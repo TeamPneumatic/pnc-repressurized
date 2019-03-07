@@ -28,6 +28,7 @@ import appeng.api.util.AEPartLocation;
 import appeng.api.util.DimensionalCoord;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
@@ -73,8 +74,13 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     private Object stackWatcher;
     private Object craftingWatcher;
     private boolean needToCheckForInterface = true;
-//    private final Map<TileEntity, Integer> providingInventories = new HashMap<>();
     private final Set<TileEntity> providingInventories = new HashSet<>();
+    @DescSynced
+    @GuiSynced
+    private int minItemOrderSize;
+    @DescSynced
+    @GuiSynced
+    private int minFluidOrderSize;
 
     @Override
     public int getColor() {
@@ -167,13 +173,47 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         return false;
     }
 
-    @Override
-    protected boolean shouldSaveNBT() {
-        return aeMode || super.shouldSaveNBT();
+    public void setMinItemOrderSize(int minItems) {
+        this.minItemOrderSize = minItems;
     }
 
+    public void setMinFluidOrderSize(int minFluid) {
+        this.minFluidOrderSize = minFluid;
+    }
+
+    public int getMinItemOrderSize() {
+        return minItemOrderSize;
+    }
+
+    public int getMinFluidOrderSize() {
+        return minFluidOrderSize;
+    }
+
+    @Override
+    protected boolean shouldSaveNBT() {
+        return aeMode || shouldWriteOrderSizeNBT() || super.shouldSaveNBT();
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound tag) {
+        super.writeToNBT(tag);
+        tag.setBoolean("aeMode", aeMode);
+        tag.setInteger(NBT_MIN_ITEMS, getMinItemOrderSize());
+        tag.setInteger(NBT_MIN_FLUID, getMinFluidOrderSize());
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound tag) {
+        super.readFromNBT(tag);
+        aeMode = tag.getBoolean("aeMode");
+        setMinItemOrderSize(tag.getInteger(NBT_MIN_ITEMS));
+        setMinFluidOrderSize(tag.getInteger(NBT_MIN_FLUID));
+    }
+
+    private boolean shouldWriteOrderSizeNBT() { return getMinFluidOrderSize() != 1 || getMinItemOrderSize() != 1; }
+
     /*
-     ****************************************** Applied Energistics 2 Integration ***************************************************************
+     ************* Applied Energistics 2 Integration **********************
      */
 
     @Override
@@ -207,18 +247,6 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     public boolean isIntegrationEnabled() {
         return aeMode;
-    }
-
-    @Override
-    public void writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setBoolean("aeMode", aeMode);
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        aeMode = tag.getBoolean("aeMode");
     }
 
     @Override
@@ -600,4 +628,5 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     public boolean validForPass(int arg0) {
         return true;
     }
+
 }

@@ -1,9 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener;
-import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
-import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
+import me.desht.pneumaticcraft.common.semiblock.*;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics.FluidStackWrapper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.item.ItemStack;
@@ -77,7 +74,7 @@ public class LogisticsManager {
     }
 
     private void tryProvide(SemiBlockLogistics provider, SemiBlockLogistics requester, PriorityQueue<LogisticsTask> tasks) {
-        IItemHandler providingInventory = IOHelper.getInventoryForTE(provider.getTileEntity());
+        IItemHandler providingInventory = IOHelper.getInventoryForTE(provider.getTileEntity(), provider.getSide());
         if (providingInventory != null) {
             if (requester instanceof IProvidingInventoryListener)
                 ((IProvidingInventoryListener) requester).notify(provider.getTileEntity());
@@ -117,15 +114,13 @@ public class LogisticsManager {
         if (te == null) return 0;
 
         int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.getMaxStackSize();
-        if (requestedAmount == 0) return 0;
+        int minOrderSize = requester instanceof SemiBlockRequester ? ((SemiBlockRequester) requester).getMinItemOrderSize() : 1;
+        if (requestedAmount < minOrderSize) return 0;
         providingStack = providingStack.copy();
         providingStack.setCount(requestedAmount);
         ItemStack remainder = providingStack.copy();
         remainder.grow(requester.getIncomingItems(providingStack));
-        for (EnumFacing d : EnumFacing.VALUES) {
-            remainder = IOHelper.insert(te, remainder, d, true);
-            if (remainder.isEmpty()) break;
-        }
+        remainder = IOHelper.insert(te, remainder, requester.getSide(), true);
         providingStack.shrink(remainder.getCount());
         if (providingStack.getCount() <= 0) return 0;
         return providingStack.getCount();
@@ -133,21 +128,18 @@ public class LogisticsManager {
 
     private static int getRequestedAmount(SemiBlockLogistics requester, FluidStack providingStack) {
         int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.amount;
-        if (requestedAmount == 0) return 0;
+        int minOrderSize = requester instanceof SemiBlockRequester ? ((SemiBlockRequester) requester).getMinFluidOrderSize() : 1;
+        if (requestedAmount < minOrderSize) return 0;
         providingStack = providingStack.copy();
         providingStack.amount = requestedAmount;
         FluidStack remainder = providingStack.copy();
         remainder.amount += requester.getIncomingFluid(remainder.getFluid());
-        TileEntity te = requester.getTileEntity();
-        if (te == null) return 0;
-        for (EnumFacing d : EnumFacing.VALUES) {
-            if (te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d)) {
-                IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d);
-                int fluidFilled = handler.fill(remainder, false);
-                if (fluidFilled > 0) {
-                    remainder.amount -= fluidFilled;
-                    break;
-                }
+        if (requester.getTileEntity() == null) return 0;
+        IFluidHandler fluidHandler = requester.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requester.getSide());
+        if (fluidHandler != null) {
+            int fluidFilled = fluidHandler.fill(remainder, false);
+            if (fluidFilled > 0) {
+                remainder.amount -= fluidFilled;
             }
         }
         providingStack.amount -= remainder.amount;

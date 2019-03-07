@@ -540,7 +540,6 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
 
     @Override
     public void onKeyTyped(IGuiWidget widget) {
-
     }
 
     protected void refreshScreen() {

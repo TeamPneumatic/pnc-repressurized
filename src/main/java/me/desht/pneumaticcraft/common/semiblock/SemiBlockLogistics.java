@@ -5,12 +5,10 @@ import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketAddSemiBlock;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -40,6 +38,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     private static final String NBT_WHITELIST = "whitelist";
     private static final String NBT_FILTERS = "filters";
     private static final String NBT_FLUID_FILTERS = "fluidFilters";
+    private static final String NBT_SIDE = "side";
     private final Map<ItemStack, Integer> incomingStacks = new HashMap<>();
     private final Map<FluidStackWrapper, Integer> incomingFluid = new HashMap<>();
     private final ItemStackHandler filters = new ItemStackHandler(27);
@@ -54,6 +53,10 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     private boolean fuzzyNBT = true;
     @GuiSynced
     private boolean whitelist = true;
+    @DescSynced
+    @GuiSynced
+    private EnumFacing side = EnumFacing.UP;
+
     private int alpha = 255;
 
     public SemiBlockLogistics() {
@@ -84,6 +87,14 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
 
     public int getAlpha() {
         return alpha;
+    }
+
+    public EnumFacing getSide() {
+        return side;
+    }
+
+    public void setSide(EnumFacing side) {
+        this.side = side;
     }
 
     @Override
@@ -184,6 +195,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
         tag.setBoolean(NBT_FUZZY_META, fuzzyMeta);
         tag.setBoolean(NBT_FUZZY_NBT, fuzzyNBT);
         tag.setBoolean(NBT_WHITELIST, whitelist);
+        tag.setString(NBT_SIDE, side.getName());
     }
 
     @Override
@@ -200,6 +212,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
         fuzzyMeta = NBTUtil.fromTag(tag, NBT_FUZZY_META, false);
         fuzzyNBT = NBTUtil.fromTag(tag, NBT_FUZZY_NBT, true);
         whitelist = NBTUtil.fromTag(tag, NBT_WHITELIST, true);
+        side = tag.hasKey(NBT_SIDE) ? EnumFacing.byName(tag.getString(NBT_SIDE)) : EnumFacing.UP;
     }
 
     public void setFilter(int filterIndex, FluidStack stack) {
@@ -228,7 +241,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
             if (fluidFilter.getFluidAmount() > 0) return true;
         }
 
-        return invisible || fuzzyMeta || !fuzzyNBT || !whitelist;
+        return invisible || fuzzyMeta || !fuzzyNBT || !whitelist || side != EnumFacing.UP;
     }
 
     @Override
@@ -254,7 +267,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     @Override
     public boolean onRightClickWithConfigurator(EntityPlayer player) {
         if (getGuiID() != null) {
-            NetworkHandler.sendTo(new PacketAddSemiBlock(pos, this), (EntityPlayerMP) player);
+//            NetworkHandler.sendTo(new PacketAddSemiBlock(pos, this), (EntityPlayerMP) player);
             player.openGui(PneumaticCraftRepressurized.instance, getGuiID().ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
@@ -311,16 +324,22 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
             fuzzyNBT = !fuzzyNBT;
         } else if (guiID == 12 && supportsBlacklisting()) {
             whitelist = !whitelist;
+        } else if (guiID >= 13 && guiID <= 18) {
+            setSide(EnumFacing.byIndex(guiID - 13));
         }
     }
 
     @Override
-    public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
-        super.addWailaTooltip(curInfo, tag, extended);
+    public void addTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
+        super.addTooltip(curInfo, tag, extended);
+        curInfo.add(I18n.format("gui.logistic_frame.facing", side));
         if (extended) {
             NonNullList<ItemStack> drops = NonNullList.create();
             addDrops(drops);
-            ItemLogisticsFrame.addTooltip(drops.get(0), PneumaticCraftRepressurized.proxy.getClientWorld(), curInfo, true);
+            if (!drops.isEmpty()) {
+                drops.get(0).setTagCompound(tag);
+                ItemLogisticsFrame.addTooltip(drops.get(0), PneumaticCraftRepressurized.proxy.getClientWorld(), curInfo, true);
+            }
         }
     }
 

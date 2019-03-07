@@ -1,5 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.client.resources.I18n;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,13 +51,14 @@ public class WidgetBase implements IGuiWidget {
 
     @Override
     public Rectangle getBounds() {
-
         return new Rectangle(x, y, width, height);
     }
 
     public void setTooltipText(String tooltip) {
         tooltipText.clear();
-        if (tooltip != null && !tooltip.equals("")) {
+        if (I18n.hasKey(tooltip)) {
+            tooltipText.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(tooltip)));
+        } else if (tooltip != null && !tooltip.isEmpty()) {
             tooltipText.add(tooltip);
         }
     }

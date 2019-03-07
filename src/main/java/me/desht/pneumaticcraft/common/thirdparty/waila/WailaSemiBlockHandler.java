@@ -10,7 +10,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -34,7 +36,12 @@ public class WailaSemiBlockHandler implements IWailaDataProvider {
         List<SemiBlockBasic> semiBlocks = SemiBlockManager.getInstance(accessor.getWorld()).getSemiBlocksAsList(SemiBlockBasic.class, accessor.getWorld(), accessor.getPosition());
         NBTTagList tagList = accessor.getNBTData().getTagList("semiBlocks", Constants.NBT.TAG_COMPOUND);
         for(int i = 0; i < semiBlocks.size(); i++){
-            semiBlocks.get(i).addWailaTooltip(currenttip, tagList.getCompoundTagAt(i), accessor.getPlayer().isSneaking());
+            NonNullList<ItemStack> l = NonNullList.create();
+            semiBlocks.get(i).addDrops(l);
+            if (!l.isEmpty()) {
+                currenttip.add(TextFormatting.YELLOW + l.get(0).getDisplayName());
+            }
+            semiBlocks.get(i).addTooltip(currenttip, tagList.getCompoundTagAt(i), accessor.getPlayer().isSneaking());
         }
         return currenttip;
     }

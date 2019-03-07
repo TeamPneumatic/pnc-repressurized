@@ -438,6 +438,8 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             if (widget.getBounds().contains(mouseX, mouseY)) {
                 widget.onMouseClicked(mouseX, mouseY, button);
                 isClicked = true;
+            } else {
+                widget.onMouseClickedOutsideBounds(mouseX, mouseY, button);
             }
         }
     }

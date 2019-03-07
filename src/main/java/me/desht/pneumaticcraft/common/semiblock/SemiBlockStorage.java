@@ -1,12 +1,21 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificProvider, ISpecificRequester {
 
     public static final String ID = "logistic_frame_storage";
+
+    @DescSynced
+    @GuiSynced
+    private int minItemOrderSize;
+    @DescSynced
+    @GuiSynced
+    private int minFluidOrderSize;
 
     @Override
     public int getColor() {
@@ -42,5 +51,4 @@ public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificPro
     public boolean canProvide(FluidStack providingStack) {
         return passesFilter(providingStack.getFluid());
     }
-
 }

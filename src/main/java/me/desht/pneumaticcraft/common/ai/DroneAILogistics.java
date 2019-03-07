@@ -106,16 +106,20 @@ public class DroneAILogistics extends EntityAIBase {
     public boolean execute(LogisticsTask task) {
         if (!drone.getInv().getStackInSlot(0).isEmpty()) {
             if (!isPosPathfindable(task.requester.getPos())) return false;
-            curAI = new DroneEntityAIInventoryExport(drone, new FakeWidgetLogistics(task.requester.getPos(), task.transportingItem));
+            curAI = new DroneEntityAIInventoryExport(drone,
+                    new FakeWidgetLogistics(task.requester.getPos(), task.requester.getSide(), task.transportingItem));
         } else if (drone.getTank().getFluidAmount() > 0) {
             if (!isPosPathfindable(task.requester.getPos())) return false;
-            curAI = new DroneAILiquidExport(drone, new FakeWidgetLogistics(task.requester.getPos(), task.transportingFluid.stack));
+            curAI = new DroneAILiquidExport(drone,
+                    new FakeWidgetLogistics(task.requester.getPos(), task.requester.getSide(), task.transportingFluid.stack));
         } else if (!task.transportingItem.isEmpty()) {
             if (!isPosPathfindable(task.provider.getPos())) return false;
-            curAI = new DroneEntityAIInventoryImport(drone, new FakeWidgetLogistics(task.provider.getPos(), task.transportingItem));
+            curAI = new DroneEntityAIInventoryImport(drone,
+                    new FakeWidgetLogistics(task.provider.getPos(), task.provider.getSide(), task.transportingItem));
         } else {
             if (!isPosPathfindable(task.provider.getPos())) return false;
-            curAI = new DroneAILiquidImport(drone, new FakeWidgetLogistics(task.provider.getPos(), task.transportingFluid.stack));
+            curAI = new DroneAILiquidImport(drone,
+                    new FakeWidgetLogistics(task.provider.getPos(),  task.provider.getSide(), task.transportingFluid.stack));
         }
         if (curAI.shouldExecute()) {
             task.informRequester();
@@ -138,19 +142,22 @@ public class DroneAILogistics extends EntityAIBase {
         private final ItemStack stack;
         private final FluidStack fluid;
         private final Set<BlockPos> area;
+        private final boolean[] sides = new boolean[6];
 
-        FakeWidgetLogistics(BlockPos pos, @Nonnull ItemStack stack) {
+        FakeWidgetLogistics(BlockPos pos, EnumFacing side, @Nonnull ItemStack stack) {
             this.stack = stack;
             this.fluid = null;
             area = new HashSet<>();
             area.add(pos);
+            sides[side.getIndex()] = true;
         }
 
-        FakeWidgetLogistics(BlockPos pos, FluidStack fluid) {
+        FakeWidgetLogistics(BlockPos pos, EnumFacing side, FluidStack fluid) {
             this.stack = ItemStack.EMPTY;
             this.fluid = fluid;
             area = new HashSet<>();
             area.add(pos);
+            sides[side.getIndex()] = true;
         }
 
         @Override
@@ -174,7 +181,7 @@ public class DroneAILogistics extends EntityAIBase {
 
         @Override
         public boolean[] getSides() {
-            return new boolean[]{true, true, true, true, true, true};
+            return sides;
         }
 
         @Override

@@ -470,10 +470,10 @@ gui.tab.info.tile.drone_interface=§0A block that allows ComputerCraft and OpenC
 gui.tab.info.tile.kerosene_lamp=§0A Kerosene Lamp is a light source that runs on Kerosene. It is similar to the long range light sources you might be used to, like Thaumcraft's Arcane Lamp, or Factorization's Wrath Lamp.
 gui.tab.info.tile.sentry_turret=§0A Sentry Turret is an autonomous defensive weapon. When provided with Gun Ammo it will fire at any living entity within a 16 block range (extendable with Range Upgrades). You can filter which entities to attack by entering a filter in the 'Target Filter' field. When the Sentry Gun is covered by a Security Station, players allowed by the Security Station will not be targeted.
 
-gui.tab.info.logistic_frame_requester=§0Requester frames can request resources from any other framed inventory. \n \nHere you can specify which resources and quantities that Logistics Drones should keep supplied in the framed inventory. Either insert items from your inventory, or search for an item/fluid by right clicking an empty slot.
+gui.tab.info.logistic_frame_requester=§0Requester frames can request resources from any other framed inventory. \n \nHere you can specify the resources and quantities that Logistics Drones / Logistics Modules should keep stocked in the framed inventory. Either insert items from your inventory, or search for an item/fluid by right clicking an empty slot.
 gui.tab.info.logistic_frame_passive_provider=§0Passive Provider frames can provide resources to Requester Frames. \n \nBy default the framed inventory will provide every item in the inventory. By adding items to this filter, only those items will be provided. Add items from your inventory, or search for an item/fluid by right clicking an empty slot.
 gui.tab.info.logistic_frame_active_provider=§0Active Provider frames can provide resources to Requester frames and Storage / Default Storage frames. \n \nBy default the framed inventory will provide every item in the inventory. By adding items to this filter, only items specified will be provided. Add items from your inventory or search for an item/fluid by right clicking an empty slot.
-gui.tab.info.logistic_frame_storage=§0Storage frames can receive resources from Active Providers and supply items to Requesters. \n \nBy default the framed inventory accepts any item from providing inventories. By adding items to this filter, only items specified can be inserted via the logistics network. Add items from your inventory or search for an item/fluid by right clicking an empty slot.
+gui.tab.info.logistic_frame_storage=§0Storage frames can receive resources from Active Providers and supply resources to Requesters. \n \nBy default the framed inventory accepts any item from providing inventories. By adding items to this filter, only items specified can be inserted via the logistics network. Add items from your inventory or search for an item/fluid by right clicking an empty slot.
 gui.tab.info.logistic_frame_default_storage=§0Default Storage frames can receive resources from Active Providers and supply resources to Requesters and Storage Frames. They have a lower priority than Storage frames, which will be always be used first if possible. \n \nBy default the framed inventory will accept any resources from providing inventories. By adding items to this filter, only items specified can be inserted via the logistics network. Add items from your inventory or search for an item/fluid by right clicking an empty slot.
 
 # Pressure
@@ -855,6 +855,13 @@ gui.logistic_frame.whitelist=Whitelist
 gui.logistic_frame.blacklist=Blacklist
 gui.logistic_frame.no_items=§o• No items
 gui.logistic_frame.no_fluids=§o• No fluids
+gui.logistic_frame.facing=Facing: %s
+gui.logistic_frame.facing.tooltip=Defines the face of the framed inventory/tank which will be accessed by Drones. This is ignored by Logistics Modules; they always access the inventory/tank on the side they face.
+gui.logistic_frame.min_amount=Minimum Order Size
+gui.logistic_frame.min_items=Minimum Items
+gui.logistic_frame.min_items.tooltip=This frame will not order fewer items than this at a time. Useful to prevent drones making many trips with tiny loads when a single trip could be more efficient.
+gui.logistic_frame.min_fluid=Minimum Fluid (mB)
+gui.logistic_frame.min_fluid.tooltip=This frame will not order less fluid than this at a time. Useful to prevent drones making many trips with tiny loads when a single trip could be more efficient.
 gui.plasticMixer.lockSelection=Lock Selection
 gui.plasticMixer.lockSelection.tooltip=Locks the selected plastic
 gui.keroseneLamp.maxRange=Max Range:

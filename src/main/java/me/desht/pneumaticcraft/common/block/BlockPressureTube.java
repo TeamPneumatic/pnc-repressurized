@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
@@ -18,6 +19,7 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -177,6 +179,12 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                 PneumaticCraftUtils.getTileEntitySafely(world, pos);
     }
 
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
+        super.onBlockPlacedBy(world, pos, state, entity, stack);
+        ModuleNetworkManager.getInstance(world).invalidateCache();
+    }
+
     public boolean tryPlaceModule(EntityPlayer player, World world, BlockPos pos, EnumFacing side, boolean simulate) {
         if (player.getHeldItemMainhand().getItem() instanceof ItemTubeModule) {
             TileEntity te = getTE(world, pos);
@@ -193,6 +201,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                             new PacketPlaySound(SoundType.GLASS.getStepSound(), SoundCategory.BLOCKS, pos.getX(), pos.getY(), pos.getZ(),
                                     SoundType.GLASS.getVolume() * 5.0f, SoundType.GLASS.getPitch() * 0.9f, false),
                             world);
+                    ModuleNetworkManager.getInstance(world).invalidateCache();
                 }
                 return true;
             }
@@ -342,6 +351,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                 world.notifyNeighborsOfStateChange(pos, this, true);
             }
         }
+        ModuleNetworkManager.getInstance(world).invalidateCache();
         return true;
     }
 
@@ -353,6 +363,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
             entity.setItem(drop);
             world.spawnEntity(entity);
         }
+        ModuleNetworkManager.getInstance(world).invalidateCache();
         super.breakBlock(world, pos, state);
     }
 

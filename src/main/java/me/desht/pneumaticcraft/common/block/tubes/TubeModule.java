@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class TubeModule implements ISidedPart {
     public static final float MAX_VALUE = 30;
@@ -210,5 +211,19 @@ public abstract class TubeModule implements ISidedPart {
 
     public AxisAlignedBB getRenderBoundingBox() {
         return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TubeModule)) return false;
+        TubeModule that = (TubeModule) o;
+        return Objects.equals(pressureTube.pos(), that.pressureTube.pos()) &&
+                dir == that.dir;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pressureTube.pos(), dir);
     }
 }

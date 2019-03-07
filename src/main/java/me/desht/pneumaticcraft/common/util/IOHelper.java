@@ -65,7 +65,7 @@ public class IOHelper {
      * Extract a specific number of the given item from the given item handler
      *
      * @param handler the item handler
-     * @param requestedStack the item to search for, including the number of items
+     * @param requestedStack the item to search for, including the number of items; this stack is not modified
      * @param countType how to interpret the item count of requestedStack
      * @param simulate true if extraction should only be simulated
      * @param fuzzyMeta true if item meta should be ignored when searching

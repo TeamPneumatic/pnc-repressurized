@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockBasic;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
@@ -24,8 +25,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
@@ -109,12 +110,19 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
     }
 
     private static void handleSemiblock(ProbeMode mode, IProbeInfo probeInfo, ISemiBlock semiBlock) {
-        List<String> currenttip = new ArrayList<>();
+        NonNullList<ItemStack> l = NonNullList.create();
+        semiBlock.addDrops(l);
+        if (l.isEmpty()) return;
+        ItemStack stack = l.get(0);
+        int color = semiBlock instanceof SemiBlockLogistics ? ((SemiBlockLogistics) semiBlock).getColor() : 0xFF808080;
+        IProbeInfo vert = probeInfo.vertical(new LayoutStyle().borderColor(color).spacing(3));
+        IProbeInfo horiz = vert.horizontal();
+        horiz.item(stack);
+        horiz.text(stack.getDisplayName());
         if (semiBlock instanceof SemiBlockBasic) {
-            ((SemiBlockBasic) semiBlock).addWailaTooltip(currenttip, new NBTTagCompound(), mode == ProbeMode.EXTENDED);
-        }
-        for (String s : currenttip) {
-            probeInfo.text(s);
+            List<String> currenttip = new ArrayList<>();
+            ((SemiBlockBasic) semiBlock).addTooltip(currenttip, stack.getTagCompound(), mode == ProbeMode.EXTENDED);
+            currenttip.forEach(vert::text);
         }
     }
 

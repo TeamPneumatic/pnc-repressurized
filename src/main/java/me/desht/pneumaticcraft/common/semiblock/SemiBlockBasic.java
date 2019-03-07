@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.semiblock;
 import me.desht.pneumaticcraft.common.inventory.SyncedField;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -13,7 +12,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -180,8 +178,16 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
         return null;
     }
 
-    public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
-        curInfo.add(TextFormatting.YELLOW + "[" + PneumaticCraftUtils.xlate(SemiBlockManager.getItemForSemiBlock(this).getTranslationKey() + ".name") + "]");
+    /**
+     * Add information for the benefit of info mods such as TOP or WAILA/HWYLA.
+     * Adds nothing by default; subclasses will override this. Note: the semiblock name is expected to be added by
+     * the caller.
+     *
+     * @param curInfo list to add info to
+     * @param tag NBT data from the semiblock in question containing extra info
+     * @param extended show extended data?
+     */
+    public void addTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
     }
 
     public void addWailaInfoToTag(NBTTagCompound tag) {
@@ -218,7 +224,6 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
 
     @Override
     public void onDescUpdate() {
-
     }
 
     @Override

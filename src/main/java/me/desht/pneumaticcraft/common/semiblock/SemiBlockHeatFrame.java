@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.recipes.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -195,10 +194,10 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     }
 
     @Override
-    public void addWailaTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
-        super.addWailaTooltip(curInfo, tag, extended);
+    public void addTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
+        super.addTooltip(curInfo, tag, extended);
         // WAILA sync's the temperature via NBT, TOP runs serverside and gets it here
         int temp = tag.hasKey("temp") ? tag.getInteger("temp") : (int) logic.getTemperature();
-        curInfo.add(I18n.format("waila.temperature", temp - 273));
+        curInfo.add(HeatUtil.formatHeatString(temp));
     }
 }

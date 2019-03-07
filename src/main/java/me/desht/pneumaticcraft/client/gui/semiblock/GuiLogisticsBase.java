@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.semiblock;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.GuiSearcher;
 import me.desht.pneumaticcraft.client.gui.widget.*;
@@ -12,14 +13,18 @@ import me.desht.pneumaticcraft.common.network.PacketSetLogisticsFilterStack;
 import me.desht.pneumaticcraft.common.network.PacketSetLogisticsFluidFilterStack;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.apache.commons.lang3.text.WordUtils;
@@ -37,10 +42,12 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
     private GuiCheckBox fuzzyMeta;
     private GuiCheckBox fuzzyNBT;
     private GuiCheckBox whitelist;
+    private GuiButtonSpecial[] facingButtons = new GuiButtonSpecial[6];
+    private GuiAnimatedStat facingTab;
 
-    public GuiLogisticsBase(InventoryPlayer invPlayer, Logistics requester) {
-        super(new ContainerLogistics(invPlayer, requester), null, Textures.GUI_LOGISTICS_REQUESTER);
-        logistics = (Logistics) ((ContainerLogistics) inventorySlots).logistics;
+    public GuiLogisticsBase(InventoryPlayer invPlayer, Logistics logistics) {
+        super(new ContainerLogistics(invPlayer, logistics), null, Textures.GUI_LOGISTICS_REQUESTER);
+        this.logistics = (Logistics) ((ContainerLogistics) inventorySlots).logistics;
         ySize = 216;
     }
 
@@ -60,15 +67,21 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
             fluidSearchGui = null;
         }
         String invisibleText = I18n.format("gui.logistic_frame.invisible");
-        addWidget(invisible = new GuiCheckBox(9, guiLeft + xSize - 15 - fontRenderer.getStringWidth(invisibleText), guiTop + 7, 0xFF404040, invisibleText));
+        addWidget(invisible = new GuiCheckBox(9, guiLeft + xSize - 15 - fontRenderer.getStringWidth(invisibleText), guiTop + 6, 0xFF404040, invisibleText));
         invisible.setTooltip(Arrays.asList(WordUtils.wrap(I18n.format("gui.logistic_frame.invisible.tooltip"), 40).split(System.getProperty("line.separator"))));
+
         addWidget(new WidgetLabel(guiLeft + 8, guiTop + 18, I18n.format(String.format("gui.%s.filters", SemiBlockManager.getKeyForSemiBlock(logistics)))));
         addWidget(new WidgetLabel(guiLeft + 8, guiTop + 90, I18n.format("gui.logistic_frame.liquid")));
         for (int i = 0; i < 9; i++) {
             addWidget(new WidgetFluidStack(i, guiLeft + i * 18 + 8, guiTop + 101, logistics.getTankFilter(i)));
         }
-        addInfoTab(I18n.format("gui.tab.info." + SemiBlockManager.getKeyForSemiBlock(logistics)));
 
+        addInfoTab(I18n.format("gui.tab.info." + SemiBlockManager.getKeyForSemiBlock(logistics)));
+        addFilterTab();
+        addFacingTab();
+    }
+
+    private void addFilterTab() {
         GuiAnimatedStat filterTab = addAnimatedStat("gui.logistic_frame.filter_settings", new ItemStack(Blocks.WEB), 0xFF106010, false);
         filterTab.addPadding(logistics.supportsBlacklisting() ? 6 : 4, 26);
         fuzzyMeta = new GuiCheckBox(10, 5, 20, 0xFFFFFFFF, I18n.format("gui.logistic_frame.fuzzyMeta"));
@@ -79,6 +92,22 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
             whitelist = new GuiCheckBox(12, 5, 52, 0xFFFFFFFF, I18n.format("gui.logistic_frame.whitelist"));
             filterTab.addWidget(whitelist);
         }
+    }
+
+    private void addFacingTab() {
+        facingTab = addAnimatedStat("", new ItemStack(Items.MAP), 0xFFC0C0C0, false);
+        facingTab.addPadding(8, 18);
+        facingTab.addWidget(facingButtons[0] = new GuiButtonSpecial(13, 15, 62, 20, 20,"D"));
+        facingTab.addWidget(facingButtons[1] = new GuiButtonSpecial(14, 15, 20, 20, 20,"U"));
+        facingTab.addWidget(facingButtons[2] = new GuiButtonSpecial(15, 36, 20, 20, 20,"N"));
+        facingTab.addWidget(facingButtons[3] = new GuiButtonSpecial(16, 36, 62, 20, 20,"S"));
+        facingTab.addWidget(facingButtons[4] = new GuiButtonSpecial(17, 15, 41, 20, 20,"W"));
+        facingTab.addWidget(facingButtons[5] = new GuiButtonSpecial(18, 57, 41, 20, 20,"E"));
+        GuiButtonSpecial info = new GuiButtonSpecial(19, 36, 41, 20, 20,"");
+        info.setVisible(false);
+        info.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.logistic_frame.facing.tooltip")));
+        info.setRenderedIcon(new ResourceLocation(Textures.GUI_INFO_LOCATION));
+        facingTab.addWidget(info);
     }
 
     @Override
@@ -106,6 +135,11 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
         fuzzyNBT.checked = logistics.isFuzzyNBT();
         if (logistics.supportsBlacklisting())
             whitelist.checked = logistics.isWhitelist();
+        for (EnumFacing face : EnumFacing.values()) {
+            facingButtons[face.getIndex()].enabled = face != logistics.getSide();
+        }
+        facingTab.setTitle(I18n.format("gui.logistic_frame.facing", logistics.getSide().getName()));
+
     }
 
     @Override
