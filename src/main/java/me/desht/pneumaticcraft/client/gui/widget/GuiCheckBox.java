@@ -52,6 +52,7 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
                 GlStateManager.color(0.8f, 0.8f, 0.8f, 1);
             }
             BufferBuilder wr = Tessellator.getInstance().getBuffer();
+            GlStateManager.glLineWidth(2);
             wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
             wr.pos(x + 2, y + 5, zLevel).endVertex();
             wr.pos(x + 5, y + 7, zLevel).endVertex();
