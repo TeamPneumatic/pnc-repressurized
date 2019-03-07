@@ -18,7 +18,7 @@ public class ElementPressure implements IElement {
     private static final float SCALE = 0.7f;
 
     ElementPressure(IPneumaticMachine te) {
-        min = te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -1;
+        min = te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : 0;
         IAirHandler airHandler = te.getAirHandler(null);
         pressure = airHandler.getPressure();
         danger = airHandler.getDangerPressure();
