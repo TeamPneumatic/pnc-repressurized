@@ -59,7 +59,6 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
         minItems = new WidgetTextFieldNumber(fontRenderer, 5, 30, 30, 12);
         minItems.minValue = 1;
         minItems.maxValue = 64;
-        minItems.setValue(logistics.getMinItemOrderSize());
         minAmountStat.addWidget(minItems);
         WidgetLabel minFluidLabel = new WidgetLabel(5, 47, I18n.format("gui.logistic_frame.min_fluid"));
         minFluidLabel.setTooltipText("gui.logistic_frame.min_fluid.tooltip");
@@ -67,7 +66,6 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
         minFluid = new WidgetTextFieldNumber(fontRenderer, 5, 57, 50, 12);
         minFluid.minValue = 1;
         minFluid.maxValue = 16000;
-        minFluid.setValue(logistics.getMinFluidOrderSize());
         minAmountStat.addWidget(minFluid);
     }
 
@@ -78,6 +76,12 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
 
     @Override
     public void updateScreen() {
+        if (firstUpdate) {
+            // do this before calling superclass method
+            minItems.setValue(logistics.getMinItemOrderSize());
+            minFluid.setValue(logistics.getMinFluidOrderSize());
+        }
+
         super.updateScreen();
 
         if (aeIntegration != null) {
@@ -97,5 +101,13 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
         } else {
             super.onKeyTyped(widget);
         }
+    }
+
+    @Override
+    public void onGuiClosed() {
+        if (packetSendDelay > 0) {
+            NetworkHandler.sendToServer(new PacketSetLogisticsMinAmounts(logistics, minItems.getValue(), minFluid.getValue()));
+        }
+        super.onGuiClosed();
     }
 }

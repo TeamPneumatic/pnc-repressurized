@@ -56,7 +56,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
     GuiAnimatedStat problemTab;
     GuiButtonSpecial redstoneButton;
     private boolean hasInit; //Fix for some weird race condition occuring in 1.8 where drawing is called before initGui().
-    private boolean firstUpdate = true;
+    protected boolean firstUpdate = true;
 
     public GuiPneumaticContainerBase(Container par1Container, Tile te, String guiTexture) {
         super(par1Container);
