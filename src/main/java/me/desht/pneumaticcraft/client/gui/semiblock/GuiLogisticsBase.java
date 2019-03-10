@@ -138,8 +138,8 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
         for (EnumFacing face : EnumFacing.values()) {
             facingButtons[face.getIndex()].enabled = face != logistics.getSide();
         }
-        facingTab.setTitle(I18n.format("gui.logistic_frame.facing", logistics.getSide().getName()));
-
+        String s = logistics.getSide() == null ? "-" : logistics.getSide().getName();
+        facingTab.setTitle(I18n.format("gui.logistic_frame.facing", s));
     }
 
     @Override
