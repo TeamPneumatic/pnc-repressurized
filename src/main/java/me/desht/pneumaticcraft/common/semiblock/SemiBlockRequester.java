@@ -89,7 +89,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     public int amountRequested(ItemStack stack) {
         int totalRequestingAmount = getTotalRequestedAmount(stack);
         if (totalRequestingAmount > 0) {
-            IItemHandler inv = IOHelper.getInventoryForTE(getTileEntity());
+            IItemHandler inv = IOHelper.getInventoryForTE(getTileEntity(), getSide());
             if (inv != null) {
                 int count = 0;
                 for (int i = 0; i < inv.getSlots(); i++) {
@@ -122,16 +122,11 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         if (totalRequestingAmount > 0) {
             TileEntity te = getTileEntity();
             int count = 0;
-            for (EnumFacing facing : EnumFacing.VALUES) {
-                if (te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)) {
-                    IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
-                    for (IFluidTankProperties properties : handler.getTankProperties()) {
-                        FluidStack contents = properties.getContents();
-                        if (contents != null && contents.getFluid() == stack.getFluid()) {
-                            count += contents.amount;
-                        }
-                    }
-                    if (count > 0) break;
+            IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getSide());
+            for (IFluidTankProperties properties : handler.getTankProperties()) {
+                FluidStack contents = properties.getContents();
+                if (contents != null && contents.getFluid() == stack.getFluid()) {
+                    count += contents.amount;
                 }
             }
             count += getIncomingFluid(stack.getFluid());
