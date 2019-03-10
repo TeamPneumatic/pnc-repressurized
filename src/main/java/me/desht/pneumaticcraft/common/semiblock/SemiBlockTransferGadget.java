@@ -14,7 +14,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity>{
+public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity> implements IDirectionalSemiblock {
     private static final int TRANSFER_INTERVAL = 40;
     public static final String ID = "transfer_gadget";
     
@@ -42,7 +42,7 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity>{
     
     @Override
     public void addDrops(NonNullList<ItemStack> drops) {
-        //Only drop one of the two halves.
+        // Only drop one of the two halves.
         if(io == EnumInputOutput.INPUT) super.addDrops(drops);
     }
     
@@ -64,10 +64,14 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity>{
     }
     
     @Override
-    public boolean onRightClickWithConfigurator(EntityPlayer player){
-        toggleIO();
-        getConnectedGadget().toggleIO();
-        return true;
+    public boolean onRightClickWithConfigurator(EntityPlayer player, EnumFacing side) {
+        if (getFacing() == side) {
+            toggleIO();
+            getConnectedGadget().toggleIO();
+            return true;
+        } else {
+            return super.onRightClickWithConfigurator(player, side);
+        }
     }
     
     private void toggleIO(){
@@ -119,7 +123,8 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity>{
             FluidUtil.tryFluidTransfer(output, input, 100, true);
         }
     }
-    
+
+    @Override
     public EnumFacing getFacing(){
         return facing;
     }
@@ -142,19 +147,5 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity>{
         counter = tag.getInteger("counter");
         facing = EnumFacing.VALUES[tag.getByte("facing")];
         io = tag.getBoolean("input") ? EnumInputOutput.INPUT : EnumInputOutput.OUTPUT;
-    }
-    
-    @Override
-    public void writeToPacket(NBTTagCompound tag){
-        super.writeToPacket(tag);
-       // tag.setByte("facing", (byte)facing.ordinal());
-        //tag.setBoolean("input", io == EnumInputOutput.INPUT);
-    }
-    
-    @Override
-    public void readFromPacket(NBTTagCompound tag){
-        super.readFromPacket(tag);
-       // facing = EnumFacing.VALUES[tag.getByte("facing")];
-       // io = tag.getBoolean("input") ? EnumInputOutput.INPUT : EnumInputOutput.OUTPUT;
     }
 }

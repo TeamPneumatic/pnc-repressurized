@@ -4,10 +4,7 @@ import com.google.common.collect.HashBiMap;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.event.SemiblockEvent;
 import me.desht.pneumaticcraft.common.item.Itemss;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketAddSemiBlock;
-import me.desht.pneumaticcraft.common.network.PacketDescription;
-import me.desht.pneumaticcraft.common.network.PacketRemoveSemiBlock;
+import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
@@ -16,12 +13,12 @@ import net.minecraft.block.SoundType;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -249,13 +246,13 @@ public class SemiBlockManager {
     private void addPendingBlock(Chunk chunk, ISemiBlock semiBlock){
         Map<BlockPos, List<ISemiBlock>> map = getOrCreateMap(chunk);
         List<ISemiBlock> semiBlocksForPos = map.computeIfAbsent(semiBlock.getPos(), k -> new ArrayList<>());
-        for (int i = 0; i < semiBlocksForPos.size(); i++) {
-            // can't have multiple semiblocks of the same type; replace any such existing semiblock
-            if (semiBlocksForPos.get(i).getClass() == semiBlock.getClass()) {
-                semiBlocksForPos.set(i, semiBlock);
-                return;
-            }
-        }
+//        for (int i = 0; i < semiBlocksForPos.size(); i++) {
+//            // can't have multiple semiblocks of the same type; replace any such existing semiblock
+//            if (semiBlocksForPos.get(i).getClass() == semiBlock.getClass()) {
+//                semiBlocksForPos.set(i, semiBlock);
+//                return;
+//            }
+//        }
         semiBlocksForPos.add(semiBlock);
     }
     
@@ -310,28 +307,32 @@ public class SemiBlockManager {
 
     @SubscribeEvent
     public void onInteraction(PlayerInteractEvent.RightClickBlock event) {
-        ItemStack curItem = event.getEntityPlayer().getHeldItemMainhand();
-        if (!event.getWorld().isRemote && event.getHand() == EnumHand.MAIN_HAND) {
-            if (curItem.getItem() instanceof ISemiBlockItem) {
-                boolean success = interact(event, curItem, event.getPos());
-                
-                //If the block can't be placed in the pos, then try to place it next to the block.
-                if (!success && event.getFace() != null)
-                    success = interact(event, curItem, event.getPos().offset(event.getFace()));
+        ItemStack curItem = event.getEntityPlayer().getHeldItem(event.getHand());
+        if (!(curItem.getItem() instanceof ISemiBlockItem)) {
+            return;
+        }
 
-                // Still can't be placed? If it has a GUI, open it.
-                if (!success) {
-                    ISemiBlock block = ((ISemiBlockItem) curItem.getItem()).getSemiBlock(event.getWorld(), null, curItem);
-                    if (block.getGuiID() != null) {
-                        event.getEntityPlayer().openGui(PneumaticCraftRepressurized.instance, block.getGuiID().ordinal(), event.getWorld(),
-                                event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
-                        success = true;
-                    }
+        if (!event.getWorld().isRemote) {
+            boolean success = interact(event, curItem, event.getPos());
+
+            // If the block can't be placed in the pos, then try to place it next to the block.
+            if (!success && event.getFace() != null)
+                success = interact(event, curItem, event.getPos().offset(event.getFace()));
+
+            // Still can't be placed? If it has a GUI, open it.
+            if (!success) {
+                ISemiBlock block = ((ISemiBlockItem) curItem.getItem()).getSemiBlock(event.getWorld(), null, curItem);
+                if (block.getGuiID() != null) {
+                    event.getEntityPlayer().openGui(PneumaticCraftRepressurized.instance, block.getGuiID().ordinal(), event.getWorld(),
+                            event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
+                    success = true;
                 }
-                if (success) event.setCanceled(true);
-
             }
-        } else if (event.getWorld().isRemote && curItem.getItem() instanceof ISemiBlockItem) {
+            if (success) event.setCanceled(true);
+
+        } else {
+            // client side
+            BlockPos pos = event.getPos();
             event.setCancellationResult(EnumActionResult.SUCCESS);
             event.setCanceled(true);
         }
@@ -359,14 +360,13 @@ public class SemiBlockManager {
             if (newBlock.canPlace(event.getFace())) {
                 addSemiBlock(event.getWorld(), pos, newBlock);
                 newBlock.onPlaced(event.getEntityPlayer(), curItem, event.getFace());
-                event.getWorld().playSound(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                        SoundType.GLASS.getPlaceSound(), SoundCategory.BLOCKS,
-                        (SoundType.GLASS.getVolume() + 1.0F) / 2.0F, SoundType.GLASS.getPitch() * 0.8F,
-                        false);
                 if (!event.getEntityPlayer().capabilities.isCreativeMode) {
                     curItem.shrink(1);
-                    if (curItem.getCount() <= 0) event.getEntityPlayer().setHeldItem(event.getHand(), ItemStack.EMPTY);
                 }
+                NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_METAL_PLACE, SoundCategory.BLOCKS,
+                        pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        (SoundType.GLASS.getVolume() + 1.0F) / 2.0F, SoundType.GLASS.getPitch() * 0.8F, false),
+                        event.getWorld());
                 return true;
             }
         }

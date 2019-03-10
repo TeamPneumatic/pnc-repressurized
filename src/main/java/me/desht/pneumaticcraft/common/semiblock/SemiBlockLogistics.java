@@ -69,8 +69,13 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     @Override
     public boolean canPlace(EnumFacing facing) {
         return getTileEntity() != null &&
-                (getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
-                || getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null));
+                (getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing)
+                || getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing));
+    }
+
+    @Override
+    public boolean canStay() {
+        return canPlace(getSide());
     }
 
     public abstract int getColor();
@@ -262,12 +267,12 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
         if (tag != null) {
             readFromNBT(tag);
         }
+        setSide(facing);
     }
 
     @Override
-    public boolean onRightClickWithConfigurator(EntityPlayer player) {
+    public boolean onRightClickWithConfigurator(EntityPlayer player, EnumFacing side) {
         if (getGuiID() != null) {
-//            NetworkHandler.sendTo(new PacketAddSemiBlock(pos, this), (EntityPlayerMP) player);
             player.openGui(PneumaticCraftRepressurized.instance, getGuiID().ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import java.util.List;
-
+import me.desht.pneumaticcraft.common.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -12,6 +11,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class ItemLogisticsConfigurator extends ItemPressurizable {
 
@@ -32,11 +33,15 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
 
             if (!semiBlocks.isEmpty()) {
                 if (player.isSneaking()) {
-                    semiBlocks.forEach(s -> SemiBlockManager.getInstance(world).breakSemiBlock(s, player));
+                    for (ISemiBlock s : semiBlocks) {
+                        if (!(s instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) s).getFacing() == side) {
+                            SemiBlockManager.getInstance(world).breakSemiBlock(s, player);
+                        }
+                    }
                     return EnumActionResult.SUCCESS;
                 } else {
                     //TODO raytrace?
-                    if (semiBlocks.stream().anyMatch(s -> s.onRightClickWithConfigurator(player))) {
+                    if (semiBlocks.stream().anyMatch(s -> s.onRightClickWithConfigurator(player, side))) {
                         addAir(stack, -PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR);
                         return EnumActionResult.SUCCESS;
                     }

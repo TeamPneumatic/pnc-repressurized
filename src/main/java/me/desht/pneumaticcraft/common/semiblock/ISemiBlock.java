@@ -39,7 +39,7 @@ public interface ISemiBlock {
 
     void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing);
 
-    boolean onRightClickWithConfigurator(EntityPlayer player);
+    boolean onRightClickWithConfigurator(EntityPlayer player, EnumFacing side);
     
     void onSemiBlockRemovedFromThisPos(ISemiBlock semiBlock);
     

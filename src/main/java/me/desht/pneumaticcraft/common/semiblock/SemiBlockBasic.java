@@ -170,7 +170,7 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
     }
 
     @Override
-    public boolean onRightClickWithConfigurator(EntityPlayer player) {
+    public boolean onRightClickWithConfigurator(EntityPlayer player, EnumFacing side) {
         return false;
     }
 
