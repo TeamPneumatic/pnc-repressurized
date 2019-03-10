@@ -28,6 +28,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
@@ -224,6 +225,19 @@ public class EventHandlerPneumaticArmor {
                     if (oldSpeed < newSpeed * mult) {
                         event.setNewSpeed(newSpeed * mult);
                     }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onFarmlandTrample(BlockEvent.FarmlandTrampleEvent event) {
+        if (event.getEntity() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getEntity();
+            if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
+                CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+                if (handler.getArmorPressure(EntityEquipmentSlot.FEET) > 0 && handler.isArmorReady(EntityEquipmentSlot.FEET)) {
+                    event.setCanceled(true);
                 }
             }
         }
