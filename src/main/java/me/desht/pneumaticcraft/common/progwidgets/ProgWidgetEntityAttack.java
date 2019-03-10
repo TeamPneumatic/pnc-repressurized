@@ -75,10 +75,6 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
             entityFilters = new EntityFilterPair(this);
         }
         return entityFilters.getValidEntities(world);
-
-//        StringFilterEntitySelector whitelistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[1], true);
-//        StringFilterEntitySelector blacklistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[3], false);
-//        return ProgWidgetAreaItemBase.getEntitiesInArea((ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[2], world, whitelistFilter, blacklistFilter);
     }
 
     @Override
@@ -87,9 +83,6 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
             entityFilters = new EntityFilterPair(this);
         }
         return entityFilters.isEntityValid(entity);
-//        StringFilterEntitySelector whitelistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[1], true);
-//        StringFilterEntitySelector blacklistFilter = ProgWidgetAreaItemBase.getEntityFilter((ProgWidgetString) getConnectedParameters()[3], false);
-//        return whitelistFilter.apply(entity) && !blacklistFilter.apply(entity);
     }
 
     @Override

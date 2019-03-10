@@ -28,7 +28,6 @@ public class DroneAILogistics extends EntityAIBase {
     private EntityAIBase curAI;
     private final IDroneBase drone;
     private final ProgWidgetAreaItemBase widget;
-    private final LogisticsManager manager = new LogisticsManager();
     private LogisticsTask curTask;
 
     public DroneAILogistics(IDroneBase drone, ProgWidgetAreaItemBase widget) {
@@ -36,28 +35,25 @@ public class DroneAILogistics extends EntityAIBase {
         this.widget = widget;
     }
 
+    private LogisticsManager getLogisticsManager() {
+        if (drone.getLogisticsManager() == null) {
+            Set<BlockPos> area = widget.getCachedAreaSet();
+            if (!area.isEmpty()) {
+                AxisAlignedBB aabb = ProgWidgetAreaItemBase.getExtents(area);
+                Stream<ISemiBlock> semiBlocksInArea = SemiBlockManager.getInstance(drone.world()).getSemiBlocksInArea(drone.world(), aabb);
+                Stream<SemiBlockLogistics> logisticFrames = StreamUtils.ofType(SemiBlockLogistics.class, semiBlocksInArea);
+
+                LogisticsManager manager = new LogisticsManager();
+                logisticFrames.filter(frame -> area.contains(frame.getPos())).forEach(manager::addLogisticFrame);
+                drone.setLogisticsManager(manager);
+            }
+        }
+        return drone.getLogisticsManager();
+    }
+
     @Override
     public boolean shouldExecute() {
-        manager.clearLogistics();
-        Set<BlockPos> area = widget.getCachedAreaSet();
-        if (area.size() == 0) return false;
-        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
-        int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
-        int minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
-        for (BlockPos pos : area) {
-            minX = Math.min(minX, pos.getX());
-            maxX = Math.max(maxX, pos.getX());
-            minY = Math.min(minY, pos.getY());
-            maxY = Math.max(maxY, pos.getY());
-            minZ = Math.min(minZ, pos.getZ());
-            maxZ = Math.max(maxZ, pos.getZ());
-        }
-
-        AxisAlignedBB aabb = new AxisAlignedBB(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
-        Stream<ISemiBlock> semiBlocksInArea = SemiBlockManager.getInstance(drone.world()).getSemiBlocksInArea(drone.world(), aabb);
-        Stream<SemiBlockLogistics> logisticFrames = StreamUtils.ofType(SemiBlockLogistics.class, semiBlocksInArea);
-        logisticFrames.filter(frame -> area.contains(frame.getPos())).forEach(manager::addLogisticFrame);
-        
+        if (getLogisticsManager() == null) return false;
         curTask = null;
         return doLogistics();
     }
@@ -65,7 +61,7 @@ public class DroneAILogistics extends EntityAIBase {
     private boolean doLogistics() {
         ItemStack item = drone.getInv().getStackInSlot(0);
         FluidStack fluid = drone.getTank().getFluid();
-        PriorityQueue<LogisticsTask> tasks = manager.getTasks(item.isEmpty() ? fluid : item);
+        PriorityQueue<LogisticsTask> tasks = getLogisticsManager().getTasks(item.isEmpty() ? fluid : item);
         if (tasks.size() > 0) {
             curTask = tasks.poll();
             return execute(curTask);

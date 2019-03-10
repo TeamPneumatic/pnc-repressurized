@@ -26,4 +26,9 @@ public interface IDroneBase extends IDrone {
     void addDebugEntry(String message);
 
     void addDebugEntry(String message, BlockPos pos);
+
+    LogisticsManager getLogisticsManager();
+
+    void setLogisticsManager(LogisticsManager logisticsManager);
+
 }

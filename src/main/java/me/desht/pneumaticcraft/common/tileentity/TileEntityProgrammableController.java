@@ -4,10 +4,12 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
+import me.desht.pneumaticcraft.api.event.SemiblockEvent;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.item.Itemss;
@@ -45,6 +47,7 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -95,6 +98,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     private UUID ownerID;
     private String ownerName;
     private boolean updateNeighbours;
+    // Although this is only used by DroneAILogistics, it is here rather than there
+    // so it can persist, for performance reasons; DroneAILogistics is a short-lived object
+    private LogisticsManager logisticsManager;
 
     public TileEntityProgrammableController() {
         super(5, 7, 5000, 4);
@@ -110,6 +116,13 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, inventory,
                 RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.setNullFaceHandler("droneInv");
+    }
+
+    @SubscribeEvent
+    public void onSemiblockEvent(SemiblockEvent event) {
+        if (!event.getWorld().isRemote && event.getWorld() == getWorld()) {
+            logisticsManager = null;
+        }
     }
 
     @Override
@@ -159,6 +172,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             }
             drone.setPosition(curX, curY, curZ);
         }
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        MinecraftForge.EVENT_BUS.unregister(this);
     }
 
     @Override
@@ -374,6 +393,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         curX = targetX = getPos().getX() + 0.5;
         curY = targetY = getPos().getY() + 0.6;
         curZ = targetZ = getPos().getZ() + 0.5;
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     private int getDroneSlots() {
@@ -624,5 +645,15 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public void addDebugEntry(String message, BlockPos pos) {
+    }
+
+    @Override
+    public LogisticsManager getLogisticsManager() {
+        return logisticsManager;
+    }
+
+    @Override
+    public void setLogisticsManager(LogisticsManager logisticsManager) {
+        this.logisticsManager = logisticsManager;
     }
 }

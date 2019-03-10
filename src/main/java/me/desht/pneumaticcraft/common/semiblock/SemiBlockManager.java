@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.semiblock;
 
 import com.google.common.collect.HashBiMap;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.event.SemiblockEvent;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAddSemiBlock;
@@ -416,6 +417,7 @@ public class SemiBlockManager {
         for (EntityPlayer player : syncList.get(chunk)) {
             NetworkHandler.sendTo(new PacketRemoveSemiBlock(semiBlock, index), (EntityPlayerMP) player);
         }
+        MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(world, pos));
         chunk.markDirty();
     }
 
@@ -437,6 +439,7 @@ public class SemiBlockManager {
 
         semiBlock.initialize(world, pos);
         addingBlocks.add(semiBlock);
+        MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(world, pos));
 
         chunk.markDirty();
     }

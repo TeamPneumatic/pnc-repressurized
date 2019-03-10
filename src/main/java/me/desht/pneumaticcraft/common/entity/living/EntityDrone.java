@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
+import me.desht.pneumaticcraft.api.event.SemiblockEvent;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.render.RenderDroneHeldItem;
@@ -79,6 +80,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ITeleporter;
@@ -87,6 +89,7 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
@@ -161,6 +164,10 @@ public class EntityDrone extends EntityDroneBase implements
     private int securityUpgradeCount; // for liquid immunity: 1 = breathe in water, 2 = temporary air bubble, 3+ = permanent water removal
     private final Map<BlockPos, IBlockState> displacedLiquids = new HashMap<>();  // liquid blocks displaced by security upgrade
 
+    // Although this is only used by DroneAILogistics, it is here rather than there
+    // so it can persist, for performance reasons; DroneAILogistics is a short-lived object
+    private LogisticsManager logisticsManager;
+
     public EntityDrone(World world) {
         super(world);
         setSize(0.7F, 0.35F);
@@ -175,6 +182,13 @@ public class EntityDrone extends EntityDroneBase implements
             playerName = player.getName();
         }else{
             playerUUID = getUniqueID().toString(); //Anonymous drone used for Amadron or spawned with a Dispenser
+        }
+    }
+
+    @SubscribeEvent
+    public void onSemiblockEvent(SemiblockEvent event) {
+        if (!event.getWorld().isRemote && event.getWorld() == getEntityWorld()) {
+            logisticsManager = null;
         }
     }
 
@@ -309,7 +323,10 @@ public class EntityDrone extends EntityDroneBase implements
             setPathPriority(PathNodeType.WATER, securityUpgradeCount > 0 ? 0.0f : -1.0f);
             speed = 0.15 + Math.min(10, getUpgrades(EnumUpgrade.SPEED)) * 0.015;
             lifeUpgrades = getUpgrades(EnumUpgrade.ITEM_LIFE);
-            if (!world.isRemote) setHasMinigun(getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0);
+            if (!world.isRemote) {
+                setHasMinigun(getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0);
+                MinecraftForge.EVENT_BUS.register(this);
+            }
             aiManager.setWidgets(progWidgets);
             energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
         }
@@ -748,6 +765,7 @@ public class EntityDrone extends EntityDroneBase implements
         if (!world.isRemote) getFakePlayer().interactionManager.cancelDestroyingBlock();
         setCustomNameTag("");  // keep other mods (like CoFH Core) quiet about death message broadcasts
         super.onDeath(par1DamageSource);
+        MinecraftForge.EVENT_BUS.unregister(this);
     }
 
     protected ItemStack getDroppedStack() {
@@ -1274,6 +1292,16 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public DroneAIManager getAIManager() {
         return aiManager;
+    }
+
+    @Override
+    public LogisticsManager getLogisticsManager() {
+        return logisticsManager;
+    }
+
+    @Override
+    public void setLogisticsManager(LogisticsManager logisticsManager) {
+        this.logisticsManager = logisticsManager;
     }
 
     @Override

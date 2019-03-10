@@ -271,7 +271,6 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             minZ = maxZ = areaPoints[0].getZ();
         }
 
-
         // Size validation is now done at compile-time - see ProgWidgetAreaItemBase#addErrors
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/95
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/104

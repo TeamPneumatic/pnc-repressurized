@@ -28,7 +28,6 @@ import appeng.api.util.AEPartLocation;
 import appeng.api.util.DimensionalCoord;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.item.Itemss;
-import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
@@ -66,6 +65,11 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 
     public static final String ID = "logistic_frame_requester";
 
+    @GuiSynced
+    private int minItemOrderSize;
+    @GuiSynced
+    private int minFluidOrderSize;
+
     //AE2 integration
     @GuiSynced
     private boolean aeMode;
@@ -75,12 +79,6 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     private Object craftingWatcher;
     private boolean needToCheckForInterface = true;
     private final Set<TileEntity> providingInventories = new HashSet<>();
-    @DescSynced
-    @GuiSynced
-    private int minItemOrderSize;
-    @DescSynced
-    @GuiSynced
-    private int minFluidOrderSize;
 
     @Override
     public int getColor() {

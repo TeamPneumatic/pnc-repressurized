@@ -269,7 +269,7 @@ public abstract class ProgWidget implements IProgWidget {
         return null;
     }
 
-    public static List getConnectedWidgetList(IProgWidget widget, int parameterIndex) {
+    static List getConnectedWidgetList(IProgWidget widget, int parameterIndex) {
         IProgWidget connectingWidget = widget.getConnectedParameters()[parameterIndex];
         if (connectingWidget != null) {
             List<IProgWidget> list = new ArrayList<>();

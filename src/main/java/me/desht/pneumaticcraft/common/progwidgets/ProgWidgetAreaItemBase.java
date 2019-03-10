@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
@@ -49,31 +50,33 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         if (getConnectedParameters()[0] == null) {
             curInfo.add("gui.progWidget.area.error.noArea");
         }
-        Set<BlockPos> posSet = getCachedAreaSet();
-        if (posSet.size() > ConfigHandler.general.maxProgrammingArea) {
+        Set<BlockPos> areaSet = getCachedAreaSet();
+        if (areaSet.size() > ConfigHandler.general.maxProgrammingArea) {
             curInfo.add(I18n.format("gui.progWidget.area.error.areaTooBig", ConfigHandler.general.maxProgrammingArea));
         }
         EntityFilterPair.addErrors(this, curInfo);
     }
 
     public static IBlockAccess getCache(Collection<BlockPos> area, World world) {
-        if (area.size() == 0) return world;
-        int minX, minY, minZ, maxX, maxY, maxZ;
-        Iterator<BlockPos> iterator = area.iterator();
-        BlockPos p = iterator.next();
-        minX = maxX = p.getX();
-        minY = maxY = p.getY();
-        minZ = maxZ = p.getZ();
-        while (iterator.hasNext()) {
-            p = iterator.next();
-            minX = Math.min(minX, p.getX());
-            minY = Math.min(minY, p.getY());
-            minZ = Math.min(minZ, p.getZ());
-            maxX = Math.max(maxX, p.getX());
-            maxY = Math.max(maxY, p.getY());
-            maxZ = Math.max(maxZ, p.getZ());
+        if (area.isEmpty()) return world;
+        AxisAlignedBB aabb = getExtents(area);
+        return new ChunkCache(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ), 0);
+    }
+
+    public static AxisAlignedBB getExtents(Collection<BlockPos> areaSet) {
+        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
+        int minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
+        for (BlockPos pos : areaSet) {
+            minX = Math.min(minX, pos.getX());
+            maxX = Math.max(maxX, pos.getX());
+            minY = Math.min(minY, pos.getY());
+            maxY = Math.max(maxY, pos.getY());
+            minZ = Math.min(minZ, pos.getZ());
+            maxZ = Math.max(maxZ, pos.getZ());
         }
-        return new ChunkCache(world, new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ), 0);
+
+        return new AxisAlignedBB(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
     }
 
     public List<BlockPos> getCachedAreaList() {
@@ -167,7 +170,11 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     public boolean isItemValidForFilters(ItemStack item, IBlockState blockState) {
-        return ProgWidgetItemFilter.isItemValidForFilters(item, ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, getParameters().length + 1), blockState);
+        return ProgWidgetItemFilter.isItemValidForFilters(item,
+                ProgWidget.getConnectedWidgetList(this, 1),
+                ProgWidget.getConnectedWidgetList(this, getParameters().length + 1),
+                blockState
+        );
     }
 
     public boolean isItemFilterEmpty() {
@@ -175,7 +182,11 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     public List<Entity> getEntitiesInArea(World world, Predicate<? super Entity> filter) {
-        return getEntitiesInArea((ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[getParameters().length], world, filter, null);
+        return getEntitiesInArea(
+                (ProgWidgetArea) getConnectedParameters()[0],
+                (ProgWidgetArea) getConnectedParameters()[getParameters().length],
+                world, filter, null
+        );
     }
 
     @Override
@@ -195,7 +206,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world,
-                                                 java.util.function.Predicate<? super Entity> whitelistPredicate, Predicate<? super Entity> blacklistPredicate) {
+                                                 Predicate<? super Entity> whitelistPredicate, Predicate<? super Entity> blacklistPredicate) {
         if (whitelistWidget == null) return new ArrayList<>();
         Set<Entity> entities = new HashSet<>();
         ProgWidgetArea widget = whitelistWidget;
