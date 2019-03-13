@@ -3,7 +3,7 @@
   "defaults": {
     "model": "pneumaticcraft:aerial_interface",
     "textures": {
-      "particle": "pneumaticcraft:blocks/aerial_interface_front",
+      "particle": "pneumaticcraft:blocks/top_panel",
       "north": "pneumaticcraft:blocks/aerial_interface_front",
       "south": "pneumaticcraft:blocks/back_panel",
       "up": "pneumaticcraft:blocks/top_panel",

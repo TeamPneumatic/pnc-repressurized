@@ -38,7 +38,7 @@ public class SemiBlockRendererLogistics implements ISemiBlockRenderer<SemiBlockL
 
     private void drawSideHighlight(SemiBlockLogistics semiBlock, int alpha, AxisAlignedBB aabb) {
         GlStateManager.enableBlend();
-        RenderUtils.glColorHex((alpha / 3 << 24 | 0x00FFFFFF) & semiBlock.getColor(), getLightMultiplier(semiBlock));
+        RenderUtils.glColorHex(((alpha * 2) / 3 << 24 | 0x00FFFFFF) & semiBlock.getColor(), getLightMultiplier(semiBlock));
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 
