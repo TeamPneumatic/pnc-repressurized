@@ -38,51 +38,49 @@ public class SemiBlockRendererLogistics implements ISemiBlockRenderer<SemiBlockL
 
     private void drawSideHighlight(SemiBlockLogistics semiBlock, int alpha, AxisAlignedBB aabb) {
         GlStateManager.enableBlend();
-        RenderUtils.glColorHex((alpha / 2 << 24 | 0x00FFFFFF) & semiBlock.getColor(), getLightMultiplier(semiBlock));
-        GlStateManager.glLineWidth(10.0F);
-        double xMid = (aabb.minX + aabb.maxX) / 2;
-        double yMid = (aabb.minY + aabb.maxY) / 2;
-        double zMid = (aabb.minZ + aabb.maxZ) / 2;
+        RenderUtils.glColorHex((alpha / 3 << 24 | 0x00FFFFFF) & semiBlock.getColor(), getLightMultiplier(semiBlock));
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+
         switch (semiBlock.getSide()) {
             case DOWN:
-                wr.pos(xMid, aabb.minY - 0.02, aabb.minZ).endVertex();
-                wr.pos(xMid, aabb.minY - 0.02, aabb.maxZ).endVertex();
-                wr.pos(aabb.maxX, aabb.minY - 0.02, zMid).endVertex();
-                wr.pos(aabb.minX, aabb.minY - 0.02, zMid).endVertex();
+                wr.pos(aabb.minX, aabb.minY - 0.02, aabb.minZ).endVertex();
+                wr.pos(aabb.maxX, aabb.minY - 0.02, aabb.minZ).endVertex();
+                wr.pos(aabb.maxX, aabb.minY - 0.02, aabb.maxZ).endVertex();
+                wr.pos(aabb.minX, aabb.minY - 0.02, aabb.maxZ).endVertex();
                 break;
             case UP:
-                wr.pos(xMid, aabb.maxY + 0.02, aabb.minZ).endVertex();
-                wr.pos(xMid, aabb.maxY + 0.02, aabb.maxZ).endVertex();
-                wr.pos(aabb.minX, aabb.maxY + 0.02, zMid).endVertex();
-                wr.pos(aabb.maxX, aabb.maxY + 0.02, zMid).endVertex();
+                wr.pos(aabb.minX, aabb.maxY + 0.02, aabb.maxZ).endVertex();
+                wr.pos(aabb.maxX, aabb.maxY + 0.02, aabb.maxZ).endVertex();
+                wr.pos(aabb.maxX, aabb.maxY + 0.02, aabb.minZ).endVertex();
+                wr.pos(aabb.minX, aabb.maxY + 0.02, aabb.minZ).endVertex();
                 break;
             case NORTH:
-                wr.pos(aabb.minX, yMid, aabb.minZ - 0.02).endVertex();
-                wr.pos(aabb.maxX, yMid, aabb.minZ - 0.02).endVertex();
-                wr.pos(xMid, aabb.minY, aabb.minZ - 0.02).endVertex();
-                wr.pos(xMid, aabb.maxY, aabb.minZ - 0.02).endVertex();
+                wr.pos(aabb.maxX, aabb.minY, aabb.minZ - 0.02).endVertex();
+                wr.pos(aabb.minX, aabb.minY, aabb.minZ - 0.02).endVertex();
+                wr.pos(aabb.minX, aabb.maxY, aabb.minZ - 0.02).endVertex();
+                wr.pos(aabb.maxX, aabb.maxY, aabb.minZ - 0.02).endVertex();
                 break;
             case SOUTH:
-                wr.pos(aabb.minX, yMid, aabb.maxZ + 0.02).endVertex();
-                wr.pos(aabb.maxX, yMid, aabb.maxZ + 0.02).endVertex();
-                wr.pos(xMid, aabb.minY, aabb.maxZ + 0.02).endVertex();
-                wr.pos(xMid, aabb.maxY, aabb.maxZ + 0.02).endVertex();
+                wr.pos(aabb.maxX, aabb.maxY, aabb.maxZ + 0.02).endVertex();
+                wr.pos(aabb.minX, aabb.maxY, aabb.maxZ + 0.02).endVertex();
+                wr.pos(aabb.minX, aabb.minY, aabb.maxZ + 0.02).endVertex();
+                wr.pos(aabb.maxX, aabb.minY, aabb.maxZ + 0.02).endVertex();
                 break;
             case WEST:
-                wr.pos(aabb.minX - 0.02, yMid, aabb.minX).endVertex();
-                wr.pos(aabb.minX - 0.02, yMid, aabb.maxZ).endVertex();
-                wr.pos(aabb.minX - 0.02, aabb.minY, zMid).endVertex();
-                wr.pos(aabb.minX - 0.02, aabb.maxY, zMid).endVertex();
+                wr.pos(aabb.minX - 0.02, aabb.minY, aabb.minZ).endVertex();
+                wr.pos(aabb.minX - 0.02, aabb.minY, aabb.maxZ).endVertex();
+                wr.pos(aabb.minX - 0.02, aabb.maxY, aabb.maxZ).endVertex();
+                wr.pos(aabb.minX - 0.02, aabb.maxY, aabb.minZ).endVertex();
                 break;
             case EAST:
-                wr.pos(aabb.maxX + 0.02, yMid, aabb.minX).endVertex();
-                wr.pos(aabb.maxX + 0.02, yMid, aabb.maxZ).endVertex();
-                wr.pos(aabb.maxX + 0.02, aabb.minY, zMid).endVertex();
-                wr.pos(aabb.maxX + 0.02, aabb.maxY, zMid).endVertex();
+                wr.pos(aabb.maxX + 0.02, aabb.maxY, aabb.minZ).endVertex();
+                wr.pos(aabb.maxX + 0.02, aabb.maxY, aabb.maxZ).endVertex();
+                wr.pos(aabb.maxX + 0.02, aabb.minY, aabb.maxZ).endVertex();
+                wr.pos(aabb.maxX + 0.02, aabb.minY, aabb.minZ).endVertex();
                 break;
         }
+
         Tessellator.getInstance().draw();
     }
 
