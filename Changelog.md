@@ -6,6 +6,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.9.4-??? (unreleased)
+#### Updates
+* Lots of work on the Logistics system:
+  * Big performance improvements for the logistics system, both for Logistics Modules and Logistics Drones. Smarter caching of discovered logistics frames means a large reduction in server CPU used.
+  * Logistics frames now have a facing direction, which tells Logistics Drones which side to access the framed inventory on. Makes no difference for non-sided inventories like chests, but a big difference for sided inventories such as furnaces or the Aerial Interface.
+  * The facing direction defaults to the clicked face of the inventory it's placed on. Logistics frames placed before this change will face up by default; you can adjust the facing in the GUI if needed.
+  * Requester Frames can now specify the minimum amount of items or fluid to transfer at a time. This avoids situations where Logistics Drones could be making constant trips moving 1mB of fluid at a time, for example (e.g. moving fuel from a Refinery output to a Liquid Compressor)
+* Charged and active Pneumatic Boots will no longer trample farmland.
+* Some Patchouli guidebook additions and improvements. Added missing page for the Logistics puzzle piece.
+#### Fixes
+* Fixed two or more Transfer Gadgets on one block causing messy breakage.
+
 ### 0.9.3-324 (4 Mar 2019)
 #### Fixes
 * FOV modifications (as done by Pneumatic Leggings with Speed Upgrades and Minigun with Entity Tracker Upgrades) should now cooperate much better with other mods, assuming those mods do their FOV calculations correctly too (see https://github.com/TeamPneumatic/pnc-repressurized/issues/304).
