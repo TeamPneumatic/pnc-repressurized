@@ -78,7 +78,9 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
 
         addInfoTab(I18n.format("gui.tab.info." + SemiBlockManager.getKeyForSemiBlock(logistics)));
         addFilterTab();
-        addFacingTab();
+        if (!((ContainerLogistics) inventorySlots).isItemContainer()) {
+            addFacingTab();
+        }
     }
 
     private void addFilterTab() {
@@ -135,11 +137,13 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
         fuzzyNBT.checked = logistics.isFuzzyNBT();
         if (logistics.supportsBlacklisting())
             whitelist.checked = logistics.isWhitelist();
-        for (EnumFacing face : EnumFacing.values()) {
-            facingButtons[face.getIndex()].enabled = face != logistics.getSide();
-        }
         String s = logistics.getSide() == null ? "-" : logistics.getSide().getName();
-        facingTab.setTitle(I18n.format("gui.logistic_frame.facing", s));
+        if (facingTab != null) {
+            facingTab.setTitle(I18n.format("gui.logistic_frame.facing", s));
+            for (EnumFacing face : EnumFacing.values()) {
+                facingButtons[face.getIndex()].enabled = face != logistics.getSide();
+            }
+        }
     }
 
     @Override

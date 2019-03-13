@@ -200,7 +200,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
         tag.setBoolean(NBT_FUZZY_META, fuzzyMeta);
         tag.setBoolean(NBT_FUZZY_NBT, fuzzyNBT);
         tag.setBoolean(NBT_WHITELIST, whitelist);
-        tag.setString(NBT_SIDE, side.getName());
+        if (side != null) tag.setString(NBT_SIDE, side.getName());
     }
 
     @Override

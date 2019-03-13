@@ -8,6 +8,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.IItemHandler;
@@ -22,7 +23,7 @@ public class ContainerLogistics extends ContainerPneumaticBase {
         super(null);
         itemContainer = logistics == null;
         if (itemContainer) {
-            logistics = getLogistics(inventoryPlayer.player, inventoryPlayer.getCurrentItem());
+            logistics = getLogistics(inventoryPlayer.player, getHeldLogisticsFrame(inventoryPlayer.player));
         }
         this.logistics = logistics;
         if (logistics != null) {
@@ -52,16 +53,33 @@ public class ContainerLogistics extends ContainerPneumaticBase {
         }
     }
 
+    public boolean isItemContainer() {
+        return itemContainer;
+    }
+
     /**
-     * Called when the container is closed.
+     * Called when the container is closed. If configuring a logistics frame in-hand, update its NBT now.
      */
     @Override
     public void onContainerClosed(EntityPlayer player) {
-        if (itemContainer && logistics != null && player.getHeldItemMainhand().getItem() instanceof ItemLogisticsFrame) {
-            NonNullList<ItemStack> drops = NonNullList.create();
-            logistics.addDrops(drops);
-            NBTTagCompound settingTag = drops.get(0).getTagCompound();
-            player.getHeldItemMainhand().setTagCompound(settingTag != null ? settingTag.copy() : null);
+        if (itemContainer && logistics != null) {
+            ItemStack logisticsStack = getHeldLogisticsFrame(player);
+            if (!logisticsStack.isEmpty()) {
+                NonNullList<ItemStack> drops = NonNullList.create();
+                logistics.addDrops(drops);
+                NBTTagCompound settingTag = drops.get(0).getTagCompound();
+                logisticsStack.setTagCompound(settingTag != null ? settingTag.copy() : null);
+            }
+        }
+    }
+
+    private ItemStack getHeldLogisticsFrame(EntityPlayer player) {
+        if (player.getHeldItemMainhand().getItem() instanceof ItemLogisticsFrame) {
+            return player.getHeldItemMainhand();
+        } else if (player.getHeldItem(EnumHand.OFF_HAND).getItem() instanceof ItemLogisticsFrame) {
+            return player.getHeldItem(EnumHand.OFF_HAND);
+        } else {
+            return ItemStack.EMPTY;
         }
     }
 
