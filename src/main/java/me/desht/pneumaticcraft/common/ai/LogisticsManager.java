@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.semiblock.*;
+import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener.TileEntityAndFace;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics.FluidStackWrapper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -74,10 +74,12 @@ public class LogisticsManager {
     }
 
     private void tryProvide(SemiBlockLogistics provider, SemiBlockLogistics requester, PriorityQueue<LogisticsTask> tasks) {
+        if (provider.getTileEntity() == null) return;
+
         IItemHandler providingInventory = IOHelper.getInventoryForTE(provider.getTileEntity(), provider.getSide());
         if (providingInventory != null) {
             if (requester instanceof IProvidingInventoryListener)
-                ((IProvidingInventoryListener) requester).notify(provider.getTileEntity());
+                ((IProvidingInventoryListener) requester).notify(new TileEntityAndFace(provider.getTileEntity(), provider.getSide()));
             for (int i = 0; i < providingInventory.getSlots(); i++) {
                 ItemStack providingStack = providingInventory.getStackInSlot(i);
                 if (!providingStack.isEmpty() && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
@@ -91,13 +93,13 @@ public class LogisticsManager {
             }
         }
 
-        for (EnumFacing d : EnumFacing.VALUES) {
-            if (provider.getTileEntity() != null && provider.getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d)) {
-                IFluidHandler handler = provider.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d);
-                FluidStack providingStack = handler.drain(16000, false);
+        IFluidHandler handler = provider.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, provider.getSide());
+        if (handler != null) {
+            FluidStack providingStack = handler.drain(16000, false);
+            if (providingStack != null) {
                 boolean canDrain = Arrays.stream(handler.getTankProperties()).anyMatch(p -> p.canDrainFluidType(providingStack));
-                if (providingStack != null &&
-                        (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack)) && canDrain) {
+                if (canDrain &&
+                        (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
                     int requestedAmount = getRequestedAmount(requester, providingStack);
                     if (requestedAmount > 0) {
                         FluidStack stack = providingStack.copy();
@@ -107,6 +109,22 @@ public class LogisticsManager {
                 }
             }
         }
+//        for (EnumFacing d : EnumFacing.VALUES) {
+//            if (provider.getTileEntity() != null && provider.getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d)) {
+//                IFluidHandler handler = provider.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d);
+//                FluidStack providingStack = handler.drain(16000, false);
+//                boolean canDrain = Arrays.stream(handler.getTankProperties()).anyMatch(p -> p.canDrainFluidType(providingStack));
+//                if (providingStack != null &&
+//                        (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack)) && canDrain) {
+//                    int requestedAmount = getRequestedAmount(requester, providingStack);
+//                    if (requestedAmount > 0) {
+//                        FluidStack stack = providingStack.copy();
+//                        stack.amount = requestedAmount;
+//                        tasks.add(new LogisticsTask(provider, requester, new FluidStackWrapper(stack)));
+//                    }
+//                }
+//            }
+//        }
     }
 
     private static int getRequestedAmount(SemiBlockLogistics requester, ItemStack providingStack) {

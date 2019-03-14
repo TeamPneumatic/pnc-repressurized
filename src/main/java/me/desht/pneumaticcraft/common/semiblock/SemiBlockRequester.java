@@ -78,7 +78,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     private Object stackWatcher;
     private Object craftingWatcher;
     private boolean needToCheckForInterface = true;
-    private final Set<TileEntity> providingInventories = new HashSet<>();
+    private final Set<TileEntityAndFace> providingInventories = new HashSet<>();
 
     @Override
     public int getColor() {
@@ -480,20 +480,20 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     }
 
     @Override
-    public void notify(TileEntity te) {
-        if (gridNode != null) providingInventories.add(te);
+    public void notify(TileEntityAndFace teAndFace) {
+        if (gridNode != null) providingInventories.add(teAndFace);
     }
 
     @Optional.Method(modid = ModIds.AE2)
     private List<IAEItemStack> getProvidingItems() {
         List<IAEItemStack> stacks = new ArrayList<>();
-        Iterator<TileEntity> iter = providingInventories.iterator();
+        Iterator<TileEntityAndFace> iter = providingInventories.iterator();
         while (iter.hasNext()) {
-            TileEntity te = iter.next();
-            if (isLogisticsTEInvalid(te)) {
+            TileEntityAndFace teFace = iter.next();
+            if (isLogisticsTEInvalid(teFace.getTileEntity())) {
                 iter.remove();
             } else {
-                IItemHandler inv = IOHelper.getInventoryForTE(te);
+                IItemHandler inv = IOHelper.getInventoryForTE(teFace.getTileEntity(), teFace.getFace());
                 if (inv != null) {
                     for (int i = 0; i < inv.getSlots(); i++) {
                         ItemStack stack = inv.getStackInSlot(i);

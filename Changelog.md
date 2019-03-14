@@ -16,6 +16,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Charged and active Pneumatic Boots will no longer trample farmland.
 * Some Patchouli guidebook additions and improvements. Added missing page for the Logistics puzzle piece.
 * The Refinery, Thermopneumatic Processing Plant and Plastic Mixer now warn in their GUI if the block is poorly insulated, and thus wasting heat (Plastic Mixer only warns if you're trying to melt down plastic).
+* The Plastic Mixer now remembers any dye in its internal buffers if the block is broken and put down again; avoids dye wastage if you need to move the machine.
 #### Fixes
 * Fixed two or more Transfer Gadgets on one block causing messy breakage.
 * Fixed Refinery & Thermopneumatic Processing Plant GUI's wrongly reporting insufficient temperature even if the temperature is fine and machine is running properly.
