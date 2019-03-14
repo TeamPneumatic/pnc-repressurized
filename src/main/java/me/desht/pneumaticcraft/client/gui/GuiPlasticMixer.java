@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerPlasticMixer;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
@@ -18,12 +19,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlasticMixer> {
     private GuiButtonSpecial[] buttons;
     private GuiCheckBox lockSelection;
+    private int nExposedFaces;
 
     public GuiPlasticMixer(InventoryPlayer player, TileEntityPlasticMixer te) {
         super(new ContainerPlasticMixer(player, te), te, Textures.GUI_PLASTIC_MIXER);
@@ -50,6 +53,8 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
             }
         }
         stat.addWidget(lockSelection = new GuiCheckBox(17, 4, 18, 0xFF000000, "gui.plasticMixer.lockSelection").setChecked(te.lockSelection).setTooltip(I18n.format("gui.plasticMixer.lockSelection.tooltip")));
+
+        nExposedFaces = HeatUtil.countExposedFaces(Collections.singletonList(te));
     }
 
     @Override
@@ -101,7 +106,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
             }
         } else {
             if (!stack.isEmpty()) {
-                if (te.getLogic(1).getTemperature() >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP && te.getTank().getCapacity() - te.getTank().getFluidAmount() < 1000) {
+                if (te.getLogic(1).getTemperatureAsInt() >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP && te.getTank().getCapacity() - te.getTank().getFluidAmount() < 1000) {
                     curInfo.add("gui.tab.problems.plasticMixer.plasticLiquidOverflow");
                 }
             }
@@ -121,6 +126,16 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
     protected void addInformation(List<String> curInfo) {
         if (curInfo.size() == 0) {
             curInfo.add(I18n.format("gui.tab.problems.plasticMixer.noProblems"));
+        }
+    }
+
+
+    @Override
+    protected void addWarnings(List<String> curInfo) {
+        super.addWarnings(curInfo);
+
+        if (nExposedFaces > 0 && !te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
+            curInfo.add(I18n.format("gui.tab.problems.exposedFaces", nExposedFaces, 6));
         }
     }
 }

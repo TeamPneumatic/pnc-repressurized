@@ -9,14 +9,16 @@ Changes are in reverse chronological order; newest changes at the top.
 ### 0.9.4-??? (unreleased)
 #### Updates
 * Lots of work on the Logistics system:
-  * Big performance improvements for the logistics system, both for Logistics Modules and Logistics Drones. Smarter caching of discovered logistics frames means a large reduction in server CPU used.
+  * Very major performance improvements for Logistics, both for Logistics Modules and Logistics Drones. Smarter caching of discovered logistics frames means a large reduction in server CPU used.
   * Logistics frames now have a facing direction, which tells Logistics Drones which side to access the framed inventory on. Makes no difference for non-sided inventories like chests, but a big difference for sided inventories such as furnaces or the Aerial Interface.
   * The facing direction defaults to the clicked face of the inventory it's placed on. Logistics frames placed before this change will face up by default; you can adjust the facing in the GUI if needed.
-  * Requester Frames can now specify the minimum amount of items or fluid to transfer at a time. This avoids situations where Logistics Drones could be making constant trips moving 1mB of fluid at a time, for example (e.g. moving fuel from a Refinery output to a Liquid Compressor)
+  * Requester Frames can now specify the minimum amount of items or fluid to transfer at a time. This avoids situations where Logistics Drones could be making constant trips moving 1mB of fluid at a time, for example (e.g. moving fuel from a Refinery output to a Liquid Compressor).
 * Charged and active Pneumatic Boots will no longer trample farmland.
 * Some Patchouli guidebook additions and improvements. Added missing page for the Logistics puzzle piece.
+* The Refinery, Thermopneumatic Processing Plant and Plastic Mixer now warn in their GUI if the block is poorly insulated, and thus wasting heat (Plastic Mixer only warns if you're trying to melt down plastic).
 #### Fixes
 * Fixed two or more Transfer Gadgets on one block causing messy breakage.
+* Fixed Refinery & Thermopneumatic Processing Plant GUI's wrongly reporting insufficient temperature even if the temperature is fine and machine is running properly.
 
 ### 0.9.3-324 (4 Mar 2019)
 #### Fixes
@@ -24,6 +26,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Programmer GUI: Coordinate Operators will now report divide-by-zero attempts as an error instead of silently ignoring them.
 * Fixed Thermopneumatic Processing Plant recipes not showing their temperature in JEI.
 * Jet Boots Builder Mode speed modification should work better now in conjunction with other mods that modify dig speed (e.g. Aerial Affinity enchant).
+
 ### 0.9.2-321 (16 Feb 2019)
 #### New
 * If you have 8 or more Jet Boots Upgrades installed, it is now possible to switch to Jet Boots "Builder Mode"

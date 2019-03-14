@@ -2,10 +2,12 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextFormatting;
@@ -18,6 +20,7 @@ import java.util.List;
 public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
     private List<TileEntityRefinery> refineries;
     private WidgetTemperature widgetTemperature;
+    private int nExposedFaces;
 
     public GuiRefinery(InventoryPlayer player, TileEntityRefinery te) {
         super(new ContainerRefinery(player, te), te, Textures.GUI_REFINERY);
@@ -45,6 +48,7 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
         int y = guiTop + 17;
         addWidget(new WidgetTank(-1, x, y, te.getOutputTank()));
 
+        // "te" always refers to the master refinery; the bottom block of the stack
         refineries = new ArrayList<>();
         refineries.add(te);
         TileEntityRefinery refinery = te;
@@ -59,16 +63,19 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
         if (refineries.size() < 2 || refineries.size() > 4) {
             problemTab.openWindow();
         }
+
+        nExposedFaces = HeatUtil.countExposedFaces(refineries);
     }
 
     @Override
     public void updateScreen() {
         super.updateScreen();
 
-        if (te.minTemp > 0)
+        if (te.minTemp > 0) {
             widgetTemperature.setScales(te.minTemp);
-        else
+        } else {
             widgetTemperature.setScales();
+        }
     }
 
     @Override
@@ -102,7 +109,8 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
     @Override
     public void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
-        if (te.getHeatExchangerLogic(null).getTemperature() < 395) {
+
+        if (te.getHeatExchangerLogic(null).getTemperatureAsInt() < te.minTemp) {
             curInfo.add("gui.tab.problems.notEnoughHeat");
         }
         if (te.getInputTank().getFluidAmount() < 10) {
@@ -112,8 +120,18 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
             curInfo.add("gui.tab.problems.refinery.notEnoughRefineries");
         } else if (refineries.size() > 4) {
             curInfo.add("gui.tab.problems.refinery.tooManyRefineries");
-        } else if (te.isBlocked()) {
+        }
+    }
+
+    @Override
+    protected void addWarnings(List<String> curInfo) {
+        super.addWarnings(curInfo);
+
+        if (te.isBlocked()) {
             curInfo.add("gui.tab.problems.refinery.outputBlocked");
+        }
+        if (nExposedFaces > 0) {
+            curInfo.add(I18n.format("gui.tab.problems.exposedFaces", nExposedFaces, refineries.size() * 6));
         }
     }
 

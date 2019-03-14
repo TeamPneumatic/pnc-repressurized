@@ -1,9 +1,12 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
+
+import java.util.Collection;
 
 public class HeatUtil {
     private static final int MIN_HEAT_LEVEL_TEMPERATURE = -200 + 273;
@@ -56,5 +59,18 @@ public class HeatUtil {
 
     public static String formatHeatString(EnumFacing face, int tempK) {
         return PneumaticCraftUtils.xlate("waila.temperature." + face.toString().toLowerCase()) + " " + TextFormatting.WHITE + (tempK - 273) + "°C";
+    }
+
+    public static int countExposedFaces(Collection<? extends TileEntity> teList) {
+        int exposed = 0;
+
+        for (TileEntity te : teList) {
+            for (EnumFacing face : EnumFacing.VALUES) {
+                if (te.getWorld().isAirBlock(te.getPos().offset(face))) {
+                    exposed++;
+                }
+            }
+        }
+        return exposed;
     }
 }

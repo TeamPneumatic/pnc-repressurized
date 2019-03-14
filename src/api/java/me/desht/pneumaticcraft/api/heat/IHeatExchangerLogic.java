@@ -56,15 +56,17 @@ public interface IHeatExchangerLogic {
     void setTemperature(double temperature);
 
     /**
-     * Get the heat exchanger's current (precise) temperature.
+     * Get the heat exchanger's current (precise) temperature. This should only be used on the server where precise
+     * values are required; it isn't synced to clients by default for performance reasons. Use
+     * {@link #getTemperatureAsInt()} there instead.
      *
      * @return the temperature
      */
     double getTemperature();
 
     /**
-     * Get the heat exchanger's current temperature to the nearest integer.  Useful when sync'ing to clients to avoid
-     * excessive network chatter.
+     * Get the heat exchanger's current temperature to the nearest integer.  This is sync'd to clients rather than
+     * the precise floating-point temperature to avoid excessive network chatter.
      *
      * @return the temperature to the nearest integer
      */

@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -11,12 +12,14 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 
 public class GuiThermopneumaticProcessingPlant extends
         GuiPneumaticContainerBase<TileEntityThermopneumaticProcessingPlant> {
 
     private WidgetTemperature tempWidget;
+    private int nExposedFaces;
 
     public GuiThermopneumaticProcessingPlant(InventoryPlayer player, TileEntityThermopneumaticProcessingPlant te) {
         super(new ContainerThermopneumaticProcessingPlant(player, te), te, Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT);
@@ -34,6 +37,8 @@ public class GuiThermopneumaticProcessingPlant extends
         dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
         dumpButton.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.thermopneumatic.dumpInput")));
         addWidget(dumpButton);
+
+        nExposedFaces = HeatUtil.countExposedFaces(Collections.singletonList(te));
     }
 
     @Override
@@ -81,9 +86,17 @@ public class GuiThermopneumaticProcessingPlant extends
 
         if (!te.hasRecipe) {
             curInfo.add("gui.tab.problems.thermopneumaticProcessingPlant.noSufficientIngredients");
-        } else if (te.getHeatExchangerLogic(null).getTemperature() < te.requiredTemperature) {
+        } else if (te.getHeatExchangerLogic(null).getTemperatureAsInt() < te.requiredTemperature) {
             curInfo.add("gui.tab.problems.notEnoughHeat");
         }
     }
 
+    @Override
+    protected void addWarnings(List<String> curInfo) {
+        super.addWarnings(curInfo);
+
+        if (nExposedFaces > 0) {
+            curInfo.add(I18n.format("gui.tab.problems.exposedFaces", nExposedFaces, 6));
+        }
+    }
 }
