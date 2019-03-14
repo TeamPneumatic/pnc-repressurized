@@ -2,14 +2,19 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
+import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
@@ -52,5 +57,34 @@ public class BlockPlasticMixer extends BlockPneumaticCraftModeled {
     @Override
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
+    }
+
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        super.getDrops(drops, world, pos, state, fortune);
+
+        if (drops.isEmpty()) return;
+
+        ItemStack teStack = drops.get(0);
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityPlasticMixer) {
+            int[] buffers = ((TileEntityPlasticMixer) te).dyeBuffers;
+            for (int i = 0; i < 3; i++) {
+                NBTUtil.setInteger(teStack, "dyeBuffer" + i, buffers[i]);
+            }
+        }
+    }
+
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
+        super.onBlockPlacedBy(world, pos, state, entity, stack);
+
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityPlasticMixer && stack.hasTagCompound()) {
+            int[] buffers = ((TileEntityPlasticMixer) te).dyeBuffers;
+            for (int i = 0; i < 3; i++) {
+                buffers[i] = NBTUtil.getInteger(stack, "dyeBuffer" + i);
+            }
+        }
     }
 }
