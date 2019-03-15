@@ -139,7 +139,7 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
             whitelist.checked = logistics.isWhitelist();
         String s = logistics.getSide() == null ? "-" : logistics.getSide().getName();
         if (facingTab != null) {
-            facingTab.setTitle(I18n.format("gui.logistic_frame.facing", s));
+            facingTab.setTitle(I18n.format("gui.logistic_frame.facing") + ": " + s);
             for (EnumFacing face : EnumFacing.values()) {
                 facingButtons[face.getIndex()].enabled = face != logistics.getSide();
             }

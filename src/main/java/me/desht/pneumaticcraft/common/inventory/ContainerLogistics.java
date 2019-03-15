@@ -11,6 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -41,16 +42,24 @@ public class ContainerLogistics extends ContainerPneumaticBase {
         }
     }
 
-    public static SemiBlockLogistics getLogistics(EntityPlayer player, ItemStack itemRequester) {
-        if (itemRequester.getItem() instanceof ItemLogisticsFrame) {
-            SemiBlockLogistics logistics = (SemiBlockLogistics) SemiBlockManager.getSemiBlockForKey(((ItemLogisticsFrame) itemRequester.getItem()).semiBlockId);
-            if (logistics == null) return null;
-            logistics.initialize(player.world, new BlockPos(0, 0, 0));
-            logistics.onPlaced(player, itemRequester, null);
-            return logistics;
-        } else {
-            return null;
+    private static SemiBlockLogistics getLogistics(EntityPlayer player, ItemStack stack) {
+        return getLogistics(player.world, player, stack);
+    }
+
+    public static SemiBlockLogistics getLogistics(World world, ItemStack stack) {
+        return getLogistics(world, null, stack);
+    }
+
+    private static SemiBlockLogistics getLogistics(World world, EntityPlayer player, ItemStack stack) {
+        if (stack.getItem() instanceof ItemLogisticsFrame) {
+            SemiBlockLogistics logistics = (SemiBlockLogistics) SemiBlockManager.getSemiBlockForKey(((ItemLogisticsFrame) stack.getItem()).semiBlockId);
+            if (logistics != null) {
+                logistics.initialize(world, new BlockPos(0, 0, 0));
+                logistics.onPlaced(player, stack, null);
+                return logistics;
+            }
         }
+        return null;
     }
 
     public boolean isItemContainer() {

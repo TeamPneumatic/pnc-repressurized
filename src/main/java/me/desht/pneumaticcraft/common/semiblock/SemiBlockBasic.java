@@ -181,7 +181,7 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
     /**
      * Add information for the benefit of info mods such as TOP or WAILA/HWYLA.
      * Adds nothing by default; subclasses will override this. Note: the semiblock name is expected to be added by
-     * the caller.
+     * the caller. NOTE: this can be called on the server too (TOP) so don't use any client-only methods (I18n.format)
      *
      * @param curInfo list to add info to
      * @param tag NBT data from the semiblock in question containing extra info

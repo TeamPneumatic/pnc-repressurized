@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -337,7 +337,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     @Override
     public void addTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
         super.addTooltip(curInfo, tag, extended);
-        curInfo.add(I18n.format("gui.logistic_frame.facing", side));
+        curInfo.add(PneumaticCraftUtils.xlate("gui.logistic_frame.facing") + ": " + side);
         if (extended) {
             NonNullList<ItemStack> drops = NonNullList.create();
             addDrops(drops);

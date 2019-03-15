@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlockBase;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -43,23 +42,23 @@ public class ItemLogisticsFrame extends ItemSemiBlockBase {
 
     public static void addTooltip(ItemStack stack, World world, List<String> curInfo, boolean sneaking) {
         if (stack.getTagCompound() != null && stack.getItem() instanceof ItemSemiBlockBase) {
-            SemiBlockLogistics logistics = ContainerLogistics.getLogistics(PneumaticCraftRepressurized.proxy.getClientPlayer(), stack);
+            SemiBlockLogistics logistics = ContainerLogistics.getLogistics(world, stack);
             if (logistics == null) return;
             if (logistics.isInvisible()) {
-                curInfo.add("- " + I18n.format("gui.logistic_frame.invisible"));
+                curInfo.add("- " + PneumaticCraftUtils.xlate("gui.logistic_frame.invisible"));
             }
             String key = SemiBlockManager.getKeyForSemiBlock(SemiBlockManager.getSemiBlockForItem((ItemSemiBlockBase) stack.getItem()));
             if (sneaking) {
-                if (logistics.isFuzzyMeta()) curInfo.add("- " + I18n.format("gui.logistic_frame.fuzzyMeta"));
-                if (logistics.isFuzzyNBT()) curInfo.add("- " + I18n.format("gui.logistic_frame.fuzzyNBT"));
+                if (logistics.isFuzzyMeta()) curInfo.add("- " + PneumaticCraftUtils.xlate("gui.logistic_frame.fuzzyMeta"));
+                if (logistics.isFuzzyNBT()) curInfo.add("- " + PneumaticCraftUtils.xlate("gui.logistic_frame.fuzzyNBT"));
                 ItemStack[] stacks = new ItemStack[logistics.getFilters().getSlots()];
                 for (int i = 0; i < logistics.getFilters().getSlots(); i++) {
                     stacks[i] = logistics.getFilters().getStackInSlot(i);
                 }
-                curInfo.add(TextFormatting.WHITE + I18n.format("gui.logistic_frame." + (logistics.isWhitelist() ? "whitelist" : "blacklist")) + ":");
+                curInfo.add(TextFormatting.WHITE + PneumaticCraftUtils.xlate("gui.logistic_frame." + (logistics.isWhitelist() ? "whitelist" : "blacklist")) + ":");
                 int l = curInfo.size();
                 PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks);
-                if (curInfo.size() == l) curInfo.add(I18n.format("gui.logistic_frame.no_items"));
+                if (curInfo.size() == l) curInfo.add(PneumaticCraftUtils.xlate("gui.logistic_frame.no_items"));
                 l = curInfo.size();
                 for (int i = 0; i < 9; i++) {
                     FluidStack fluid = logistics.getTankFilter(i).getFluid();
@@ -67,9 +66,9 @@ public class ItemLogisticsFrame extends ItemSemiBlockBase {
                         curInfo.add("\u2022 " + fluid.amount + "mB " + fluid.getLocalizedName());
                     }
                 }
-                if (curInfo.size() == l) curInfo.add(I18n.format("gui.logistic_frame.no_fluids"));
+                if (curInfo.size() == l) curInfo.add(PneumaticCraftUtils.xlate("gui.logistic_frame.no_fluids"));
             } else {
-                curInfo.add(I18n.format(String.format("gui.%s.hasFilters", key)));
+                curInfo.add(PneumaticCraftUtils.xlate(String.format("gui.%s.hasFilters", key)));
             }
         }
     }
