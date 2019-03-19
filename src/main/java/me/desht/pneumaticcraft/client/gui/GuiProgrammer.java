@@ -377,10 +377,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         int y = lastMouseY;
 
         IProgWidget hoveredWidget = programmerUnit.getHoveredWidget(x, y);
-        ThirdPartyManager.instance().docsProvider.showWidgetDocs(getWidgetId(programmerUnit.getHoveredWidget(x, y)));
+        ThirdPartyManager.instance().docsProvider.showWidgetDocs(getWidgetId(hoveredWidget));
         for (IProgWidget widget : visibleSpawnWidgets) {
             if (widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
                 ThirdPartyManager.instance().docsProvider.showWidgetDocs(getWidgetId(widget));
+                break;
             }
         }
     }
@@ -790,7 +791,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                     break;
                 }
             }
-            if (showingAllWidgets) {
+            if (showingAllWidgets && button != programmerUnit.getScrollBar()) {
+                // scrollbar is under the widget area when showingAllWidgets is true...
                 toggleShowWidgets();
             }
             updateVisibleProgWidgets();
