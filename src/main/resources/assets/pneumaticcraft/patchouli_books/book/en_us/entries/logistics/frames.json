@@ -10,7 +10,11 @@
     },
     {
       "type": "text",
-      "text": "All Frames support $(thing)filtering/$ to control what items/fluids they will provide or accept.$(p)In addition, you can specify whether filters match by $(thing)item metadata/$ or $(thing)item NBT/$.$(p)Finally, frames can be configured to be $(thing)invisible/$ to players unless they are holding a Logistics item (frame or configurator)."
+      "text": "The following aspects can be configured:$(li)All Frames support $(thing)filtering/$ to control what items/fluids they will provide or accept.$(li)The $(thing)Filter/$ side tab lets you configure whether filters match by $(thing)item metadata/$ or $(thing)item NBT/$, and also whether the filter should be applied as a whitelist (default) or blacklist.$(li)The $(thing)Facing/$ frame lets you configure which side of the inventory should be accessed by $(ttcolor)$(t:Logistics Modules ignore this and always use the side of the inventory they're facing)Logistic Drones/$."
+    },
+    {
+      "type": "text",
+      "text": "$(li)For $(l:logistics/frames#requester)Requester Frames/$, the $(thing)Minimum Order Size/$ tab allows you to configure the minimum amount of items or fluid that will be moved at a time; useful to prevent drones making constant trips with tiny payloads.$(li)Finally, all frames can be configured to be $(thing)invisible/$ to players unless they are holding a Logistics item (frame or configurator)."
     },
     {
       "type": "crafting",
@@ -45,7 +49,7 @@
       "anchor": "requester",
       "title": "Requester Frame",
       "recipe": "pneumaticcraft:logistic_frame_requester",
-      "text": "$(item)Requester Frames/$ can request items/fluids from any other framed inventory. Use the configuration GUI to tell the frame how much of each item or fluid to try to keep stocked."
+      "text": "$(item)Requester Frames/$ can request items/fluids from any other framed inventory. For these frames, use the configuration GUI to tell the frame how much of each item or fluid to try to keep $(thing)stocked/$."
     }
   ]
 }
