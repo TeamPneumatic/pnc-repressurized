@@ -14,11 +14,12 @@
     },
     {
       "type": "text",
-      "text": "$(bold)Mode Tab/$$(br)The Gas Lift can be switched to one of 3 modes:$(li)$(#00f)Pump and allow empty tank/$ will do as described above. It will lay down Pressure Tubes, and pump liquids when it hits them.$(li)$(#00f)Pump and leave liquid in filter/$ will do the same as above, but the Gas Lift will always keep 1000mB in its tank. This is useful when pumping for a certain liquid, to make sure no other liquids will be pumped."
+      "title": "Mode Tab",
+      "text": "The Gas Lift can be switched to one of 3 modes:$(li)$(#00f)Pump and allow empty tank/$ extrudes Pressure Tubes, pumping fluids when it encounters them.$(li)$(#00f)Pump and leave liquid in filter/$ does the same as above, but will always keep 1000mB of fluid in the tank. This is useful when pumping for a certain liquid, to make sure no other liquids will be pumped."
     },
     {
       "type": "text",
-      "text": "$(li)$(#00f)Draw in tubes/$ will make the Gas Lift stop pumping and retract any tubes it put down, back into its inventory."
+      "text": "$(li)$(#00f)Draw in tubes/$ will make the $(thing)Gas Lift/$ stop pumping and retract any tubes it extruded, back into its inventory."
     },
     {
       "type": "crafting",
