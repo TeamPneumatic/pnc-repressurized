@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "Any solid block in the way will be broken, without yield. Breaking blocks uses up air; this is a very small amount for soft blocks like dirt or sand, but much more for hard blocks such as obsidian. If you use $(l:blocks/advanced_pressure_tube)Advanced Pressure Tubes/$, air usage will be reduced by 50%.$(p)The air usage required to pump fluids scales linearly with the depth it is digging/pumping at."
+      "text": "Any solid block in the way will be broken, without yield. Breaking blocks uses up air; this is a very small amount for soft blocks like dirt or sand, but much more for hard blocks such as obsidian. If you use $(l:tubes/pressure_tubes#advanced)Advanced Pressure Tubes/$, air usage is reduced by 50%.$(p)The air usage required to pump fluids scales linearly with the depth it is pumping at, i.e. the number of tubes currently extruded."
     },
     {
       "type": "text",
