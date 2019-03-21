@@ -162,12 +162,16 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     public void writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         logic.writeToNBT(tag);
+        tag.setInteger("cookingProgress", cookingProgress);
+        tag.setInteger("coolingProgress", coolingProgress);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         logic.readFromNBT(tag);
+        cookingProgress = tag.getInteger("cookingProgress");
+        coolingProgress = tag.getInteger("coolingProgress");
     }
 
     @Override
