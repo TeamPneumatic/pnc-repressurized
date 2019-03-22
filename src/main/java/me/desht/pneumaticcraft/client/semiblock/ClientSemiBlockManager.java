@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -34,6 +35,8 @@ public class ClientSemiBlockManager {
     public void renderWorldLastEvent(RenderWorldLastEvent event) {
         Minecraft mc = FMLClientHandler.instance().getClient();
         EntityPlayer player = mc.player;
+        boolean blind = player.isPotionActive(MobEffects.BLINDNESS);
+
         double playerX = player.prevPosX + (player.posX - player.prevPosX) * event.getPartialTicks();
         double playerY = player.prevPosY + (player.posY - player.prevPosY) * event.getPartialTicks();
         double playerZ = player.prevPosZ + (player.posZ - player.prevPosZ) * event.getPartialTicks();
@@ -44,13 +47,15 @@ public class ClientSemiBlockManager {
 
         for (Map<BlockPos, List<ISemiBlock>> map : SemiBlockManager.getInstance(player.world).getSemiBlocks().values()) {
             for (List<ISemiBlock> semiBlocks : map.values()) {
-                for(ISemiBlock semiBlock : semiBlocks){
-                    ISemiBlockRenderer renderer = getRenderer(semiBlock);
-                    if (renderer != null) {
-                        GlStateManager.pushMatrix();
-                        GlStateManager.translate(semiBlock.getPos().getX(), semiBlock.getPos().getY(), semiBlock.getPos().getZ());
-                        renderer.render(semiBlock, event.getPartialTicks());
-                        GlStateManager.popMatrix();
+                for (ISemiBlock semiBlock : semiBlocks) {
+                    if (!blind || !(player.getDistanceSq(semiBlock.getPos()) > 25)) {
+                        ISemiBlockRenderer renderer = getRenderer(semiBlock);
+                        if (renderer != null) {
+                            GlStateManager.pushMatrix();
+                            GlStateManager.translate(semiBlock.getPos().getX(), semiBlock.getPos().getY(), semiBlock.getPos().getZ());
+                            renderer.render(semiBlock, event.getPartialTicks());
+                            GlStateManager.popMatrix();
+                        }
                     }
                 }
             }
