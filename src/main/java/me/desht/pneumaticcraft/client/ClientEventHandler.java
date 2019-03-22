@@ -330,6 +330,7 @@ public class ClientEventHandler {
 
         // air particles
         event.getMap().registerSprite(AirParticle.AIR_PARTICLE_TEXTURE);
+        event.getMap().registerSprite(AirParticle.AIR_PARTICLE_TEXTURE2);
     }
 
     @SubscribeEvent
