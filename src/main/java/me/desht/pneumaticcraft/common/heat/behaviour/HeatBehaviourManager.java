@@ -19,23 +19,21 @@ public class HeatBehaviourManager {
         return INSTANCE;
     }
 
-    public void init() {
+    public void onPostInit() {
         registerBehaviour(HeatBehaviourFurnace.class);
-        registerBehaviour(HeatBehaviourLava.class);
-        registerBehaviour(HeatBehaviourWaterVaporate.class);
-        registerBehaviour(HeatBehaviourWaterSolidify.class);
-        registerBehaviour(HeatBehaviourFireTransition.class);
         registerBehaviour(HeatBehaviourHeatFrame.class);
-        registerBehaviour(HeatBehaviourMagmaTransition.class);
+
+        // this handles any custom non-tile-entity blocks and fluids, vanilla and modded
+        registerBehaviour(HeatBehaviourCustomTransition.class);
     }
 
     public void registerBehaviour(Class<? extends HeatBehaviour> behaviour) {
         if (behaviour == null) throw new IllegalArgumentException("Can't register a null behaviour!");
         try {
             HeatBehaviour ins = behaviour.newInstance();
-            HeatBehaviour overridenBehaviour = behaviours.put(ins.getId(), ins);
-            if (overridenBehaviour != null)
-                Log.warning("Registered a heat behaviour that has the same id as an already registered one. The old one will be discarded. Old behaviour class: " + overridenBehaviour.getClass() + ". New class: " + behaviour.getClass());
+            HeatBehaviour old = behaviours.put(ins.getId(), ins);
+            if (old != null)
+                Log.warning("Registered a heat behaviour that has the same id as an already registered one. The old one will be discarded. Old behaviour class: " + old.getClass() + ". New class: " + behaviour.getClass());
         } catch (InstantiationException e) {
             throw new IllegalArgumentException("The behaviour class doesn't have a nullary constructor, or is abstract! Class: " + behaviour);
         } catch (IllegalAccessException e) {
@@ -43,7 +41,11 @@ public class HeatBehaviourManager {
         }
     }
 
-    public HeatBehaviour getBehaviourForId(String id) {
+    HeatBehaviour getBehaviour(String id) {
+        return behaviours.get(id);
+    }
+
+    public HeatBehaviour getNewBehaviourForId(String id) {
         HeatBehaviour behaviour = behaviours.get(id);
         if (behaviour != null) {
             try {
@@ -60,11 +62,12 @@ public class HeatBehaviourManager {
 
     public void addHeatBehaviours(World world, BlockPos pos, EnumFacing direction, IHeatExchangerLogic logic, List<HeatBehaviour> list) {
         for (HeatBehaviour behaviour : behaviours.values()) {
-            behaviour.initialize(logic, world, pos, direction);
+            String id = behaviour.getId();
+            behaviour.initialize(id, logic, world, pos, direction);
             if (behaviour.isApplicable()) {
                 try {
                     behaviour = behaviour.getClass().newInstance();
-                    behaviour.initialize(logic, world, pos, direction);
+                    behaviour.initialize(id, logic, world, pos, direction);
                     list.add(behaviour);
                 } catch (Exception e) {
                     e.printStackTrace();

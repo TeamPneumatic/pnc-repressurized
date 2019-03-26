@@ -190,7 +190,7 @@ public class EventHandlerPneumaticArmor {
                 return;
             }
             CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
-            if (!handler.isJetBootsActive() && handler.isArmorReady(EntityEquipmentSlot.LEGS)
+            if (!handler.isJetBootsEnabled() && handler.isArmorReady(EntityEquipmentSlot.LEGS)
                     && handler.isJumpBoostEnabled() && handler.getArmorPressure(EntityEquipmentSlot.LEGS) > 0.01F) {
                 float power = ItemPneumaticArmor.getIntData(stack, "jumpBoost", 100) / 100.0f;
                 int rangeUpgrades = handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.RANGE,

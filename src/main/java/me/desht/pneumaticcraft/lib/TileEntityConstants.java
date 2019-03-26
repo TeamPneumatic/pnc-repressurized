@@ -34,4 +34,6 @@ public class TileEntityConstants {
     public static final int SECURITY_STATION_REBOOT_TIME = 1200;//ticks
 
     public static final double PACKET_UPDATE_DISTANCE = 64D;//maximum client distance before clients aren't being sent anymore from the server.
+
+    public static final int HEAT_SINK_THERMAL_RESISTANCE = 14;
 }

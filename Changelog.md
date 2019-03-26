@@ -6,20 +6,46 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.9.4-??? (unreleased)
-#### Updates
+### 0.10.0-??? (unreleased)
+#### New
 * Lots of work on the Logistics system:
   * Very major performance improvements for Logistics, both for Logistics Modules and Logistics Drones. Smarter caching of discovered logistics frames means a large reduction in server CPU used.
-  * Logistics frames now have a facing direction, which tells Logistics Drones which side to access the framed inventory on. Makes no difference for non-sided inventories like chests, but a big difference for sided inventories such as furnaces or the Aerial Interface.
-  * The facing direction defaults to the clicked face of the inventory it's placed on. Logistics frames placed before this change will face up by default; you can adjust the facing in the GUI if needed.
-  * Requester Frames can now specify the minimum amount of items or fluid to transfer at a time. This avoids situations where Logistics Drones could be making constant trips moving 1mB of fluid at a time, for example (e.g. moving fuel from a Refinery output to a Liquid Compressor).
+  * Logistics frames now have a facing direction, which tells Logistics Drones which side to access the framed inventory on. Not important for non-sided inventories like chests, but very important for sided inventories such as Furnaces or the Aerial Interface.
+    * The facing direction defaults to the clicked face of the inventory it's placed on. Logistics frames placed before this change will face up by default; you can adjust the facing from within the GUI with the new "Facing" side tab.
+    * Logistics Modules ignore the frame's facing and always use the side of the inventory they face.
+  * Requester Frames can now specify the minimum amount of items or fluid to transfer at a time. This avoids situations where Logistics Drones could end up making constant trips moving 1mB of fluid at a time (e.g. moving fuel from a Refinery output to a Liquid Compressor).
+* Significant overhaul of the Heat system:
+  * Block heat properties can now be specified in the ``config/pneumaticcraft/BlockHeatProperties.cfg`` config file. Modpack makers, you're free to edit this file - entries you've changed won't be overwritten by future mod updates, although new entries could be added. (Note that this will likely become a datapack if & when I port to MC 1.13/1.14).
+  * Several other mod blocks and fluids now have useful heat properties, for heating or cooling PneumaticCraft machines:
+    * IC2 and Immersive Engineering Uranium blocks are not very hot but will last for ages before turning into Lead (not 4.46 billion years, though)
+    * IC2 Coolant & Hot Coolant are highly effective for heating & cooling purposes
+    * IC2 Steam & Superheated Steam are also useful, though not as good as Coolant
+    * Natura Heat Sand will emit a decent amount of heat before turning to Sand
+    * Thermal Foundation Enderium Blocks are unnaturally cold and will absorb a lot of heat before turning to Platinum
+    * Cryotheum is still an excellent coolant but now turns to Snow instead of Stone
+    * Quark blaze lamps are good heat sources, and will turn to Glowstone blocks
+    * Quark brimstone and permafrost are decent heat sources - not particularly hot/cold, but will last a while, and will turn to Cobblestone
+  * If you add a modded block or fluid entry which is generally useful, I will happily add that to the default list above. Just raise a github issue or (even better) a pull request.
+  * Note that *all* fluids have heat properties; a fluid's temperature is mod-defined, but its thermal resistance, total heat capacity and block transitions can all be overridden in ``config/pneumaticcraft/BlockHeatProperties.cfg``.
+  * Custom block heat properties now allow for a block transition both for hot and cold (e.g. IC2 steam becomes superheated steam if too much heat is absorbed, and water if too much heat is lost). Previously only a hot *or* cold transition was possible.
+  * Ambient temperature is no longer a flat 22C, but varies by biome and altitude
+    * Plains biome at sea level is 27C
+    * Ambient temperature drops above Y=80 and below Y=40 (by 0.1C per block by default, but configurable)
+    * Temperature variations are configurable in ``config/pneumaticcraft/BlockHeatProperties.cfg`` and can be disabled entirely if you want (set "ambientTemperatureBiomeModifier" and "ambientTemperatureHeightModifier" to 0)
+    * This makes biomes like Deserts great for running a Refinery, but less great for running advanced compressors (not impossible, just less efficient), and vice versa for biomes like Taiga or Extreme Hills.
+#### Updates
 * Charged and active Pneumatic Boots will no longer trample farmland.
 * Some Patchouli guidebook additions and improvements. Added missing page for the Logistics puzzle piece.
 * The Refinery, Thermopneumatic Processing Plant and Plastic Mixer now warn in their GUI if the block is poorly insulated, and thus wasting heat (Plastic Mixer only warns if you're trying to melt down plastic).
-* The Plastic Mixer now remembers any dye in its internal buffers if the block is broken and put down again; avoids dye wastage if you need to move the machine.
+* The Plastic Mixer now remembers any dye in its internal buffers if the block is broken and put down again, avoiding dye wastage if you need to move the machine.
+* Added "/dumpNBT" command (op level), which dumps the NBT of the currently-held item as a JSON string. Primarily intended for getting internal Forge fluid names from a bucket of the fluid, for adding to custom fluid properties to ``config/pneumaticcraft/BlockHeatProperties.cfg``, but is also generally useful for debugging purposes.
 #### Fixes
 * Fixed two or more Transfer Gadgets on one block causing messy breakage.
 * Fixed Refinery & Thermopneumatic Processing Plant GUI's wrongly reporting insufficient temperature even if the temperature is fine and machine is running properly.
+* Programmer GUI: Fixed middle-click on rightmost column of expanded widget tray closing the tray instead of opening docs for the clicked widget
+* Added a couple of missing Patchouli docs pages for programming widgets
+* Logistics frame info is now properly shown by The One Probe on dedicated server (previously just said "Error") 
+* Semiblocks (logistics frames, heat frames, etc.) no longer render for blinded players unless they're close enough to see the block the semiblock is on.
 
 ### 0.9.3-324 (4 Mar 2019)
 #### Fixes

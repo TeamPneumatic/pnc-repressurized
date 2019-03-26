@@ -28,11 +28,7 @@ public class FluidPlastic extends FluidPneumaticCraft {
 
     @Override
     public int getTemperature(FluidStack plastic) {
-        return getTemperatureS(plastic);
-    }
-
-    public static int getTemperatureS(FluidStack plastic) {
-        return PneumaticValues.PLASTIC_MIXER_MELTING_TEMP + 1;//plastic.tag != null ? plastic.tag.getInteger("temperature") : 295;
+        return PneumaticValues.PLASTIC_MIXER_MELTING_TEMP + 1;
     }
 
     public static void addDye(FluidStack plastic, int dyeMetadata) {

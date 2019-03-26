@@ -17,10 +17,12 @@
     },
     {
       "type": "text",
-      "text": "Static (i.e. non-machine) blocks can be used to provide or remove heat from machines, and they are $(l:base_concepts/heat_sources)listed here/$. However, due to limitations in the game, and for performance reasons, such blocks and fluids can not track a temperature themselves. Instead, the amount of heat removed or added is tracked by machines adjacent to them. If too much heat is transferred, they will be converted into non-heat-source blocks (commonly $(item)Obsidian/$, $(item)Stone/$, or $(item)Ice/$)."
+      "title": "Insulation",
+      "text": "Machines will lose heat to the air if left exposed; this is particularly noticeable with the $(l:manufacturing/refinery)Refinery/$, which has many exposed faces, but is also true of any heat-conducting block, including $(l:base_concepts/basic_materials#compressed_iron_block)Compressed Iron Blocks/$.$(p)To avoid this heat loss, ensure that no faces are exposed to air blocks; any non-conducting block will do. It doesn't have to be a full block, either - $(item)Trapdoors/$ and $(item)slabs/$ will work fine."
     },
     {
       "type": "text",
+      "title": "Heat Sources",
       "text": "Some machines in $(pncr) produce Heat that needs to be dissipated, and some require Heat to run.$(p)Therefore, you will need to $(l:base_concepts/heat_sources)find ways/$ to manipulate the temperature of these machines..."
     }
   ]

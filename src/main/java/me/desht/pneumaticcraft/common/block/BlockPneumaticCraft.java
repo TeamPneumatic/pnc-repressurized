@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
@@ -173,6 +174,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (te instanceof IPneumaticMachine && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_AIR_AMOUNT)) {
             int air = stack.getTagCompound().getInteger(NBT_AIR_AMOUNT);
             ((IPneumaticMachine) te).getAirHandler(null).addAir(air);
+        }
+        if (te instanceof IHeatExchanger) {
+            double ambient = HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature();
+            ((IHeatExchanger) te).getHeatExchangerLogic(null).setTemperature(ambient);
         }
     }
 

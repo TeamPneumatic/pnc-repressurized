@@ -4,10 +4,12 @@ import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.BlockHeatPropertiesConfig;
+import me.desht.pneumaticcraft.common.config.BlockHeatPropertiesConfig.CustomHeatEntry;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -19,12 +21,11 @@ import net.minecraftforge.fluids.FluidRegistry;
 import java.util.*;
 
 public class HeatExchangerManager implements IHeatRegistry {
-    public static final double DEFAULT_FLUID_RESISTANCE = 500;
-
     // Used to add thermal properties to vanilla blocks or non-tile-entity modded blocks
     private final Map<Block, IHeatExchanger> specialBlockExchangers = new HashMap<>();
+    private final Map<String, IHeatExchanger> specialBlockvariantExchangers = new HashMap<>();
 
-    private static final IHeatExchangerLogic AIR_EXCHANGER = new HeatExchangerLogicConstant(295, 100);
+//    static final IHeatExchangerLogic AIR_EXCHANGER = new HeatExchangerLogicConstant(295, 100);
 
     private static final HeatExchangerManager INSTANCE = new HeatExchangerManager();
 
@@ -32,22 +33,30 @@ public class HeatExchangerManager implements IHeatRegistry {
         return INSTANCE;
     }
 
-    public void init() {
-        registerBlockExchanger(Blocks.ICE, 263, 500 * ConfigHandler.general.blockThermalResistanceMultiplier);
-        registerBlockExchanger(Blocks.PACKED_ICE, 263, 500 * ConfigHandler.general.blockThermalResistanceMultiplier);
-        registerBlockExchanger(Blocks.SNOW, 268, 1000 * ConfigHandler.general.blockThermalResistanceMultiplier);
-        registerBlockExchanger(Blocks.TORCH, 1700, 100000 * ConfigHandler.general.blockThermalResistanceMultiplier);
-        registerBlockExchanger(Blocks.FIRE, 1700, 1000 * ConfigHandler.general.blockThermalResistanceMultiplier);
-        registerBlockExchanger(Blocks.MAGMA, 1700, 500 * ConfigHandler.general.blockThermalResistanceMultiplier);
+    public void onPostInit() {
+        BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntries().values().forEach(this::registerCustomHeatEntry);
 
         Map<String, Fluid> fluids = FluidRegistry.getRegisteredFluids();
         for (Fluid fluid : fluids.values()) {
-            if (fluid.getBlock() != null) {
-                registerBlockExchanger(fluid.getBlock(), fluid.getTemperature(), ConfigHandler.general.fluidThermalResistance);
+            if (fluid.getBlock() != null && !specialBlockExchangers.containsKey(fluid.getBlock())) {
+                CustomHeatEntry entry = BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntry(fluid.getBlock().getDefaultState());
+                registerBlockExchanger(fluid.getBlock(), entry.getTemperature(), entry.getThermalResistance());
             }
         }
-        registerBlockExchanger(Blocks.FLOWING_WATER, FluidRegistry.WATER.getTemperature(), ConfigHandler.general.fluidThermalResistance);
-        registerBlockExchanger(Blocks.FLOWING_LAVA, FluidRegistry.LAVA.getTemperature(), ConfigHandler.general.fluidThermalResistance);
+        // the vanilla flowing blocks aren't in the forge fluid registry...
+        registerBlockExchanger(Blocks.FLOWING_LAVA, specialBlockExchangers.get(Blocks.LAVA));
+        registerBlockExchanger(Blocks.FLOWING_WATER, specialBlockExchangers.get(Blocks.WATER));
+    }
+
+
+    private void registerCustomHeatEntry(CustomHeatEntry rec) {
+        if (rec.isDefaultState()) {
+            // all states of this block type
+            registerBlockExchanger(rec.getBlockState().getBlock(), rec.getTemperature(), rec.getThermalResistance());
+        } else {
+            // a specific blockstate - use where modded blocks have subtypes
+            registerBlockExchanger(rec.getBlockState(), rec.getTemperature(), rec.getThermalResistance());
+        }
     }
 
     public IHeatExchangerLogic getLogic(World world, BlockPos pos, EnumFacing side) {
@@ -57,20 +66,41 @@ public class HeatExchangerManager implements IHeatRegistry {
             return ((IHeatExchanger) te).getHeatExchangerLogic(side);
         } else {
             if (world.isAirBlock(pos)) {
-                return AIR_EXCHANGER;
+                return HeatExchangerLogicAmbient.atPosition(world, pos);
+//                return AIR_EXCHANGER;
             } else {
-                Block block = world.getBlockState(pos).getBlock();
+                IBlockState state = world.getBlockState(pos);
+                Block block = state.getBlock();
                 if (block instanceof IHeatExchanger) {
                     return ((IHeatExchanger) block).getHeatExchangerLogic(side);
                 } else {
-                    IHeatExchanger exchanger = specialBlockExchangers.get(block);
+                    IHeatExchanger exchanger = getSpecialBlockExchanger(state);
                     return exchanger == null ? null : exchanger.getHeatExchangerLogic(side);
                 }
             }
         }
     }
 
-    public void registerBlockExchanger(Block block, IHeatExchanger heatExchanger) {
+    private IHeatExchanger getSpecialBlockExchanger(IBlockState state) {
+        String key = state.getBlock().getRegistryName() + ":" + state.getBlock().getMetaFromState(state);
+        IHeatExchanger exchanger = specialBlockvariantExchangers.get(key);
+        return exchanger == null ? specialBlockExchangers.get(state.getBlock()) : exchanger;
+    }
+
+    // todo this can go away in 1.13 when it will be purely block-based (yay flattening)
+    private void registerBlockExchanger(IBlockState state, IHeatExchanger heatExchanger) {
+        Block block = state.getBlock();
+        if (block instanceof IHeatExchanger)
+            Log.warning("The block " + block.getTranslationKey() + " is implementing IHeatExchanger. Therefore you don't need to register it as such");
+        String key = block.getRegistryName() + ":" + block.getMetaFromState(state);
+        if (specialBlockvariantExchangers.containsKey(key)) {
+            Log.error("The block " + key + " was registered as heat exchanger already! It won't be added!");
+        } else {
+            specialBlockvariantExchangers.put(key, heatExchanger);
+        }
+    }
+
+    private void registerBlockExchanger(Block block, IHeatExchanger heatExchanger) {
         if (block == null)
             throw new IllegalArgumentException("block is null when trying to register a heat exchanger!");
         if (block instanceof IHeatExchanger)
@@ -82,13 +112,22 @@ public class HeatExchangerManager implements IHeatRegistry {
         }
     }
 
-    public void registerBlockExchanger(Block block, IHeatExchangerLogic heatExchangerLogic) {
+    private void registerBlockExchanger(Block block, IHeatExchangerLogic heatExchangerLogic) {
         registerBlockExchanger(block, new SimpleHeatExchanger(heatExchangerLogic));
+    }
+
+    private void registerBlockExchanger(IBlockState state, IHeatExchangerLogic heatExchangerLogic) {
+        registerBlockExchanger(state, new SimpleHeatExchanger(heatExchangerLogic));
     }
 
     @Override
     public void registerBlockExchanger(Block block, double temperature, double thermalResistance) {
         registerBlockExchanger(block, new HeatExchangerLogicConstant(temperature, thermalResistance));
+    }
+
+    @Override
+    public void registerBlockExchanger(IBlockState state, double temperature, double thermalResistance) {
+        registerBlockExchanger(state, new HeatExchangerLogicConstant(temperature, thermalResistance));
     }
 
     @Override
@@ -98,8 +137,9 @@ public class HeatExchangerManager implements IHeatRegistry {
 
     @Override
     public IHeatExchangerLogic getHeatExchangerLogic() {
-        return new HeatExchangerLogic();
+        return new HeatExchangerLogicTicking();
     }
+
 
     public static class TemperatureData {
         private final Double[] temp = new Double[7];

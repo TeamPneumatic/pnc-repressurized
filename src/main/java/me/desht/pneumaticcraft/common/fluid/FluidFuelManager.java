@@ -9,7 +9,7 @@ public class FluidFuelManager {
     public static void registerFuels() {
         for (Fluid fluid : FluidRegistry.getRegisteredFluids().values()) {
             if (fluid.getTemperature() > ConfigHandler.general.minimumFluidFuelTemperature) {
-                PneumaticRegistry.getInstance().registerFuel(fluid, (fluid.getTemperature() - 295) * 40);
+                PneumaticRegistry.getInstance().registerFuel(fluid, (fluid.getTemperature() - 300) * 40);
             }
         }
     }

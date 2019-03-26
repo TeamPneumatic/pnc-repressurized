@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.config;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraftforge.common.config.Config;
@@ -22,7 +21,8 @@ public class ConfigHandler {
             new ProgWidgetConfig(),
             HelmetWidgetDefaults.INSTANCE,
             ThirdPartyConfig.INSTANCE,
-            MicromissileDefaults.INSTANCE
+            MicromissileDefaults.INSTANCE,
+            BlockHeatPropertiesConfig.INSTANCE
     };
 
     @Config.Name("general")
@@ -130,22 +130,23 @@ public class ConfigHandler {
         @Config.Comment("Oil worldgen blacklist: add dimension IDs to this list if you don't want oil worldgen to happen there.")
         @Config.RequiresMcRestart
         public int[] oilWorldGenBlacklist = new int[] { 1, -1 };
-        @Config.Comment("Thermal resistance of non-vanilla fluids, which is how fast heat moves between them and adjacent heat-handling blocks like the refinery.  Lower values mean faster heat movement.")
-        @Config.RequiresWorldRestart
-        public double fluidThermalResistance = HeatExchangerManager.DEFAULT_FLUID_RESISTANCE;
         @Config.Comment("Fluids as hot or hotter than this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")
         @Config.RequiresMcRestart
         public int minimumFluidFuelTemperature = 373; // 100C
-        @Config.Comment("Thermal resistance multiplier for non-fluid blocks.  Higher values mean slower heat transfer; you can set this to a very high value to make blocks not worth using as heat sources.  See also I:fluidThermalResistance for fluid blocks.")
-        @Config.RequiresWorldRestart
-        @Config.RangeDouble(min = 0.01)
-        public double blockThermalResistanceMultiplier = 1.0;
+
 
         // deprecated stuff
         @Config.Comment("DEPRECATED: use Minigun / baseDamage")
         public double configMinigunDamage = 4.0;
         @Config.Comment("DEPRECATED: use Minigun / potionProcChance")
         public int minigunPotionProcChance = 15;
+//        @Config.Comment("Thermal resistance of non-vanilla fluids, which is how fast heat moves between them and adjacent heat-handling blocks like the refinery.  Lower values mean faster heat movement.")
+//        @Config.RequiresWorldRestart
+//        public double fluidThermalResistance = HeatExchangerManager.DEFAULT_FLUID_RESISTANCE;
+//        @Config.Comment("Thermal resistance multiplier for non-fluid blocks.  Higher values mean slower heat transfer; you can set this to a very high value to make blocks not worth using as heat sources.  See also I:fluidThermalResistance for fluid blocks.")
+//        @Config.RequiresWorldRestart
+//        @Config.RangeDouble(min = 0.01)
+//        public double blockThermalResistanceMultiplier = 1.0;
     }
 
     public static class PneumaticArmor {

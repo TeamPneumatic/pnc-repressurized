@@ -2,11 +2,11 @@ package me.desht.pneumaticcraft.common.heat.behaviour;
 
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
+import me.desht.pneumaticcraft.common.heat.HeatExtractionTracker;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
@@ -14,16 +14,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
-    private double extractedHeat;
     private double maxExchangedHeat;
     private double blockTemp = -1;
     private IHeatExchangerLogic logic;
-
-    @Override
-    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, EnumFacing direction) {
-        super.initialize(connectedHeatLogic, world, pos, direction);
-        extractedHeat = connectedHeatLogic.getHeatExtracted(direction);
-    }
+    private HeatExtractionTracker tracker;
 
     @Override
     public boolean isApplicable() {
@@ -31,14 +25,18 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
         return logic != null;
     }
 
+    @Override
+    public void initialize(String id, IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, EnumFacing direction) {
+        super.initialize(id, connectedHeatLogic, world, pos, direction);
+
+        tracker = HeatExtractionTracker.getInstance(getWorld());
+    }
+
     protected abstract int getMaxExchangedHeat();
 
-    protected abstract boolean transitionOnTooMuchExtraction();
+    protected boolean transformBlockHot() { return false; }
 
-    @Override
-    public double getHeatExtracted() {
-        return extractedHeat;
-    }
+    protected boolean transformBlockCold() { return false; }
 
     @Override
     public void update() {
@@ -46,26 +44,18 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
             blockTemp = logic.getTemperature();
             maxExchangedHeat = getMaxExchangedHeat() * (logic.getThermalResistance() + getHeatExchanger().getThermalResistance());
         }
-        extractedHeat += blockTemp - getHeatExchanger().getTemperature();
-        if (transitionOnTooMuchExtraction() ? extractedHeat > maxExchangedHeat : extractedHeat < -maxExchangedHeat) {
-            extractedHeat %= maxExchangedHeat;
-            transformBlock();
+        double extractedHeat = tracker.getHeatExtracted(getPos());
+        if (extractedHeat < Math.abs(maxExchangedHeat)) {
+            double toExtract = blockTemp - getHeatExchanger().getTemperature();
+            tracker.extractHeat(getPos(), toExtract);
+            extractedHeat += toExtract;
+        }
+        if (extractedHeat >= maxExchangedHeat) {
+            if (transformBlockCold()) tracker.extractHeat(getPos(), -maxExchangedHeat);
+        } else if (extractedHeat <= -maxExchangedHeat) {
+            if (transformBlockHot()) tracker.extractHeat(getPos(), maxExchangedHeat);
         }
     }
-
-    @Override
-    public void writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setDouble("extractedHeat", extractedHeat);
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        extractedHeat = tag.getDouble("extractedHeat");
-    }
-
-    protected abstract void transformBlock();
 
     void onTransition(BlockPos pos) {
         NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.AMBIENT, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0.5F, 2.6F + (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * 0.8F, true), getWorld());

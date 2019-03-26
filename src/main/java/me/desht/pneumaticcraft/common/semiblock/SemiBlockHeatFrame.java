@@ -119,9 +119,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
         ItemStack stack = handler.getStackInSlot(slot);
         if (!stack.isEmpty()) {
             for (HeatFrameCoolingRecipe recipe : HeatFrameCoolingRecipe.recipes) {
-//                if (PneumaticRecipeRegistry.isItemEqual(recipe.input, stack)) {
                 if (recipe.input.isItemEqual(stack)) {
-//                    int amount = PneumaticRecipeRegistry.getItemAmount(recipe.input);
                     if (stack.getCount() >= recipe.input.getItemAmount()) {
                         ItemStack containerItem = stack.getItem().getContainerItem(stack);
                         boolean canStoreContainerItem = false;

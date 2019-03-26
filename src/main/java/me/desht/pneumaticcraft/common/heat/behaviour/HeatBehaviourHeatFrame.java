@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.heat.behaviour;
 
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.heat.HeatExchangerLogic;
+import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicTicking;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.lib.Names;
@@ -15,8 +15,8 @@ public class HeatBehaviourHeatFrame extends HeatBehaviour<TileEntity> {
     private SemiBlockHeatFrame semiBlock;
 
     @Override
-    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, EnumFacing direction) {
-        super.initialize(connectedHeatLogic, world, pos, direction);
+    public void initialize(String id, IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, EnumFacing direction) {
+        super.initialize(id, connectedHeatLogic, world, pos, direction);
         semiBlock = null;
     }
 
@@ -39,7 +39,7 @@ public class HeatBehaviourHeatFrame extends HeatBehaviour<TileEntity> {
 
     @Override
     public void update() {
-        HeatExchangerLogic.exchange(getSemiBlock().getHeatExchangerLogic(null), getHeatExchanger());
+        HeatExchangerLogicTicking.exchange(getSemiBlock().getHeatExchangerLogic(null), getHeatExchanger());
     }
 
 }

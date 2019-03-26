@@ -43,6 +43,11 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     }
 
     @Override
+    public double getAmbientTemperature() {
+        return temperature;
+    }
+
+    @Override
     public double getTemperature() {
         return temperature;
     }
@@ -59,15 +64,6 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     @Override
     public double getThermalResistance() {
         return thermalResistance;
-    }
-
-    @Override
-    public double getHeatExtracted(EnumFacing side) {
-        return 0;
-    }
-
-    @Override
-    public void setHeatExtracted(EnumFacing side, double heat) {
     }
 
     @Override

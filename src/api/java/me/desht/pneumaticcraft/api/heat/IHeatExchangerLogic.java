@@ -73,6 +73,14 @@ public interface IHeatExchangerLogic {
     int getTemperatureAsInt();
 
     /**
+     * Get the heat exchanger's ambient temperature, i.e. the temperature at which it initially starts, dependent
+     * on its environment (biome and altitude).
+     *
+     * @return the ambient temperature
+     */
+    double getAmbientTemperature();
+
+    /**
      * The higher the thermal resistance, the slower the heat disperses. The effective resistance is the sum of this
      * resistance plus the neighbour's resistance; if both exchangers have a resistance of 1, heat will equalize in
      * a single tick under normal circumstances.
@@ -88,26 +96,6 @@ public interface IHeatExchangerLogic {
      * @return the thermal resistance, higher resistance means slower heat transfer
      */
     double getThermalResistance();
-
-    /**
-     * Get the amount of heat extracted on this side so far. This will always be 0 for non-transitioning heat
-     * behaviours. The primary reason for this method is to track heat extraction separately from individual heat
-     * behaviour objects to stop exploits involving repeatedly breaking and replacing blocks/fluids to avoid
-     * transitions occurring.
-     *
-     * @param side the side
-     * @return the amount of heat extracted
-     */
-    double getHeatExtracted(EnumFacing side);
-
-    /**
-     * Set the amout of heat extracted on this side; called when a transition occurs to update the heat level.
-     * See {@link #getHeatExtracted(EnumFacing)} for more info.
-     *
-     * @param side the side
-     * @param heat the amount of heat
-     */
-    void setHeatExtracted(EnumFacing side, double heat);
 
     /**
      * Set this heat exchanger's thermal capacity.

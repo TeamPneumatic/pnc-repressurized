@@ -7,5 +7,6 @@ public class PCCommandManager {
         commandManager.registerCommand(new CommandAmazonDelivery());
         commandManager.registerCommand(new CommandGetGlobalVariable());
         commandManager.registerCommand(new CommandSetGlobalVariable());
+        commandManager.registerCommand(new CommandDumpNBT());
     }
 }

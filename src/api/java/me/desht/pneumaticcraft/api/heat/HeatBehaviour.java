@@ -17,6 +17,7 @@ import net.minecraft.world.World;
  */
 public abstract class HeatBehaviour<Tile extends TileEntity> {
 
+    private String id;
     private IHeatExchangerLogic connectedHeatLogic;
     private World world;
     private BlockPos pos;
@@ -26,12 +27,13 @@ public abstract class HeatBehaviour<Tile extends TileEntity> {
 
     /**
      * Called by the connected IHeatExchangerLogic.
+     * @param id ID of this behaviour; can be used to
      * @param connectedHeatLogic
      * @param world
      * @param pos
      * @param direction direction of this behaviour from the tile entity's PoV
      */
-    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, EnumFacing direction) {
+    public void initialize(String id, IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, EnumFacing direction) {
         this.connectedHeatLogic = connectedHeatLogic;
         this.world = world;
         this.pos = pos;
@@ -54,16 +56,6 @@ public abstract class HeatBehaviour<Tile extends TileEntity> {
 
     public EnumFacing getDirection() {
         return direction;
-    }
-
-    /**
-     * Get the amount of heat extracted from this behaviour (since the last transition).  This is always 0.0 for
-     * non-transitioning heat behaviours.
-     *
-     * @return the amount of heat extracted
-     */
-    public double getHeatExtracted() {
-        return 0.0;
     }
 
     public Tile getTileEntity() {

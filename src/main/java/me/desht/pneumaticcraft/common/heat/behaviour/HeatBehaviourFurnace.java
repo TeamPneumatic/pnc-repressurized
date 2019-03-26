@@ -29,7 +29,7 @@ public class HeatBehaviourFurnace extends HeatBehaviour<TileEntityFurnace> {
                 getHeatExchanger().addHeat(-1);
             }
             if (furnaceCookTime > 0) {
-                // Easy performance saver, the Furnace won't be ticked unnecessary when there's nothing to
+                // Easy performance saver, the Furnace won't be ticked unnecessarily when there's nothing to
                 // cook (or when just started cooking).
                 int progress = Math.max(0, ((int) getHeatExchanger().getTemperature() - 343) / 30);
                 progress = Math.min(5, progress);

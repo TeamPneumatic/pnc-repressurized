@@ -114,7 +114,6 @@ public class PneumaticCraftRepressurized {
         if (ConfigHandler.general.oilGenerationChance > 0) {
             GameRegistry.registerWorldGenerator(new WorldGeneratorPneumaticCraft(), 0);
         }
-        HeatBehaviourManager.getInstance().init();
 
         proxy.preInit();
 
@@ -179,13 +178,15 @@ public class PneumaticCraftRepressurized {
     public void postInit(FMLPostInitializationEvent event) {
         // Add these later so we include other mods' storage recipes.
 //         CraftingRegistrator.addPressureChamberStorageBlockRecipes();
+        ConfigHandler.onPostInit();
+
         AssemblyRecipe.calculateAssemblyChain();
-        HeatExchangerManager.getInstance().init();
+        HeatBehaviourManager.getInstance().onPostInit();
+        HeatExchangerManager.getInstance().onPostInit();
         FluidFuelManager.registerFuels();
 
         ThirdPartyManager.instance().postInit();
         proxy.postInit();
-        ConfigHandler.onPostInit();
         AmadronOfferManager.getInstance().shufflePeriodicOffers();
         AmadronOfferManager.getInstance().recompileOffers();
         ModInteractionUtils.registerThirdPartyWrenches();

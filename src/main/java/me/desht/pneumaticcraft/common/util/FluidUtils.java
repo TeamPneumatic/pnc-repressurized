@@ -116,13 +116,12 @@ public class FluidUtils {
         return isSourceBlock(world, pos, null);
     }
 
-
     /**
-     * Check if the given blockpos contains a fluid source block of a certain fluid.
+     * Check if the given blockpos contains a fluid source block of a certain fluid (os possibly any fluid)
      *
      * @param world the world
      * @param pos the blockpos
-     * @param fluid the fluid
+     * @param fluid the fluid, may be null to match any fluid
      * @return true if there is a fluid source block of the right fluid at the given blockpos, false otherwise
      */
     public static boolean isSourceBlock(World world, BlockPos pos, Fluid fluid) {

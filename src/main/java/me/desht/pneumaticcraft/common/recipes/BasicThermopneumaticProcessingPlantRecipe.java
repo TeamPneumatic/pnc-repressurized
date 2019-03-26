@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.recipes;
 
 import me.desht.pneumaticcraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
+import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -84,7 +85,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
 
     @Override
     public double heatUsed(FluidStack inputTank, @Nonnull ItemStack inputItem) {
-        return (requiredTemperature - 295) / 10D;
+        return (requiredTemperature - HeatExchangerLogicAmbient.BASE_AMBIENT_TEMP) / 10D;
     }
 
     @Override
