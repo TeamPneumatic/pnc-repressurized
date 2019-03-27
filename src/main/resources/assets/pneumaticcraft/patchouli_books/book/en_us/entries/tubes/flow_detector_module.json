@@ -1,6 +1,6 @@
 {
   "name": "Flow Detector Module",
-  "icon": "pneumaticcraft:charging_module",
+  "icon": "pneumaticcraft:flow_detector_module",
   "category": "tubes",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [

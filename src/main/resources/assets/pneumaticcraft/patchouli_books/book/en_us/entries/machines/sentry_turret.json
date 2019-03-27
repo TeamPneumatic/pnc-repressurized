@@ -6,12 +6,12 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(thing)Sentry Turret/$ is an autonomous defensive weapon. It uses an integrated $(l:tools/minigun)Minigun/$ and $(l:tools/minigun_ammo)Gun Ammo/$ (which you must supply) to shoot entities within range. Its range is 16 blocks by default, but can be upgraded with $(l:base_concepts/upgrades#range)Range Upgrades/$ to a max of 32 blocks."
+      "text": "The $(thing)Sentry Turret/$ is an autonomous defensive weapon. It uses an integrated $(l:tools/minigun)Minigun/$ and $(l:tools/minigun_ammo)Gun Ammo/$ (which you must supply) to shoot entities within range. Its range is 16 blocks by default, but can be upgraded with $(l:base_concepts/upgrades#range)Range Upgrades/$ to a max of 32 blocks.$(p)You do not need to provide $(l:base_concepts/pressure)pressure/$ for Sentry Turret to function, but you do need to provide $(l:tools/minigun_ammo)ammo/$."
     },
     {
       "type": "spotlight",
       "item": "pneumaticcraft:sentry_turret",
-      "text": "Potential targets for the $(thing)Sentry Turret/$ can be filtered by entering an $(l:base_concepts/entity_filter)Entity Filter/$ in the Turret's GUI; you can press & hold $(thing)F1/$ for a popup filter help page."
+      "text": "Potential targets for the $(thing)Sentry Turret/$ can be filtered by entering an $(l:base_concepts/entity_filter)Entity Filter/$ in the Turret's GUI; you can press & hold $(thing)F1/$ for a popup filter help page.$(p)$(bold)Important/$: set an entity filter $(italic)before/$ loading ammo to avoid pain and suffering."
     },
     {
       "type": "spotlight",

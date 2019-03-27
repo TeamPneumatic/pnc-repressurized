@@ -21,7 +21,7 @@
     {
       "type": "text",
       "title": "Upgrade Management",
-      "text": "The $(item)Charging Station/$ also functions as a management system for items which accept $(l:base_concepts/upgrades)upgrades/$. To upgrade an item, put it in the $(item)Charging Station/$ as usual, and click the $(thing)Inv/$ button just above the item slot. This opens a new GUI into which upgrades can be inserted; every applicable upgrade for the item in question is documented in a GUI side tab."
+      "text": "The $(item)Charging Station/$ also functions as a management system for items which accept $(l:base_concepts/upgrades)upgrades/$. To upgrade an item, put it in the $(item)Charging Station/$ as usual, and click the $(thing)up-arrow/$ button just above the item slot. This opens a new GUI where upgrades can be inserted; every applicable upgrade for the item in question is documented in a GUI side tab."
     },
     {
       "type": "relations",
