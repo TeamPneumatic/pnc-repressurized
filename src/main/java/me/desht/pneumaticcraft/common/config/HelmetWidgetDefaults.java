@@ -23,8 +23,12 @@ public class HelmetWidgetDefaults extends JsonConfig {
 
     @Override
     protected void writeToJson(JsonObject json) {
-        json.addProperty("description", "Tracks the active upgrades for the Pneumatic Helmet");
+        json.addProperty("description", "Tracks the active upgrades for the Pneumatic Armor");
         JsonArray array = new JsonArray();
+        if (keyBinds.isEmpty()) {
+            // armor is on by default
+            keyBinds.add("pneumaticHelmet.upgrade.coreComponents");
+        }
         for (String s : keyBinds) {
             array.add(s);
         }

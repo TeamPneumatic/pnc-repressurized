@@ -41,22 +41,25 @@ public class UpgradeRenderHandlerList {
         for (int i = 0; i < 4; i++) {
             upgradeRenderers.add(new ArrayList<>());
         }
-        addUpgradeRenderer(new MainHelmetHandler());
+        addUpgradeRenderer(new MainHelmetHandler());  // always keep this first
         addUpgradeRenderer(new BlockTrackUpgradeHandler());
         addUpgradeRenderer(new EntityTrackUpgradeHandler());
         addUpgradeRenderer(new SearchUpgradeHandler());
         addUpgradeRenderer(new CoordTrackUpgradeHandler());
         addUpgradeRenderer(new DroneDebugUpgradeHandler());
-        addUpgradeRenderer(new MagnetUpgradeRenderHandler());
-        addUpgradeRenderer(new ChargingUpgradeRenderHandler());
-        addUpgradeRenderer(new StepAssistUpgradeHandler());
-        addUpgradeRenderer(new RunSpeedUpgradeHandler());
-        addUpgradeRenderer(new JumpBoostUpgradeHandler());
-        addUpgradeRenderer(new KickUpgradeRenderHandler());
-        addUpgradeRenderer(new JetBootsUpgradeHandler());
         addUpgradeRenderer(new NightVisionUpgradeHandler());
         addUpgradeRenderer(new ScubaUpgradeHandler());
+
+        addUpgradeRenderer(new MagnetUpgradeRenderHandler());
+        addUpgradeRenderer(new ChargingUpgradeRenderHandler());
         addUpgradeRenderer(new ChestplateLauncherHandler());
+
+        addUpgradeRenderer(new RunSpeedUpgradeHandler());
+        addUpgradeRenderer(new JumpBoostUpgradeHandler());
+
+        addUpgradeRenderer(new JetBootsUpgradeHandler());
+        addUpgradeRenderer(new StepAssistUpgradeHandler());
+        addUpgradeRenderer(new KickUpgradeRenderHandler());
     }
 
     public void addUpgradeRenderer(IUpgradeRenderHandler handler) {

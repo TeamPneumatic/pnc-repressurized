@@ -50,6 +50,7 @@ public class HUDHandler implements IKeyListener {
     private static final int PROGRESS_BAR_HEIGHT = 17;
 
     private long lastArmorInitSound; // avoid too much sound spam when equipping armor
+    private boolean sentForceInitPacket = false; // whether to send an armor init packet when helmet not equipped
 
     private final List<ArmorMessage> messageList = new ArrayList<>();
     private final boolean[] gaveEmptyWarning = new boolean[4];  // per-slot
@@ -113,25 +114,47 @@ public class HUDHandler implements IKeyListener {
             EntityPlayer player = event.player;
             if (player == mc.player && player.world.isRemote) {
                 boolean armorEquipped = false;
+                CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer();
                 for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                     if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor) {
-                        update(mc.player, slot);
+                        update(mc.player, slot, comHudHandler);
                         armorEquipped = true;
                     }
                 }
                 if (armorEquipped) {
+                    ensureArmorInit(player, comHudHandler);
+                    updateLauncherTracker();
                     messageList.forEach(message -> message.getStat().update());
                     messageList.removeIf(message -> message == null || --message.lifeSpan <= 0);
                 } else {
                     messageList.clear();
+                    sentForceInitPacket = false;
                 }
-                if (LauncherTracker.INSTANCE.getLauncherProgress() > 0) {
-                    if (!KeyHandler.getInstance().keybindLauncher.isKeyDown()) {
-                        LauncherTracker.INSTANCE.trigger();
-                    } else {
-                        LauncherTracker.INSTANCE.chargeLauncher();
-                    }
-                }
+            }
+        }
+    }
+
+    private void ensureArmorInit(EntityPlayer player, CommonHUDHandler comHudHandler) {
+        if (!(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemPneumaticArmor)
+                && !sentForceInitPacket) {
+            // Special case: ensure core components packet always gets sent so armor can switch on even if helmet
+            // is not equipped (core components is in the helmet for historical reasons)
+            boolean state = GuiKeybindCheckBox.getCoreComponents().checked;
+            // core-components is always in slot HEAD, index 0
+            if (state) {
+                comHudHandler.setUpgradeRenderEnabled(EntityEquipmentSlot.HEAD, (byte) 0, true);
+                NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) 0, true, EntityEquipmentSlot.HEAD));
+            }
+            sentForceInitPacket = true;
+        }
+    }
+
+    private void updateLauncherTracker() {
+        if (LauncherTracker.INSTANCE.getLauncherProgress() > 0) {
+            if (!KeyHandler.getInstance().keybindLauncher.isKeyDown()) {
+                LauncherTracker.INSTANCE.trigger();
+            } else {
+                LauncherTracker.INSTANCE.chargeLauncher();
             }
         }
     }
@@ -234,8 +257,8 @@ public class HUDHandler implements IKeyListener {
         }
     }
 
-    private void update(EntityPlayer player, EntityEquipmentSlot slot) {
-        CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
+    private void update(EntityPlayer player, EntityEquipmentSlot slot, CommonHUDHandler comHudHandler) {
+//        CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
         boolean armorEnabled = GuiKeybindCheckBox.getCoreComponents().checked;
         List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
         if (comHudHandler.getTicksSinceEquipped(slot) == 0) {
@@ -253,7 +276,7 @@ public class HUDHandler implements IKeyListener {
             if (comHudHandler.getTicksSinceEquipped(slot) > comHudHandler.getStartupTime(slot) && armorEnabled) {
                 for (int i = 0; i < renderHandlers.size(); i++) {
                     IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
-                    if (comHudHandler.isUpgradeRendererInserted(slot, i) && GuiKeybindCheckBox.fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + upgradeRenderHandler.getUpgradeName()).checked) {
+                    if (comHudHandler.isUpgradeRendererInserted(slot, i) && comHudHandler.isUpgradeRendererEnabled(slot, i)) {
                         IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
                         if (stat != null) {
                             if (comHudHandler.armorPressure[slot.getIndex()] > upgradeRenderHandler.getMinimumPressure()) {

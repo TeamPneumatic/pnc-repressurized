@@ -43,9 +43,10 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed two or more Transfer Gadgets on one block causing messy breakage.
 * Fixed Refinery & Thermopneumatic Processing Plant GUI's wrongly reporting insufficient temperature even if the temperature is fine and machine is running properly.
 * Programmer GUI: Fixed middle-click on rightmost column of expanded widget tray closing the tray instead of opening docs for the clicked widget
-* Added a couple of missing Patchouli docs pages for programming widgets
+* Added a couple of missing Patchouli docs pages for programming widgets.  A few other Patchouli docs fixes & updates too.
 * Logistics frame info is now properly shown by The One Probe on dedicated server (previously just said "Error") 
 * Semiblocks (logistics frames, heat frames, etc.) no longer render for blinded players unless they're close enough to see the block the semiblock is on.
+* Fixed Pneumatic Armor pieces not booting up on login if player isn't wearing the Pneumatic Helmet (this was due to the "master switch" being installed in the helmet - a holdover from when the helmet was the only armor piece).
 
 ### 0.9.3-324 (4 Mar 2019)
 #### Fixes
