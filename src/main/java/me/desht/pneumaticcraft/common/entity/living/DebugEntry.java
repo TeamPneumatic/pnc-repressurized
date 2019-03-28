@@ -19,7 +19,7 @@ public class DebugEntry /*implements Comparable<DebugEntry>*/ {
      */
     DebugEntry(String message, int progWidgetId, BlockPos pos) {
         this.message = message;
-        this.pos = pos != null ? pos : new BlockPos(0, 0, 0);
+        this.pos = pos != null ? pos : BlockPos.ORIGIN;
         this.progWidgetId = progWidgetId;
     }
 

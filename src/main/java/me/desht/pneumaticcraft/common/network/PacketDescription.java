@@ -66,12 +66,12 @@ public class PacketDescription extends LocationIntPacket<PacketDescription> {
         extraData = ByteBufUtils.readTag(buf);
     }
 
-    public static Object getSyncableForType(PacketDescription message, EntityPlayer player, IDescSynced.Type type) {
+    private static Object getSyncableForType(PacketDescription message, EntityPlayer player, IDescSynced.Type type) {
         switch (type) {
             case TILE_ENTITY:
                 return message.getTileEntity(player.world);
             case SEMI_BLOCK:
-                if (message.pos.equals(new BlockPos(0, 0, 0))) {
+                if (message.pos.equals(BlockPos.ORIGIN)) {
                     Container container = player.openContainer;
                     if (container instanceof ContainerLogistics) {
                         return ((ContainerLogistics) container).logistics;

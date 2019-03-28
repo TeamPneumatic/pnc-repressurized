@@ -79,7 +79,7 @@ public class GlobalVariableManager extends WorldSavedData {
     public BlockPos getPos(String varName) {
         BlockPos pos = globalVars.get(varName);
         //if(pos != null) Log.info("getting var: " + varName + " set to " + pos.chunkPosX + ", " + pos.chunkPosY + ", " + pos.chunkPosZ);
-        return pos != null ? pos : new BlockPos(0, 0, 0);
+        return pos != null ? pos : BlockPos.ORIGIN;
     }
 
     public ItemStack getItem(String varName) {

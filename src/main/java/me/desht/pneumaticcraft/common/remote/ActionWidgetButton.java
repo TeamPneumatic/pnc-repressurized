@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class ActionWidgetButton extends ActionWidgetVariable<GuiButtonSpecial> implements IActionWidgetLabeled {
 
-    public BlockPos settingCoordinate = new BlockPos(0, 0, 0);//The coordinate the variable is set to when the button is pressed.
+    public BlockPos settingCoordinate = BlockPos.ORIGIN; // The coordinate the variable is set to when the button is pressed.
 
     public ActionWidgetButton() {
         super();

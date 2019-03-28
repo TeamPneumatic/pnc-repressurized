@@ -14,7 +14,7 @@ public class GuiGPSAreaTool extends GuiGPSTool{
     private final int index;
     
     private GuiGPSAreaTool(BlockPos gpsLoc, String oldVarName, int metadata){
-        super(gpsLoc != null ? gpsLoc : new BlockPos(0, 0, 0), oldVarName, metadata);
+        super(gpsLoc != null ? gpsLoc : BlockPos.ORIGIN, oldVarName, metadata);
         this.index = metadata;
     }
     

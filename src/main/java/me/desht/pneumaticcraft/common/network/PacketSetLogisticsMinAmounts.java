@@ -42,7 +42,7 @@ public class PacketSetLogisticsMinAmounts extends LocationIntPacket<PacketSetLog
 
     @Override
     public void handleServerSide(PacketSetLogisticsMinAmounts message, EntityPlayer player) {
-        if (message.pos.equals(new BlockPos(0, 0, 0))) {
+        if (message.pos.equals(BlockPos.ORIGIN)) {
             // frame in hand
             if (player.openContainer instanceof ContainerLogistics) {
                 setMinAmounts(((ContainerLogistics) player.openContainer).logistics, message.minItems, message.minFluid);

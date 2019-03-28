@@ -119,7 +119,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
                 }
                 break;
             case PLUS_MINUS:
-                curPos = new BlockPos(0, 0, 0);
+                curPos = BlockPos.ORIGIN;
                 coordinateWidget = (ProgWidgetCoordinate) widget.getConnectedParameters()[argIndex];
                 while (coordinateWidget != null) {
                     BlockPos pos = coordinateWidget.getCoordinate();

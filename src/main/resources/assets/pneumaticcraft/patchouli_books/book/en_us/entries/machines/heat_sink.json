@@ -14,7 +14,7 @@
         "pneumaticcraft:textures/patchouli/heat_sinks.png"
       ],
       "border": "true",
-      "text": "$(italic)An $(l:compressors/advanced_liquid/compressor)Advanced Liquid Compressor/$ $(italic)with multiple Heat Sinks/$"
+      "text": "$(italic)An $(l:compressors/advanced_liquid_compressor)Advanced Liquid Compressor/$ $(italic)with multiple Heat Sinks/$"
     },
     {
       "type": "text",

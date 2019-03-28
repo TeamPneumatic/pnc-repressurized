@@ -45,7 +45,7 @@ public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
         ItemStack stack = playerIn.getHeldItemMainhand();
         if (worldIn.isRemote) {
             BlockPos pos = getGPSLocation(stack);
-            FMLCommonHandler.instance().showGuiScreen(new GuiGPSTool(pos != null ? pos : new BlockPos(0, 0, 0), getVariable(stack)));
+            FMLCommonHandler.instance().showGuiScreen(new GuiGPSTool(pos != null ? pos : BlockPos.ORIGIN, getVariable(stack)));
         }
         return ActionResult.newResult(EnumActionResult.SUCCESS, stack);
     }

@@ -144,7 +144,7 @@ public class DroneAIManager implements IVariableProvider {
         } else {
             pos = coordinateVariables.get(varName);
         }
-        return pos != null ? pos : new BlockPos(0, 0, 0);
+        return pos != null ? pos : BlockPos.ORIGIN;
     }
 
     public void setCoordinate(String varName, BlockPos coord) {

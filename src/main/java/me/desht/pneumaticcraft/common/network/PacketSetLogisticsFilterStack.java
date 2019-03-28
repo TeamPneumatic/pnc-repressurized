@@ -45,7 +45,7 @@ public class PacketSetLogisticsFilterStack extends LocationIntPacket<PacketSetLo
 
     @Override
     public void handleServerSide(PacketSetLogisticsFilterStack message, EntityPlayer player) {
-        if (message.pos.equals(new BlockPos(0, 0, 0))) {
+        if (message.pos.equals(BlockPos.ORIGIN)) {
             if (player.openContainer instanceof ContainerLogistics) {
                 ((ContainerLogistics) player.openContainer).logistics.getFilters().setStackInSlot(message.settingIndex, message.settingStack);
             }

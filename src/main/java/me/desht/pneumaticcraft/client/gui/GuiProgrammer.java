@@ -507,7 +507,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                             BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
                             String var = ItemGPSTool.getVariable(heldItem);
                             if (pos != null) ((ProgWidgetArea) widget).setP1(pos);
-                            ((ProgWidgetArea) widget).setP2(new BlockPos(0, 0, 0));
+                            ((ProgWidgetArea) widget).setP2(BlockPos.ORIGIN);
                             ((ProgWidgetArea) widget).setCoord1Variable(var);
                             ((ProgWidgetArea) widget).setCoord2Variable("");
                         }
@@ -522,7 +522,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
                 } else if (heldItem.getItem() == Itemss.GPS_TOOL) {
                     if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
                         BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
-                        ProgWidgetArea areaWidget = ProgWidgetArea.fromPositions(pos, new BlockPos(0, 0, 0));
+                        ProgWidgetArea areaWidget = ProgWidgetArea.fromPositions(pos, BlockPos.ORIGIN);
                         String var = ItemGPSTool.getVariable(heldItem);
                         if (!var.isEmpty()) areaWidget.setCoord1Variable(var);
                         draggingWidget = areaWidget;
@@ -1026,7 +1026,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
     }
 
     private String getOffsetVariable(Map<BlockPos, String> offsetToVariableNames, String baseVariable, BlockPos offset) {
-        if (offset.equals(new BlockPos(0, 0, 0)))
+        if (offset.equals(BlockPos.ORIGIN))
             return baseVariable;
         return offsetToVariableNames.computeIfAbsent(offset, k -> "var" + (offsetToVariableNames.size() + 1));
     }
