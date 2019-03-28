@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.10.0-??? (unreleased)
+### 0.10.0-328 (28 Mar 2019)
 #### New
 * Lots of work on the Logistics system:
   * Very major performance improvements for Logistics, both for Logistics Modules and Logistics Drones. Smarter caching of discovered logistics frames means a large reduction in server CPU used.
@@ -39,6 +39,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * The Refinery, Thermopneumatic Processing Plant and Plastic Mixer now warn in their GUI if the block is poorly insulated, and thus wasting heat (Plastic Mixer only warns if you're trying to melt down plastic).
 * The Plastic Mixer now remembers any dye in its internal buffers if the block is broken and put down again, avoiding dye wastage if you need to move the machine.
 * Added "/dumpNBT" command (op level), which dumps the NBT of the currently-held item as a JSON string. Primarily intended for getting internal Forge fluid names from a bucket of the fluid, for adding to custom fluid properties to ``config/pneumaticcraft/BlockHeatProperties.cfg``, but is also generally useful for debugging purposes.
+* Pressure chamber textures don't look quite as flat now.
 #### Fixes
 * Fixed two or more Transfer Gadgets on one block causing messy breakage.
 * Fixed Refinery & Thermopneumatic Processing Plant GUI's wrongly reporting insufficient temperature even if the temperature is fine and machine is running properly.
@@ -47,6 +48,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Logistics frame info is now properly shown by The One Probe on dedicated server (previously just said "Error") 
 * Semiblocks (logistics frames, heat frames, etc.) no longer render for blinded players unless they're close enough to see the block the semiblock is on.
 * Fixed Pneumatic Armor pieces not booting up on login if player isn't wearing the Pneumatic Helmet (this was due to the "master switch" being installed in the helmet - a holdover from when the helmet was the only armor piece).
+* Fixed minor problem where placing a pressure chamber wall against another pressure chamber wall didn't play the block-place sound.
+* Scaled down 8 programming widget textures with excessively large (256x256, ouch) textures sizes, saving a good chunk of texture atlas space.
 
 ### 0.9.3-324 (4 Mar 2019)
 #### Fixes
