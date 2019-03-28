@@ -35,7 +35,7 @@ public class BlockPressureChamberWallBase extends BlockPneumaticCraft implements
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
-        if (world.isRemote) return true;
+        if (world.isRemote) return false;
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityPressureChamberWall) {
             TileEntityPressureChamberValve valve = ((TileEntityPressureChamberWall) te).getCore();
