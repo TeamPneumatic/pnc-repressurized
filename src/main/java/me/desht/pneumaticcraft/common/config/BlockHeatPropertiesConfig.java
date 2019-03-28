@@ -227,10 +227,9 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
             IBlockState transformHotFlowing = null;
             IBlockState transformCold = null;
             IBlockState transformColdFlowing = null;
-            boolean isHeatSupplier = false;
 
             IBlockState blockState = parseBlockState(blockStateId);
-            if (blockState == null) {
+            if (blockState == null || blockState.getBlock() == Blocks.AIR) {
                 return null;
             }
             Fluid fluid = FluidRegistry.lookupFluidForBlock(blockState.getBlock());
