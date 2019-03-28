@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.10.1-330 (28 Mar 2019)
+#### Fixes
+* HOTFIX: fix crash on startup related to new heat system when mods referenced in BlockHeatProperties.cfg are not installed.
+
 ### 0.10.0-328 (28 Mar 2019)
 #### New
 * Lots of work on the Logistics system:
