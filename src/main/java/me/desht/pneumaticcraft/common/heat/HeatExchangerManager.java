@@ -40,7 +40,11 @@ public class HeatExchangerManager implements IHeatRegistry {
         for (Fluid fluid : fluids.values()) {
             if (fluid.getBlock() != null && !specialBlockExchangers.containsKey(fluid.getBlock())) {
                 CustomHeatEntry entry = BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntry(fluid.getBlock().getDefaultState());
-                registerBlockExchanger(fluid.getBlock(), entry.getTemperature(), entry.getThermalResistance());
+                if (entry != null) {
+                    registerBlockExchanger(fluid.getBlock(), entry.getTemperature(), entry.getThermalResistance());
+                } else {
+                    Log.warning("unable to retrieve custom heat entry for fluid " + fluid.getName() + " - block: " + fluid.getBlock());
+                }
             }
         }
         // the vanilla flowing blocks aren't in the forge fluid registry...
