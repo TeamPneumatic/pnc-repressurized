@@ -90,6 +90,7 @@ public class SemiBlockRendererTransferGadget implements ISemiBlockRenderer<SemiB
             models.put(aabb, renderList);
         }
         GlStateManager.callList(renderList);
+        GlStateManager.disableBlendProfile(Profile.TRANSPARENT_MODEL);
         
         GlStateManager.popMatrix();
         GlStateManager.color(1, 1, 1, 1);
