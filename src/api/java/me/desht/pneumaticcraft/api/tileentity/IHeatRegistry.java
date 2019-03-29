@@ -19,6 +19,8 @@ public interface IHeatRegistry {
 
     /**
      * Register a block as a heat exchanger.
+     * <p>
+     * Note: the preferred way to do this is via the BlockHeatProperties.cfg config file.
      *
      * @param block the block
      * @param temperature the block's temperature
@@ -29,6 +31,9 @@ public interface IHeatRegistry {
     /**
      * Register a block state as a heat exchanger.  This should only be used to distinguish block variants, never
      * rotation states.
+     * <p>
+     * Note: the preferred way to do this is via the BlockHeatProperties.cfg config file.
+     *
      * @param state the blockstate
      * @param temperature the block variant's temperature
      * @param thermalResistance the thermal resistance, i.e. how quickly heat will be transferred
@@ -37,6 +42,8 @@ public interface IHeatRegistry {
 
     /**
      * Register a heat behaviour instance.
+     * <p>
+     * Note: the preferred way to do this is via the BlockHeatProperties.cfg config file.
      *
      * @param heatBehaviour a heat behaviour
      */

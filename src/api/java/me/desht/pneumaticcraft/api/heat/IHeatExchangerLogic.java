@@ -22,17 +22,30 @@ public interface IHeatExchangerLogic {
 
     /**
      * When called (preferably on tile entity load and neighbor block/tile entity change) this will add all IHeatExchanger
-     * neighbor TileEntities as connected heat exchangers.  It will also take care of blocks like Lava.
+     * neighbor TileEntities as connected heat exchangers.  It will also take care of neighbouring blocks with heat
+     * properties, like Magma or Lava.
      * <p>
-     * You don't _have_ to call this method if this heat exchanger is not connected to the outside world (for example
+     * You don't <i>have</i> to call this method if this heat exchanger is not connected to the outside world (for example
      * the heat of the liquid plastic in the Plastic Mixer).
      *
-     * @param world
-     * @param pos
-     * @param validSides Can be left out as vararg, meaning every side can be connected. When one or more sides are specified this will constrain
-     *                   this heat exchanger to only connect to other heat exchangers on these sides.
+     * @param world the world
+     * @param pos  the position
+     * @param validSides Can be left out as vararg, meaning every side can be connected. When one or more sides are
+     *                   specified this will constrain this heat exchanger to only connect to other heat exchangers on
+     *                   these sides.
      */
     void initializeAsHull(World world, BlockPos pos, EnumFacing... validSides);
+
+    /**
+     * Initialize this heat exchanger's ambient temperature based on the given world & position.  You don't need to call
+     * this method if your heat exchanger is a hull exchanger (i.e. returned by
+     * {@link me.desht.pneumaticcraft.api.tileentity.IHeatExchanger#getHeatExchangerLogic(EnumFacing)}), as hulls
+     * are automatically initialized by {@link IHeatExchangerLogic#initializeAsHull(World, BlockPos, EnumFacing...)}
+     *
+     * @param world the world
+     * @param pos the position
+     */
+    void initializeAmbientTemperature(World world, BlockPos pos);
 
     /**
      * When called, this will connect these two heat exchangers. You should only call this on one of the two heat exchangers.
@@ -49,7 +62,9 @@ public interface IHeatExchangerLogic {
     void removeConnectedExchanger(IHeatExchangerLogic exchanger);
 
     /**
-     * A heat exchanger starts with 295 degrees Kelvin (22 degrees Celsius) by default.
+     * Set the temperature of this heat exchanger.  By default, heat exchangers start with a temperature equal to
+     * the ambient temperature (in the case of non-hull exchangers which have not been initialized, the default
+     * temperature is 300K, the Forge-defined temperature of water).
      *
      * @param temperature in degrees Kelvin
      */

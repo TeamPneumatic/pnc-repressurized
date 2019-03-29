@@ -31,6 +31,10 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     }
 
     @Override
+    public void initializeAmbientTemperature(World world, BlockPos pos) {
+    }
+
+    @Override
     public void addConnectedExchanger(IHeatExchangerLogic exchanger) {
     }
 

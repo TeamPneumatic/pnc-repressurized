@@ -194,6 +194,9 @@ public class ConfigHandler {
         public boolean omniHopperDispenser = true;
         @Config.Comment("Aerial Interface backwards compat: allow pre-0.8.0 behaviour of getting player's armor inventory from top face, even with Dispenser Upgrade installed")
         public boolean aerialInterfaceArmorCompat = true;
+        @Config.Comment("The ratio of liquid plastic to solid plastic sheets in the Plastic Mixer, in mB per sheet")
+        @Config.RangeInt(min = 1)
+        public int plasticMixerPlasticRatio = 1000;
     }
 
     public static class Advanced {

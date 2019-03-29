@@ -29,8 +29,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     @Override
     public void initializeAsHull(World world, BlockPos pos, EnumFacing... validSides) {
         if (ambientTemperature < 0) {
-            ambientTemperature = HeatExchangerLogicAmbient.atPosition(world, pos).getTemperature();
-//            setTemperature(ambientTemperature);
+            initializeAmbientTemperature(world, pos);
         }
 
         if (world.isRemote) return;
@@ -78,6 +77,11 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
             exchanger.removeConnectedExchanger(this);
             isAddingOrRemovingLogic = false;
         }
+    }
+
+    @Override
+    public void initializeAmbientTemperature(World world, BlockPos pos) {
+        ambientTemperature = HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature();
     }
 
     @Override

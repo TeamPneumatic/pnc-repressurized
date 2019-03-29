@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -20,7 +21,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
@@ -44,7 +44,6 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
             "gui.tab.redstoneBehaviour.button.lowSignal",
             "gui.tab.redstoneBehaviour.plasticMixer.button.selectOnSignal"
     );
-    private static final int BASE_TEMPERATURE = FluidRegistry.WATER.getTemperature();
     public static final int INVENTORY_SIZE = 5;
     public static final int DYE_BUFFER_MAX = 0xFF * 2 * PneumaticValues.NORMAL_TANK_CAPACITY / 1000;
     private static final int DYE_PER_DYE = 0xFF * 10;
@@ -110,27 +109,35 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     }
 
     @Override
+    protected void onFirstServerUpdate() {
+        super.onFirstServerUpdate();
+
+        itemLogic.initializeAmbientTemperature(world, pos);
+    }
+
+    @Override
     public void update() {
         super.update();
         if (!getWorld().isRemote) {
             refillDyeBuffers();
             itemLogic.update();
             ItemStack inputStack = inventory.getStackInSlot(INV_INPUT);
+            int plasticRatio = ConfigHandler.machineProperties.plasticMixerPlasticRatio;
             if (getWorld().getTotalWorldTime() % 20 == 0) { // We don't need to run _that_ often.
                 if (inputStack.getCount() > lastTickInventoryStacksize) {
                     int stackIncrease = inputStack.getCount() - lastTickInventoryStacksize;
-                    double ratio = (double) inputStack.getCount() / (inputStack.getCount() + stackIncrease);
-                    itemLogic.setTemperature((int) (ratio * itemLogic.getTemperature() + (1 - ratio) * BASE_TEMPERATURE));
+                    double heatingRatio = (double) inputStack.getCount() / (inputStack.getCount() + stackIncrease);
+                    itemLogic.setTemperature((int) (heatingRatio * itemLogic.getTemperature() + (1 - heatingRatio) * hullLogic.getAmbientTemperature()));
                 } else if (inputStack.isEmpty()) {
-                    itemLogic.setTemperature(BASE_TEMPERATURE);
+                    itemLogic.setTemperature(hullLogic.getAmbientTemperature());
                 }
 
                 if (itemLogic.getTemperature() >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP) {
-                    FluidStack moltenPlastic = new FluidStack(Fluids.PLASTIC, inputStack.getCount() * 1000);
-                    int maxFill = tank.fill(moltenPlastic, false) / 1000;
+                    FluidStack moltenPlastic = new FluidStack(Fluids.PLASTIC, inputStack.getCount() * plasticRatio);
+                    int maxFill = tank.fill(moltenPlastic, false) / plasticRatio;
                     if (maxFill > 0) {
                         inventory.extractItem(INV_INPUT, maxFill, false);
-                        tank.fill(new FluidStack(moltenPlastic, maxFill * 1000), true);
+                        tank.fill(new FluidStack(moltenPlastic, maxFill * plasticRatio), true);
                     }
                 }
 
@@ -138,14 +145,14 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
                 itemLogic.setThermalCapacity(lastTickInventoryStacksize);
             }
             if (tank.getFluid() != null && selectedPlastic >= 0 && redstoneAllows()) {
-                ItemStack solidifiedStack = new ItemStack(Itemss.PLASTIC, tank.getFluid().amount / 1000, selectedPlastic);
+                ItemStack solidifiedStack = new ItemStack(Itemss.PLASTIC, tank.getFluid().amount / plasticRatio, selectedPlastic);
                 if (solidifiedStack.getCount() > 0) {
                     solidifiedStack.setCount(1);
                     if (inventory.getStackInSlot(INV_OUTPUT).isEmpty()) {
                         solidifiedStack.setCount(useDye(solidifiedStack.getCount()));
                         if (solidifiedStack.getCount() > 0) {
                             inventory.setStackInSlot(INV_OUTPUT, solidifiedStack);
-                            tank.drain(solidifiedStack.getCount() * 1000, true);
+                            tank.drain(solidifiedStack.getCount() * plasticRatio, true);
                             sendDescriptionPacket();
                         }
                     } else if (solidifiedStack.isItemEqual(inventory.getStackInSlot(INV_OUTPUT))) {
@@ -154,7 +161,7 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
                         ItemStack newStack = inventory.getStackInSlot(INV_OUTPUT);
                         newStack.grow(solidifiedItems);
                         inventory.setStackInSlot(INV_OUTPUT, newStack);
-                        tank.drain(solidifiedItems * 1000, true);
+                        tank.drain(solidifiedItems * plasticRatio, true);
                         sendDescriptionPacket();
                     }
                 }
@@ -299,9 +306,6 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         } else if (guiID >= 1 && guiID < 17) {
             if (selectedPlastic != guiID) {
                 selectedPlastic = guiID - 1;
-//                if (tank.getFluidAmount() >= 1000) {
-//                    AchievementHandler.giveAchievement(player, new ItemStack(Itemss.PLASTIC));
-//                }
             } else {
                 selectedPlastic = -1;
             }
