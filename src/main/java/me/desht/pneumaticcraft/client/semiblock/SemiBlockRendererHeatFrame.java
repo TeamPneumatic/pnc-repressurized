@@ -19,6 +19,7 @@ public class SemiBlockRendererHeatFrame implements ISemiBlockRenderer<SemiBlockH
     @Override
     public void render(SemiBlockHeatFrame semiBlock, float partialTick) {
         Minecraft.getMinecraft().renderEngine.bindTexture(Textures.MODEL_HEAT_FRAME);
+        GlStateManager.enableTexture2D();
         int heatLevel = semiBlock.getHeatLevel();
         float[] color = HeatUtil.getColorForHeatLevel(heatLevel);
         float lightMul = getLightMultiplier(semiBlock);
