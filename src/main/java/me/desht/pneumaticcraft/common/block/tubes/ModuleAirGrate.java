@@ -24,6 +24,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,6 +38,8 @@ public class ModuleAirGrate extends TubeModule {
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x5500FF00);
     private boolean resetRendering = true;
     private EntityFilter entityFilter = null;
+    private TileEntity adjacentInv = null;
+    private EnumFacing adjacentInvSide;
 
     public ModuleAirGrate() {
     }
@@ -87,17 +90,15 @@ public class ModuleAirGrate extends TubeModule {
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, entityFilter);
         double d0 = grateRange + 0.5D;
         for (Entity entity : entities) {
-            if (!entity.world.isRemote && entity instanceof EntityItem && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 0.6D && !entity.isDead) {
-                ItemStack leftover = ((EntityItem) entity).getItem();
-                for (EnumFacing dir : EnumFacing.VALUES) {
-                    TileEntity inv = pressureTube.world().getTileEntity(pos.offset(dir));
-                    leftover = IOHelper.insert(inv, leftover, dir.getOpposite(), false);
-                    if (leftover.isEmpty()) break;
-                }
-                if (leftover.isEmpty()) {
-                    entity.setDead();
-                } else {
-                    ((EntityItem) entity).setItem(leftover);
+            if (!entity.world.isRemote && entity instanceof EntityItem && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 1D && !entity.isDead) {
+                if (getAdjacentInventory() != null) {
+                    ItemStack stack = ((EntityItem) entity).getItem();
+                    ItemStack excess = IOHelper.insert(getAdjacentInventory(), stack, adjacentInvSide, false);
+                    if (excess.isEmpty()) {
+                        entity.setDead();
+                    } else {
+                        ((EntityItem) entity).setItem(excess);
+                    }
                 }
             } else {
                 if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.isCreativeMode) {
@@ -118,14 +119,36 @@ public class ModuleAirGrate extends TubeModule {
                             entity.motionZ -= d3 / d4 * d5 * 0.1D;
                             if (world.isRemote && world.rand.nextDouble() * 0.85 > d4) {
                                 Vec3d vec = new Vec3d(pos.getX() + 0.5 + d1, pos.getY() + 0.5 + d2, pos.getZ() + 0.5 + d3);
-                                PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, world,
-                                        pos.getX() + 0.5 + d1, pos.getY() + 0.5 + d2, pos.getZ() + 0.5 + d3, d1, d2, d3);
+                                if (vacuum) {
+                                    PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, world,
+                                            entity.posX, entity.posY, entity.posZ, -d1, -d2, -d3);
+                                } else {
+                                    PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, world,
+                                            pos.getX() + 0.5 + d1, pos.getY() + 0.5 + d2, pos.getZ() + 0.5 + d3, d1, d2, d3);
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    private TileEntity getAdjacentInventory() {
+        if (adjacentInv != null && !adjacentInv.isInvalid()) {
+            return adjacentInv;
+        }
+
+        adjacentInv = null;
+        for (EnumFacing dir : EnumFacing.VALUES) {
+            TileEntity inv = pressureTube.world().getTileEntity(pressureTube.pos().offset(dir));
+            if (inv != null && inv.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite())) {
+                adjacentInv = inv;
+                adjacentInvSide = dir.getOpposite();
+                break;
+            }
+        }
+        return adjacentInv;
     }
 
     private void coolHeatSinks(World world, BlockPos pos, int range) {
