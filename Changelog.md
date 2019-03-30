@@ -6,6 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.10.2-332 (30 Mar 2019)
+#### Updates
+* Air grate module now has slightly better range for inserting vacuumed items into an adjacent inventory
+* Plastic Mixer: liquid to solid plastic ratio can now be configured in pneumaticcraft.cfg, Machine Properties section
+#### Fixes
+* Fix another potential startup crash related to new heat system and certain fluids
+* Fixed some rendering glitches related to Transfer Gadgets and Heat Frames
+* Fixed Plastic Mixer item heat gauge sometimes showing stupid values
+
 ### 0.10.1-330 (28 Mar 2019)
 #### Fixes
 * HOTFIX: fix crash on startup related to new heat system when mods referenced in BlockHeatProperties.cfg are not installed.

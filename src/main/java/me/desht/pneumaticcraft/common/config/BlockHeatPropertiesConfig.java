@@ -125,20 +125,19 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
                     CustomHeatEntry che = CustomHeatEntry.fromJson(entry.getKey(), jsonRecord);
                     if (che != null) {
                         IBlockState state = che.getBlockState();
-//                        if (state.getBlock().getDefaultState() == state) {
                         if (entry.getKey().indexOf('[') == -1) {
                             ignoreVariants.add(state.getBlock());
                         }
                         customHeatEntries.put(makeKeyForState(state), che);
                     } else {
-                        Log.info("Skipping BlockHeatProperties.cfg entry '" + entry.getKey() + "': unknown block or fluid (respective mod not present?)");
+                        String what = entry.getKey().indexOf(':') == -1 ? "fluid" : "block";
+                        Log.warning("skipping BlockHeatProperties.cfg entry '" + entry.getKey() + "': unknown " + what + " (mod not loaded?)");
                     }
                 } catch (InvalidBlockStateException e) {
-                    Log.warning("invalid JSON for " + entry.getKey() + ": " + e.getMessage());
-                    e.printStackTrace();
+                    Log.error("invalid blockstate for " + entry.getKey() + ": " + e.getMessage());
                 }
             } else {
-                Log.warning("Invalid JSON? entry '" + entry.getKey() + "' in " + getConfigFilename());
+                Log.error("Invalid JSON? entry '" + entry.getKey() + "' in " + getConfigFilename());
             }
         }
     }
@@ -324,9 +323,14 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
         }
 
         private static IBlockState parseBlockState(String s) throws InvalidBlockStateException {
+            // special case
+            if (s.equals("minecraft:air")) return Blocks.AIR.getDefaultState();
+
             Fluid fluid = FluidRegistry.getFluid(s);
             if (fluid != null) {
                 return fluid.getBlock().getDefaultState();
+            } else if (s.indexOf(':') == -1) {
+                return null;
             }
             String blockName = s;
             String variant = "";
@@ -338,7 +342,7 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
             }
             ResourceLocation rl = new ResourceLocation(blockName);
             Block b = Block.REGISTRY.getObject(rl);
-            if (b == null) {
+            if (b == Blocks.AIR || b == null) {
                 if (Loader.isModLoaded(rl.getNamespace())) {
                     // if mod is loaded, then the config contains an error
                     throw new InvalidBlockStateException("unknown block name: " + rl);
