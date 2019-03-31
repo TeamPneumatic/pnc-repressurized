@@ -172,6 +172,7 @@ dependencies {
     compileOnly("appeng:appliedenergistics2:${ae2_version}:api")
     //compileOnly "elucent:albedo:${albedo_version}"
     compileOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
+    compileOnly "blusunrize:ImmersiveEngineering:${immersive_engineering_version}"
 }
 
 processResources {
