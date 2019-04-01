@@ -282,14 +282,14 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         @Override
         public FluidStack drain(FluidStack resource, boolean doDrain) {
             FluidStack res = super.drain(resource, doDrain);
-            if (res != null && res.amount > 0) searchForRecipe = true;
+            if (doDrain && res != null && res.amount > 0) searchForRecipe = true;
             return res;
         }
 
         @Override
         public FluidStack drain(int maxDrain, boolean doDrain) {
             FluidStack res = super.drain(maxDrain, doDrain);
-            if (res != null && res.amount > 0) searchForRecipe = true;
+            if (doDrain && res != null && res.amount > 0) searchForRecipe = true;
             return res;
         }
     }
