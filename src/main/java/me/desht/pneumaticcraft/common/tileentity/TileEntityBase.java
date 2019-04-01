@@ -19,6 +19,7 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -405,17 +406,27 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
             IFluidHandler handler = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
             FluidStack toDrain = handler.drain(1000, false);
             if (toDrain != null && toDrain.amount > 0) {
-                for (EnumFacing d : EnumFacing.VALUES) {
-                    TileEntity te = getTileCache()[d.ordinal()].getTileEntity();
-                    if (te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d.getOpposite())) {
-                        IFluidHandler destHandler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d.getOpposite());
-                        FluidStack sent = FluidUtil.tryFluidTransfer(destHandler, handler, toDrain, true);
-                        toDrain.amount -= sent == null ? 0 : sent.amount;
+                EnumFacing ejectDir = upgradeCache.getEjectDirection();
+                if (ejectDir != null) {
+                    tryEjectLiquid(handler, ejectDir, toDrain.amount);
+                } else {
+                    for (EnumFacing d : EnumFacing.VALUES) {
+                        toDrain.amount -= tryEjectLiquid(handler, d, toDrain.amount);
                         if (toDrain.amount <= 0) break;
                     }
                 }
             }
         }
+    }
+
+    private int tryEjectLiquid(IFluidHandler handler, EnumFacing dir, int amount) {
+        TileEntity te = getTileCache()[dir.ordinal()].getTileEntity();
+        if (te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite())) {
+            IFluidHandler destHandler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
+            FluidStack sent = FluidUtil.tryFluidTransfer(destHandler, handler, amount, true);
+            return sent == null ? 0 : sent.amount;
+        }
+        return 0;
     }
 
     @Override
@@ -697,6 +708,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         private Map<String,Integer> customUpgradeCount;
         private final TileEntityBase te;
         private boolean isValid = false;
+        private EnumFacing ejectDirection;
 
         UpgradeCache(TileEntityBase te) {
             this.te = te;
@@ -707,13 +719,17 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
             Arrays.fill(upgradeCount, 0);
             customUpgradeCount = null;
+            ejectDirection = null;
             IItemHandler inv = te.getUpgradesInventory();
             for (int i = 0; i < inv.getSlots(); i++) {
                 ItemStack stack = inv.getStackInSlot(i);
                 if (stack.getItem() instanceof ItemMachineUpgrade) {
                     // native upgrade
-                    int idx = ((ItemMachineUpgrade) stack.getItem()).getUpgradeType().ordinal();
-                    upgradeCount[idx] += inv.getStackInSlot(i).getCount();
+                    IItemRegistry.EnumUpgrade type = ((ItemMachineUpgrade) stack.getItem()).getUpgradeType();
+                    upgradeCount[type.ordinal()] += inv.getStackInSlot(i).getCount();
+                    if (type == IItemRegistry.EnumUpgrade.DISPENSER && stack.hasTagCompound()) {
+                        ejectDirection = EnumFacing.byName(NBTUtil.getString(stack, ItemMachineUpgrade.NBT_DIRECTION));
+                    }
                 } else if (!inv.getStackInSlot(i).isEmpty()) {
                     // custom upgrade from another mod
                     if (customUpgradeCount == null)
@@ -739,6 +755,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
         public int getUpgrades(ItemStack stack) {
             return customUpgradeCount == null ? 0 : customUpgradeCount.getOrDefault(makeUpgradeKey(stack), 0);
+        }
+
+        public EnumFacing getEjectDirection() {
+            return ejectDirection;
         }
     }
 }

@@ -1275,6 +1275,9 @@ message.amadron.addedStaticOffer=§a[Amadron] §bAdded static offer: §6%s§b fo
 message.camo.notEnoughBlocks=§4Out of §c%s !
 message.camo.invalidBlock=§4Invalid camo block: §c%s !
 
+message.dispenser.direction=§eEject to: %s
+message.dispenser.clickToSet=§e§oRight-click any block to set eject direction
+
 # Patchouli
 patchouli.book.name=PNC:R Manual
 patchouli.book.landing=This manual is a complete reference guide to $(#228)PneumaticCraft: Repressurized/$.
