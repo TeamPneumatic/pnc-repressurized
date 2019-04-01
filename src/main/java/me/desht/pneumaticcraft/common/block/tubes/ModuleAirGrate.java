@@ -103,10 +103,11 @@ public class ModuleAirGrate extends TubeModule {
             } else {
                 if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.isCreativeMode) {
                     Vec3d entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
-                    RayTraceResult trace = world.rayTraceBlocks(entityVec, tileVec);
+                    RayTraceResult trace = world.rayTraceBlocks(entityVec, tileVec, false, true, false);
                     if (trace != null && trace.getBlockPos().equals(pos)) {
                         double d1 = (entity.posX - pos.getX() - 0.5D) / d0;
                         double d2 = (entity.posY + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
+                        d2 -= 0.08;  // kludge: avoid entities getting stuck on edges, e.g. farmland->full block
                         double d3 = (entity.posZ - pos.getZ() - 0.5D) / d0;
                         double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
                         double d5 = 1.0D - d4;
