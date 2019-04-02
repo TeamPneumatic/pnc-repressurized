@@ -33,7 +33,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks {
+public class TileEntityGasLift extends TileEntityPneumaticBase
+        implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks, IAutoFluidEjecting {
     private static final int INVENTORY_SIZE = 1;
 
     public enum Status {
@@ -132,9 +133,6 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements IMinWo
                 }
             } else {
                 status = Status.IDLE;
-            }
-            if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-                autoExportLiquid();
             }
         }
     }

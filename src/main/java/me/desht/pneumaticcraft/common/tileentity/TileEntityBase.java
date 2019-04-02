@@ -172,10 +172,14 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         firstRun = false;
 
         upgradeCache.validate();
-        if (!world.isRemote) {
 
+        if (!world.isRemote) {
             if (this instanceof IHeatExchanger) {
                 ((IHeatExchanger) this).getHeatExchangerLogic(null).update();
+            }
+
+            if (this instanceof IAutoFluidEjecting && getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) > 0) {
+                ((IAutoFluidEjecting) this).autoExportFluid(this);
             }
 
             if (descriptionFields == null) descriptionPacketScheduled = true;
@@ -401,33 +405,33 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return new EnumFacing[0];
     }
 
-    void autoExportLiquid() {
-        if (hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
-            IFluidHandler handler = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-            FluidStack toDrain = handler.drain(1000, false);
-            if (toDrain != null && toDrain.amount > 0) {
-                EnumFacing ejectDir = upgradeCache.getEjectDirection();
-                if (ejectDir != null) {
-                    tryEjectLiquid(handler, ejectDir, toDrain.amount);
-                } else {
-                    for (EnumFacing d : EnumFacing.VALUES) {
-                        toDrain.amount -= tryEjectLiquid(handler, d, toDrain.amount);
-                        if (toDrain.amount <= 0) break;
-                    }
-                }
-            }
-        }
-    }
-
-    private int tryEjectLiquid(IFluidHandler handler, EnumFacing dir, int amount) {
-        TileEntity te = getTileCache()[dir.ordinal()].getTileEntity();
-        if (te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite())) {
-            IFluidHandler destHandler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
-            FluidStack sent = FluidUtil.tryFluidTransfer(destHandler, handler, amount, true);
-            return sent == null ? 0 : sent.amount;
-        }
-        return 0;
-    }
+//    private void autoExportFluid() {
+//        if (hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
+//            IFluidHandler handler = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+//            FluidStack toDrain = handler.drain(1000, false);
+//            if (toDrain != null && toDrain.amount > 0) {
+//                EnumFacing ejectDir = upgradeCache.getEjectDirection();
+//                if (ejectDir != null) {
+//                    tryEjectLiquid(handler, ejectDir, toDrain.amount);
+//                } else {
+//                    for (EnumFacing d : EnumFacing.VALUES) {
+//                        toDrain.amount -= tryEjectLiquid(handler, d, toDrain.amount);
+//                        if (toDrain.amount <= 0) break;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    int tryEjectLiquid(IFluidHandler handler, EnumFacing dir, int amount) {
+//        TileEntity te = getTileCache()[dir.ordinal()].getTileEntity();
+//        if (te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite())) {
+//            IFluidHandler destHandler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
+//            FluidStack sent = FluidUtil.tryFluidTransfer(destHandler, handler, amount, true);
+//            return sent == null ? 0 : sent.amount;
+//        }
+//        return 0;
+//    }
 
     @Override
     public Type getSyncType() {

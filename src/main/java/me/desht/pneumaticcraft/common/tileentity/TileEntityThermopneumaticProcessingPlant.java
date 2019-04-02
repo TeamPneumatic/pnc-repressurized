@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumaticBase
-        implements IHeatExchanger, IMinWorkingPressure, IRedstoneControlled, ISerializableTanks, ISmartFluidSync  {
+        implements IHeatExchanger, IMinWorkingPressure, IRedstoneControlled, ISerializableTanks, ISmartFluidSync, IAutoFluidEjecting {
 
     private static final int INVENTORY_SIZE = 1;
     private static final int CRAFTING_TIME = 60;
@@ -118,9 +118,6 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                 craftingProgress = 0;
                 requiredTemperature = 273;
                 requiredPressure = 0;
-            }
-            if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-                autoExportLiquid();
             }
         }
     }
