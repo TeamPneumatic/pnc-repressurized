@@ -215,8 +215,6 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         if (buttonID == 0) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
-        } else if (buttonID == 1) {
-            inputTank.drain(inputTank.getCapacity(), true);
         }
     }
 
