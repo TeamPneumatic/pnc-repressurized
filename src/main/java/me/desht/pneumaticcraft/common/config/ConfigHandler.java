@@ -30,7 +30,7 @@ public class ConfigHandler {
     @Config.Comment("General stuff that doesn't fit anywhere else")
     public static final General general = new General();
 
-    @Config.Name("general")
+    @Config.Name("armor")
     @Config.LangKey("gui.config.category.pneumaticArmor")
     @Config.Comment("Settings affecting Pneumatic Armor operation (other than helmet HUD settings)")
     public static final PneumaticArmor pneumaticArmor = new PneumaticArmor();
@@ -69,6 +69,11 @@ public class ConfigHandler {
     @Config.LangKey("gui.config.category.micromissile")
     @Config.Comment("Micromissiles")
     public static final MicromissileProperties microMissile = new MicromissileProperties();
+
+    @Config.Name("integration")
+    @Config.LangKey("gui.config.category.integration")
+    @Config.Comment("Mod Integration")
+    public static final IntegrationProperties integration = new IntegrationProperties();
 
     public static void sync() {
         ConfigManager.sync(Names.MOD_ID, Config.Type.INSTANCE);
@@ -369,6 +374,21 @@ public class ConfigHandler {
         public int launchCooldown = 15;
     }
 
+    public static class IntegrationProperties {
+        @Config.Comment("Immersive Engineering: External Heater RF/t. Set to 0 to disable External Heater integration entirely.")
+        @Config.RangeInt(min = 0)
+        public int ieExternalHeaterRFperTick = 100;
+        @Config.Comment("Immersive Engineering: External Heater heat/RF.  The amount of PneumaticCraft heat added by 1 RF.")
+        @Config.RangeDouble(min = 0.0)
+        public double ieExternalHeaterHeatPerRF = 0.01;
+        @Config.Comment("Mekanism thermal resistance multiplier. Larger values mean slower heat transfer.")
+        @Config.RangeDouble(min = 1.0)
+        public double mekThermalResistanceMult = 100.0;
+        @Config.Comment("Mekanism heat conversion efficiency.  Smaller values mean Mekanism heat is worth less PneumaticCraft heat. Set to 0.0 to disable Mekanism heat integration entirely.")
+        @Config.RangeDouble(min = 0.0)
+        public double mekHeatEfficiency = 0.2;
+    }
+
     public static void setProgrammerDifficulty(int difficulty) {
         client.programmerDifficulty = difficulty;
         sync();
@@ -390,4 +410,5 @@ public class ConfigHandler {
         }
 
     }
+
 }

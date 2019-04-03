@@ -6,19 +6,18 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.tileentity.TileEntity;
 
-class IEHeatHandler {
-    private static final int EXTERNAL_HEATER_RF_PER_TICK = 100;
-    private static final double EXTERNAL_HEATER_HEAT_PER_RF = 0.01;
+import static me.desht.pneumaticcraft.common.config.ConfigHandler.integration;
 
+class IEHeatHandler {
     static void registerHeatHandler() {
         ExternalHeaterHandler.registerHeatableAdapter(TileEntityBase.class, new ExternalHeaterHandler.HeatableAdapter() {
             @Override
             public int doHeatTick(TileEntity tileEntity, int energyAvailable, boolean canHeat) {
-                if (tileEntity instanceof IHeatExchanger) {
+                if (tileEntity instanceof IHeatExchanger && integration.ieExternalHeaterHeatPerRF > 0) {
                     IHeatExchangerLogic heatExchanger = ((IHeatExchanger) tileEntity).getHeatExchangerLogic(null);
-                    if (heatExchanger != null && energyAvailable >= EXTERNAL_HEATER_RF_PER_TICK) {
-                        heatExchanger.addHeat(EXTERNAL_HEATER_RF_PER_TICK * EXTERNAL_HEATER_HEAT_PER_RF);
-                        return EXTERNAL_HEATER_RF_PER_TICK;
+                    if (heatExchanger != null && energyAvailable >= integration.ieExternalHeaterRFperTick) {
+                        heatExchanger.addHeat(integration.ieExternalHeaterRFperTick * integration.ieExternalHeaterHeatPerRF);
+                        return integration.ieExternalHeaterRFperTick;
                     }
                 }
                 return 0;

@@ -1044,6 +1044,7 @@ gui.config.category.client=Clientside Options
 gui.config.category.helmet=Pneumatic Helmet (Clientside)
 gui.config.category.minigun=Minigun & Ammo
 gui.config.category.micromissile=Micromissiles
+gui.config.category.integration=Mod Integration
 
 # Side Configurator tabs
 gui.sideConfigurator.unconnected=§oUnconnected

@@ -17,8 +17,10 @@ import me.desht.pneumaticcraft.common.inventory.SyncedField;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.thirdparty.IHeatDisperser;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.thirdparty.mekanism.Mekanism;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
@@ -61,6 +63,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
             "gui.tab.redstoneBehaviour.button.highSignal",
             "gui.tab.redstoneBehaviour.button.lowSignal"
     );
+
+    private static final List<IHeatDisperser> moddedDispersers = new ArrayList<>();
 
     private final Set<Item> applicableUpgrades = new HashSet<>();
     private final Set<String> applicableCustomUpgrades = new HashSet<>();
@@ -158,6 +162,9 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         NetworkHandler.sendToAllAround(new PacketDescription(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), maxPacketDistance));
     }
 
+    public static void registerHeatDisperser(IHeatDisperser disperser) {
+        moddedDispersers.add(disperser);
+    }
     /*
      * Even though this class doesn't implement ITickable, we'll keep the base update() logic here; classes
      * which extend non-tickable subclasses might need it (e.g. TileEntityPressureChamberInterface)
@@ -176,6 +183,9 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         if (!world.isRemote) {
             if (this instanceof IHeatExchanger) {
                 ((IHeatExchanger) this).getHeatExchangerLogic(null).update();
+                for (IHeatDisperser disperser : moddedDispersers) {
+                    disperser.disperseHeat(this, tileCache);
+                }
             }
 
             if (this instanceof IAutoFluidEjecting && getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) > 0) {
@@ -405,34 +415,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return new EnumFacing[0];
     }
 
-//    private void autoExportFluid() {
-//        if (hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
-//            IFluidHandler handler = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-//            FluidStack toDrain = handler.drain(1000, false);
-//            if (toDrain != null && toDrain.amount > 0) {
-//                EnumFacing ejectDir = upgradeCache.getEjectDirection();
-//                if (ejectDir != null) {
-//                    tryEjectLiquid(handler, ejectDir, toDrain.amount);
-//                } else {
-//                    for (EnumFacing d : EnumFacing.VALUES) {
-//                        toDrain.amount -= tryEjectLiquid(handler, d, toDrain.amount);
-//                        if (toDrain.amount <= 0) break;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    int tryEjectLiquid(IFluidHandler handler, EnumFacing dir, int amount) {
-//        TileEntity te = getTileCache()[dir.ordinal()].getTileEntity();
-//        if (te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite())) {
-//            IFluidHandler destHandler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
-//            FluidStack sent = FluidUtil.tryFluidTransfer(destHandler, handler, amount, true);
-//            return sent == null ? 0 : sent.amount;
-//        }
-//        return 0;
-//    }
-
     @Override
     public Type getSyncType() {
         return Type.TILE_ENTITY;
@@ -603,6 +585,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return getPrimaryInventory() != null;
+        } else if (capability == Mekanism.CAPABILITY_HEAT_TRANSFER && ConfigHandler.integration.mekHeatEfficiency > 0) {
+            return this instanceof IHeatExchanger && ((IHeatExchanger) this).getHeatExchangerLogic(facing) != null;
         } else {
             return super.hasCapability(capability, facing);
         }
@@ -613,6 +597,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && getPrimaryInventory() != null) {
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getPrimaryInventory());
+        } else if (capability == Mekanism.CAPABILITY_HEAT_TRANSFER && this instanceof IHeatExchanger) {
+            return Mekanism.CAPABILITY_HEAT_TRANSFER.cast(Mekanism.getHeatAdapter(this, facing));
         }
         return super.getCapability(capability, facing);
     }

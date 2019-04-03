@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ic2.IC2;
 import me.desht.pneumaticcraft.common.thirdparty.igwmod.IGWMod;
 import me.desht.pneumaticcraft.common.thirdparty.immersiveengineering.ImmersiveEngineering;
 import me.desht.pneumaticcraft.common.thirdparty.immersivepetroleum.ImmersivePetroleum;
+import me.desht.pneumaticcraft.common.thirdparty.mekanism.Mekanism;
 import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.thaumcraft.Thaumcraft;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
@@ -69,6 +70,7 @@ public class ThirdPartyManager implements IGuiHandler {
             thirdPartyClasses.put(ModIds.BOTANIA, Botania.class);
             thirdPartyClasses.put(ModIds.IMMERSIVE_PETROLEUM, ImmersivePetroleum.class);
             thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli.class);
+            thirdPartyClasses.put(ModIds.MEKANISM, Mekanism.class);
         } catch (Throwable e) {
             Log.error("A class loader loaded a class where we didn't expect it to do so! Please report, as third party content is broken.");
             e.printStackTrace();
