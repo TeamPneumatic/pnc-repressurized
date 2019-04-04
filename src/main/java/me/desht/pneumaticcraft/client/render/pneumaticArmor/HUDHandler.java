@@ -68,7 +68,7 @@ public class HUDHandler implements IKeyListener {
 
     @SubscribeEvent
     public void renderWorldLastEvent(RenderWorldLastEvent event) {
-        if (!GuiKeybindCheckBox.getCoreComponents().checked) return;
+        if (!GuiKeybindCheckBox.getCoreComponents().checked || Minecraft.getMinecraft().gameSettings.hideGUI) return;
 
         Minecraft mc = FMLClientHandler.instance().getClient();
         EntityPlayer player = mc.player;
@@ -99,7 +99,7 @@ public class HUDHandler implements IKeyListener {
 
     @SubscribeEvent
     public void renderTick(TickEvent.RenderTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
+        if (event.phase == TickEvent.Phase.END && !Minecraft.getMinecraft().gameSettings.hideGUI) {
             Minecraft mc = FMLClientHandler.instance().getClient();
             if (mc != null && mc.player != null) {
                 render2D(event.renderTickTime);
