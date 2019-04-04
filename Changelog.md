@@ -6,6 +6,34 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.10.3-??? (unreleased)
+#### New
+* Experimental Immersive Engineering heat integration
+  * Immersive Engineering External Heater will supply heat to PneumaticCraft machines (Refinery etc.) if given RF
+  * By default it uses 100RF/t to provide 1 heat unit; this can be changed in config (``pneumaticcraft.cfg``, "integration" section) 
+  * Can be disabled entirely by setting ``ieExternalHeaterRFperTick`` to 0 in config
+  * NOTE: highly-experimental and subject to possible significant retuning for balance purposes
+* Experimental Mekanism heat integration
+  * PNC and Mekansim machines will now exchange heat with each other
+  * Heat exchange properties can be configured in ``pneumaticcraft.cfg``, "integration" section
+  * Can be disabled entirely bet setting ``mekHeatEfficiency`` to 0.0 in config
+  * NOTE: should be considered even more experimental than the Immersive Engineering integration!  Heavily subject to possible rebalancing.
+* Aerial Interface now has Baubles support
+  * Any FE (RF etc.) items in your Baubles slots will now be charged by the Aerial Interface
+  * The GUI Side Configuration tab now also has the ability to connect a face of the block to your Baubles inventory, if available
+* Added a Creative Upgrade item, for use in the Omnidirectional and Liquid Hoppers.  This allows them to infinitely dispense items/fluids.
+* Dispenser Upgrade can now be configured with a direction
+  * Right-click any block to set the direction to the clicked face, right-click air to clear the direction
+  * This is used by the Gas Lift and Thermopneumatic Processing Plant to enforce a specific direction to eject fluids to
+  * If no direction is defined, outputs are searched in D-U-N-S-W-E order, as before.
+#### Updates
+* Got rid of the "Dump Input" button from the Thermopneumatic Processing Plant GUI.  This isn't necessary anymore, since the TPP doesn't accept fluids that it can't process.
+#### Fixes
+* Fixed another startup crash related to BlockHeatProperties.cfg (so many edge cases...) - this one occurred with fluids that don't have an associated block.
+* When hiding the GUI (with F1 by default), Pneumatic Armor HUD is now also properly hidden
+* Fixed minor problem with Air Grate vacuuming mode where items could get caught on edges, e.g. farmland->block transition
+* Slightly increased Air Grate vacuum mode range for adjacent inventory insertion (items could get stuck just outside insertion range)
+
 ### 0.10.2-332 (30 Mar 2019)
 #### Updates
 * Air grate module now has slightly better range for inserting vacuumed items into an adjacent inventory
