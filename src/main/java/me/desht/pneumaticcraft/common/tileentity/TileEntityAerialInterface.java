@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.thirdparty.baubles.Baubles;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -16,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,6 +33,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -50,6 +53,9 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
     private static final int ENERGY_CAPACITY = 100000;
     private static final int RF_PER_TICK = 1000;
+
+    @GameRegistry.ObjectHolder("baubles:ring")
+    private static final Item BAUBLES_RING = null;
 
     @GuiSynced
     @DescSynced
@@ -103,6 +109,15 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerOffhandInvHandler);
         itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStack(Blocks.ENDER_CHEST),
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerEnderInvHandler);
+        if (Baubles.available) {
+            itemHandlerSideConfigurator.registerHandler("baublesInv", new ItemStack(BAUBLES_RING),
+                    CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, new PlayerInvHandler() {
+                        @Override
+                        protected IItemHandler getInvWrapper() {
+                            return getPlayer().getCapability(Baubles.CAPABILITY_BAUBLES, null);
+                        }
+                    });
+        }
 
         energyStorage = new PneumaticEnergyStorage(ENERGY_CAPACITY);
     }
@@ -330,6 +345,10 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                     break;
                 }
             }
+        }
+
+        if (Baubles.available && energyStorage.getEnergyStored() > 0) {
+            Baubles.chargeBaubles(getPlayer(), energyStorage, RF_PER_TICK);
         }
     }
 

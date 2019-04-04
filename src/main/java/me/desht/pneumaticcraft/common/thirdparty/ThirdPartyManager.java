@@ -4,6 +4,7 @@ import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.config.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2;
+import me.desht.pneumaticcraft.common.thirdparty.baubles.Baubles;
 import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
 import me.desht.pneumaticcraft.common.thirdparty.buildcraft.BuildCraft;
 import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
@@ -71,6 +72,7 @@ public class ThirdPartyManager implements IGuiHandler {
             thirdPartyClasses.put(ModIds.IMMERSIVE_PETROLEUM, ImmersivePetroleum.class);
             thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli.class);
             thirdPartyClasses.put(ModIds.MEKANISM, Mekanism.class);
+            thirdPartyClasses.put(ModIds.BAUBLES, Baubles.class);
         } catch (Throwable e) {
             Log.error("A class loader loaded a class where we didn't expect it to do so! Please report, as third party content is broken.");
             e.printStackTrace();

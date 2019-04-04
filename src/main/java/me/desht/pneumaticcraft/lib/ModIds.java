@@ -24,4 +24,5 @@ ModIds {
     public static final String IMMERSIVE_PETROLEUM = "immersivepetroleum";
     public static final String PATCHOULI = "patchouli";
     public static final String MEKANISM = "mekanism";
+    public static final String BAUBLES = "baubles";
 }

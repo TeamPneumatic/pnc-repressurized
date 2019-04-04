@@ -57,6 +57,10 @@ repositories {
     maven { // Albedo Lights
         url = 'https://repo.elytradev.com/'
     }
+    maven { // Baubles
+        name = "thiakil"
+        url = "http://maven.thiakil.com"
+    }
 }
 
 task copyCIArtifacts << {
@@ -155,6 +159,7 @@ minecraft {
 
 dependencies {
     compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
+    compileOnly("mekanism:Mekanism:${mekanism_version}:api") { exclude group: "mezz.jei" }
     compileOnly "mezz.jei:jei_${mc_version}:${jei_version}"
     compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
     compileOnly "MCMultiPart2:MCMultiPart:${mcmultipart_version}"
@@ -173,7 +178,7 @@ dependencies {
     //compileOnly "elucent:albedo:${albedo_version}"
     compileOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
     compileOnly "blusunrize:ImmersiveEngineering:${immersive_engineering_version}"
-    compileOnly "mekanism:Mekanism:${mekanism_version}:api"
+    compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
 }
 
 processResources {
