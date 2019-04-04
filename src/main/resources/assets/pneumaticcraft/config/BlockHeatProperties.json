@@ -109,7 +109,7 @@
     "quark:biome_cobblestone[variant=icy_stone]": {
       "temperature": 223,
       "totalHeat": 5000,
-      "transformCold": "minecraft:cobblestone"
+      "transformHot": "minecraft:cobblestone"
     }
   }
 }
