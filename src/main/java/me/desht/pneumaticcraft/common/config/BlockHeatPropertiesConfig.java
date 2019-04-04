@@ -328,10 +328,13 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
 
             Fluid fluid = FluidRegistry.getFluid(s);
             if (fluid != null) {
-                return fluid.getBlock().getDefaultState();
+                // not all fluids have an associated block
+                return fluid.getBlock() == null ? null : fluid.getBlock().getDefaultState();
             } else if (s.indexOf(':') == -1) {
+                Log.warning("BlockHeatProperties.cfg: unknown fluid definition [" + s + "]");
                 return null;
             }
+
             String blockName = s;
             String variant = "";
             int i = s.indexOf('[');

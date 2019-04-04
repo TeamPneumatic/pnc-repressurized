@@ -1,6 +1,7 @@
 {
   "Description": [
     "Defines custom heat properties of blocks & fluids, which are keyed by either a blockstate name or a fluid name.",
+    "Block names MUST be in the form <modid>:<blockname>, fluid names are just a <fluidname>",
     "Blockstate variants should only be used to distinguish subtypes of blocks, never properties such as block-facing.",
     "If you're not sure of a fluid name, hold a bucket of the fluid, and type '/dumpNBT'.",
     "'temperature' is mandatory for non-fluids; for fluids it uses the fluid's temperature (mod-defined) by default",
