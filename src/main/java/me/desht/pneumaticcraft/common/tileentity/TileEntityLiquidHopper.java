@@ -81,12 +81,19 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     @Override
     protected boolean doExport(int maxItems) {
         EnumFacing dir = getRotation();
+
         if (tank.getFluid() != null) {
             TileEntity neighbor = getCachedNeighbor(dir);
             if (neighbor != null && neighbor.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite())) {
                 IFluidHandler fluidHandler = neighbor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
                 int amount = Math.min(maxItems * 100, tank.getFluid().amount - leaveMaterialCount * 1000);
-                FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
+                FluidStack transferred;
+                if (isCreative) {
+                    transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, false);
+                    if (transferred != null) fluidHandler.fill(transferred, true);
+                } else {
+                    transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
+                }
                 return transferred != null && transferred.amount > 0;
             }
         }
@@ -114,7 +121,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
                 if (extractedFluid != null && extractedFluid.amount == 1000) {
                     Block fluidBlock = extractedFluid.getFluid().getBlock();
                     if (fluidBlock != null) {
-                        tank.drain(1000, true);
+                        tank.drain(1000, !isCreative);
                         getWorld().setBlockState(getPos().offset(dir), fluidBlock.getDefaultState());
                     }
                 }
@@ -127,6 +134,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     @Override
     protected boolean doImport(int maxItems) {
         TileEntity inputInv = getCachedNeighbor(inputDir);
+
         if (inputInv != null && inputInv.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite())) {
             IFluidHandler fluidHandler = inputInv.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite());
             FluidStack fluid = fluidHandler.drain(maxItems * 100, false);

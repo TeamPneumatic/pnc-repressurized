@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -81,5 +82,10 @@ public class ItemMachineUpgrade extends ItemPneumatic {
             NBTUtil.setString(stack, NBT_DIRECTION, facing.getName());
             player.sendStatusMessage(new TextComponentTranslation("message.dispenser.direction", facing.getName()), true);
         }
+    }
+
+    @Override
+    public EnumRarity getRarity(ItemStack stack) {
+        return getUpgradeType() == IItemRegistry.EnumUpgrade.CREATIVE ? EnumRarity.EPIC : EnumRarity.COMMON;
     }
 }

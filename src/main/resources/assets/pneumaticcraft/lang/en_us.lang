@@ -178,6 +178,7 @@ item.armor_upgrade.name=Armor Upgrade
 item.jet_boots_upgrade.name=Jet Boots Upgrade
 item.night_vision_upgrade.name=Night Vision Upgrade
 item.scuba_upgrade.name=SCUBA Upgrade
+item.creative_upgrade.name=Creative Supply Upgrade
 
 item.assembly_program0.name=Assembly Program: Drill
 item.assembly_program1.name=Assembly Program: Laser
@@ -529,6 +530,7 @@ gui.tab.upgrades=Upgrades
 gui.tab.upgrades.volume=§7§nVolume Upgrade \n§0Adds 5L more air capacity for each upgrade inserted.  Adding volume upgrades will increase the air that can be stored, causing a pressure drop.  Removing upgrades will keep the pressure constant, losing air from the machine.
 gui.tab.upgrades.volumeCapacity=§7§nVolume Upgrade \n§0Increases the heat capacity of this machine. It will heat up slower, but it also will cool down slower.
 gui.tab.upgrades.security=§7§nSecurity Upgrade \n§0Adds a built-in Safety Valve Tube to the pneumatic machine.
+gui.tab.upgrades.creative=§d§nCreative Upgrade \n§0Allows the hopper to provide items/fluids infinitely.
 gui.tab.upgrades.tile.aerial_interface=§7§nDispenser Upgrade \n§0Allows interfacing of Food & Experience instead of items. Only food items will be accepted through the Aerial Interface; see the Feed Mode tab opposite for how the food is handled. \n \nIf a suitable XP fluid is available, it can be pumped in or out of the Aerial Interface and will convert to or from player levels.  See the Interfacing XP tab opposite to choose which fluid type to use.
 gui.tab.upgrades.tile.air_cannon=§7§nDispenser Upgrade \n§0Will make the cannon act like a Dispenser. Any item that would act special in a Dispenser, will be handled the same way in here. \n§7§nEntity Tracker Upgrade (max = 5) \n§0When fired, the Air Cannon will grab the closest living entity and shoot it to the set coordinate. This can be used as player transport. It has a grabbing radius of 1 by default. Per inserted Entity Tracker Upgrade the radius will increase by one. \n§7§nBlock Tracker Upgrade \n§0When fired, items being shot automatically will try to go into inventories they hit. When firing at a Chest for example, items will land in the Chest without needing a Hopper. \n§7§nItem Life Upgrade \n§0By default the Air Cannon shoots items which have a lifespan of 60 seconds. For each of this upgrades you put in you get an additional 30 seconds. \n§7§nSpeed Upgrade (max = 10) \n§0The cannon will turn faster. \n§7§nRange Upgrade \n§0The shooting range will increase by about 25 blocks per upgrade, up to 250 blocks.
 gui.tab.upgrades.tile.air_compressor=§7§nSpeed Upgrade (max = 10) \n§0The Air Compressor will produce more compressed air per tick. However this is at the expense of the efficiency.

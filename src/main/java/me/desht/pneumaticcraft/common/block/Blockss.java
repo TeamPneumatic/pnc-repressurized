@@ -222,6 +222,16 @@ public class Blockss {
             return 0xFFAFAFE4;
         }, Blockss.UV_LIGHT_BOX);
 
+        event.getBlockColors().registerBlockColorHandler((state, blockAccess, pos, tintIndex) -> {
+            if (blockAccess != null && pos != null) {
+                TileEntity te = blockAccess.getTileEntity(pos);
+                if (te instanceof TileEntityOmnidirectionalHopper) {
+                    return ((TileEntityOmnidirectionalHopper) te).isCreative ? 0xFFFF60FF : 0xFFFFFFFF;
+                }
+            }
+            return 0xFFFFFFFF;
+        }, Blockss.OMNIDIRECTIONAL_HOPPER, Blockss.LIQUID_HOPPER);
+
         for (Block b : Blockss.blocks) {
             if (b instanceof BlockPneumaticCraftCamo) {
                 event.getBlockColors().registerBlockColorHandler((state, worldIn, pos, tintIndex) -> {

@@ -80,5 +80,6 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<TileEnti
         if (ConfigHandler.machineProperties.omniHopperDispenser) {
             text.add("gui.tab.upgrades.tile.omnidirectional_hopper.dispenser");
         }
+        text.add("gui.tab.upgrades.creative");
     }
 }

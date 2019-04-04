@@ -30,7 +30,8 @@ public interface IItemRegistry {
         ARMOR("armor"),
         JET_BOOTS("jetboots"),
         NIGHT_VISION("night_vision"),
-        SCUBA("scuba");
+        SCUBA("scuba"),
+        CREATIVE("creative");
 
         private final String name;
         private final String depModId;

@@ -37,10 +37,13 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     @GuiSynced
     int leaveMaterialCount; // leave items/liquids (used as filter)
     private int importSlot = 0;
+    @DescSynced
+    public boolean isCreative; // has a creative upgrade installed
 
     public TileEntityOmnidirectionalHopper() {
         super(4);
         addApplicableUpgrade(EnumUpgrade.SPEED);
+        addApplicableUpgrade(EnumUpgrade.CREATIVE);
         if (ConfigHandler.machineProperties.omniHopperDispenser) addApplicableUpgrade(EnumUpgrade.DISPENSER);
     }
 
@@ -51,6 +54,13 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     @Override
     protected boolean shouldRerenderChunkOnDescUpdate() {
         return true;
+    }
+
+    @Override
+    protected void onFirstServerUpdate() {
+        super.onFirstServerUpdate();
+
+        isCreative = getUpgrades(EnumUpgrade.CREATIVE) > 0;
     }
 
     @Override
@@ -91,8 +101,10 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
                     int toExport = exportedStack.getCount();
                     ItemStack excess = ItemHandlerHelper.insertItem(handler, exportedStack, false);
                     int exportedCount = toExport - excess.getCount();
-                    stack.shrink(exportedCount);
-                    if (exportedCount > 0) inventory.invalidateComparatorValue();
+                    if (!isCreative) {
+                        stack.shrink(exportedCount);
+                        if (exportedCount > 0) inventory.invalidateComparatorValue();
+                    }
                     maxItems -= exportedCount;
                     if (maxItems <= 0) return true;
                 }
@@ -103,7 +115,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
             if (!world.isBlockFullCube(pos)) {
                 for (int i = 0; i < inventory.getSlots(); i++) {
                     ItemStack inSlot = inventory.getStackInSlot(i);
-                    ItemStack stack = inventory.extractItem(i, Math.min(inSlot.getCount() - leaveMaterialCount, remaining), false);
+                    ItemStack stack = inventory.extractItem(i, Math.min(inSlot.getCount() - leaveMaterialCount, remaining), isCreative);
                     if (!stack.isEmpty()) {
                         remaining -= stack.getCount();
                         PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getWorld(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
@@ -263,4 +275,14 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     public int getComparatorValue() {
         return getComparatorValueInternal();
     }
+
+    @Override
+    protected void onUpgradesChanged() {
+        super.onUpgradesChanged();
+
+        if (world != null && !world.isRemote) {
+            isCreative = getUpgrades(EnumUpgrade.CREATIVE) > 0;
+        }
+    }
+
 }
