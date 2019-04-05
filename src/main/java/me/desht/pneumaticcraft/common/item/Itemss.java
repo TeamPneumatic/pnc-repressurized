@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.semiblock.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
@@ -262,8 +263,13 @@ public class Itemss {
         }, Itemss.PLASTIC);
 
         event.getItemColors().registerItemColorHandler((stack, tintIndex) ->
-                tintIndex == 0 ? EnumDyeColor.BLUE.getColorValue() : EnumDyeColor.WHITE.getColorValue(),
+                        tintIndex == 0 ? EnumDyeColor.BLUE.getColorValue() : EnumDyeColor.WHITE.getColorValue(),
                 Item.getItemFromBlock(Blockss.APHORISM_TILE));
+
+        event.getItemColors().registerItemColorHandler((stack, tintIndex) -> {
+            int n = UpgradableItemUtils.getUpgrades(EnumUpgrade.CREATIVE, stack);
+            return n > 0 ? 0xFFFF60FF : 0xFFFFFFFF;
+        }, Item.getItemFromBlock(Blockss.OMNIDIRECTIONAL_HOPPER), Item.getItemFromBlock(Blockss.LIQUID_HOPPER));
     }
 
 

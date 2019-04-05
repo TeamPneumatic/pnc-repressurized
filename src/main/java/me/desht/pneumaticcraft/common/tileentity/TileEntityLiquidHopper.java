@@ -33,7 +33,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     @LazySynced
     @DescSynced
     @GuiSynced
-    private final SmartSyncTank tank;
+    private final HopperTank tank;
 
     @SuppressWarnings("unused")
     @DescSynced
@@ -47,13 +47,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
         if (ConfigHandler.machineProperties.liquidHopperDispenser) {
             addApplicableUpgrade(EnumUpgrade.DISPENSER);
         }
-        tank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY) {
-            @Override
-            protected void onContentsChanged() {
-                super.onContentsChanged();
-                comparatorValue = -1;
-            }
-        };
+        tank = new HopperTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
         inputWrapper = new WrappedFluidTank(tank, true);
         outputWrapper = new WrappedFluidTank(tank, false);
     }
@@ -87,13 +81,13 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
             if (neighbor != null && neighbor.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite())) {
                 IFluidHandler fluidHandler = neighbor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
                 int amount = Math.min(maxItems * 100, tank.getFluid().amount - leaveMaterialCount * 1000);
-                FluidStack transferred;
-                if (isCreative) {
-                    transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, false);
-                    if (transferred != null) fluidHandler.fill(transferred, true);
-                } else {
-                    transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
-                }
+//                FluidStack transferred;
+//                if (isCreative) {
+//                    transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, false);
+//                    if (transferred != null) fluidHandler.fill(transferred, true);
+//                } else {
+//                }
+                FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
                 return transferred != null && transferred.amount > 0;
             }
         }
@@ -121,7 +115,7 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
                 if (extractedFluid != null && extractedFluid.amount == 1000) {
                     Block fluidBlock = extractedFluid.getFluid().getBlock();
                     if (fluidBlock != null) {
-                        tank.drain(1000, !isCreative);
+                        tank.drain(1000, true);
                         getWorld().setBlockState(getPos().offset(dir), fluidBlock.getDefaultState());
                     }
                 }
@@ -236,6 +230,50 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     @Override
     public void updateScaledFluidAmount(int tankIndex, int amount) {
         fluidAmountScaled = amount;
+    }
+
+    @Override
+    protected void onUpgradesChanged() {
+        super.onUpgradesChanged();
+
+        if (world != null && !world.isRemote && getUpgrades(EnumUpgrade.CREATIVE) > 0) {
+            FluidStack fluidStack = tank.getFluid();
+            if (fluidStack != null && fluidStack.amount > 0) {
+                tank.setFluid(new FluidStack(fluidStack.getFluid(), PneumaticValues.NORMAL_TANK_CAPACITY));
+            }
+        }
+    }
+
+    class HopperTank extends SmartSyncTank {
+        HopperTank(ISmartFluidSync holder, int capacity) {
+            super(holder, capacity);
+        }
+
+        @Override
+        protected void onContentsChanged() {
+            super.onContentsChanged();
+            comparatorValue = -1;
+        }
+
+        @Override
+        public int fill(FluidStack resource, boolean doFill) {
+            int filled = super.fill(resource, doFill);
+            if (isCreative && getFluidAmount() > 0 && getFluid().getFluid() == resource.getFluid()) {
+                return resource.amount;   // acts like an infinite fluid sink
+            } else {
+                return filled;
+            }
+        }
+
+        @Override
+        public FluidStack drain(FluidStack resource, boolean doDrain) {
+            return super.drain(resource, !isCreative && doDrain);
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, boolean doDrain) {
+            return super.drain(maxDrain, !isCreative && doDrain);
+        }
     }
 
     class WrappedFluidTank implements IFluidTank, IFluidHandler {

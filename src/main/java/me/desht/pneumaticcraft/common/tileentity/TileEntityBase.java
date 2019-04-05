@@ -77,7 +77,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     private List<SyncedField> descriptionFields;
     private TileEntityCache[] tileCache;
     private IBlockState cachedBlockState;
-    public boolean preserveUpgradesOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
+    private boolean preserveStateOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
     private LuaMethodRegistry luaMethodRegistry = null;
@@ -616,7 +616,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
             }
         }
 
-        if (!preserveUpgradesOnBreak) {
+        if (!shouldPreserveStateOnBreak()) {
             IItemHandler upgrades = getUpgradesInventory();
             if (upgrades != null) {
                 for (int i = 0; i < upgrades.getSlots(); i++) {
@@ -659,6 +659,20 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
     public String getRedstoneTabTitle() {
         return this instanceof IRedstoneControlled ? "gui.tab.redstoneBehaviour.enableOn" : "gui.tab.redstoneBehaviour.emitRedstoneWhen";
+    }
+
+    /**
+     * Should this tile entity preserve its state (currently: upgrades and stored air) when broken?
+     * By default this is true when sneak-wrenched, and false when broken by pick.
+     *
+     * @return true if state should be preserved, false otherwise
+     */
+    public boolean shouldPreserveStateOnBreak() {
+        return preserveStateOnBreak;
+    }
+
+    public void setPreserveStateOnBreak(boolean preserveStateOnBreak) {
+        this.preserveStateOnBreak = preserveStateOnBreak;
     }
 
     /**
@@ -747,7 +761,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
             return customUpgradeCount == null ? 0 : customUpgradeCount.getOrDefault(makeUpgradeKey(stack), 0);
         }
 
-        public EnumFacing getEjectDirection() {
+        EnumFacing getEjectDirection() {
             return ejectDirection;
         }
     }

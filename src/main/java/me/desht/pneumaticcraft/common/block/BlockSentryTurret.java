@@ -53,7 +53,7 @@ public class BlockSentryTurret extends BlockPneumaticCraftModeled {
         super.getDrops(drops, world, pos, state, fortune);
 
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntitySentryTurret && ((TileEntitySentryTurret) te).preserveUpgradesOnBreak) {
+        if (te instanceof TileEntitySentryTurret && ((TileEntitySentryTurret) te).shouldPreserveStateOnBreak()) {
             String filter = ((TileEntitySentryTurret) te).getText(0);
             if (filter != null && !filter.isEmpty()) {
                 ItemStack teStack = drops.get(0);

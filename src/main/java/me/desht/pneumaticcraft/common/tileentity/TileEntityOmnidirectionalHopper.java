@@ -285,4 +285,9 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
         }
     }
 
+    @Override
+    public boolean shouldPreserveStateOnBreak() {
+        // always preserve state, since we can't sneak-wrench this machine (sneak-wrench rotates output)
+        return true;
+    }
 }

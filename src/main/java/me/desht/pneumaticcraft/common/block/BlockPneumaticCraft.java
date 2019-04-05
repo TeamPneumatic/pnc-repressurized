@@ -246,7 +246,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (player != null && player.isSneaking()) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityBase) {
-                ((TileEntityBase) te).preserveUpgradesOnBreak = true;
+                ((TileEntityBase) te).setPreserveStateOnBreak(true);
             }
             if (!player.capabilities.isCreativeMode) dropBlockAsItem(world, pos, world.getBlockState(pos), 0);
             world.setBlockToAir(pos);
@@ -461,7 +461,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (te instanceof ISerializableTanks) {
                 ((ISerializableTanks) te).serializeTanks(teStack);
             }
-            if (te instanceof TileEntityBase && ((TileEntityBase) te).preserveUpgradesOnBreak) {
+            if (te instanceof TileEntityBase && ((TileEntityBase) te).shouldPreserveStateOnBreak()) {
                 TileEntityBase.UpgradeHandler upgradeHandler = ((TileEntityBase) te).getUpgradesInventory();
                 for (int i = 0; i < upgradeHandler.getSlots(); i++) {
                     if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
