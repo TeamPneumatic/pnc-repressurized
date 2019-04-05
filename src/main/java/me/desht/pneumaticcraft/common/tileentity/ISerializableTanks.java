@@ -37,19 +37,25 @@ public interface ISerializableTanks {
 
     /**
      * Serialize some tank data onto an ItemStack.  Useful to preserve tile entity tank data when breaking
-     * the block, or when using the item's fluid handler capability.  If the tank is empty, it will not be
-     * serialized at all.
+     * the block, or when using the item's fluid handler capability.  If the tank is empty, it will be removed
+     * from the stack's NBT.
      *
      * @param tank the fluid tank
      * @param stack the itemstack to save to
      * @param tagName name of the subtag in the itemstack's NBT to store the tank data
      */
      static void serializeTank(FluidTank tank, ItemStack stack, String tagName) {
-        if (tank.getFluid() != null && tank.getFluid().amount > 0) {
-            NBTTagCompound subTag = NBTUtil.getCompoundTag(stack, NBT_SAVED_TANKS);
-            subTag.setTag(tagName, tank.writeToNBT(new NBTTagCompound()));
-            NBTUtil.setCompoundTag(stack, NBT_SAVED_TANKS, subTag);
-        }
+         NBTTagCompound subTag = NBTUtil.getCompoundTag(stack, NBT_SAVED_TANKS);
+         if (tank.getFluid() != null && tank.getFluid().amount > 0) {
+             subTag.setTag(tagName, tank.writeToNBT(new NBTTagCompound()));
+         } else {
+             subTag.removeTag(tagName);
+         }
+         if (!subTag.isEmpty()) {
+             NBTUtil.setCompoundTag(stack, NBT_SAVED_TANKS, subTag);
+         } else {
+             NBTUtil.removeTag(stack, NBT_SAVED_TANKS);
+         }
     }
 
     /**
