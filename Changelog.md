@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.9.4-xxx (5 Apr 2019)
+#### Fixes
+* Fixed fluid dupe bug with Liquid Hopper
+
 ### 0.9.3-324 (4 Mar 2019)
 #### Fixes
 * FOV modifications (as done by Pneumatic Leggings with Speed Upgrades and Minigun with Entity Tracker Upgrades) should now cooperate much better with other mods, assuming those mods do their FOV calculations correctly too (see https://github.com/TeamPneumatic/pnc-repressurized/issues/304).
