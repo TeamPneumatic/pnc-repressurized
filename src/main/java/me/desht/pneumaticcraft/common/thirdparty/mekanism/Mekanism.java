@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.thirdparty.IHeatDisperser;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
@@ -44,7 +45,7 @@ public class Mekanism implements IThirdParty, IHeatDisperser {
                     double invConduction = sink.getInverseConductionCoefficient() + source.getInverseConductionCoefficient();
                     double heatToTransfer = (source.getTemp() - (sink.getTemp() + 300)) / invConduction;
                     source.transferHeatTo(-heatToTransfer);
-                    sink.transferHeatTo(heatToTransfer);
+                    sink.transferHeatTo(heatToTransfer * ConfigHandler.integration.mekHeatEfficiency);
                 }
             }
         }
