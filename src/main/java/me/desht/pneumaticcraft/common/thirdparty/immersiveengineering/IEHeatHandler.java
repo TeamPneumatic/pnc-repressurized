@@ -13,7 +13,7 @@ class IEHeatHandler {
         ExternalHeaterHandler.registerHeatableAdapter(TileEntityBase.class, new ExternalHeaterHandler.HeatableAdapter() {
             @Override
             public int doHeatTick(TileEntity tileEntity, int energyAvailable, boolean canHeat) {
-                if (tileEntity instanceof IHeatExchanger && integration.ieExternalHeaterHeatPerRF > 0) {
+                if (tileEntity instanceof IHeatExchanger && integration.ieExternalHeaterHeatPerRF > 0 && !canHeat) {
                     IHeatExchangerLogic heatExchanger = ((IHeatExchanger) tileEntity).getHeatExchangerLogic(null);
                     if (heatExchanger != null && energyAvailable >= integration.ieExternalHeaterRFperTick) {
                         heatExchanger.addHeat(integration.ieExternalHeaterRFperTick * integration.ieExternalHeaterHeatPerRF);
