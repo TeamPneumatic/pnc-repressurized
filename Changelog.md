@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.10.3-335 (6 Apr 2019)
+### 0.10.3-337 (6 Apr 2019)
 #### New
 * Experimental Immersive Engineering heat integration
   * Immersive Engineering External Heater will supply heat to PneumaticCraft machines (Refinery etc.) if given RF (Forge Energy)
