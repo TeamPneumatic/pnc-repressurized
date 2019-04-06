@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "When you apply an $(l:components/advanced_pcb)Advanced PCB/$ to the Pressure Gauge Module, the module's charging rate increases from 10mL/tick (per item) to 100mL/tick (per item)"
+      "text": "When you apply an $(l:components/advanced_pcb)Advanced PCB/$ to the Charging Module, the module's charging rate increases from 10mL/tick (per item) to 100mL/tick (per item)"
     },
     {
       "type": "crafting",
