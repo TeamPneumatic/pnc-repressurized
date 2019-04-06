@@ -6,22 +6,24 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.10.3-??? (unreleased)
+### 0.10.3-335 (6 Apr 2019)
 #### New
 * Experimental Immersive Engineering heat integration
-  * Immersive Engineering External Heater will supply heat to PneumaticCraft machines (Refinery etc.) if given RF
-  * By default it uses 100RF/t to provide 1 heat unit; this can be changed in config (``pneumaticcraft.cfg``, "integration" section) 
+  * Immersive Engineering External Heater will supply heat to PneumaticCraft machines (Refinery etc.) if given RF (Forge Energy)
+  * By default it uses 100RF/t to provide 1 heat unit; this can be changed in config (``pneumaticcraft.cfg`` -> "integration" section) 
+  * A redstone signal to the heater will stop it providing heat to PneumaticCraft (but it will continue to charge RF)
   * Can be disabled entirely by setting ``ieExternalHeaterRFperTick`` to 0 in config
   * NOTE: highly-experimental and subject to possible significant retuning for balance purposes
 * Experimental Mekanism heat integration
   * PNC and Mekansim machines will now exchange heat with each other
-  * Heat exchange properties can be configured in ``pneumaticcraft.cfg``, "integration" section
+  * Heat exchange properties can be configured in ``pneumaticcraft.cfg`` -> "integration" section
   * Can be disabled entirely bet setting ``mekHeatEfficiency`` to 0.0 in config
   * NOTE: should be considered even more experimental than the Immersive Engineering integration!  Heavily subject to possible rebalancing.
 * Aerial Interface now has Baubles support
   * Any FE (RF etc.) items in your Baubles slots will now be charged by the Aerial Interface
   * The GUI Side Configuration tab now also has the ability to connect a face of the block to your Baubles inventory, if available
 * Added a Creative Upgrade item, for use in the Omnidirectional and Liquid Hoppers.  This allows them to infinitely dispense items/fluids.
+  * A liquid hopper with a Creative Upgrade will also act as an infinite fluid sink if it receives any fluid that it already contains
 * Dispenser Upgrade can now be configured with a direction
   * Right-click any block to set the direction to the clicked face, right-click air to clear the direction
   * This is used by the Gas Lift and Thermopneumatic Processing Plant to enforce a specific direction to eject fluids to
@@ -91,6 +93,10 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Pneumatic Armor pieces not booting up on login if player isn't wearing the Pneumatic Helmet (this was due to the "master switch" being installed in the helmet - a holdover from when the helmet was the only armor piece).
 * Fixed minor problem where placing a pressure chamber wall against another pressure chamber wall didn't play the block-place sound.
 * Scaled down 8 programming widget textures with excessively large (256x256, ouch) textures sizes, saving a good chunk of texture atlas space.
+
+### 0.9.4-1 (4 Mar 2019)
+#### Fixes
+* Hotfix release: fix fluid dupe bug in Liquid Hopper
 
 ### 0.9.3-324 (4 Mar 2019)
 #### Fixes
