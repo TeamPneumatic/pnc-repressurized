@@ -14,7 +14,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -47,9 +49,7 @@ public class GuiInventorySearcher extends GuiContainer {
 
     public void setSearchStack(@Nonnull ItemStack stack) {
         if (!stack.isEmpty() && stackPredicate.test(stack)) {
-            stack = stack.copy();
-            stack.setCount(1);
-            inventory.setStackInSlot(0, stack);
+            inventory.setStackInSlot(0, ItemHandlerHelper.copyStackWithSize(stack, 1));
         }
     }
 
@@ -69,8 +69,7 @@ public class GuiInventorySearcher extends GuiContainer {
      */
     @Override
     protected void keyTyped(char par1, int par2) throws IOException {
-        if (par2 == 1)//esc
-        {
+        if (par2 == Keyboard.KEY_ESCAPE) {
             mc.displayGuiScreen(parentScreen);
             onGuiClosed();
         } else {
@@ -89,14 +88,16 @@ public class GuiInventorySearcher extends GuiContainer {
         ItemStack stack = inventory.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
             List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(stack);
-            BlockPos pos = posList.get(0);
-            if (pos != null) {
-                float scale = 0.75F;
-                GlStateManager.pushMatrix();
-                GlStateManager.scale(scale, scale, scale);
-                GlStateManager.translate(140 * (1 - scale), 28 * (1 - scale), 0);
-                fontRenderer.drawString(String.format("%d, %d, %d", pos.getX(), pos.getY(), pos.getZ()), 105, 28, 0x404080);
-                GlStateManager.popMatrix();
+            if (!posList.isEmpty()) {
+                BlockPos pos = posList.get(0);
+                if (pos != null) {
+                    float scale = 0.75F;
+                    GlStateManager.pushMatrix();
+                    GlStateManager.scale(scale, scale, scale);
+                    GlStateManager.translate(140 * (1 - scale), 28 * (1 - scale), 0);
+                    fontRenderer.drawString(String.format("%d, %d, %d", pos.getX(), pos.getY(), pos.getZ()), 105, 28, 0x404080);
+                    GlStateManager.popMatrix();
+                }
             }
         }
     }
@@ -107,10 +108,8 @@ public class GuiInventorySearcher extends GuiContainer {
     @Override
     public void drawScreen(int par1, int par2, float par3) {
         super.drawScreen(par1, par2, par3);
+
         renderHoveredToolTip(par1, par2);
-        /*
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                GlStateManager.disable();*/
     }
 
     /**

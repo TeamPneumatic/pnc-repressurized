@@ -95,22 +95,28 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         switchToWidgets(widget.type);
         
         if (invSearchGui != null) {
-            BlockPos pos = !invSearchGui.getSearchStack().isEmpty() ? ItemGPSTool.getGPSLocation(invSearchGui.getSearchStack()) : null;
-            if (pos != null) {
-                if (pointSearched == 0) {
-                    widget.x1 = pos.getX();
-                    widget.y1 = pos.getY();
-                    widget.z1 = pos.getZ();
-                } else {
-                    widget.x2 = pos.getX();
-                    widget.y2 = pos.getY();
-                    widget.z2 = pos.getZ();
-                }
-            } else {
-                if (pointSearched == 0) {
-                    widget.x1 = widget.y1 = widget.z1 = 0;
-                } else {
-                    widget.x2 = widget.y2 = widget.z2 = 0;
+            ItemStack stack = invSearchGui.getSearchStack();
+            if (stack.getItem() instanceof IPositionProvider) {
+                List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(stack);
+                if (!posList.isEmpty()) {
+                    BlockPos pos = posList.get(0);
+                    if (pos != null) {
+                        if (pointSearched == 0) {
+                            widget.x1 = pos.getX();
+                            widget.y1 = pos.getY();
+                            widget.z1 = pos.getZ();
+                        } else {
+                            widget.x2 = pos.getX();
+                            widget.y2 = pos.getY();
+                            widget.z2 = pos.getZ();
+                        }
+                    } else {
+                        if (pointSearched == 0) {
+                            widget.x1 = widget.y1 = widget.z1 = 0;
+                        } else {
+                            widget.x2 = widget.y2 = widget.z2 = 0;
+                        }
+                    }
                 }
             }
         }
