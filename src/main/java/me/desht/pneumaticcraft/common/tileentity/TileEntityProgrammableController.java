@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.event.SemiblockEvent;
@@ -613,6 +614,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     @Override
     public void onItemPickupEvent(EntityItem curPickingUpEntity, int stackSize) {
+    }
+
+    @Override
+    public EntityPlayer getOwner() {
+        if (ownerID == null) return null;
+        if (getWorld().isRemote) return PneumaticCraftRepressurized.proxy.getClientPlayer();
+
+        return PneumaticCraftUtils.getPlayerFromId(ownerID);
     }
 
     @Override

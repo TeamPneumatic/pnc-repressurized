@@ -2,12 +2,11 @@ package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class DroneSpecialVariableHandler {
@@ -15,13 +14,12 @@ public class DroneSpecialVariableHandler {
     @SubscribeEvent
     public void onSpecialVariableRetrieving(SpecialVariableRetrievalEvent.CoordinateVariable.Drone event) {
         if (event.specialVarName.equalsIgnoreCase("owner")) {
-            EntityDrone drone = (EntityDrone) event.drone;
-            EntityPlayer player = drone.getOwner();
+            EntityPlayer player = event.drone.getOwner();
             if (player != null) event.coordinate = getPosForEntity(player);
         } else if (event.specialVarName.equalsIgnoreCase("drone")) {
             event.coordinate = getPosForEntity(event.drone);
         } else if (event.specialVarName.toLowerCase().startsWith("player=")) {
-            EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(event.specialVarName.substring("player=".length()));
+            EntityPlayer player = PneumaticCraftUtils.getPlayerFromName(event.specialVarName.substring("player=".length()));
             if (player != null) event.coordinate = getPosForEntity(player);
         }
     }

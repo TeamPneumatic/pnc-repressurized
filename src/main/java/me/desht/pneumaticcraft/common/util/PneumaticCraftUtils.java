@@ -640,6 +640,10 @@ public class PneumaticCraftUtils {
         return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(uuid));
     }
 
+    public static EntityPlayer getPlayerFromId(UUID uuid) {
+        return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(uuid);
+    }
+
     public static EntityPlayer getPlayerFromName(String name) {
         return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(name);
     }

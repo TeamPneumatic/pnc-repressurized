@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -160,4 +161,11 @@ public interface IDrone extends IPressurizable, ICapabilityProvider {
      * @param stackSize the size of the itemstack in the item entity
      */
     void onItemPickupEvent(EntityItem curPickingUpEntity, int stackSize);
+
+    /**
+     * Retrieve the owning player of this drone.
+     *
+     * @return the owning player; may be null if the owner is offline
+     */
+    EntityPlayer getOwner();
 }
