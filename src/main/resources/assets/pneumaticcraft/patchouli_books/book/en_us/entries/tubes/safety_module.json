@@ -14,6 +14,7 @@
     },
     {
       "type": "text",
+      "title": "Advanced PCB",
       "text": "When you apply an $(l:components/advanced_pcb)Advanced PCB/$ to the Safety Module, the module gains a GUI (right-click) providing far more control over the threshold level. You can set a precise threshold in the GUI, or with the $(bold)Advanced Config/$ checkbox, configure interpolated threshold levels based on the signal. This functions very much like the $(l:tubes/pressure_gauge_module#img)Pressure Gauge GUI/$, but in reverse."
     },
     {

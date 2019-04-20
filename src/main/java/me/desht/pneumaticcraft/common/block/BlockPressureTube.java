@@ -293,9 +293,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     }
 
     private boolean isCloserMOP(Vec3d origin, RayTraceResult originalMOP, RayTraceResult newMOP) {
-        if (newMOP == null) return false;
-        if (originalMOP == null) return true;
-        return PneumaticCraftUtils.distBetween(origin, newMOP.hitVec) < PneumaticCraftUtils.distBetween(origin, originalMOP.hitVec);
+        return newMOP != null &&
+                (originalMOP == null || origin.squareDistanceTo(newMOP.hitVec) < origin.squareDistanceTo(originalMOP.hitVec));
     }
 
     @Override

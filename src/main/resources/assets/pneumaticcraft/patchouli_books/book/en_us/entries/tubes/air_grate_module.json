@@ -20,7 +20,8 @@
     },
     {
       "type": "text",
-      "text": "When you apply an $(l:tubes/advanced_pcb)Advanced PCB/$, you gain control over which entities are affected by the module.$(p)You could set it up, for example, so that only a certain player gets affected, or only Creepers. This can be done by right clicking the upgraded module to open a GUI allowing an $(l:base_concepts/entity_filter)entity filter/$ to be defined."
+      "title": "Advanced PCB",
+      "text": "When you apply an $(l:tubes/advanced_pcb)Advanced PCB/$, you gain control over which entities are affected by the module.$(p)You could set it up, for example, so that only a certain player gets affected, or only Creepers, or only items. This can be done by right clicking the upgraded module to open a GUI allowing an $(l:base_concepts/entity_filter)entity filter/$ to be defined."
     },
     {
       "type": "crafting",

@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "This powerful module is used to connect inventories to a $(l:logistics/overview)Logistics System/$, effectively allowing controlled item transfer via pressure tubes.$(p)The inventory or tank that the module points at must be fitted with a $(l:logistics/frames)Logistic Frame/$."
+      "text": "This powerful module is used to connect inventories to a $(l:logistics/overview)Logistics System/$, effectively allowing controlled item transfer via pressure tubes.$(p)The inventory or tank that the module points at must be fitted with a $(l:logistics/frames)Logistic Frame/$.$(p)The Logistics Module does not accept an $(l:tubes/advanced_pcb)Advanced PCB/$."
     },
     {
       "type": "image",

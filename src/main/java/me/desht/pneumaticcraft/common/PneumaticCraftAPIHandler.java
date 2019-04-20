@@ -26,7 +26,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-
 import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface {
 
     @Override
     public int getProtectingSecurityStations(World world, BlockPos pos, EntityPlayer player, boolean showRangeLines) {
-        if (world.isRemote) throw new IllegalArgumentException("This method can only be called from the server side!");
+        Validate.isTrue(!world.isRemote, "This method can only be called from the server side!");
         return PneumaticCraftUtils.getProtectingSecurityStations(world, pos, player, showRangeLines, false);
     }
 
@@ -102,8 +101,8 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface {
 
     @Override
     public void registerFuel(Fluid fluid, int mLPerBucket) {
-        if (fluid == null) throw new NullPointerException("Fluid can't be null!");
-        if (mLPerBucket < 0) throw new IllegalArgumentException("mLPerBucket can't be < 0");
+        Validate.notNull(fluid);
+        Validate.isTrue(mLPerBucket >= 0, "mlPerBucket can't be < 0!");
         if (liquidFuels.containsKey(fluid.getName())) {
             Log.info("Overriding liquid fuel entry " + fluid.getLocalizedName(new FluidStack(fluid, 1)) + " (" + fluid.getName() + ") with a fuel value of " + mLPerBucket + " (previously " + liquidFuels.get(fluid.getName()) + ")");
             if (mLPerBucket == 0) liquidFuels.remove(fluid.getName());

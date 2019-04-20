@@ -71,7 +71,7 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     }
 
     private int getTextureIndex(IBlockAccess world, BlockPos pos, EnumFacing face) {
-        boolean bitMatrix[] = new boolean[8];
+        boolean[] bitMatrix = new boolean[8];
         switch (face) {
             case DOWN:case UP:
                 bitMatrix[0] = isGlass(world, pos.add(face == EnumFacing.DOWN ? 1 : -1, 0, -1));

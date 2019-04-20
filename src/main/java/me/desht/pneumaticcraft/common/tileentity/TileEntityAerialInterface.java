@@ -111,12 +111,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerEnderInvHandler);
         if (Baubles.available) {
             itemHandlerSideConfigurator.registerHandler("baublesInv", new ItemStack(BAUBLES_RING),
-                    CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, new PlayerInvHandler() {
-                        @Override
-                        protected IItemHandler getInvWrapper() {
-                            return getPlayer().getCapability(Baubles.CAPABILITY_BAUBLES, null);
-                        }
-                    });
+                    CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, new PlayerBaublesHandler());
         }
 
         energyStorage = new PneumaticEnergyStorage(ENERGY_CAPACITY);
@@ -168,7 +163,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             updateNeighbours();
         }
         if (!getWorld().isRemote) {
-            if (getPressure() > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE && isConnectedToPlayer) {
+            if (getPressure() >= getMinWorkingPressure() && isConnectedToPlayer) {
                 addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE);
 
                 if ((getWorld().getTotalWorldTime() & 0x3f) == 0) {
@@ -203,7 +198,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         if (buttonID == 0) {
             redstoneMode++;
             if (redstoneMode > 1) redstoneMode = 0;
-            // updateNeighbours();
         } else if (buttonID >= 1 && buttonID < 4) {
             feedMode = buttonID - 1;
         } else if (buttonID == 4) {
@@ -393,13 +387,17 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return playerRef.get() == null ? stack : getInvWrapper().insertItem(slot, stack, simulate);
+            if (playerRef.get() == null || getPressure() < getMinWorkingPressure()) return stack;
+
+            return getInvWrapper().insertItem(slot, stack, simulate);
         }
 
         @Nonnull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return playerRef.get() == null ? ItemStack.EMPTY : getInvWrapper().extractItem(slot, amount, simulate);
+            if (playerRef.get() == null || getPressure() < getMinWorkingPressure()) return ItemStack.EMPTY;
+
+            return getInvWrapper().extractItem(slot, amount, simulate);
         }
 
         @Override
@@ -436,6 +434,13 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
     }
 
+    private class PlayerBaublesHandler extends PlayerInvHandler {
+        @Override
+        protected IItemHandler getInvWrapper() {
+            return getPlayer().getCapability(Baubles.CAPABILITY_BAUBLES, null);
+        }
+    }
+
     private class PlayerFoodHandler implements IItemHandler {
         @Override
         public int getSlots() {
@@ -451,9 +456,12 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            if (getPressure() < getMinWorkingPressure()) return stack;
+
             EntityPlayer player = getPlayer();
-            if (player == null || getFoodValue(stack) <= 0) return stack;
-            if (!okToFeed(stack, player)) return stack;
+            if (player == null || getFoodValue(stack) <= 0 || !okToFeed(stack, player)) {
+                return stack;
+            }
 
             if (simulate) return ItemStack.EMPTY;
 
@@ -541,7 +549,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             return dispenserUpgradeInserted && fluid != null && fluid == curXpFluid
                     && PneumaticCraftAPIHandler.getInstance().liquidXPs.containsKey(fluid)
                     && getPlayer() != null
-                    && getPressure() > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE;
+                    && getPressure() >= getMinWorkingPressure();
         }
 
         @Nullable
@@ -563,7 +571,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             return dispenserUpgradeInserted
                     && (fluid == null || PneumaticCraftAPIHandler.getInstance().liquidXPs.containsKey(fluid))
                     && getPlayer() != null
-                    && getPressure() > PneumaticValues.MIN_PRESSURE_AERIAL_INTERFACE;
+                    && getPressure() >= getMinWorkingPressure();
         }
 
         @Nullable

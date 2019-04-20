@@ -145,13 +145,6 @@ public class ConfigHandler {
         public double configMinigunDamage = 4.0;
         @Config.Comment("DEPRECATED: use Minigun / potionProcChance")
         public int minigunPotionProcChance = 15;
-//        @Config.Comment("Thermal resistance of non-vanilla fluids, which is how fast heat moves between them and adjacent heat-handling blocks like the refinery.  Lower values mean faster heat movement.")
-//        @Config.RequiresWorldRestart
-//        public double fluidThermalResistance = HeatExchangerManager.DEFAULT_FLUID_RESISTANCE;
-//        @Config.Comment("Thermal resistance multiplier for non-fluid blocks.  Higher values mean slower heat transfer; you can set this to a very high value to make blocks not worth using as heat sources.  See also I:fluidThermalResistance for fluid blocks.")
-//        @Config.RequiresWorldRestart
-//        @Config.RangeDouble(min = 0.01)
-//        public double blockThermalResistanceMultiplier = 1.0;
     }
 
     public static class PneumaticArmor {

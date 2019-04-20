@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The Regulator Tube Module is used to limit the $(l:base_concepts/pressure)pressure/$ allowed through the tube. To set a threshold pressure $(formula)Pt/$, apply a $(#f00)redstone signal/$ of level $(formula)S/$:$(p)$(formula)  Pt = (15 - S) / 2/$$(p)E.g. a $(#f00)redstone signal/$ of level 6 will enforce a pressure threshold of $(formula) (15 - 6) / 2 = 4.5 bar/$."
+      "text": "The Regulator Tube Module is an $(thing)in-line/$ module used to limit the $(l:base_concepts/pressure)pressure/$ allowed through the tube. To set a threshold pressure $(formula)Pt/$, apply a $(#f00)redstone signal/$ of level $(formula)S/$:$(p)$(formula)  Pt = (15 - S) / 2/$$(p)E.g. a $(#f00)redstone signal/$ of level 6 will enforce a pressure threshold of $(formula) (15 - 6) / 2 = 4.5 bar/$."
     },
     {
       "type": "text",
@@ -18,6 +18,7 @@
     },
     {
       "type": "text",
+      "title": "Advanced PCB",
       "text": "When you apply an $(l:components/advanced_pcb)Advanced PCB/$ to the Regulator Module, the module gains a GUI providing far more control over the threshold level. You can set a precise threshold in the GUI, or with the $(bold)Advanced Config/$ checkbox, configure interpolated threshold levels based on the signal. This functions exactly like the $(l:tubes/safety_module)Safety Module/$."
     },
     {

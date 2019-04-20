@@ -35,7 +35,7 @@
     {
       "type": "crafting",
       "anchor": "network_api",
-      "text": "The $(item)Network API/$ can be used to store $(l:tools/drone)Drone/$ programs. It requires $(l:programming/puzzle_pieces)Puzzle Pieces/$ to program, and can be used to run programs in the $(l:machines/programmable_controller)Programmable Controller/$ or by the $(l:programming/external_program)External Program/$ widget.",
+      "text": "The $(item)Network API/$ can be used to store $(l:tools/drone)Drone/$ programs. It requires $(l:programming/puzzle_pieces)Puzzle Pieces/$ to program, and can be used to run programs in the $(l:programming/programmable_controller)Programmable Controller/$ or by the $(l:programming/external_program)External Program/$ widget.",
       "recipe": "pneumaticcraft:network_component_v5"
     },
     {

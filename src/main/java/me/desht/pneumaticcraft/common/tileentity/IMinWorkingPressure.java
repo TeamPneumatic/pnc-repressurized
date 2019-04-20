@@ -2,9 +2,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 public interface IMinWorkingPressure {
     /**
-     * Used in GUI's only.
+     * Get the minimum pressure at which this machine can operate.  Used for GUI display purposes (drawing the
+     * yellow region of the pressure gauge, but can also be checked elsewhere.
      *
-     * @return
+     * @return the minimum pressure at which this machine can operate
      */
     float getMinWorkingPressure();
 }
