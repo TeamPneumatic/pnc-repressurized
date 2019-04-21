@@ -11,11 +11,13 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.BasicThermopneumaticProcessingPlantRecipe;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -37,7 +39,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         implements IHeatExchanger, IMinWorkingPressure, IRedstoneControlled, ISerializableTanks, ISmartFluidSync, IAutoFluidEjecting {
 
     private static final int INVENTORY_SIZE = 1;
-    private static final int CRAFTING_TIME = 60;
+    private static final int CRAFTING_TIME = 60 * 100;
 
     @GuiSynced
     @DescSynced
@@ -62,6 +64,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     @SuppressWarnings("unused")
     @DescSynced
     private int inputAmountScaled, outputAmountScaled;
+    @DescSynced
+    private boolean didWork;
     private IThermopneumaticProcessingPlantRecipe currentRecipe;
     private boolean searchForRecipe = true;
 
@@ -95,29 +99,37 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     public void update() {
         super.update();
         if (!getWorld().isRemote) {
-            if (searchForRecipe) {
+            // bit of a kludge since inv/fluid changes aren't always reliably detected
+            if (searchForRecipe || (getWorld().getTotalWorldTime() & 0xf) == 0) {
                 currentRecipe = getValidRecipe();
                 searchForRecipe = false;
             }
             hasRecipe = currentRecipe != null;
+            didWork = false;
             if (hasRecipe) {
                 ItemStack stackInSlot = handler.getStackInSlot(0);
                 requiredPressure = currentRecipe.getRequiredPressure(inputTank.getFluid(), stackInSlot);
                 requiredTemperature = currentRecipe.getRequiredTemperature(inputTank.getFluid(), stackInSlot);
                 if (redstoneAllows() && heatExchanger.getTemperature() >= requiredTemperature && getPressure() >= getMinWorkingPressure()) {
-                    craftingProgress++;
+                    double inc = requiredTemperature > 0 ? Math.min(2.0, heatExchanger.getTemperature() / requiredTemperature) : 1.0;
+                    craftingProgress += inc * 100;
                     if (craftingProgress >= CRAFTING_TIME) {
-                        outputTank.fill(currentRecipe.getRecipeOutput(inputTank.getFluid(), stackInSlot).copy(), true);
+                        int filled = outputTank.fill(currentRecipe.getRecipeOutput(inputTank.getFluid(), stackInSlot).copy(), true);
                         currentRecipe.useResources(inputTank, handler);
                         addAir(-currentRecipe.airUsed(inputTank.getFluid(), stackInSlot));
-                        heatExchanger.addHeat(-currentRecipe.heatUsed(inputTank.getFluid(), stackInSlot));
-                        craftingProgress = 0;
+                        heatExchanger.addHeat(-currentRecipe.heatUsed(inputTank.getFluid(), stackInSlot) * inc);
+                        craftingProgress -= CRAFTING_TIME;
                     }
+                    didWork = true;
                 }
             } else {
                 craftingProgress = 0;
-                requiredTemperature = 273;
+                requiredTemperature = 0;
                 requiredPressure = 0;
+            }
+        } else {
+            if (didWork && getWorld().rand.nextBoolean()) {
+                PneumaticCraftUtils.emitParticles(getWorld(), getPos(), EnumParticleTypes.SMOKE_NORMAL);
             }
         }
     }

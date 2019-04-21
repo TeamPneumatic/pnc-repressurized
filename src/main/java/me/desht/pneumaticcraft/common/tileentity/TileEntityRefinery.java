@@ -5,8 +5,11 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -57,6 +60,11 @@ public class TileEntityRefinery extends TileEntityTickableBase
     @GuiSynced
     public int minTemp;
 
+    @DescSynced
+    private int refineryCount; // for particle spawning
+    @DescSynced
+    private int lastProgress; // for particle spawning
+
     private RefineryRecipe currentRecipe;
     private int workTimer = 0;
     private int comparatorValue;
@@ -83,8 +91,10 @@ public class TileEntityRefinery extends TileEntityTickableBase
         super.update();
 
         if (!getWorld().isRemote && isMaster()) {
+            lastProgress = 0;
             List<TileEntityRefinery> refineries = getRefineries();
-            if (prevRefineryCount != refineries.size()) searchForRecipe = true;
+            refineryCount = refineries.size();
+            if (prevRefineryCount != refineryCount) searchForRecipe = true;
             if (searchForRecipe) {
                 Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluid() != null ?
                         inputTank.getFluid().getFluid() : null, refineries.size());
@@ -94,9 +104,8 @@ public class TileEntityRefinery extends TileEntityTickableBase
             }
             boolean hasWork = false;
             if (currentRecipe != null) {
-                if (prevRefineryCount != refineries.size() && refineries.size() > 1) {
+                if (prevRefineryCount != refineryCount && refineries.size() > 1) {
                     redistributeFluids(refineries, currentRecipe);
-                    prevRefineryCount = refineries.size();
                 }
 
                 if (refineries.size() > 1 && redstoneAllows() && refine(refineries, true)) {
@@ -112,16 +121,18 @@ public class TileEntityRefinery extends TileEntityTickableBase
                             refine(refineries, false);
                             inputTank.drain(currentRecipe.input.amount, true);
                         }
-                        NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.SMOKE_LARGE,
-                                        getPos().getX(), getPos().getY() + refineries.size(), getPos().getZ(),
-                                        0, 0, 0, Math.max(2, progress), 1d, 1d, 1d),
-                                getWorld());
+                        lastProgress = progress;
                     }
                 } else {
                     workTimer = 0;
                 }
             }
+            prevRefineryCount = refineryCount;
             updateComparatorValue(refineries, hasWork);
+        } else if (getWorld().isRemote && lastProgress > 0) {
+            for (int i = 0; i < lastProgress; i++) {
+                PneumaticCraftUtils.emitParticles(getWorld(), getPos().offset(EnumFacing.UP, refineryCount - 1), EnumParticleTypes.SMOKE_LARGE);
+            }
         }
     }
 

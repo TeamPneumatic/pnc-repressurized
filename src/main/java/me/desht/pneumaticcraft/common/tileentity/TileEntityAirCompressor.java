@@ -21,7 +21,6 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
-import java.util.Random;
 
 public class TileEntityAirCompressor extends TileEntityPneumaticBase implements IRedstoneControlled {
 
@@ -107,29 +106,28 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     }
 
     private void spawnBurningParticle() {
-        Random rand = new Random();
-        if (rand.nextInt(3) != 0) return;
-        float f = getPos().getX() + 0.5F;
-        float f1 = getPos().getY() + 0.0F + rand.nextFloat() * 6.0F / 16.0F;
-        float f2 = getPos().getZ() + 0.5F;
+        if (getWorld().rand.nextInt(3) != 0) return;
+        float px = getPos().getX() + 0.5F;
+        float py = getPos().getY() + getWorld().rand.nextFloat() * 6.0F / 16.0F;
+        float pz = getPos().getZ() + 0.5F;
         float f3 = 0.5F;
-        float f4 = rand.nextFloat() * 0.4F - 0.2F;
+        float f4 = getWorld().rand.nextFloat() * 0.4F - 0.2F;
         switch (getRotation()) {
             case EAST:
-                getWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
-                getWorld().spawnParticle(EnumParticleTypes.FLAME, f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+                getWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
+                getWorld().spawnParticle(EnumParticleTypes.FLAME, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
                 break;
             case WEST:
-                getWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
-                getWorld().spawnParticle(EnumParticleTypes.FLAME, f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+                getWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, px + f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
+                getWorld().spawnParticle(EnumParticleTypes.FLAME, px + f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
                 break;
             case SOUTH:
-                getWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
-                getWorld().spawnParticle(EnumParticleTypes.FLAME, f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
+                getWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, px + f4, py, pz - f3, 0.0D, 0.0D, 0.0D);
+                getWorld().spawnParticle(EnumParticleTypes.FLAME, px + f4, py, pz - f3, 0.0D, 0.0D, 0.0D);
                 break;
             case NORTH:
-                getWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
-                getWorld().spawnParticle(EnumParticleTypes.FLAME, f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
+                getWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, px + f4, py, pz + f3, 0.0D, 0.0D, 0.0D);
+                getWorld().spawnParticle(EnumParticleTypes.FLAME, px + f4, py, pz + f3, 0.0D, 0.0D, 0.0D);
                 break;
         }
     }

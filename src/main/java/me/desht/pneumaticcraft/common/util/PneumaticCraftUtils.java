@@ -27,6 +27,7 @@ import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
 import net.minecraft.world.ChunkCache;
@@ -289,7 +290,7 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Bubblesorts the itemstacks alphabetical, on the given charIndex. when the index is 2 for example, the stack with an item name
+     * Bubblesorts the itemstacks alphabetically, on the given charIndex. when the index is 2 for example, the stack with an item name
      * that has a 'B' as second letter will sort in front of a name with a 'D' as second letter.
      *
      * @param stackArray
@@ -819,5 +820,21 @@ public class PneumaticCraftUtils {
 
     public static String xlate(String s) {
         return PneumaticCraftRepressurized.proxy.xlate(s);
+    }
+
+    /**
+     * Emit particles from just above the given blockpos, which is generally a machine or similar.
+     * Only call this clientside.
+     *
+     * @param world the world
+     * @param pos the block pos
+     * @param particle the particle type
+     */
+    public static void emitParticles(World world, BlockPos pos, EnumParticleTypes particle) {
+        float xOff = world.rand.nextFloat() * 0.6F + 0.2F;
+        float zOff = world.rand.nextFloat() * 0.6F + 0.2F;
+        PneumaticCraftRepressurized.proxy.getClientWorld().spawnParticle(particle,
+                pos.getX() + xOff, pos.getY() + 1.2, pos.getZ() + zOff,
+                0, 0, 0);
     }
 }

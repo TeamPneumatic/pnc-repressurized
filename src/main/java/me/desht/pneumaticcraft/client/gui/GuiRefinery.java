@@ -35,8 +35,8 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
             public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
                 if (te.minTemp > 0) {
-                    TextFormatting tf = te.minTemp < te.getHeatExchangerLogic(null).getTemperature() ? TextFormatting.GREEN : TextFormatting.GOLD;
-                    curTip.add(tf + "Minimum Temperature: " + (te.minTemp - 273) + "\u00b0C");
+                    TextFormatting tf = te.minTemp < te.getHeatExchangerLogic(null).getTemperatureAsInt() ? TextFormatting.GREEN : TextFormatting.GOLD;
+                    curTip.add(tf + "Required Temperature: " + (te.minTemp - 273) + "\u00b0C");
                 }
             }
         };
