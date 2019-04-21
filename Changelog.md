@@ -6,6 +6,21 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.10.4-??? (unreleased)
+#### Updates
+* Plastic Mixer can now be configured to accept alternative input fluids, either via Java API or via CraftTweaker.
+  * Ratio of liquid to solid plastic sheets can be defined on a per-input basis too.
+  * CT docs will be added to https://crafttweaker.readthedocs.io/en/latest/#Mods/PneumaticCraft_Repressurized/PneumaticCraft_Repressurized/ but see https://github.com/TeamPneumatic/pnc-repressurized/issues/326 for now.
+* Thermopneumatic Processing Plant now runs up to twice as fast if given more heat than the minimum recipe requirement (but also consumes heat proportionally more quickly).
+* Thermopneumatic Processing Plant now emits smoke particles when running.
+* Thermopneumatic Processing Plant GUI now shows required temperature in heat gauge tooltip.
+#### Fixes
+* Fixed crash in Programmable Controller when running a program which refers the "$owner" special variable. The Programmable Controller's owner's (head) position is now returned, as expected.
+* Fixed Thermopneumatic Processing Plant sometimes forgetting what it was supposed to be doing.
+* GPS Area Tools may now be used when setting an area widget's position via the inventory search GUI (previously this caused a crash). Note that when the area tool contains multiple positions, an arbitrary position will be selected.
+* Aerial Interface now properly enforces minimum pressure requirements for moving items in & out.
+* Refinery smoke particles are now all handled client-side: less server->client traffic there.
+
 ### 0.10.3-337 (6 Apr 2019)
 #### New
 * Experimental Immersive Engineering heat integration
