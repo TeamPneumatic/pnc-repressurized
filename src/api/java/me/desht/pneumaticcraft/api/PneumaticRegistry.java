@@ -107,5 +107,13 @@ public final class PneumaticRegistry {
          */
         @Deprecated
         void registerRefineryInput(Fluid fluid);
+
+        /**
+         * Register a fluid as a valid input for the Plastic Mixer
+         *
+         * @param fluid the fluid to register
+         * @param ratio amount in mB which will be used to make 1 solid plastic sheet
+         */
+        void registerPlasticFluid(Fluid fluid, int ratio);
     }
 }

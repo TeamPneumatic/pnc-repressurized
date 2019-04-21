@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.harvesting.HarvestRegistry;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.pressure.AirHandlerSupplier;
+import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -97,6 +98,11 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface {
     	registry.registerRefineryRecipe(new FluidStack(fluid, 10), new FluidStack(Fluids.DIESEL, 4), new FluidStack(Fluids.LPG, 2));
     	registry.registerRefineryRecipe(new FluidStack(fluid, 10), new FluidStack(Fluids.DIESEL, 2), new FluidStack(Fluids.KEROSENE, 3), new FluidStack(Fluids.LPG, 2));
     	registry.registerRefineryRecipe(new FluidStack(fluid, 10), new FluidStack(Fluids.DIESEL, 2), new FluidStack(Fluids.KEROSENE, 3), new FluidStack(Fluids.GASOLINE, 3), new FluidStack(Fluids.LPG, 2));
+    }
+
+    @Override
+    public void registerPlasticFluid(Fluid fluid, int ratio) {
+        PlasticMixerRegistry.INSTANCE.registerPlasticMixerInput(fluid, ratio);
     }
 
     @Override

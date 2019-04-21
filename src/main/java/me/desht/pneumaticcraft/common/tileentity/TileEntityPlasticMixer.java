@@ -6,12 +6,12 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -112,6 +112,7 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     protected void onFirstServerUpdate() {
         super.onFirstServerUpdate();
 
+
         itemLogic.initializeAmbientTemperature(world, pos);
     }
 
@@ -122,7 +123,6 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
             refillDyeBuffers();
             itemLogic.update();
             ItemStack inputStack = inventory.getStackInSlot(INV_INPUT);
-            int plasticRatio = ConfigHandler.machineProperties.plasticMixerPlasticRatio;
             if (getWorld().getTotalWorldTime() % 20 == 0) { // We don't need to run _that_ often.
                 if (inputStack.getCount() > lastTickInventoryStacksize) {
                     int stackIncrease = inputStack.getCount() - lastTickInventoryStacksize;
@@ -133,11 +133,12 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
                 }
 
                 if (itemLogic.getTemperature() >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP) {
-                    FluidStack moltenPlastic = new FluidStack(Fluids.PLASTIC, inputStack.getCount() * plasticRatio);
-                    int maxFill = tank.fill(moltenPlastic, false) / plasticRatio;
+                    int nativePlasticRatio = PlasticMixerRegistry.INSTANCE.getFluidRatio(Fluids.PLASTIC);
+                    FluidStack moltenPlastic = new FluidStack(Fluids.PLASTIC, inputStack.getCount() * nativePlasticRatio);
+                    int maxFill = tank.fill(moltenPlastic, false) / nativePlasticRatio;
                     if (maxFill > 0) {
                         inventory.extractItem(INV_INPUT, maxFill, false);
-                        tank.fill(new FluidStack(moltenPlastic, maxFill * plasticRatio), true);
+                        tank.fill(new FluidStack(moltenPlastic, maxFill * nativePlasticRatio), true);
                     }
                 }
 
@@ -145,14 +146,15 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
                 itemLogic.setThermalCapacity(lastTickInventoryStacksize);
             }
             if (tank.getFluid() != null && selectedPlastic >= 0 && redstoneAllows()) {
-                ItemStack solidifiedStack = new ItemStack(Itemss.PLASTIC, tank.getFluid().amount / plasticRatio, selectedPlastic);
+                int currentPlasticRatio = PlasticMixerRegistry.INSTANCE.getFluidRatio(tank.getFluid().getFluid());
+                ItemStack solidifiedStack = new ItemStack(Itemss.PLASTIC, tank.getFluid().amount / currentPlasticRatio, selectedPlastic);
                 if (solidifiedStack.getCount() > 0) {
                     solidifiedStack.setCount(1);
                     if (inventory.getStackInSlot(INV_OUTPUT).isEmpty()) {
                         solidifiedStack.setCount(useDye(solidifiedStack.getCount()));
                         if (solidifiedStack.getCount() > 0) {
                             inventory.setStackInSlot(INV_OUTPUT, solidifiedStack);
-                            tank.drain(solidifiedStack.getCount() * plasticRatio, true);
+                            tank.drain(solidifiedStack.getCount() * currentPlasticRatio, true);
                             sendDescriptionPacket();
                         }
                     } else if (solidifiedStack.isItemEqual(inventory.getStackInSlot(INV_OUTPUT))) {
@@ -161,7 +163,7 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
                         ItemStack newStack = inventory.getStackInSlot(INV_OUTPUT);
                         newStack.grow(solidifiedItems);
                         inventory.setStackInSlot(INV_OUTPUT, newStack);
-                        tank.drain(solidifiedItems * plasticRatio, true);
+                        tank.drain(solidifiedItems * currentPlasticRatio, true);
                         sendDescriptionPacket();
                     }
                 }
@@ -258,7 +260,7 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
 
         @Override
         public boolean canFillFluidType(FluidStack fluid) {
-            return Fluids.areFluidsEqual(fluid.getFluid(), Fluids.PLASTIC);
+            return PlasticMixerRegistry.INSTANCE.getFluidRatio(fluid.getFluid()) > 0;
         }
     }
 

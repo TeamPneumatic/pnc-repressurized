@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.jei.JEIPlasticMixerCategory.PlasticMixerRecipeWrapper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -11,6 +12,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -64,10 +67,23 @@ public class JEIPlasticMixerCategory extends PneumaticCraftCategory<PlasticMixer
 
     List<MultipleInputOutputRecipeWrapper> getAllRecipes() {
         List<MultipleInputOutputRecipeWrapper> recipes = new ArrayList<>();
-        for (int i = 0; i < 16; i++)
-            recipes.add(new PlasticMixerRecipeWrapper(new ItemStack(Itemss.PLASTIC, 1, i), new FluidStack(Fluids.PLASTIC, 1000)));
-        for (int i = 0; i < 16; i++)
-            recipes.add(new PlasticMixerRecipeWrapper(new FluidStack(Fluids.PLASTIC, 1000), new ItemStack(Itemss.PLASTIC, 1, i)));
+
+        for (String fluidName : PlasticMixerRegistry.INSTANCE.getFluids()) {
+            Fluid fluid = FluidRegistry.getFluid(fluidName);
+            int ratio = PlasticMixerRegistry.INSTANCE.getFluidRatio(fluid);
+            if (ratio > 0) {
+                for (int i = 0; i < 16; i++) {
+                    recipes.add(new PlasticMixerRecipeWrapper(new FluidStack(fluid, ratio), new ItemStack(Itemss.PLASTIC, 1, i)));
+                }
+            }
+        }
+
+        int ratio = PlasticMixerRegistry.INSTANCE.getFluidRatio(Fluids.PLASTIC);
+        if (ratio > 0) {
+            for (int i = 0; i < 16; i++) {
+                recipes.add(new PlasticMixerRecipeWrapper(new ItemStack(Itemss.PLASTIC, 1, i), new FluidStack(Fluids.PLASTIC, ratio)));
+            }
+        }
         return recipes;
     }
 }

@@ -13,12 +13,12 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.gui.*;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.gui.elements.DrawableResource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -61,10 +61,10 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
 
         @Override
         public void getIngredients(@Nonnull IIngredients ingredients) {
-            ingredients.setInputLists(ItemStack.class, input.stream().map(PositionedStack::getStacks).collect(Collectors.toList()));
-            ingredients.setInputs(FluidStack.class, inputLiquids.stream().map(WidgetTank::getFluid).collect(Collectors.toList()));
-            ingredients.setOutputLists(ItemStack.class, output.stream().map(PositionedStack::getStacks).collect(Collectors.toList()));
-            ingredients.setOutputs(FluidStack.class, outputLiquids.stream().map(WidgetTank::getFluid).collect(Collectors.toList()));
+            ingredients.setInputLists(VanillaTypes.ITEM, input.stream().map(PositionedStack::getStacks).collect(Collectors.toList()));
+            ingredients.setInputs(VanillaTypes.FLUID, inputLiquids.stream().map(WidgetTank::getFluid).collect(Collectors.toList()));
+            ingredients.setOutputLists(VanillaTypes.ITEM, output.stream().map(PositionedStack::getStacks).collect(Collectors.toList()));
+            ingredients.setOutputs(VanillaTypes.FLUID, outputLiquids.stream().map(WidgetTank::getFluid).collect(Collectors.toList()));
         }
 
         void addIngredient(PositionedStack stack) {
@@ -80,8 +80,7 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
         }
 
         void addInputLiquid(FluidStack liquid, int x, int y) {
-            WidgetTank tank = new WidgetTank(x, y, liquid);
-            addInputLiquid(tank);
+            addInputLiquid(new WidgetTank(x, y, liquid));
         }
 
         void addInputLiquid(WidgetTank tank) {
@@ -90,8 +89,7 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
         }
 
         void addOutputLiquid(FluidStack liquid, int x, int y) {
-            WidgetTank tank = new WidgetTank(x, y, liquid);
-            addOutputLiquid(tank);
+            addOutputLiquid(new WidgetTank(x, y, liquid));
         }
 
         void addOutputLiquid(WidgetTank tank) {
@@ -108,15 +106,15 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
                 maxFluid = Math.max(maxFluid, w.getTank().getFluidAmount());
             }
 
-            if (maxFluid <= 10) {
-                maxFluid = 10;
-            } else if (maxFluid <= 100) {
-                maxFluid = 100;
-            } else if (maxFluid <= 1000) {
-                maxFluid = 1000;
-            } else {
-                maxFluid = 16000;
-            }
+//            if (maxFluid <= 10) {
+//                maxFluid = 10;
+//            } else if (maxFluid <= 100) {
+//                maxFluid = 100;
+//            } else if (maxFluid <= 1000) {
+//                maxFluid = 1000;
+//            } else {
+//                maxFluid = 16000;
+//            }
             for (WidgetTank w : inputLiquids) {
                 w.getTank().setCapacity(maxFluid);
             }
@@ -224,27 +222,27 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
                 }
             });
 
-            for (int i = 0; i < ingredients.getInputs(ItemStack.class).size(); i++) {
+            for (int i = 0; i < ingredients.getInputs(VanillaTypes.ITEM).size(); i++) {
                 recipeLayout.getItemStacks().init(i, true, recipe.input.get(i).getX() - 1, recipe.input.get(i).getY() - 1);
                 recipeLayout.getItemStacks().set(i, recipe.input.get(i).getStacks());
             }
 
-            for (int i = 0; i < ingredients.getOutputs(ItemStack.class).size(); i++) {
+            for (int i = 0; i < ingredients.getOutputs(VanillaTypes.ITEM).size(); i++) {
                 recipeLayout.getItemStacks().init(i + recipe.input.size(), false, recipe.output.get(i).getX() - 1, recipe.output.get(i).getY() - 1);
                 recipeLayout.getItemStacks().set(i + recipe.input.size(), recipe.output.get(i).getStacks());
             }
 
-            for (int i = 0; i < ingredients.getInputs(FluidStack.class).size(); i++) {
+            for (int i = 0; i < ingredients.getInputs(VanillaTypes.FLUID).size(); i++) {
                 WidgetTank tank = recipe.inputLiquids.get(i);
                 IDrawable tankOverlay = new DrawableResource(Textures.WIDGET_TANK, 0, 0, tank.getBounds().width, tank.getBounds().height, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height);
-                recipeLayout.getFluidStacks().init(i, true, tank.x, tank.y, tank.getBounds().width, tank.getBounds().height, tank.getTank().getCapacity(), true, tankOverlay);
+                recipeLayout.getFluidStacks().init(i, true, tank.x, tank.y, tank.getBounds().width, tank.getBounds().height, tank.getTank().getCapacity(), false, tankOverlay);
                 recipeLayout.getFluidStacks().set(i, tank.getFluid());
             }
 
-            for (int i = 0; i < ingredients.getOutputs(FluidStack.class).size(); i++) {
+            for (int i = 0; i < ingredients.getOutputs(VanillaTypes.FLUID).size(); i++) {
                 WidgetTank tank = recipe.outputLiquids.get(i);
                 IDrawable tankOverlay = new DrawableResource(Textures.WIDGET_TANK, 0, 0, tank.getBounds().width, tank.getBounds().height, 0, 0, 0, 0, tank.getBounds().width, tank.getBounds().height);
-                recipeLayout.getFluidStacks().init(recipe.inputLiquids.size() + i, false, tank.x, tank.y, tank.getBounds().width, tank.getBounds().height, tank.getTank().getCapacity(), true, tankOverlay);
+                recipeLayout.getFluidStacks().init(recipe.inputLiquids.size() + i, false, tank.x, tank.y, tank.getBounds().width, tank.getBounds().height, tank.getTank().getCapacity(), false, tankOverlay);
                 recipeLayout.getFluidStacks().set(recipe.inputLiquids.size() + i, tank.getFluid());
             }
 
