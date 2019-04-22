@@ -64,7 +64,7 @@ import org.apache.logging.log4j.Logger;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @Mod(modid = Names.MOD_ID, name = Names.MOD_NAME, version = PneumaticCraftRepressurized.MODVERSION,
-        dependencies = "required-after:forge@[14.23.5.2768,);after:forestry;after:igwmod@[1.4.2-11,);after:thaumcraft;after:computercraft;after:appliedenergistics2@[rv6,]",
+        dependencies = "required-after:forge@[14.23.5.2768,);after:forestry;after:igwmod@[1.4.2-11,);after:thaumcraft;after:computercraft;after:appliedenergistics2@[rv6,];after:jei@[4.12.0,)",
         updateJSON = "https://raw.github.com/TeamPneumatic/pnc-repressurized/master/release_info.json",
         acceptedMinecraftVersions = "1.12"
 )
