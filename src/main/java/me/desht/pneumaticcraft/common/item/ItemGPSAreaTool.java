@@ -94,7 +94,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
             BlockPos pos = getGPSLocation(stack, index);
             infoList.add(String.format("\u00a72P%d: %d, %d, %d", index + 1, pos.getX(), pos.getY(), pos.getZ()));
             String varName = getVariable(stack, index);
-            if (!varName.equals("")) {
+            if (!varName.isEmpty()) {
                 infoList.add(I18n.format("gui.tooltip.gpsTool.variable", varName));
             }
         }
@@ -103,11 +103,13 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
 
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean heldItem) {
-        for(int index = 0; index < 2; index++){
-            String var = getVariable(stack, index);
-            if (!var.equals("") && !world.isRemote) {
-                BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
-                setGPSLocation(stack, pos, index);
+        if (!world.isRemote) {
+            for (int index = 0; index < 2; index++) {
+                String var = getVariable(stack, index);
+                if (!var.isEmpty()) {
+                    BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
+                    setGPSLocation(stack, pos, index);
+                }
             }
         }
     }
