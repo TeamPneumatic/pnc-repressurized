@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "This is a $(l:programming/conditions)Condition/$ widget.$(p)The $(thing)Condition: Coordinate/$ widget compares two $(l:programming/coordinates)Coordinates/$. Different tests can be done on these coordinates, and more specifically on every axis (X/Y/Z) of the coordinate. You can check if just one axis of both coordinates matches, or two, or all three."
+      "text": "This is a $(l:programming/conditions)Condition/$ widget.$(p)The $(thing)Condition: Coordinate/$ widget compares two $(l:programming/coordinate)Coordinates/$. Different tests can be done on these coordinates, and more specifically on every axis (X/Y/Z) of the coordinate. You can check if just one axis of both coordinates matches, or two, or all three."
     },
     {
       "type": "text",

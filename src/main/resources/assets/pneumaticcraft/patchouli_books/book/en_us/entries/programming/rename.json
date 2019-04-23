@@ -11,14 +11,14 @@
     {
       "type": "text",
       "title": "Variables",
-      "text": "You can also insert the value of a $(l:programming/coordinate_operator)variable/$, by including $(thing)${<var_name>}/$ in the text, e.g.$(p)  $(formula)Counter: ${counter}/$$(p)would expand to $(thing)Counter: 1, 2, 3/$ if the $(thing)counter/$ variable was set to $(thing)x=1,y=2,z=3/$. $(l:programming/coordinate_operator#special)Special/$ and $(l:programming/coordinate_operator#global)Global variables/$ can also be used here."
+      "text": "You can also insert the value of a $(l:programming/variables)variable/$, by including $(thing)${<var_name>}/$ in the text, e.g.$(p)  $(formula)Counter: ${counter}/$$(p)would expand to $(thing)Counter: 1, 2, 3/$ if the $(thing)counter/$ variable was set to $(thing)x=1,y=2,z=3/$. $(l:programming/variables#special)Special/$ and $(l:programming/variables#global)Global variables/$ can also be used here."
     },
     {
       "type": "image",
       "images": [
         "pneumaticcraft:textures/items/progwidgets/rename_piece.png"
       ],
-      "text": "$(italic)Who are you, again?/$"
+      "text": "$(italic)Who are you again?/$"
     }
   ]
 }

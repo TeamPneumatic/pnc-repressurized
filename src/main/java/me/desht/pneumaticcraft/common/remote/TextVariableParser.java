@@ -45,7 +45,9 @@ public class TextVariableParser {
         boolean z = variable.endsWith(".z");
         if (x || y || z) variable = variable.substring(0, variable.length() - 2);
         relevantVariables.add(variable);
-        BlockPos pos = variableHolder != null ? variableHolder.getCoordinate(variable) : GlobalVariableManager.getInstance().getPos(variable.startsWith("#") ? variable.substring(1) : variable);
+        BlockPos pos = variableHolder != null ?
+                variableHolder.getCoordinate(variable) :
+                GlobalVariableManager.getInstance().getPos(variable.startsWith("#") ? variable.substring(1) : variable);
         if (x) return pos.getX() + "";
         if (y) return pos.getY() + "";
         if (z) return pos.getZ() + "";

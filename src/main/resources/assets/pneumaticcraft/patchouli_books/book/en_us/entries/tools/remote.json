@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "With a Remote you can create your own GUI to remotely control $(l:tools/drone)Drones/$ or $(l:machines/universal_sensor)Universal Sensors/$ via $(l:programming/coordinate_operator)global variable/$ manipulation. Note that with $(item)Universal Sensors/$, you can use the $(item)Remote/$ to create wireless redstone!$(p)To start creating your own GUI, $(thing)sneak+right-click/$ the $(item)Remote/$ to open up the editor window."
+      "text": "With a Remote you can create your own GUI to remotely control $(l:tools/drone)Drones/$ or $(l:machines/universal_sensor)Universal Sensors/$ via $(l:programming/variables#global)global variable/$ manipulation. Note that with $(item)Universal Sensors/$, you can use the $(item)Remote/$ to create wireless redstone!$(p)To start creating your own GUI, $(thing)sneak+right-click/$ the $(item)Remote/$ to open up the editor window."
     },
     {
       "type": "text",
@@ -27,7 +27,7 @@
       "type": "text",
       "title": "Label Widget",
       "anchor": "label",
-      "text": "This widget simply displays some text, with an optional tooltip, for informational purposes. While the label can't $(italic)change/$ variables, it can $(italic)display/$ a variable, using the syntax $(thing)${#<var_name>}/$, which can be useful for debugging purposes.$(p)The Label widget has no fields other than the default fields."
+      "text": "This widget simply displays some text, with an optional tooltip, for informational purposes. While the label can't $(italic)change/$ variables, it can $(italic)display/$ a variable, using the syntax $(thing)${#globalvarname}/$, which can be useful for debugging purposes.$(p)The Label widget has no fields other than the default fields."
     },
     {
       "type": "text",

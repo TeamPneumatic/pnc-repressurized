@@ -17,7 +17,7 @@
       "images": [
         "pneumaticcraft:textures/items/progwidgets/liquid_import_piece.png"
       ],
-      "text": "$(italic)Fluid Import Widget/$"
+      "text": "$(italic)Slurp/$"
     }
   ]
 }

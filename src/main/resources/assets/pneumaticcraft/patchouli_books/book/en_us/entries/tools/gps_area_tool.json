@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "The $(item)GPS Area Tool/$ supports $(thing)Global Variables/$ like the basic $(l:gps_tool#variables)GPS Tool/$ does.$(p)In a $(l:programming/programmer)Programmer/$, $(thing)left-click/$ the programming area background with the $(item)GPS Area Tool/$ to create a new $(l:programming/area)Area/$ puzzle piece, or $(thing)left-click/$ on an existing $(l:programming/area)Area/$ puzzle piece to overwrite it."
+      "text": "The $(item)GPS Area Tool/$ supports $(l:programming/variables#global)Global Variables/$ like the basic $(l:gps_tool#variables)GPS Tool/$ does.$(p)In a $(l:programming/programmer)Programmer/$, $(thing)left-click/$ the programming area background with the $(item)GPS Area Tool/$ to create a new $(l:programming/area)Area/$ puzzle piece, or $(thing)left-click/$ on an existing $(l:programming/area)Area/$ puzzle piece to overwrite it."
     },
     {
       "type": "crafting",

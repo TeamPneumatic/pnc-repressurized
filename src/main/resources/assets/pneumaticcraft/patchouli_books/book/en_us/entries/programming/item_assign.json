@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(thing)Item Assignment/$ widget is an advanced widget that allows you to store an item in a $(thing)variable/$. Variables may be either coordinates or items; here we are talking about the latter.$(p)See the $(l:programming/coordinate_operator)Coordinate Operator/$ widget for information about coordinate variables and a general explanation about variables."
+      "text": "The $(thing)Item Assignment/$ widget is an advanced widget that allows you to store an item in a $(l:programming/variables)variable/$. Variables may be either coordinates or items; here we are talking about the latter.$(p)See the $(l:programming/coordinate_operator)Coordinate Operator/$ widget for information about coordinate variables and a general explanation about variables."
     },
     {
       "type": "text",

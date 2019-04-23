@@ -22,7 +22,7 @@
       "type": "text",
       "anchor": "variables",
       "title": "Linking Global Variables",
-      "text": "$(thing)Global Variables/$ are an advanced $(l:base_concepts/drone)Drone/$ feature, accessed via the $(l:programming/coordinate_operator)Coordinate Operator/$.$(p)$(thing)Right-clicking/$ a $(item)GPS Tool/$ in the air allows a variable name to be entered.$(p)Now, that $(thing)Global Variable/$ will track the value of the $(item)GPS Tool's/$ selected coordinate. This can be used to make $(thing)Drone programs/$ that use dynamic areas."
+      "text": "$(l:programming/variables#global)Global Variables/$ are an advanced $(l:base_concepts/drone)Drone/$ feature, accessed via the $(l:programming/coordinate_operator)Coordinate Operator/$.$(p)$(thing)Right-clicking/$ a $(item)GPS Tool/$ in the air allows a variable name to be entered.$(p)Now, that $(thing)Global Variable/$ will track the value of the $(item)GPS Tool's/$ selected coordinate. This can be used to make $(thing)Drone programs/$ that use dynamic areas."
     },
     {
       "type": "crafting",

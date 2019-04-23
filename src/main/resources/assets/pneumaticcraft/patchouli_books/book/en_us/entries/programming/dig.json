@@ -28,7 +28,7 @@
       "images": [
         "pneumaticcraft:textures/items/progwidgets/dig_piece.png"
       ],
-      "text": "$(italic)Dig Widget/$"
+      "text": "$(italic)Hi ho/$"
     }
   ]
 }
