@@ -14,6 +14,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Thermopneumatic Processing Plant now runs up to twice as fast if given more heat than the minimum recipe requirement (but also consumes heat proportionally more quickly).
 * Thermopneumatic Processing Plant now emits smoke particles when running.
 * Thermopneumatic Processing Plant GUI now shows required temperature in heat gauge tooltip.
+* JEI version 4.12.0 or later is now required
 #### Fixes
 * Fixed crash in Programmable Controller when running a program which refers the "$owner" special variable. The Programmable Controller's owner's (head) position is now returned, as expected.
 * Fixed Thermopneumatic Processing Plant sometimes forgetting what it was supposed to be doing.
