@@ -31,6 +31,7 @@ public abstract class TubeModuleRedstoneEmitting extends TubeModule {
 
     @Override
     public void addInfo(List<String> curInfo) {
+        super.addInfo(curInfo);
         curInfo.add("Emitting redstone: " + TextFormatting.WHITE + redstone);
     }
 

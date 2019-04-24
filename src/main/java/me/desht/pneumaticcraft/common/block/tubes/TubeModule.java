@@ -13,8 +13,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.swing.TextField;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -161,6 +163,10 @@ public abstract class TubeModule implements ISidedPart {
     }
 
     public void addInfo(List<String> curInfo) {
+        if (upgraded) {
+            ItemStack stack = new ItemStack(Itemss.ADVANCED_PCB);
+            curInfo.add(TextFormatting.GREEN + stack.getDisplayName() + " installed");
+        }
     }
 
     public void addItemDescription(List<String> curInfo) {

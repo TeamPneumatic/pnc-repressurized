@@ -196,6 +196,7 @@ public class ModuleAirGrate extends TubeModule {
 
     @Override
     public void addInfo(List<String> curInfo) {
+        super.addInfo(curInfo);
         curInfo.add("Status: " + TextFormatting.WHITE + (grateRange == 0 ? "Idle" : vacuum ? "Attracting" : "Repelling"));
         curInfo.add("Range: " + TextFormatting.WHITE + grateRange + " blocks");
         if (entityFilter != null)

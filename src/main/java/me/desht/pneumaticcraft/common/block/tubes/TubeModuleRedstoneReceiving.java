@@ -23,6 +23,7 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
 
     @Override
     public void addInfo(List<String> curInfo) {
+        super.addInfo(curInfo);
         curInfo.add("Applied redstone: " + TextFormatting.WHITE + redstoneLevel);
     }
 

@@ -46,6 +46,7 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
 
     @Override
     public void addInfo(List<String> curInfo) {
+        super.addInfo(curInfo);
         curInfo.add("Flow: " + TextFormatting.WHITE + oldFlow + " mL/tick");
         super.addInfo(curInfo);
     }
