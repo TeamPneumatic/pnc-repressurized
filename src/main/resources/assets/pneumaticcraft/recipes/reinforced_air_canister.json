@@ -1,0 +1,25 @@
+{
+  "type": "pneumaticcraft:shaped_pressurizable",
+  "pattern": [
+    " t ",
+    "ici",
+    "iii"
+  ],
+  "key": {
+    "c": {
+      "item": "pneumaticcraft:air_canister",
+      "data": 32767
+    },
+    "t": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIronCompressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:reinforced_air_canister",
+    "data": 30000
+  }
+}

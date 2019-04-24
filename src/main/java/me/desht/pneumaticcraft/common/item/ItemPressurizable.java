@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IPressurizable;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -21,7 +22,7 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
         setMaxStackSize(1);
         setMaxDamage(maxAir);
         this.volume = volume;
-        maxPressure = maxAir / volume;
+        maxPressure = (float)maxAir / volume;
         setNoRepair();
     }
 
@@ -57,6 +58,16 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
         return volume;
     }
 
+    @Override
+    public boolean showDurabilityBar(ItemStack stack) {
+        return shouldShowPressureDurability(stack);
+    }
+
+    @Override
+    public int getRGBDurabilityForDisplay(ItemStack stack) {
+        return getDurabilityColor(stack);
+    }
+
     static void addPressureTooltip(ItemStack stack, List<String> textList) {
         IPressurizable p = IPressurizable.of(stack);
         if (p != null) {
@@ -71,5 +82,21 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
             }
             textList.add(color + I18n.format("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(p.getPressure(stack), 1)));
         }
+    }
+
+    public static int getDurabilityColor(ItemStack stack) {
+        IPressurizable p = IPressurizable.of(stack);
+        if (p != null) {
+            float f = p.getPressure(stack) / p.maxPressure(stack);
+            int c = (int) (64 + 191 * f);
+            return 0x40 << 16 | c << 8 | 0xFF;
+        }
+        return 0xC0C0C0;
+    }
+
+    public static boolean shouldShowPressureDurability(ItemStack stack) {
+        if (ConfigHandler.client.alwaysShowPressureDurabilityBar) return true;
+        IPressurizable p = IPressurizable.of(stack);
+        return p != null && p.getPressure(stack) < p.maxPressure(stack);
     }
 }

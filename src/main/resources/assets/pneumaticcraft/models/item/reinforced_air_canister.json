@@ -1,0 +1,6 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:items/reinforced_air_canister"
+   },
+   "parent" : "item/generated"
+}

@@ -52,6 +52,8 @@ public class Itemss {
     public static final Item PLASTIC = null;
     @ObjectHolder("air_canister")
     public static final Item AIR_CANISTER = null;
+    @ObjectHolder("reinforced_air_canister")
+    public static final Item REINFORCED_AIR_CANISTER = null;
     @ObjectHolder("vortex_cannon")
     public static final Item VORTEX_CANNON = null;
     @ObjectHolder("pneumatic_cylinder")
@@ -166,6 +168,7 @@ public class Itemss {
         registerItem(registry, new ItemPneumatic("turbine_blade"));
         registerItem(registry, new ItemPlastic());
         registerItem(registry, new ItemPressurizable("air_canister", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));
+        registerItem(registry, new ItemReinforcedAirCanister());
         registerItem(registry, new ItemVortexCannon());
         registerItem(registry, new ItemPneumatic("pneumatic_cylinder"));
         registerItem(registry, new ItemPneumaticArmor("pneumatic_helmet", EntityEquipmentSlot.HEAD));

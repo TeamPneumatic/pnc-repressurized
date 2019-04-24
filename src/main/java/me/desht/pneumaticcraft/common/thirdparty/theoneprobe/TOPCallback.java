@@ -138,8 +138,10 @@ public class TOPCallback implements Function<ITheOneProbe, Void> {
         if (module != null) {
             List<String> currenttip = new ArrayList<>();
             module.addInfo(currenttip);
-            IProbeInfo vert = probeInfo.vertical(new LayoutStyle().borderColor(0xFF4040FF).spacing(3));
-            currenttip.forEach(vert::text);
+            if (!currenttip.isEmpty()) {
+                IProbeInfo vert = probeInfo.vertical(new LayoutStyle().borderColor(0xFF4040FF).spacing(3));
+                currenttip.forEach(vert::text);
+            }
         }
     }
 

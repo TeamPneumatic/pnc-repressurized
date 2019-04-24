@@ -7,6 +7,8 @@ Changes are in reverse chronological order; newest changes at the top.
 ## Minecraft 1.12.2
 
 ### 0.10.4-??? (unreleased)
+#### New
+* Added a Reinforced Air Canister, which can hold up to 120000mL of air at 20 bar. These can be used (with a little design) as a wireless pressure transfer mechanism using a couple of Aerial Interfaces & Charging Modules and a (vanilla) Ender Chest...
 #### Updates
 * Plastic Mixer can now be configured to accept alternative input fluids, either via Java API or via CraftTweaker.
   * Ratio of liquid to solid plastic sheets can be defined on a per-input basis too.
@@ -15,7 +17,10 @@ Changes are in reverse chronological order; newest changes at the top.
 * Thermopneumatic Processing Plant now emits smoke particles when running.
 * Thermopneumatic Processing Plant GUI now shows required temperature in heat gauge tooltip.
 * JEI version 4.12.0 or later is now required.
-* Refinery smoke particles are now all handled client-side: less server->client traffic there.
+* Refinery smoke particles are now all handled client-side, reducing server->client traffic when the Refinery is running.
+* Pressurizable items now draw their durability bar in a pale blue colour (darkening as the pressure decreases). Since the bar is showing air and not actual damage, this differentiates it from a normal item damage bar.
+* Pressure bar is now always shown on pressurizable items, even when full. If you prefer the old behaviour, set the clientside "alwaysShowPressureDurabilityBar" config setting to false.
+* Pneumatic Armor now shows the new-style pressure bar in addition to the existing durability bar.
 #### Fixes
 * Fixed crash in Programmable Controller when running a program which refers to the "$owner" special variable. The Programmable Controller's owner's (head) position is now returned, as expected.
 * Fixed Thermopneumatic Processing Plant sometimes forgetting what it was supposed to be doing.

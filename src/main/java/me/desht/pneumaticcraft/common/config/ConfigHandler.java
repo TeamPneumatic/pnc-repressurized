@@ -247,6 +247,8 @@ public class ConfigHandler {
         public boolean guiBevel = true;
         @Config.Comment("Remote Editor GUI: should GUI controls be snapped to 4x4 grid?")
         public boolean guiRemoteGridSnap;
+        @Config.Comment("Always show the pressure durability bar for pressurizable items, even when full?")
+        public boolean alwaysShowPressureDurabilityBar = true;
     }
 
     public static class HelmetOptions {

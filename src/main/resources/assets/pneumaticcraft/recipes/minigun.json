@@ -1,8 +1,9 @@
 {
-  "type": "forge:ore_shaped",
+  "type": "pneumaticcraft:shaped_pressurizable",
   "pattern": [
+    "a  ",
     "cib",
-    "g  "
+    "gl "
   ],
   "key": {
     "b": {
@@ -10,7 +11,7 @@
     },
     "c": {
       "type": "forge:ore_dict",
-      "ore": "blockIronCompressed"
+      "ore": "chest"
     },
     "g": {
       "type": "forge:ore_dict",
@@ -19,6 +20,13 @@
     "i": {
       "type": "forge:ore_dict",
       "ore": "ingotIronCompressed"
+    },
+    "l": {
+      "item": "minecraft:lever"
+    },
+    "a": {
+      "item": "pneumaticcraft:air_canister",
+      "data": 32767
     }
   },
   "result": {

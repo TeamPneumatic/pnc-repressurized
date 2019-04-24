@@ -36,19 +36,24 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderBiped;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
@@ -562,6 +567,48 @@ public class ClientEventHandler {
     private int renderString(FontRenderer fr, String s, int x, int y) {
         fr.drawStringWithShadow(s, x, y, 0xFFAAAAAA);
         return fr.getStringWidth(s);
+    }
+
+    @SubscribeEvent
+    public void drawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
+        // with thanks to V0idWa1k3r
+        // https://github.com/V0idWa1k3r/ExPetrum/blob/master/src/main/java/v0id/exp/client/ExPHandlerClient.java#L235
+        if (event.getGui() instanceof GuiContainer) {
+            GlStateManager.disableTexture2D();
+            GlStateManager.color(1F, 1F, 1F, 1F);
+            BufferBuilder bb = Tessellator.getInstance().getBuffer();
+            GuiContainer container = (GuiContainer) event.getGui();
+            int i = container.getGuiLeft();
+            int j = container.getGuiTop();
+            bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+            for (Slot s : container.inventorySlots.inventorySlots) {
+                if (!s.getStack().isEmpty()) {
+                    float x = s.xPos;
+                    float y = s.yPos;
+                    if (s.getStack().getItem() instanceof ItemPneumaticArmor && ItemPressurizable.shouldShowPressureDurability(s.getStack())) {
+                        // render secondary durability bar showing remaining air
+                        ItemPneumaticArmor a = (ItemPneumaticArmor) s.getStack().getItem();
+                        float val = a.getPressure(s.getStack()) / a.maxPressure(s.getStack());
+                        int c = ItemPressurizable.getDurabilityColor(s.getStack());
+                        float r = ((c & 0xFF0000) >> 16) / 256f;
+                        float g = ((c & 0xFF00) >> 8) / 256f;
+                        float b = ((c & 0xFF)) / 256f;
+
+                        bb.pos(i + x + 2, j + y + 17, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+                        bb.pos(i + x + 15, j + y + 17, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+                        bb.pos(i + x + 15, j + y + 16, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+                        bb.pos(i + x + 2, j + y + 16, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+
+                        bb.pos(i + x + 2, j + y + 16, 1).color(r, g, b, 1F).endVertex();
+                        bb.pos(i + x + 2 + 13 * val, j + y + 16, 1).color(r, g, b, 1F).endVertex();
+                        bb.pos(i + x + 2 + 13 * val, j + y + 15, 1).color(r, g, b, 1F).endVertex();
+                        bb.pos(i + x + 2, j + y + 15, 1).color(r, g, b, 1F).endVertex();
+                    }
+                }
+            }
+            Tessellator.getInstance().draw();
+            GlStateManager.enableTexture2D();
+        }
     }
 }
 
