@@ -40,6 +40,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     private static final int INVENTORY_SIZE = 1;
     private static final int CRAFTING_TIME = 60 * 100;
+    private static final double MAX_SPEED_UP = 2.5;
 
     @GuiSynced
     @DescSynced
@@ -111,13 +112,13 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                 requiredPressure = currentRecipe.getRequiredPressure(inputTank.getFluid(), stackInSlot);
                 requiredTemperature = currentRecipe.getRequiredTemperature(inputTank.getFluid(), stackInSlot);
                 if (redstoneAllows() && heatExchanger.getTemperature() >= requiredTemperature && getPressure() >= getMinWorkingPressure()) {
-                    double inc = requiredTemperature > 0 ? Math.min(2.0, heatExchanger.getTemperature() / requiredTemperature) : 1.0;
+                    double inc = requiredTemperature > 0 ? Math.min(MAX_SPEED_UP, heatExchanger.getTemperature() / requiredTemperature) : 1.0;
                     craftingProgress += inc * 100;
                     if (craftingProgress >= CRAFTING_TIME) {
-                        int filled = outputTank.fill(currentRecipe.getRecipeOutput(inputTank.getFluid(), stackInSlot).copy(), true);
+                        outputTank.fill(currentRecipe.getRecipeOutput(inputTank.getFluid(), stackInSlot).copy(), true);
                         currentRecipe.useResources(inputTank, handler);
                         addAir(-currentRecipe.airUsed(inputTank.getFluid(), stackInSlot));
-                        heatExchanger.addHeat(-currentRecipe.heatUsed(inputTank.getFluid(), stackInSlot) * inc);
+                        heatExchanger.addHeat(-currentRecipe.heatUsed(inputTank.getFluid(), stackInSlot) * inc * 0.75);
                         craftingProgress -= CRAFTING_TIME;
                     }
                     didWork = true;
