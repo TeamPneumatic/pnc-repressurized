@@ -379,7 +379,7 @@ public class ConfigHandler {
         public double mekThermalResistanceMult = 100.0;
         @Config.Comment("Mekanism heat conversion efficiency.  Smaller values mean Mekanism heat is worth less PneumaticCraft heat. Set to 0.0 to disable Mekanism heat integration entirely.")
         @Config.RangeDouble(min = 0.0)
-        public double mekHeatEfficiency = 0.2;
+        public double mekHeatEfficiency = 0.4;
     }
 
     public static void setProgrammerDifficulty(int difficulty) {
