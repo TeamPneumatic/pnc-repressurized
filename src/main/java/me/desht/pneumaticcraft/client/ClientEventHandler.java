@@ -593,16 +593,18 @@ public class ClientEventHandler {
                         float r = ((c & 0xFF0000) >> 16) / 256f;
                         float g = ((c & 0xFF00) >> 8) / 256f;
                         float b = ((c & 0xFF)) / 256f;
+                        int yOff = s.getStack().getItemDamage() > 0 ? 0 : 1;
 
-                        bb.pos(i + x + 2, j + y + 17, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-                        bb.pos(i + x + 15, j + y + 17, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-                        bb.pos(i + x + 15, j + y + 16, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-                        bb.pos(i + x + 2, j + y + 16, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-
-                        bb.pos(i + x + 2, j + y + 16, 1).color(r, g, b, 1F).endVertex();
-                        bb.pos(i + x + 2 + 13 * val, j + y + 16, 1).color(r, g, b, 1F).endVertex();
-                        bb.pos(i + x + 2 + 13 * val, j + y + 15, 1).color(r, g, b, 1F).endVertex();
-                        bb.pos(i + x + 2, j + y + 15, 1).color(r, g, b, 1F).endVertex();
+                        if (yOff == 1) {
+                            bb.pos(i + x + 2, j + y + 15, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+                            bb.pos(i + x + 15, j + y + 15, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+                            bb.pos(i + x + 15, j + y + 14, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+                            bb.pos(i + x + 2, j + y + 14, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+                        }
+                        bb.pos(i + x + 2, j + y + 13 + yOff, 300).color(r, g, b, 1F).endVertex();
+                        bb.pos(i + x + 2 + 13 * val, j + y + 13 + yOff, 300).color(r, g, b, 1F).endVertex();
+                        bb.pos(i + x + 2 + 13 * val, j + y + 12 + yOff, 300).color(r, g, b, 1F).endVertex();
+                        bb.pos(i + x + 2, j + y + 12 + yOff, 300).color(r, g, b, 1F).endVertex();
                     }
                 }
             }
