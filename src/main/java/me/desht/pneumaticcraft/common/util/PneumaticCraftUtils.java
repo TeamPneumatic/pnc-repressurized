@@ -659,60 +659,54 @@ public class PneumaticCraftUtils {
     }
 
     public static RayTraceResult getMouseOverServer(EntityLivingBase lookingEntity, double range) {
-
-        RayTraceResult mop = raytraceEntityBlocks(lookingEntity, range);
-        double d1 = range;
+        RayTraceResult result = raytraceEntityBlocks(lookingEntity, range);
+        double rangeSq = range * range;
         Pair<Vec3d, Vec3d> startAndEnd = getStartAndEndLookVec(lookingEntity, (float) range);
-        Vec3d vec3 = startAndEnd.getLeft();
+        Vec3d eyePos = startAndEnd.getLeft();
 
-        if (mop != null) {
-            d1 = mop.hitVec.distanceTo(vec3);
+        if (result != null) {
+            rangeSq = result.hitVec.squareDistanceTo(eyePos);
         }
 
-        Vec3d vec31 = lookingEntity.getLookVec();
-        Vec3d vec32 = startAndEnd.getRight();
-        Entity pointedEntity = null;
-        Vec3d vec33 = null;
-        float f1 = 1.0F;
-        List<Entity> list = lookingEntity.world.getEntitiesWithinAABBExcludingEntity(lookingEntity, lookingEntity.getEntityBoundingBox()
-                .grow(vec31.x * range, vec31.y * range, vec31.z * range).grow(f1, f1, f1));
-        double d2 = d1;
+        double rangeSq2 = rangeSq;
+        Vec3d hitVec = null;
+        Entity focusedEntity = null;
 
-        for (Entity entity : list) {
-            if (entity.canBeCollidedWith()) {
-                float f2 = entity.getCollisionBorderSize();
-                AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox().grow(f2, f2, f2);
-                RayTraceResult movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
+        Vec3d lookVec = lookingEntity.getLookVec().scale(range + 1);
+        AxisAlignedBB box = lookingEntity.getEntityBoundingBox().grow(lookVec.x, lookVec.y, lookVec.z);
 
-                if (axisalignedbb.contains(vec3)) {
-                    if (0.0D < d2 || d2 == 0.0D) {
-                        pointedEntity = entity;
-                        vec33 = movingobjectposition == null ? vec3 : movingobjectposition.hitVec;
-                        d2 = 0.0D;
-                    }
-                } else if (movingobjectposition != null) {
-                    double d3 = vec3.distanceTo(movingobjectposition.hitVec);
+        for (Entity entity : lookingEntity.world.getEntitiesInAABBexcluding(lookingEntity, box, Entity::canBeCollidedWith)) {
+            AxisAlignedBB aabb = entity.getEntityBoundingBox().grow(entity.getCollisionBorderSize());
+            RayTraceResult rtr = aabb.calculateIntercept(eyePos, startAndEnd.getRight());
 
-                    if (d3 < d2 || d2 == 0.0D) {
-                        if (entity == entity.getRidingEntity() && !entity.canRiderInteract()) {
-                            if (d2 == 0.0D) {
-                                pointedEntity = entity;
-                                vec33 = movingobjectposition.hitVec;
-                            }
-                        } else {
-                            pointedEntity = entity;
-                            vec33 = movingobjectposition.hitVec;
-                            d2 = d3;
+            if (aabb.contains(eyePos)) {
+                if (rangeSq2 >= 0.0D) {
+                    focusedEntity = entity;
+                    hitVec = rtr == null ? eyePos : rtr.hitVec;
+                    rangeSq2 = 0.0D;
+                }
+            } else if (rtr != null) {
+                double rangeSq3 = eyePos.squareDistanceTo(rtr.hitVec);
+
+                if (rangeSq3 < rangeSq2 || rangeSq2 == 0.0D) {
+                    if (entity == entity.getRidingEntity() && !entity.canRiderInteract()) {
+                        if (rangeSq2 == 0.0D) {
+                            focusedEntity = entity;
+                            hitVec = rtr.hitVec;
                         }
+                    } else {
+                        focusedEntity = entity;
+                        hitVec = rtr.hitVec;
+                        rangeSq2 = rangeSq3;
                     }
                 }
             }
         }
 
-        if (pointedEntity != null && (d2 < d1 || mop == null)) {
-            mop = new RayTraceResult(pointedEntity, vec33);
+        if (focusedEntity != null && (rangeSq2 < rangeSq || result == null)) {
+            result = new RayTraceResult(focusedEntity, hitVec);
         }
-        return mop;
+        return result;
     }
 
     public static PathFinder getPathFinder() {
