@@ -22,10 +22,11 @@ public class NodeProcessorDrone extends FlyingNodeProcessor {
     public int findPathOptions(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance)
     {
         int i = 0;
-        
+
+        float maxSq = maxDistance * maxDistance;
         for(EnumFacing dir : EnumFacing.VALUES){
             PathPoint point = openPoint(currentPoint.x + dir.getXOffset(), currentPoint.y + dir.getYOffset(), currentPoint.z + dir.getZOffset());
-            if(point != null && !point.visited && point.distanceTo(targetPoint) < maxDistance){
+            if(point != null && !point.visited && point.distanceToSquared(targetPoint) < maxSq){
                 pathOptions[i++] = point;
             }
         }
