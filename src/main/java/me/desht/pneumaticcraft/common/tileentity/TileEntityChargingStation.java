@@ -47,7 +47,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     private static final int INVENTORY_SIZE = 1;
 
     public static final int CHARGE_INVENTORY_INDEX = 0;
-    private static final float ANIMATION_AIR_SPEED = 0.001F;
 
     @GuiSynced
     public float chargingItemPressure;
@@ -140,8 +139,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     private List<Pair<IPressurizable, ItemStack>> findChargeableItems() {
         List<Pair<IPressurizable, ItemStack>> res = new ArrayList<>();
 
-        if (getChargingItem().getItem() instanceof IPressurizable) {
-            IPressurizable p = IPressurizable.of(getChargingItem());
+        IPressurizable p = IPressurizable.of(getChargingItem());
+        if (p != null) {
             res.add(Pair.of(p, getChargingItem()));
             chargingItemPressure = p.getPressure(getChargingItem());
         }

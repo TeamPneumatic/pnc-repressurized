@@ -45,8 +45,6 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
                 } else {
                     FluidStack fluidStack = FluidUtils.getFluidAt(drone.world(), pos, false);
                     if (fluidStack != null && ProgWidgetLiquidFilter.isLiquidValid(fluidStack.getFluid(), widget, 1)) {
-//                    Fluid fluid = FluidRegistry.lookupFluidForBlock(drone.world().getBlockState(pos).getBlock());
-//                    if (fluid != null && ProgWidgetLiquidFilter.isLiquidValid(fluid, widget, 1) && FluidUtils.isSourceBlock(drone.world(), pos)) {
                         count += 1000;
                     }
                 }

@@ -240,7 +240,6 @@ public class TileEntityRefinery extends TileEntityTickableBase
 
     @Override
     public boolean redstoneAllows() {
-//        if (getWorld().isRemote) onNeighborBlockUpdate();
         boolean isPoweredByRedstone = poweredRedstone > 0;
 
         TileEntityRefinery refinery = this;

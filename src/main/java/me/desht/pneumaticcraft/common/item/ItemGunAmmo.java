@@ -146,9 +146,6 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
      * @return the number of rounds fired
      */
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face, Vec3d hitVec) {
-        double x = pos.getX() + face.getXOffset();
-        double y = pos.getY() + face.getYOffset();
-        double z = pos.getZ() + face.getZOffset();
         World w = minigun.getPlayer().world;
         IBlockState state = w.getBlockState(pos);
         ((WorldServer) w).spawnParticle(EnumParticleTypes.BLOCK_DUST, hitVec.x, hitVec.y, hitVec.z, 10,
