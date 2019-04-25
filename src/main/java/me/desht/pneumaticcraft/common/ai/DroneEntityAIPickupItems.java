@@ -61,7 +61,7 @@ public class DroneEntityAIPickupItems extends EntityAIBase {
     @Override
     public boolean shouldContinueExecuting() {
         if (curPickingUpEntity.isDead) return false;
-        if (new Vec3d(curPickingUpEntity.posX, curPickingUpEntity.posY, curPickingUpEntity.posZ).distanceTo(drone.getDronePos()) < 1.5) {
+        if (new Vec3d(curPickingUpEntity.posX, curPickingUpEntity.posY, curPickingUpEntity.posZ).squareDistanceTo(drone.getDronePos()) < 2.25) {
             ItemStack stack = curPickingUpEntity.getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
                 tryPickupItem(drone, curPickingUpEntity);
@@ -71,14 +71,19 @@ public class DroneEntityAIPickupItems extends EntityAIBase {
         return !drone.getPathNavigator().hasNoPath();
     }
 
-    public static void tryPickupItem(IDrone drone, EntityItem itemEntity){
+    static void tryPickupItem(IDrone drone, EntityItem itemEntity){
         ItemStack stack = itemEntity.getItem();
         int stackSize = stack.getCount();
-        ItemStack remainder = PneumaticCraftUtils.exportStackToInventory(drone, stack, EnumFacing.UP); // side doesn't matter, drones aren't ISided.
+
+        ItemStack remainder = PneumaticCraftUtils.exportStackToInventory(drone, stack, EnumFacing.UP);
+        int collected = stackSize - remainder.getCount();
+        if (collected > 0) {
+            drone.onItemPickupEvent(itemEntity, collected);
+        }
         if (remainder.isEmpty()) {
-//          new EventHandlerPneumaticCraft().onPlayerPickup(new EntityItemPickupEvent(drone.getFakePlayer(), curPickingUpEntity));//not posting the event globally, as I don't have a way of handling a canceled event.
-            drone.onItemPickupEvent(itemEntity, stackSize);
             itemEntity.setDead();
+        } else if (collected > 0) {
+            itemEntity.setItem(remainder);
         }
     }
 }

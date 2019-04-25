@@ -310,16 +310,19 @@ public class DroneAIManager implements IVariableProvider {
         }
     }
     
-    private void pickupItemsIfMagnet(){
+    private void pickupItemsIfMagnet() {
         int magnetUpgrades = drone.getUpgrades(ItemRegistry.getInstance().getUpgrade(EnumUpgrade.MAGNET));
-        if(magnetUpgrades > 0){
+        if (magnetUpgrades > 0) {
             int range = Math.min(6, 1 + magnetUpgrades);
             Vec3d v = drone.getDronePos();
             AxisAlignedBB aabb = new AxisAlignedBB(v.x, v.y, v.z, v.x, v.y, v.z).grow(range);
-            List<EntityItem> items = drone.world().getEntitiesWithinAABB(EntityItem.class, aabb, 
-                                                                         item -> drone.getDronePos().distanceTo(item.getPositionVector()) <= range);
-            
-            for(EntityItem item : items){
+            List<EntityItem> items = drone.world().getEntitiesWithinAABB(EntityItem.class, aabb,
+                    item -> item != null
+                            && item.isEntityAlive()
+                            && !item.cannotPickup()
+                            && drone.getDronePos().squareDistanceTo(item.getPositionVector()) <= range * range);
+
+            for (EntityItem item : items) {
                 DroneEntityAIPickupItems.tryPickupItem(drone, item);
             }
         }
