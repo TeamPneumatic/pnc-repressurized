@@ -26,6 +26,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Thermopneumatic Processing Plant sometimes forgetting what it was supposed to be doing.
 * GPS Area Tools may now be used when setting an area widget's position via the inventory search GUI (previously this caused a crash). Note that when the area tool contains multiple positions, an arbitrary position will be selected.
 * Aerial Interface now properly enforces minimum pressure requirements for moving items in & out.
+* Hopefully resolve some occasional item dupe issues relating to Drones with Magnet Upgrades
 
 ### 0.10.3-337 (6 Apr 2019)
 #### New
