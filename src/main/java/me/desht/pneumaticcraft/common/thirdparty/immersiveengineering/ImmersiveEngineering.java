@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.block.Block;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @GameRegistry.ObjectHolder(ModIds.IMMERSIVEENGINEERING)
@@ -12,7 +13,12 @@ public class ImmersiveEngineering implements IThirdParty {
 
     @GameRegistry.ObjectHolder("hemp")
     public static final Block HEMP_BLOCK = null;
-    
+
+    @Override
+    public void preInit() {
+        MinecraftForge.EVENT_BUS.register(ElectricAttackHandler.class);
+    }
+
     @Override
     public void postInit() {
         if (HEMP_BLOCK != null){
