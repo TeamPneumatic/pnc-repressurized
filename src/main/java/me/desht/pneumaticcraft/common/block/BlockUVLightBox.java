@@ -42,7 +42,7 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
         state = super.getActualState(state, worldIn, pos);
         TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
         if (te instanceof TileEntityUVLightBox) {
-            state = state.withProperty(LOADED, !((TileEntityUVLightBox) te).getLoadedPCB().isEmpty());
+            state = state.withProperty(LOADED, ((TileEntityUVLightBox) te).hasLoadedPCB);
         }
         return state;
     }

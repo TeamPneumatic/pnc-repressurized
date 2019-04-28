@@ -22,10 +22,10 @@ public class RenderChargingStation extends AbstractModelRenderer<TileEntityCharg
 
     @Override
     void renderModel(TileEntityChargingStation te, float partialTicks) {
-        if (te != null && !te.getChargingItem().isEmpty()) {
+        if (te != null && !te.chargingStackSynced.isEmpty()) {
             EntityItem ghostEntityItem = new EntityItem(te.getWorld());
             ghostEntityItem.hoverStart = 0.0F;
-            ghostEntityItem.setItem(te.getChargingItem());
+            ghostEntityItem.setItem(te.chargingStackSynced);
             if (customRenderItem == null) {
                 customRenderItem = new NoBobItemRenderer();
             }

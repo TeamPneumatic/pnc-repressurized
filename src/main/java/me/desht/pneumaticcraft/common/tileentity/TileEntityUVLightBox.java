@@ -44,14 +44,12 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     private Object light = null;
 
     @DescSynced
-    public boolean leftConnected;
-    @DescSynced
-    public boolean rightConnected;
-    @DescSynced
     public boolean areLightsOn;
     @GuiSynced
     public int redstoneMode;
     @DescSynced
+    public boolean hasLoadedPCB;
+
     public final LightBoxItemHandlerInternal inventory = new LightBoxItemHandlerInternal();
     private final LightBoxItemHandlerExternal inventoryExt = new LightBoxItemHandlerExternal(inventory);
     public int ticksExisted;
@@ -101,6 +99,13 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
                 updateNeighbours();
             }
         }
+    }
+
+    @Override
+    protected void onFirstServerUpdate() {
+        super.onFirstServerUpdate();
+
+        hasLoadedPCB = !getLoadedPCB().isEmpty();
     }
 
     private int ticksPerProgress(int damage) {
@@ -155,15 +160,13 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     private void updateConnections() {
-        leftConnected = false;
-        rightConnected = false;
+        boolean leftConnected = false;
 
         List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         for (Pair<EnumFacing, IAirHandler> entry : connections) {
             if (entry.getKey() == getRotation().rotateY()) { //TODO 1.8 test
                 leftConnected = true;
             } else if (entry.getKey() == getRotation().rotateYCCW()) {
-                rightConnected = true;
             }
         }
     }
@@ -259,6 +262,13 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         @Override
         public boolean test(Integer integer, ItemStack itemStack) {
             return itemStack.isEmpty() || itemStack.getItem() instanceof ItemEmptyPCB;
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+
+            hasLoadedPCB = !getStackInSlot(slot).isEmpty();
         }
     }
 

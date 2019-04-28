@@ -26,7 +26,7 @@ public class ChargeableItemHandler extends FilteredItemStackHandler {
     }
 
     private ItemStack getChargingStack() {
-        return ((TileEntityChargingStation) te).getChargingItem();
+        return ((TileEntityChargingStation) te).getChargingStack();
     }
 
     public void writeToNBT() {
