@@ -101,7 +101,7 @@ public class PacketUpdateGui extends AbstractPacket<PacketUpdateGui> {
                 buf.writeByte((Byte) value);
                 break;
             case 6:
-                ByteBufUtils.writeItemStack(buf, (ItemStack) value);
+                ByteBufUtils.writeItemStack(buf, value == null ? ItemStack.EMPTY : (ItemStack) value);
                 break;
             case 7:
                 buf.writeBoolean(value != null);
