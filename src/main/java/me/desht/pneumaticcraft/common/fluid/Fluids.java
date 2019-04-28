@@ -6,10 +6,12 @@ import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.BlockFluidEtchingAcid;
 import me.desht.pneumaticcraft.common.block.BlockFluidPneumaticCraft;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.MaterialLiquid;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -66,6 +68,12 @@ public class Fluids {
     public static void init() {
         // stuff that needs to be done AFTER items & blocks are registered
         PneumaticCraftAPIHandler.getInstance().registerRefineryInput(Fluids.OIL);
+
+        // no magnet'ing PCB's out of etching acid pools
+        PneumaticCraftAPIHandler.getInstance().getItemRegistry().registerMagnetSuppressor(
+                e -> e instanceof EntityItem && ((EntityItem) e).getItem().getItem() == Itemss.EMPTY_PCB
+                        && e.getEntityWorld().getBlockState(e.getPosition()).getBlock() == Fluids.ETCHING_ACID.getBlock()
+        );
     }
 
     private static <T extends Block & IFluidBlock> Fluid createFluid(String name,
