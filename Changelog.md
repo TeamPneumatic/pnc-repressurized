@@ -13,20 +13,25 @@ Changes are in reverse chronological order; newest changes at the top.
 * Plastic Mixer can now be configured to accept alternative input fluids, either via Java API or via CraftTweaker.
   * Ratio of liquid to solid plastic sheets can be defined on a per-input basis too.
   * CT docs will be added to https://crafttweaker.readthedocs.io/en/latest/#Mods/PneumaticCraft_Repressurized/PneumaticCraft_Repressurized/ but see https://github.com/TeamPneumatic/pnc-repressurized/issues/326 for now.
-* Thermopneumatic Processing Plant now runs up to 2.5 times as fast if given more heat than the minimum recipe requirement; heat will also be consumed more quickly, but it's slightly more efficient in terms of heat usage to run the plant hotter than the minimum.
-* Thermopneumatic Processing Plant now emits smoke particles when running.
-* Thermopneumatic Processing Plant GUI now shows required temperature in heat gauge tooltip.
+* Thermopneumatic Processing Plant updates:
+  * Thermopneumatic Processing Plant now runs up to 2.5 times as fast if given more heat than the minimum recipe requirement; heat will also be consumed more quickly, but it's slightly more efficient in terms of heat usage to run the plant hotter than the minimum.
+  * Thermopneumatic Processing Plant now emits smoke particles when running.
+  * Thermopneumatic Processing Plant GUI now shows required temperature in heat gauge tooltip.
 * JEI version 4.12.0 or later is now required.
 * Refinery smoke particles are now all handled client-side, reducing server->client traffic when the Refinery is running.
-* Pressurizable items now draw their durability bar in a pale blue colour (darkening as the pressure decreases). Since the bar is showing air and not actual damage, this differentiates it from a normal item damage bar.
-* Pressure bar is now always shown on pressurizable items, even when full. If you prefer the old behaviour, set the clientside "alwaysShowPressureDurabilityBar" config setting to false.
-* Pneumatic Armor now shows the new-style pressure bar in addition to the existing durability bar.
+* Pressurizable items now draw their durability bar in a light blue colour (darkening as the pressure decreases). Since the bar is showing air and not actual damage, this differentiates it from a normal item damage bar.
+  * The pressure bar is now always shown on pressurizable items, even when full. If you prefer the old behaviour, set the clientside ``alwaysShowPressureDurabilityBar`` config setting to false.
+  * Pneumatic Armor now shows the new-style pressure bar in addition to the existing durability bar.
+* Pneumatic Chestplate Magnet Upgrade will no longer pull unfinished PCB's from Etching Acid pools.
+* Pneumatic Chestplate Security Upgrade now provides electrical protection from Immersive Engineering wiring. You will not be injured, but air will be used from the chestplate to provide this protection. Knockback is *not* prevented.
+* Similarly, a Security Upgrade in a Drone will protect it from IE wiring, also at an air cost. Drones didn't get knocked back by the shock in any case. 
 #### Fixes
-* Fixed crash in Programmable Controller when running a program which refers to the "$owner" special variable. The Programmable Controller's owner's (head) position is now returned, as expected.
+* Fixed crash in Programmable Controller when running a program which refers to the ``$owner`` special variable. The Programmable Controller's owner's (head) position is now returned, as expected.
 * Fixed Thermopneumatic Processing Plant sometimes forgetting what it was supposed to be doing.
 * GPS Area Tools may now be used when setting an area widget's position via the inventory search GUI (previously this caused a crash). Note that when the area tool contains multiple positions, an arbitrary position will be selected.
 * Aerial Interface now properly enforces minimum pressure requirements for moving items in & out.
-* Hopefully resolve some occasional item dupe issues relating to Drones with Magnet Upgrades
+* Fixed item dupe issue relating to Drones with Magnet Upgrades in certain circumstances.
+* Fixed excessive packet sending causing FPS drops with Charging Station and UV Light Box when items were being processed.
 
 ### 0.10.3-337 (6 Apr 2019)
 #### New
