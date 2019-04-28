@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.10.4-??? (unreleased)
+### 0.10.4-343 (28 Apr 2019)
 #### New
 * Added a Reinforced Air Canister, which can hold up to 120000mL of air at 20 bar. These can be used (with a little design) as a wireless pressure transfer mechanism using a couple of Aerial Interfaces & Charging Modules and a (vanilla) Ender Chest...
 #### Updates
