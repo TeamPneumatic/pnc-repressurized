@@ -41,7 +41,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     );
 
     @DescSynced
-    public ItemStack chargingStackSynced;  // the item being charged, minus any meta/nbt - for client display purposes
+    public ItemStack chargingStackSynced = ItemStack.EMPTY;  // the item being charged, minus any meta/nbt - for client display purposes
 
     private ChargingStationHandler inventory;  // holds the item being charged
     private ChargeableItemHandler chargeableInventory;  // inventory of the item being charged

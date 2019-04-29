@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.10.5-346 (29 Apr 2019)
+#### Fixes
+* Hotfix: fix crashes due to null ItemStack field in Charging Station tile entity (manifested either as server crashes on world load or client crashes when rendering the Charging Station charged item)
+
 ### 0.10.4-343 (28 Apr 2019)
 #### New
 * Added a Reinforced Air Canister, which can hold up to 120000mL of air at 20 bar. These can be used (with a little design) as a wireless pressure transfer mechanism using a couple of Aerial Interfaces & Charging Modules and a (vanilla) Ender Chest...
