@@ -146,8 +146,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     public void sendDescriptionPacket() {
-        IBlockState state = world.getBlockState(getPos());
-        world.notifyBlockUpdate(getPos(), state, state, 3);
+//        IBlockState state = world.getBlockState(getPos());
+//        world.notifyBlockUpdate(getPos(), state, state, 3);
         sendDescPacket(256);
     }
 
