@@ -53,6 +53,7 @@ public class UpgradeRenderHandlerList {
         addUpgradeRenderer(new MagnetUpgradeRenderHandler());
         addUpgradeRenderer(new ChargingUpgradeRenderHandler());
         addUpgradeRenderer(new ChestplateLauncherHandler());
+        addUpgradeRenderer(new AirConUpgradeHandler());
 
         addUpgradeRenderer(new RunSpeedUpgradeHandler());
         addUpgradeRenderer(new JumpBoostUpgradeHandler());

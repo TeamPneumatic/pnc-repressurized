@@ -18,12 +18,20 @@
     {
       "type": "text",
       "title": "Insulation",
+      "anchor": "insulation",
       "text": "Machines will lose heat to the air if left exposed; this is particularly noticeable with the $(l:manufacturing/refinery)Refinery/$, which has many exposed faces, but is also true of any heat-conducting block, including $(l:base_concepts/basic_materials#compressed_iron_block)Compressed Iron Blocks/$.$(p)To avoid this heat loss, ensure that no faces are exposed to air blocks; any non-conducting block will do. It doesn't have to be a full block, either - $(item)Trapdoors/$ and $(item)slabs/$ will work fine."
     },
     {
       "type": "text",
       "title": "Heat Sources",
       "text": "Some machines in $(pncr) produce Heat that needs to be dissipated, and some require Heat to run.$(p)Therefore, you will need to $(l:base_concepts/heat_sources)find ways/$ to manipulate the temperature of these machines..."
+    },
+    {
+      "type": "spotlight",
+      "flag": "mod:toughasnails",
+      "title": "Tough As Nails",
+      "item": "toughasnails:thermometer",
+      "text": "Since $(l:https://minecraft.curseforge.com/projects/tough-as-nails)Tough As Nails/$ is installed, you should take extra care around hot or cold $(pncr) machines and blocks, since they will have an effect on your temperature!$(p)Blocks that are $(l:base_concepts/heat#insulation)insulated/$ will have a less pronounced heating or cooling effect."
     }
   ]
 }

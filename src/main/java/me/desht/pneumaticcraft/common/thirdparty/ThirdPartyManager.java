@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.thirdparty.mekanism.Mekanism;
 import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.thaumcraft.Thaumcraft;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
+import me.desht.pneumaticcraft.common.thirdparty.toughasnails.ToughAsNails;
 import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -73,6 +74,7 @@ public class ThirdPartyManager implements IGuiHandler {
             thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli.class);
             thirdPartyClasses.put(ModIds.MEKANISM, Mekanism.class);
             thirdPartyClasses.put(ModIds.BAUBLES, Baubles.class);
+            thirdPartyClasses.put(ModIds.TOUGH_AS_NAILS, ToughAsNails.class);
         } catch (Throwable e) {
             Log.error("A class loader loaded a class where we didn't expect it to do so! Please report, as third party content is broken.");
             e.printStackTrace();

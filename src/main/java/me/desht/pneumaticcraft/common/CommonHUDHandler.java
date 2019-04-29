@@ -94,6 +94,7 @@ public class CommonHUDHandler {
     private boolean entityTrackerEnabled;
     private boolean nightVisionEnabled;
     private boolean scubaEnabled;
+    private boolean airConEnabled;
     private boolean jetBootsEnabled;  // are jet boots switched on?
     private boolean jetBootsActive;  // are jet boots actually firing (player rising) ?
     private float flightAccel = 1.0F;  // increases while diving, decreases while climbing
@@ -588,6 +589,8 @@ public class CommonHUDHandler {
             nightVisionEnabled = state;
         } else if (handler instanceof ScubaUpgradeHandler) {
             scubaEnabled = state;
+        } else if (handler instanceof AirConUpgradeHandler) {
+            airConEnabled = state;
         }
     }
 
@@ -643,6 +646,10 @@ public class CommonHUDHandler {
 
     public boolean isJumpBoostEnabled() {
         return jumpBoostEnabled;
+    }
+
+    public boolean isAirConEnabled() {
+        return airConEnabled;
     }
 
     public float getArmorPressure(EntityEquipmentSlot slot) {

@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "toughasnails"
+    }
+  ],
+  "pattern": [
+    "lpl",
+    "cph",
+    "lpl"
+  ],
+  "key": {
+    "l": {
+      "item": "minecraft:dye",
+      "data": 4
+    },
+    "p": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "c": {
+      "item": "toughasnails:temperature_coil",
+      "data": 0
+    },
+    "h": {
+      "item": "toughasnails:temperature_coil",
+      "data": 1
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:air_conditioning_upgrade"
+  }
+}

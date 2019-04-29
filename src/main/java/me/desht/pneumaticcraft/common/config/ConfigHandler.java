@@ -382,6 +382,11 @@ public class ConfigHandler {
         @Config.Comment("Mekanism heat conversion efficiency.  Smaller values mean Mekanism heat is worth less PneumaticCraft heat. Set to 0.0 to disable Mekanism heat integration entirely.")
         @Config.RangeDouble(min = 0.0)
         public double mekHeatEfficiency = 0.4;
+        @Config.Comment("Tough As Nails temperature divider; smaller values make PneumaticCraft heat sources have a more pronounced effect on your temperature. Set to 0 to ignore PneumaticCraft heat sources.")
+        public float tanHeatDivider = 10.0f;
+        @Config.Comment("Interval in ticks with which to refresh heat information from PneumaticCraft heat sources to Tough As Nails. A larger interval is kinder to the server but will provide less precise temperature data to TAN.")
+        @Config.RangeInt(min = 1, max = 100)
+        public int tanRefreshInterval = 20;
     }
 
     public static void setProgrammerDifficulty(int difficulty) {

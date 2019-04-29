@@ -165,6 +165,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public static void registerHeatDisperser(IHeatDisperser disperser) {
         moddedDispersers.add(disperser);
     }
+
     /*
      * Even though this class doesn't implement ITickable, we'll keep the base update() logic here; classes
      * which extend non-tickable subclasses might need it (e.g. TileEntityPressureChamberInterface)

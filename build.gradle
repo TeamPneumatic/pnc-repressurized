@@ -179,6 +179,7 @@ dependencies {
     compileOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
     compileOnly "blusunrize:ImmersiveEngineering:${immersive_engineering_version}"
     compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
+    compileOnly "com.github.glitchfiend.biomesoplenty:ToughAsNails:${tan_version}:universal"
 }
 
 processResources {

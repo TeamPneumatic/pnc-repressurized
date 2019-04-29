@@ -21,6 +21,13 @@
     },
     {
       "type": "spotlight",
+      "flag": "mod:immersiveengineering",
+      "title": "Immersive Engineering",
+      "item": "immersiveengineering:wirecoil",
+      "text": "The $(item)Security Upgrade/$ will also provide protection from uninsulated $(l:https://minecraft.curseforge.com/projects/immersive-engineering)Immersive Engineering/$ wiring; you will not be injured by electric shocks from such wires, but this does cost air from the chestplate, proportional to the damage negated. This doesn't prevent any knockbacks."
+    },
+    {
+      "type": "spotlight",
       "item": "pneumaticcraft:magnet_upgrade",
       "text": "With one or more $(l:base_concepts/upgrades#magnet)Magnet Upgrades/$ installed, nearby items and XP orbs will be attracted to you for a very small air cost.  The base range is 5 blocks, but this can be increased up to 10 blocks by adding extra upgrades."
     },

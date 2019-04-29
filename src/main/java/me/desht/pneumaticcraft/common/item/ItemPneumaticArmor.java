@@ -163,9 +163,7 @@ public class ItemPneumaticArmor extends ItemArmor
             addApplicableUpgrade(slot, EnumUpgrade.VOLUME);
             addApplicableUpgrade(slot, EnumUpgrade.ITEM_LIFE);
             addApplicableUpgrade(slot, EnumUpgrade.ARMOR);
-            if (EnumUpgrade.THAUMCRAFT.isDepLoaded()) {
-                addApplicableUpgrade(slot, EnumUpgrade.THAUMCRAFT);
-            }
+            addApplicableUpgrade(slot, EnumUpgrade.THAUMCRAFT);
         }
         addApplicableUpgrade(EntityEquipmentSlot.HEAD, EnumUpgrade.RANGE);
         addApplicableUpgrade(EntityEquipmentSlot.HEAD, EnumUpgrade.SECURITY);
@@ -175,12 +173,15 @@ public class ItemPneumaticArmor extends ItemArmor
         addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.SECURITY);
         addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.MAGNET);
         addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.DISPENSER);
+        addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.AIR_CONDITIONING);
         addApplicableUpgrade(EntityEquipmentSlot.LEGS, EnumUpgrade.RANGE);
         addApplicableUpgrade(EntityEquipmentSlot.FEET, EnumUpgrade.JET_BOOTS);
     }
 
     private static void addApplicableUpgrade(EntityEquipmentSlot slot, EnumUpgrade what) {
-        applicableUpgrades.get(slot.getIndex()).add(CraftingRegistrator.getUpgrade(what).getItem());
+        if (what.isDepLoaded()) {
+            applicableUpgrades.get(slot.getIndex()).add(CraftingRegistrator.getUpgrade(what).getItem());
+        }
     }
 
     @Override
