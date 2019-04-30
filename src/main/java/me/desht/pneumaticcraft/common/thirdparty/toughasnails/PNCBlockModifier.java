@@ -75,7 +75,7 @@ public class PNCBlockModifier implements ITemperatureModifier {
                             side = rtr == null ? null : rtr.sideHit;
                         }
                         IHeatExchangerLogic logic = ((IHeatExchanger) te).getHeatExchangerLogic(side);
-                        if (logic != null) {
+                        if (logic != null && (logic.getTemperature() > 308 || logic.getTemperature() < 273)) {
                             float div = Math.max(1, Math.abs(x) + Math.abs(y) + Math.abs(z));
                             float div2 = side != null && world.isAirBlock(pos2.offset(side)) ? 1f : 3f;
                             float mod = (float) (logic.getTemperature() - 273) / (ConfigHandler.integration.tanHeatDivider * div * div2 * div3);
