@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControlled;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedAirCompressor;
@@ -30,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class TileEntityElectricCompressor extends TileEntityPneumaticBase implements IEnergySink, IWrenchable, IRedstoneControlled, IHeatExchanger {
-    public int outputTimer;//set to 20 when receiving energy, and decreased to 0 when not. Acts as a buffer before sending packets to update the client's rotation logic.
+    private int outputTimer;//set to 20 when receiving energy, and decreased to 0 when not. Acts as a buffer before sending packets to update the client's rotation logic.
 
     private boolean redstoneAllows;
     @GuiSynced
@@ -53,7 +54,7 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
     }
 
     public int getEfficiency() {
-        return TileEntityAdvancedAirCompressor.getEfficiency(heatExchanger.getTemperature());
+        return HeatUtil.getEfficiency(heatExchanger.getTemperatureAsInt());
     }
 
     @Override

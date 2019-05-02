@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -45,7 +46,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     }
 
     public int getEfficiency() {
-        return TileEntityAdvancedAirCompressor.getEfficiency(heatExchanger.getTemperature());
+        return HeatUtil.getEfficiency(heatExchanger.getTemperatureAsInt());
     }
 
     @Override

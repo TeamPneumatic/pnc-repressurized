@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,7 +44,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     }
 
     public int getEfficiency(){
-        return TileEntityAdvancedAirCompressor.getEfficiency(heatExchanger.getTemperature());
+        return HeatUtil.getEfficiency(heatExchanger.getTemperatureAsInt());
     }
 
     @Override

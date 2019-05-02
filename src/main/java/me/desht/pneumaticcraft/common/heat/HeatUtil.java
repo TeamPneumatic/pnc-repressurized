@@ -53,6 +53,16 @@ public class HeatUtil {
         }
     }
 
+    /**
+     * Get the efficiency of an advanced compressor based on its temperature.
+     * @param temperature the temperature
+     * @return efficiency percentage
+     */
+    public static int getEfficiency(int temperature) {
+        // 0% efficiency at > 350 degree C, 100% at < 50 degree C.
+        return MathHelper.clamp(((625 - temperature) / 3), 0, 100);
+    }
+
     public static String formatHeatString(int tempK) {
         return PneumaticCraftUtils.xlate("waila.temperature") + " " + TextFormatting.WHITE + (tempK - 273) + "°C";
     }

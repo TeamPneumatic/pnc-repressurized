@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.util.EnumFacing;
@@ -35,11 +36,7 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
 
     @Override
     public int getEfficiency() {
-        return getEfficiency(heatExchanger.getTemperature());
-    }
-
-    public static int getEfficiency(double temperature) {
-        return MathHelper.clamp((int) ((625 - temperature) / 3), 0, 100);//0% efficiency at > 350 degree C, 100% at < 50 degree C.
+        return HeatUtil.getEfficiency(heatExchanger.getTemperatureAsInt());
     }
 
 //    @Override

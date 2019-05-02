@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControlled;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedAirCompressor;
@@ -44,7 +45,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     }
 
     public int getEfficiency() {
-        return TileEntityAdvancedAirCompressor.getEfficiency(heatExchanger.getTemperature());
+        return HeatUtil.getEfficiency(heatExchanger.getTemperatureAsInt());
     }
 
     @Override

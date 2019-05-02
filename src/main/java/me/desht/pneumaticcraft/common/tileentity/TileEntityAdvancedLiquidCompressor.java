@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.util.EnumFacing;
@@ -35,7 +36,7 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
 
     @Override
     public int getEfficiency() {
-        return TileEntityAdvancedAirCompressor.getEfficiency(heatExchanger.getTemperature());
+        return HeatUtil.getEfficiency(heatExchanger.getTemperatureAsInt());
     }
 
     @Override
