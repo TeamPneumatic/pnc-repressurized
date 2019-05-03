@@ -50,6 +50,19 @@
       "type": "text",
       "title": "Dispenser Upgrade (cont.)",
       "text": "$(li)Some blocks have special $(item)Dispenser/$-like behaviour, such as $(item)TNT/$, or $(item)Arrows/$...$(li)Other blocks (like $(item)Torches/$) will be fired as 'tumbling' blocks which reform as blocks when they hit something.$(li)Other items will simply be fired as item entities."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:air_conditioning_upgrade",
+      "flag": "mod:toughasnails",
+      "title": "A/C Upgrade",
+      "text": "With up to four $(l:base_concepts/upgrades#air_conditioning)Air Conditioning Upgrades/$ installed, you will gain some protection from environmental temperature extremes added by the $(l:https://minecraft.curseforge.com/projects/tough-as-nails)Tough As Nails/$ mod. Air Conditioning will automatically engage if it detects that your body temperature is higher or lower than normal, and disengage when equilibrium has been restored."
+    },
+    {
+      "type": "text",
+      "flag": "mod:toughasnails",
+      "title": "A/C Upgrade (cont.)",
+      "text": "This does come at a moderate pressure cost, however, which is dependent on the level of heating or cooling required and the number of upgrades installed. Depending on the environment you're working in, you may not need the full four upgrades to remain comfortable."
     }
   ]
 }

@@ -109,6 +109,13 @@
             "anchor": "scuba",
             "recipe": "pneumaticcraft:scuba_upgrade",
             "text": "Creating a Scuba Upgrade"
+        },
+        {
+            "type": "crafting",
+            "flag": "mod:toughasnails",
+            "anchor": "air_conditioning",
+            "recipe": "pneumaticcraft:air_conditioning_upgrade",
+            "text": "Creating an Air Conditioning Upgrade"
         }
     ]
 }
