@@ -19,19 +19,17 @@ import java.util.List;
 public class GuiAirCompressor extends GuiPneumaticContainerBase<TileEntityAirCompressor> {
 
     public GuiAirCompressor(Container container, TileEntityAirCompressor te, String texture) {
-
         super(container, te, texture);
     }
 
     public GuiAirCompressor(InventoryPlayer player, TileEntityAirCompressor te) {
-
         super(new ContainerAirCompressor(player, te), te, Textures.GUI_AIR_COMPRESSOR_LOCATION);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-
         super.drawGuiContainerForegroundLayer(x, y);
+
         fontRenderer.drawString("Upgr.", 28, 19, 4210752);
     }
 

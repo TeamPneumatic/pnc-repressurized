@@ -195,6 +195,8 @@ public class ConfigHandler {
         @Config.Comment("The ratio of liquid plastic to solid plastic sheets in the Plastic Mixer, in mB per sheet")
         @Config.RangeInt(min = 1)
         public int plasticMixerPlasticRatio = 1000;
+        @Config.Comment("Thermal resistance between opposite faces of the Thermal Compressor. Higher values means heat leaks across (equalizes) more slowly, making the compressor better at converting heat differential to pressure.")
+        public double thermalCompressorThermalResistance = 150;
     }
 
     public static class Advanced {

@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.util.EnumFacing;
 
-public class TileEntityCompressedIronBlock extends TileEntityTickableBase implements IHeatExchanger, IComparatorSupport {
+public class TileEntityCompressedIronBlock extends TileEntityTickableBase implements IHeatExchanger, IComparatorSupport, IHeatTinted {
 
     protected final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
     @DescSynced
@@ -52,4 +52,8 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
         return HeatUtil.getComparatorOutput((int) heatExchanger.getTemperature());
     }
 
+    @Override
+    public int getHeatLevelForTintIndex(int tintIndex) {
+        return heatLevel;
+    }
 }

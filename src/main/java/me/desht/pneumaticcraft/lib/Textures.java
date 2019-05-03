@@ -277,7 +277,9 @@ public class Textures {
     public static final String GUI_KEROSENE_LAMP = GUI_LOCATION + "gui_kerosene_lamp.png";
     public static final String GUI_SENTRY_TURRET = GUI_LOCATION + "gui_sentry_turret.png";
     public static final String GUI_MINIGUN_MAGAZINE = GUI_LOCATION + "gui_minigun_magazine.png";
+    public static final String GUI_THERMAL_COMPRESSOR_LOCATION = GUI_LOCATION + "gui_thermal_compressor.png";
     public static final String WIDGET_AMADRON_OFFER_STRING = WIDGET_LOCATION + "widget_amadron_offer.png";
+
     public static final ResourceLocation GUI_WIDGET_OPTIONS = new ResourceLocation(GUI_WIDGET_OPTIONS_STRING);
     public static final ResourceLocation GUI_WIDGET_AREA = new ResourceLocation(GUI_LOCATION + "gui_widget_area.png");
     public static final ResourceLocation GUI_PASTEBIN = new ResourceLocation(GUI_LOCATION + "gui_pastebin.png");

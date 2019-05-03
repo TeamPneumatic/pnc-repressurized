@@ -52,6 +52,7 @@ public class TileEntityRegistrator {
         GameRegistry.registerTileEntity(TileEntitySentryTurret.class, RL("sentryTurret"));
         GameRegistry.registerTileEntity(TileEntityFluxCompressor.class, RL("fluxCompressor"));
         GameRegistry.registerTileEntity(TileEntityPneumaticDynamo.class, RL("pneumaticDynamo"));
+        GameRegistry.registerTileEntity(TileEntityThermalCompressor.class, RL("thermalCompressor"));
     }
 
 }

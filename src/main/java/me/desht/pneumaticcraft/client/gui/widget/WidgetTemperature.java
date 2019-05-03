@@ -12,7 +12,7 @@ import java.util.List;
 public class WidgetTemperature extends WidgetBase {
 
     private int[] scales;
-    private final IHeatExchangerLogic logic;
+    protected final IHeatExchangerLogic logic;
     private final int minTemp, maxTemp;
 
     public WidgetTemperature(int id, int x, int y, int minTemp, int maxTemp, IHeatExchangerLogic logic, int... scales) {

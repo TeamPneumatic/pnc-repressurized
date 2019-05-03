@@ -123,6 +123,8 @@ public class Blockss {
     public static final Block PNEUMATIC_DYNAMO = null;
     @GameRegistry.ObjectHolder("fake_ice")
     public static final Block FAKE_ICE = null;
+    @GameRegistry.ObjectHolder("thermal_compressor")
+    public static final Block THERMAL_COMPRESSOR = null;
 
     public static List<Block> blocks = new ArrayList<>();
 
@@ -179,6 +181,7 @@ public class Blockss {
         registerBlock(registry, new BlockFluxCompressor());
         registerBlock(registry, new BlockPneumaticDynamo());
         registerBlock(registry, new BlockFakeIce());
+        registerBlock(registry, new BlockThermalCompressor());
     }
 
     public static void registerBlock(IForgeRegistry<Block> registry, Block block) {
@@ -193,24 +196,12 @@ public class Blockss {
         event.getBlockColors().registerBlockColorHandler((state, blockAccess, pos, tintIndex) -> {
             if (blockAccess != null && pos != null) {
                 TileEntity te = blockAccess.getTileEntity(pos);
-                int heatLevel = 10;
-                if (te instanceof TileEntityCompressedIronBlock) {
-                    heatLevel = ((TileEntityCompressedIronBlock) te).getHeatLevel();
-                } else if (te instanceof TileEntityVortexTube) {
-                    switch (tintIndex) {
-                        case 0:
-                            heatLevel = ((TileEntityVortexTube) te).getHotHeatLevel();
-                            break;
-                        case 1:
-                            heatLevel = ((TileEntityVortexTube) te).getColdHeatLevel();
-                            break;
-                    }
-                }
+                int heatLevel = te instanceof IHeatTinted ? ((IHeatTinted) te).getHeatLevelForTintIndex(tintIndex) : 10;
                 float[] color = HeatUtil.getColorForHeatLevel(heatLevel);
                 return 0xFF000000 + ((int) (color[0] * 255) << 16) + ((int) (color[1] * 255) << 8) + (int) (color[2] * 255);
             }
             return 0xFFFFFFFF;
-        }, Blockss.COMPRESSED_IRON, Blockss.HEAT_SINK, Blockss.VORTEX_TUBE);
+        }, Blockss.COMPRESSED_IRON, Blockss.HEAT_SINK, Blockss.VORTEX_TUBE, Blockss.THERMAL_COMPRESSOR);
 
         event.getBlockColors().registerBlockColorHandler((state, blockAccess, pos, tintIndex) -> {
             if (blockAccess != null && pos != null) {

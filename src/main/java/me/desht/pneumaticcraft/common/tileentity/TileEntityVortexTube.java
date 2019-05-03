@@ -13,11 +13,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.Arrays;
 import java.util.List;
 
-public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatExchanger {
+public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatExchanger, IHeatTinted {
     private final IHeatExchangerLogic coldHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
     private final IHeatExchangerLogic hotHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
     private final IHeatExchangerLogic connectingExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
-    private int visualizationTimer = 60;
+    private int visualizationTimer = 30;
 
     @DescSynced
     public final boolean[] sidesConnected = new boolean[6];
@@ -136,4 +136,12 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
         return true;
     }
 
+    @Override
+    public int getHeatLevelForTintIndex(int tintIndex) {
+        switch (tintIndex) {
+            case 0: return visualize ? 20 : hotHeatLevel;
+            case 1: return visualize ? 0 : coldHeatLevel;
+            default: return 0xFFFFFFFF;
+        }
+    }
 }

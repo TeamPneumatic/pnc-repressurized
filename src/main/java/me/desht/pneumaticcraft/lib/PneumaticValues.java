@@ -14,6 +14,7 @@ public class PneumaticValues {
     public static final float DANGER_PRESSURE_ASSEMBLY_CONTROLLER = DANGER_PRESSURE_TIER_ONE;
     public static final float DANGER_PRESSURE_UV_LIGHTBOX = DANGER_PRESSURE_TIER_ONE;
     public static final float DANGER_PRESSURE_UNIVERSAL_SENSOR = DANGER_PRESSURE_TIER_ONE;
+    public static final float DANGER_PRESSURE_THERMAL_COMPRESSOR = DANGER_PRESSURE_TIER_ONE;
 
     public static final float DANGER_PRESSURE_TIER_TWO = 20;
     public static final float DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE = DANGER_PRESSURE_TIER_TWO;
@@ -40,6 +41,7 @@ public class PneumaticValues {
     public static final float MAX_PRESSURE_ASSEMBLY_CONTROLLER = MAX_PRESSURE_TIER_ONE;
     public static final float MAX_PRESSURE_UV_LIGHTBOX = MAX_PRESSURE_TIER_ONE;
     public static final float MAX_PRESSURE_UNIVERSAL_SENSOR = MAX_PRESSURE_TIER_ONE;
+    public static final float MAX_PRESSURE_THERMAL_COMPRESSOR = MAX_PRESSURE_TIER_ONE;
 
     public static final float MAX_PRESSURE_TIER_TWO = 25F;
     public static final float MAX_PRESSURE_ADVANCED_PRESSURE_TUBE = MAX_PRESSURE_TIER_TWO;
@@ -106,6 +108,7 @@ public class PneumaticValues {
     public static final int VOLUME_AERIAL_INTERFACE = 4000;
     public static final int VOLUME_ELECTROSTATIC_COMPRESSOR = 50000;
     public static final int VOLUME_PNEUMATIC_PUMP = 10000;
+    public static final int VOLUME_THERMAL_COMPRESSOR = 5000;
 
     public static final int VOLUME_PRESSURE_CHAMBER_PER_EMPTY = 16000;
     public static final int VOLUME_VOLUME_UPGRADE = 5000;
