@@ -2,17 +2,20 @@ package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import toughasnails.api.temperature.*;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class AirConditioningModifier implements ITemperatureModifier {
+    private static Map<UUID, Integer> lastDelta = new HashMap<>();
+
     @Override
     public Temperature applyEnvironmentModifiers(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull Temperature initialTemperature, @Nonnull IModifierMonitor monitor) {
         return initialTemperature;
@@ -34,15 +37,20 @@ public class AirConditioningModifier implements ITemperatureModifier {
 
         int targetTemp = initialTemperature.getRawValue();
         int playerTemp = TemperatureHelper.getTemperatureData(player).getTemperature().getRawValue();
-        int deltaTemp = Math.abs(TemperatureScale.getScaleMidpoint() - playerTemp);
+        int deltaTemp = (TemperatureScale.getScaleMidpoint() - playerTemp);
+        if (Math.abs(deltaTemp) < 2)
+            deltaTemp = 0;
+        else if (Math.abs(deltaTemp) == 2)
+            deltaTemp /= 2;
 
-        if (playerTemp > TemperatureScale.getScaleMidpoint() + 1) {
-            targetTemp -= deltaTemp * upgrades;
-            handler.addAir(player.getItemStackFromSlot(EntityEquipmentSlot.CHEST), EntityEquipmentSlot.CHEST, -deltaTemp * upgrades);
-        } else if (playerTemp < TemperatureScale.getScaleMidpoint() - 1) {
-            targetTemp += deltaTemp * upgrades;
-            handler.addAir(player.getItemStackFromSlot(EntityEquipmentSlot.CHEST), EntityEquipmentSlot.CHEST, -deltaTemp * upgrades);
+        deltaTemp *= upgrades;
+        targetTemp += deltaTemp;
+        if (deltaTemp != lastDelta.getOrDefault(player.getUniqueID(), 0)) {
+            NetworkHandler.sendTo(new PacketPlayerTemperatureDelta(deltaTemp), (EntityPlayerMP) player);
+            lastDelta.put(player.getUniqueID(), deltaTemp);
         }
+        handler.addAir(player.getItemStackFromSlot(EntityEquipmentSlot.CHEST), EntityEquipmentSlot.CHEST, -Math.abs(deltaTemp));
+
         Temperature res = new Temperature(targetTemp);
         monitor.addEntry(new IModifierMonitor.Context(this.getId(), "Pneumatic Armor A/C", initialTemperature, res));
         return res;

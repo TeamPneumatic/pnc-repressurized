@@ -258,9 +258,10 @@ public class HUDHandler implements IKeyListener {
     }
 
     private void update(EntityPlayer player, EntityEquipmentSlot slot, CommonHUDHandler comHudHandler) {
-//        CommonHUDHandler comHudHandler = CommonHUDHandler.getHandlerForPlayer(player);
         boolean armorEnabled = GuiKeybindCheckBox.getCoreComponents().checked;
         List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
+
+        // At start of init, inform the server which upgrades are enabled
         if (comHudHandler.getTicksSinceEquipped(slot) == 0) {
             for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
                 handler.reset();
@@ -272,27 +273,26 @@ public class HUDHandler implements IKeyListener {
             }
         }
 
-        if (slot == EntityEquipmentSlot.HEAD) {
-            if (comHudHandler.getTicksSinceEquipped(slot) > comHudHandler.getStartupTime(slot) && armorEnabled) {
-                for (int i = 0; i < renderHandlers.size(); i++) {
-                    IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
-                    if (comHudHandler.isUpgradeRendererInserted(slot, i) && comHudHandler.isUpgradeRendererEnabled(slot, i)) {
-                        IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
-                        if (stat != null) {
-                            if (comHudHandler.armorPressure[slot.getIndex()] > upgradeRenderHandler.getMinimumPressure()) {
-                                stat.openWindow();
-                            } else {
-                                stat.closeWindow();
-                            }
-                            stat.update();
+        // After full init, run handler's update() on each installed upgrade
+        if (comHudHandler.getTicksSinceEquipped(slot) > comHudHandler.getStartupTime(slot) && armorEnabled) {
+            for (int i = 0; i < renderHandlers.size(); i++) {
+                IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
+                if (comHudHandler.isUpgradeRendererInserted(slot, i) && comHudHandler.isUpgradeRendererEnabled(slot, i)) {
+                    IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
+                    if (stat != null) {
+                        if (comHudHandler.armorPressure[slot.getIndex()] > upgradeRenderHandler.getMinimumPressure()) {
+                            stat.openWindow();
+                        } else {
+                            stat.closeWindow();
                         }
-                        upgradeRenderHandler.update(player, comHudHandler.getUpgradeCount(EntityEquipmentSlot.HEAD, IItemRegistry.EnumUpgrade.RANGE));
+                        stat.update();
                     }
+                    upgradeRenderHandler.update(player, comHudHandler.getUpgradeCount(slot, IItemRegistry.EnumUpgrade.RANGE));
                 }
             }
         }
 
-        // Display found/not found message for each possible upgrade
+        // During init, display found/not found message for each possible upgrade
         for (int i = 0; i < renderHandlers.size(); i++) {
             if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot) / (renderHandlers.size() + 2) * (i + 1)) {
                 playArmorInitSound(player, Sounds.HUD_INIT, 0.5F + (float) (i + 1) / (renderHandlers.size() + 2) * 0.5F);

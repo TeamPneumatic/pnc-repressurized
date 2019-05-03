@@ -23,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -125,9 +126,9 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketChestplateLauncher.class, PacketChestplateLauncher.class, discriminant++, Side.SERVER);
     }
 
-    /* public static void INSTANCE.registerMessage(Class<? extends AbstractPacket<? extends IMessage>> clazz){
-         INSTANCE.registerMessage(clazz, clazz, discriminant++, Side.SERVER, discriminant++, Side.SERVER);
-     }*/
+    public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> messageHandler, Class<REQ> requestMessageType, Side side) {
+        INSTANCE.registerMessage(messageHandler, requestMessageType, discriminant++, side);
+    }
 
     public static void sendToAll(IMessage message) {
         INSTANCE.sendToAll(message);

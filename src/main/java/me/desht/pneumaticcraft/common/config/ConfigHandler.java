@@ -282,6 +282,13 @@ public class ConfigHandler {
         public int itemSearchX = -1;
         @Config.Comment("Pneumatic helmet item search Y")
         public int itemSearchY = 17;
+        @Config.Comment("Pneumatic chestplate air conditioning status X")
+        public int acStatY = 2;
+        @Config.Comment("Pneumatic chestplate air conditioning status Y")
+        public int acStatX = -25;
+        @Config.Comment("Pneumatic chestplate air conditioning status on left?")
+        public boolean acStatLeft = false;
+
         @Config.Comment("Pneumatic helmet item search on left?")
         public boolean itemSearchLeft = true;
         @Config.Comment("Pneumatic helmet Path Enabled")

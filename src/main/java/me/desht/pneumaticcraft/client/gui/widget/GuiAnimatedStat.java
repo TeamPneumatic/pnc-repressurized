@@ -314,6 +314,8 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             maxHeight -= (lineSpacing - fontRenderer.FONT_HEIGHT);
             maxHeight = (int) (maxHeight * textSize);
 
+            if (maxHeight < 16) maxWidth -= 16;  // maxHeight < 16 means no icon drawn; no need for the extra width
+
             // expand the box
             width = Math.min(maxWidth, width + ANIMATED_STAT_SPEED);
             height = Math.min(maxHeight, height + ANIMATED_STAT_SPEED);
@@ -371,7 +373,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         if (leftSided) renderWidth *= -1;
 
         // if done expanding, draw the information
-        int titleYoffset = title.isEmpty() ? 2 : 12;
+        int titleYoffset = title.isEmpty() ? 3 : 12;
         if (doneExpanding) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(renderBaseX + (leftSided ? -renderWidth : 16), renderAffectedY, 0);
