@@ -673,6 +673,7 @@ gui.setKeybind=Press key to bind
 gui.enableModule=Enable %s
 gui.pressureChamber=Pressure Chamber
 gui.pressureChamberTitle=%s Pressure Chamber
+gui.thermopneumatic.dumpInput=Dump Input Tank \n§7Get rid of any unwanted / excess fluids from the input tank
 gui.universalSensor.button.showRange=Show Range
 gui.programmer.button.showArea=Show Area
 gui.programmer.button.stopShowingArea=Stop Showing Area

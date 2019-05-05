@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -43,6 +44,11 @@ public class GuiThermopneumaticProcessingPlant extends
         };
 
         addWidget(tempWidget);
+
+        GuiButtonSpecial dumpButton = new GuiButtonSpecial(1, guiLeft + 12, guiTop + 81, 18, 20, "");
+        dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
+        dumpButton.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.thermopneumatic.dumpInput")));
+        addWidget(dumpButton);
 
         nExposedFaces = HeatUtil.countExposedFaces(Collections.singletonList(te));
     }
