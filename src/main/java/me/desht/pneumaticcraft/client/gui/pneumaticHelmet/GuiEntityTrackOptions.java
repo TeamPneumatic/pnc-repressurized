@@ -63,8 +63,8 @@ public class GuiEntityTrackOptions implements IOptionPage {
     @Override
     public void actionPerformed(GuiButton button) {
         if (button.id == 10) {
-            FMLClientHandler.instance().getClient().player.closeScreen();
-            FMLCommonHandler.instance().showGuiScreen(new GuiMoveStat(renderHandler));
+            Minecraft.getMinecraft().player.closeScreen();
+            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler));
         }
     }
 

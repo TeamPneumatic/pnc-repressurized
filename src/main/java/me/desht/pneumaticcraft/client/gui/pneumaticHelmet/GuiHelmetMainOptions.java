@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.MainHelmetHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
@@ -34,12 +35,14 @@ public class GuiHelmetMainOptions implements IOptionPage {
     public void actionPerformed(GuiButton button) {
         switch (button.id) {
             case 10:
-                FMLCommonHandler.instance().showGuiScreen(new GuiMoveStat(renderHandler));
+                Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler));
                 break;
             case 11:
-                renderHandler.testMessageStat = new GuiAnimatedStat(null, "Test Message, keep in mind messages can be long!", renderHandler.messagesStatX, renderHandler.messagesStatY, 0x7000AA00, null, renderHandler.messagesStatLeftSided);
+                renderHandler.testMessageStat = new GuiAnimatedStat(null, "Test Message, keep in mind messages can be long!",
+                        renderHandler.messagesStatX, renderHandler.messagesStatY, 0x7000AA00,
+                        null, renderHandler.messagesStatLeftSided);
                 renderHandler.testMessageStat.openWindow();
-                FMLCommonHandler.instance().showGuiScreen(new GuiMoveStat(renderHandler, renderHandler.testMessageStat));
+                Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler, renderHandler.testMessageStat));
                 break;
             case 12:
                 changeKeybindingButton.toggleKeybindMode();
@@ -49,7 +52,9 @@ public class GuiHelmetMainOptions implements IOptionPage {
 
     @Override
     public void keyTyped(char ch, int key) {
-        if (changeKeybindingButton != null) changeKeybindingButton.receiveKey(key);
+        if (changeKeybindingButton != null) {
+            changeKeybindingButton.receiveKey(key);
+        }
     }
 
     @Override

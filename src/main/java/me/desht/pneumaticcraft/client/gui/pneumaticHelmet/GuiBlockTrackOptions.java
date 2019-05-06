@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.client.gui.widget.IWidgetListener;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.BlockTrackUpgradeHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -36,8 +37,8 @@ public class GuiBlockTrackOptions extends IOptionPage.SimpleToggleableOptions im
     @Override
     public void actionPerformed(GuiButton button) {
         if (button.id == 10) {
-            FMLClientHandler.instance().getClient().player.closeScreen();
-            FMLCommonHandler.instance().showGuiScreen(new GuiMoveStat(getRenderHandler()));
+            Minecraft.getMinecraft().player.closeScreen();
+            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(getRenderHandler()));
         }
     }
 

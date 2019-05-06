@@ -26,7 +26,7 @@ public class ClientSemiBlockManager {
         registerRenderer(SemiBlockTransferGadget.class, new SemiBlockRendererTransferGadget());
     }
 
-    public static <T extends ISemiBlock> void registerRenderer(Class<T> semiBlock, ISemiBlockRenderer<T> renderer) {
+    private static <T extends ISemiBlock> void registerRenderer(Class<T> semiBlock, ISemiBlockRenderer<T> renderer) {
         renderers.put(semiBlock, renderer);
     }
 
@@ -64,7 +64,7 @@ public class ClientSemiBlockManager {
         GlStateManager.popMatrix();
     }
 
-    public static ISemiBlockRenderer<?> getRenderer(ISemiBlock semiBlock) {
+    private static ISemiBlockRenderer<?> getRenderer(ISemiBlock semiBlock) {
         Class<?> clazz = semiBlock.getClass();
         while (clazz != Object.class && !renderers.containsKey(clazz)) {
             clazz = clazz.getSuperclass();

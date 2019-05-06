@@ -4,20 +4,16 @@ import com.google.common.base.Strings;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiAirConditionerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
-import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.util.StringUtils;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -72,9 +68,9 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
             String bar = (ac < 0 ? TextFormatting.BLUE : TextFormatting.GOLD)
                     + Strings.repeat("|", Math.abs(ac))
                     + TextFormatting.DARK_GRAY
-                    + Strings.repeat("|", 20 - Math.abs(ac));
-            stat.setText(TextFormatting.YELLOW + "A/C: " + bar);
-            stat.setBackGroundColor(ac < 0 ? 0x400080FF : (ac == 0 ? 0x4080FF80 : 0x40FFD000));
+                    + Strings.repeat("|", MAX_AC - Math.abs(ac));
+            stat.setTitle(TextFormatting.YELLOW + "A/C: " + bar);
+            stat.setBackGroundColor(ac < 0 ? 0x300080FF : (ac == 0 ? 0x3000AA00 : 0x30FFD000));
         }
     }
 

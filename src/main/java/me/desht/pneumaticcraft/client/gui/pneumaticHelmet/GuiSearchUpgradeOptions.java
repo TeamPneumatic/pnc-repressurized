@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateSearchStack;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -55,9 +56,9 @@ public class GuiSearchUpgradeOptions implements IOptionPage {
             if (!player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).isEmpty()) {
                 searchGui.setSearchStack(ItemPneumaticArmor.getSearchedStack(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD)));
             }
-            FMLClientHandler.instance().showGuiScreen(searchGui);
+            Minecraft.getMinecraft().displayGuiScreen(searchGui);
         } else {
-            FMLCommonHandler.instance().showGuiScreen(new GuiMoveStat(renderHandler));
+            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler));
         }
     }
 

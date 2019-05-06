@@ -142,6 +142,13 @@ public interface IGuiAnimatedStat {
     void setBackGroundColor(int backGroundColor);
 
     /**
+     * Get the background color of this stat.
+     *
+     * @return the background color
+     */
+    int getBackgroundColor();
+
+    /**
      * Should this stat be drawn with a beveled edge, or a plain edge?  Default behaviour is a beveled edge
      * for GUI side tabs, plain edge for HUD stats.  The color of the plain edge is a darkened version of the stat's
      * background color.

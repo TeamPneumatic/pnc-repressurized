@@ -238,6 +238,11 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         }
     }
 
+    @Override
+    public int getBackgroundColor() {
+        return backGroundColor;
+    }
+
     private void calculateColorHighlights(int color) {
         if (ConfigHandler.client.guiBevel) {
             float fgR = (float) (color >> 16 & 255) / 255.0F;
@@ -313,8 +318,6 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             }
             maxHeight -= (lineSpacing - fontRenderer.FONT_HEIGHT);
             maxHeight = (int) (maxHeight * textSize);
-
-            if (maxHeight < 16) maxWidth -= 16;  // maxHeight < 16 means no icon drawn; no need for the extra width
 
             // expand the box
             width = Math.min(maxWidth, width + ANIMATED_STAT_SPEED);
