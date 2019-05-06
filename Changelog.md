@@ -6,6 +6,21 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.10.6-??? (unreleased)
+#### New
+* Tough As Nails support:
+  * PneumaticCraft heat (and cold!) sources will have an effect on your body temperature. Take care!
+  * Added the Air Conditioning Upgrade for the Pneumatic Chestplate.  This will use pressure to try and regulate your body temperature, protecting from Tough As Nails temperature extremes.  Up to 4 upgrades can be added (although the max of 4 would only be needed for the most extreme conditions).
+  * See ``tanHeatDivider`` and ``tanRefreshInterval`` config settings.
+* Added the Thermal Compressor, a machine which converts temperature differences on opposite sides directly to air pressure.
+  * Heat will attempt to equalize across sides, so effort is needed to maintain a temperature gradient across the compressor.
+  * See ``thermalCompressorThermalResistance`` config setting.
+#### Updates
+* When moving Pneumatic Armor stat windows, the move GUI now shows other open stat windows too to make it easier to line things up, avoid overlaps etc.
+* Performance improvement: tile entity data syncing now requires far fewer block updates, which should improve performance in general.
+#### Fixes
+* Restore the Thermopneumatic Processing Plant "Dump Input Tank" button. Was a mistake to remove that.
+
 ### 0.10.5-346 (29 Apr 2019)
 #### Fixes
 * Hotfix: fix crashes due to null ItemStack field in Charging Station tile entity (manifested either as server crashes on world load or client crashes when rendering the Charging Station charged item)
