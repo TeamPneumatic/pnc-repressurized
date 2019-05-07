@@ -3,7 +3,9 @@ package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -18,20 +20,22 @@ import toughasnails.api.temperature.Temperature;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
+import java.util.Map;
 
-public class PNCBlockModifier implements ITemperatureModifier {
+public class TANModifierPNCBlock implements ITemperatureModifier {
     private static final PosCache modifierCache = new PosCache();
 
     @Override
     public Temperature applyEnvironmentModifiers(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull Temperature initialTemperature, @Nonnull IModifierMonitor monitor) {
-        if (ConfigHandler.integration.tanHeatDivider == 0f) return initialTemperature;
+        if (ConfigHandler.integration.tanHeatDivider == 0f) {
+            return initialTemperature;
+        }
 
-        int newTemperatureLevel = initialTemperature.getRawValue();
+        if (world.getTotalWorldTime() % ConfigHandler.integration.tanRefreshInterval == 0) {
+            modifierCache.prune(world);
+        }
 
-        float blockTemperatureModifier = modifierCache.getModifier(world, pos);
-
-        newTemperatureLevel += blockTemperatureModifier;
-        Temperature res = new Temperature(newTemperatureLevel);
+        Temperature res = new Temperature(initialTemperature.getRawValue() + Math.round(modifierCache.getModifier(world, pos)));
         monitor.addEntry(new IModifierMonitor.Context(this.getId(), "PneumaticCraft Heat Sources", initialTemperature, res));
         return res;
     }
@@ -84,6 +88,10 @@ public class PNCBlockModifier implements ITemperatureModifier {
                             }
                         }
                     }
+                    if (te instanceof TileEntityAirCompressor && ((TileEntityAirCompressor) te).isActive()
+                            || te instanceof TileEntityLiquidCompressor && ((TileEntityLiquidCompressor) te).isProducing) {
+                        blockTemperatureModifier += 3;
+                    }
                 }
             }
         }
@@ -101,17 +109,28 @@ public class PNCBlockModifier implements ITemperatureModifier {
         }
     }
 
-    private static class PosCache extends HashMap<String, TimeAndModifier> {
-        private float getModifier(World world, BlockPos pos) {
-            String k = world.provider.getDimension() + ":" + pos.toLong();
-            TimeAndModifier tm = get(k);
+    private static class PosCache {
+        private final Map<Integer, Map<BlockPos, TimeAndModifier>> cache = new HashMap<>();
 
-            if (tm == null || world.getTotalWorldTime() - tm.ticks >= ConfigHandler.integration.tanRefreshInterval) {
-                float modifier = getModifierAt(world, pos);
-                put(k, new TimeAndModifier(world.getTotalWorldTime(), modifier));
-                return modifier;
+        private void prune(World world) {
+            Map<BlockPos, TimeAndModifier> posMap = cache.get(world.provider.getDimension());
+            if (posMap != null) {
+                long now = world.getTotalWorldTime();
+                posMap.entrySet().removeIf(entry -> now - entry.getValue().ticks > ConfigHandler.integration.tanRefreshInterval);
             }
-            return tm.modifier;
+        }
+
+        private float getModifier(World world, BlockPos pos) {
+            Map<BlockPos, TimeAndModifier> posMap = cache.computeIfAbsent(world.provider.getDimension(), k -> new HashMap<>());
+            TimeAndModifier tm = posMap.get(pos);
+
+            if (tm == null) {
+                float modifier = getModifierAt(world, pos);
+                posMap.put(pos, new TimeAndModifier(world.getTotalWorldTime(), modifier));
+                return modifier;
+            } else {
+                return tm.modifier;
+            }
         }
     }
 }

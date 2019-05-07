@@ -119,7 +119,6 @@ public class ModuleAirGrate extends TubeModule {
                             entity.motionY -= d2 / d4 * d5 * 0.1D;
                             entity.motionZ -= d3 / d4 * d5 * 0.1D;
                             if (world.isRemote && world.rand.nextDouble() * 0.85 > d4) {
-                                Vec3d vec = new Vec3d(pos.getX() + 0.5 + d1, pos.getY() + 0.5 + d2, pos.getZ() + 0.5 + d3);
                                 if (vacuum) {
                                     PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, world,
                                             entity.posX, entity.posY, entity.posZ, -d1, -d2, -d3);

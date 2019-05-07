@@ -14,7 +14,7 @@ import toughasnails.api.temperature.*;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class AirConditioningModifier implements ITemperatureModifier {
+public class TANModifierAirConditioning implements ITemperatureModifier {
     private static Map<UUID, Integer> lastDelta = new HashMap<>();
 
     @Override

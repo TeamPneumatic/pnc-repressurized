@@ -35,23 +35,24 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     private int maxBurnTime; // in here the total burn time of the current burning item is stored.
     @GuiSynced
     public int redstoneMode = 0; // determines how the compressor responds to redstone.
+
     @DescSynced
     private boolean isActive;
+
     @GuiSynced
     public int curFuelUsage;
-
     private class AirCompressorHandler extends FilteredItemStackHandler {
+
         AirCompressorHandler() {
             super(TileEntityAirCompressor.this, INVENTORY_SIZE);
         }
-
         @Override
         public boolean test(Integer slot, ItemStack itemStack) {
             return slot == FUEL_SLOT &&
                     (itemStack.isEmpty() || TileEntityFurnace.isItemFuel(itemStack) && FluidUtil.getFluidContained(itemStack) == null);
         }
-    }
 
+    }
     public TileEntityAirCompressor() {
         this(PneumaticValues.DANGER_PRESSURE_AIR_COMPRESSOR, PneumaticValues.MAX_PRESSURE_AIR_COMPRESSOR, PneumaticValues.VOLUME_AIR_COMPRESSOR);
     }
@@ -59,6 +60,10 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     public TileEntityAirCompressor(float dangerPressure, float criticalPressure, int volume) {
         super(dangerPressure, criticalPressure, volume, 4);
         addApplicableUpgrade(EnumUpgrade.SPEED);
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 
     @Override

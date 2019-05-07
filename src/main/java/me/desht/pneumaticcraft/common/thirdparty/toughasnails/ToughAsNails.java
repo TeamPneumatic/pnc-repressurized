@@ -13,7 +13,7 @@ public class ToughAsNails implements IThirdParty {
 
     @Override
     public void postInit() {
-        TemperatureHelper.registerTemperatureModifier(new PNCBlockModifier());
-        TemperatureHelper.registerTemperatureModifier(new AirConditioningModifier());
+        TemperatureHelper.registerTemperatureModifier(new TANModifierPNCBlock());
+        TemperatureHelper.registerTemperatureModifier(new TANModifierAirConditioning());
     }
 }

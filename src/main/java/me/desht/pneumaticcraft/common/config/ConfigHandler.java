@@ -394,8 +394,8 @@ public class ConfigHandler {
         @Config.Comment("Tough As Nails temperature divider; smaller values make PneumaticCraft heat sources have a more pronounced effect on your temperature. Set to 0 to ignore PneumaticCraft heat sources.")
         public float tanHeatDivider = 10.0f;
         @Config.Comment("Interval in ticks with which to refresh heat information from PneumaticCraft heat sources to Tough As Nails. A larger interval is kinder to the server but will provide less precise temperature data to TAN.")
-        @Config.RangeInt(min = 1, max = 100)
-        public int tanRefreshInterval = 20;
+        @Config.RangeInt(min = 1, max = 200)
+        public int tanRefreshInterval = 40;
         @Config.Comment("ToughAsNails: air usage multiplier for the Pneumatic Chestplate Air Conditioning Upgrade.")
         @Config.RangeDouble(min = 0.0)
         public double tanAirConAirUsageMultiplier = 1.5;
