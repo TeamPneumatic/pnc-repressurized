@@ -57,6 +57,7 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
 
     @Override
     public void drawScreen(int x, int y, float partialTicks) {
+        GlStateManager.color(1f, 1f, 1f, 1.0f);
         if (getTexture() != null) {
             FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture());
             drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);

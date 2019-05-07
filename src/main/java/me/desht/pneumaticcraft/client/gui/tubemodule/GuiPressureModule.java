@@ -142,7 +142,7 @@ public class GuiPressureModule extends GuiTubeModule {
         GlStateManager.disableTexture2D();
         GlStateManager.color(0, 0, 0, 1.0f);
         for (int i = 0; i < 16; i++) {
-            double y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15;
+            double y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15.0;
             double x = graphLeft + (graphRight - graphLeft) * module.getThreshold(i) / 30;
             bufferBuilder.pos(x, y, 90.0d).color(0.25f + i * 0.05f, 0f, 0f, 1.0f).endVertex();
         }

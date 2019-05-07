@@ -205,7 +205,8 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         deltaTemp /= dispersionDivider;
         deltaTemp /= totalResistance;
 
-        double maxDeltaTemp = (logic.getTemperature() * logic.getThermalCapacity() - logic2.getTemperature() * logic2.getThermalCapacity()) / 2;//Calculate the heat needed to exactly equalize the heat.
+        // Calculate the heat needed to exactly equalize the heat.
+        double maxDeltaTemp = (logic.getTemperature() * logic.getThermalCapacity() - logic2.getTemperature() * logic2.getThermalCapacity()) / 2;
         if (maxDeltaTemp >= 0 && deltaTemp > maxDeltaTemp || maxDeltaTemp <= 0 && deltaTemp < maxDeltaTemp)
             deltaTemp = maxDeltaTemp;
         logic2.addHeat(deltaTemp);
@@ -223,8 +224,6 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     @Override
     public void addHeat(double amount) {
         setTemperature(MathHelper.clamp(temperature + amount / getThermalCapacity(), 0, 2273));
-//        temperature += amount / getThermalCapacity();
-//        temperature = Math.max(0, Math.min(2273, temperature));
     }
 
 }

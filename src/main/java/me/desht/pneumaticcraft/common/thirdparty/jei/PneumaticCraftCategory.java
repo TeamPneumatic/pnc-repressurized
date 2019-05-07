@@ -150,7 +150,7 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
                 drawAnimatedPressureGauge(gaugeX, gaugeY, -1, pressure, 5, 7);
             }
             if (tempWidget != null) {
-                heatExchanger.setTemperature(tickTimer.getValue() * (tempWidget.getScales()[0] - 273) / tickTimer.getMaxValue() + 273);
+                heatExchanger.setTemperature(tickTimer.getValue() * (tempWidget.getScales()[0] - 273.0) / tickTimer.getMaxValue() + 273.0);
                 tempWidget.render(0, 0, 0);
             }
         }

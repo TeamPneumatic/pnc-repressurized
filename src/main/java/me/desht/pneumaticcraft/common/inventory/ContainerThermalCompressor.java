@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
 import net.minecraft.entity.player.InventoryPlayer;
 

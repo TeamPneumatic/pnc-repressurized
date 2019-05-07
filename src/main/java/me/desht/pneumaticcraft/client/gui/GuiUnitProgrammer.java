@@ -26,7 +26,6 @@ public class GuiUnitProgrammer extends GuiScreen {
     private final List<IProgWidget> progWidgets;
     private final int guiLeft, guiTop;
     private final int startX, startY, areaWidth, areaHeight;
-    private final int xSize;
     private int translatedX, translatedY;
     private int lastMouseX, lastMouseY;
     private int lastZoom;
@@ -43,7 +42,6 @@ public class GuiUnitProgrammer extends GuiScreen {
         this.guiLeft = guiLeft;
         this.guiTop = guiTop;
         setWorldAndResolution(Minecraft.getMinecraft(), width, height);
-        this.xSize = xSize;
         this.startX = startX;
         this.startY = startY;
         this.areaWidth = areaWidth;

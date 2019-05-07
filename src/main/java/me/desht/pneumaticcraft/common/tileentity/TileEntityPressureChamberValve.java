@@ -385,9 +385,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     }
     
     private void dropItemOnGround(ItemStack stack){
-        PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getWorld(), multiBlockX + multiBlockSize / 2,
-                                                                multiBlockY + 1,  
-                                                                multiBlockZ + multiBlockSize / 2);
+        PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getWorld(),
+                multiBlockX + multiBlockSize / 2.0, multiBlockY + 1.0, multiBlockZ + multiBlockSize / 2.0);
     }
 
     private void invalidateMultiBlock() {

@@ -56,9 +56,10 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
      * Copy any definitions from internal resource file that aren't in the saved file, but don't modify any changed
      * definitions.
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs
      */
     private void mergeConfigs() throws IOException {
+        //noinspection UnstableApiUsage
         String cfg = Resources.toString(PneumaticCraftRepressurized.class.getResource(HEATBLOCK_CFG_ASSET), Charsets.UTF_8);
         JsonParser parser = new JsonParser();
         JsonObject internalJsonObject = (JsonObject) parser.parse(cfg);
@@ -370,6 +371,7 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
         }
 
         private static <T extends Comparable<T>> IBlockState setValueHelper(IBlockState state, IProperty<T> property, String propVal) {
+            //noinspection Guava
             Optional<T> optional = property.parseValue(propVal);
 
             if (optional.isPresent()) {

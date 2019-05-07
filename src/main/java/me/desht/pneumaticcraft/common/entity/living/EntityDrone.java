@@ -133,7 +133,7 @@ public class EntityDrone extends EntityDroneBase implements
     private float volume;
     private RenderProgressingLine targetLine;
     private RenderProgressingLine oldTargetLine;
-    public List<IProgWidget> progWidgets = new ArrayList<IProgWidget>();
+    public List<IProgWidget> progWidgets = new ArrayList<>();
 
     private DroneFakePlayer fakePlayer;
     public String playerName = "Drone";
@@ -158,7 +158,7 @@ public class EntityDrone extends EntityDroneBase implements
     private ItemStack usedTablet;//Tablet used to place the order.
     private String buyingPlayer;
     private final DroneDebugList debugList = new DroneDebugList();
-    private final Set<EntityPlayerMP> syncedPlayers = new HashSet<EntityPlayerMP>();
+    private final Set<EntityPlayerMP> syncedPlayers = new HashSet<>();
     private boolean heldItemChanged = true;  // if true, force a check of item attribute modifiers in onUpdate()
 
     private int securityUpgradeCount; // for liquid immunity: 1 = breathe in water, 2 = temporary air bubble, 3+ = permanent water removal

@@ -40,8 +40,9 @@ public class RenderProgressBar {
         }
         wr.pos(minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
         wr.pos(minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
-        wr.pos(minX + (maxX - minX) * progress / 100D, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
-        wr.pos(minX + (maxX - minX) * progress / 100D, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
+        double x = minX + (maxX - minX) * progress / 100D;
+        wr.pos(x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
+        wr.pos(x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
 
         Tessellator.getInstance().draw();
         GlStateManager.shadeModel(GL11.GL_FLAT);

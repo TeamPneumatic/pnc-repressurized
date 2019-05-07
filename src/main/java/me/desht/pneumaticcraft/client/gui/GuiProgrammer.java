@@ -583,7 +583,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         Rectangle draggingRect = new Rectangle(widget1.getX(), widget1.getY(), widget1.getWidth() / 2, widget1.getHeight() / 2);
         for (IProgWidget widget : te.progWidgets) {
             if (widget != widget1) {
-                if (draggingRect.intersects(widget.getX(), widget.getY(), widget.getWidth() / 2, widget.getHeight() / 2)) {
+                if (draggingRect.intersects(widget.getX(), widget.getY(), widget.getWidth() / 2.0, widget.getHeight() / 2.0)) {
                     return false;
                 }
             }

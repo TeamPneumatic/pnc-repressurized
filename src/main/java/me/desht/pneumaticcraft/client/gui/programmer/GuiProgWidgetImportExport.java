@@ -14,7 +14,6 @@ import net.minecraft.util.EnumFacing;
 
 public class GuiProgWidgetImportExport<Widget extends IProgWidget> extends GuiProgWidgetAreaShow<Widget> {
 
-    private GuiCheckBox useItemCount;
     private WidgetTextFieldNumber textField;
 
     public GuiProgWidgetImportExport(Widget widget, GuiProgrammer guiProgrammer) {
@@ -34,10 +33,11 @@ public class GuiProgWidgetImportExport<Widget extends IProgWidget> extends GuiPr
             }
         }
 
-        useItemCount = new GuiCheckBox(6, guiLeft + 4, guiTop + (showSides() ? 115 : 30), 0xFF404040, I18n.format("gui.progWidget.itemFilter.useItemCount"));
+        GuiCheckBox useItemCount = new GuiCheckBox(6, guiLeft + 4, guiTop + (showSides() ? 115 : 30), 0xFF404040, I18n.format("gui.progWidget.itemFilter.useItemCount"));
         useItemCount.setTooltip("gui.progWidget.itemFilter.useItemCount.tooltip");
         useItemCount.checked = ((ICountWidget) widget).useCount();
         addWidget(useItemCount);
+
         textField = new WidgetTextFieldNumber(Minecraft.getMinecraft().fontRenderer, guiLeft + 7, guiTop + (showSides() ? 128 : 43), 50, 11);
         textField.setValue(((ICountWidget) widget).getCount());
         textField.setEnabled(useItemCount.checked);

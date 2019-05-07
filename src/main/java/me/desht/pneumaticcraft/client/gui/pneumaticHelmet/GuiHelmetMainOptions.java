@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.MainHelmetHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class GuiHelmetMainOptions implements IOptionPage {
 

@@ -68,7 +68,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<TileEn
 
         List<String> info = new ArrayList<>();
         info.add(TextFormatting.WHITE + "Energy production:");
-        info.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / connectedCompressors, 1) + " mL/lightning strike");
+        info.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / (float) connectedCompressors, 1) + " mL/lightning strike");
         info.add(TextFormatting.BLACK + "(" + connectedCompressors + " connected compressors)");
         info.add(TextFormatting.WHITE + "Maximum air redirection:");
         info.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath, 1) + " mL/lightning strike");

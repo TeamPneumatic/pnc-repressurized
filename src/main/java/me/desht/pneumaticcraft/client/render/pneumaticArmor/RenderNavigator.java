@@ -16,14 +16,12 @@ import org.lwjgl.opengl.GL11;
 
 public class RenderNavigator {
     private final BlockPos targetPos;
-    private final World world;
     private Path path;
     private boolean increaseAlpha;
     private float alphaValue = 0.2F;
 
     public RenderNavigator(World world, BlockPos targetPos) {
         this.targetPos = targetPos;
-        this.world = world;
         updatePath();
     }
 
@@ -48,16 +46,16 @@ public class RenderNavigator {
         GlStateManager.disableTexture2D();
         GlStateManager.glLineWidth(5.0F);
 
-        boolean noDestinationPath = !tracedToDestination();
+        boolean hasDestinationPath = tracedToDestination();
 
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(0, 0.01D, 0);
 
-        //Draws just wires
+        // Draws just wires
         if (wirePath) {
-            if (noDestinationPath) {
+            if (!hasDestinationPath) {
                 GL11.glEnable(GL11.GL_LINE_STIPPLE);
                 GL11.glLineStipple(2, (short) 0x00FF);
             }
@@ -76,7 +74,9 @@ public class RenderNavigator {
                 Tessellator.getInstance().draw();
             }
         } else {
-            if (noDestinationPath) {
+            if (hasDestinationPath) {
+                if (alphaValue > 0.2F) alphaValue -= 0.005F;
+            } else {
                 if (increaseAlpha) {
                     alphaValue += 0.005F;
                     if (alphaValue > 0.3F) increaseAlpha = false;
@@ -84,8 +84,6 @@ public class RenderNavigator {
                     alphaValue -= 0.005F;
                     if (alphaValue < 0.2F) increaseAlpha = true;
                 }
-            } else {
-                if (alphaValue > 0.2F) alphaValue -= 0.005F;
             }
             for (int i = 0; i < path.getCurrentPathLength(); i++) {
                 float red = 1;
@@ -115,6 +113,6 @@ public class RenderNavigator {
     public boolean tracedToDestination() {
         if (path == null) return false;
         PathPoint finalPoint = path.getFinalPathPoint();
-        return targetPos.equals(new BlockPos(finalPoint.x, finalPoint.y, finalPoint.z));
+        return finalPoint != null && targetPos.equals(new BlockPos(finalPoint.x, finalPoint.y, finalPoint.z));
     }
 }

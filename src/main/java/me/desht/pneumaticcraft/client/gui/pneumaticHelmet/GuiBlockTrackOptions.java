@@ -10,8 +10,6 @@ import me.desht.pneumaticcraft.client.render.pneumaticArmor.blockTracker.BlockTr
 import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.BlockTrackUpgradeHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class GuiBlockTrackOptions extends IOptionPage.SimpleToggleableOptions implements IWidgetListener {
     public GuiBlockTrackOptions(BlockTrackUpgradeHandler renderHandler) {

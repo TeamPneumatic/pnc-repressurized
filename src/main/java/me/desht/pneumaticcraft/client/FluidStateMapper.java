@@ -10,11 +10,9 @@ import net.minecraftforge.fluids.Fluid;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class FluidStateMapper extends StateMapperBase implements ItemMeshDefinition {
-    private final Fluid fluid;
     private final ModelResourceLocation location;
 
-    public FluidStateMapper(Fluid fluid) {
-        this.fluid = fluid;
+    FluidStateMapper(Fluid fluid) {
         this.location = new ModelResourceLocation(RL("fluid"), fluid.getName());
     }
 

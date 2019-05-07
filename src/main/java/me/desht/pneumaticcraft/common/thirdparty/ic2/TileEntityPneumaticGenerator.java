@@ -13,7 +13,6 @@ import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControlled;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedAirCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.state.IBlockState;
@@ -155,7 +154,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
         if (efficiency < 1) efficiency = 1;
         int airUsage = (int) (amount / 0.25F * 100F / efficiency);
         addAir(-airUsage);
-        heatExchanger.addHeat(airUsage / 40);
+        heatExchanger.addHeat(airUsage / 40.0);
         outputting = true;
         curEnergyProduction = (int) amount;
     }

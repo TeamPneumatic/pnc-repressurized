@@ -111,15 +111,13 @@ public class TintedOBJModel implements IModel
     @Override
     public IModel process(ImmutableMap<String, String> customData)
     {
-        TintedOBJModel ret = new TintedOBJModel(this.matLib, this.modelLocation, new CustomData(this.customData, customData));
-        return ret;
+        return new TintedOBJModel(this.matLib, this.modelLocation, new CustomData(this.customData, customData));
     }
 
     @Override
     public IModel retexture(ImmutableMap<String, String> textures)
     {
-        TintedOBJModel ret = new TintedOBJModel(this.matLib.makeLibWithReplacements(textures), this.modelLocation, this.customData);
-        return ret;
+        return new TintedOBJModel(this.matLib.makeLibWithReplacements(textures), this.modelLocation, this.customData);
     }
 
     static class CustomData
@@ -284,7 +282,7 @@ public class TintedOBJModel implements IModel
                             v.add(newV);
                         }
 
-                        Vertex[] va = v.toArray(new Vertex[v.size()]);
+                        Vertex[] va = v.toArray(new Vertex[0]);
 
                         Face face = new Face(va, material.name);
                         if (usemtlCounter < this.vertices.size())
@@ -331,8 +329,7 @@ public class TintedOBJModel implements IModel
                         if (key.equalsIgnoreCase("g"))
                         {
                             String[] splitSpace = data.split(" ");
-                            for (String s : splitSpace)
-                                groupList.add(s);
+                            Collections.addAll(groupList, splitSpace);
                         }
                         else
                         {
@@ -456,10 +453,10 @@ public class TintedOBJModel implements IModel
         public void changeMaterialColor(String name, int color)
         {
             Vector4f colorVec = new Vector4f();
-            colorVec.w = (color >> 24 & 255) / 255;
-            colorVec.x = (color >> 16 & 255) / 255;
-            colorVec.y = (color >> 8 & 255) / 255;
-            colorVec.z = (color & 255) / 255;
+            colorVec.w = (color >> 24 & 255) / 255f;
+            colorVec.x = (color >> 16 & 255) / 255f;
+            colorVec.y = (color >> 8 & 255) / 255f;
+            colorVec.z = (color & 255) / 255f;
             this.materials.get(name).setColor(colorVec);
         }
 
@@ -667,8 +664,7 @@ public class TintedOBJModel implements IModel
 
         public ResourceLocation getTextureLocation()
         {
-            ResourceLocation loc = new ResourceLocation(this.path);
-            return loc;
+            return new ResourceLocation(this.path);
         }
 
         public void setPath(String path)
@@ -1398,7 +1394,7 @@ public class TintedOBJModel implements IModel
             return ImmutableList.copyOf(quads);
         }
 
-        private final void putVertexData(UnpackedBakedQuad.Builder builder, Vertex v, Normal faceNormal, TextureCoordinate defUV, TextureAtlasSprite sprite)
+        private void putVertexData(UnpackedBakedQuad.Builder builder, Vertex v, Normal faceNormal, TextureCoordinate defUV, TextureAtlasSprite sprite)
         {
             for (int e = 0; e < format.getElementCount(); e++)
             {

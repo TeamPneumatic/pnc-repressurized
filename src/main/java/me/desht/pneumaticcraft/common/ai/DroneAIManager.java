@@ -423,18 +423,15 @@ public class DroneAIManager implements IVariableProvider {
      */
     private boolean canUse(EntityAITaskEntry par1EntityAITaskEntry) {
         theProfiler.startSection("canUse");
-        Iterator iterator = taskEntries.iterator();
 
-        while (iterator.hasNext()) {
-            EntityAITaskEntry entityaitaskentry1 = (EntityAITaskEntry) iterator.next();
-
-            if (entityaitaskentry1 != par1EntityAITaskEntry) {
-                if (par1EntityAITaskEntry.priority >= entityaitaskentry1.priority) {
-                    if (executingTaskEntries.contains(entityaitaskentry1) && !areTasksCompatible(par1EntityAITaskEntry, entityaitaskentry1)) {
+        for (EntityAITaskEntry entry : taskEntries) {
+            if (entry != par1EntityAITaskEntry) {
+                if (par1EntityAITaskEntry.priority >= entry.priority) {
+                    if (executingTaskEntries.contains(entry) && !areTasksCompatible(par1EntityAITaskEntry, entry)) {
                         theProfiler.endSection();
                         return false;
                     }
-                } else if (executingTaskEntries.contains(entityaitaskentry1) && !entityaitaskentry1.action.isInterruptible()) {
+                } else if (executingTaskEntries.contains(entry) && !entry.action.isInterruptible()) {
                     theProfiler.endSection();
                     return false;
                 }

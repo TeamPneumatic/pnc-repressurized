@@ -121,9 +121,9 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
             if (ConfigHandler.machineProperties.keroseneLampCanUseAnyFuel) {
                 Fluid f = tank.getFluid().getFluid();
                 // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
-                fuelQuality = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(f.getName(), 0) / 110;
+                fuelQuality = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(f.getName(), 0) / 110f;
             } else {
-                fuelQuality = Fluids.areFluidsEqual(tank.getFluid().getFluid(), Fluids.KEROSENE) ? 10000 : 0;
+                fuelQuality = Fluids.areFluidsEqual(tank.getFluid().getFluid(), Fluids.KEROSENE) ? 10000f : 0f;
             }
             fuelQuality *= ConfigHandler.machineProperties.keroseneLampFuelEfficiency;
         }

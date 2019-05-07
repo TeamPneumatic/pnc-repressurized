@@ -97,6 +97,7 @@ public class ModelProgrammingPuzzle implements IModel {
         builder.add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16 * maxUV.getLeft().floatValue(), 16 * maxUV.getRight().floatValue(), NORTH_Z_BASE, widgetSprite, EnumFacing.NORTH, 0xffffffff, -1));
         builder.add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16 * maxUV.getLeft().floatValue(), 16 * maxUV.getRight().floatValue(), SOUTH_Z_BASE, widgetSprite, EnumFacing.SOUTH, 0xffffffff, -1));
 
+        //noinspection UnstableApiUsage
         return new BakedProgrammingPuzzle(this, builder.build(), widgetSprite, format, Maps.immutableEnumMap(transformMap), Maps.newHashMap());
     }
 

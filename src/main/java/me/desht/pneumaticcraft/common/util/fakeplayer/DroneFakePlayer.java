@@ -30,12 +30,7 @@ public class DroneFakePlayer extends FakePlayer {
     @Nonnull
     @Override
     public ItemStack getItemStackFromSlot(@Nonnull EntityEquipmentSlot slotIn) {
-        switch (slotIn) {
-            case MAINHAND:
-                return drone.getInv().getStackInSlot(0);
-            default:
-                return ItemStack.EMPTY;
-        }
+        return slotIn == EntityEquipmentSlot.MAINHAND ? drone.getInv().getStackInSlot(0) : ItemStack.EMPTY;
     }
 
     @Override

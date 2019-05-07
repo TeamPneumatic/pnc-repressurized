@@ -207,7 +207,7 @@ public class ClientEventHandler {
             ScaledResolution sr = new ScaledResolution(mc);
             FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
             String warning = TextFormatting.RED + I18n.format("gui.regulatorTube.hudMessage." + (ModuleRegulatorTube.inverted ? "inverted" : "notInLine"));
-            fontRenderer.drawStringWithShadow(warning, sr.getScaledWidth() / 2 - fontRenderer.getStringWidth(warning) / 2, sr.getScaledHeight() / 2 + 30, 0xFFFFFFFF);
+            fontRenderer.drawStringWithShadow(warning, sr.getScaledWidth() / 2f - fontRenderer.getStringWidth(warning) / 2f, sr.getScaledHeight() / 2f + 30, 0xFFFFFFFF);
         }
     }
 
@@ -231,7 +231,7 @@ public class ClientEventHandler {
                     GuiUtils.drawItemStack(ammo,w / 2 + 16, h / 2 - 7);
                     int remaining = ammo.getMaxDamage() - ammo.getItemDamage();
                     GlStateManager.pushMatrix();
-                    GlStateManager.translate(w / 2 + 32, h / 2 - 1, 0);
+                    GlStateManager.translate(w / 2f + 32, h / 2f - 1, 0);
                     GlStateManager.scale(MINIGUN_TEXT_SIZE, MINIGUN_TEXT_SIZE, 1.0);
                     String text = remaining + "/" + ammo.getMaxDamage();
                     mc.fontRenderer.drawString(text, 1, 0, 0);
@@ -346,10 +346,9 @@ public class ClientEventHandler {
                 Map<IBlockState,ModelResourceLocation> map
                         = event.getModelManager().getBlockModelShapes().getBlockStateMapper().getVariants(block);
                 for (Map.Entry<IBlockState,ModelResourceLocation> entry : map.entrySet()) {
-                    Object object = event.getModelRegistry().getObject(entry.getValue());
-                    if (object != null) {
-                        IBakedModel existing = (IBakedModel) object;
-                        CamoModel customModel = new CamoModel(existing);
+                    IBakedModel model = event.getModelRegistry().getObject(entry.getValue());
+                    if (model != null) {
+                        CamoModel customModel = new CamoModel(model);
                         event.getModelRegistry().putObject(entry.getValue(), customModel);
                     }
                 }
@@ -358,9 +357,9 @@ public class ClientEventHandler {
 
         // minigun model: using TEISR for in-hand transforms
         ModelResourceLocation mrl = new ModelResourceLocation(Itemss.MINIGUN.getRegistryName(), "inventory");
-        Object object = event.getModelRegistry().getObject(mrl);
+        IBakedModel object = event.getModelRegistry().getObject(mrl);
         if (object != null) {
-            event.getModelRegistry().putObject(mrl, new BakedMinigunWrapper((IBakedModel) object));
+            event.getModelRegistry().putObject(mrl, new BakedMinigunWrapper(object));
         }
     }
 

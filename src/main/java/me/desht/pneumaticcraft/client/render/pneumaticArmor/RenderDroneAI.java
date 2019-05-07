@@ -19,7 +19,6 @@ import java.util.List;
 
 public class RenderDroneAI {
     private final EntityDrone drone;
-    private final RenderEntityItem renderItem;
     private final EntityItem entityItem;
     private final List<Pair<RenderCoordWireframe, Integer>> blackListWireframes = new ArrayList<>();
     private float progress = 0;
@@ -27,7 +26,6 @@ public class RenderDroneAI {
 
     public RenderDroneAI(EntityDrone drone) {
         this.drone = drone;
-        renderItem = new RenderEntityItem(Minecraft.getMinecraft().getRenderManager(), Minecraft.getMinecraft().getRenderItem()); //TODO 1.8 test
         entityItem = new EntityItem(drone.world);
         update();
     }

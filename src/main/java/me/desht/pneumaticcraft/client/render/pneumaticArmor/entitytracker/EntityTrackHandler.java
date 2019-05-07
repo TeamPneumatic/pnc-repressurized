@@ -165,16 +165,16 @@ public class EntityTrackHandler {
             switch (((EntitySlime) entity).getSlimeSize()) {
                 case 1:
                     curInfo.add("Size: Tiny");
-                    return;
+                    break;
                 case 2:
                     curInfo.add("Size: Small");
-                    return;
+                    break;
                 case 4:
                     curInfo.add("Size: Big");
-                    return;
+                    break;
                 default:
                     curInfo.add("Size: " + ((EntitySlime) entity).getSlimeSize());
-                    return;
+                    break;
             }
         }
     }

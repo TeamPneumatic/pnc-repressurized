@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.MathHelper;
 
 public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor implements IHeatExchanger {
     @GuiSynced

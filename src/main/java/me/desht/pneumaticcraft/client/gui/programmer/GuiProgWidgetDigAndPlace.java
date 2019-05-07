@@ -14,7 +14,6 @@ import java.util.List;
 
 public class GuiProgWidgetDigAndPlace<Widget extends ProgWidgetDigAndPlace> extends GuiProgWidgetAreaShow<Widget> {
 
-    private GuiCheckBox useMaxActions;
     private WidgetTextFieldNumber textField;
 
     public GuiProgWidgetDigAndPlace(Widget widget, GuiProgrammer guiProgrammer) {
@@ -35,10 +34,11 @@ public class GuiProgWidgetDigAndPlace<Widget extends ProgWidgetDigAndPlace> exte
             radioButton.otherChoices = radioButtons;
         }
 
-        useMaxActions = new GuiCheckBox(16, guiLeft + (moveActionsToSide() ? 54 : 4), guiTop + 115, 0xFF404040, I18n.format("gui.progWidget.digAndPlace.useMaxActions"));
+        GuiCheckBox useMaxActions = new GuiCheckBox(16, guiLeft + (moveActionsToSide() ? 54 : 4), guiTop + 115, 0xFF404040, I18n.format("gui.progWidget.digAndPlace.useMaxActions"));
         useMaxActions.setTooltip("gui.progWidget.digAndPlace.useMaxActions.tooltip");
         useMaxActions.checked = widget.useMaxActions();
         addWidget(useMaxActions);
+
         textField = new WidgetTextFieldNumber(Minecraft.getMinecraft().fontRenderer, guiLeft + (moveActionsToSide() ? 57 : 7), guiTop + 128, 50, 11);
         textField.setValue(widget.getMaxActions());
         textField.setEnabled(useMaxActions.checked);

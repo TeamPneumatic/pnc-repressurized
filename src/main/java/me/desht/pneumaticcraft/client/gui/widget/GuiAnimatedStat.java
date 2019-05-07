@@ -249,11 +249,12 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             float fgG = (float) (color >> 8 & 255) / 255.0F;
             float fgB = (float) (color & 255) / 255.0F;
             float fgA = (float) (color >> 24 & 255) / 255.0F;
+            Color c = new Color(fgR, fgG, fgB, fgA);
             if (bevel) {
-                bgColorHi = new Color(fgR, fgG, fgB, fgA).brighter();
-                bgColorLo = new Color(fgR, fgG, fgB, fgA).darker();
+                bgColorHi = c.brighter();
+                bgColorLo = c.darker();
             } else {
-                bgColorHi = new Color(fgR, fgG, fgB, fgA).darker().darker();
+                bgColorHi = c.darker().darker();
                 bgColorLo = bgColorHi;
             }
         } else {

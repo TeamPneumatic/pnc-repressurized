@@ -18,9 +18,6 @@ import java.util.List;
 public class EntityVortex extends EntityThrowable {
 
     private int hitCounter = 0;
-    private double oldMotionX;
-    private double oldMotionY;
-    private double oldMotionZ;
 
     // clientside: rendering X offset of vortex, depends on which hand the vortex was fired from
     private float renderOffsetX = -Float.MAX_VALUE;
@@ -43,9 +40,6 @@ public class EntityVortex extends EntityThrowable {
 
     @Override
     public void onUpdate() {
-        oldMotionX = motionX;
-        oldMotionY = motionY;
-        oldMotionZ = motionZ;
         super.onUpdate();
         motionX *= 0.95D; // equal to the potion effect friction. 0.95F
         motionY *= 0.95D;
