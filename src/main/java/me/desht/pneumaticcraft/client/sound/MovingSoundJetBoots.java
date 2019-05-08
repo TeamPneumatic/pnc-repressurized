@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.sound;
 
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MovingSound;
@@ -9,7 +9,7 @@ import net.minecraft.util.SoundCategory;
 
 public class MovingSoundJetBoots extends MovingSound {
     private final EntityPlayer player;
-    private final CommonHUDHandler handler;
+    private final CommonArmorHandler handler;
     private float targetPitch;
     private int endTimer = -1;
 
@@ -23,7 +23,7 @@ public class MovingSoundJetBoots extends MovingSound {
         this.targetPitch = 0.7F;
         this.pitch = 0.4F;
 
-        handler = CommonHUDHandler.getHandlerForPlayer(player);
+        handler = CommonArmorHandler.getHandlerForPlayer(player);
     }
 
     @Override

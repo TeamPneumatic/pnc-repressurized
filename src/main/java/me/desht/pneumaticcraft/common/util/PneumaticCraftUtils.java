@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.CoordTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.lib.GuiConstants;

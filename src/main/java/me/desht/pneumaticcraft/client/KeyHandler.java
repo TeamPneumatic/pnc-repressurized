@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client;
 
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.settings.KeyConflictContext;

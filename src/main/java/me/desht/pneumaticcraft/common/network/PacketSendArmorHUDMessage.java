@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.ArmorMessage;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;

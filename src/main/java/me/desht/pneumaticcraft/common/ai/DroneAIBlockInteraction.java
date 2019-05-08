@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
@@ -234,7 +234,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
             if (player.getDistanceSq(pos) < 1024) {
                 ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
                 if (helmet.getItem() == Itemss.PNEUMATIC_HELMET) {
-                    CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+                    CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.isEntityTrackerEnabled()
                             && handler.getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.ENTITY_TRACKER) > 0
                             && handler.getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.DISPENSER) > 0) {

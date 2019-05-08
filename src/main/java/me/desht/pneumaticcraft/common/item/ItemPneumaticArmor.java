@@ -6,9 +6,9 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.RenderCoordWireframe;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderCoordWireframe;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
@@ -339,7 +339,7 @@ public class ItemPneumaticArmor extends ItemArmor
     @Override
     public float getFOVModifier(ItemStack stack, EntityPlayer player, EntityEquipmentSlot slot) {
         if (slot == EntityEquipmentSlot.LEGS && ConfigHandler.client.leggingsFOVfactor > 0) {
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             double boost = handler.getSpeedBoostFromLegs();
             if (boost > 0) {
                 return 1.0f + (float) (boost * 2.0 * ConfigHandler.client.leggingsFOVfactor);

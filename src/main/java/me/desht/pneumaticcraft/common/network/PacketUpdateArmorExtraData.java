@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.client.gui.pneumaticHelmet.GuiJetBootsOptions;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiJetBootsOptions;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,7 +51,7 @@ public class PacketUpdateArmorExtraData extends AbstractPacket<PacketUpdateArmor
     public void handleServerSide(PacketUpdateArmorExtraData message, EntityPlayer player) {
         ItemStack stack = player.getItemStackFromSlot(message.slot);
         if (stack.getItem() instanceof ItemPneumaticArmor) {
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             NBTUtil.initNBTTagCompound(stack);
             for (String key : message.data.getKeySet()) {
                 NBTBase dataTag = message.data.getTag(key);

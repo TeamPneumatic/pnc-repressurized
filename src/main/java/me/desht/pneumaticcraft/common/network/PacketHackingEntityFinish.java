@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,7 +37,7 @@ public class PacketHackingEntityFinish extends AbstractPacket<PacketHackingEntit
             if (hackableEntity != null) {
                 hackableEntity.onHackFinished(entity, player);
                 PneumaticCraftRepressurized.proxy.getHackTickHandler().trackEntity(entity, hackableEntity);
-                CommonHUDHandler.getHandlerForPlayer(player).setHackedEntity(null);
+                CommonArmorHandler.getHandlerForPlayer(player).setHackedEntity(null);
                 player.playSound(Sounds.HELMET_HACK_FINISH, 1.0F, 1.0F);
             }
         }

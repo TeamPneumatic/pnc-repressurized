@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
 import blusunrize.immersiveengineering.common.util.IEDamageSources;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -42,7 +42,7 @@ public class ElectricAttackHandler {
             }
         } else if (event.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer)event.getEntityLiving();
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.SECURITY) > 0
                     && handler.getArmorPressure(EntityEquipmentSlot.CHEST) > 0.1
                     && handler.isArmorReady(EntityEquipmentSlot.CHEST)) {

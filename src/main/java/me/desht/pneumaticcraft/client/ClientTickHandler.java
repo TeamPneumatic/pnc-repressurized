@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.gui.INeedTickUpdate;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.EntityEquipmentSlot;

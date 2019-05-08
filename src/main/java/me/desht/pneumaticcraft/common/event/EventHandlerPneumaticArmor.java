@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -54,7 +54,7 @@ public class EventHandlerPneumaticArmor {
             EntityPlayerMP player = (EntityPlayerMP) event.getTarget();
             if (player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemPneumaticArmor) {
                 if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getTarget().getEntityId()) {
-                    CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+                    CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.getArmorPressure(EntityEquipmentSlot.HEAD) > 0 && handler.isEntityTrackerEnabled()) {
                         NetworkHandler.sendTo(new PacketSendArmorHUDMessage(
                                 "pneumaticHelmet.message.targetWarning", 60, 0x70FF4000, event.getEntityLiving().getName()),
@@ -94,7 +94,7 @@ public class EventHandlerPneumaticArmor {
             if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
                 return;
             }
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (!handler.isArmorEnabled()) return;
             if (event.getEntity().world.getDifficulty() == EnumDifficulty.HARD && handler.isJetBootsActive()) {
                 event.setDamageMultiplier(0.2F);
@@ -128,7 +128,7 @@ public class EventHandlerPneumaticArmor {
 
             ItemStack armorStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
             if (armorStack.getItem() instanceof ItemPneumaticArmor && event.getSource().isFireDamage()) {
-                CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.isArmorEnabled() && handler.getArmorPressure(EntityEquipmentSlot.CHEST) > 0.1F && handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.SECURITY) > 0) {
                     event.setCanceled(true);
                     player.extinguish();
@@ -189,7 +189,7 @@ public class EventHandlerPneumaticArmor {
             if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
                 return;
             }
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (!handler.isJetBootsEnabled() && handler.isArmorReady(EntityEquipmentSlot.LEGS)
                     && handler.isJumpBoostEnabled() && handler.getArmorPressure(EntityEquipmentSlot.LEGS) > 0.01F) {
                 float power = ItemPneumaticArmor.getIntData(stack, "jumpBoost", 100) / 100.0f;
@@ -214,7 +214,7 @@ public class EventHandlerPneumaticArmor {
         // (need 10 upgrades for normal dig speed)
         EntityPlayer player = event.getEntityPlayer();
         if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(event.getEntityPlayer());
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getEntityPlayer());
             if (handler.isJetBootsEnabled() && !player.onGround && handler.isJetBootsBuilderMode()) {
                 int n = 11 - handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, 10);
                 // default dig speed when not on ground is 1/5 of normal
@@ -235,7 +235,7 @@ public class EventHandlerPneumaticArmor {
         if (event.getEntity() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntity();
             if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
-                CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.getArmorPressure(EntityEquipmentSlot.FEET) > 0 && handler.isArmorReady(EntityEquipmentSlot.FEET)) {
                     event.setCanceled(true);
                 }

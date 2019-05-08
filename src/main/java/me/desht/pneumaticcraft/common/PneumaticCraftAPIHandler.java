@@ -11,7 +11,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerSupplier;
 import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
 import me.desht.pneumaticcraft.api.universalSensor.ISensorRegistry;
 import me.desht.pneumaticcraft.client.GuiRegistry;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.harvesting.HarvestRegistry;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;

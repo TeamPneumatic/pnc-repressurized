@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
-import me.desht.pneumaticcraft.common.itemBlock.ItemBlockLiquidHopper;
+import me.desht.pneumaticcraft.common.itemblock.ItemBlockLiquidHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;

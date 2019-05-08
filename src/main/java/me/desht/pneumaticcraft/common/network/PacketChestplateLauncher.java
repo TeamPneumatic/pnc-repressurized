@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,7 +10,6 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class PacketChestplateLauncher extends AbstractPacket<PacketChestplateLauncher> {
@@ -32,7 +31,7 @@ public class PacketChestplateLauncher extends AbstractPacket<PacketChestplateLau
     @Override
     public void handleServerSide(PacketChestplateLauncher message, EntityPlayer player) {
         ItemStack stack = player.getHeldItemOffhand();
-        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+        CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
         int upgrades = handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.DISPENSER, 4);
 
         if (handler.getArmorPressure(EntityEquipmentSlot.CHEST) > 0.1f && handler.isArmorReady(EntityEquipmentSlot.CHEST) && upgrades > 0 && !stack.isEmpty()) {

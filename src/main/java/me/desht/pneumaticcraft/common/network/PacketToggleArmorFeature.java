@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 
@@ -41,7 +41,7 @@ public class PacketToggleArmorFeature extends AbstractPacket<PacketToggleArmorFe
     @Override
     public void handleServerSide(PacketToggleArmorFeature message, EntityPlayer player) {
         if (message.featureIndex >= 0 && message.featureIndex < UpgradeRenderHandlerList.instance().getHandlersForSlot(message.slot).size()) {
-            CommonHUDHandler.getHandlerForPlayer(player).setUpgradeRenderEnabled(message.slot, message.featureIndex, message.state);
+            CommonArmorHandler.getHandlerForPlayer(player).setUpgradeRenderEnabled(message.slot, message.featureIndex, message.state);
         }
     }
 

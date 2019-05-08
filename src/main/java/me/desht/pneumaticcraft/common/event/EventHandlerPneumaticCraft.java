@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.api.drone.AmadronRetrievalEvent;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.entity.HackableEnderman;
+import me.desht.pneumaticcraft.common.hacking.entity.HackableEnderman;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;

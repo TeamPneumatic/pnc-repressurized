@@ -7,11 +7,13 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
+import me.desht.pneumaticcraft.client.model.BakedMinigunWrapper;
+import me.desht.pneumaticcraft.client.model.CamoModel;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassBakedModel;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
@@ -369,7 +371,7 @@ public class ClientEventHandler {
         if (event.getEntity() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntity();
             if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor && !player.onGround) {
-                CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 float targetRoll;
                 float div = 50F;
                 if (handler.isJetBootsActive()) {
@@ -446,7 +448,7 @@ public class ClientEventHandler {
         if (event.phase == TickEvent.Phase.START) {
             EntityPlayer player = FMLClientHandler.instance().getClientPlayerEntity();
             if (player == null || player.world == null) return;
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             GameSettings settings = FMLClientHandler.instance().getClient().gameSettings;
             if (handler.isJetBootsActive() && (!handler.isJetBootsEnabled() || !settings.keyBindJump.isKeyDown())) {
                 NetworkHandler.sendToServer(new PacketJetBootState(false));
@@ -497,7 +499,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void adjustFOVEvent(FOVUpdateEvent event) {
-        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
+        CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
 
         float modifier = 1.0f;
         for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
@@ -514,7 +516,7 @@ public class ClientEventHandler {
     public void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
         if (event.getState().getMaterial() == Material.WATER && event.getEntity() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntity();
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer();
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.isScubaEnabled() && handler.getUpgradeCount(EntityEquipmentSlot.HEAD, IItemRegistry.EnumUpgrade.SCUBA) > 0) {
                 event.setDensity(0.02f);
                 event.setCanceled(true);

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -25,7 +25,7 @@ public class PacketJetBootState extends AbstractPacket<PacketJetBootState> {
     @Override
     public void handleServerSide(PacketJetBootState message, EntityPlayer player) {
         if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) > 0
                     && (!message.state || handler.isJetBootsEnabled())) {
                 handler.setJetBootsActive(message.state, player);

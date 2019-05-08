@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
@@ -31,7 +31,7 @@ public class PacketPneumaticKick extends AbstractPacket<PacketPneumaticKick> {
     @Override
     public void handleServerSide(PacketPneumaticKick message, EntityPlayer player) {
         if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
-            CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.isArmorEnabled() && handler.isArmorReady(EntityEquipmentSlot.FEET) && handler.getArmorPressure(EntityEquipmentSlot.FEET) > 0.1f) {
                 int upgrades = handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.DISPENSER);
                 if (upgrades > 0) {
@@ -64,7 +64,7 @@ public class PacketPneumaticKick extends AbstractPacket<PacketPneumaticKick> {
         NetworkHandler.sendToAllAround(new PacketSetEntityMotion(target, target.motionX, target.motionY, target.motionZ), player.world);
         NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.EXPLOSION_LARGE, target.posX, target.posY, target.posZ, 1.0D, 0.0D, 0.0D), player.world);
         ItemStack boots = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
-        CommonHUDHandler.getHandlerForPlayer(player).addAir(boots, EntityEquipmentSlot.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * (2 << upgrades));
+        CommonArmorHandler.getHandlerForPlayer(player).addAir(boots, EntityEquipmentSlot.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * (2 << upgrades));
     }
 
     @Override

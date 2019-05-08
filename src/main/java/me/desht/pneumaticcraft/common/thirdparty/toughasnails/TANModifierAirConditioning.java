@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,7 +24,7 @@ public class TANModifierAirConditioning implements ITemperatureModifier {
 
     @Override
     public Temperature applyPlayerModifiers(@Nonnull EntityPlayer player, @Nonnull Temperature initialTemperature, @Nonnull IModifierMonitor monitor) {
-        CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
+        CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
 
         if (!handler.isAirConEnabled()
                 || !handler.isArmorReady(EntityEquipmentSlot.CHEST)

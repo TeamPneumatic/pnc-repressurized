@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.renderHandler.AirConUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.AirConUpgradeHandler;
 import me.desht.pneumaticcraft.common.network.AbstractPacket;
 import net.minecraft.entity.player.EntityPlayer;
 

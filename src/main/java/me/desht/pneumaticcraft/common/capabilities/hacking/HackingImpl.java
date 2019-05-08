@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.capabilities.hacking;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTBase;

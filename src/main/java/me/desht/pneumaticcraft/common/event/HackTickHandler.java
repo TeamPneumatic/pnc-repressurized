@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.hacking.CapabilityHacking;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.common.util.WorldAndCoord;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;

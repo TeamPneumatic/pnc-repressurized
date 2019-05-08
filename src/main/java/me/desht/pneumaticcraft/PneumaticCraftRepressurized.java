@@ -4,9 +4,9 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.CreativeTabPneumaticCraft;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.hacking.HackableHandler;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.GuiHandler;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
@@ -154,7 +154,7 @@ public class PneumaticCraftRepressurized {
         OreDictionaryHelper.addOreDictEntries();
 
         MinecraftForge.EVENT_BUS.register(Itemss.GPS_AREA_TOOL);
-        MinecraftForge.EVENT_BUS.register(CommonHUDHandler.class);
+        MinecraftForge.EVENT_BUS.register(CommonArmorHandler.class);
         MinecraftForge.EVENT_BUS.register(proxy.getHackTickHandler());
 
         proxy.init();

@@ -5,8 +5,8 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.render.pneumaticArmor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.common.CommonHUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.common.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -78,7 +78,7 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        CommonHUDHandler.getHandlerForPlayer().initArmorInventory(Minecraft.getMinecraft().player, equipmentSlot);
+        CommonArmorHandler.getHandlerForPlayer().initArmorInventory(Minecraft.getMinecraft().player, equipmentSlot);
         statusStat.setText(getStatusText());
     }
 
@@ -91,9 +91,9 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
             EntityPlayer player = FMLClientHandler.instance().getClient().player;
             List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(equipmentSlot);
             for (int i = 0; i < renderHandlers.size(); i++) {
-                if (CommonHUDHandler.getHandlerForPlayer(player).isUpgradeRendererInserted(equipmentSlot, i)) {
+                if (CommonArmorHandler.getHandlerForPlayer(player).isUpgradeRendererInserted(equipmentSlot, i)) {
                     IUpgradeRenderHandler handler = renderHandlers.get(i);
-                    float upgradeUsage = handler.getEnergyUsage(CommonHUDHandler.getHandlerForPlayer(player).getUpgradeCount(equipmentSlot, EnumUpgrade.RANGE), player);
+                    float upgradeUsage = handler.getEnergyUsage(CommonArmorHandler.getHandlerForPlayer(player).getUpgradeCount(equipmentSlot, EnumUpgrade.RANGE), player);
                     if (upgradeUsage > 0F) {
                         text.add(TextFormatting.BLACK.toString() + PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/tick (" + handler.getUpgradeName() + ")");
                     }
