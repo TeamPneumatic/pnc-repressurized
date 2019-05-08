@@ -26,8 +26,6 @@ import java.util.Random;
  */
 public class Debugger {
 
-    private static Random rand = new Random();
-
     public static void indicateBlock(TileEntity te) {
 
         indicateBlock(te.getWorld(), te.getPos());

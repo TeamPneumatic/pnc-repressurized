@@ -60,7 +60,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     );
 
     private final AirCannonStackHandler inventory = new AirCannonStackHandler(this);
-    private final Random rand = new Random();
     @DescSynced
     @LazySynced
     public float rotationAngle;

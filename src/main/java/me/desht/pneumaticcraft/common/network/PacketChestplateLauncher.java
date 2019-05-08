@@ -31,7 +31,6 @@ public class PacketChestplateLauncher extends AbstractPacket<PacketChestplateLau
 
     @Override
     public void handleServerSide(PacketChestplateLauncher message, EntityPlayer player) {
-        World world = player.getEntityWorld();
         ItemStack stack = player.getHeldItemOffhand();
         CommonHUDHandler handler = CommonHUDHandler.getHandlerForPlayer(player);
         int upgrades = handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.DISPENSER, 4);

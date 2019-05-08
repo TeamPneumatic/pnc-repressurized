@@ -23,6 +23,6 @@ public class HarvestHandlerLeaves implements IHarvestHandler{
     @Override
     public void addFilterItems(World world, IBlockAccess chunkCache, BlockPos pos, IBlockState state, NonNullList<ItemStack> stacks, IDrone drone){
         Block block = state.getBlock();
-        stacks.add(new ItemStack(block.getItemDropped(state, new Random(), 0), 1, block.damageDropped(state)));
+        stacks.add(new ItemStack(block.getItemDropped(state, world.rand, 0), 1, block.damageDropped(state)));
     }
 }
