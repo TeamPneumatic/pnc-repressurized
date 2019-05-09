@@ -156,6 +156,10 @@ public class ClientProxy implements IProxy {
 
     @Override
     public void playCustomParticle(EnumCustomParticleType particleType, World w, double x, double y, double z, double dx, double dy, double dz) {
+        Minecraft mc = Minecraft.getMinecraft();
+        int part = mc.gameSettings.particleSetting;
+        if (part == 2 && mc.world.rand.nextInt(10) > 0) return;
+        if (part == 1 && mc.world.rand.nextInt(3) > 0) return;
         Minecraft.getMinecraft().effectRenderer.addEffect(CustomParticleFactory.createParticle(particleType, w, x, y, z, dx, dy, dz));
     }
 
