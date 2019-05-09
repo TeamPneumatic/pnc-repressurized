@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -49,7 +49,7 @@ public class PacketChestplateLauncher extends AbstractPacket<PacketChestplateLau
 
             int usedAir = (int) (20 * upgrades * message.amount);
             if (!player.capabilities.isCreativeMode) {
-                handler.addAir(player.getItemStackFromSlot(EntityEquipmentSlot.CHEST), EntityEquipmentSlot.CHEST, -usedAir);
+                handler.addAir(EntityEquipmentSlot.CHEST, -usedAir);
             }
         }
     }

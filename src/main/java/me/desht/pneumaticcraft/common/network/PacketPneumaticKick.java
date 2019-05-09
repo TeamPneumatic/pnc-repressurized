@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
@@ -63,8 +63,7 @@ public class PacketPneumaticKick extends AbstractPacket<PacketPneumaticKick> {
         NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PUNCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0f, 1.0f, false), player.world);
         NetworkHandler.sendToAllAround(new PacketSetEntityMotion(target, target.motionX, target.motionY, target.motionZ), player.world);
         NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.EXPLOSION_LARGE, target.posX, target.posY, target.posZ, 1.0D, 0.0D, 0.0D), player.world);
-        ItemStack boots = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
-        CommonArmorHandler.getHandlerForPlayer(player).addAir(boots, EntityEquipmentSlot.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * (2 << upgrades));
+        CommonArmorHandler.getHandlerForPlayer(player).addAir(EntityEquipmentSlot.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * (2 << upgrades));
     }
 
     @Override

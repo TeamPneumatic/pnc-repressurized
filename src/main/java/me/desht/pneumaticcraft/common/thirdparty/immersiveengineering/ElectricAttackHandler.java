@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
 import blusunrize.immersiveengineering.common.util.IEDamageSources;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -46,7 +46,7 @@ public class ElectricAttackHandler {
             if (handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.SECURITY) > 0
                     && handler.getArmorPressure(EntityEquipmentSlot.CHEST) > 0.1
                     && handler.isArmorReady(EntityEquipmentSlot.CHEST)) {
-                handler.addAir(player.getItemStackFromSlot(EntityEquipmentSlot.CHEST), EntityEquipmentSlot.CHEST, (int)(-150 * event.getAmount()));
+                handler.addAir(EntityEquipmentSlot.CHEST, (int)(-150 * event.getAmount()));
                 float sx = player.getRNG().nextFloat() * 1.5F - 0.75F;
                 float sz = player.getRNG().nextFloat() * 1.5F - 0.75F;
                 double dy = Math.min(event.getAmount() / 4, 0.5);

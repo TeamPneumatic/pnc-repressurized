@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
-import me.desht.pneumaticcraft.common.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

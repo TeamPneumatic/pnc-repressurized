@@ -1,14 +1,13 @@
 package me.desht.pneumaticcraft.common.event;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.network.PacketSendArmorHUDMessage;
-import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
@@ -25,11 +24,14 @@ import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -117,7 +119,7 @@ public class EventHandlerPneumaticArmor {
                 NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, player.posX, player.posY, player.posZ, sx, 0.1, sz), player.world);
             }
             NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.SHORT_HISS, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.3f, 0.8f, false), player.world);
-            handler.addAir(stack, EntityEquipmentSlot.FEET, (int) -airNeeded);
+            handler.addAir(EntityEquipmentSlot.FEET, (int) -airNeeded);
         }
     }
 
@@ -133,7 +135,7 @@ public class EventHandlerPneumaticArmor {
                     event.setCanceled(true);
                     player.extinguish();
                     if (!player.world.isRemote) {
-                        handler.addAir(armorStack, EntityEquipmentSlot.CHEST, -PneumaticValues.PNEUMATIC_ARMOR_FIRE_USAGE);
+                        handler.addAir(EntityEquipmentSlot.CHEST, -PneumaticValues.PNEUMATIC_ARMOR_FIRE_USAGE);
                         for (int i = 0; i < 2; i++) {
                             float sx = player.getRNG().nextFloat() * 1.5F - 0.75F;
                             float sz = player.getRNG().nextFloat() * 1.5F - 0.75F;
@@ -181,6 +183,9 @@ public class EventHandlerPneumaticArmor {
         }
     }
 
+    /**
+     * Jump boost due to leggings range upgrades
+     */
     @SubscribeEvent
     public void onPlayerJump(LivingEvent.LivingJumpEvent event) {
         if (event.getEntityLiving() instanceof EntityPlayer) {
@@ -203,23 +208,25 @@ public class EventHandlerPneumaticArmor {
                 if (player.motionZ != 0) player.motionZ += (double)(MathHelper.cos(rotRad) * scale);
                 armorJumping.put(player.getUniqueID(), player.world.getTotalWorldTime());
                 int airUsed = (int) Math.ceil(PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * actualBoost * (player.isSprinting() ? 2 : 1));
-                handler.addAir(stack, EntityEquipmentSlot.LEGS, -airUsed);
+                handler.addAir(EntityEquipmentSlot.LEGS, -airUsed);
             }
         }
     }
 
+    /**
+     * Allow the player to dig at improved speed if flying with builder mode active
+     * (need 10 upgrades for normal dig speed)
+     */
     @SubscribeEvent
     public void breakSpeedCheck(PlayerEvent.BreakSpeed event) {
-        // allow the player to dig at improved speed if flying with builder mode active
-        // (need 10 upgrades for normal dig speed)
         EntityPlayer player = event.getEntityPlayer();
+        int max = PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES;
         if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getEntityPlayer());
             if (handler.isJetBootsEnabled() && !player.onGround && handler.isJetBootsBuilderMode()) {
-                int n = 11 - handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, 10);
-                // default dig speed when not on ground is 1/5 of normal
+                int n = (max + 1) - handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, max);
                 if (n < 4) {
-                    float mult = 5.0f / n;
+                    float mult = 5.0f / n;   // default dig speed when not on ground is 1/5 of normal
                     float oldSpeed = event.getOriginalSpeed();
                     float newSpeed = event.getNewSpeed();
                     if (oldSpeed < newSpeed * mult) {
@@ -230,6 +237,9 @@ public class EventHandlerPneumaticArmor {
         }
     }
 
+    /**
+     * Prevent farmland trampling with pneumatic boots
+     */
     @SubscribeEvent
     public void onFarmlandTrample(BlockEvent.FarmlandTrampleEvent event) {
         if (event.getEntity() instanceof EntityPlayer) {
@@ -238,6 +248,58 @@ public class EventHandlerPneumaticArmor {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.getArmorPressure(EntityEquipmentSlot.FEET) > 0 && handler.isArmorReady(EntityEquipmentSlot.FEET)) {
                     event.setCanceled(true);
+                }
+            }
+        }
+    }
+
+    private static final Vec3d IDLE_VEC = new Vec3d(0, -0.5, -0);
+
+    /**
+     * Client side: play particles for all known players (including us) with active jet boots either idling or firing
+     */
+    @SubscribeEvent
+    public void playJetbootsParticles(TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && event.player.world.isRemote) {
+            JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(event.player);
+            for (EntityPlayer player : event.player.world.playerEntities) {
+                if (!player.onGround && player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
+                    JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
+                    if (state != null && state.isEnabled()) {
+                        int nParticles = state.isActive() ? 5 : 1;
+                        Vec3d jetVec = state.shouldRotatePlayer() ? player.getLookVec().scale(-0.5) : IDLE_VEC;
+                        Vec3d feet = getFeetPos(player, state.shouldRotatePlayer());
+                        for (int i = 0; i < nParticles; i++) {
+                            PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, player.world,
+                                    feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private Vec3d getFeetPos(EntityPlayer player, boolean rotated) {
+        if (!rotated) return new Vec3d(player.posX, player.posY, player.posZ);
+
+        double midY = (player.posY + player.getPositionEyes(1.0f).y) / 2;
+        return new Vec3d(player.posX, player.posY, player.posZ).add(player.getLookVec().scale(player.posY - midY));
+    }
+
+    /**
+     * Server side: Inform players joining the world of existing players' jet boots status
+     */
+    @SubscribeEvent
+    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+        if (!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayerMP) {
+            EntityPlayerMP newPlayer = (EntityPlayerMP) event.getEntity();
+            JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(newPlayer);
+            for (EntityPlayer player : event.getWorld().playerEntities) {
+                if (player.getEntityId() != newPlayer.getEntityId()) {
+                    JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
+                    if (state != null) {
+                        NetworkHandler.sendTo(new PacketJetBootsStateSync(player, state), newPlayer);
+                    }
                 }
             }
         }

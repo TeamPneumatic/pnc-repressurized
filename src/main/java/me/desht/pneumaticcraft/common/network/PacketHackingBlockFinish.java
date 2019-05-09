@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
-import me.desht.pneumaticcraft.common.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.WorldAndCoord;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.entity.player.EntityPlayer;

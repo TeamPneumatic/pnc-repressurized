@@ -116,9 +116,9 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketMultiPart.class, PacketMultiPart.class, discriminant++, Side.SERVER);
 
         INSTANCE.registerMessage(PacketPneumaticKick.class, PacketPneumaticKick.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketJetBootState.class, PacketJetBootState.class, discriminant++, Side.SERVER);
+        INSTANCE.registerMessage(PacketJetBootsActivate.class, PacketJetBootsActivate.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketPlayMovingSound.class, PacketPlayMovingSound.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketMarkPlayerJetbootsActive.class, PacketMarkPlayerJetbootsActive.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketJetBootsStateSync.class, PacketJetBootsStateSync.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketRotateBlock.class, PacketRotateBlock.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketUpdateArmorExtraData.class, PacketUpdateArmorExtraData.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketUpdateMicromissileSettings.class, PacketUpdateMicromissileSettings.class, discriminant++, Side.SERVER);

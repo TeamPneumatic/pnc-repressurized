@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.sound;
 
-import me.desht.pneumaticcraft.common.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MovingSound;

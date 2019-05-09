@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.common.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -78,7 +78,7 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        CommonArmorHandler.getHandlerForPlayer().initArmorInventory(Minecraft.getMinecraft().player, equipmentSlot);
+        CommonArmorHandler.getHandlerForPlayer().initArmorInventory(equipmentSlot);
         statusStat.setText(getStatusText());
     }
 

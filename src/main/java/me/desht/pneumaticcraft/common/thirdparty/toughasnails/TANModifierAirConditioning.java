@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import net.minecraft.entity.player.EntityPlayer;
@@ -52,7 +52,7 @@ public class TANModifierAirConditioning implements ITemperatureModifier {
         }
 
         int airUsage = (int) (deltaTemp * ConfigHandler.integration.tanAirConAirUsageMultiplier);
-        handler.addAir(player.getItemStackFromSlot(EntityEquipmentSlot.CHEST), EntityEquipmentSlot.CHEST, -Math.abs(airUsage));
+        handler.addAir(EntityEquipmentSlot.CHEST, -Math.abs(airUsage));
 
         Temperature res = new Temperature(targetTemp);
         monitor.addEntry(new IModifierMonitor.Context(this.getId(), "Pneumatic Armor A/C", initialTemperature, res));

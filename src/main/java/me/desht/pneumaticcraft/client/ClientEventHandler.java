@@ -13,7 +13,7 @@ import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassBakedMode
 import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketJetBootState;
-import me.desht.pneumaticcraft.common.network.PacketMarkPlayerJetbootsActive;
+import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
+import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -451,11 +451,11 @@ public class ClientEventHandler {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             GameSettings settings = FMLClientHandler.instance().getClient().gameSettings;
             if (handler.isJetBootsActive() && (!handler.isJetBootsEnabled() || !settings.keyBindJump.isKeyDown())) {
-                NetworkHandler.sendToServer(new PacketJetBootState(false));
-                handler.setJetBootsActive(false, player);
+                NetworkHandler.sendToServer(new PacketJetBootsActivate(false));
+                handler.setJetBootsActive(false);
             } else if (!handler.isJetBootsActive() && handler.isJetBootsEnabled() && settings.keyBindJump.isKeyDown()) {
-                NetworkHandler.sendToServer(new PacketJetBootState(true));
-                handler.setJetBootsActive(true, player);
+                NetworkHandler.sendToServer(new PacketJetBootsActivate(true));
+                handler.setJetBootsActive(true);
             }
         }
     }
@@ -463,7 +463,9 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
         EntityPlayer player = event.getEntityPlayer();
-        if (PacketMarkPlayerJetbootsActive.shouldPlayerBeRotated(player)) {
+        JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(player);
+        JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
+        if (state != null && state.shouldRotatePlayer()) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(event.getX(), event.getY(), event.getZ());
             GlStateManager.rotate(makeQuaternion(player));
@@ -474,13 +476,16 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void playerPostRotateEvent(RenderPlayerEvent.Post event) {
-        if (PacketMarkPlayerJetbootsActive.shouldPlayerBeRotated(event.getEntityPlayer())) {
+        EntityPlayer player = event.getEntityPlayer();
+        JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(player);
+        JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
+        if (state != null && state.shouldRotatePlayer()) {
             GlStateManager.popMatrix();
         }
     }
 
     private static Quaternion makeQuaternion(EntityPlayer player) {
-        Vec3d forward = player.getLookVec().normalize();
+        Vec3d forward = player.getLookVec();
 
         double dot = new Vec3d(0, 1, 0).dotProduct(forward);
         if (Math.abs(dot + 1) < 0.000001) {
@@ -499,8 +504,6 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void adjustFOVEvent(FOVUpdateEvent event) {
-        CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-
         float modifier = 1.0f;
         for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
             ItemStack stack = event.getEntity().getItemStackFromSlot(slot);
@@ -515,7 +518,6 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
         if (event.getState().getMaterial() == Material.WATER && event.getEntity() instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) event.getEntity();
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.isScubaEnabled() && handler.getUpgradeCount(EntityEquipmentSlot.HEAD, IItemRegistry.EnumUpgrade.SCUBA) > 0) {
                 event.setDensity(0.02f);
@@ -571,7 +573,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void drawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
+    public void drawCustomDurabilityBars(GuiScreenEvent.DrawScreenEvent.Pre event) {
         // with thanks to V0idWa1k3r
         // https://github.com/V0idWa1k3r/ExPetrum/blob/master/src/main/java/v0id/exp/client/ExPHandlerClient.java#L235
         if (event.getGui() instanceof GuiContainer) {
