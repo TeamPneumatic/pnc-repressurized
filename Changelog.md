@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.10.6-??? (unreleased)
+### 0.11.0-??? (unreleased)
 #### New
 * Tough As Nails support:
   * PneumaticCraft heat (and cold!) sources will have an effect on your body temperature. Take care!
@@ -18,6 +18,8 @@ Changes are in reverse chronological order; newest changes at the top.
 #### Updates
 * When moving Pneumatic Armor stat windows, the move GUI now shows other open stat windows too to make it easier to line things up, avoid overlaps etc.
 * Performance improvement: tile entity data syncing now requires far fewer block updates, which should improve performance in general.
+* Performance improvement: player jet boots particles are now all handled client-side; only player jet boots state needs to be synced from server to clients when it changes - much less network traffic.
+* Custom air particle density (used in many places: pressure chamber, leaking tubes, jet boots) now respects the clientside particle density setting.
 #### Fixes
 * Restore the Thermopneumatic Processing Plant "Dump Input Tank" button. Was a mistake to remove that.
 
