@@ -29,16 +29,33 @@ public class JetBootsStateTracker {
     private JetBootsStateTracker() {
     }
 
+    /**
+     * Set jet boots state server-side.  No-op if called client-side (client state is updated by the
+     * PacketJetBootsStateSync packet).
+     *
+     * @param player the player
+     * @param enabled jet boots switched on?
+     * @param active jet boots firing?
+     * @param builderMode in builder mode?
+     */
     void setJetBootsState(EntityPlayer player, boolean enabled, boolean active, boolean builderMode) {
-        JetBootsState state = stateMap.computeIfAbsent(player.getUniqueID(), uuid -> new JetBootsState(false, false, false));
+        if (!player.world.isRemote) {
+            JetBootsState state = stateMap.computeIfAbsent(player.getUniqueID(), uuid -> new JetBootsState(false, false, false));
 
-        boolean sendPacket = !player.world.isRemote && (state.enabled != enabled || state.active != active || state.builderMode != builderMode);
-        state.enabled = enabled;
-        state.active = active;
-        state.builderMode = builderMode;
-        if (sendPacket) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(player, state), player.world.provider.getDimension());
+            boolean sendPacket = state.enabled != enabled || state.active != active || state.builderMode != builderMode;
+            state.enabled = enabled;
+            state.active = active;
+            state.builderMode = builderMode;
+            if (sendPacket) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(player, state), player.world.provider.getDimension());
+        }
     }
 
+    /**
+     * Set jet boots state client-side; only called from PacketJetBootsStateSync packet handler.
+     *
+     * @param playerId a player's UUID (not necessarily the client player; could be another player in this dimension)
+     * @param state full jet boots state
+     */
     public void setJetBootsState(UUID playerId, JetBootsState state) {
         stateMap.put(playerId, state);
     }
@@ -59,9 +76,8 @@ public class JetBootsStateTracker {
     }
 
     public JetBootsState getJetBootsState(EntityPlayer player) {
-        return stateMap.get(player.getUniqueID());
+        return stateMap.getOrDefault(player.getUniqueID(), new JetBootsState(false, false, false));
     }
-
 
     public static class JetBootsState {
         private boolean enabled;  // switched on
@@ -100,6 +116,11 @@ public class JetBootsStateTracker {
 
         public boolean shouldRotatePlayer() {
             return enabled && active && !builderMode;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("[en=%b,ac=%b,bu=%b]", enabled, active, builderMode);
         }
     }
 }

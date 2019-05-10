@@ -37,6 +37,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
+
 /**
  * Events related to Pneumatic Armor.  Note any player-tick events are handled in CommonHUDHandler#tickArmorPiece()
  */
@@ -54,7 +56,7 @@ public class EventHandlerPneumaticArmor {
         int mobId = event.getEntityLiving().getEntityId();
         if (event.getTarget() instanceof EntityPlayerMP) {
             EntityPlayerMP player = (EntityPlayerMP) event.getTarget();
-            if (player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemPneumaticArmor) {
+            if (isPneumaticArmorPiece(player, EntityEquipmentSlot.HEAD)) {
                 if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getTarget().getEntityId()) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.getArmorPressure(EntityEquipmentSlot.HEAD) > 0 && handler.isEntityTrackerEnabled()) {
@@ -128,8 +130,7 @@ public class EventHandlerPneumaticArmor {
         if (event.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
 
-            ItemStack armorStack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-            if (armorStack.getItem() instanceof ItemPneumaticArmor && event.getSource().isFireDamage()) {
+            if (isPneumaticArmorPiece(player, EntityEquipmentSlot.CHEST) && event.getSource().isFireDamage()) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.isArmorEnabled() && handler.getArmorPressure(EntityEquipmentSlot.CHEST) > 0.1F && handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.SECURITY) > 0) {
                     event.setCanceled(true);
@@ -221,7 +222,7 @@ public class EventHandlerPneumaticArmor {
     public void breakSpeedCheck(PlayerEvent.BreakSpeed event) {
         EntityPlayer player = event.getEntityPlayer();
         int max = PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES;
-        if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
+        if (isPneumaticArmorPiece(player, EntityEquipmentSlot.FEET)) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getEntityPlayer());
             if (handler.isJetBootsEnabled() && !player.onGround && handler.isJetBootsBuilderMode()) {
                 int n = (max + 1) - handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, max);
@@ -244,7 +245,7 @@ public class EventHandlerPneumaticArmor {
     public void onFarmlandTrample(BlockEvent.FarmlandTrampleEvent event) {
         if (event.getEntity() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntity();
-            if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
+            if (isPneumaticArmorPiece(player, EntityEquipmentSlot.FEET)) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.getArmorPressure(EntityEquipmentSlot.FEET) > 0 && handler.isArmorReady(EntityEquipmentSlot.FEET)) {
                     event.setCanceled(true);
@@ -263,7 +264,7 @@ public class EventHandlerPneumaticArmor {
         if (event.phase == TickEvent.Phase.END && event.player.world.isRemote) {
             JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(event.player);
             for (EntityPlayer player : event.player.world.playerEntities) {
-                if (!player.onGround && player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
+                if (!player.onGround && isPneumaticArmorPiece(player, EntityEquipmentSlot.FEET)) {
                     JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
                     if (state != null && state.isEnabled()) {
                         int nParticles = state.isActive() ? 5 : 1;
@@ -294,14 +295,21 @@ public class EventHandlerPneumaticArmor {
         if (!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayerMP) {
             EntityPlayerMP newPlayer = (EntityPlayerMP) event.getEntity();
             JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(newPlayer);
+            // inform the new player of any other relevant player's state
             for (EntityPlayer player : event.getWorld().playerEntities) {
-                if (player.getEntityId() != newPlayer.getEntityId()) {
+                if (player.getEntityId() != newPlayer.getEntityId() && isPneumaticArmorPiece(newPlayer, EntityEquipmentSlot.FEET)) {
                     JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
                     if (state != null) {
                         NetworkHandler.sendTo(new PacketJetBootsStateSync(player, state), newPlayer);
                     }
                 }
             }
+            // inform the other players of the new player's state if necessary
+            if (isPneumaticArmorPiece(newPlayer, EntityEquipmentSlot.FEET)) {
+                JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(newPlayer);
+                if (state != null) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(newPlayer, state), event.getWorld().provider.getDimension());
+            }
         }
     }
+
 }

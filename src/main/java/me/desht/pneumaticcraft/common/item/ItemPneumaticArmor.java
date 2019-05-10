@@ -87,10 +87,14 @@ public class ItemPneumaticArmor extends ItemArmor
      * @return true if the player is wearing pneumatic armor
      */
     public static boolean isPlayerWearingAnyPneumaticArmor(EntityPlayer player) {
-        return player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemPneumaticArmor
-                || player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() instanceof ItemPneumaticArmor
-                || player.getItemStackFromSlot(EntityEquipmentSlot.LEGS).getItem() instanceof ItemPneumaticArmor
-                || player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor;
+        for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+            if (isPneumaticArmorPiece(player, slot)) return true;
+        }
+        return false;
+    }
+
+    public static boolean isPneumaticArmorPiece(EntityPlayer player, EntityEquipmentSlot slot) {
+        return player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor;
     }
 
     /**

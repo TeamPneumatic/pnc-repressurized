@@ -101,7 +101,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
                 if (inInitPhase || CommonArmorHandler.getHandlerForPlayer().isUpgradeRendererInserted(slot, i)) {
                     IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
                     if (inInitPhase
-                            || FMLClientHandler.instance().getClient().player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor
+                            || ItemPneumaticArmor.isPneumaticArmorPiece(Minecraft.getMinecraft().player, slot)
                             || upgradeRenderHandler instanceof MainHelmetHandler) {
                         IOptionPage optionPage = upgradeRenderHandler.getGuiOptionsPage();
                         if (optionPage != null) {

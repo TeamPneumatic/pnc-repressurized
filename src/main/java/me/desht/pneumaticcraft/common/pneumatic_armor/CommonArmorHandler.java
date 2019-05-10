@@ -646,13 +646,10 @@ public class CommonArmorHandler {
     }
 
     public void setJetBootsActive(boolean jetBootsActive) {
-//        if (!player.world.isRemote && jetBootsActive != this.jetBootsActive) {
-//            NetworkHandler.sendToDimension(new PacketMarkPlayerJetbootsActive(player, jetBootsActive && !jetBootsBuilderMode), player.world.provider.getDimension());
-//        }
-        if (!jetBootsActive) jetBootsActiveTicks = 0;
-
+        if (!jetBootsActive) {
+            jetBootsActiveTicks = 0;
+        }
         this.jetBootsActive = jetBootsActive;
-
         JetBootsStateTracker.getTracker(player).setJetBootsState(player, isJetBootsEnabled(), jetBootsActive, isJetBootsBuilderMode());
     }
 
@@ -703,7 +700,7 @@ public class CommonArmorHandler {
                 break;
             case GuiJetBootsOptions.NBT_BUILDER_MODE:
                 jetBootsBuilderMode = ((NBTTagByte) dataTag).getByte() == 1;
-                JetBootsStateTracker.getTracker(player).setJetBootsState(player, isJetBootsEnabled(), isJetBootsActive(), jetBootsBuilderMode);
+                JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode(jetBootsBuilderMode);
                 break;
         }
     }

@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiDroneDebuggerOptions;
+import me.desht.pneumaticcraft.common.item.ItemPneumatic;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
@@ -69,7 +70,7 @@ public class DroneDebugUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     public static boolean enabledForPlayer(EntityPlayer player) {
-        if (player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemPneumaticArmor) {
+        if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EntityEquipmentSlot.HEAD)) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             return handler.getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.DISPENSER) > 0;
         } else {

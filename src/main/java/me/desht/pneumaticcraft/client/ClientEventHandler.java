@@ -370,7 +370,7 @@ public class ClientEventHandler {
     public void screenTilt(EntityViewRenderEvent.CameraSetup event) {
         if (event.getEntity() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntity();
-            if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor && !player.onGround) {
+            if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EntityEquipmentSlot.FEET) && !player.onGround) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 float targetRoll;
                 float div = 50F;

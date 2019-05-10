@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
+
 @SideOnly(Side.CLIENT)
 public class HUDHandler implements IKeyListener {
     private static final int PROGRESS_BAR_HEIGHT = 17;
@@ -116,7 +118,7 @@ public class HUDHandler implements IKeyListener {
                 boolean armorEquipped = false;
                 CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer();
                 for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                    if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor) {
+                    if (isPneumaticArmorPiece(player, slot)) {
                         update(mc.player, slot, comHudHandler);
                         armorEquipped = true;
                     }
@@ -135,8 +137,7 @@ public class HUDHandler implements IKeyListener {
     }
 
     private void ensureArmorInit(EntityPlayer player, CommonArmorHandler comHudHandler) {
-        if (!(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemPneumaticArmor)
-                && !sentForceInitPacket) {
+        if (!isPneumaticArmorPiece(player, EntityEquipmentSlot.HEAD) && !sentForceInitPacket) {
             // Special case: ensure core components packet always gets sent so armor can switch on even if helmet
             // is not equipped (core components is in the helmet for historical reasons)
             boolean state = GuiKeybindCheckBox.getCoreComponents().checked;
@@ -248,7 +249,7 @@ public class HUDHandler implements IKeyListener {
             // show armor initialisation percentages
             if (comHudHandler.isArmorEnabled() && anyArmorInInit) {
                 for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                    if (player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor && comHudHandler.getArmorPressure(slot) > 0F) {
+                    if (isPneumaticArmorPiece(player, slot) && comHudHandler.getArmorPressure(slot) > 0F) {
                         String text = Math.min(100, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot)) + "%";
                         mc.fontRenderer.drawStringWithShadow(text, sr.getScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40);
                     }

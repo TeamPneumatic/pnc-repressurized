@@ -59,7 +59,7 @@ public class HackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     public static boolean enabledForPlayer(EntityPlayer player) {
-        if (player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() instanceof ItemPneumaticArmor) {
+        if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EntityEquipmentSlot.HEAD)) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             return handler.getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.SECURITY) > 0;
         }

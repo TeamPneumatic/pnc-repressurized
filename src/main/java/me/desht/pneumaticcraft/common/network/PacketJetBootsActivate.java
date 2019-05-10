@@ -28,7 +28,7 @@ public class PacketJetBootsActivate extends AbstractPacket<PacketJetBootsActivat
 
     @Override
     public void handleServerSide(PacketJetBootsActivate message, EntityPlayer player) {
-        if (player.getItemStackFromSlot(EntityEquipmentSlot.FEET).getItem() instanceof ItemPneumaticArmor) {
+        if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EntityEquipmentSlot.FEET)) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) > 0
                     && (!message.state || handler.isJetBootsEnabled())) {

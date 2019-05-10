@@ -78,7 +78,7 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     }
 
     private String getPressureStr(EntityPlayer player, EntityEquipmentSlot slot) {
-        if (!(player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor))
+        if (!ItemPneumaticArmor.isPneumaticArmorPiece(player, slot))
             return "-";
         float pressure = CommonArmorHandler.getHandlerForPlayer(player).armorPressure[slot.getIndex()];
         TextFormatting colour;
