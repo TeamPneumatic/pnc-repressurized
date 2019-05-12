@@ -138,32 +138,11 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
                         if (isValidPosition(pos)) {
                             curPos = pos;
                             if (moveToPositions()) {
-                                if (moveIntoBlock()) {
-                                    if (drone.getPathNavigator().moveToXYZ(curPos.getX(), curPos.getY() + 0.5, curPos.getZ())) {
-                                        searching = false;
-                                        totalActions++;
-                                        if (respectClaims()) DroneClaimManager.getInstance(drone.world()).claim(pos);
-                                        blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
-                                        return true;
-                                    }
-                                } else {
-                                    for (EnumFacing dir : EnumFacing.VALUES) {
-                                        if (drone.getPathNavigator().moveToXYZ(curPos.getX() + dir.getXOffset(), curPos.getY() + dir.getYOffset() + 0.5, curPos.getZ() + dir.getZOffset())) {
-                                            searching = false;
-                                            totalActions++;
-                                            if (respectClaims())
-                                                DroneClaimManager.getInstance(drone.world()).claim(pos);
-                                            blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
-                                            return true;
-                                        }
-                                    }
+                                if (tryMoveToBlock(pos)) {
+                                    return true;
                                 }
                                 if (drone.getPathNavigator().isGoingToTeleport()) {
-                                    searching = false;
-                                    totalActions++;
-                                    if (respectClaims()) DroneClaimManager.getInstance(drone.world()).claim(pos);
-                                    blacklist.clear();//clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
-                                    return true;
+                                    return movedToBlockOK(pos);
                                 } else {
                                     drone.addDebugEntry("gui.progWidget.general.debug.cantNavigate", pos);
                                 }
@@ -194,6 +173,29 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
             }
             return !drone.getPathNavigator().hasNoPath();
         }
+    }
+
+    private boolean tryMoveToBlock(BlockPos pos) {
+        if (moveIntoBlock()) {
+            if (drone.getPathNavigator().moveToXYZ(curPos.getX(), curPos.getY() + 0.5, curPos.getZ())) {
+                return movedToBlockOK(pos);
+            }
+        } else {
+            for (EnumFacing dir : EnumFacing.VALUES) {
+                if (drone.getPathNavigator().moveToXYZ(curPos.getX() + dir.getXOffset(), curPos.getY() + dir.getYOffset() + 0.5, curPos.getZ() + dir.getZOffset())) {
+                    return movedToBlockOK(pos);
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean movedToBlockOK(BlockPos pos) {
+        searching = false;
+        totalActions++;
+        if (respectClaims()) DroneClaimManager.getInstance(drone.world()).claim(pos);
+        blacklist.clear(); //clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
+        return true;
     }
 
     protected void addEndingDebugEntry() {
