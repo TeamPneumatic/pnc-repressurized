@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetDigAndPlace;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class GuiProgWidgetDigAndPlace<Widget extends ProgWidgetDigAndPlace> exte
 
         textField = new WidgetTextFieldNumber(Minecraft.getMinecraft().fontRenderer, guiLeft + (moveActionsToSide() ? 57 : 7), guiTop + 128, 50, 11);
         textField.setValue(widget.getMaxActions());
-        textField.setEnabled(useMaxActions.checked);
+        textField.setVisible(useMaxActions.checked);
         addWidget(textField);
     }
 
@@ -55,7 +56,7 @@ public class GuiProgWidgetDigAndPlace<Widget extends ProgWidgetDigAndPlace> exte
             widget.setOrder(ProgWidgetDigAndPlace.EnumOrder.values()[guiWidget.getID()]);
         if (guiWidget.getID() == 16) {
             widget.setUseMaxActions(((GuiCheckBox) guiWidget).checked);
-            textField.setEnabled(widget.useMaxActions());
+            textField.setVisible(widget.useMaxActions());
         }
         super.actionPerformed(guiWidget);
     }
@@ -69,7 +70,7 @@ public class GuiProgWidgetDigAndPlace<Widget extends ProgWidgetDigAndPlace> exte
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        fontRenderer.drawString("Order:", guiLeft + 8, guiTop + 20, 0xFF404060);
+        fontRenderer.drawString(TextFormatting.UNDERLINE + "Order", guiLeft + 6, guiTop + 20, 0xFF404060);
     }
 
 }
