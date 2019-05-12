@@ -197,6 +197,8 @@ public class ConfigHandler {
         public int plasticMixerPlasticRatio = 1000;
         @Config.Comment("Thermal resistance between opposite faces of the Thermal Compressor. Higher values means heat leaks across (equalizes) more slowly, making the compressor better at converting heat differential to pressure.")
         public double thermalCompressorThermalResistance = 150;
+        @Config.Comment("Chance per tick of Crop Supports causing a growth tick. The default, 0.002, is roughly 2.5 times faster than the vanilla growth rate")
+        public double cropSticksGrowthBoostChance = 0.002;
     }
 
     public static class Advanced {
