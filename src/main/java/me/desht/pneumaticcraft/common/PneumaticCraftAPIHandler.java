@@ -12,17 +12,20 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
 import me.desht.pneumaticcraft.api.universalSensor.ISensorRegistry;
 import me.desht.pneumaticcraft.client.GuiRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.harvesting.HarvestRegistry;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
+import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.pressure.AirHandlerSupplier;
-import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
@@ -102,7 +105,8 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface {
 
     @Override
     public void registerPlasticFluid(Fluid fluid, int ratio) {
-        PlasticMixerRegistry.INSTANCE.registerPlasticMixerInput(fluid, ratio);
+        PneumaticRecipeRegistry.getInstance().registerPlasticMixerRecipe(new FluidStack(fluid, ratio), new ItemStack(Itemss.PLASTIC),
+                PneumaticValues.PLASTIC_MIXER_MELTING_TEMP, true, true);
     }
 
     @Override

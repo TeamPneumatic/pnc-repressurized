@@ -192,8 +192,8 @@ public class ConfigHandler {
         public boolean omniHopperDispenser = true;
         @Config.Comment("Aerial Interface backwards compat: allow pre-0.8.0 behaviour of getting player's armor inventory from top face, even with Dispenser Upgrade installed")
         public boolean aerialInterfaceArmorCompat = true;
-        @Config.Comment("The ratio of liquid plastic to solid plastic sheets in the Plastic Mixer, in mB per sheet")
-        @Config.RangeInt(min = 1)
+        @Config.Comment("The ratio of liquid plastic to solid plastic sheets in the Plastic Mixer, in mB per sheet.  If set to 0, no default liquid->solid plastic recipe will be added (but CraftTweaker or API can be used to add recipes)")
+        @Config.RangeInt(min = 0)
         public int plasticMixerPlasticRatio = 1000;
         @Config.Comment("Thermal resistance between opposite faces of the Thermal Compressor. Higher values means heat leaks across (equalizes) more slowly, making the compressor better at converting heat differential to pressure.")
         public double thermalCompressorThermalResistance = 150;

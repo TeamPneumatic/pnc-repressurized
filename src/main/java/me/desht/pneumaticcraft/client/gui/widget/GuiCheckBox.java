@@ -17,7 +17,7 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class GuiCheckBox extends Gui implements IGuiWidget {
-    public boolean checked, enabled = true;
+    public boolean checked, enabled = true, visible = true;
     public int x, y, color;
     private final int id;
     public String text;
@@ -42,26 +42,28 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
-        drawRect(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, enabled ? 0xFFA0A0A0 : 0xFF999999);
-        drawRect(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, enabled ? 0xFF202020 : 0xFFAAAAAA);
-        if (checked) {
-            GlStateManager.disableTexture2D();
-            if (enabled) {
-                GlStateManager.color(1, 1, 1, 1);
-            } else {
-                GlStateManager.color(0.8f, 0.8f, 0.8f, 1);
+        if (visible) {
+            drawRect(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, enabled ? 0xFFA0A0A0 : 0xFF999999);
+            drawRect(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, enabled ? 0xFF202020 : 0xFFAAAAAA);
+            if (checked) {
+                GlStateManager.disableTexture2D();
+                if (enabled) {
+                    GlStateManager.color(1, 1, 1, 1);
+                } else {
+                    GlStateManager.color(0.8f, 0.8f, 0.8f, 1);
+                }
+                BufferBuilder wr = Tessellator.getInstance().getBuffer();
+                GlStateManager.glLineWidth(2);
+                wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+                wr.pos(x + 2, y + 5, zLevel).endVertex();
+                wr.pos(x + 5, y + 7, zLevel).endVertex();
+                wr.pos(x + 8, y + 3, zLevel).endVertex();
+                Tessellator.getInstance().draw();
+                GlStateManager.enableTexture2D();
+                GlStateManager.color(0.25f, 0.25f, 0.25f, 1);
             }
-            BufferBuilder wr = Tessellator.getInstance().getBuffer();
-            GlStateManager.glLineWidth(2);
-            wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            wr.pos(x + 2, y + 5, zLevel).endVertex();
-            wr.pos(x + 5, y + 7, zLevel).endVertex();
-            wr.pos(x + 8, y + 3, zLevel).endVertex();
-            Tessellator.getInstance().draw();
-            GlStateManager.enableTexture2D();
-            GlStateManager.color(0.25f, 0.25f, 0.25f, 1);
+            Minecraft.getMinecraft().fontRenderer.drawString(I18n.format(text), x + 1 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2 - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2, enabled ? color : 0xFF888888);
         }
-        Minecraft.getMinecraft().fontRenderer.drawString(I18n.format(text), x + 1 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2 - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2, enabled ? color : 0xFF888888);
     }
 
     @Override
@@ -97,7 +99,7 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
 
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed) {
-        curTooltip.addAll(tooltip);
+        if (visible) curTooltip.addAll(tooltip);
     }
 
     public String getTooltip() {

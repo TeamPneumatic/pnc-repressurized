@@ -4,12 +4,14 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
+import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -45,6 +47,7 @@ public class CraftingRegistrator {
         registerAmadronOffers();
         addCoolingRecipes();
         addExplosionCraftingRecipes();
+        addPlasticMixerRecipes();
     }
 
     public static ItemStack getUpgrade(EnumUpgrade upgrade) {
@@ -227,5 +230,13 @@ public class CraftingRegistrator {
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
         registry.registerHeatFrameCoolRecipe(new ItemIngredient(new ItemStack(Items.WATER_BUCKET)), new ItemStack(Blocks.ICE));
         registry.registerHeatFrameCoolRecipe(new ItemIngredient(new ItemStack(Items.LAVA_BUCKET)), new ItemStack(Blocks.OBSIDIAN));
+    }
+
+    private static void addPlasticMixerRecipes() {
+        PneumaticCraftAPIHandler.getInstance().getRecipeRegistry().registerPlasticMixerRecipe(
+                new FluidStack(Fluids.PLASTIC, ConfigHandler.machineProperties.plasticMixerPlasticRatio),
+                new ItemStack(Itemss.PLASTIC),
+                PneumaticValues.PLASTIC_MIXER_MELTING_TEMP, true, true
+        );
     }
 }

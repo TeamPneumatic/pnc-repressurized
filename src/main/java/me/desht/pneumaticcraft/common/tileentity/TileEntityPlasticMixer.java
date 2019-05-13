@@ -6,16 +6,16 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.fluid.Fluids;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
+import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry.PlasticMixerRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -28,6 +28,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.Validate;
@@ -65,9 +66,9 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
 
     private int lastTickInventoryStacksize;
     @GuiSynced
-    private final IHeatExchangerLogic hullLogic = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+    private final IHeatExchangerLogic hullHeatLogic = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
     @GuiSynced
-    private final IHeatExchangerLogic itemLogic = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+    private final IHeatExchangerLogic itemHeatLogic = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
     @GuiSynced
     public int selectedPlastic = -1;
     @GuiSynced
@@ -79,17 +80,17 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
 
     public TileEntityPlasticMixer() {
         super(4);
-        hullLogic.addConnectedExchanger(itemLogic);
-        hullLogic.setThermalCapacity(100);
+        hullHeatLogic.addConnectedExchanger(itemHeatLogic);
+        hullHeatLogic.setThermalCapacity(100);
     }
 
     @SideOnly(Side.CLIENT)
     public IHeatExchangerLogic getLogic(int index) {
         switch (index) {
             case 0:
-                return hullLogic;
+                return hullHeatLogic;
             case 1:
-                return itemLogic;
+                return itemHeatLogic;
         }
         throw new IllegalArgumentException("Invalid index: " + index);
     }
@@ -113,63 +114,75 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         super.onFirstServerUpdate();
 
 
-        itemLogic.initializeAmbientTemperature(world, pos);
+        itemHeatLogic.initializeAmbientTemperature(world, pos);
     }
 
     @Override
     public void update() {
         super.update();
+
         if (!getWorld().isRemote) {
             refillDyeBuffers();
-            itemLogic.update();
+            itemHeatLogic.update();
+
             ItemStack inputStack = inventory.getStackInSlot(INV_INPUT);
             if (getWorld().getTotalWorldTime() % 20 == 0) { // We don't need to run _that_ often.
                 if (inputStack.getCount() > lastTickInventoryStacksize) {
                     int stackIncrease = inputStack.getCount() - lastTickInventoryStacksize;
                     double heatingRatio = (double) inputStack.getCount() / (inputStack.getCount() + stackIncrease);
-                    itemLogic.setTemperature((int) (heatingRatio * itemLogic.getTemperature() + (1 - heatingRatio) * hullLogic.getAmbientTemperature()));
-                } else if (inputStack.isEmpty()) {
-                    itemLogic.setTemperature(hullLogic.getAmbientTemperature());
+                    itemHeatLogic.setTemperature((int) (heatingRatio * itemHeatLogic.getTemperature() + (1 - heatingRatio) * hullHeatLogic.getAmbientTemperature()));
                 }
 
-                if (itemLogic.getTemperature() >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP) {
-                    int nativePlasticRatio = PlasticMixerRegistry.INSTANCE.getFluidRatio(Fluids.PLASTIC);
-                    FluidStack moltenPlastic = new FluidStack(Fluids.PLASTIC, inputStack.getCount() * nativePlasticRatio);
-                    int maxFill = tank.fill(moltenPlastic, false) / nativePlasticRatio;
-                    if (maxFill > 0) {
-                        inventory.extractItem(INV_INPUT, maxFill, false);
-                        tank.fill(new FluidStack(moltenPlastic, maxFill * nativePlasticRatio), true);
-                    }
+                if (!inputStack.isEmpty()) {
+                    tryMeltPlastic(inputStack);
                 }
 
                 lastTickInventoryStacksize = inventory.getStackInSlot(INV_INPUT).getCount();
-                itemLogic.setThermalCapacity(lastTickInventoryStacksize);
+                itemHeatLogic.setThermalCapacity(lastTickInventoryStacksize);
             }
             if (tank.getFluid() != null && selectedPlastic >= 0 && redstoneAllows()) {
-                int currentPlasticRatio = PlasticMixerRegistry.INSTANCE.getFluidRatio(tank.getFluid().getFluid());
-                ItemStack solidifiedStack = new ItemStack(Itemss.PLASTIC, tank.getFluid().amount / currentPlasticRatio, selectedPlastic);
-                if (solidifiedStack.getCount() > 0) {
-                    solidifiedStack.setCount(1);
-                    if (inventory.getStackInSlot(INV_OUTPUT).isEmpty()) {
-                        solidifiedStack.setCount(useDye(solidifiedStack.getCount()));
-                        if (solidifiedStack.getCount() > 0) {
-                            inventory.setStackInSlot(INV_OUTPUT, solidifiedStack);
-                            tank.drain(solidifiedStack.getCount() * currentPlasticRatio, true);
-                            sendDescriptionPacket();
-                        }
-                    } else if (solidifiedStack.isItemEqual(inventory.getStackInSlot(INV_OUTPUT))) {
-                        int solidifiedItems = Math.min(64 - inventory.getStackInSlot(INV_OUTPUT).getCount(), solidifiedStack.getCount());
-                        solidifiedItems = useDye(solidifiedItems);
-                        ItemStack newStack = inventory.getStackInSlot(INV_OUTPUT);
-                        newStack.grow(solidifiedItems);
-                        inventory.setStackInSlot(INV_OUTPUT, newStack);
-                        tank.drain(solidifiedItems * currentPlasticRatio, true);
-                        sendDescriptionPacket();
-                    }
-                }
+                trySolidifyPlastic();
             }
-            if (!lockSelection) selectedPlastic = -1;
-            if (redstoneMode == 3) selectedPlastic = poweredRedstone;
+            if (!lockSelection) {
+                selectedPlastic = -1;
+            }
+            if (redstoneMode == 3) {
+                selectedPlastic = poweredRedstone;
+            }
+        }
+    }
+
+    private void tryMeltPlastic(ItemStack inputStack) {
+        PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(inputStack);
+        if (recipe != null && recipe.allowMelting() && itemHeatLogic.getTemperature() >= recipe.getTemperature()) {
+            FluidStack moltenPlastic = recipe.getFluidStack().copy();
+            int filled = tank.fill(moltenPlastic, false);
+            if (filled == moltenPlastic.amount) {
+                inventory.extractItem(INV_INPUT, 1, false);
+                tank.fill(moltenPlastic, true);
+                itemHeatLogic.addHeat(-1);
+            }
+        }
+    }
+
+    private void trySolidifyPlastic() {
+        PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(tank.getFluid());
+        if (recipe != null && recipe.allowSolidifying()) {
+            ItemStack solidifiedStack = ItemHandlerHelper.copyStackWithSize(recipe.getItemStack(), 1);
+            solidifiedStack.setItemDamage(selectedPlastic);
+            if (inventory.getStackInSlot(INV_OUTPUT).isEmpty()) {
+                solidifiedStack.setCount(useDye(solidifiedStack.getCount()));
+                if (solidifiedStack.getCount() > 0) {
+                    inventory.setStackInSlot(INV_OUTPUT, solidifiedStack);
+                    tank.drain(solidifiedStack.getCount() * recipe.getFluidStack().amount, true);
+                }
+            } else if (solidifiedStack.isItemEqual(inventory.getStackInSlot(INV_OUTPUT))) {
+                int solidifiedItems = Math.min(solidifiedStack.getMaxStackSize() - inventory.getStackInSlot(INV_OUTPUT).getCount(), solidifiedStack.getCount());
+                solidifiedItems = useDye(solidifiedItems);
+                ItemStack newStack = inventory.getStackInSlot(INV_OUTPUT);
+                newStack.grow(solidifiedItems);
+                tank.drain(solidifiedItems * recipe.getFluidStack().amount, true);
+            }
         }
     }
 
@@ -183,19 +196,26 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     }
 
     private int useDye(int maxItems) {
+        if (selectedPlastic == EnumDyeColor.WHITE.getDyeDamage()) return maxItems; // Converting to white plastic is free.
+
         int desiredColor = ItemDye.DYE_COLORS[selectedPlastic];
-        if (selectedPlastic == 15) return maxItems; //Converting to white plastic is free.
+
+        // see how much we *can* make
         for (int i = 0; i < 3; i++) {
             int colorComponent = desiredColor >> 8 * i & 0xFF;
-            colorComponent = 0xFF - colorComponent; //Invert, because we start out with white, and we darken the plastic.
+            colorComponent = 0xFF - colorComponent; // Invert, because we start out with white and darken the plastic
             if (colorComponent > 0) {
                 maxItems = Math.min(maxItems, dyeBuffers[i] / colorComponent);
             }
         }
-        for (int i = 0; i < 3; i++) {
-            int colorComponent = desiredColor >> 8 * i & 0xFF;
-            colorComponent = 0xFF - colorComponent; //Invert, because we start out with white, and we darken the plastic.
-            dyeBuffers[i] -= colorComponent * maxItems;
+
+        // if we can make any, use up some dye now
+        if (maxItems > 0) {
+            for (int i = 0; i < 3; i++) {
+                int colorComponent = desiredColor >> 8 * i & 0xFF;
+                colorComponent = 0xFF - colorComponent; // see above
+                dyeBuffers[i] -= colorComponent * maxItems;
+            }
         }
         return maxItems;
     }
@@ -212,7 +232,7 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         dyeBuffers[2] = tag.getInteger("dyeBuffer2");
         redstoneMode = tag.getInteger("redstoneMode");
 
-        itemLogic.readFromNBT(tag.getCompoundTag("itemLogic"));
+        itemHeatLogic.readFromNBT(tag.getCompoundTag("itemLogic"));
 
         tank.setFluid(null);
         tank.readFromNBT(tag.getCompoundTag("fluid"));
@@ -232,7 +252,7 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         tag.setInteger("redstoneMode", redstoneMode);
 
         NBTTagCompound heatTag = new NBTTagCompound();
-        itemLogic.writeToNBT(heatTag);
+        itemHeatLogic.writeToNBT(heatTag);
         tag.setTag("itemLogic", heatTag);
 
         NBTTagCompound tankTag = new NBTTagCompound();
@@ -273,18 +293,20 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         public boolean test(Integer slot, ItemStack itemStack) {
             if (itemStack.isEmpty()) return true;
             switch (slot) {
-                case INV_INPUT: case INV_OUTPUT: return itemStack.getItem() == Itemss.PLASTIC;
+                case INV_INPUT: return PlasticMixerRegistry.INSTANCE.isValidInputItem(itemStack);
+                case INV_OUTPUT: return PlasticMixerRegistry.INSTANCE.isValidOutputItem(itemStack);
                 case INV_DYE_RED: return getDyeIndex(itemStack) == 1;
                 case INV_DYE_GREEN: return getDyeIndex(itemStack) == 2;
                 case INV_DYE_BLUE: return getDyeIndex(itemStack) == 4;
             }
             return false;
         }
+
     }
 
     @Override
     public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
-        return hullLogic;
+        return hullHeatLogic;
     }
 
     public static int getDyeIndex(ItemStack stack) {

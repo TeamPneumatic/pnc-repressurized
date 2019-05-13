@@ -116,4 +116,9 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     public void registerRefineryRecipe(int minimumTemperature, FluidStack input, FluidStack... outputs) {
         RefineryRecipe.recipes.add(new RefineryRecipe(minimumTemperature, input, outputs));
     }
+
+    @Override
+    public void registerPlasticMixerRecipe(FluidStack fluidPlastic, ItemStack solidPlastic, int temperature, boolean allowMelting, boolean allowSolidifying) {
+        PlasticMixerRegistry.INSTANCE.addPlasticMixerRecipe(fluidPlastic, solidPlastic, temperature, allowMelting, allowSolidifying);
+    }
 }

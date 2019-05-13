@@ -8,7 +8,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import java.util.List;
 
 public class RenderPlasticMixer extends FastFluidTESR<TileEntityPlasticMixer> {
-    private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(2.5/16f, 1/16f, 2.5/16f, 13.5/16f, 15/16f, 13.5/16f);
+    private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(2.5/16f, 2/16f, 2.5/16f, 13.5/16f, 15/16f, 13.5/16f);
 
     @Override
     List<TankRenderInfo> getTanksToRender(TileEntityPlasticMixer te) {

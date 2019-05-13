@@ -1,22 +1,27 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerPlasticMixer;
 import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
+import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry.PlasticMixerRecipe;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.util.Collections;
@@ -26,7 +31,13 @@ import java.util.List;
 public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlasticMixer> {
     private GuiButtonSpecial[] buttons;
     private GuiCheckBox lockSelection;
+    private WidgetLabel noItemsLabel;
+    private WidgetLabel amountLabel;
+    private WidgetTemperature tempWidget;
     private int nExposedFaces;
+    private GuiAnimatedStat selectionTab;
+    private Fluid lastFluid;
+    private ItemStack lastItemStack = ItemStack.EMPTY;
 
     public GuiPlasticMixer(InventoryPlayer player, TileEntityPlasticMixer te) {
         super(new ContainerPlasticMixer(player, te), te, Textures.GUI_PLASTIC_MIXER);
@@ -36,34 +47,105 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
     public void initGui() {
         super.initGui();
 
-        addWidget(new WidgetTemperature(0, guiLeft + 55, guiTop + 25, 295, 500, te.getLogic(0)));
-        addWidget(new WidgetTemperature(1, guiLeft + 82, guiTop + 25, 295, 500, te.getLogic(1), PneumaticValues.PLASTIC_MIXER_MELTING_TEMP));
+        addWidget(new WidgetTemperature(0, guiLeft + 55, guiTop + 25, 273, 773, te.getLogic(0)));
+        addWidget(tempWidget = new WidgetTemperature(1, guiLeft + 82, guiTop + 25, 273, 773, te.getLogic(1), 273) {
+            @Override
+            public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
+                super.addTooltip(mouseX, mouseY, curTip, shift);
+                if (getScales().length >= 2) {
+                    TextFormatting tf = getScales()[1] <= te.getLogic(1).getTemperatureAsInt() ? TextFormatting.GREEN : TextFormatting.GOLD;
+                    curTip.add(tf + "Required Temperature: " + (getScales()[1] - 273) + "\u00b0C");
+                }
+            }
+        });
         addWidget(new WidgetTank(3, guiLeft + 152, guiTop + 14, te.getTank()));
 
-        GuiAnimatedStat stat = addAnimatedStat("gui.tab.plasticMixer.plasticSelection", new ItemStack(Itemss.PLASTIC, 1, 1), 0xFF005500, false);
-        stat.addPadding(12, 21);
+        PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(te.getTank().getFluid());
+        Item targetItem = recipe == null ? Itemss.PLASTIC : recipe.getItemStack().getItem();
+        selectionTab = addAnimatedStat("gui.tab.plasticMixer.plasticSelection", new ItemStack(targetItem, 1, 1), 0xFF005500, false);
+        selectionTab.addPadding(12, 21);
 
         buttons = new GuiButtonSpecial[16];
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 int index = y * 4 + x;
-                ItemStack plastic = new ItemStack(Itemss.PLASTIC, 1, index);
-                buttons[index] = new GuiButtonSpecial(index + 1, x * 21 + 4, y * 21 + 30, 20, 20, "").setRenderStacks(plastic).setTooltipText(plastic.getDisplayName());
-                stat.addWidget(buttons[index]);
+                ItemStack stack = new ItemStack(targetItem, 1, index);
+                buttons[index] = new GuiButtonSpecial(index + 1, x * 21 + 4, y * 21 + 30, 20, 20, "")
+                        .setRenderStacks(stack)
+                        .setTooltipText(stack.getDisplayName());
+                selectionTab.addWidget(buttons[index]);
             }
         }
-        stat.addWidget(lockSelection = new GuiCheckBox(17, 4, 18, 0xFF000000, "gui.plasticMixer.lockSelection").setChecked(te.lockSelection).setTooltip(I18n.format("gui.plasticMixer.lockSelection.tooltip")));
+        noItemsLabel = new WidgetLabel(5, 34, TextFormatting.GOLD.toString() + TextFormatting.ITALIC + I18n.format("gui.tab.plasticMixer.tankEmpty"));
+        selectionTab.addWidget(noItemsLabel);
+        amountLabel = new WidgetLabel(3, 118, "");
+        selectionTab.addWidget(amountLabel);
+
+        selectionTab.addWidget(lockSelection = new GuiCheckBox(17, 4, 18, 0xFF000000, "gui.plasticMixer.lockSelection")
+                .setChecked(te.lockSelection)
+                .setTooltip(I18n.format("gui.plasticMixer.lockSelection.tooltip")));
+
+        if (te.getTank().getFluid() != null && te.getTank().getFluid().amount > 0) {
+            selectionTab.openWindow();
+        }
+        updateSelectionTab();
 
         nExposedFaces = HeatUtil.countExposedFaces(Collections.singletonList(te));
+    }
+
+    private void updateSelectionTab() {
+        PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(te.getTank().getFluid());
+        boolean recipeOK = recipe != null && recipe.allowSolidifying();
+
+        for (int index = 0; index < 16; index++) {
+            if (recipeOK) {
+                ItemStack stack = new ItemStack(recipe.getItemStack().getItem(), 1, index);
+                buttons[index].setRenderStacks(stack).setTooltipText(stack.getDisplayName());
+            }
+            buttons[index].setVisible(recipeOK);
+            buttons[index].visible = recipeOK;
+        }
+        if (recipeOK) {
+            FluidStack f = recipe.getFluidStack();
+            amountLabel.text = StringUtils.abbreviate(TextFormatting.GRAY + "" + f.amount + "mB " + f.getFluid().getLocalizedName(f), 20);
+        }
+        amountLabel.visible = recipeOK;
+        noItemsLabel.visible = !recipeOK;
+        selectionTab.setTexture(recipeOK ? recipe.getItemStack() : new ItemStack(Blocks.STRUCTURE_VOID));
+
     }
 
     @Override
     public void updateScreen() {
         super.updateScreen();
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i].enabled = te.selectedPlastic != i;
+
+        if (selectionTab != null) {
+            for (int i = 0; i < buttons.length; i++) {
+                buttons[i].enabled = te.selectedPlastic != i;
+            }
+            lockSelection.checked = te.lockSelection;
         }
-        lockSelection.checked = te.lockSelection;
+
+        Fluid f = getFluid();
+        if (f != lastFluid) {
+            updateSelectionTab();
+        }
+        lastFluid = getFluid();
+
+        ItemStack input = te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_INPUT);
+        if (!ItemStack.areItemsEqual(input, lastItemStack)) {
+            PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(input);
+            if (recipe != null && recipe.allowMelting()) {
+                tempWidget.setScales(273, recipe.getTemperature());
+            } else {
+                tempWidget.setScales(273);
+            }
+        }
+        lastItemStack = te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_OUTPUT).copy();
+    }
+
+    private Fluid getFluid() {
+        return te.getTank().getFluid() == null ? null : te.getTank().getFluid().getFluid();
     }
 
     @Override
@@ -80,7 +162,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
         super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
         for (int i = 0; i < 3; i++) {
             double percentage = (double) te.dyeBuffers[i] / TileEntityPlasticMixer.DYE_BUFFER_MAX;
-            drawVerticalLine(guiLeft + 123, guiTop + 37 + i * 18, guiTop + 37 - MathHelper.clamp((int) (percentage * 16), 1, 15) + i * 18, 0xFF000000 | 0xFF0000 >> 8 * i);
+            drawVerticalLine(guiLeft + 124, guiTop + 35 + i * 18, guiTop + 37 - MathHelper.clamp((int) (percentage * 16), 1, 15) + i * 18, 0xFF000000 | 0xFF0000 >> 8 * i);
         }
     }
 
@@ -104,11 +186,12 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
             } else {
                 curInfo.add("gui.tab.problems.notEnoughHeat");
             }
-        } else {
-            if (!stack.isEmpty()) {
-                if (te.getLogic(1).getTemperatureAsInt() >= PneumaticValues.PLASTIC_MIXER_MELTING_TEMP && te.getTank().getCapacity() - te.getTank().getFluidAmount() < 1000) {
-                    curInfo.add("gui.tab.problems.plasticMixer.plasticLiquidOverflow");
-                }
+        } else if (!stack.isEmpty()) {
+            PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(stack);
+            int temp = recipe == null ? PneumaticValues.PLASTIC_MIXER_MELTING_TEMP : recipe.getTemperature();
+            int amount = recipe == null ? 1000 : recipe.getFluidStack().amount;
+            if (te.getLogic(1).getTemperatureAsInt() >= temp && te.getTank().getCapacity() - te.getTank().getFluidAmount() < amount) {
+                curInfo.add("gui.tab.problems.plasticMixer.plasticOverflow");
             }
         }
         if (te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_DYE_RED).isEmpty()) {

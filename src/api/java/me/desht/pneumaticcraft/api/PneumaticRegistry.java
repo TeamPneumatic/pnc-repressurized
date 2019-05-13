@@ -10,9 +10,11 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerSupplier;
 import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
 import me.desht.pneumaticcraft.api.universalSensor.ISensorRegistry;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Loader;
 
 /**
@@ -109,11 +111,13 @@ public final class PneumaticRegistry {
         void registerRefineryInput(Fluid fluid);
 
         /**
-         * Register a fluid as a valid input for the Plastic Mixer
+         * Register a fluid as a valid input for the Plastic Mixer.
          *
+         * @deprecated use {@link IPneumaticRecipeRegistry#registerPlasticMixerRecipe(FluidStack, ItemStack, int, boolean, boolean)}
          * @param fluid the fluid to register
          * @param ratio amount in mB which will be used to make 1 solid plastic sheet
          */
+        @Deprecated
         void registerPlasticFluid(Fluid fluid, int ratio);
     }
 }

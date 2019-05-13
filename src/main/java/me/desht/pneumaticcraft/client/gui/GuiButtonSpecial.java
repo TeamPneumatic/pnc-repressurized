@@ -158,7 +158,7 @@ public class GuiButtonSpecial extends GuiButton implements IGuiWidget {
 
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed) {
-        curTooltip.addAll(tooltipText);
+        if (visible) curTooltip.addAll(tooltipText);
     }
 
     @Override

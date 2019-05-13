@@ -1,10 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
-import me.desht.pneumaticcraft.client.gui.GuiAssemblyController;
-import me.desht.pneumaticcraft.client.gui.GuiPressureChamber;
-import me.desht.pneumaticcraft.client.gui.GuiRefinery;
-import me.desht.pneumaticcraft.client.gui.GuiThermopneumaticProcessingPlant;
+import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
@@ -55,6 +52,7 @@ public class JEI implements IModPlugin {
         registry.addRecipeClickArea(GuiPressureChamber.class, 100, 7, 40, 40, ModCategoryUid.PRESSURE_CHAMBER);
         registry.addRecipeClickArea(GuiRefinery.class, 47, 21, 27, 47, ModCategoryUid.REFINERY);
         registry.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 31, 48, 20, ModCategoryUid.THERMO_PNEUMATIC);
+        registry.addRecipeClickArea(GuiPlasticMixer.class, 97, 44, 28, 12, ModCategoryUid.PLASTIC_MIXER);
 
         registry.addRecipeCatalyst(new ItemStack(Itemss.AMADRON_TABLET), ModCategoryUid.AMADRON_TRADE);
         registry.addRecipeCatalyst(new ItemStack(Blockss.ASSEMBLY_CONTROLLER), ModCategoryUid.ASSEMBLY_CONTROLLER);

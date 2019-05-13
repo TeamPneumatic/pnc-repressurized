@@ -12,6 +12,7 @@ public class WidgetLabel extends WidgetBase {
     public String text;
     private int color;
     private Alignment alignment = Alignment.LEFT;
+    public boolean visible = true;
 
     public WidgetLabel(int x, int y, String text) {
         this(x, y, text, 0xFF404040);
@@ -34,20 +35,23 @@ public class WidgetLabel extends WidgetBase {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
-        int drawX;
-        FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-        switch (alignment) {
-            case LEFT: default:
-                drawX = x;
-                break;
-            case CENTRE:
-                drawX = x - fr.getStringWidth(text) / 2;
-                break;
-            case RIGHT:
-                drawX = x - fr.getStringWidth(text);
-                break;
+        if (visible) {
+            int drawX;
+            FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+            switch (alignment) {
+                case LEFT:
+                default:
+                    drawX = x;
+                    break;
+                case CENTRE:
+                    drawX = x - fr.getStringWidth(text) / 2;
+                    break;
+                case RIGHT:
+                    drawX = x - fr.getStringWidth(text);
+                    break;
+            }
+            fr.drawString(text, drawX, y, color);
         }
-        fr.drawString(text, drawX, y, color);
     }
 
     @Override

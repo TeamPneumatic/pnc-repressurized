@@ -138,7 +138,12 @@ public abstract class PneumaticCraftCategory<T extends IRecipeWrapper> implement
 
         void setUsedTemperature(int x, int y, double temperature) {
             tempWidget = new WidgetTemperature(0, x, y, 273, 673,
-                    heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic(), (int) temperature);
+                    heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic(), (int) temperature) {
+                @Override
+                public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
+                    curTip.add("Required Temperature: " + (logic.getTemperatureAsInt() - 273) + "\u00b0C");
+                }
+            };
         }
 
         @Override

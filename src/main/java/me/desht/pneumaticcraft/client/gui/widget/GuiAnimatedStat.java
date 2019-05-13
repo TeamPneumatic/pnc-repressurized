@@ -611,4 +611,8 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     public void setTexture(String texture) {
         this.texture = texture;
     }
+
+    public void setTexture(ItemStack itemStack) {
+        this.iStack = itemStack;
+    }
 }

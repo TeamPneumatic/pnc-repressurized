@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.BlockFluidEtchingAcid;
 import me.desht.pneumaticcraft.common.block.BlockFluidPneumaticCraft;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
@@ -61,8 +60,6 @@ public class Fluids {
         PneumaticRegistry.getInstance().registerFuel(KEROSENE, 1100000);
         PneumaticRegistry.getInstance().registerFuel(GASOLINE, 1500000);
         PneumaticRegistry.getInstance().registerFuel(LPG, 1800000);
-
-        PneumaticRegistry.getInstance().registerPlasticFluid(PLASTIC, ConfigHandler.machineProperties.plasticMixerPlasticRatio);
     }
 
     public static void init() {
