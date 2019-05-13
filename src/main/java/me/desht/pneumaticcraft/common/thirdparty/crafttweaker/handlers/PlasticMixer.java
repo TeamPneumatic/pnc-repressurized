@@ -17,9 +17,9 @@ import net.minecraftforge.fluids.FluidStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
-@ZenClass("mods.pneumaticcraft.liquidplastic")
+@ZenClass("mods.pneumaticcraft.plasticmixer")
 @ZenRegister
-public class LiquidPlastic {
+public class PlasticMixer {
 	
 	private static final String NAME = "PneumaticCraft Plastic Mixer";
 
@@ -93,9 +93,9 @@ public class LiquidPlastic {
         @Override
         public String describe() {
             if (fluidStack.amount == 0) {
-                return String.format("Removing liquid plastic value for fluid %s", fluidStack.getFluid().getName());
+                return String.format("Removing recipe for fluid %s", fluidStack.getFluid().getName());
             } else {
-                return String.format("Registering liquid plastic for fluid %s as %d mB per solid plastic.", fluidStack.getFluid().getName(), fluidStack.amount);
+                return String.format("Registering recipe for fluid %s as %d mB per item.", fluidStack.getFluid().getName(), fluidStack.amount);
             }
         }
     }
