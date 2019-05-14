@@ -258,7 +258,7 @@ public class Blockss {
         }, Blockss.APHORISM_TILE);
     }
 
-    private static int desaturate(int c) {
+    public static int desaturate(int c) {
         float[] hsb = Color.RGBtoHSB((c & 0xFF0000) >> 16, (c & 0xFF00) >> 8, c & 0xFF, null);
         Color color = Color.getHSBColor(hsb[0], hsb[1] * 0.4f, hsb[2]);
         if (hsb[2] < 0.7) color = color.brighter();

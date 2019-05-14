@@ -3,17 +3,22 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
+import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -27,9 +32,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.DyeUtils;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.OptionalInt;
 
 public class BlockAphorismTile extends BlockPneumaticCraft {
+
+    private static final String NBT_BORDER_COLOR = "borderColor";
+    private static final String NBT_BACKGROUND_COLOR = "backgroundColor";
+
     BlockAphorismTile() {
         super(Material.ROCK, "aphorism_tile");
         setHardness(1.5f);
@@ -75,28 +85,58 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
         return false;
     }
 
+    @Override
+    public void addInformation(ItemStack stack, World world, List<String> curInfo, ITooltipFlag flag) {
+        super.addInformation(stack, world, curInfo, flag);
+        if (NBTUtil.hasTag(stack, NBT_BORDER_COLOR) || NBTUtil.hasTag(stack, NBT_BACKGROUND_COLOR)) {
+            curInfo.add(TextFormatting.DARK_GREEN.toString() + TextFormatting.ITALIC + I18n.format("gui.tab.info.tile.aphorism_tile.color"));
+        }
+    }
+
     /**
      * Called when the block is placed in the world.
      */
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack iStack) {
         super.onBlockPlacedBy(world, pos, state, entityLiving, iStack);
-        EnumFacing rotation = getRotation(world, pos);
-        if (rotation.getAxis() == Axis.Y) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityAphorismTile) {
-                TileEntityAphorismTile teAT = (TileEntityAphorismTile) te;
-                float yaw = entityLiving.rotationYaw; if (yaw < 0) yaw += 360;
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityAphorismTile) {
+            TileEntityAphorismTile teAT = (TileEntityAphorismTile) te;
+
+            teAT.setBackgroundColor(getBackgroundColor(iStack));
+            teAT.setBorderColor(getBorderColor(iStack));
+
+            EnumFacing rotation = getRotation(world, pos);
+            if (rotation.getAxis() == Axis.Y) {
+                float yaw = entityLiving.rotationYaw;
+                if (yaw < 0) yaw += 360;
                 teAT.textRotation = (((int) yaw + 45) / 90 + 2) % 4;
                 if (rotation.getYOffset() > 0 && (teAT.textRotation == 1 || teAT.textRotation == 3)) {
                     // fudge - reverse rotation if placing above, and player is facing on east/west axis
                     teAT.textRotation = 4 - teAT.textRotation;
                 }
             }
+
+            if (world.isRemote && entityLiving instanceof EntityPlayer) {
+                ((EntityPlayer) entityLiving).openGui(PneumaticCraftRepressurized.instance, EnumGuiId.APHORISM_TILE.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
+                sendEditorMessage((EntityPlayer) entityLiving);
+            }
         }
-        if (world.isRemote && entityLiving instanceof EntityPlayer) {
-            ((EntityPlayer) entityLiving).openGui(PneumaticCraftRepressurized.instance, EnumGuiId.APHORISM_TILE.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
-            sendEditorMessage((EntityPlayer) entityLiving);
+    }
+
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        super.getDrops(drops, world, pos, state, fortune);
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityAphorismTile && drops.size() > 0) {
+            TileEntityAphorismTile teAT = (TileEntityAphorismTile) te;
+            ItemStack teStack = drops.get(0);
+            int bgColor = teAT.getBackgroundColor();
+            int borderColor = teAT.getBorderColor();
+            if (bgColor != EnumDyeColor.WHITE.getDyeDamage() || borderColor != EnumDyeColor.BLUE.getDyeDamage()) {
+                NBTUtil.setInteger(teStack, NBT_BACKGROUND_COLOR, bgColor);
+                NBTUtil.setInteger(teStack, NBT_BORDER_COLOR, borderColor);
+            }
         }
     }
 
@@ -181,5 +221,13 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     @Override
     public boolean isPassable(IBlockAccess worldIn, BlockPos pos) {
         return true;
+    }
+
+    public static int getBackgroundColor(ItemStack stack) {
+        return NBTUtil.hasTag(stack, NBT_BACKGROUND_COLOR) ? NBTUtil.getInteger(stack, NBT_BACKGROUND_COLOR) : EnumDyeColor.WHITE.getDyeDamage();
+    }
+
+    public static int getBorderColor(ItemStack stack) {
+        return NBTUtil.hasTag(stack, NBT_BORDER_COLOR) ? NBTUtil.getInteger(stack, NBT_BORDER_COLOR) : EnumDyeColor.BLUE.getDyeDamage();
     }
 }

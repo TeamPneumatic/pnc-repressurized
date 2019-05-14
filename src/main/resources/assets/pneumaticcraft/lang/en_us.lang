@@ -467,6 +467,7 @@ gui.tab.info.tile.refinery=§0A Refinery is used to process a fluid into differe
 gui.tab.info.tile.thermopneumatic_processing_plant=§0A Thermopneumatic Processing Plant is used to process liquids into other liquids. LPG and Coal together in this machine can produce Liquid Plastic. It can also be used in fuel cracking. Heavy fuels can be cracked into lighter ones. This means Diesel can be turned into Kerosene, Kerosene into Gasoline and Gasoline into LPG.
 gui.tab.info.tile.compressed_iron_block=§0A block used as crafting component. Apart from that it serves as an excellent heat conductor.
 gui.tab.info.tile.aphorism_tile=§0This block acts as a sign. However, it is capable of storing theoretically infinite amounts of text. It scales the text to so the text will always fit.  Right-click with any dye to recolor the tile; you can color the border and background independently.
+gui.tab.info.tile.aphorism_tile.color=Self-craft to remove dyes
 gui.tab.info.tile.elevator_caller=§0This block is used in combination with Elevator Bases and Elevator Frames.
 gui.tab.info.tile.programmer=§0This block is required to program Drones. It uses puzzle pieces to define a program.
 gui.tab.info.tile.creative_compressor=§0A creative-only block used to generate any pressure you would like to test set-ups.

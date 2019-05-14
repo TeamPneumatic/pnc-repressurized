@@ -16,12 +16,6 @@ Changes are in reverse chronological order; newest changes at the top.
   * Heat will attempt to equalize across sides, so effort is needed to maintain a temperature gradient across the compressor.
   * See ``thermalCompressorThermalResistance`` config setting.
 #### Updates
-* When moving Pneumatic Armor stat windows, the move GUI now shows other open stat windows too (with a grey border) to make it easier to line things up, avoid overlaps etc.
-* Performance: tile entity data syncing now causes far fewer block/chunk updates, which should improve performance in general.
-* Performance: player jet boots particles are now all handled client-side; only player jet boots state needs to be synced from server to clients when it changes - much less network traffic.
-* Performance: crop sticks growth particles are now done client-side, reducing server->client traffic.
-* Crop stick growth tick chance is now configurable: see ``cropSticksGrowthBoostChance``.
-* Custom air particle density (used in many places: pressure chamber, leaking tubes, jet boots...) now respects the clientside particle density setting.
 * Plastic Mixer CraftTweaker support has been heavily reworked:
   * There is now far more extensive CraftTweaker support, allowing melting or solidifying more than just plastic. E.g. you could add a recipe to convert Thermal Foundation Rockwool to/from Blazing Pyrotheum.
   * Fluid->solid ratio (mB per item) can be defined on a per-recipe basis.
@@ -35,9 +29,17 @@ Changes are in reverse chronological order; newest changes at the top.
   * The misleading GUI arrow from input item to output item is gone, replaced by arrows from the input item to the fluid tank, and from the fluid tank to the output item.
   * The above arrow has been replaced by a small "book" icon, which can be used to show all recipes for the Plastic Mixer in JEI.
   * The Item Temperature gauge now shows the required temperature to melt an item in its tooltip, if applicable.
+* When moving Pneumatic Armor stat windows, the move GUI now shows other open stat windows too (with a grey border) to make it easier to line things up, avoid overlaps etc.
+* Performance: tile entity data syncing now causes far fewer block/chunk updates, which should improve performance in general.
+* Performance: player jet boots particles are now all handled client-side; only player jet boots state needs to be synced from server to clients when it changes - much less network traffic.
+* Performance: crop sticks growth particles are now done client-side, reducing server->client traffic.
+* Crop stick growth tick chance is now configurable: see ``cropSticksGrowthBoostChance``.
+* Custom air particle density (used in many places: pressure chamber, leaking tubes, jet boots...) now respects the clientside particle density setting.
+* Dyed Aphorism Tiles now keep their colours when the block is broken.
+  * Added a self-craft recipe which resets the colour of a dyed Aphorism Tile item.
 * Made drone area sorting more deterministic (see https://github.com/TeamPneumatic/pnc-repressurized/issues/342).
 #### Fixes
-* Restore the Thermopneumatic Processing Plant "Dump Input Tank" button. Was a mistake to remove that.
+* Restored the Thermopneumatic Processing Plant "Dump Input Tank" button. Was a mistake to remove that.
 * Added missing Patchouli docs page for the "Pick Up Item" programming widget.
 
 ### 0.10.5-346 (29 Apr 2019)

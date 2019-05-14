@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.block.ICustomItemBlock;
 import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
@@ -265,16 +266,22 @@ public class Itemss {
             return plasticColour >= 0 ? plasticColour : 0xffffff;
         }, Itemss.PLASTIC);
 
-        event.getItemColors().registerItemColorHandler((stack, tintIndex) ->
-                        tintIndex == 0 ? EnumDyeColor.BLUE.getColorValue() : EnumDyeColor.WHITE.getColorValue(),
-                Item.getItemFromBlock(Blockss.APHORISM_TILE));
-
         event.getItemColors().registerItemColorHandler((stack, tintIndex) -> {
             int n = UpgradableItemUtils.getUpgrades(EnumUpgrade.CREATIVE, stack);
             return n > 0 ? 0xFFFF60FF : 0xFFFFFFFF;
         }, Item.getItemFromBlock(Blockss.OMNIDIRECTIONAL_HOPPER), Item.getItemFromBlock(Blockss.LIQUID_HOPPER));
-    }
 
+        event.getItemColors().registerItemColorHandler((stack, tintIndex) -> {
+            switch (tintIndex) {
+                case 0: // border
+                    return EnumDyeColor.byDyeDamage(BlockAphorismTile.getBorderColor(stack)).getColorValue();
+                case 1: // background
+                    return Blockss.desaturate(EnumDyeColor.byDyeDamage(BlockAphorismTile.getBackgroundColor(stack)).getColorValue());
+                default:
+                    return 0xFFFFFF;
+            }
+        }, Item.getItemFromBlock(Blockss.APHORISM_TILE));
+    }
 
     public static int getAmmoColor(@Nonnull ItemStack stack) {
         if (stack.getItem() instanceof ItemGunAmmo) {
