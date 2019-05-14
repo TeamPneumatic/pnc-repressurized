@@ -97,13 +97,14 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
         PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(te.getTank().getFluid());
         boolean recipeOK = recipe != null && recipe.allowSolidifying();
 
+        int nTypes = recipe == null ? 0 : recipe.getNumSubTypes();
         for (int index = 0; index < 16; index++) {
             if (recipeOK) {
                 ItemStack stack = new ItemStack(recipe.getItemStack().getItem(), 1, index);
                 buttons[index].setRenderStacks(stack).setTooltipText(stack.getDisplayName());
             }
-            buttons[index].setVisible(recipeOK);
-            buttons[index].visible = recipeOK;
+            buttons[index].setVisible(recipeOK && index < nTypes);
+            buttons[index].visible = recipeOK && index < nTypes;
         }
         if (recipeOK) {
             FluidStack f = recipe.getFluidStack();
@@ -112,7 +113,6 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
         amountLabel.visible = recipeOK;
         noItemsLabel.visible = !recipeOK;
         selectionTab.setTexture(recipeOK ? recipe.getItemStack() : new ItemStack(Blocks.STRUCTURE_VOID));
-
     }
 
     @Override

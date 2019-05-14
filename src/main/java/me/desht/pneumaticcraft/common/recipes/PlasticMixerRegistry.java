@@ -2,12 +2,16 @@ package me.desht.pneumaticcraft.common.recipes;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public enum PlasticMixerRegistry {
     INSTANCE;
@@ -106,5 +110,14 @@ public enum PlasticMixerRegistry {
         public int getTemperature() {
             return temperature;
         }
+
+        public int getNumSubTypes() {
+            Item item = getItemStack().getItem();
+            if (item.getCreativeTab() == null) return 1;
+            NonNullList<ItemStack> subs = NonNullList.create();
+            item.getSubItems(item.getCreativeTab(), subs);
+            return Math.max(1, subs.size());
+        }
+
     }
 }

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.jei.JEIPlasticMixerCategory.PlasticMixerRecipeWrapper;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.IJeiHelpers;
 import net.minecraft.client.resources.I18n;
@@ -64,14 +63,14 @@ public class JEIPlasticMixerCategory extends PneumaticCraftCategory<PlasticMixer
 
         for (PlasticMixerRegistry.PlasticMixerRecipe recipe : PlasticMixerRegistry.INSTANCE.allRecipes()) {
             if (recipe.getFluidStack().amount > 0 && !recipe.getItemStack().isEmpty()) {
+                int numSubTypes = recipe.getNumSubTypes();
                 if (recipe.allowSolidifying()) {
-                    for (int i = 0; i < 16; i++) {
+                    for (int i = 0; i < numSubTypes; i++) {
                         recipes.add(new PlasticMixerRecipeWrapper(recipe.getFluidStack(), new ItemStack(recipe.getItemStack().getItem(), 1, i)));
                     }
                 }
                 if (recipe.allowMelting()) {
-                    int n = recipe.getItemStack().getItem().getHasSubtypes() ? 16 : 1;
-                    for (int i = 0; i < n; i++) {
+                    for (int i = 0; i < numSubTypes; i++) {
                         recipes.add(new PlasticMixerRecipeWrapper(new ItemStack(recipe.getItemStack().getItem(), 1, i), recipe.getFluidStack(), recipe.getTemperature()));
                     }
                 }
