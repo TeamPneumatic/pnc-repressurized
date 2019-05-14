@@ -29,28 +29,23 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 
 public class ModelProgrammingPuzzle implements IModel {
-    public static final ModelResourceLocation LOCATION = new ModelResourceLocation(new ResourceLocation("forge", "dynbucket"), "inventory");
-
     // minimal Z offset to prevent depth-fighting
     private static final float NORTH_Z_BASE = 7.496f / 16f;
     private static final float SOUTH_Z_BASE = 8.504f / 16f;
-    private static final float NORTH_Z_FLUID = 7.498f / 16f;
-    private static final float SOUTH_Z_FLUID = 8.502f / 16f;
 
-    public static final IModel MODEL = new ModelProgrammingPuzzle();
+    private static final IModel MODEL = new ModelProgrammingPuzzle();
 
     private final IProgWidget widget;
 
-    public ModelProgrammingPuzzle() {
+    private ModelProgrammingPuzzle() {
         this(new ProgWidgetStart());
     }
 
-    public ModelProgrammingPuzzle(IProgWidget widget) {
+    private ModelProgrammingPuzzle(IProgWidget widget) {
         this.widget = widget;
     }
 
@@ -76,27 +71,22 @@ public class ModelProgrammingPuzzle implements IModel {
 
     @Override
     public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+        Pair<Double, Double> maxUV = widget.getMaxUV();
+        float scale = 1F / (float) Math.max(maxUV.getLeft(), maxUV.getRight());
+        float transX = 0; //maxUV.getLeft().floatValue();
+        float transY = -1 + maxUV.getRight().floatValue();
+
+        TRSRTransformation transform = state.apply(Optional.empty()).orElse(TRSRTransformation.identity())
+                .compose(new TRSRTransformation(new Vector3f(0, 0, 0), null, new Vector3f(scale, scale, 1), null))
+                .compose(new TRSRTransformation(new Vector3f(transX, transY, 0), null, new Vector3f(1, 1, 1), null));
+
+        TextureAtlasSprite widgetSprite = bakedTextureGetter.apply(getWidgetTexture(widget));
+
+        ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
+        builder.add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16 * maxUV.getLeft().floatValue(), 16 * maxUV.getRight().floatValue(), NORTH_Z_BASE, widgetSprite, EnumFacing.NORTH, 0xffffffff, -1))
+                .add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16 * maxUV.getLeft().floatValue(), 16 * maxUV.getRight().floatValue(), SOUTH_Z_BASE, widgetSprite, EnumFacing.SOUTH, 0xffffffff, -1));
 
         ImmutableMap<TransformType, TRSRTransformation> transformMap = PerspectiveMapWrapper.getTransforms(state);
-
-        TRSRTransformation transform = state.apply(Optional.empty()).orElse(TRSRTransformation.identity());
-        TextureAtlasSprite widgetSprite = bakedTextureGetter.apply(getWidgetTexture(widget));
-        ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
-
-        int width = widget.getWidth() + (widget.getParameters() != null && widget.getParameters().length > 0 ? 10 : 0);
-        int height = widget.getHeight() + (widget.hasStepOutput() ? 5 : 0);
-
-        Pair<Double, Double> maxUV = widget.getMaxUV();
-        int textureSize = widget.getTextureSize();
-        float scale = 1F / (float) Math.max(maxUV.getLeft(), maxUV.getRight());
-        float transX = 0;//maxUV.getLeft().floatValue();
-        float transY = -1 + maxUV.getRight().floatValue();
-        transform = transform.compose(new TRSRTransformation(new Vector3f(0, 0, 0), null, new Vector3f(scale, scale, 1), null));
-        transform = transform.compose(new TRSRTransformation(new Vector3f(transX, transY, 0), null, new Vector3f(1, 1, 1), null));
-
-        builder.add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16 * maxUV.getLeft().floatValue(), 16 * maxUV.getRight().floatValue(), NORTH_Z_BASE, widgetSprite, EnumFacing.NORTH, 0xffffffff, -1));
-        builder.add(ItemTextureQuadConverter.genQuad(format, transform, 0, 0, 16 * maxUV.getLeft().floatValue(), 16 * maxUV.getRight().floatValue(), SOUTH_Z_BASE, widgetSprite, EnumFacing.SOUTH, 0xffffffff, -1));
-
         //noinspection UnstableApiUsage
         return new BakedProgrammingPuzzle(this, builder.build(), widgetSprite, format, Maps.immutableEnumMap(transformMap), Maps.newHashMap());
     }
@@ -126,7 +116,7 @@ public class ModelProgrammingPuzzle implements IModel {
         }
 
         @Override
-        public IModel loadModel(ResourceLocation modelLocation) throws IOException {
+        public IModel loadModel(ResourceLocation modelLocation) {
             return MODEL;
         }
 
@@ -136,7 +126,6 @@ public class ModelProgrammingPuzzle implements IModel {
         }
     }
 
-    // the dynamic bucket is based on the empty bucket
     protected static class BakedProgrammingPuzzle implements IBakedModel {
 
         private final ModelProgrammingPuzzle parent;
@@ -147,10 +136,10 @@ public class ModelProgrammingPuzzle implements IModel {
         private final VertexFormat format;
         private final PuzzleOverrideList overridesList;
 
-        public BakedProgrammingPuzzle(ModelProgrammingPuzzle parent, ImmutableList<BakedQuad> quads,
-                                      TextureAtlasSprite particle, VertexFormat format,
-                                      ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms,
-                                      Map<String, IBakedModel> cache) {
+        BakedProgrammingPuzzle(ModelProgrammingPuzzle parent, ImmutableList<BakedQuad> quads,
+                               TextureAtlasSprite particle, VertexFormat format,
+                               ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms,
+                               Map<String, IBakedModel> cache) {
             this.quads = quads;
             this.particle = particle;
             this.format = format;
@@ -197,7 +186,6 @@ public class ModelProgrammingPuzzle implements IModel {
     }
 
     private static class PuzzleOverrideList extends ItemOverrideList {
-
         private final BakedProgrammingPuzzle puzzle;
 
         PuzzleOverrideList(List<ItemOverride> overridesIn, BakedProgrammingPuzzle puzzle) {

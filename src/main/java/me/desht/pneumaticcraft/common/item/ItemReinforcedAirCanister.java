@@ -64,8 +64,8 @@ public class ItemReinforcedAirCanister extends ItemPneumatic implements IPressur
 
     @Override
     public void addAir(ItemStack iStack, int amount) {
-        int currentAir = NBTUtil.getInteger(iStack, "air");
-        NBTUtil.setInteger(iStack, "air",
+        int currentAir = NBTUtil.getInteger(iStack, NBT_AIR);
+        NBTUtil.setInteger(iStack, NBT_AIR,
                 MathHelper.clamp(currentAir + amount, 0, PneumaticValues.REINFORCED_AIR_CANISTER_MAX_AIR));
     }
 
