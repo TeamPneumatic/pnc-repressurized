@@ -38,7 +38,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -191,6 +190,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
             TileEntityPressureTube pressureTube = ModInteractionUtils.getInstance().getTube(te);
             if (pressureTube.modules[side.ordinal()] == null && !pressureTube.sidesClosed[side.ordinal()] && ModInteractionUtils.getInstance().occlusionTest(boundingBoxes[side.ordinal()], te)) {
                 TubeModule module = ModuleRegistrator.getModule(((ItemTubeModule) player.getHeldItemMainhand().getItem()).moduleName);
+                if (module == null) return false;
                 if (simulate) module.markFake();
                 pressureTube.setModule(module, side);
                 if (!simulate) {
@@ -323,8 +323,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
             if (module != null) {
                 // detach and drop the module as an item
                 if (!player.capabilities.isCreativeMode) {
-                    List<ItemStack> drops = module.getDrops();
-                    for (ItemStack drop : drops) {
+                    for (ItemStack drop : module.getDrops()) {
                         EntityItem entity = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
                         entity.setItem(drop);
                         world.spawnEntity(entity);
@@ -356,8 +355,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state) {
-        List<ItemStack> drops = getModuleDrops((TileEntityPressureTube) getTE(world, pos));
-        for (ItemStack drop : drops) {
+        for (ItemStack drop : getModuleDrops((TileEntityPressureTube) getTE(world, pos))) {
             EntityItem entity = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
             entity.setItem(drop);
             world.spawnEntity(entity);
@@ -366,8 +364,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         super.breakBlock(world, pos, state);
     }
 
-    private static List<ItemStack> getModuleDrops(TileEntityPressureTube tube) {
-        List<ItemStack> drops = new ArrayList<>();
+    private static NonNullList<ItemStack> getModuleDrops(TileEntityPressureTube tube) {
+        NonNullList<ItemStack> drops = NonNullList.create();
         for (TubeModule module : tube.modules) {
             if (module != null) {
                 drops.addAll(module.getDrops());

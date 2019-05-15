@@ -8,9 +8,6 @@ import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextFormatting;
-
-import java.util.List;
 
 public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     public ModulePressureGauge() {
@@ -45,13 +42,6 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     @Override
     protected double getHeight() {
         return 0.25;
-    }
-
-    @Override
-    public void addItemDescription(List<String> curInfo) {
-        curInfo.add(TextFormatting.BLUE + "Formula: Redstone = 2.0 x pressure(bar)");
-        curInfo.add("This module emits a redstone signal, the strength of");
-        curInfo.add("which depends the tube's pressure.");
     }
 
     @Override

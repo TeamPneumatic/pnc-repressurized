@@ -7,7 +7,7 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.List;
 
 public abstract class TubeModuleRedstoneReceiving extends TubeModule {
-    protected int redstoneLevel;
+    private int redstoneLevel;
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
@@ -30,12 +30,6 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
     @Override
     public void onNeighborBlockUpdate() {
         redstoneLevel = pressureTube.world().getRedstonePowerFromNeighbors(pressureTube.pos());
-//        redstoneLevel = 0;
-//        for (EnumFacing side : EnumFacing.VALUES) {
-//            if (dir == side || isInline() && side != dir.getOpposite()) {
-//                redstoneLevel = Math.max(redstoneLevel, PneumaticCraftUtils.getRedstoneLevel(pressureTube.world(), pressureTube.pos().offset(side)));
-//            }
-//        }
     }
 
     public int getReceivingRedstoneLevel() {

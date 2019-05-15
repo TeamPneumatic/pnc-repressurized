@@ -34,11 +34,11 @@ public class ModuleCharging extends TubeModule {
     @Override
     public void update() {
         super.update();
-        if (pressureTube.world().isRemote) return;
-        if ((pressureTube.world().getTotalWorldTime() & 0x7) != 0) return;
+        if (pressureTube.world().isRemote || (pressureTube.world().getTotalWorldTime() & 0x7) != 0) return;
 
         IItemHandler handler = getConnectedInventory();
         if (handler != null) {
+            // times 8 because we only run every 8 ticks
             int airToTransfer = 8 * PneumaticValues.CHARGING_STATION_CHARGE_RATE * (upgraded ? 10 : 1);
             IAirHandler airHandler = pressureTube.getAirHandler(null);
             int airInTube = (int) (airHandler.getPressure() * airHandler.getVolume());

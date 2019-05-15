@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-public class ModuleLogistics extends TubeModule {
+public class ModuleLogistics extends TubeModule implements INetworkedModule {
     private SemiBlockLogistics cachedFrame;
     private int colorChannel;
     private int ticksSinceAction = -1; // client sided timer used to display the blue color when doing a logistic task.

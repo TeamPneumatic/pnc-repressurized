@@ -1015,7 +1015,6 @@ gui.tooltip.item.gun_ammo_weighted=This specialized Minigun ammo does much more 
 gui.tooltip.item.gun_ammo_ap=This specialized Minigun ammo can penetrate armor and does slightly more damage overall than normal ammo. But it's not cheap.
 gui.tooltip.item.gun_ammo_explosive=This specialized Minigun ammo causes explosions on impact. Don't use at short range!
 gui.tooltip.item.amadron_tablet=Item used to order items/fluids, similar to Villager trading, except Items/fluids are picked up and delivered via Drones, which is way more awesome than villagers. A pick-up/drop-off location must be specified by right-clicking an inventory and/or tank with the tablet.
-gui.tooltip.item.logistics_module=This tube module when fitted on a tube will communicate with other Logistics Tube Modules on connected tubes. It will perform logistics tasks on inventories/tanks it is pointing towards, and are fitted with a Logistic Frame. It uses pressure to do so.
 gui.tooltip.item.heat_frame=Can be placed on any inventory. When heated by an adjacent heat source it will try to smelt any item in the inventory as well as freeze it when cooled. It will only succeed when there is room in the inventory for the resulting item. The more heat applied, the faster the smelting process will be, up to a maximum of 1 item smelted per second. Similarly the more it's cooled, the faster it will freeze objects.
 gui.tooltip.item.spawner_agitator=When placed on Mob Spawners, the Spawner Agitator will prevent the spawned entity to despawn when the player leaves the area. Additionally, the spawner will keep spawning while the player is not in the area. Mob farm anyone? 
 gui.tooltip.item.crop_support=When placed on soil or dirt, this will improve the growth speed of any crop or tree that grows there.
@@ -1034,6 +1033,15 @@ gui.tooltip.item.network_component3=Required component in a Security Station. \n
 gui.tooltip.item.network_component4=Required component in a Security Station. \n \nThis is the target for hackers; if all Registries are hacked, the Security Station has been compromised.
 gui.tooltip.item.network_component5=This is a generic Security Station component which allows a path to be created between the required Security Station components.
 gui.tooltip.item.micromissile=Micromissiles are small, hand-launched projectiles with smart guidance systems and an explosive payload. \nSneak + Right-click to open the setup GUI.
+
+gui.tooltip.item.safety_tube_module=§9Formula: Threshold(bar) = 7.5 - Redstone x 0.5 \n \n§bThis module will release high pressure gases when a certain threshold's reached. Though it prevents overpressure it can be counted as energy loss.
+gui.tooltip.item.pressure_gauge_module=§9Formula: Redstone = 2.0 x pressure(bar) \n \n§bThis module emits a redstone signal, the strength of which depends on the tube's pressure.
+gui.tooltip.item.flow_detector_module=§9Formula: Redstone = 0.2 x flow(mL/tick) \n \n§bThis module emits a redstone signal, the strength of which is dependent on how much air is travelling through the tube.
+gui.tooltip.item.air_grate_module=§9Formula: Range(blocks) = 4.0 x pressure(bar), or -16 x pressure(bar) if vacuum \n \n§bThis module will repel or attract any entity within range dependent on whether pressure is positive or negative, respectively, and will attempt to insert items into any adjacent inventory.  Can also be used to cool Heat Sinks.
+gui.tooltip.item.regulator_tube_module=§9Formula: Threshold(bar) = 7.5 - Redstone x 0.5 \n \n§bThis module will stop pressurized air from travelling through this tube when a certain pressure threshold is reached.
+gui.tooltip.item.charging_module=§bThis module will (de)pressurize any pressurizable items in the inventory it points at. Note: air can flow both to and from items in the inventory, depending on their pressure and pressure in the tube!
+gui.tooltip.item.logistics_module=§bThis module will communicate with other Logistics Modules on connected tubes to perform logistics tasks on any inventories/tanks it is pointing at which are fitted with a Logistic Frame. It uses pressure from the tube to do so.
+
 gui.tooltip.terrainWarning=§6WARNING: terrain damage enabled.
 gui.tooltip.terrainSafe=§eTerrain damage disabled.
 

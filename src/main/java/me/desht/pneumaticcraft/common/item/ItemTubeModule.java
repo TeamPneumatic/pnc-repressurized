@@ -16,6 +16,7 @@ public class ItemTubeModule extends ItemPneumatic {
 
     public ItemTubeModule(String moduleName) {
         super(moduleName);
+
         this.moduleName = moduleName;
     }
 
@@ -24,8 +25,8 @@ public class ItemTubeModule extends ItemPneumatic {
     public void addInformation(ItemStack par1ItemStack, World par2EntityPlayer, List<String> par3List, ITooltipFlag par4) {
         super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
         TubeModule module = ModuleRegistrator.getModule(moduleName);
-        module.addItemDescription(par3List);
-        par3List.add(TextFormatting.DARK_GRAY + "In line: " + (module.isInline() ? "Yes" : "No"));
+        if (module != null) {
+            par3List.add(TextFormatting.DARK_AQUA + "In line: " + (module.isInline() ? "Yes" : "No"));
+        }
     }
-
 }

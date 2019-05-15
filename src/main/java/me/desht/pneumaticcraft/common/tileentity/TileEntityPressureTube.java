@@ -121,8 +121,10 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         for (int i = 0; i < moduleList.tagCount(); i++) {
             NBTTagCompound moduleTag = moduleList.getCompoundTagAt(i);
             TubeModule module = ModuleRegistrator.getModule(moduleTag.getString("type"));
-            module.readFromNBT(moduleTag);
-            setModule(module, EnumFacing.byIndex(moduleTag.getInteger("side")));
+            if (module != null) {
+                module.readFromNBT(moduleTag);
+                setModule(module, EnumFacing.byIndex(moduleTag.getInteger("side")));
+            }
         }
         updateRenderBoundingBox();
         if (hasWorld() && getWorld().isRemote) {
@@ -200,7 +202,6 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         }
         modules[side.ordinal()] = module;
         if (getWorld() != null && !getWorld().isRemote) {
-//            if (part != null) updatePart();
             sendDescriptionPacket();
         }
         markDirty();

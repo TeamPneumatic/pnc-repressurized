@@ -6,12 +6,12 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
-import me.desht.pneumaticcraft.lib.BBConstants;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -19,9 +19,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static me.desht.pneumaticcraft.lib.BBConstants.PRESSURE_PIPE_MAX_POS;
+import static me.desht.pneumaticcraft.lib.BBConstants.PRESSURE_PIPE_MIN_POS;
 
 public abstract class TubeModule implements ISidedPart {
     public static final float MAX_VALUE = 30;
@@ -42,12 +44,12 @@ public abstract class TubeModule implements ISidedPart {
         double height = getHeight();
 
         // 0..6 = D,U,N,S,W,E
-        boundingBoxes[0] = new AxisAlignedBB(0.5 - width, BBConstants.PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 + width, BBConstants.PRESSURE_PIPE_MIN_POS, 0.5 + width);
-        boundingBoxes[1] = new AxisAlignedBB(0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 + width, BBConstants.PRESSURE_PIPE_MAX_POS + height, 0.5 + width);
-        boundingBoxes[2] = new AxisAlignedBB(0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MIN_POS - height, 0.5 + width, 0.5 + width, BBConstants.PRESSURE_PIPE_MIN_POS);
-        boundingBoxes[3] = new AxisAlignedBB(0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 + width, 0.5 + width, BBConstants.PRESSURE_PIPE_MAX_POS + height);
-        boundingBoxes[4] = new AxisAlignedBB(BBConstants.PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MIN_POS, 0.5 + width, 0.5 + width);
-        boundingBoxes[5] = new AxisAlignedBB(BBConstants.PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 - width, BBConstants.PRESSURE_PIPE_MAX_POS + height, 0.5 + width, 0.5 + width);
+        boundingBoxes[0] = new AxisAlignedBB(0.5 - width, PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 + width, PRESSURE_PIPE_MIN_POS, 0.5 + width);
+        boundingBoxes[1] = new AxisAlignedBB(0.5 - width, PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 + width, PRESSURE_PIPE_MAX_POS + height, 0.5 + width);
+        boundingBoxes[2] = new AxisAlignedBB(0.5 - width, 0.5 - width, PRESSURE_PIPE_MIN_POS - height, 0.5 + width, 0.5 + width, PRESSURE_PIPE_MIN_POS);
+        boundingBoxes[3] = new AxisAlignedBB(0.5 - width, 0.5 - width, PRESSURE_PIPE_MAX_POS, 0.5 + width, 0.5 + width, PRESSURE_PIPE_MAX_POS + height);
+        boundingBoxes[4] = new AxisAlignedBB(PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 - width, PRESSURE_PIPE_MIN_POS, 0.5 + width, 0.5 + width);
+        boundingBoxes[5] = new AxisAlignedBB(PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 - width, PRESSURE_PIPE_MAX_POS + height, 0.5 + width, 0.5 + width);
     }
 
     public void markFake() {
@@ -67,11 +69,11 @@ public abstract class TubeModule implements ISidedPart {
     }
 
     public double getWidth() {
-        return BBConstants.PRESSURE_PIPE_MAX_POS - BBConstants.PRESSURE_PIPE_MIN_POS;
+        return PRESSURE_PIPE_MAX_POS - PRESSURE_PIPE_MIN_POS;
     }
 
     protected double getHeight() {
-        return BBConstants.PRESSURE_PIPE_MIN_POS;
+        return PRESSURE_PIPE_MIN_POS;
     }
 
     public float getThreshold(int redstone) {
@@ -81,12 +83,12 @@ public abstract class TubeModule implements ISidedPart {
     }
 
     /**
-     * Returns the item that this part drops.
+     * Returns the item(s) that this part drops.
      *
-     * @return
+     * @return the module item and possibly an Advanced PCB too
      */
-    public List<ItemStack> getDrops() {
-        List<ItemStack> drops = new ArrayList<>();
+    public NonNullList<ItemStack> getDrops() {
+        NonNullList<ItemStack> drops = NonNullList.create();
         if (shouldDrop) {
             drops.add(new ItemStack(ModuleRegistrator.getModuleItem(getType())));
             if (upgraded) drops.add(new ItemStack(Itemss.ADVANCED_PCB));
@@ -119,16 +121,6 @@ public abstract class TubeModule implements ISidedPart {
         nbt.setBoolean("advancedConfig", advancedConfig);
     }
 
-    /* TODO FMP dep @Optional.Method(modid = ModIds.FMP)
-     public void writeDesc(MCDataOutput data){
-         data.writeInt(dir.ordinal());
-     }
-
-     @Optional.Method(modid = ModIds.FMP)
-     public void readDesc(MCDataInput data){
-         dir = EnumFacing.byIndex(data.readInt());
-     }*/
-
     public void update() {
     }
 
@@ -139,9 +131,9 @@ public abstract class TubeModule implements ISidedPart {
     }
 
     /**
-     * Used by multiparts and/or by NBT saving.
+     * Get a unique string identifier for this module type.
      *
-     * @return
+     * @return the module ID
      */
     public abstract String getType();
 
@@ -149,7 +141,7 @@ public abstract class TubeModule implements ISidedPart {
         return 0;
     }
 
-    protected void updateNeighbors() {
+    void updateNeighbors() {
         pressureTube.world().notifyNeighborsOfStateChange(pressureTube.pos(), pressureTube.world().getBlockState(pressureTube.pos()).getBlock(), true);
     }
 
@@ -166,9 +158,6 @@ public abstract class TubeModule implements ISidedPart {
             ItemStack stack = new ItemStack(Itemss.ADVANCED_PCB);
             curInfo.add(TextFormatting.GREEN + stack.getDisplayName() + " installed");
         }
-    }
-
-    public void addItemDescription(List<String> curInfo) {
     }
 
     public boolean canUpgrade() {
@@ -223,8 +212,7 @@ public abstract class TubeModule implements ISidedPart {
         if (this == o) return true;
         if (!(o instanceof TubeModule)) return false;
         TubeModule that = (TubeModule) o;
-        return Objects.equals(pressureTube.pos(), that.pressureTube.pos()) &&
-                dir == that.dir;
+        return Objects.equals(pressureTube.pos(), that.pressureTube.pos()) && dir == that.dir;
     }
 
     @Override

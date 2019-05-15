@@ -59,17 +59,17 @@ public class ModuleAirGrate extends TubeModule {
     @Override
     public void update() {
         super.update();
+
         World world = pressureTube.world();
         BlockPos pos = pressureTube.pos();
-        Vec3d tileVec = new Vec3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
+
         if (!world.isRemote) {
             int oldGrateRange = grateRange;
             grateRange = getRange();
             pressureTube.getAirHandler(null).addAir((vacuum ? 1 : -1) * grateRange * PneumaticValues.USAGE_AIR_GRATE);
             if (oldGrateRange != grateRange) sendDescriptionPacket();
 
-            coolHeatSinks(world, pos, grateRange);
-
+            coolHeatSinks();
         } else {
             if (resetRendering) {
                 rangeLineRenderer.resetRendering(grateRange);
@@ -78,7 +78,7 @@ public class ModuleAirGrate extends TubeModule {
             rangeLineRenderer.update();
         }
 
-        pushEntities(world, pos, tileVec);
+        pushEntities(world, pos, new Vec3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
     }
 
     private AxisAlignedBB getAffectedAABB() {
@@ -90,46 +90,49 @@ public class ModuleAirGrate extends TubeModule {
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, entityFilter);
         double d0 = grateRange + 0.5D;
         for (Entity entity : entities) {
-            if (!entity.world.isRemote && entity instanceof EntityItem && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 1D && !entity.isDead) {
-                if (getAdjacentInventory() != null) {
-                    ItemStack stack = ((EntityItem) entity).getItem();
-                    ItemStack excess = IOHelper.insert(getAdjacentInventory(), stack, adjacentInvSide, false);
-                    if (excess.isEmpty()) {
-                        entity.setDead();
-                    } else {
-                        ((EntityItem) entity).setItem(excess);
-                    }
-                }
-            } else {
-                if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.isCreativeMode) {
-                    Vec3d entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
-                    RayTraceResult trace = world.rayTraceBlocks(entityVec, tileVec, false, true, false);
-                    if (trace != null && trace.getBlockPos().equals(pos)) {
-                        double d1 = (entity.posX - pos.getX() - 0.5D) / d0;
-                        double d2 = (entity.posY + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
-                        d2 -= 0.08;  // kludge: avoid entities getting stuck on edges, e.g. farmland->full block
-                        double d3 = (entity.posZ - pos.getZ() - 0.5D) / d0;
-                        double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
-                        double d5 = 1.0D - d4;
+            if (!entity.world.isRemote && entity instanceof EntityItem && !entity.isDead
+                    && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 1D) {
+                tryItemInsertion((EntityItem) entity);
+            } else if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.isCreativeMode) {
+                Vec3d entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
+                RayTraceResult trace = world.rayTraceBlocks(entityVec, tileVec, false, true, false);
+                if (trace != null && trace.getBlockPos().equals(pos)) {
+                    double d1 = (entity.posX - pos.getX() - 0.5D) / d0;
+                    double d2 = (entity.posY + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
+                    d2 -= 0.08;  // kludge: avoid entities getting stuck on edges, e.g. farmland->full block
+                    double d3 = (entity.posZ - pos.getZ() - 0.5D) / d0;
+                    double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
+                    double d5 = 1.0D - d4;
 
-                        if (d5 > 0.0D) {
-                            d5 *= d5;
-                            if (!vacuum) d5 *= -1;
-                            entity.motionX -= d1 / d4 * d5 * 0.1D;
-                            entity.motionY -= d2 / d4 * d5 * 0.1D;
-                            entity.motionZ -= d3 / d4 * d5 * 0.1D;
-                            if (world.isRemote && world.rand.nextDouble() * 0.85 > d4) {
-                                if (vacuum) {
-                                    PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, world,
-                                            entity.posX, entity.posY, entity.posZ, -d1, -d2, -d3);
-                                } else {
-                                    PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, world,
-                                            pos.getX() + 0.5 + d1, pos.getY() + 0.5 + d2, pos.getZ() + 0.5 + d3, d1, d2, d3);
-                                }
+                    if (d5 > 0.0D) {
+                        d5 *= d5;
+                        if (!vacuum) d5 *= -1;
+                        entity.motionX -= d1 / d4 * d5 * 0.1D;
+                        entity.motionY -= d2 / d4 * d5 * 0.1D;
+                        entity.motionZ -= d3 / d4 * d5 * 0.1D;
+                        if (world.isRemote && world.rand.nextDouble() * 0.85 > d4) {
+                            if (vacuum) {
+                                PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, world,
+                                        entity.posX, entity.posY, entity.posZ, -d1, -d2, -d3);
+                            } else {
+                                PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, world,
+                                        pos.getX() + 0.5 + d1, pos.getY() + 0.5 + d2, pos.getZ() + 0.5 + d3, d1, d2, d3);
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private void tryItemInsertion(EntityItem entity) {
+        if (getAdjacentInventory() != null) {
+            ItemStack stack = entity.getItem();
+            ItemStack excess = IOHelper.insert(getAdjacentInventory(), stack, adjacentInvSide, false);
+            if (excess.isEmpty()) {
+                entity.setDead();
+            } else {
+                entity.setItem(excess);
             }
         }
     }
@@ -151,11 +154,11 @@ public class ModuleAirGrate extends TubeModule {
         return adjacentInv;
     }
 
-    private void coolHeatSinks(World world, BlockPos pos, int range) {
+    private void coolHeatSinks() {
         if (grateRange > 2) {
-            int curTeIndex = (int) (world.getTotalWorldTime() % 27);
-            BlockPos curPos = pos.offset(dir, 2).add(-1 + curTeIndex % 3, -1 + curTeIndex / 3 % 3, -1 + curTeIndex / 9 % 3);
-            TileEntity te = world.getTileEntity(curPos);
+            int curTeIndex = (int) (pressureTube.world().getTotalWorldTime() % 27);
+            BlockPos curPos = pressureTube.pos().offset(dir, 2).add(-1 + curTeIndex % 3, -1 + curTeIndex / 3 % 3, -1 + curTeIndex / 9 % 3);
+            TileEntity te = pressureTube.world().getTileEntity(curPos);
             if (te instanceof TileEntityHeatSink) heatSinks.add((TileEntityHeatSink) te);
 
             Iterator<TileEntityHeatSink> iterator = heatSinks.iterator();
@@ -200,15 +203,6 @@ public class ModuleAirGrate extends TubeModule {
         curInfo.add("Range: " + TextFormatting.WHITE + grateRange + " blocks");
         if (entityFilter != null)
             curInfo.add("Entity Filter: " + TextFormatting.WHITE + "\"" + entityFilter.toString() + "\"");
-    }
-
-    @Override
-    public void addItemDescription(List<String> curInfo) {
-        curInfo.add(TextFormatting.BLUE + "Formula: Range(blocks) = 4.0 x pressure(bar),");
-        curInfo.add(TextFormatting.BLUE + "or -16 x pressure(bar), if vacuum");
-        curInfo.add("This module will attract or repel any entity");
-        curInfo.add("within range dependant on whether it is in");
-        curInfo.add("vacuum or under pressure respectively.");
     }
 
     @Override

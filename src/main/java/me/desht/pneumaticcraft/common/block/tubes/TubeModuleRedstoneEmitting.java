@@ -9,10 +9,10 @@ public abstract class TubeModuleRedstoneEmitting extends TubeModule {
     protected int redstone;
 
     /**
-     * @param level
+     * @param level signal level
      * @return true if the redstone has changed compared to last time.
      */
-    protected boolean setRedstone(int level) {
+    boolean setRedstone(int level) {
         level = Math.max(level, 0);
         level = Math.min(level, 15);
         if (redstone != level) {

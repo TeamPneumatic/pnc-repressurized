@@ -71,14 +71,6 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
     }
 
     @Override
-    public void addItemDescription(List<String> curInfo) {
-        curInfo.add(TextFormatting.BLUE + "Formula: Redstone = 0.2 x flow(mL/tick)");
-        curInfo.add("This module emits a redstone signal of which");
-        curInfo.add("the strength is dependent on how much air");
-        curInfo.add("is travelling through the tube.");
-    }
-
-    @Override
     public boolean canUpgrade() {
         return false;
     }

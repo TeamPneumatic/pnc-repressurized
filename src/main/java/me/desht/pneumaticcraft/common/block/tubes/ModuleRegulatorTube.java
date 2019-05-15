@@ -95,14 +95,6 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     }
 
     @Override
-    public void addItemDescription(List<String> curInfo) {
-        curInfo.add(TextFormatting.BLUE + "Formula: Threshold(bar) = 7.5 - Redstone x 0.5");
-        curInfo.add("This module will stop pressurized air from");
-        curInfo.add("travelling through this tube when a certain");
-        curInfo.add("pressure threshold's reached.");
-    }
-
-    @Override
     public Class<? extends ModelModuleBase> getModelClass() {
         return ModelPressureRegulator.class;
     }

@@ -32,15 +32,6 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
     }
 
     @Override
-    public void addItemDescription(List<String> curInfo) {
-        curInfo.add(TextFormatting.BLUE + "Formula: Threshold(bar) = 7.5 - Redstone x 0.5");
-        curInfo.add("This module will release high pressure gases");
-        curInfo.add("when a certain threshold's reached. Though");
-        curInfo.add("it prevents overpressure it can be counted");
-        curInfo.add("as energy loss.");
-    }
-
-    @Override
     public Class<? extends ModelModuleBase> getModelClass() {
         return ModelSafetyValve.class;
     }

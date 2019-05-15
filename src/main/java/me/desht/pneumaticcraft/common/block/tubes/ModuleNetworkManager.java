@@ -34,7 +34,9 @@ public class ModuleNetworkManager {
         while (!pendingTubes.isEmpty()) {
             TileEntityPressureTube tube = pendingTubes.pop();
             for (TubeModule m : tube.modules) {
-                if (m != null) modules.add(m);
+                if (m instanceof INetworkedModule && module.getClass() == m.getClass()) {
+                    modules.add(m);
+                }
             }
             TileEntityCache[] cache = ((AirHandler) tube.getAirHandler(null)).getTileCache();
             for (EnumFacing d : EnumFacing.VALUES) {

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.thirdparty;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.block.tubes.IPneumaticPosProvider;
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -96,13 +95,6 @@ public class ModInteractionUtils {
         return null;
     }
 
-    public Item getModuleItem(String moduleName) {
-        return new ItemTubeModule(moduleName);
-    }
-
-    public void registerModulePart(String partName) {
-    }
-
     public boolean isMultipart(TileEntity te) {
         return false;
     }
@@ -137,10 +129,6 @@ public class ModInteractionUtils {
 
     public void sendDescriptionPacket(IPneumaticPosProvider te) {
         ((TileEntityPressureTube) te).sendDescriptionPacket();
-    }
-
-    public void removeTube(TileEntity te) {
-        te.getWorld().setBlockToAir(te.getPos());
     }
 
     public boolean occlusionTest(AxisAlignedBB aabb, TileEntity te) {
