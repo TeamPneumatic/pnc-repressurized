@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.Helper;
-import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.RemoveAllRecipes;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
@@ -24,18 +23,18 @@ public class PlasticMixer {
 	private static final String NAME = "PneumaticCraft Plastic Mixer";
 
     @ZenMethod
-    public static void addRecipe(ILiquidStack liquidInput, IItemStack stack, int temperature) {
-        CraftTweaker.ADDITIONS.add(new LiquidPlasticAction(Helper.toFluid(liquidInput), Helper.toStack(stack), temperature, true, true));
+    public static void addRecipe(ILiquidStack liquid, IItemStack stack, int temperature) {
+        CraftTweaker.ADDITIONS.add(new LiquidPlasticAction(Helper.toFluid(liquid), Helper.toStack(stack), temperature, true, true));
     }
 
     @ZenMethod
-    public static void addMeltOnlyRecipe(ILiquidStack liquidInput, IItemStack stack, int temperature) {
-        CraftTweaker.ADDITIONS.add(new LiquidPlasticAction(Helper.toFluid(liquidInput), Helper.toStack(stack), temperature, true, false));
+    public static void addMeltOnlyRecipe(IItemStack stackInput, ILiquidStack liquidOutput, int temperature) {
+        CraftTweaker.ADDITIONS.add(new LiquidPlasticAction(Helper.toFluid(liquidOutput), Helper.toStack(stackInput), temperature, true, false));
     }
 
     @ZenMethod
-    public static void addSolidifyOnlyRecipe(ILiquidStack liquidInput, IItemStack stack) {
-        CraftTweaker.ADDITIONS.add(new LiquidPlasticAction(Helper.toFluid(liquidInput), Helper.toStack(stack), 0, false, true));
+    public static void addSolidifyOnlyRecipe(ILiquidStack liquidInput, IItemStack stackOutput) {
+        CraftTweaker.ADDITIONS.add(new LiquidPlasticAction(Helper.toFluid(liquidInput), Helper.toStack(stackOutput), 0, false, true));
     }
 
     @ZenMethod
