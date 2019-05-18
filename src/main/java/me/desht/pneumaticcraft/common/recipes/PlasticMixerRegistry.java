@@ -36,9 +36,9 @@ public enum PlasticMixerRegistry {
     public PlasticMixerRecipe getRecipe(FluidStack input) {
         if (input == null || input.amount == 0) return null;
 
-        for (PlasticMixerRecipe record : recipes) {
-            if (record.fluidStack.getFluid() == input.getFluid() && record.fluidStack.amount <= input.amount) {
-                return record;
+        for (PlasticMixerRecipe recipe : recipes) {
+            if (recipe.allowSolidifying && recipe.fluidStack.getFluid() == input.getFluid() && recipe.fluidStack.amount <= input.amount) {
+                return recipe;
             }
         }
 
@@ -46,9 +46,9 @@ public enum PlasticMixerRegistry {
     }
 
     public PlasticMixerRecipe getRecipe(ItemStack stack) {
-        for (PlasticMixerRecipe record : recipes) {
-            if (stack.getItem() == record.itemStack.getItem()) {
-                return record;
+        for (PlasticMixerRecipe recipe : recipes) {
+            if (recipe.allowMelting && stack.getItem() == recipe.itemStack.getItem()) {
+                return recipe;
             }
         }
         return null;
