@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class PacketUseItem extends AbstractPacket<PacketUseItem> {
@@ -38,8 +39,13 @@ public class PacketUseItem extends AbstractPacket<PacketUseItem> {
 
     @Override
     public void handleServerSide(PacketUseItem message, EntityPlayer player) {
-        for (int i = 0; i < message.amount; i++)
-            PneumaticCraftUtils.consumeInventoryItem(player.inventory, message.item);
+        for (int i = 0; i < message.amount; i++) {
+            if (!PneumaticCraftUtils.consumeInventoryItem(player.inventory, message.item)) {
+                // lying client!
+                player.attackEntityFrom(DamageSource.OUT_OF_WORLD, 2000);
+                break;
+            }
+        }
     }
 
 }
