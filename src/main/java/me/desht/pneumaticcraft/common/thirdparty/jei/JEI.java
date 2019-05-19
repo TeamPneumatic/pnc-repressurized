@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.common.block.Blockss;
@@ -14,8 +15,16 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import net.minecraft.block.Block;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
@@ -66,9 +75,43 @@ public class JEI implements IModPlugin {
 
         registry.addAdvancedGuiHandlers(new GuiTabHandler());
 
+        addIngredientInfoTabs(registry);
+
         IIngredientBlacklist blacklist = registry.getJeiHelpers().getIngredientBlacklist();
         blacklist.addIngredientToBlacklist(new ItemStack(Blockss.FAKE_ICE));
+    }
 
+    private void addIngredientInfoTabs(IModRegistry registry) {
+        for (Item item : Itemss.items) {
+            NonNullList<ItemStack> stacks = NonNullList.create();
+            if (item.getHasSubtypes()) {
+                item.getSubItems(PneumaticCraftRepressurized.tabPneumaticCraft, stacks);
+            } else {
+                stacks.add(new ItemStack(item, 1, 0));
+            }
+            stacks.forEach(s -> addStackInfo(registry, s));
+        }
+
+        for (Block block : Blockss.blocks) {
+            ItemStack stack = new ItemStack(block, 1, 0);
+            addStackInfo(registry, stack);
+        }
+
+        for (Fluid fluid : Fluids.FLUIDS) {
+            String k = "gui.tooltip.item." + fluid.getName() + "_bucket";
+            if (I18n.hasKey(k)) {
+                String raw = TextFormatting.getTextWithoutFormattingCodes(I18n.format(k));
+                registry.addIngredientInfo(new FluidStack(fluid, 1000), VanillaTypes.FLUID, raw.split(" \\\\n"));
+            }
+        }
+    }
+
+    private void addStackInfo(IModRegistry registry, ItemStack stack) {
+        String k = (stack.getItem() instanceof ItemBlock ? "gui.tab.info." : "gui.tooltip.") + stack.getTranslationKey();
+        if (I18n.hasKey(k)) {
+            String raw = TextFormatting.getTextWithoutFormattingCodes(I18n.format(k));
+            registry.addIngredientInfo(stack, VanillaTypes.ITEM, raw.split(" \\\\n"));
+        }
     }
 
     @Override

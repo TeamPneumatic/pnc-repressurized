@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.jei.JEIPlasticMixerCategory.PlasticMixerRecipeWrapper;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.IJeiHelpers;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -37,11 +38,13 @@ public class JEIPlasticMixerCategory extends PneumaticCraftCategory<PlasticMixer
     }
 
     static class PlasticMixerRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
+        private final boolean solidify;
 
         private PlasticMixerRecipeWrapper(ItemStack input, FluidStack output, int temperature) {
             addOutputLiquid(output, 146, 11);
             addIngredient(new PositionedStack(input, 92, 23));
             setUsedTemperature(76, 22, temperature);
+            solidify = false;
         }
 
         private PlasticMixerRecipeWrapper(FluidStack input, ItemStack output) {
@@ -50,11 +53,20 @@ public class JEIPlasticMixerCategory extends PneumaticCraftCategory<PlasticMixer
             addIngredient(new PositionedStack(getDye("dyeGreen", 2), 122, 35));
             addIngredient(new PositionedStack(getDye("dyeBlue", 4), 122, 53));
             addOutput(new PositionedStack(output, 92, 55));
+            solidify = true;
         }
 
         private ItemStack getDye(String oreDictName, int fallbackMeta) {
             NonNullList<ItemStack> entries = OreDictionary.getOres(oreDictName);
             return entries.isEmpty() ? new ItemStack(Items.DYE, 1, fallbackMeta) : entries.get(0);
+        }
+
+        @Override
+        public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+            super.drawInfo(minecraft, recipeWidth, recipeHeight, mouseX, mouseY);
+
+            String s = solidify ? "Solidify" : "Melt";
+            minecraft.fontRenderer.drawString(s, 1, 0, 0xFF404040);
         }
     }
 

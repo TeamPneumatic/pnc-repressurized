@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.ic2;
 import ic2.api.item.IC2Items;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
@@ -32,14 +33,14 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 public class IC2 implements IThirdParty, IGuiHandler {
 
     @GameRegistry.ObjectHolder("pneumatic_generator")
-    public static final Block PNEUMATIC_GENERATOR = null;
+    static final Block PNEUMATIC_GENERATOR = null;
     @GameRegistry.ObjectHolder("electric_compressor")
-    public static final Block ELECTRIC_COMPRESSOR = null;
+    static final Block ELECTRIC_COMPRESSOR = null;
 
-    public static ItemStack glassFibreCable;
-    public static ItemStack overclockerUpgrade;
-    public static ItemStack transformerUpgrade;
-    public static ItemStack energyStorageUpgrade;
+    static ItemStack glassFibreCable;
+    static ItemStack overclockerUpgrade;
+    static ItemStack transformerUpgrade;
+    static ItemStack energyStorageUpgrade;
 
     @Override
     public void preInit() {
@@ -61,14 +62,13 @@ public class IC2 implements IThirdParty, IGuiHandler {
 
     @SubscribeEvent
     public void onBlockRegister(RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(new BlockElectricCompressor());
-        event.getRegistry().register(new BlockPneumaticGenerator());
+        Blockss.registerBlock(event.getRegistry(), new BlockElectricCompressor());
+        Blockss.registerBlock(event.getRegistry(), new BlockPneumaticGenerator());
     }
 
     @SubscribeEvent
     public void onItemRegister(RegistryEvent.Register<Item> event) {
-        event.getRegistry().register(new ItemBlock(ELECTRIC_COMPRESSOR).setRegistryName(ELECTRIC_COMPRESSOR.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(PNEUMATIC_GENERATOR).setRegistryName(PNEUMATIC_GENERATOR.getRegistryName()));
+        // itemblocks are handled automatically, nothing to do here
     }
 
     @SideOnly(Side.CLIENT)
@@ -81,7 +81,9 @@ public class IC2 implements IThirdParty, IGuiHandler {
     @SideOnly(Side.CLIENT)
     private void registerModel(Block block) {
         Item item = ItemBlock.getItemFromBlock(block);
-        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+        if (item.getRegistryName() != null) {
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+        }
     }
 
     @Nullable
