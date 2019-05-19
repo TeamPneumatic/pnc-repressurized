@@ -30,7 +30,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.DyeUtils;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
@@ -48,10 +48,6 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     public static final int INVENTORY_SIZE = 5;
     public static final int DYE_BUFFER_MAX = 0xFF * 2 * PneumaticValues.NORMAL_TANK_CAPACITY / 1000;
     private static final int DYE_PER_DYE = 0xFF * 10;
-    private static final String[] DYES = {
-            "dyeBlack", "dyeRed", "dyeGreen", "dyeBrown", "dyeBlue", "dyePurple", "dyeCyan", "dyeLightGray",
-            "dyeGray", "dyePink", "dyeLime", "dyeYellow", "dyeLightBlue", "dyeMagenta", "dyeOrange", "dyeWhite"
-    };
     public static final int INV_INPUT = 0, INV_OUTPUT = 1, INV_DYE_RED = 2, INV_DYE_GREEN = 3, INV_DYE_BLUE = 4;
 
     @LazySynced
@@ -273,51 +269,9 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         fluidAmountScaled = amount;
     }
 
-    private class PlasticFluidTank extends SmartSyncTank {
-        PlasticFluidTank(int capacity) {
-            super(TileEntityPlasticMixer.this, capacity);
-        }
-
-        @Override
-        public boolean canFillFluidType(FluidStack fluid) {
-            return PlasticMixerRegistry.INSTANCE.getFluidRatio(fluid.getFluid()) > 0;
-        }
-    }
-
-    private class PlasticItemStackHandler extends FilteredItemStackHandler {
-        PlasticItemStackHandler() {
-            super(TileEntityPlasticMixer.this, INVENTORY_SIZE);
-        }
-
-        @Override
-        public boolean test(Integer slot, ItemStack itemStack) {
-            if (itemStack.isEmpty()) return true;
-            switch (slot) {
-                case INV_INPUT: return PlasticMixerRegistry.INSTANCE.isValidInputItem(itemStack);
-                case INV_OUTPUT: return PlasticMixerRegistry.INSTANCE.isValidOutputItem(itemStack);
-                case INV_DYE_RED: return getDyeIndex(itemStack) == 1;
-                case INV_DYE_GREEN: return getDyeIndex(itemStack) == 2;
-                case INV_DYE_BLUE: return getDyeIndex(itemStack) == 4;
-            }
-            return false;
-        }
-
-    }
-
     @Override
     public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
         return hullHeatLogic;
-    }
-
-    public static int getDyeIndex(ItemStack stack) {
-        int[] ids = OreDictionary.getOreIDs(stack);
-        for (int id : ids) {
-            String name = OreDictionary.getOreName(id);
-            for (int i = 0; i < DYES.length; i++) {
-                if (DYES[i].equals(name)) return i;
-            }
-        }
-        return -1;
     }
 
     @Override
@@ -381,5 +335,36 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     @Override
     protected List<String> getRedstoneButtonLabels() {
         return REDSTONE_LABELS;
+    }
+
+    private class PlasticFluidTank extends SmartSyncTank {
+        PlasticFluidTank(int capacity) {
+            super(TileEntityPlasticMixer.this, capacity);
+        }
+
+        @Override
+        public boolean canFillFluidType(FluidStack fluid) {
+            return PlasticMixerRegistry.INSTANCE.getFluidRatio(fluid.getFluid()) > 0;
+        }
+    }
+
+    private class PlasticItemStackHandler extends FilteredItemStackHandler {
+        PlasticItemStackHandler() {
+            super(TileEntityPlasticMixer.this, INVENTORY_SIZE);
+        }
+
+        @Override
+        public boolean test(Integer slot, ItemStack itemStack) {
+            if (itemStack.isEmpty()) return true;
+            switch (slot) {
+                case INV_INPUT: return PlasticMixerRegistry.INSTANCE.isValidInputItem(itemStack);
+                case INV_OUTPUT: return PlasticMixerRegistry.INSTANCE.isValidOutputItem(itemStack);
+                case INV_DYE_RED: return DyeUtils.rawDyeDamageFromStack(itemStack) == 1;
+                case INV_DYE_GREEN: return DyeUtils.rawDyeDamageFromStack(itemStack) == 2;
+                case INV_DYE_BLUE: return DyeUtils.rawDyeDamageFromStack(itemStack) == 4;
+            }
+            return false;
+        }
+
     }
 }

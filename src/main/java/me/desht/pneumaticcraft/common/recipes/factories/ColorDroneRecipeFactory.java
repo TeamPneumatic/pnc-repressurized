@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.common.item.ItemDrone;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
@@ -12,6 +11,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.IRecipeFactory;
 import net.minecraftforge.common.crafting.JsonContext;
+import net.minecraftforge.oredict.DyeUtils;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import javax.annotation.Nonnull;
@@ -38,7 +38,7 @@ public class ColorDroneRecipeFactory implements IRecipeFactory {
                 if (stack.getItem() instanceof ItemDrone) {
                     if (!hasDrone) hasDrone = true;
                     else return false;
-                } else if (!stack.isEmpty() && TileEntityPlasticMixer.getDyeIndex(stack) >= 0) {
+                } else if (!stack.isEmpty() && DyeUtils.rawDyeDamageFromStack(stack) >= 0) {
                     if (!hasDye) hasDye = true;
                     else return false;
                 }
@@ -57,7 +57,7 @@ public class ColorDroneRecipeFactory implements IRecipeFactory {
                     if (stack.getItem() instanceof ItemDrone) {
                         drone = stack.copy();
                     } else if (dyeIndex == -1) {
-                        dyeIndex = TileEntityPlasticMixer.getDyeIndex(stack);
+                        dyeIndex = DyeUtils.rawDyeDamageFromStack(stack);
                     }
                 }
             }

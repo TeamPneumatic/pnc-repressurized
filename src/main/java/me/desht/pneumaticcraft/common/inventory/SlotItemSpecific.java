@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
+import net.minecraftforge.oredict.DyeUtils;
 import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
@@ -38,7 +38,7 @@ class SlotItemSpecific extends SlotItemHandler {
             int[] ids = OreDictionary.getOreIDs(stack);
             for (int id : ids) {
                 if (id == oreDictEntry) return true;
-                if (dye && TileEntityPlasticMixer.getDyeIndex(stack) >= 0) return true;
+                if (dye && DyeUtils.dyeDamageFromStack(stack).isPresent()) return true;
             }
             return false;
         }

@@ -30,7 +30,6 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -97,6 +96,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.oredict.DyeUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -678,9 +678,9 @@ public class EntityDrone extends EntityDroneBase implements
                     getNavigator().tryMoveToXYZ(gpsLoc.getX(), gpsLoc.getY(), gpsLoc.getZ(), 0.1D);
                 }
             } else {
-                int dyeIndex = TileEntityPlasticMixer.getDyeIndex(equippedItem);
-                if (dyeIndex >= 0) {
-                    setDroneColor(ItemDye.DYE_COLORS[dyeIndex]);
+                OptionalInt dyeIndex = DyeUtils.dyeDamageFromStack(equippedItem);
+                if (dyeIndex.isPresent()) {
+                    setDroneColor(ItemDye.DYE_COLORS[dyeIndex.getAsInt()]);
                     equippedItem.shrink(1);
                     if (equippedItem.getCount() <= 0) {
                         player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
