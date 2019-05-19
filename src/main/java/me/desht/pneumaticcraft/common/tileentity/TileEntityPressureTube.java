@@ -7,8 +7,6 @@ import me.desht.pneumaticcraft.common.block.tubes.IInfluenceDispersing;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
-import me.desht.pneumaticcraft.common.thirdparty.mcmultipart.IMultipartTE;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.state.IBlockState;
@@ -26,7 +24,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.Arrays;
 import java.util.List;
 
-public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, IMultipartTE, ICamouflageableTE {
+public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, ICamouflageableTE {
     @DescSynced
     public final boolean[] sidesConnected = new boolean[6];
     @DescSynced
@@ -37,22 +35,12 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     private IBlockState camoState;
     private AxisAlignedBB renderBoundingBox = null;
 
-    private Object part;
-
     public TileEntityPressureTube() {
         super(PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
     }
 
     public TileEntityPressureTube(float dangerPressurePressureTube, float maxPressurePressureTube, int volumePressureTube) {
         super(dangerPressurePressureTube, maxPressurePressureTube, volumePressureTube, 0);
-    }
-
-    public TileEntityPressureTube setPart(Object part) {
-        this.part = part;
-        for (TubeModule module : modules) {
-            if (module != null) module.shouldDrop = false;
-        }
-        return this;
     }
 
     @Override
@@ -173,7 +161,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public void onAirDispersion(IAirHandler handler, EnumFacing side, int amount) {
         if (side != null) {
-            int intSide = side/*.getOpposite()*/.ordinal();
+            int intSide = side.ordinal();
             if (modules[intSide] instanceof IInfluenceDispersing) {
                 ((IInfluenceDispersing) modules[intSide]).onAirDispersion(amount);
             }
@@ -183,7 +171,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public int getMaxDispersion(IAirHandler handler, EnumFacing side) {
         if (side != null) {
-            int intSide = side/*.getOpposite()*/.ordinal();
+            int intSide = side.ordinal();
             if (modules[intSide] instanceof IInfluenceDispersing) {
                 return ((IInfluenceDispersing) modules[intSide]).getMaxDispersion();
             }
@@ -210,8 +198,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public boolean isConnectedTo(EnumFacing side) {
         return !sidesClosed[side.ordinal()]
-                && (modules[side.ordinal()] == null || modules[side.ordinal()].isInline())
-                && (part == null || ModInteractionUtils.getInstance().isMultipartWiseConnected(part, side));
+                && (modules[side.ordinal()] == null || modules[side.ordinal()].isInline());
     }
 
     @Override
@@ -283,11 +270,6 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public String getMultipartId() {
-        return "pressure_tube";
-    }
-
-    @Override
     public IBlockState getCamouflage() {
         return camoState;
     }
@@ -305,18 +287,4 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         camoState = ICamouflageableTE.getStateForStack(camoStack);
         rerenderTileEntity();
     }
-
-//    @Override
-//    @Optional.Method(modid = ModIds.MCMP)
-//    public void sendDescriptionPacket() {
-//        if (part != null && !getWorld().isRemote) {
-//            ((PartPressureTube) part).sendUpdatePacket();
-//        }
-//        super.sendDescriptionPacket();
-//    }
-//
-//    @Optional.Method(modid = ModIds.FMP)
-//    public void updatePart() {
-//        ((PartPressureTube) part).onNeighborTileChange(null);
-//    }
 }

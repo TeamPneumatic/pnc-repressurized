@@ -58,10 +58,6 @@ public class ThirdPartyManager implements IGuiHandler {
             thirdPartyClasses.put(ModIds.AE2, AE2.class);
             thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
             thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
-            // TODO: MCMP2 support just doesn't work at this time
-//            if (Loader.isModLoaded(ModIds.MCMP)) {
-//                thirdPartyClasses.put(ModIds.MCMP, PneumaticMultiPart.class);
-//            }
             thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
             thirdPartyClasses.put(ModIds.WAILA, Waila.class);
             thirdPartyClasses.put(ModIds.TOP, TheOneProbe.class);

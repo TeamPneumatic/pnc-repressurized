@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtilImplementation;
+import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -47,8 +47,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -94,13 +92,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class EventHandlerPneumaticCraft {
 
-    private static final ItemStack IRON_INGOT = new ItemStack(Items.IRON_INGOT);
-    private static final ItemStack IRON_BLOCK = new ItemStack(Blocks.IRON_BLOCK);
-
     @SubscribeEvent
     public void handleFuelEvent(FurnaceFuelBurnTimeEvent event) {
         FluidStack fluidStack = FluidUtil.getFluidContained(event.getItemStack());
-        if (fluidStack != null && FluidRegistry.getModId(fluidStack).equals(Names.MOD_ID)) {
+        if (fluidStack != null && Names.MOD_ID.equals(FluidRegistry.getModId(fluidStack))) {
             int value = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(fluidStack.getFluid().getName(), -1);
             event.setBurnTime(value > 0 ? (int)(value * ConfigHandler.general.fuelBucketEfficiencyMultiplier) : -1);
         }
@@ -214,7 +209,7 @@ public class EventHandlerPneumaticCraft {
         }
 
         if (!event.isCanceled() && event instanceof PlayerInteractEvent.RightClickBlock) {
-            if (interactedBlock instanceof IPneumaticWrenchable && ModInteractionUtilImplementation.getInstance().isModdedWrench(heldItem)) {
+            if (interactedBlock instanceof IPneumaticWrenchable && ModInteractionUtils.getInstance().isModdedWrench(heldItem)) {
                 // When a player clicks one of our rotatable blocks with a wrench from another mod, cancel that and
                 // send our custom PacketRotateBlock, which ensures our rotateBlock() gets called & includes the
                 // player information, which is needed in several places

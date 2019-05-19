@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ModInteractionUtils {
-    private static final ModInteractionUtils INSTANCE = new ModInteractionUtilImplementation();
+    private static final ModInteractionUtils INSTANCE = new ModInteractionUtils();
 
     @GameRegistry.ObjectHolder("thermalfoundation:wrench")
     private static final Item CRESCENT_HAMMER = null;

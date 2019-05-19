@@ -15,7 +15,6 @@ ModIds {
     public static final String COFH_CORE = "cofhcore";
     public static final String OPEN_COMPUTERS = "opencomputers";
     public static final String EIO = "enderio";
-    public static final String MCMP = "mcmultipart";
     public static final String TOP = "theoneprobe";
     public static final String JEI = "jei";
     public static final String CRAFTTWEAKER = "crafttweaker";
