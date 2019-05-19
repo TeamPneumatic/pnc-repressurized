@@ -27,6 +27,7 @@ public class ModuleRegistrator {
         registerModule(registry, new ModuleRegulatorTube());
         registerModule(registry, new ModuleCharging());
         registerModule(registry, new ModuleLogistics());
+        registerModule(registry, new ModuleRedstone());
     }
 
     private static void registerModule(IForgeRegistry<Item> registry, TubeModule module) {

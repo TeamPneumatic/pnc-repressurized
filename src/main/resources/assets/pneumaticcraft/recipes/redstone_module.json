@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " r ",
+    "tdt"
+  ],
+  "key": {
+    "d": {
+      "item": "minecraft:repeater"
+    },
+    "t": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "r": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:redstone_module"
+  }
+}

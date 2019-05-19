@@ -190,12 +190,12 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing face) {
+    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing face, EnumHand hand) {
         IBlockState state = world.getBlockState(pos);
         if (isTopDoor(state)) {
-            return rotateBlock(world, player, pos.offset(EnumFacing.DOWN), face);
+            return rotateBlock(world, player, pos.offset(EnumFacing.DOWN), face, hand);
         } else {
-            super.rotateBlock(world, player, pos, face);
+            super.rotateBlock(world, player, pos, face, hand);
             IBlockState newState = world.getBlockState(pos);
             world.setBlockState(pos.offset(EnumFacing.UP), newState.withProperty(TOP_DOOR, true), 3);
             TileEntity te = world.getTileEntity(pos);

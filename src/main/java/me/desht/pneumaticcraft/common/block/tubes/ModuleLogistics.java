@@ -10,16 +10,14 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticModule;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -27,11 +25,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.oredict.DyeUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class ModuleLogistics extends TubeModule implements INetworkedModule {
     private SemiBlockLogistics cachedFrame;
@@ -79,10 +75,12 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         return ModelLogistics.class;
     }
 
+    @Override
     public int getColorChannel() {
         return colorChannel;
     }
 
+    @Override
     public void setColorChannel(int colorChannel) {
         this.colorChannel = colorChannel;
     }
@@ -120,18 +118,18 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public boolean onActivated(EntityPlayer player) {
-        if (!player.getHeldItemMainhand().isEmpty()) {
-            int colorIndex = TileEntityPlasticMixer.getDyeIndex(player.getHeldItemMainhand());
-            if (colorIndex >= 0) {
+    public boolean onActivated(EntityPlayer player, EnumHand hand) {
+        if (!player.getHeldItem(hand).isEmpty()) {
+            OptionalInt colorIndex = DyeUtils.dyeDamageFromStack(player.getHeldItem(hand));
+            if (colorIndex.isPresent()) {
                 if (!player.world.isRemote) {
-                    colorChannel = colorIndex;
+                    setColorChannel(colorIndex.getAsInt());
                     NetworkHandler.sendToAllAround(new PacketUpdateLogisticModule(this, 0), getTube().world());
                 }
                 return true;
             }
         }
-        return super.onActivated(player);
+        return super.onActivated(player, hand);
     }
 
     @Override
@@ -280,8 +278,10 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
             status = "waila.logisticsModule.noPower";
         }
         curInfo.add(PneumaticCraftUtils.xlate("hud.msg.state") + ": " + PneumaticCraftUtils.xlate(status));
-        curInfo.add(PneumaticCraftUtils.xlate("waila.logisticsModule.channel") + " "
-                + TextFormatting.YELLOW
-                + PneumaticCraftUtils.xlate("item.fireworksCharge." + EnumDyeColor.byDyeDamage(colorChannel).getTranslationKey()));
+    }
+
+    @Override
+    public boolean canUpgrade() {
+        return false;
     }
 }

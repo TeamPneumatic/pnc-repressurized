@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.model.module;
 
 import me.desht.pneumaticcraft.client.gui.GuiUtils;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModulePressureGauge;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -35,6 +36,7 @@ public class ModelGauge extends ModelModuleBase {
 
     @Override
     protected void renderDynamic(float scale, float partialTicks) {
+        if (gaugeModule != null && gaugeModule.isUpgraded()) RenderUtils.glColorHex(0xFFC0FF70);
         shape1.render(scale);
         shape2.render(scale);
 
@@ -54,6 +56,7 @@ public class ModelGauge extends ModelModuleBase {
         GlStateManager.disableLighting();
         GuiUtils.drawPressureGauge(FMLClientHandler.instance().getClient().fontRenderer, -1, critPressure, dangerPressure, -1.001F, pressure, 0, 0, 0);
         GlStateManager.enableLighting();
+
     }
 
     @Override

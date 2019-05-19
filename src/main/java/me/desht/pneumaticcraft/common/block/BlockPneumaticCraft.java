@@ -242,7 +242,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side) {
+    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side, EnumHand hand) {
         if (player != null && player.isSneaking()) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityBase) {

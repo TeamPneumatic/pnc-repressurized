@@ -41,7 +41,7 @@ public class ItemPneumaticWrench extends ItemPressurizable /*implements IToolWre
             boolean didWork = true;
             float pressure = ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).getPressure(stack);
             if (wrenchable != null && pressure > 0) {
-                if (wrenchable.rotateBlock(world, player, pos, side)) {
+                if (wrenchable.rotateBlock(world, player, pos, side, hand)) {
                     if (!player.capabilities.isCreativeMode)
                         ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).addAir(stack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                 }
@@ -65,7 +65,7 @@ public class ItemPneumaticWrench extends ItemPressurizable /*implements IToolWre
     public boolean itemInteractionForEntity(ItemStack iStack, EntityPlayer player, EntityLivingBase target, EnumHand hand) {
         if (!player.world.isRemote) {
             if (target.isEntityAlive() && target instanceof IPneumaticWrenchable && ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).getPressure(iStack) > 0) {
-                if (((IPneumaticWrenchable) target).rotateBlock(target.world, player, null, null)) {
+                if (((IPneumaticWrenchable) target).rotateBlock(target.world, player, null, null, hand)) {
                     if (!player.capabilities.isCreativeMode)
                         ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).addAir(iStack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                     NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PNEUMATIC_WRENCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0F, 1.0F, false), target.world);

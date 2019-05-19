@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.model.module;
 
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.ModelRenderer;
@@ -14,8 +15,10 @@ public class ModelAirGrate extends ModelModuleBase {
     private final ModelRenderer base1;
     private final ModelRenderer base2;
     private final ModelRenderer base3;
+    private final ModuleAirGrate grateModule;
 
     public ModelAirGrate(ModuleAirGrate grate) {
+        this.grateModule = grate;
         textureWidth = 128;
         textureHeight = 128;
 
@@ -71,6 +74,7 @@ public class ModelAirGrate extends ModelModuleBase {
 
     @Override
     protected void renderDynamic(float scale, float partialTicks) {
+        if (grateModule != null && grateModule.isUpgraded()) RenderUtils.glColorHex(0xFFC0FF70);
         top.render(scale);
         side1.render(scale);
         side2.render(scale);

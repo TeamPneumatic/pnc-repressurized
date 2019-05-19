@@ -18,7 +18,8 @@
         "tubes/air_grate_module",
         "tubes/regulator_module",
         "tubes/charging_module",
-        "tubes/logistics_module"
+        "tubes/logistics_module",
+        "tubes/redstone_module"
       ]
     }
   ]

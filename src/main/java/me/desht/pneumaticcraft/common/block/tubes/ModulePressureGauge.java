@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     public ModulePressureGauge() {
@@ -18,6 +17,7 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     @Override
     public void update() {
         super.update();
+
         if (!pressureTube.world().isRemote) {
             if (pressureTube.world().getTotalWorldTime() % 20 == 0)
                 NetworkHandler.sendToAllAround(new PacketUpdatePressureBlock((TileEntityPneumaticBase) getTube()), getTube().world());
@@ -42,11 +42,6 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     @Override
     protected double getHeight() {
         return 0.25;
-    }
-
-    @Override
-    public boolean onActivated(EntityPlayer player) {
-        return super.onActivated(player);
     }
 
     @Override

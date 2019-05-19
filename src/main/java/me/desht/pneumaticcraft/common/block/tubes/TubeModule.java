@@ -6,11 +6,14 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextFormatting;
@@ -158,6 +161,12 @@ public abstract class TubeModule implements ISidedPart {
             ItemStack stack = new ItemStack(Itemss.ADVANCED_PCB);
             curInfo.add(TextFormatting.GREEN + stack.getDisplayName() + " installed");
         }
+        if (this instanceof INetworkedModule) {
+            int colorChannel = ((INetworkedModule) this).getColorChannel();
+            curInfo.add(PneumaticCraftUtils.xlate("waila.logisticsModule.channel") + " "
+                    + TextFormatting.YELLOW
+                    + PneumaticCraftUtils.xlate("item.fireworksCharge." + EnumDyeColor.byDyeDamage(colorChannel).getTranslationKey()));
+        }
     }
 
     public boolean canUpgrade() {
@@ -172,7 +181,7 @@ public abstract class TubeModule implements ISidedPart {
         return upgraded;
     }
 
-    public boolean onActivated(EntityPlayer player) {
+    public boolean onActivated(EntityPlayer player, EnumHand hand) {
         if (!player.world.isRemote && upgraded && getGuiId() != null) {
             NetworkHandler.sendTo(new PacketOpenTubeModuleGui(getGuiId().ordinal(), pressureTube.pos()), (EntityPlayerMP) player);
             return true;

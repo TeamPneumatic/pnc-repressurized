@@ -9,8 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEntityPressureTube> {
 
@@ -20,17 +20,23 @@ public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEnti
             return;
         }
 
-        boolean holdingModule = Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() instanceof ItemTubeModule;
+        Minecraft mc = Minecraft.getMinecraft();
+        EnumHand holdingModule = null;
+        if (mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemTubeModule) {
+            holdingModule = EnumHand.MAIN_HAND;
+        } else if (mc.player.getHeldItem(EnumHand.OFF_HAND).getItem() instanceof ItemTubeModule) {
+            holdingModule = EnumHand.OFF_HAND;
+        }
         boolean render = false;
         for (int i = 0; i < tile.modules.length; i++) {
             if (tile.modules[i] != null) render = true;
         }
-        if (!render && !holdingModule)
+        if (!render && holdingModule == null)
             return;
 
         GlStateManager.pushMatrix();
 
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         GlStateManager.enableTexture2D();
         GlStateManager.disableAlpha();
         GlStateManager.color(1, 1, 1);
@@ -39,7 +45,7 @@ public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEnti
         GlStateManager.scale(1.0F, -1F, -1F);
 
         // "fake" module is for showing a preview of where the module would be placed
-        if (holdingModule) attachFakeModule(tile);
+        if (holdingModule != null) attachFakeModule(mc, tile, holdingModule);
 
         for (int i = 0; i < tile.modules.length; i++) {
             TubeModule module = tile.modules[i];
@@ -48,35 +54,31 @@ public class RenderPressureTubeModule extends TileEntitySpecialRenderer<TileEnti
                     GlStateManager.enableBlend();
                     GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
                     GlStateManager.color(1, 1, 1, 0.5f);
-                } else if (module.isUpgraded()) {
-                    GlStateManager.color(0.95f, 1, 0.75f, 1);
                 }
 
-                module.getModel().renderModel(0.0625f, module.getDirection(), partialTicks);
+                module.getModel().renderModel(0.0625f, module, partialTicks);
                 module.doExtraRendering();
 
                 if (module.isFake()) {
                     tile.modules[i] = null;
                     GlStateManager.disableBlend();
-                    GlStateManager.disableBlend();
                 }
-                if (module.isFake() || module.isUpgraded()) {
-                    GlStateManager.color(1, 1, 1, 1);
-                }
+                GlStateManager.color(1, 1, 1, 1);
             }
         }
-        GlStateManager.color(1, 1, 1, 1);
 
         GlStateManager.enableAlpha();
 
         GlStateManager.popMatrix();
     }
 
-    private void attachFakeModule(TileEntityPressureTube tile) {
-        Minecraft mc = Minecraft.getMinecraft();
-        RayTraceResult pos = mc.objectMouseOver;
-        if (pos != null && pos.typeOfHit == RayTraceResult.Type.BLOCK && pos.getBlockPos().equals(tile.getPos()) && mc.world.getTileEntity(pos.getBlockPos()) == tile) {
-            ((BlockPressureTube) Blockss.PRESSURE_TUBE).tryPlaceModule(mc.player, mc.world, tile.getPos(), pos.sideHit, true);
+    private void attachFakeModule(Minecraft mc, TileEntityPressureTube tile, EnumHand hand) {
+        RayTraceResult rtr = mc.objectMouseOver;
+        if (rtr != null
+                && rtr.typeOfHit == RayTraceResult.Type.BLOCK
+                && rtr.getBlockPos().equals(tile.getPos())
+                && mc.world.getTileEntity(rtr.getBlockPos()) == tile) {
+            ((BlockPressureTube) Blockss.PRESSURE_TUBE).tryPlaceModule(mc.player, mc.world, tile.getPos(), rtr.sideHit, hand , true);
         }
     }
 }

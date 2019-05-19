@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.client.model.module;
 
+import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -16,11 +16,11 @@ public abstract class ModelModuleBase extends ModelBase {
         model.rotateAngleZ = z;
     }
 
-    public final void renderModel(float scale, EnumFacing dir, float partialTicks) {
+    public final void renderModel(float scale, TubeModule module, float partialTicks) {
         GlStateManager.pushMatrix();
 
         FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture());
-        PneumaticCraftUtils.rotateMatrixByMetadata(dir.ordinal());
+        PneumaticCraftUtils.rotateMatrixByMetadata(module.getDirection().ordinal());
         renderDynamic(scale, partialTicks);
 
         GlStateManager.popMatrix();

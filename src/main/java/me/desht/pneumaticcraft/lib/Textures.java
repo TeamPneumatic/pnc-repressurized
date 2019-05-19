@@ -73,6 +73,7 @@ public class Textures {
     public static final ResourceLocation MODEL_LOGISTICS_MODULE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "logistics_module.png");
     public static final ResourceLocation MODEL_SAFETY_VALVE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "safety_valve.png");
     public static final ResourceLocation MODEL_REGULATOR_MODULE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "regulator.png");
+    public static final ResourceLocation MODEL_REDSTONE_MODULE = new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + "redstone.png");
 
     public static final ResourceLocation MODEL_DRONE = new ResourceLocation(ENTITY_LOCATION + "drone.png");
 
@@ -285,6 +286,7 @@ public class Textures {
     public static final ResourceLocation GUI_PASTEBIN = new ResourceLocation(GUI_LOCATION + "gui_pastebin.png");
     public static final ResourceLocation GUI_INVENTORY_SEARCHER = new ResourceLocation(GUI_LOCATION + "gui_inventory_searcher.png");
     public static final ResourceLocation GUI_TUBE_MODULE = new ResourceLocation(GUI_LOCATION + "gui_tube_module.png");
+    public static final ResourceLocation GUI_REDSTONE_MODULE = new ResourceLocation(GUI_LOCATION + "gui_redstone_module.png");
     public static final ResourceLocation GUI_TEXT_WIDGET = new ResourceLocation(GUI_LOCATION + "gui_text_widget.png");
     public static final ResourceLocation GUI_MODULE_SIMPLE = new ResourceLocation(GUI_LOCATION + "gui_tube_module_simple.png");
     public static final ResourceLocation WIDGET_TEMPERATURE = new ResourceLocation(WIDGET_LOCATION + "widget_temperature.png");

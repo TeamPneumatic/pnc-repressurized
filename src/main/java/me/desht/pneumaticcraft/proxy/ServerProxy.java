@@ -66,6 +66,10 @@ public class ServerProxy implements IProxy {
 
     @Override
     public void suppressItemEquipAnimation() {
+    }
 
+    @Override
+    public int particleLevel() {
+        return 0;
     }
 }

@@ -8,6 +8,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### 0.11.0-??? (unreleased)
 #### New
+* Added the Redstone Module, a tube module that allows redstone signals to be transmitted along pressure tubes.
+  * Toggle a module between input and output by right-clicking with a wrench.
+  * 16 independent channels are available; right-click with a dye to set a module's channel (the dye will not be used up).
+  * Add an Advanced PCB to the module to gain some extra signal processing, e.g. integrated logic gates, timers, toggle latches, comparators...
 * Tough As Nails support:
   * PneumaticCraft heat (and cold!) sources will have an effect on your body temperature. Take care!
   * Added the Air Conditioning Upgrade for the Pneumatic Chestplate.  This will use pressure to try and regulate your body temperature, protecting from Tough As Nails temperature extremes.  Up to 4 upgrades can be added (although the max of 4 would only be needed for the most extreme conditions).

@@ -4,21 +4,20 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.IWidgetListener;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidgetListener {
@@ -34,12 +33,6 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
         guiTop = height / 2 - ySize / 2;
     }
 
-    public void addWidgets(Iterable<IGuiWidget> widgets) {
-        for (IGuiWidget widget : widgets) {
-            addWidget(widget);
-        }
-    }
-
     public void addWidget(IGuiWidget widget) {
         widgets.add(widget);
         widget.setListener(this);
@@ -49,7 +42,7 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
         addWidget(new WidgetLabel(x, y, text));
     }
 
-    public void removeWidget(IGuiWidget widget) {
+    protected void removeWidget(IGuiWidget widget) {
         widgets.remove(widget);
     }
 
@@ -103,14 +96,25 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        // new arraylist creation necessary to avoid a comod exception
-        for (IGuiWidget widget : new ArrayList<>(widgets)) {
+
+        // new list creation necessary to avoid a comod exception
+        LinkedList<IGuiWidget> l = new LinkedList<>();
+        widgets.forEach(w -> {
+            if (!(w instanceof WidgetComboBox && ((WidgetComboBox) w).isFocused())) {
+                // ensure any focused combobox is added last
+                l.addFirst(w);
+            } else {
+                l.add(w);
+            }
+        });
+
+        l.forEach(widget -> {
             if (widget.getBounds().contains(mouseX, mouseY)) {
                 widget.onMouseClicked(mouseX, mouseY, mouseButton);
             } else {
                 widget.onMouseClickedOutsideBounds(mouseX, mouseY, mouseButton);
             }
-        }
+        });
     }
 
     @Override
@@ -164,17 +168,4 @@ public abstract class GuiPneumaticScreenBase extends GuiScreen implements IWidge
         widgets.clear();
         super.setWorldAndResolution(par1Minecraft, par2, par3);
     }
-
-    public GuiButton getButtonFromRectangle(int buttonID, Rectangle buttonSize, String buttonText) {
-        return new GuiButton(buttonID, buttonSize.x, buttonSize.y, buttonSize.width, buttonSize.height, buttonText);
-    }
-
-    public GuiButtonSpecial getInvisibleButtonFromRectangle(int buttonID, Rectangle buttonSize) {
-        return new GuiButtonSpecial(buttonID, buttonSize.x, buttonSize.y, buttonSize.width, buttonSize.height, "");
-    }
-
-    public GuiTextField getTextFieldFromRectangle(Rectangle textFieldSize) {
-        return new GuiTextField(-1, fontRenderer, textFieldSize.x, textFieldSize.y, textFieldSize.width, textFieldSize.height);
-    }
-
 }

@@ -253,6 +253,8 @@ public class ConfigHandler {
         public boolean guiRemoteGridSnap;
         @Config.Comment("Always show the pressure durability bar for pressurizable items, even when full?")
         public boolean alwaysShowPressureDurabilityBar = true;
+        @Config.Comment("Should tube modules emit redstone play redstone particle effects when active?")
+        public boolean tubeModuleRedstoneParticles = true;
     }
 
     public static class HelmetOptions {

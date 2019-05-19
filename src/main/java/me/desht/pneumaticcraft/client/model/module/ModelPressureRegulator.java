@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.model.module;
 
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.ModelRenderer;
@@ -8,8 +9,10 @@ import net.minecraft.util.ResourceLocation;
 public class ModelPressureRegulator extends ModelModuleBase {
     private final ModelRenderer shape1;
     private final ModelRenderer valve;
+    private final ModuleRegulatorTube module;
 
     public ModelPressureRegulator(ModuleRegulatorTube module) {
+        this.module = module;
         textureWidth = 64;
         textureHeight = 32;
 
@@ -29,6 +32,7 @@ public class ModelPressureRegulator extends ModelModuleBase {
 
     @Override
     protected void renderDynamic(float scale, float partialTicks) {
+        if (module.isUpgraded()) RenderUtils.glColorHex(0xFFC0FF70);
         shape1.render(scale);
         valve.render(scale);
     }

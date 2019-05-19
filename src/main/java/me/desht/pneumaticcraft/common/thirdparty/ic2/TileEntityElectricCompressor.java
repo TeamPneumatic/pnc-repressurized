@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -203,7 +204,7 @@ public class TileEntityElectricCompressor extends TileEntityPneumaticBase implem
     public boolean setFacing(World world, BlockPos blockPos, EnumFacing enumFacing, EntityPlayer entityPlayer) {
         Block b = getBlockType();
         if (b instanceof BlockElectricCompressor) {
-            ((BlockElectricCompressor) b).rotateBlock(world, entityPlayer, blockPos, enumFacing);
+            ((BlockElectricCompressor) b).rotateBlock(world, entityPlayer, blockPos, enumFacing, EnumHand.MAIN_HAND);
             return true;
         }
         return false;

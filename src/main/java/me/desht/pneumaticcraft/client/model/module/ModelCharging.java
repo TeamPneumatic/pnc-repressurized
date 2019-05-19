@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.model.module;
 
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleCharging;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.ModelRenderer;
@@ -9,8 +10,10 @@ public class ModelCharging extends ModelModuleBase {
     private final ModelRenderer shape1;
     private final ModelRenderer shape2;
     private final ModelRenderer shape3;
+    private final ModuleCharging chargingModule;
 
     public ModelCharging(ModuleCharging charging) {
+        this.chargingModule = charging;
         textureWidth = 64;
         textureHeight = 32;
 
@@ -36,6 +39,7 @@ public class ModelCharging extends ModelModuleBase {
 
     @Override
     protected void renderDynamic(float scale, float partialTicks) {
+        if (chargingModule.isUpgraded()) RenderUtils.glColorHex(0xFFC0FF70);
         shape1.render(scale);
         shape2.render(scale);
         shape3.render(scale);

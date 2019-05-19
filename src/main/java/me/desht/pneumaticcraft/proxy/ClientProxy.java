@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.proxy;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.client.*;
+import me.desht.pneumaticcraft.client.AreaShowManager;
+import me.desht.pneumaticcraft.client.ClientEventHandler;
+import me.desht.pneumaticcraft.client.ClientTickHandler;
+import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.model.TintedOBJLoader;
 import me.desht.pneumaticcraft.client.model.item.ModelProgrammingPuzzle.LoaderProgrammingPuzzle;
@@ -223,4 +226,8 @@ public class ClientProxy implements IProxy {
         }
     }
 
+    @Override
+    public int particleLevel() {
+        return Minecraft.getMinecraft().gameSettings.particleSetting;
+    }
 }

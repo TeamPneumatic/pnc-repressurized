@@ -15,6 +15,7 @@ public class Names {
     public static final String MODULE_AIR_GRATE = "air_grate_module";
     public static final String MODULE_CHARGING = "charging_module";
     public static final String MODULE_LOGISTICS = "logistics_module";
+    public static final String MODULE_REDSTONE = "redstone_module";
 
     public static final String PNEUMATIC_KEYBINDING_CATEGORY = "key.pneumaticcraft.category";
 

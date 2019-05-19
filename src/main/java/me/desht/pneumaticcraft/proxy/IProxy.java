@@ -31,4 +31,6 @@ public interface IProxy {
     String xlate(String key);
 
     void suppressItemEquipAnimation();
+
+    int particleLevel();
 }

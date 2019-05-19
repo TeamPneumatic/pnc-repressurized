@@ -89,6 +89,8 @@ public class NetworkHandler {
         INSTANCE.registerMessage(PacketAmadronTradeNotifyDeal.class, PacketAmadronTradeNotifyDeal.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketAmadronTradeRemoved.class, PacketAmadronTradeRemoved.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketUpdateLogisticModule.class, PacketUpdateLogisticModule.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketSyncRedstoneModuleToClient.class, PacketSyncRedstoneModuleToClient.class, discriminant++, Side.CLIENT);
+        INSTANCE.registerMessage(PacketSyncRedstoneModuleToServer.class, PacketSyncRedstoneModuleToServer.class, discriminant++, Side.SERVER);
         INSTANCE.registerMessage(PacketCommandGetGlobalVariableOutput.class, PacketCommandGetGlobalVariableOutput.class, discriminant++, Side.CLIENT);
         INSTANCE.registerMessage(PacketNotifyVariablesRemote.class, PacketNotifyVariablesRemote.class, discriminant++, Side.CLIENT);
 

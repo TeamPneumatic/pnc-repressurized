@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -31,9 +32,9 @@ public class BlockAssemblyIOUnit extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side) {
+    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side, EnumHand hand) {
         if (player != null && player.isSneaking()) {
-            return super.rotateBlock(world, player, pos, side);
+            return super.rotateBlock(world, player, pos, side, hand);
         } else {
             return ((TileEntityAssemblyIOUnit) world.getTileEntity(pos)).switchMode();
         }

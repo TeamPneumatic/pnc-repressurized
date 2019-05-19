@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsRequester;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsStorage;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiAirGrateModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiPressureModule;
+import me.desht.pneumaticcraft.client.gui.tubemodule.GuiRedstoneModule;
 import me.desht.pneumaticcraft.common.inventory.*;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer.TradeType;
 import me.desht.pneumaticcraft.common.semiblock.*;
@@ -32,7 +33,7 @@ public class GuiHandler implements IGuiHandler {
         THERMOPNEUMATIC_PROCESSING_PLANT, LOGISTICS_REQUESTER, LOGISTICS_STORAGE, LOGISTICS_PASSIVE_PROVIDER,
         AMADRON, AMADRON_ADD_PLAYER_TRADE, AMADRON_ADD_PERIODIC_TRADE, AMADRON_ADD_STATIC_TRADE,
         CREATIVE_COMPRESSOR, KEROSENE_LAMP, SENTRY_TURRET, MINIGUN_MAGAZINE, MINIGUN_UPGRADES,
-        MICROMISSILE, THERMAL_COMPRESSOR
+        MICROMISSILE, THERMAL_COMPRESSOR, REDSTONE_MODULE
     }
 
     @Nullable
@@ -181,6 +182,8 @@ public class GuiHandler implements IGuiHandler {
                 return new GuiPressureModule(player, x, y, z);
             case AIR_GRATE_MODULE:
                 return new GuiAirGrateModule(player, x, y, z);
+            case REDSTONE_MODULE:
+                return new GuiRedstoneModule(player, x, y, z);
             case PLASTIC_MIXER:
                 return new GuiPlasticMixer(player.inventory, (TileEntityPlasticMixer) te);
             case LIQUID_COMPRESSOR:

@@ -7,18 +7,19 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.api.drone.AmadronRetrievalEvent;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
-import me.desht.pneumaticcraft.common.hacking.entity.HackableEnderman;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.capabilities.hacking.CapabilityHackingProvider;
 import me.desht.pneumaticcraft.common.config.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.hacking.entity.HackableEnderman;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
@@ -218,7 +219,7 @@ public class EventHandlerPneumaticCraft {
                 // send our custom PacketRotateBlock, which ensures our rotateBlock() gets called & includes the
                 // player information, which is needed in several places
                 if (event.getWorld().isRemote) {
-                    NetworkHandler.sendToServer(new PacketRotateBlock(event.getPos(), event.getFace()));
+                    NetworkHandler.sendToServer(new PacketRotateBlock(event.getPos(), event.getFace(), event.getHand()));
                 }
                 event.setCanceled(true);
             }
@@ -244,6 +245,7 @@ public class EventHandlerPneumaticCraft {
                 GlobalVariableManager.overworld = event.getWorld();
                 event.getWorld().loadData(GlobalVariableManager.class, GlobalVariableManager.DATA_KEY);
             }
+            ModuleNetworkManager.getInstance(event.getWorld()).invalidateCache();
         }
     }
 

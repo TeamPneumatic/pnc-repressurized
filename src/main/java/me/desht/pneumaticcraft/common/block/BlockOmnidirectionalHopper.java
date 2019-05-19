@@ -106,7 +106,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing face) {
+    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing face, EnumHand hand) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityOmnidirectionalHopper) {
             TileEntityOmnidirectionalHopper teOh = (TileEntityOmnidirectionalHopper) te;

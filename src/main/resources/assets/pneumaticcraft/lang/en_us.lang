@@ -212,6 +212,7 @@ item.air_grate_module.name=Air Grate Tube Module
 item.regulator_tube_module.name=Regulator Tube Module
 item.charging_module.name=Charging Module
 item.logistics_module.name=Logistics Module
+item.redstone_module.name=Redstone Module
 
 # Programming Puzzles
 programmingPuzzle.comment.name=Comment
@@ -667,6 +668,25 @@ gui.tubeModule.simpleConfig.threshold=Threshold:
 gui.tubeModule.simpleConfig.turn=Emit when
 gui.tubeModule.simpleConfig.higherThan=Higher than
 gui.tubeModule.simpleConfig.lowerThan=Lower than
+gui.redstoneModule.operation_passthrough=Passthrough
+gui.redstoneModule.operation_and=And
+gui.redstoneModule.operation_or=Or
+gui.redstoneModule.operation_xor=Xor
+gui.redstoneModule.operation_clock=Clock
+gui.redstoneModule.operation_comparator=Comparator
+gui.redstoneModule.operation_subtract=Subtract
+gui.redstoneModule.operation_compare=Compare
+gui.redstoneModule.operation_toggle=Toggle
+gui.redstoneModule.operation_passthrough.tooltip=The output signal is simply the highest of any input signals from the %s channel.
+gui.redstoneModule.operation_and.tooltip=The output signal is 15 if the highest input signal from both the %s AND %s channels is non-zero. Otherwise the output signal is 0.
+gui.redstoneModule.operation_or.tooltip=The output signal is 15 if the highest input signal from either the %s OR %s channels is non-zero. Otherwise the output signal is 0.
+gui.redstoneModule.operation_xor.tooltip=The output signal is 15 if the highest input signals from the %s AND %s channels are both zero, or both non-zero.  Otherwise the output signal is 0.
+gui.redstoneModule.operation_clock.tooltip=When there is no input signal on the %s channel, the output signal is 15 for 2 ticks out of every %d ticks. Otherwise the output signal is 0.
+gui.redstoneModule.operation_compare.tooltip=The output signal is 15 if the highest input signal from the %s channel is greater than the constant value %d.  Otherwise the output signal is 0.
+gui.redstoneModule.operation_comparator.tooltip=The output signal is 15 if the highest input signal from the %s channel is greater than the highest input signal from the %s channel.  Otherwise the output signal is 0.
+gui.redstoneModule.operation_toggle.tooltip=The output signal is toggled between 0 and 15 on a rising signal edge from the %s channel.
+gui.redstoneModule.operation_subtract.tooltip=The output signal is the highest input signal from the %s channel minus the highest input signal from the %s channel, clamped to 0 .. 15.
+gui.redstoneModule.invert.tooltip=If checked, the output signal will become 0 if it was > 0, and 15 if it was 0.
 gui.general.bar=Bar
 gui.keybindBoundKey=Bound to: §a%s
 gui.keybindRightClickToSet=§7Right click to bind key
@@ -1034,13 +1054,14 @@ gui.tooltip.item.network_component4=Required component in a Security Station. \n
 gui.tooltip.item.network_component5=This is a generic Security Station component which allows a path to be created between the required Security Station components.
 gui.tooltip.item.micromissile=Micromissiles are small, hand-launched projectiles with smart guidance systems and an explosive payload. \nSneak + Right-click to open the setup GUI.
 
-gui.tooltip.item.safety_tube_module=§9Formula: Threshold(bar) = 7.5 - Redstone x 0.5 \n \n§bThis module will release high pressure gases when a certain threshold's reached. Though it prevents overpressure it can be counted as energy loss.
-gui.tooltip.item.pressure_gauge_module=§9Formula: Redstone = 2.0 x pressure(bar) \n \n§bThis module emits a redstone signal, the strength of which depends on the tube's pressure.
-gui.tooltip.item.flow_detector_module=§9Formula: Redstone = 0.2 x flow(mL/tick) \n \n§bThis module emits a redstone signal, the strength of which is dependent on how much air is travelling through the tube.
-gui.tooltip.item.air_grate_module=§9Formula: Range(blocks) = 4.0 x pressure(bar), or -16 x pressure(bar) if vacuum \n \n§bThis module will repel or attract any entity within range dependent on whether pressure is positive or negative, respectively, and will attempt to insert items into any adjacent inventory.  Can also be used to cool Heat Sinks.
-gui.tooltip.item.regulator_tube_module=§9Formula: Threshold(bar) = 7.5 - Redstone x 0.5 \n \n§bThis module will stop pressurized air from travelling through this tube when a certain pressure threshold is reached.
-gui.tooltip.item.charging_module=§bThis module will (de)pressurize any pressurizable items in the inventory it points at. Note: air can flow both to and from items in the inventory, depending on their pressure and pressure in the tube!
-gui.tooltip.item.logistics_module=§bThis module will communicate with other Logistics Modules on connected tubes to perform logistics tasks on any inventories/tanks it is pointing at which are fitted with a Logistic Frame. It uses pressure from the tube to do so.
+gui.tooltip.item.safety_tube_module=§9Formula: Threshold(bar) = 7.5 - Redstone x 0.5 \n \n§bThis module will release high pressure air when the given threshold is reached. Although it prevents explosions, released air counts as energy loss. \n \nWhen upgraded with an Advanced PCB, the threshold can be configured precisely via GUI.
+gui.tooltip.item.pressure_gauge_module=§9Formula: Redstone = 2.0 x pressure(bar) \n \n§bThis module emits a redstone signal, the strength of which depends on the tube's pressure. \n \nWhen upgraded with an Advanced PCB, the threshold can be configured precisely via GUI.
+gui.tooltip.item.flow_detector_module=§9Formula: Redstone = 0.2 x flow(mL/tick) \n \n§bThis module emits a redstone signal, the strength of which depends on how much air is travelling through the tube.
+gui.tooltip.item.air_grate_module=§9Formula: Range(blocks) = 4.0 x pressure(bar), or -16 x pressure(bar) if vacuum \n \n§bThis module will repel or attract any entity within range dependent on whether pressure is positive or negative, respectively, and will attempt to insert items into any adjacent inventory.  Can also be used to cool Heat Sinks. \n \nWhen upgraded with an Advanced PCB, the entities affected can be configured via GUI.
+gui.tooltip.item.regulator_tube_module=§9Formula: Threshold(bar) = 7.5 - Redstone x 0.5 \n \n§bThis module will stop pressurized air from travelling through this tube when a given pressure threshold is reached. \n \nWhen upgraded with an Advanced PCB, the threshold can be configured precisely via GUI.
+gui.tooltip.item.charging_module=§bThis module (de)pressurizes any pressurizable items in the inventory it points at. Note: air can flow both to and from items in the inventory, depending on their pressure and pressure in the tube! \n \nWhen upgraded with an Advanced PCB, air flows much more quickly.
+gui.tooltip.item.logistics_module=§bThis module communicates with other Logistics Modules on connected tubes to perform logistics tasks on any inventories/tanks it is pointing at which are fitted with a Logistic Frame. It uses pressure from the tube to do so.
+gui.tooltip.item.redstone_module=§bThis module transmits redstone signals to other Redstone Modules on connected tubes. Right-click with any dye to set the channel; right-click with a wrench to toggle between input and output. \n \nWhen upgraded with an Advanced PCB, some extra signal processing becomes available.
 
 gui.tooltip.terrainWarning=§6WARNING: terrain damage enabled.
 gui.tooltip.terrainSafe=§eTerrain damage disabled.

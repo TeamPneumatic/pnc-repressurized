@@ -1,8 +1,10 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -49,13 +51,13 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
             BBConstants.PRESSURE_PIPE_MAX_POS, BBConstants.PRESSURE_PIPE_MAX_POS, BBConstants.PRESSURE_PIPE_MAX_POS
     );
 
-    public static final PropertyEnum<ConnectionType> UP = PropertyEnum.create("up", ConnectionType.class);
-    public static final PropertyEnum<ConnectionType> DOWN = PropertyEnum.create("down", ConnectionType.class);
-    public static final PropertyEnum<ConnectionType> NORTH = PropertyEnum.create("north", ConnectionType.class);
-    public static final PropertyEnum<ConnectionType> EAST = PropertyEnum.create("east", ConnectionType.class);
-    public static final PropertyEnum<ConnectionType> SOUTH = PropertyEnum.create("south", ConnectionType.class);
-    public static final PropertyEnum<ConnectionType> WEST = PropertyEnum.create("west", ConnectionType.class);
-    public static final PropertyEnum<ConnectionType>[] CONNECTION_PROPERTIES_3 = new PropertyEnum[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
+    private static final PropertyEnum<ConnectionType> UP = PropertyEnum.create("up", ConnectionType.class);
+    private static final PropertyEnum<ConnectionType> DOWN = PropertyEnum.create("down", ConnectionType.class);
+    private static final PropertyEnum<ConnectionType> NORTH = PropertyEnum.create("north", ConnectionType.class);
+    private static final PropertyEnum<ConnectionType> EAST = PropertyEnum.create("east", ConnectionType.class);
+    private static final PropertyEnum<ConnectionType> SOUTH = PropertyEnum.create("south", ConnectionType.class);
+    private static final PropertyEnum<ConnectionType> WEST = PropertyEnum.create("west", ConnectionType.class);
+    private static final PropertyEnum<ConnectionType>[] CONNECTION_PROPERTIES_3 = new PropertyEnum[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
 
     private final AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
     private final AxisAlignedBB[] closedBoundingBoxes = new AxisAlignedBB[6];
@@ -134,7 +136,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                 state = state.withProperty(CONNECTION_PROPERTIES_3[i], conn);
             }
             // bit of a hack, but pressure tube should appear to connect to underside of gas lift
-            if (worldIn.getBlockState(pos.up()).getBlock() == Blockss.GAS_LIFT) {
+            if (worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGasLift) {
                 state = state.withProperty(CONNECTION_PROPERTIES_3[EnumFacing.UP.getIndex()], ConnectionType.CONNECTED);
             }
         }
@@ -153,15 +155,13 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
-        if (hand == EnumHand.MAIN_HAND) {
-            if (!world.isRemote) {
-                if (tryPlaceModule(player, world, pos, side, false)) return true;
-            }
-            if (!player.isSneaking()) {
-                TubeModule module = getLookedModule(world, pos, player);
-                if (module != null) {
-                    return module.onActivated(player);
-                }
+        if (tryPlaceModule(player, world, pos, side, hand, false)) {
+            return true;
+        }
+        if (!player.isSneaking()) {
+            TubeModule module = getLookedModule(world, pos, player);
+            if (module != null) {
+                return module.onActivated(player, hand);
             }
         }
         return false;
@@ -184,19 +184,22 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         ModuleNetworkManager.getInstance(world).invalidateCache();
     }
 
-    public boolean tryPlaceModule(EntityPlayer player, World world, BlockPos pos, EnumFacing side, boolean simulate) {
-        if (player.getHeldItemMainhand().getItem() instanceof ItemTubeModule) {
-            TileEntity te = getTE(world, pos);
-            TileEntityPressureTube pressureTube = ModInteractionUtils.getInstance().getTube(te);
-            if (pressureTube.modules[side.ordinal()] == null && !pressureTube.sidesClosed[side.ordinal()] && ModInteractionUtils.getInstance().occlusionTest(boundingBoxes[side.ordinal()], te)) {
-                TubeModule module = ModuleRegistrator.getModule(((ItemTubeModule) player.getHeldItemMainhand().getItem()).moduleName);
+    public boolean tryPlaceModule(EntityPlayer player, World world, BlockPos pos, EnumFacing side, EnumHand hand, boolean simulate) {
+        TileEntity te = getTE(world, pos);
+        if (!(te instanceof TileEntityPressureTube)) return false;
+
+        TileEntityPressureTube tePT = ModInteractionUtils.getInstance().getTube(te);
+        ItemStack heldStack = player.getHeldItem(hand);
+        if (heldStack.getItem() instanceof ItemTubeModule) {
+            if (tePT.modules[side.ordinal()] == null && !tePT.sidesClosed[side.ordinal()]) {
+                TubeModule module = ModuleRegistrator.getModule(((ItemTubeModule) heldStack.getItem()).moduleName);
                 if (module == null) return false;
                 if (simulate) module.markFake();
-                pressureTube.setModule(module, side);
+                tePT.setModule(module, side);
                 if (!simulate) {
                     neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side));
                     world.notifyNeighborsOfStateChange(pos, this, true);
-                    if (!player.capabilities.isCreativeMode) player.getHeldItemMainhand().shrink(1);
+                    if (!player.capabilities.isCreativeMode) heldStack.shrink(1);
                     NetworkHandler.sendToAllAround(
                             new PacketPlaySound(SoundType.GLASS.getStepSound(), SoundCategory.BLOCKS, pos.getX(), pos.getY(), pos.getZ(),
                                     SoundType.GLASS.getVolume() * 5.0f, SoundType.GLASS.getPitch() * 0.9f, false),
@@ -205,12 +208,13 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                 }
                 return true;
             }
-        } else if (player.getHeldItemMainhand().getItem() == Itemss.ADVANCED_PCB && !simulate) {
+        } else if (heldStack.getItem() == Itemss.ADVANCED_PCB && !simulate) {
             TubeModule module = BlockPressureTube.getLookedModule(world, pos, player);
             if (module != null && !module.isUpgraded() && module.canUpgrade()) {
                 if (!world.isRemote) {
                     module.upgrade();
-                    if (!player.capabilities.isCreativeMode) player.getHeldItemMainhand().shrink(1);
+                    tePT.sendDescriptionPacket();
+                    if (!player.capabilities.isCreativeMode) heldStack.shrink(1);
                 }
                 return true;
             }
@@ -315,11 +319,11 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side) {
+    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side, EnumHand hand) {
         if (player == null) return false;
         TileEntityPressureTube tube = ModInteractionUtils.getInstance().getTube(getTE(world, pos));
+        TubeModule module = getLookedModule(world, pos, player);
         if (player.isSneaking()) {
-            TubeModule module = getLookedModule(world, pos, player);
             if (module != null) {
                 // detach and drop the module as an item
                 if (!player.capabilities.isCreativeMode) {
@@ -339,14 +343,17 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                 world.setBlockToAir(pos);
             }
         } else {
-            // close (or reopen) this side of the pipe
-            Pair<Boolean, EnumFacing> lookData = getLookedTube(world, pos, player);
-            if (lookData != null) {
-                boolean isCore = lookData.getLeft();
-                EnumFacing sideHit = lookData.getRight();
-                tube.sidesClosed[sideHit.ordinal()] = !tube.sidesClosed[sideHit.ordinal()];
-                neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side));
-                world.notifyNeighborsOfStateChange(pos, this, true);
+            if (module != null) {
+                module.onActivated(player, hand);
+            } else {
+                // close (or reopen) this side of the pipe
+                Pair<Boolean, EnumFacing> lookData = getLookedTube(world, pos, player);
+                if (lookData != null) {
+                    EnumFacing sideHit = lookData.getRight();
+                    tube.sidesClosed[sideHit.ordinal()] = !tube.sidesClosed[sideHit.ordinal()];
+                    neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side));
+                    world.notifyNeighborsOfStateChange(pos, this, true);
+                }
             }
         }
         ModuleNetworkManager.getInstance(world).invalidateCache();
@@ -400,28 +407,27 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     @Override
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(IBlockState state, World par1World, BlockPos pos, Random par5Random) {
+        if (!ConfigHandler.client.tubeModuleRedstoneParticles || PneumaticCraftRepressurized.proxy.particleLevel() == 2) return;
+
         TileEntity te = getTE(par1World, pos);
         if (te instanceof TileEntityPressureTube) {
             TileEntityPressureTube tePt = (TileEntityPressureTube) te;
             int l = 0;
+            EnumFacing side = null;
             for (TubeModule module : tePt.modules) {
-                if (module != null) l = Math.max(l, module.getRedstoneLevel());
+                if (module != null && module.getRedstoneLevel() > l) {
+                    l = module.getRedstoneLevel();
+                    side = module.getDirection();
+                }
             }
             if (l > 0) {
-                double d0 = pos.getX() + 0.5D + (par5Random.nextFloat() - 0.5D) * 0.5D;
-                double d1 = pos.getY() + 0.5D + (par5Random.nextFloat() - 0.5D) * 0.5D;
-                double d2 = pos.getZ() + 0.5D + (par5Random.nextFloat() - 0.5D) * 0.5D;
+                double d0 = pos.getX() + 0.5D + side.getXOffset() * 0.5D + (par5Random.nextFloat() - 0.5D) * 0.5D;
+                double d1 = pos.getY() + 0.5D + side.getYOffset() * 0.5D + (par5Random.nextFloat() - 0.5D) * 0.5D;
+                double d2 = pos.getZ() + 0.5D + side.getZOffset() * 0.5D + (par5Random.nextFloat() - 0.5D) * 0.5D;
                 float f = l / 15.0F;
                 float f1 = f * 0.6F + 0.4F;
-                float f2 = f * f * 0.7F - 0.5F;
-                float f3 = f * f * 0.6F - 0.7F;
-                if (f2 < 0.0F) {
-                    f2 = 0.0F;
-                }
-
-                if (f3 < 0.0F) {
-                    f3 = 0.0F;
-                }
+                float f2 = Math.max(0f, f * f * 0.7F - 0.5F);
+                float f3 = Math.max(0f, f * f * 0.6F - 0.7F);
                 par1World.spawnParticle(EnumParticleTypes.REDSTONE, d0, d1, d2, f1, f2, f3);
             }
         }

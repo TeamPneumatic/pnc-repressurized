@@ -197,7 +197,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     }
 
     @Override
-    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing face) {
+    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing face, EnumHand hand) {
         if (player != null && player.isSneaking()) {
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileEntityAphorismTile) {
@@ -209,7 +209,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
                 return false;
             }
         } else {
-            return super.rotateBlock(world, player, pos, face);
+            return super.rotateBlock(world, player, pos, face, hand);
         }
     }
 

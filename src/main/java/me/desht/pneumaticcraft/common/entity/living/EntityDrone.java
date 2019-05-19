@@ -695,7 +695,7 @@ public class EntityDrone extends EntityDroneBase implements
      * Called when a drone is hit by a Pneumatic Wrench.
      */
     @Override
-    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side) {
+    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side, EnumHand hand) {
         if (!naturallySpawned) {
             if (player.capabilities.isCreativeMode) naturallySpawned = true;//don't drop the drone in creative.
             attackEntityFrom(new DamageSourceDroneOverload("wrenched"), 2000.0F);

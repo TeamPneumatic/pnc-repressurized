@@ -9,11 +9,11 @@ import net.minecraft.util.math.BlockPos;
 public abstract class GuiTubeModule extends GuiPneumaticScreenBase {
     protected final TubeModule module;
 
-    public GuiTubeModule(EntityPlayer player, int x, int y, int z) {
+    GuiTubeModule(EntityPlayer player, int x, int y, int z) {
         this(BlockPressureTube.getLookedModule(player.world, new BlockPos(x, y, z), player));
     }
 
-    public GuiTubeModule(TubeModule module) {
+    GuiTubeModule(TubeModule module) {
         this.module = module;
         xSize = 183;
     }
