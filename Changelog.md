@@ -42,6 +42,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Dyed Aphorism Tiles now keep their colours when the block is broken.
   * Added a self-craft recipe which resets the colour of a dyed Aphorism Tile item.
 * Made drone area sorting more deterministic (see https://github.com/TeamPneumatic/pnc-repressurized/issues/342).
+* JEI now shows an info tab for all items & blocks which have tooltip information (same info as the item tooltip is shown here - just another way to view it)
 #### Fixes
 * Restored the Thermopneumatic Processing Plant "Dump Input Tank" button. Was a mistake to remove that.
 * Added missing Patchouli docs page for the "Pick Up Item" programming widget.

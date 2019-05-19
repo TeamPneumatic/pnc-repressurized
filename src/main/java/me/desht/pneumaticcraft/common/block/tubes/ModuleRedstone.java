@@ -131,6 +131,15 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
                 } else {
                     return lastOutput;
                 }
+            case CONSTANT:
+                return MathHelper.clamp(constantVal, 0, 15);
+            case COUNTER:
+                if (s1 > prevLevels[getColorChannel()]) {
+                    lastOutput++;
+                    return lastOutput > Math.min(15, constantVal) ? 0 : lastOutput;
+                } else {
+                    return lastOutput;
+                }
             default:
                 return 0;
         }
@@ -321,7 +330,9 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         COMPARATOR(true, false),
         SUBTRACT(true, false),
         COMPARE(false, true),
-        TOGGLE(false, false);
+        TOGGLE(false, false),
+        CONSTANT(false, true),
+        COUNTER(false, true);
 
         private final boolean useOtherColor;
         private final boolean useConst;

@@ -181,7 +181,13 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
         super.onBlockPlacedBy(world, pos, state, entity, stack);
+
         ModuleNetworkManager.getInstance(world).invalidateCache();
+        // force TE to calculate its connections immediately so network manager rescanning works
+        TileEntity te = getTE(world, pos);
+        if (te instanceof TileEntityPressureTube) {
+            ((TileEntityPressureTube) te).onNeighborTileUpdate();
+        }
     }
 
     public boolean tryPlaceModule(EntityPlayer player, World world, BlockPos pos, EnumFacing side, EnumHand hand, boolean simulate) {

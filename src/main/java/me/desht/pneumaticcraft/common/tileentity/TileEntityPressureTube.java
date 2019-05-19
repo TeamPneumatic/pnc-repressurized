@@ -134,8 +134,10 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public void update() {
         super.update();
 
+        boolean hasModules = false;
         for (TubeModule module : modules) {
             if (module != null) {
+                hasModules = true;
                 module.shouldDrop = true;
                 module.update();
             }
@@ -143,13 +145,6 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
 
         List<Pair<EnumFacing, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
 
-        boolean hasModules = false;
-        for (TubeModule module : modules) {
-            if (module != null) {
-                hasModules = true;
-                break;
-            }
-        }
         if (!hasModules && teList.size() == 1 && !getWorld().isRemote) {
             for (Pair<EnumFacing, IAirHandler> entry : teList) {
                 if (entry.getKey() != null && modules[entry.getKey().getOpposite().ordinal()] == null && isConnectedTo(entry.getKey().getOpposite()))

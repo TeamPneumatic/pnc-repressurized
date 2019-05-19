@@ -13,17 +13,22 @@ public class ModuleNetworkManager {
     private static final Map<Integer, ModuleNetworkManager> INSTANCES = new HashMap<>();
 
     private final Map<TubeModule, Set<TubeModule>> connectionCache = new HashMap<>();
+    private boolean needInvalidate = false;
 
     public static ModuleNetworkManager getInstance(World w) {
         return INSTANCES.computeIfAbsent(w.provider.getDimension(), dimId -> new ModuleNetworkManager());
     }
 
     Set<TubeModule> getConnectedModules(TubeModule module) {
+        if (needInvalidate) {
+            connectionCache.clear();
+            needInvalidate = false;
+        }
         return connectionCache.computeIfAbsent(module, this::computeConnections);
     }
 
     public void invalidateCache() {
-        connectionCache.clear();
+        needInvalidate = true;
     }
 
     private Set<TubeModule> computeConnections(TubeModule module) {

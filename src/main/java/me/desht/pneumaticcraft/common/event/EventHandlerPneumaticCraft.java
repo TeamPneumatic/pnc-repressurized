@@ -52,6 +52,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -208,8 +209,10 @@ public class EventHandlerPneumaticCraft {
             }
         }
 
-        if (!event.isCanceled() && event instanceof PlayerInteractEvent.RightClickBlock) {
-            if (interactedBlock instanceof IPneumaticWrenchable && ModInteractionUtils.getInstance().isModdedWrench(heldItem)) {
+        if (!event.isCanceled() && event instanceof PlayerInteractEvent.RightClickBlock && interactedBlock instanceof IPneumaticWrenchable) {
+            if (event.getHand() == EnumHand.OFF_HAND && ModInteractionUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND))) {
+                event.setCanceled(true);
+            } else if (ModInteractionUtils.getInstance().isModdedWrench(heldItem)) {
                 // When a player clicks one of our rotatable blocks with a wrench from another mod, cancel that and
                 // send our custom PacketRotateBlock, which ensures our rotateBlock() gets called & includes the
                 // player information, which is needed in several places

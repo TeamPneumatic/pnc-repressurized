@@ -89,7 +89,7 @@ public class GuiRedstoneModule extends GuiTubeModule {
         for (Operation op : Operation.values()) {
             ops.add(I18n.format(op.getTranslationKey()));
         }
-        comboBox = new WidgetComboBox(fontRenderer, xBase, guiTop + 39, 80, 12)
+        comboBox = new WidgetComboBox(fontRenderer, xBase, guiTop + 39, xSize - xBase + guiLeft - 10, 12)
                 .setFixedOptions().setShouldSort(false).setElements(ops);
         comboBox.selectElement(mr.getOperation().ordinal());
         addWidget(comboBox);
