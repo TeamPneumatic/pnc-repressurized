@@ -6,11 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.11.0-??? (unreleased)
+### 0.11.0-357 (20 May 2019)
 #### New
 * Added the Redstone Module, a tube module that allows redstone signals to be transmitted along pressure tubes.
   * Toggle a module between input and output by right-clicking with a wrench.
-  * 16 independent channels are available; right-click with a dye to set a module's channel (the dye will not be used up).
+  * 16 independent channels are available; right-click with a dye to set a module's channel (the dye will not be used up by default, but see ``useUpDyesWhenColoring`` config setting)).
   * Add an Advanced PCB to the module to gain some extra signal processing, e.g. integrated logic gates, timers, toggle latches, comparators...
 * Tough As Nails support:
   * PneumaticCraft heat (and cold!) sources will have an effect on your body temperature. Take care!
@@ -43,6 +43,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * Added a self-craft recipe which resets the colour of a dyed Aphorism Tile item.
 * Made drone area sorting more deterministic (see https://github.com/TeamPneumatic/pnc-repressurized/issues/342).
 * JEI now shows an info tab for all items & blocks which have tooltip information (same info as the item tooltip is shown here - just another way to view it)
+* Dyeing drones no longer uses the dye by default (but see ``useUpDyesWhenColoring`` config setting)
 #### Fixes
 * Restored the Thermopneumatic Processing Plant "Dump Input Tank" button. Was a mistake to remove that.
 * Added missing Patchouli docs page for the "Pick Up Item" programming widget.
