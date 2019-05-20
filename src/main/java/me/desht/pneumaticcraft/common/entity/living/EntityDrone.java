@@ -681,9 +681,11 @@ public class EntityDrone extends EntityDroneBase implements
                 OptionalInt dyeIndex = DyeUtils.dyeDamageFromStack(equippedItem);
                 if (dyeIndex.isPresent()) {
                     setDroneColor(ItemDye.DYE_COLORS[dyeIndex.getAsInt()]);
-                    equippedItem.shrink(1);
-                    if (equippedItem.getCount() <= 0) {
-                        player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+                    if (ConfigHandler.general.useUpDyesWhenColoring && !player.capabilities.isCreativeMode) {
+                        equippedItem.shrink(1);
+                        if (equippedItem.getCount() <= 0) {
+                            player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+                        }
                     }
                 }
             }

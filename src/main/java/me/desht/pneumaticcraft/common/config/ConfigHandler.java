@@ -138,7 +138,8 @@ public class ConfigHandler {
         @Config.Comment("Fluids as hot or hotter than this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")
         @Config.RequiresMcRestart
         public int minimumFluidFuelTemperature = 373; // 100C
-
+        @Config.Comment("Should dyes be used when coloring things (Drones, Logistics Modules, Redstone Modules")
+        public boolean useUpDyesWhenColoring = false;
 
         // deprecated stuff
         @Config.Comment("DEPRECATED: use Minigun / baseDamage")

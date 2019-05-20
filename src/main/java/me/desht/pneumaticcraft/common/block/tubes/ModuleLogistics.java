@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticModule;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
@@ -119,12 +120,16 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
 
     @Override
     public boolean onActivated(EntityPlayer player, EnumHand hand) {
-        if (!player.getHeldItem(hand).isEmpty()) {
-            OptionalInt colorIndex = DyeUtils.dyeDamageFromStack(player.getHeldItem(hand));
+        ItemStack heldStack = player.getHeldItem(hand);
+        if (!heldStack.isEmpty()) {
+            OptionalInt colorIndex = DyeUtils.dyeDamageFromStack(heldStack);
             if (colorIndex.isPresent()) {
                 if (!player.world.isRemote) {
                     setColorChannel(colorIndex.getAsInt());
                     NetworkHandler.sendToAllAround(new PacketUpdateLogisticModule(this, 0), getTube().world());
+                    if (ConfigHandler.general.useUpDyesWhenColoring && !player.capabilities.isCreativeMode) {
+                        heldStack.shrink(1);
+                    }
                 }
                 return true;
             }

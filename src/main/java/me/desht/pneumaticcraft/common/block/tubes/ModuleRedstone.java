@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.block.tubes;
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.client.model.module.ModelRedstone;
 import me.desht.pneumaticcraft.common.GuiHandler;
+import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
@@ -270,6 +271,9 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         OptionalInt colorIndex = DyeUtils.dyeDamageFromStack(heldStack);
         if (colorIndex.isPresent()) {
             setColorChannel(colorIndex.getAsInt());
+            if (ConfigHandler.general.useUpDyesWhenColoring && !player.capabilities.isCreativeMode) {
+                heldStack.shrink(1);
+            }
             return true;
         } else if (heldStack.getItem() instanceof ItemPneumaticWrench || ModInteractionUtils.getInstance().isModdedWrench(heldStack)) {
             redstoneDirection = redstoneDirection == EnumRedstoneDirection.INPUT ? EnumRedstoneDirection.OUTPUT : EnumRedstoneDirection.INPUT;

@@ -209,23 +209,38 @@ public class EventHandlerPneumaticCraft {
             }
         }
 
-        if (!event.isCanceled() && event instanceof PlayerInteractEvent.RightClickBlock && interactedBlock instanceof IPneumaticWrenchable) {
+//        if (!event.isCanceled() && interactedBlock == Blocks.COBBLESTONE) {
+//            AdvancementUtils.checkFor9x9(event.getEntityPlayer(), event.getPos());
+//        }
+    }
+
+    @SubscribeEvent
+    public void onModdedWrenchBlock(PlayerInteractEvent.RightClickBlock event) {
+        IBlockState state = event.getWorld().getBlockState(event.getPos());
+        if (!event.isCanceled() && state.getBlock() instanceof IPneumaticWrenchable) {
             if (event.getHand() == EnumHand.OFF_HAND && ModInteractionUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND))) {
                 event.setCanceled(true);
-            } else if (ModInteractionUtils.getInstance().isModdedWrench(heldItem)) {
-                // When a player clicks one of our rotatable blocks with a wrench from another mod, cancel that and
-                // send our custom PacketRotateBlock, which ensures our rotateBlock() gets called & includes the
-                // player information, which is needed in several places
+            } else if (ModInteractionUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(event.getHand()))) {
                 if (event.getWorld().isRemote) {
                     NetworkHandler.sendToServer(new PacketRotateBlock(event.getPos(), event.getFace(), event.getHand()));
                 }
                 event.setCanceled(true);
             }
         }
+    }
 
-//        if (!event.isCanceled() && interactedBlock == Blocks.COBBLESTONE) {
-//            AdvancementUtils.checkFor9x9(event.getEntityPlayer(), event.getPos());
-//        }
+    @SubscribeEvent
+    public void onModdedWrenchEntity(PlayerInteractEvent.EntityInteract event) {
+        if (!event.isCanceled() && event.getTarget() instanceof IPneumaticWrenchable) {
+            if (event.getHand() == EnumHand.OFF_HAND && ModInteractionUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND))) {
+                event.setCanceled(true);
+            } else if (ModInteractionUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(event.getHand()))) {
+                if (event.getWorld().isRemote) {
+                    NetworkHandler.sendToServer(new PacketRotateBlock(event.getPos(), event.getHand(), event.getTarget().getEntityId()));
+                }
+                event.setCanceled(true);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -386,6 +401,7 @@ public class EventHandlerPneumaticCraft {
                     event.getFrom().getTagCompound().removeTag("owningPlayerId");
                 }
             } else if (event.getSlot().getSlotType() == EntityEquipmentSlot.Type.ARMOR) {
+                // trigger the "compressed iron man" advancement if wearing a full suit
                 EntityPlayerMP player = (EntityPlayerMP) event.getEntityLiving();
                 for (ItemStack stack : player.getArmorInventoryList()) {
                     if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
