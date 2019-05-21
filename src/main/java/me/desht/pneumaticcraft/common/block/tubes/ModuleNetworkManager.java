@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.common.pressure.AirHandler;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import net.minecraft.util.EnumFacing;
@@ -46,7 +45,7 @@ public class ModuleNetworkManager {
             TileEntityCache[] cache = ((AirHandler) tube.getAirHandler(null)).getTileCache();
             for (EnumFacing d : EnumFacing.VALUES) {
                 if (tube.sidesConnected[d.ordinal()] && !tube.sidesClosed[d.ordinal()]) {
-                    TileEntityPressureTube newTube = ModInteractionUtils.getInstance().getTube(cache[d.ordinal()].getTileEntity());
+                    TileEntityPressureTube newTube = TileEntityPressureTube.getTube(cache[d.ordinal()].getTileEntity());
                     if (newTube != null && !traversedTubes.contains(newTube)) {
                         pendingTubes.add(newTube);
                         traversedTubes.add(newTube);

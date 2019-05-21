@@ -41,6 +41,7 @@ public class ThirdPartyManager implements IGuiHandler {
     private final List<IThirdParty> thirdPartyMods = new ArrayList<>();
     public static boolean computerCraftLoaded;
     public IDocsProvider docsProvider = new IDocsProvider.NoDocsProvider();
+    private GenericIntegrationHandler generic = new GenericIntegrationHandler();
 
     public static ThirdPartyManager instance() {
         return INSTANCE;
@@ -107,6 +108,7 @@ public class ThirdPartyManager implements IGuiHandler {
     }
 
     public void preInit() {
+        generic.preInit();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.preInit();
@@ -118,6 +120,7 @@ public class ThirdPartyManager implements IGuiHandler {
     }
 
     public void init() {
+        generic.init();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.init();
@@ -129,6 +132,7 @@ public class ThirdPartyManager implements IGuiHandler {
     }
 
     public void postInit() {
+        generic.postInit();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.postInit();
@@ -138,14 +142,15 @@ public class ThirdPartyManager implements IGuiHandler {
             }
         }
 
-        ModNameCache.init();
-        XPFluids.registerXPFluids();
     }
 
-    public void clientSide() {
+    public void clientPreInit() {
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.clientPreInit();
+                if (thirdParty instanceof IDocsProvider) {
+                    docsProvider = (IDocsProvider) thirdParty;
+                }
             } catch (Throwable e) {
                 Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " client side!");
                 e.printStackTrace();

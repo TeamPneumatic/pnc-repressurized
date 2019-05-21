@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
@@ -38,7 +37,7 @@ public abstract class PacketUpdateTubeModule<REQ extends PacketUpdateTubeModule<
 
     @Override
     public void handleServerSide(REQ message, EntityPlayer player) {
-        TileEntityPressureTube te = ModInteractionUtils.getInstance().getTube(message.getTileEntity(player.getEntityWorld()));
+        TileEntityPressureTube te = TileEntityPressureTube.getTube(message.getTileEntity(player.getEntityWorld()));
         if (te != null) {
             TubeModule module = te.modules[message.moduleSide.ordinal()];
             if (module != null) {

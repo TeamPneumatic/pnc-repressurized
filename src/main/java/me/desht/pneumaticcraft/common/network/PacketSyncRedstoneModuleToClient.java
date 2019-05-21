@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -30,7 +29,7 @@ public class PacketSyncRedstoneModuleToClient extends LocationIntPacket<PacketSy
 
     @Override
     public void handleClientSide(PacketSyncRedstoneModuleToClient message, EntityPlayer player) {
-        TileEntityPressureTube te = ModInteractionUtils.getInstance().getTube(message.getTileEntity(player.world));
+        TileEntityPressureTube te = TileEntityPressureTube.getTube(message.getTileEntity(player.world));
         if (te != null) {
             TubeModule module = te.modules[message.side];
             if (module instanceof ModuleRedstone) {

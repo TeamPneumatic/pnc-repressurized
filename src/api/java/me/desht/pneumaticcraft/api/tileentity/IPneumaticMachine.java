@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.tileentity;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
@@ -26,4 +27,13 @@ public interface IPneumaticMachine {
      * @return a valid IAirHandler when connectable on this side, null otherwise
      */
     IAirHandler getAirHandler(EnumFacing side);
+
+    /**
+     * Convenience method to cast a TE to a IPneumaticMachine
+     * @param te the tile entity
+     * @return an IPneumaticMachine, or null
+     */
+    static IPneumaticMachine getMachine(TileEntity te) {
+        return te instanceof IPneumaticMachine ? (IPneumaticMachine) te : null;
+    }
 }

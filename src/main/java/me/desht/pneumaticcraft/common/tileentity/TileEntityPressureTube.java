@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
@@ -281,5 +282,9 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public void onDescUpdate() {
         camoState = ICamouflageableTE.getStateForStack(camoStack);
         rerenderTileEntity();
+    }
+
+    public static TileEntityPressureTube getTube(TileEntity te) {
+        return te instanceof TileEntityPressureTube ? (TileEntityPressureTube) te : null;
     }
 }

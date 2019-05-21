@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -153,7 +153,7 @@ public abstract class TubeModule implements ISidedPart {
     }
 
     public void sendDescriptionPacket() {
-        ModInteractionUtils.getInstance().sendDescriptionPacket(pressureTube);
+        if (pressureTube instanceof TileEntityPressureTube) ((TileEntityPressureTube) pressureTube).sendDescriptionPacket();
     }
 
     public void addInfo(List<String> curInfo) {

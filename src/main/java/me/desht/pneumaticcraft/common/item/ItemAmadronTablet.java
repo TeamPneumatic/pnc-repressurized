@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemAmadronTablet extends ItemPressurizable implements IAmadronInterface, IPositionProvider {
+public class ItemAmadronTablet extends ItemPressurizable implements IPositionProvider {
 
     public ItemAmadronTablet() {
         super("amadron_tablet", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);

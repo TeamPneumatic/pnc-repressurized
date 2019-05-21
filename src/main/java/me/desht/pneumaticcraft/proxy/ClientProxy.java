@@ -82,7 +82,7 @@ public class ClientProxy implements IProxy {
         MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
 
-        ThirdPartyManager.instance().clientSide();
+        ThirdPartyManager.instance().clientPreInit();
 
         EntityTrackHandler.registerDefaultEntries();
 

@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -339,7 +338,7 @@ public class AirHandler implements IAirHandler {
         }
         for (EnumFacing direction : EnumFacing.VALUES) {
             TileEntity te = getTileCache()[direction.ordinal()].getTileEntity();
-            IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);
+            IPneumaticMachine machine = IPneumaticMachine.getMachine(te);
             if (machine != null && parentPneumatic.getAirHandler(direction) == this && machine.getAirHandler(direction.getOpposite()) != null) {
                 teList.add(new ImmutablePair<>(direction, machine.getAirHandler(direction.getOpposite())));
             }

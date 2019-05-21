@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedPressureTube;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -46,7 +45,7 @@ import java.util.Random;
 
 public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
-    public static final AxisAlignedBB BASE_BOUNDS = new AxisAlignedBB(
+    private static final AxisAlignedBB BASE_BOUNDS = new AxisAlignedBB(
             BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MIN_POS, BBConstants.PRESSURE_PIPE_MIN_POS,
             BBConstants.PRESSURE_PIPE_MAX_POS, BBConstants.PRESSURE_PIPE_MAX_POS, BBConstants.PRESSURE_PIPE_MAX_POS
     );
@@ -128,9 +127,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     @Override
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
         state = super.getActualState(state, worldIn, pos);
-        TileEntity te = getTE(worldIn, pos);
-        if (te instanceof TileEntityPressureTube) {
-            TileEntityPressureTube tube = (TileEntityPressureTube) te;
+        TileEntityPressureTube tube = getTE(worldIn, pos);
+        if (tube != null) {
             for (int i = 0; i < 6; i++) {
                 ConnectionType conn = tube.sidesClosed[i] ? ConnectionType.CLOSED : tube.sidesConnected[i] ? ConnectionType.CONNECTED : ConnectionType.OPEN;
                 state = state.withProperty(CONNECTION_PROPERTIES_3[i], conn);
@@ -171,11 +169,9 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         return tier.tier;
     }
 
-    private static TileEntity getTE(IBlockAccess world, BlockPos pos) {
-        // TODO: maybe one day I'll get round to making MCMP2 support work!
-        return /*ThirdPartyConfig.isEnabled(ModIds.MCMP) ?
-                PneumaticMultiPart.unwrapTile(world, pos) :*/
-                PneumaticCraftUtils.getTileEntitySafely(world, pos);
+    private static TileEntityPressureTube getTE(IBlockAccess world, BlockPos pos) {
+        TileEntity te = PneumaticCraftUtils.getTileEntitySafely(world, pos);
+        return te instanceof TileEntityPressureTube ? (TileEntityPressureTube) te : null;
     }
 
     @Override
@@ -184,17 +180,16 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
         ModuleNetworkManager.getInstance(world).invalidateCache();
         // force TE to calculate its connections immediately so network manager rescanning works
-        TileEntity te = getTE(world, pos);
-        if (te instanceof TileEntityPressureTube) {
-            ((TileEntityPressureTube) te).onNeighborTileUpdate();
+        TileEntityPressureTube te = getTE(world, pos);
+        if (te != null) {
+            te.onNeighborTileUpdate();
         }
     }
 
     public boolean tryPlaceModule(EntityPlayer player, World world, BlockPos pos, EnumFacing side, EnumHand hand, boolean simulate) {
-        TileEntity te = getTE(world, pos);
-        if (!(te instanceof TileEntityPressureTube)) return false;
+        TileEntityPressureTube tePT = getTE(world, pos);
+        if (tePT == null) return false;
 
-        TileEntityPressureTube tePT = ModInteractionUtils.getInstance().getTube(te);
         ItemStack heldStack = player.getHeldItem(hand);
         if (heldStack.getItem() instanceof ItemTubeModule) {
             if (tePT.modules[side.ordinal()] == null && !tePT.sidesClosed[side.ordinal()]) {
@@ -234,8 +229,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         RayTraceResult rayTraceResult = state.collisionRayTrace(world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
         if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
-            TileEntityPressureTube tube = ModInteractionUtils.getInstance().getTube(getTE(world, pos));
-            return tube.modules[tubeHitInfo.dir.ordinal()];
+            TileEntityPressureTube tube = getTE(world, pos);
+            return tube == null ? null : tube.modules[tubeHitInfo.dir.ordinal()];
         }
         return null;
     }
@@ -273,7 +268,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
             bestAABB = getBoundingBox(state, world, pos);
         }
 
-        TileEntityPressureTube tube = ModInteractionUtils.getInstance().getTube(getTE(world, pos));
+        TileEntityPressureTube tube = getTE(world, pos);
+        if (tube == null) return null;
         for (int i = 0; i < 6; i++) {
             if (tube.sidesConnected[i] || tube.sidesClosed[i]) {
                 setBlockBounds(tube.sidesClosed[i] ? closedBoundingBoxes[i] : boundingBoxes[i]);
@@ -313,7 +309,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {
             return super.getPickBlock(state, target, world, pos, player);
         } else if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
-            TileEntityPressureTube tube = (TileEntityPressureTube) getTE(world, pos);
+            TileEntityPressureTube tube = getTE(world, pos);
             if (tube != null) {
                 TubeModule module = tube.modules[tubeHitInfo.dir.ordinal()];
                 if (module != null) {
@@ -327,7 +323,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     @Override
     public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side, EnumHand hand) {
         if (player == null) return false;
-        TileEntityPressureTube tube = ModInteractionUtils.getInstance().getTube(getTE(world, pos));
+        TileEntityPressureTube tube = getTE(world, pos);
+        if (tube == null) return false;
         TubeModule module = getLookedModule(world, pos, player);
         if (player.isSneaking()) {
             if (module != null) {
@@ -368,7 +365,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     @Override
     public void breakBlock(World world, BlockPos pos, IBlockState state) {
-        for (ItemStack drop : getModuleDrops((TileEntityPressureTube) getTE(world, pos))) {
+        for (ItemStack drop : getModuleDrops(getTE(world, pos))) {
             EntityItem entity = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
             entity.setItem(drop);
             world.spawnEntity(entity);
@@ -379,9 +376,11 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     private static NonNullList<ItemStack> getModuleDrops(TileEntityPressureTube tube) {
         NonNullList<ItemStack> drops = NonNullList.create();
-        for (TubeModule module : tube.modules) {
-            if (module != null) {
-                drops.addAll(module.getDrops());
+        if (tube != null) {
+            for (TubeModule module : tube.modules) {
+                if (module != null) {
+                    drops.addAll(module.getDrops());
+                }
             }
         }
         return drops;
@@ -396,9 +395,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
         addCollisionBoxToList(pos, entityBox, collidingBoxes, BASE_BOUNDS);
 
-        TileEntity te = getTE(worldIn, pos);
-        if (te instanceof TileEntityPressureTube) {
-            TileEntityPressureTube tePt = (TileEntityPressureTube) te;
+        TileEntityPressureTube tePt = getTE(worldIn, pos);
+        if (tePt != null) {
             for (int i = 0; i < 6; i++) {
                 if (tePt.sidesConnected[i]) {
                     addCollisionBoxToList(pos, entityBox, collidingBoxes, boundingBoxes[i]);
@@ -415,9 +413,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     public void randomDisplayTick(IBlockState state, World par1World, BlockPos pos, Random par5Random) {
         if (!ConfigHandler.client.tubeModuleRedstoneParticles || PneumaticCraftRepressurized.proxy.particleLevel() == 2) return;
 
-        TileEntity te = getTE(par1World, pos);
-        if (te instanceof TileEntityPressureTube) {
-            TileEntityPressureTube tePt = (TileEntityPressureTube) te;
+        TileEntityPressureTube tePt = getTE(par1World, pos);
+        if (tePt != null) {
             int l = 0;
             EnumFacing side = null;
             for (TubeModule module : tePt.modules) {
@@ -442,9 +439,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     @Override
     public int getWeakPower(IBlockState state, IBlockAccess par1IBlockAccess, BlockPos pos, EnumFacing side) {
-        TileEntity te = getTE(par1IBlockAccess, pos);
-        if (te instanceof TileEntityPressureTube) {
-            TileEntityPressureTube tePt = (TileEntityPressureTube) te;
+        TileEntityPressureTube tePt = getTE(par1IBlockAccess, pos);
+        if (tePt != null) {
             int redstoneLevel = 0;
             for (EnumFacing face : EnumFacing.VALUES) {
                 if (tePt.modules[face.ordinal()] != null) {

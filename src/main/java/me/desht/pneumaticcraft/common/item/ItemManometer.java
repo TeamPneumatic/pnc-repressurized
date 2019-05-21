@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,7 +36,7 @@ public class ItemManometer extends ItemPressurizable {
         ItemStack iStack = player.getHeldItem(hand);
         if (((IPressurizable) iStack.getItem()).getPressure(iStack) > 0F) {
             TileEntity te = world.getTileEntity(pos);
-            IPneumaticMachine machine = ModInteractionUtils.getInstance().getMachine(te);
+            IPneumaticMachine machine = IPneumaticMachine.getMachine(te);
             List<ITextComponent> curInfo = new ArrayList<>();
             List<String> info = new ArrayList<>();
             if (machine != null && machine.getAirHandler(side) != null) {

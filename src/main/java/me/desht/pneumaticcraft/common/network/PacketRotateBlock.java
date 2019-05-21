@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
+import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -68,7 +68,7 @@ public class PacketRotateBlock extends LocationIntPacket<PacketRotateBlock> {
     @Override
     public void handleServerSide(PacketRotateBlock message, EntityPlayer player) {
         if (player.world.isBlockLoaded(message.pos) && player.getDistanceSq(message.pos) < 64) {
-            if (ModInteractionUtils.getInstance().isModdedWrench(player.getHeldItem(message.hand))) {
+            if (ModdedWrenchUtils.getInstance().isModdedWrench(player.getHeldItem(message.hand))) {
                 if (message.entityID >= 0) {
                     Entity e = player.world.getEntityByID(message.entityID);
                     if (e instanceof IPneumaticWrenchable && e.isEntityAlive()) {

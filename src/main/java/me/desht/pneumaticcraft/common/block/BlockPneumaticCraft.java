@@ -14,7 +14,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
+import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.ITOPInfoProvider;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TOPCallback;
@@ -119,8 +119,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         ItemStack heldItem = player.getHeldItem(hand);
         if (player.isSneaking()
                 || getGuiID() == null
-                || isRotatable() && (heldItem.getItem() == Itemss.MANOMETER || ModInteractionUtils.getInstance().isModdedWrench(heldItem))
-                || hand == EnumHand.OFF_HAND && ModInteractionUtils.getInstance().isModdedWrench(player.getHeldItemMainhand())) {
+                || isRotatable() && (heldItem.getItem() == Itemss.MANOMETER || ModdedWrenchUtils.getInstance().isModdedWrench(heldItem))
+                || hand == EnumHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(player.getHeldItemMainhand())) {
             return false;
         } else {
             if (!world.isRemote) {

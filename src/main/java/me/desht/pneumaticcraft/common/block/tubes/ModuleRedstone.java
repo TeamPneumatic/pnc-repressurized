@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
+import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.EntityPlayer;
@@ -275,7 +275,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
                 heldStack.shrink(1);
             }
             return true;
-        } else if (heldStack.getItem() instanceof ItemPneumaticWrench || ModInteractionUtils.getInstance().isModdedWrench(heldStack)) {
+        } else if (heldStack.getItem() instanceof ItemPneumaticWrench || ModdedWrenchUtils.getInstance().isModdedWrench(heldStack)) {
             redstoneDirection = redstoneDirection == EnumRedstoneDirection.INPUT ? EnumRedstoneDirection.OUTPUT : EnumRedstoneDirection.INPUT;
             updateNeighbors();
             if (!updateInputLevel()) {

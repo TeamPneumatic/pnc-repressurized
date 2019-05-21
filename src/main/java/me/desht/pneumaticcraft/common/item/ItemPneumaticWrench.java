@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.block.Block;
@@ -18,8 +17,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-//TODO Buildcraft dep @Optional.Interface(iface = "buildcraft.api.tools.IToolWrench", modid = ModIds.BUILDCRAFT)
-public class ItemPneumaticWrench extends ItemPressurizable /*implements IToolWrench*/ {
+public class ItemPneumaticWrench extends ItemPressurizable {
 
     public ItemPneumaticWrench() {
         super("pneumatic_wrench", PneumaticValues.PNEUMATIC_WRENCH_MAX_AIR, PneumaticValues.PNEUMATIC_WRENCH_VOLUME);
@@ -32,18 +30,12 @@ public class ItemPneumaticWrench extends ItemPressurizable /*implements IToolWre
             IBlockState state = world.getBlockState(pos);
             Block block = state.getBlock();
 
-            IPneumaticWrenchable wrenchable;
-            if (block instanceof IPneumaticWrenchable) {
-                wrenchable = (IPneumaticWrenchable) block;
-            } else {
-                wrenchable = ModInteractionUtils.getInstance().getWrenchable(world.getTileEntity(pos));
-            }
             boolean didWork = true;
-            float pressure = ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).getPressure(stack);
+            float pressure = getPressure(stack);
+            IPneumaticWrenchable wrenchable = IPneumaticWrenchable.forBlock(block);
             if (wrenchable != null && pressure > 0) {
-                if (wrenchable.rotateBlock(world, player, pos, side, hand)) {
-                    if (!player.capabilities.isCreativeMode)
-                        ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).addAir(stack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+                if (wrenchable.rotateBlock(world, player, pos, side, hand) && !player.capabilities.isCreativeMode) {
+                    addAir(stack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                 }
             } else {
                 // rotating normal blocks doesn't use pressure
@@ -64,10 +56,11 @@ public class ItemPneumaticWrench extends ItemPressurizable /*implements IToolWre
     @Override
     public boolean itemInteractionForEntity(ItemStack iStack, EntityPlayer player, EntityLivingBase target, EnumHand hand) {
         if (!player.world.isRemote) {
-            if (target.isEntityAlive() && target instanceof IPneumaticWrenchable && ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).getPressure(iStack) > 0) {
+            if (target.isEntityAlive() && target instanceof IPneumaticWrenchable && getPressure(iStack) > 0) {
                 if (((IPneumaticWrenchable) target).rotateBlock(target.world, player, null, null, hand)) {
-                    if (!player.capabilities.isCreativeMode)
-                        ((ItemPneumaticWrench) Itemss.PNEUMATIC_WRENCH).addAir(iStack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+                    if (!player.capabilities.isCreativeMode) {
+                        addAir(iStack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+                    }
                     NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PNEUMATIC_WRENCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0F, 1.0F, false), target.world);
                     return true;
                 }
@@ -75,12 +68,4 @@ public class ItemPneumaticWrench extends ItemPressurizable /*implements IToolWre
         }
         return false;
     }
-
-    /* @Override
-     public boolean canWrench(EntityPlayer player, int x, int y, int z){
-         return true;
-     }
-
-     @Override
-     public void wrenchUsed(EntityPlayer player, int x, int y, int z){}*/
 }

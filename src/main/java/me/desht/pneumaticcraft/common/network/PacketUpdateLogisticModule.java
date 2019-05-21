@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleLogistics;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -45,7 +44,7 @@ public class PacketUpdateLogisticModule extends LocationIntPacket<PacketUpdateLo
 
     @Override
     public void handleClientSide(PacketUpdateLogisticModule message, EntityPlayer player) {
-        TileEntityPressureTube te = ModInteractionUtils.getInstance().getTube(message.getTileEntity(player.world));
+        TileEntityPressureTube te = TileEntityPressureTube.getTube(message.getTileEntity(player.world));
         if (te != null) {
             TubeModule module = te.modules[message.side];
             if (module instanceof ModuleLogistics) {

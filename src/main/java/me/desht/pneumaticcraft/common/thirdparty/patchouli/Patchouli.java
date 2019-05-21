@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.thirdparty.IDocsProvider;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.state.IBlockState;
@@ -37,7 +36,6 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     @Override
     public void clientPreInit() {
         MinecraftForge.EVENT_BUS.register(this);
-        ThirdPartyManager.instance().docsProvider = this;
     }
 
     @Override

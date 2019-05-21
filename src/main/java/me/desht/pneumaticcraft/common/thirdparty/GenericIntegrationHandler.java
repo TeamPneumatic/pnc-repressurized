@@ -6,8 +6,18 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-public class XPFluids {
-    static void registerXPFluids() {
+/**
+ * Generic integration tasks which don't depend on specific mods' API.
+ */
+public class GenericIntegrationHandler implements IThirdParty {
+    @Override
+    public void postInit() {
+        registerXPFluids();
+        ModdedWrenchUtils.getInstance().registerThirdPartyWrenches();
+        ModNameCache.init();
+    }
+
+    private void registerXPFluids() {
         // XP fluids are pretty mod-agnostic (just a String fluid name), and the same fluid can be registered
         // by multiple mods ("xpjuice" is registered by EnderIO, OpenBlocks and Cyclic for example).  So handle
         // XP fluid registration here rather than in mod-specific modules.
@@ -18,7 +28,7 @@ public class XPFluids {
         maybeRegisterXPFluid("experience", 20);  // CoFH Essence of Knowledge
     }
 
-    private static void maybeRegisterXPFluid(String fluidName, int xpRatio) {
+    private void maybeRegisterXPFluid(String fluidName, int xpRatio) {
         Fluid fluid = FluidRegistry.getFluid(fluidName);
         if (fluid != null) {
             PneumaticRegistry.getInstance().registerXPLiquid(fluid, xpRatio);

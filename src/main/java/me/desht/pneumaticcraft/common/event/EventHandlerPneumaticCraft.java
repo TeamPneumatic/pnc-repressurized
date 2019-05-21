@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
-import me.desht.pneumaticcraft.common.thirdparty.ModInteractionUtils;
+import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -218,9 +218,9 @@ public class EventHandlerPneumaticCraft {
     public void onModdedWrenchBlock(PlayerInteractEvent.RightClickBlock event) {
         IBlockState state = event.getWorld().getBlockState(event.getPos());
         if (!event.isCanceled() && state.getBlock() instanceof IPneumaticWrenchable) {
-            if (event.getHand() == EnumHand.OFF_HAND && ModInteractionUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND))) {
+            if (event.getHand() == EnumHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND))) {
                 event.setCanceled(true);
-            } else if (ModInteractionUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(event.getHand()))) {
+            } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(event.getHand()))) {
                 if (event.getWorld().isRemote) {
                     NetworkHandler.sendToServer(new PacketRotateBlock(event.getPos(), event.getFace(), event.getHand()));
                 }
@@ -232,9 +232,9 @@ public class EventHandlerPneumaticCraft {
     @SubscribeEvent
     public void onModdedWrenchEntity(PlayerInteractEvent.EntityInteract event) {
         if (!event.isCanceled() && event.getTarget() instanceof IPneumaticWrenchable) {
-            if (event.getHand() == EnumHand.OFF_HAND && ModInteractionUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND))) {
+            if (event.getHand() == EnumHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND))) {
                 event.setCanceled(true);
-            } else if (ModInteractionUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(event.getHand()))) {
+            } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(event.getHand()))) {
                 if (event.getWorld().isRemote) {
                     NetworkHandler.sendToServer(new PacketRotateBlock(event.getPos(), event.getHand(), event.getTarget().getEntityId()));
                 }
