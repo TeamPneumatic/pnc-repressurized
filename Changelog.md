@@ -24,7 +24,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * There is now far more extensive CraftTweaker support, allowing melting or solidifying more than just plastic. E.g. you could add a recipe to convert Thermal Foundation Rockwool to/from Blazing Pyrotheum.
   * Fluid->solid ratio (mB per item) can be defined on a per-recipe basis.
   * Conversions can be melt-only, solidify-only, or both melt & solidify.  E.g. you could add a recipe to melt Lapis into IC2 Coolant, but not allow resolidification.
-  * Since the Plastic Mixer also colourizes items/blocks, this is primarily intended for those which can have one of 16 colours (Wool, Concrete, Terracotta...). However, melting-only recipes (such as Lapis->Coolant) will work.  Trying to solidify to items/blocks which aren't colourizable will probably yield nonsensical results.
+  * Since the Plastic Mixer also colourizes items/blocks, this is primarily intended for those which can have one of 16 colours (Wool, Concrete, Terracotta...). However, melting-only recipes (such as Lapis->Coolant) will work.  Trying to solidify to items/blocks which aren't colourizable does work, but still uses dye.
   * See https://github.com/TeamPneumatic/pnc-repressurized/issues/343 for CT docs until https://crafttweaker.readthedocs.io/en/latest/#Mods/PneumaticCraft_Repressurized/PneumaticCraft_Repressurized/ is updated.
   * This breaks the CT methods added in 0.10.4 - sorry!  But the new system is far more powerful.
 * General Plastic Mixer changes:

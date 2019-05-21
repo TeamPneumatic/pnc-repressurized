@@ -13,25 +13,21 @@ import javax.annotation.Nonnull;
 public class ContainerInventorySearcher extends Container {
     public ContainerInventorySearcher(InventoryPlayer inventoryPlayer) {
         // Add the player's inventory slots to the container
-        for (int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
-            for (int inventoryColumnIndex = 0; inventoryColumnIndex < 9; ++inventoryColumnIndex) {
-                addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 8 + inventoryColumnIndex * 18, 48 + inventoryRowIndex * 18));
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 9; ++col) {
+                addSlotToContainer(new Slot(inventoryPlayer, col + row * 9 + 9, 8 + col * 18, 48 + row * 18));
             }
         }
 
         // Add the player's action bar slots to the container
-        for (int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
-            addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, 106));
+        for (int slot = 0; slot < 9; ++slot) {
+            addSlotToContainer(new Slot(inventoryPlayer, slot, 8 + slot * 18, 106));
         }
     }
 
     public void init(IItemHandler inv) {
         addSlotToContainer(new SlotItemHandler(inv, 0, 80, 23));
     }
-
-//    @Override
-//    protected void retrySlotClick(int par1, int par2, boolean par3, EntityPlayer par4EntityPlayer) {
-//    }
 
     /**
      * Called when a player shift-clicks on a slot. You must override this or you will crash when someone does that.
@@ -44,11 +40,8 @@ public class ContainerInventorySearcher extends Container {
 
     @Override
     public void putStackInSlot(int par1, @Nonnull ItemStack par2ItemStack) {
-    } //override this to do nothing, as NEI tries to place items in this container which makes it crash.
-
-//    @Override
-//    public void putStacksInSlots(ItemStack[] p_75131_1_) {
-//    }
+        //override this to do nothing, as NEI tries to place items in this container which makes it crash.
+    }
 
     @Override
     public boolean canInteractWith(@Nonnull EntityPlayer entityplayer) {

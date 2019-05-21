@@ -9,7 +9,6 @@ public class ContainerUVLightBox extends ContainerPneumaticBase<TileEntityUVLigh
     public ContainerUVLightBox(InventoryPlayer inventoryPlayer, TileEntityUVLightBox te) {
         super(te);
 
-        // Add the burn slot.
         addSlotToContainer(new SlotItemSpecific(te.getPrimaryInventory(), Itemss.EMPTY_PCB, 0, 71, 36));
 
         addUpgradeSlots(21, 29);

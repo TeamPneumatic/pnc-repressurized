@@ -17,9 +17,4 @@ public class ContainerOmnidirectionalHopper extends ContainerPneumaticBase<TileE
 
         addPlayerSlots(inventoryPlayer, 84);
     }
-
-//    @Override
-//    public boolean canInteractWith(EntityPlayer player) {
-//        return te.isUseableByPlayer(player);
-//    }
 }

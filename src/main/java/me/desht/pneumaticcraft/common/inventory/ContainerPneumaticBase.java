@@ -34,18 +34,19 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
         if (te != null) addSyncedFields(te);
     }
 
-    protected void addSyncedField(SyncedField field) {
+    void addSyncedField(SyncedField field) {
         syncedFields.add(field);
         field.setLazy(false);
     }
 
-    protected void addSyncedFields(Object annotatedObject) {
+    void addSyncedFields(Object annotatedObject) {
         List<SyncedField> fields = NetworkUtils.getSyncedFields(annotatedObject, GuiSynced.class);
         for (SyncedField field : fields)
             addSyncedField(field);
     }
 
     public void updateField(int index, Object value) {
+        //noinspection unchecked
         syncedFields.get(index).setValue(value);
         if (te != null) te.onGuiUpdate();
     }
@@ -66,7 +67,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
         firstTick = false;
     }
 
-    protected void sendToContainerListeners(IMessage message) {
+    void sendToContainerListeners(IMessage message) {
         for (IContainerListener listener : listeners) {
             if (listener instanceof EntityPlayerMP) {
                 NetworkHandler.sendTo(message, (EntityPlayerMP) listener);
@@ -105,7 +106,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
      * that packet to be sent continually, causing a horrible item-equip sound loop to be played (and using unnecessary
      * network bandwith).
      */
-    protected void addArmorSlots(InventoryPlayer inventoryPlayer, int xBase, int yBase) {
+    void addArmorSlots(InventoryPlayer inventoryPlayer, int xBase, int yBase) {
         for (int i = 0; i < 4; ++i) {
             final EntityEquipmentSlot entityequipmentslot = VALID_EQUIPMENT_SLOTS[i];
             this.addSlotToContainer(new Slot(inventoryPlayer, 36 + (3 - i), xBase, yBase + i * 18) {
@@ -187,7 +188,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
             stack = stackSlot.copy();
             if (stackSlot.isEmpty()) {
                 if (!stackHeld.isEmpty() && slot.isItemValid(stackHeld)) {
-                    fillPhantomSlot(slot, stackHeld, clickType, dragType);
+                    fillPhantomSlot(slot, stackHeld, dragType);
                 }
             } else if (stackHeld.isEmpty()) {
                 adjustPhantomSlot(slot, clickType, dragType);
@@ -196,7 +197,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
                 if (canStacksMerge(stackSlot, stackHeld)) {
                     adjustPhantomSlot(slot, clickType, dragType);
                 } else {
-                    fillPhantomSlot(slot, stackHeld, clickType, dragType);
+                    fillPhantomSlot(slot, stackHeld, dragType);
                 }
             }
         }
@@ -228,7 +229,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
         slot.putStack(stackSlot);
     }
 
-    private void fillPhantomSlot(Slot slot, ItemStack stackHeld, ClickType clickType, int dragType) {
+    private void fillPhantomSlot(Slot slot, ItemStack stackHeld, int dragType) {
         if (!((IPhantomSlot) slot).canAdjust()) {
             return;
         }

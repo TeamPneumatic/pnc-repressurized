@@ -10,17 +10,18 @@ import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerSearcher extends Container {
-    /**
-     * the list of items in this container
-     */
+    private static final int SEARCH_ROWS = 6;
+    private static final int SEARCH_COLS = 8;
+
+    // list of ALL items in this container, updated by GuiSearcher#updateCreativeSearch
     public final NonNullList<ItemStack> itemList = NonNullList.create();
     private GuiSearcher gui;
 
     public void init(GuiSearcher gui) {
         this.gui = gui;
-        for (int i = 0; i < 6; ++i) {
-            for (int j = 0; j < 8; ++j) {
-                addSlotToContainer(new SlotItemHandler(gui.getInventory(), i * 8 + j, 8 + j * 18, 52 + i * 18));
+        for (int i = 0; i < SEARCH_ROWS; ++i) {
+            for (int j = 0; j < SEARCH_COLS; ++j) {
+                addSlotToContainer(new SlotItemHandler(gui.getInventory(), i * SEARCH_COLS + j, SEARCH_COLS + j * 18, 52 + i * 18));
             }
         }
 
@@ -35,35 +36,24 @@ public class ContainerSearcher extends Container {
 
     /**
      * Updates the gui slots ItemStack's based on scroll position.
+     * @param scrollPos scroll position, the range 0.0 - 1.0
      */
-    public void scrollTo(float par1) {
-        int i = itemList.size() / 8 - 6 + 1;
-        int j = (int) (par1 * i + 0.5D);
+    public void scrollTo(float scrollPos) {
+        int i = itemList.size() / SEARCH_COLS - SEARCH_ROWS + 1;
+        int j = Math.max(0, (int) (scrollPos * i + 0.5D));
 
-        if (j < 0) {
-            j = 0;
-        }
-
-        for (int k = 0; k < 6; ++k) {
-            for (int l = 0; l < 8; ++l) {
-                int i1 = l + (k + j) * 8;
-
-                if (i1 >= 0 && i1 < itemList.size()) {
-                    gui.getInventory().setStackInSlot(l + k * 8, itemList.get(i1));
-                } else {
-                    gui.getInventory().setStackInSlot(l + k * 8, ItemStack.EMPTY);
-                }
+        for (int k = 0; k < SEARCH_ROWS; ++k) {
+            for (int l = 0; l < SEARCH_COLS; ++l) {
+                int idx = l + (k + j) * SEARCH_COLS;
+                ItemStack stack = idx >= 0 && idx < itemList.size() ? itemList.get(idx) : ItemStack.EMPTY;
+                gui.getInventory().setStackInSlot(l + k * SEARCH_COLS, stack);
             }
         }
     }
 
     public boolean hasMoreThan1PageOfItemsInList() {
-        return itemList.size() > 48;
+        return itemList.size() > SEARCH_COLS * SEARCH_ROWS;
     }
-
-//    @Override
-//    protected void retrySlotClick(int par1, int par2, boolean par3, EntityPlayer par4EntityPlayer) {
-//    }
 
     /**
      * Called when a player shift-clicks on a slot. You must override this or you will crash when someone does that.
@@ -73,12 +63,9 @@ public class ContainerSearcher extends Container {
         return ItemStack.EMPTY;
     }
 
-//    @Override
-//    public void putStacksInSlots(ItemStack[] p_75131_1_) {
-//    }
-
     @Override
     public void putStackInSlot(int par1, ItemStack par2ItemStack) {
-    } //override this to do nothing, as NEI tries to place items in this container which makes it crash.
+        // override this to do nothing, as NEI tries to place items in this container which makes it crash.
+    }
 
 }

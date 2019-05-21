@@ -10,19 +10,22 @@ import net.minecraftforge.oredict.OreDictionary;
 import javax.annotation.Nonnull;
 
 class SlotItemSpecific extends SlotItemHandler {
-    private Item itemAllowed;
-    private int oreDictEntry;
-    private boolean dye;
+    private final Item itemAllowed;
+    private final int oreDictEntry;
+    private final boolean dye;
 
     SlotItemSpecific(IItemHandler handler, Item itemAllowed, int index, int x, int y) {
         super(handler, index, x, y);
         this.itemAllowed = itemAllowed;
+        this.oreDictEntry = 0;
+        this.dye = false;
     }
 
     SlotItemSpecific(IItemHandler handler, String oreDictKeyAllowed, int index, int x, int y) {
         super(handler, index, x, y);
-        oreDictEntry = OreDictionary.getOreID(oreDictKeyAllowed);
-        dye = oreDictKeyAllowed.equals("dye");
+        this.itemAllowed = null;
+        this.oreDictEntry = OreDictionary.getOreID(oreDictKeyAllowed);
+        this.dye = oreDictKeyAllowed.equals("dye");
     }
 
     /**

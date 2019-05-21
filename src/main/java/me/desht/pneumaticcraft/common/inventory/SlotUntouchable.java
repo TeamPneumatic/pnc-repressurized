@@ -3,13 +3,14 @@ package me.desht.pneumaticcraft.common.inventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
 /**
  * @author CovertJaguar <http://www.railcraft.info>
  */
-public class SlotUntouchable extends SlotBase implements IPhantomSlot {
+public class SlotUntouchable extends SlotItemHandler implements IPhantomSlot {
     private boolean enabled = true;
 
     SlotUntouchable(IItemHandler handler, int slotIndex, int x, int y) {
@@ -28,11 +29,6 @@ public class SlotUntouchable extends SlotBase implements IPhantomSlot {
 
     @Override
     public boolean canAdjust() {
-        return false;
-    }
-
-    @Override
-    public boolean canShift() {
         return false;
     }
 

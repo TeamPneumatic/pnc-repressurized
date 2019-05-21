@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -19,7 +20,7 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase {
         gunInv = ItemMinigun.getMagazine(player.getHeldItemMainhand());
 
         for (int i = 0; i < gunInv.getSlots(); i++) {
-            addSlotToContainer(new SlotInventoryLimiting(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
+            addSlotToContainer(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
         }
 
         addPlayerSlots(player.inventory, 84);

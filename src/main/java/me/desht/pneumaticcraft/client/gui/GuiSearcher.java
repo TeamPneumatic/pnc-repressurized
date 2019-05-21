@@ -195,7 +195,6 @@ public class GuiSearcher extends InventoryEffectRenderer {
         ContainerSearcher containerSearcher = (ContainerSearcher) inventorySlots;
         containerSearcher.itemList.clear();
 
-        
         String s = searchField.getText().toLowerCase();
 
         List<ItemStack> applicableEntries = getSearchEntries()

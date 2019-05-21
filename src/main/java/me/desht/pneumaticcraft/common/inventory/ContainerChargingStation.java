@@ -7,6 +7,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -15,8 +16,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
     public ContainerChargingStation(InventoryPlayer inventoryPlayer, TileEntityChargingStation te) {
         super(te);
 
-        // add the cannoned slot.
-        addSlotToContainer(new SlotInventoryLimiting(te.getPrimaryInventory(), 0, 91, 39) {
+        addSlotToContainer(new SlotItemHandler(te.getPrimaryInventory(), 0, 91, 39) {
             @Override
             public int getSlotStackLimit() {
                 return 1;
