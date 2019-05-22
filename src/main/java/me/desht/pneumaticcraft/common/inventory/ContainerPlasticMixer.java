@@ -12,7 +12,7 @@ public class ContainerPlasticMixer extends ContainerPneumaticBase<TileEntityPlas
         addUpgradeSlots(11, 29);
 
         addSlotToContainer(new SlotItemHandler(te.getPrimaryInventory(), TileEntityPlasticMixer.INV_INPUT, 98, 26));
-        addSlotToContainer(new SlotItemHandler(te.getPrimaryInventory(), TileEntityPlasticMixer.INV_OUTPUT, 98, 58));
+        addSlotToContainer(new SlotOutput(te.getPrimaryInventory(), TileEntityPlasticMixer.INV_OUTPUT, 98, 58));
         for (int i = 0; i < 3; i++) {
             addSlotToContainer(new SlotItemHandler(te.getPrimaryInventory(), TileEntityPlasticMixer.INV_DYE_RED + i, 128, 20 + i * 18));
         }

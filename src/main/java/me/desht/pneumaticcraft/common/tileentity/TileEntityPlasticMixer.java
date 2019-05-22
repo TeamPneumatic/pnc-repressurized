@@ -27,6 +27,7 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
@@ -59,6 +60,7 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     private int fluidAmountScaled;
 
     private final ItemStackHandler inventory = new PlasticItemStackHandler();
+    private final IItemHandlerModifiable inventoryPublic = new PlasticItemStackHandlerPublic();
 
     private int lastTickInventoryStacksize;
     @GuiSynced
@@ -302,6 +304,8 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
+        } else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventoryPublic);
         } else {
             return super.getCapability(capability, facing);
         }
@@ -348,23 +352,57 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         }
     }
 
-    private class PlasticItemStackHandler extends FilteredItemStackHandler {
+    private class PlasticItemStackHandler extends BaseItemStackHandler {
         PlasticItemStackHandler() {
             super(TileEntityPlasticMixer.this, INVENTORY_SIZE);
         }
 
         @Override
-        public boolean test(Integer slot, ItemStack itemStack) {
-            if (itemStack.isEmpty()) return true;
+        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+            if (stack.isEmpty()) return true;
             switch (slot) {
-                case INV_INPUT: return PlasticMixerRegistry.INSTANCE.isValidInputItem(itemStack);
-                case INV_OUTPUT: return PlasticMixerRegistry.INSTANCE.isValidOutputItem(itemStack);
-                case INV_DYE_RED: return DyeUtils.rawDyeDamageFromStack(itemStack) == 1;
-                case INV_DYE_GREEN: return DyeUtils.rawDyeDamageFromStack(itemStack) == 2;
-                case INV_DYE_BLUE: return DyeUtils.rawDyeDamageFromStack(itemStack) == 4;
+                case INV_INPUT: return PlasticMixerRegistry.INSTANCE.isValidInputItem(stack);
+                case INV_OUTPUT: return PlasticMixerRegistry.INSTANCE.isValidOutputItem(stack);
+                case INV_DYE_RED: return DyeUtils.rawDyeDamageFromStack(stack) == EnumDyeColor.RED.getDyeDamage();
+                case INV_DYE_GREEN: return DyeUtils.rawDyeDamageFromStack(stack) == EnumDyeColor.GREEN.getDyeDamage();
+                case INV_DYE_BLUE: return DyeUtils.rawDyeDamageFromStack(stack) == EnumDyeColor.BLUE.getDyeDamage();
             }
             return false;
         }
+    }
 
+    private class PlasticItemStackHandlerPublic implements IItemHandlerModifiable {
+        @Override
+        public int getSlots() {
+            return INVENTORY_SIZE;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return inventory.getStackInSlot(slot);
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            return slot == INV_OUTPUT ? stack : inventory.insertItem(slot, stack, simulate);
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return slot == INV_OUTPUT ? inventory.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return inventory.getSlotLimit(slot);
+        }
+
+        @Override
+        public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+            inventory.setStackInSlot(slot, stack);
+        }
     }
 }
