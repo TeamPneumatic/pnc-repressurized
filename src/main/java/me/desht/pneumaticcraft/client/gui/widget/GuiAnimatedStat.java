@@ -12,6 +12,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -20,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -31,17 +33,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-/**
- * IMPORTANT: WHEN CHANGING THE PACKAGE OF THIS CLASS, ALSO EDIT GUIANIMATEDSTATSUPPLIER.JAVA!!
- */
-
 public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetListener {
     private static final int ANIMATED_STAT_SPEED = 30;
     private static final int WIDGET_SCROLLBAR_ID = -1000;
 
     private IGuiAnimatedStat affectingStat;
     private ItemStack iStack = ItemStack.EMPTY;
-    private String texture = "";
+    private String texture;
     private final GuiScreen gui;
     private final List<String> textList = new ArrayList<>();
     private final List<IGuiWidget> widgets = new ArrayList<>();
@@ -61,7 +59,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     private int backGroundColor;
     private Color bgColorHi, bgColorLo;
     private String title;
-    private boolean leftSided; // this boolean determines if the stat is going to expand to the left or right.
+    private boolean leftSided; // determines if the stat is going to expand to the left or right.
     private boolean doneExpanding;
     private RenderItem itemRenderer;
     private float textSize;
@@ -88,16 +86,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         setTitle(title);
         texture = "";
         this.leftSided = leftSided;
-        if (gui != null) {
-            ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-            if (sr.getScaledWidth() < 520) {
-                textSize = (sr.getScaledWidth() - 220) * 0.0033F;
-            } else {
-                textSize = 1F;
-            }
-        } else {
-            textSize = 1;
-        }
+        textSize = 1;
 
         affectedY = baseY;
         if (affectingStat != null) {
@@ -303,22 +292,10 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         oldWidth = width;
         oldHeight = height;
 
-        FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
         doneExpanding = true;
         if (isClicked) {
-            // calculate the width and height needed for the box to fit the strings.
-            int maxWidth = fontRenderer.getStringWidth(title);
-            for (String line : textList) {
-                if (fontRenderer.getStringWidth(line) > maxWidth) maxWidth = fontRenderer.getStringWidth(line);
-            }
-            maxWidth = (int) (maxWidth * textSize) + 20;
-
-            int maxHeight = title.isEmpty() ? 2 : 12;
-            if (!textList.isEmpty()) {
-                maxHeight += 4 + Math.min(MAX_LINES, textList.size()) * lineSpacing;
-            }
-            maxHeight -= (lineSpacing - fontRenderer.FONT_HEIGHT);
-            maxHeight = (int) (maxHeight * textSize);
+            Pair<Integer, Integer> maxSize = calculateMaxSize();
+            int maxWidth = maxSize.getLeft(), maxHeight = maxSize.getRight();
 
             // expand the box
             width = Math.min(maxWidth, width + ANIMATED_STAT_SPEED);
@@ -344,6 +321,50 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         if (affectingStat != null) {
             affectedY += affectingStat.getAffectedY() + affectingStat.getHeight();
         }
+    }
+
+    private Pair<Integer,Integer> calculateMaxSize() {
+        FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
+
+        // scale the box down if necessary to avoid extending beyond screen edge
+        // (should only be an issue for very low scaled X resolution)
+        int availableWidth;
+        if (gui instanceof GuiContainer) {
+            GuiContainer gc = (GuiContainer) gui;
+            availableWidth = leftSided ? gc.getGuiLeft() : gc.width - (gc.getGuiLeft() + gc.getXSize());
+        } else {
+            availableWidth = new ScaledResolution(Minecraft.getMinecraft()).getScaledWidth();
+        }
+
+        // calculate the width and height needed for the box to fit the strings.
+        int maxWidth = fontRenderer.getStringWidth(title);
+        for (String line : textList) {
+            maxWidth = Math.max(maxWidth, fontRenderer.getStringWidth(line));
+        }
+        maxWidth += 20;  // to allow space for the scrollbar, where necessary
+
+        int maxHeight = title.isEmpty() ? 6 : 16;
+        if (!textList.isEmpty()) {
+            maxHeight += Math.min(MAX_LINES, textList.size()) * lineSpacing;
+        }
+        maxHeight -= (lineSpacing - fontRenderer.FONT_HEIGHT);
+
+        float lastTextSize = textSize;
+        if (maxWidth > availableWidth - 3) {
+            textSize = (availableWidth - 3f) / maxWidth;
+            maxWidth = (int) (maxWidth * textSize);
+            maxHeight = (int) (maxHeight * textSize);
+        } else {
+            textSize = 1.0f;
+        }
+        if (lastTextSize != textSize) {
+            float newTextSize = textSize;
+            textSize = 1.0f;
+            scaleTextSize(newTextSize);
+        }
+
+        //noinspection SuspiciousNameCombination
+        return Pair.of(maxWidth, maxHeight);
     }
 
     @Override

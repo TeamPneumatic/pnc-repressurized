@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class ImmersiveEngineering implements IThirdParty {
 
     @GameRegistry.ObjectHolder("hemp")
-    public static final Block HEMP_BLOCK = null;
+    private static final Block HEMP_BLOCK = null;
 
     @Override
     public void preInit() {

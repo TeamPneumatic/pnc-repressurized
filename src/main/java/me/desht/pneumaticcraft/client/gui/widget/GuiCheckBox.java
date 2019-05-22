@@ -48,7 +48,7 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
             if (checked) {
                 GlStateManager.disableTexture2D();
                 if (enabled) {
-                    GlStateManager.color(1, 1, 1, 1);
+                    GlStateManager.color(0.5f, 1, 0.5f, 1);
                 } else {
                     GlStateManager.color(0.8f, 0.8f, 0.8f, 1);
                 }
@@ -62,7 +62,7 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
                 GlStateManager.enableTexture2D();
                 GlStateManager.color(0.25f, 0.25f, 0.25f, 1);
             }
-            Minecraft.getMinecraft().fontRenderer.drawString(I18n.format(text), x + 1 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2 - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2, enabled ? color : 0xFF888888);
+            Minecraft.getMinecraft().fontRenderer.drawString(I18n.format(text), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2 - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2, enabled ? color : 0xFF888888);
         }
     }
 

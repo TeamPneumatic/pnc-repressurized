@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
 import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry.PlasticMixerRecipe;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
@@ -63,27 +64,27 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
         PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(te.getTank().getFluid());
         Item targetItem = recipe == null ? Itemss.PLASTIC : recipe.getItemStack().getItem();
         selectionTab = addAnimatedStat("gui.tab.plasticMixer.plasticSelection", new ItemStack(targetItem, 1, 1), 0xFF005500, false);
-        selectionTab.addPadding(12, 21);
+        selectionTab.addPadding(12, 88 / fontRenderer.getStringWidth(" "));
 
         buttons = new GuiButtonSpecial[16];
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 int index = y * 4 + x;
                 ItemStack stack = new ItemStack(targetItem, 1, index);
-                buttons[index] = new GuiButtonSpecial(index + 1, x * 21 + 4, y * 21 + 30, 20, 20, "")
+                buttons[index] = new GuiButtonSpecial(index + 1, x * 21 + 15, y * 21 + 30, 20, 20, "")
                         .setRenderStacks(stack)
                         .setTooltipText(stack.getDisplayName());
                 selectionTab.addWidget(buttons[index]);
             }
         }
-        noItemsLabel = new WidgetLabel(5, 34, TextFormatting.GOLD.toString() + TextFormatting.ITALIC + I18n.format("gui.tab.plasticMixer.tankEmpty"));
+        noItemsLabel = new WidgetLabel(15, 34, TextFormatting.GOLD.toString() + TextFormatting.ITALIC + I18n.format("gui.tab.plasticMixer.tankEmpty"));
         selectionTab.addWidget(noItemsLabel);
-        amountLabel = new WidgetLabel(3, 118, "");
+        amountLabel = new WidgetLabel(15, 118, "");
         selectionTab.addWidget(amountLabel);
 
-        selectionTab.addWidget(lockSelection = new GuiCheckBox(17, 4, 18, 0xFF000000, "gui.plasticMixer.lockSelection")
+        selectionTab.addWidget(lockSelection = new GuiCheckBox(17, 15, 18, 0xFF000000, "gui.plasticMixer.lockSelection")
                 .setChecked(te.lockSelection)
-                .setTooltip(I18n.format("gui.plasticMixer.lockSelection.tooltip")));
+                .setTooltip(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.plasticMixer.lockSelection.tooltip"))));
 
         if (te.getTank().getFluid() != null && te.getTank().getFluid().amount > 0) {
             selectionTab.openWindow();
