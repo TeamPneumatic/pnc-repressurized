@@ -17,8 +17,8 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class GuiLiquidCompressor extends GuiPneumaticContainerBase<TileEntityLiquidCompressor> {
 
@@ -33,7 +33,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<TileEntityLiq
     @Override
     public void initGui() {
         super.initGui();
-        addWidget(new WidgetTank(0, guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
+        addWidget(new WidgetTank(-1, guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
         addAnimatedStat("gui.tab.liquidCompressor.fuel", new ItemStack(Items.LAVA_BUCKET), 0xFFFF6600, true).setTextWithoutCuttingString(getAllFuels());
     }
 
