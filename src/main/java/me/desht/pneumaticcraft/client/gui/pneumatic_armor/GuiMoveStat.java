@@ -2,14 +2,18 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
@@ -22,6 +26,7 @@ public class GuiMoveStat extends GuiScreen {
     private final IUpgradeRenderHandler renderHandler;
     private boolean clicked = false;
     private final List<IGuiAnimatedStat> otherStats = new ArrayList<>();
+    private final List<String> helpText = new ArrayList<>();
 
     GuiMoveStat(IUpgradeRenderHandler renderHandler) {
         this(renderHandler, renderHandler.getAnimatedStat());
@@ -100,7 +105,9 @@ public class GuiMoveStat extends GuiScreen {
     @Override
     public void drawScreen(int x, int y, float partialTicks) {
         drawDefaultBackground();
-        drawString(fontRenderer, "Middle mouse click to switch between expansion to the right or left", 5, 5, 0xFFFFFFFF);
+
+        GuiUtils.showPopupHelpScreen(this, fontRenderer, helpText);
+
         super.drawScreen(x, y, partialTicks);
 
         movedStat.render(-1, -1, partialTicks);
@@ -119,5 +126,17 @@ public class GuiMoveStat extends GuiScreen {
 
         movedStat.update();
         otherStats.forEach(IGuiAnimatedStat::update);
+
+        if (helpText.isEmpty()) {
+            helpText.add(TextFormatting.UNDERLINE + "" + TextFormatting.GREEN + "Moving " + I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandler.getUpgradeName()));
+            helpText.add("");
+            helpText.add("Left- or Right-Click: move the highlighted stat");
+            helpText.add("...");
+        }
+        helpText.set(3, "Stat expands " + getDir(movedStat.isLeftSided()) + ". Middle-click: expand " + getDir(!movedStat.isLeftSided()));
+    }
+
+    private String getDir(boolean left) {
+        return TextFormatting.YELLOW + (left ? "Left" : "Right") + TextFormatting.RESET;
     }
 }

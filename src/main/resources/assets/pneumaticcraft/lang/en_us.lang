@@ -926,7 +926,7 @@ pneumaticHelmet.upgrade.entityTracker=Entity Tracker
 pneumaticHelmet.upgrade.itemSearcher=Item Search Upgrade
 pneumaticHelmet.upgrade.coordinateTracker=Coordinate Tracker
 pneumaticHelmet.upgrade.hackingUpgrade=Hacking Upgrade
-pneumaticHelmet.upgrade.coreComponents=Pneumatic Armor
+pneumaticHelmet.upgrade.coreComponents=Core Components
 pneumaticHelmet.upgrade.droneDebugger=Drone Debugger
 pneumaticHelmet.upgrade.nightVision=Night Vision
 # Pneumatic Chestplate upgrades
