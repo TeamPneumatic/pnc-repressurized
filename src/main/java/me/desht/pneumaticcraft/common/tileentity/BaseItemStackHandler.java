@@ -9,6 +9,10 @@ import net.minecraftforge.items.ItemStackHandler;
 public class BaseItemStackHandler extends ItemStackHandler {
     protected final TileEntity te;
 
+    public BaseItemStackHandler(int size) {
+        this(null, size);
+    }
+
     protected BaseItemStackHandler(TileEntity te, int size) {
         super(size);
         this.te = te;

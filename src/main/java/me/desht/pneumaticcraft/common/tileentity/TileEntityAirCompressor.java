@@ -41,13 +41,14 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
     @GuiSynced
     public int curFuelUsage;
-    private class AirCompressorHandler extends FilteredItemStackHandler {
 
+    private class AirCompressorHandler extends BaseItemStackHandler {
         AirCompressorHandler() {
             super(TileEntityAirCompressor.this, INVENTORY_SIZE);
         }
+
         @Override
-        public boolean test(Integer slot, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return slot == FUEL_SLOT &&
                     (itemStack.isEmpty() || TileEntityFurnace.isItemFuel(itemStack) && FluidUtil.getFluidContained(itemStack) == null);
         }

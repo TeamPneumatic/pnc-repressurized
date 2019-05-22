@@ -456,13 +456,13 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         return tag;
     }
 
-    private class AirCannonStackHandler extends FilteredItemStackHandler {
+    private class AirCannonStackHandler extends BaseItemStackHandler {
         AirCannonStackHandler(TileEntity te) {
             super(te, INVENTORY_SIZE);
         }
 
         @Override
-        public boolean test(Integer slot, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             if (slot == GPS_SLOT) {
                 return itemStack.isEmpty() || itemStack.getItem() instanceof IPositionProvider;
             } else {

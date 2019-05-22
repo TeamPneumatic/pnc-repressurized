@@ -249,7 +249,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
     */
 
-    private class LightBoxItemHandlerInternal extends FilteredItemStackHandler {
+    private class LightBoxItemHandlerInternal extends BaseItemStackHandler {
         LightBoxItemHandlerInternal() {
             super(TileEntityUVLightBox.this, INVENTORY_SIZE);
         }
@@ -260,7 +260,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         }
 
         @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || itemStack.getItem() instanceof ItemEmptyPCB;
         }
 

@@ -84,9 +84,9 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     @DescSynced
     private float fuelQuality = -1f; // the quality of the liquid currently in the tank; basically, its burn time
 
-    private final ItemStackHandler inventory = new FilteredItemStackHandler(this, INVENTORY_SIZE) {
+    private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
-        public boolean test(Integer slot, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack) != null;
         }
     };

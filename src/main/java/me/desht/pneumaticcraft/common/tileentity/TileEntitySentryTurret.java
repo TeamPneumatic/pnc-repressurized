@@ -194,18 +194,19 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         return Blockss.SENTRY_TURRET.getTranslationKey();
     }
 
-    private class TurretItemStackHandler extends FilteredItemStackHandler {
+    private class TurretItemStackHandler extends BaseItemStackHandler {
         TurretItemStackHandler(TileEntity te) {
             super(te, INVENTORY_SIZE);
         }
 
         @Override
         protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
             updateAmmo();
         }
 
         @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || itemStack.getItem() instanceof ItemGunAmmo;
         }
     }

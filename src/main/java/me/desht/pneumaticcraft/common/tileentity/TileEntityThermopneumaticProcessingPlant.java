@@ -70,9 +70,9 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     private IThermopneumaticProcessingPlantRecipe currentRecipe;
     private boolean searchForRecipe = true;
 
-    private final ItemStackHandler handler = new FilteredItemStackHandler(this, INVENTORY_SIZE) {
+    private final ItemStackHandler handler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty()
                     || BasicThermopneumaticProcessingPlantRecipe.recipes.stream().anyMatch(r -> r.isValidInput(itemStack));
         }

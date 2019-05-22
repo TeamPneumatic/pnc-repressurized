@@ -690,13 +690,13 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return upgradeCache;
     }
 
-    public class UpgradeHandler extends FilteredItemStackHandler {
+    public class UpgradeHandler extends BaseItemStackHandler {
         UpgradeHandler(int upgradeSize) {
             super(TileEntityBase.this, upgradeSize);
         }
 
         @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty()
                     || applicableUpgrades.contains(itemStack.getItem())
                     || applicableCustomUpgrades.contains(makeUpgradeKey(itemStack));

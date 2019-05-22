@@ -239,7 +239,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         return getRotation();
     }
 
-    private class ProgrammableItemStackHandler extends FilteredItemStackHandler {
+    private class ProgrammableItemStackHandler extends BaseItemStackHandler {
         ProgrammableItemStackHandler(TileEntity te) {
             super(te, INVENTORY_SIZE);
         }
@@ -271,7 +271,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         }
 
         @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || isProgrammableAndValidForDrone(TileEntityProgrammableController.this, itemStack);
         }
     }

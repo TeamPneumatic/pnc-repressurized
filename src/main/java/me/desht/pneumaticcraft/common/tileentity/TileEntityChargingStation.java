@@ -316,7 +316,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         GlobalTileEntityCacheManager.getInstance().chargingStations.add(this);
     }
 
-    private class ChargingStationHandler extends FilteredItemStackHandler {
+    private class ChargingStationHandler extends BaseItemStackHandler {
         ChargingStationHandler() {
             super(TileEntityChargingStation.this, INVENTORY_SIZE);
         }
@@ -327,7 +327,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         }
 
         @Override
-        public boolean test(Integer slot, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return slot == CHARGE_INVENTORY_INDEX && (itemStack.isEmpty() || itemStack.getItem() instanceof IPressurizable);
         }
 

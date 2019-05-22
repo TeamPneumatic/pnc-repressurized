@@ -14,7 +14,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.tileentity.FilteredItemStackHandler;
+import me.desht.pneumaticcraft.common.tileentity.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -210,7 +210,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         return TextFormatting.GREEN + I18n.format("gui.tooltip.gunAmmo.loaded");
     }
 
-    public static class MagazineHandler extends FilteredItemStackHandler {
+    public static class MagazineHandler extends BaseItemStackHandler {
         private final ItemStack gunStack;
 
         MagazineHandler(ItemStack gunStack) {
@@ -228,7 +228,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         }
 
         @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || itemStack.getItem() instanceof ItemGunAmmo;
         }
 

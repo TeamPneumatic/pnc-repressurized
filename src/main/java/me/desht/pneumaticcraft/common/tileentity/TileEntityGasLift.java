@@ -47,9 +47,9 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
 
     @GuiSynced
     private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
-    private final ItemStackHandler inventory = new FilteredItemStackHandler(this, INVENTORY_SIZE) {
+    private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty()
                     || itemStack.getItem() instanceof ItemBlock && ((ItemBlock) itemStack.getItem()).getBlock() instanceof BlockPressureTube;
         }

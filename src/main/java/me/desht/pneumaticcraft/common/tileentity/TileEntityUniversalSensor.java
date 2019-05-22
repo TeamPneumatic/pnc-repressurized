@@ -89,7 +89,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
             addApplicableUpgrade(upgrade);
         }
         addApplicableUpgrade(EnumUpgrade.RANGE);
-        upgradeHandler = new UniversalSensorUpgradeHandler(this);  // custom upgrade inventory
+        upgradeHandler = new UniversalSensorUpgradeHandler();  // custom upgrade inventory
     }
 
     @Override
@@ -561,26 +561,25 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     private class UniversalSensorUpgradeHandler extends UpgradeHandler {
-        private final TileEntityUniversalSensor te;
-
-        UniversalSensorUpgradeHandler(TileEntityUniversalSensor te) {
+        UniversalSensorUpgradeHandler() {
             super(INVENTORY_SIZE);
-            this.te = te;
         }
 
         @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || getApplicableUpgrades().contains(itemStack.getItem()) || itemStack.getItem() == Itemss.GPS_TOOL;
         }
 
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
-            if (!getWorld().isRemote && !getSensorSetting().equals("")
+
+            if (!getWorld().isRemote && !getSensorSetting().isEmpty()
                     && !areGivenUpgradesInserted(SensorHandler.getInstance().getRequiredStacksFromText(getSensorSetting()))) {
                 setSensorSetting("");
             }
-            te.setupGPSPositions();
+
+            setupGPSPositions();
         }
     }
 

@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -31,9 +32,9 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     private static final int PROGRAM_INVENTORY_INDEX = 0;
     private static final int INVENTORY_SIZE = 1;
 
-    private final FilteredItemStackHandler inventory = new FilteredItemStackHandler(this, INVENTORY_SIZE) {
+    private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
-        public boolean test(Integer integer, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || itemStack.getItem() == Itemss.ASSEMBLY_PROGRAM;
         }
     };

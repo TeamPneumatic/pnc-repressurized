@@ -503,7 +503,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         canRedo = historyIndex < history.tagCount() - 1;
     }
 
-    private class ProgrammerItemHandler extends FilteredItemStackHandler {
+    private class ProgrammerItemHandler extends BaseItemStackHandler {
         ProgrammerItemHandler() {
             super(TileEntityProgrammer.this, INVENTORY_SIZE);
         }
@@ -517,7 +517,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         }
 
         @Override
-        public boolean test(Integer slot, ItemStack itemStack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.getItem() instanceof IProgrammable && ((IProgrammable) itemStack.getItem()).canProgram(itemStack);
         }
     }
