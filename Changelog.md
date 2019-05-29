@@ -11,7 +11,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Plastic Mixer allowing items to be piped into the output slot.
 * Fixed clicking the tank in the Liquid Compressor GUI causing the machine's redstone mode to be changed.
 * Fixed problem where Plastic Mixer "Item Selection" GUI side tab could sometimes be too small (depending on screen resolution), causing buttons to be outside the tab's area, and unclickable.
-
+* Fixed Chestplate upgrades being missing in charging station upgrade GUI when Tough As Nails not installed.
 ### 0.11.0-357 (20 May 2019)
 #### New
 * Added the Redstone Module, a tube module that allows redstone signals to be transmitted along pressure tubes.

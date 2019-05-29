@@ -2,15 +2,14 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderCoordWireframe;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.recipes.factories.OneProbeRecipeFactory;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -160,26 +159,21 @@ public class ItemPneumaticArmor extends ItemArmor
 
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
             Set<Item> upgrades = applicableUpgrades.get(slot.getIndex());
-            for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
-                Collections.addAll(upgrades, handler.getRequiredUpgrades());
-            }
+            UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).forEach(
+                    handler -> Arrays.stream(handler.getRequiredUpgrades())
+                            .filter(Objects::nonNull)
+                            .forEach(upgrades::add)
+            );
+            // common to all armor pieces but don't have a specific handler
             addApplicableUpgrade(slot, EnumUpgrade.SPEED);
             addApplicableUpgrade(slot, EnumUpgrade.VOLUME);
             addApplicableUpgrade(slot, EnumUpgrade.ITEM_LIFE);
             addApplicableUpgrade(slot, EnumUpgrade.ARMOR);
             addApplicableUpgrade(slot, EnumUpgrade.THAUMCRAFT);
         }
+        // piece-specific upgrades which don't have a specific handler
         addApplicableUpgrade(EntityEquipmentSlot.HEAD, EnumUpgrade.RANGE);
-        addApplicableUpgrade(EntityEquipmentSlot.HEAD, EnumUpgrade.SECURITY);
-        addApplicableUpgrade(EntityEquipmentSlot.HEAD, EnumUpgrade.NIGHT_VISION);
-        addApplicableUpgrade(EntityEquipmentSlot.HEAD, EnumUpgrade.SCUBA);
-        addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.CHARGING);
         addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.SECURITY);
-        addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.MAGNET);
-        addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.DISPENSER);
-        addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.AIR_CONDITIONING);
-        addApplicableUpgrade(EntityEquipmentSlot.LEGS, EnumUpgrade.RANGE);
-        addApplicableUpgrade(EntityEquipmentSlot.FEET, EnumUpgrade.JET_BOOTS);
     }
 
     private static void addApplicableUpgrade(EntityEquipmentSlot slot, EnumUpgrade what) {
