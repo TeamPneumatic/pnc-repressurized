@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class ServerProxy implements IProxy {
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
@@ -71,5 +72,10 @@ public class ServerProxy implements IProxy {
     @Override
     public int particleLevel() {
         return 0;
+    }
+
+    @Override
+    public Pair<Integer, Integer> getScaledScreenSize() {
+        return Pair.of(0, 0);
     }
 }

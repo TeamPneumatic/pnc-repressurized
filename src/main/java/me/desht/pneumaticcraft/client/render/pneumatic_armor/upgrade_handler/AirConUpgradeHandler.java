@@ -7,10 +7,8 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiAirConditionerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -27,9 +25,6 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
 
     @SideOnly(Side.CLIENT)
     private GuiAnimatedStat acStat;
-    private int statX;
-    private int statY;
-    private boolean statLeftSided;
 
     @Override
     public String getUpgradeName() {
@@ -75,29 +70,17 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
     }
 
     @Override
-    public void initConfig() {
-        statX = ConfigHandler.helmetOptions.acStatX;
-        statY = ConfigHandler.helmetOptions.acStatY;
-        statLeftSided = ConfigHandler.helmetOptions.acStatLeft;
-    }
-
-    @Override
-    public void saveToConfig() {
-        ConfigHandler.helmetOptions.acStatX = statX = acStat.getBaseX();
-        ConfigHandler.helmetOptions.acStatY = statY = acStat.getBaseY();
-        ConfigHandler.helmetOptions.acStatLeft = statLeftSided = acStat.isLeftSided();
-        ConfigHandler.sync();
-    }
-
-    @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (acStat == null) {
-            Minecraft minecraft = Minecraft.getMinecraft();
-            ScaledResolution sr = new ScaledResolution(minecraft);
-            acStat = new GuiAnimatedStat(null, "", "",
-                    statX != -1 ? statX : sr.getScaledWidth() - 2, statY, 0x3000AA00, null, statLeftSided);
+            acStat = new GuiAnimatedStat(null, "", GuiAnimatedStat.StatIcon.NONE,
+                    0x3000AA00, null, ArmorHUDLayout.INSTANCE.airConStat);
             acStat.setMinDimensionsAndReset(0, 0);
         }
         return acStat;
+    }
+
+    @Override
+    public void onResolutionChanged() {
+        acStat = null;
     }
 }

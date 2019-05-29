@@ -5,9 +5,9 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.KeyHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -21,16 +21,6 @@ public class HackUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     public String getUpgradeName() {
         return "hackingUpgrade";
-    }
-
-    @Override
-    public void initConfig() {
-
-    }
-
-    @Override
-    public void saveToConfig() {
-
     }
 
     @Override

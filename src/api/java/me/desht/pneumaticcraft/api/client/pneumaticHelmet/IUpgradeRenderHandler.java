@@ -24,14 +24,14 @@ public interface IUpgradeRenderHandler {
      * This is called from PneumaticCraft's config handler in the pre-init phase. You can use this method to read
      * settings such as stat positions.
      */
-    void initConfig();
+    default void initConfig() {}
 
     /**
      * When called this should save the settings to the config file. Called when changed a setting. When you want to use
      * PneumaticCraft's config file, save a reference of it somewhere in this class when the config gets passed in the
      * initConfig() method (this always will be called first).
      */
-    void saveToConfig();
+    default void saveToConfig() {}
 
     /**
      * This method will be called every client tick, and should be used to update logic like the tracking and velocities
@@ -117,19 +117,16 @@ public interface IUpgradeRenderHandler {
     EntityEquipmentSlot getEquipmentSlot();
 
     /**
+     * Called when the screen resolution has changed.  This can be used to reset IGuiAnimatedState positions,
+     * for example.
+     */
+    default void onResolutionChanged() {
+    }
+
+    /**
      * Convenience class for simple toggleable armor features with no additional settings.
      */
     abstract class SimpleToggleableRenderHandler implements IUpgradeRenderHandler {
-        @Override
-        public void initConfig() {
-
-        }
-
-        @Override
-        public void saveToConfig() {
-
-        }
-
         @Override
         public void update(EntityPlayer player, int rangeUpgrades) {
 

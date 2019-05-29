@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -40,7 +39,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
         guiSelectButton = new GuiButtonSpecial(1, xStart + 89, yStart + 15, 21, 20, "");
-        guiSelectButton.setRenderedIcon(new ResourceLocation(Textures.GUI_UPGRADES_LOCATION));
+        guiSelectButton.setRenderedIcon(Textures.GUI_UPGRADES_LOCATION);
         buttonList.add(guiSelectButton);
     }
 

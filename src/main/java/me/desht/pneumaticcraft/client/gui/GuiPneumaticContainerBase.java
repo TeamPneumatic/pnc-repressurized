@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -64,7 +65,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         this.guiTexture = guiTexture != null ? new ResourceLocation(guiTexture) : null;
     }
 
-    protected GuiAnimatedStat addAnimatedStat(String title, @Nonnull ItemStack icon, int color, boolean leftSided) {
+    private GuiAnimatedStat addAnimatedStat(String title, StatIcon icon, int color, boolean leftSided) {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
@@ -79,19 +80,16 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         return stat;
     }
 
-    protected GuiAnimatedStat addAnimatedStat(String title, String icon, int color, boolean leftSided) {
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
+    protected GuiAnimatedStat addAnimatedStat(String title, @Nonnull ItemStack icon, int color, boolean leftSided) {
+        return addAnimatedStat(title, StatIcon.of(icon), color, leftSided);
+    }
 
-        GuiAnimatedStat stat = new GuiAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : xSize + 1), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
-        stat.setBeveled(true);
-        addWidget(stat);
-        if (leftSided) {
-            lastLeftStat = stat;
-        } else {
-            lastRightStat = stat;
-        }
-        return stat;
+    protected GuiAnimatedStat addAnimatedStat(String title, ResourceLocation icon, int color, boolean leftSided) {
+        return addAnimatedStat(title, StatIcon.of(icon), color, leftSided);
+    }
+
+    protected GuiAnimatedStat addAnimatedStat(String title, int color, boolean leftSided) {
+        return addAnimatedStat(title, StatIcon.NONE, color, leftSided);
     }
 
     protected void addWidget(IGuiWidget widget) {
@@ -125,7 +123,7 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             pressureStat = this.addAnimatedStat("gui.tab.pressure", new ItemStack(Blockss.PRESSURE_TUBE), 0xFF00AA00, false);
         }
         if (shouldAddProblemTab()) {
-            problemTab = addAnimatedStat("gui.tab.problems", "", 0xFFA0A0A0, false);
+            problemTab = addAnimatedStat("gui.tab.problems", 0xFFA0A0A0, false);
         }
         if (te != null) {
             if (shouldAddInfoTab()) {
@@ -497,8 +495,8 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         drawHoveringText(text, x, y, fontRenderer);
     }
 
-    public static void drawTexture(String texture, int x, int y) {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiUtils.getResourceLocation(texture));
+    public static void drawTexture(ResourceLocation texture, int x, int y) {
+        Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         wr.pos(x, y + 16, 0).tex(0.0, 1.0).endVertex();

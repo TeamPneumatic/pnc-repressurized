@@ -8,11 +8,9 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainOptions;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -29,43 +27,10 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     private GuiAnimatedStat powerStat;
     public GuiAnimatedStat testMessageStat;
 
-    private int powerStatX;
-    private int powerStatY;
-    private boolean powerStatLeftSided;
-    public int messagesStatX;
-    public int messagesStatY;
-    public boolean messagesStatLeftSided;
-
     @Override
     @SideOnly(Side.CLIENT)
     public String getUpgradeName() {
         return "coreComponents";
-    }
-
-    @Override
-    public void initConfig() {
-        powerStatX = ConfigHandler.helmetOptions.powerX;
-        powerStatY = ConfigHandler.helmetOptions.powerY;
-        powerStatLeftSided = ConfigHandler.helmetOptions.powerLeft;
-        messagesStatX = ConfigHandler.helmetOptions.messageX;
-        messagesStatY = ConfigHandler.helmetOptions.messageY;
-        messagesStatLeftSided = ConfigHandler.helmetOptions.messageLeft;
-    }
-
-    @Override
-    public void saveToConfig() {
-        if (powerStat != null) {
-            ConfigHandler.helmetOptions.powerX = powerStatX = powerStat.getBaseX();
-            ConfigHandler.helmetOptions.powerY = powerStatY = powerStat.getBaseY();
-            ConfigHandler.helmetOptions.powerLeft = powerStatLeftSided = powerStat.isLeftSided();
-        }
-        if (testMessageStat != null) {
-            ConfigHandler.helmetOptions.messageX = messagesStatX = testMessageStat.getBaseX();
-            ConfigHandler.helmetOptions.messageY = messagesStatY = testMessageStat.getBaseY();
-            ConfigHandler.helmetOptions.messageLeft = messagesStatLeftSided = testMessageStat.isLeftSided();
-        }
-
-        ConfigHandler.sync();
     }
 
     @Override
@@ -108,9 +73,7 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     @SideOnly(Side.CLIENT)
     public IGuiAnimatedStat getAnimatedStat() {
         if (powerStat == null) {
-            Minecraft minecraft = Minecraft.getMinecraft();
-            ScaledResolution sr = new ScaledResolution(minecraft);
-            powerStat = new GuiAnimatedStat(null, "", "", powerStatX != -1 ? powerStatX : sr.getScaledWidth() - 2, powerStatY, 0x3000AA00, null, powerStatLeftSided);
+            powerStat = new GuiAnimatedStat(null, "", GuiAnimatedStat.StatIcon.NONE,0x3000AA00, null, ArmorHUDLayout.INSTANCE.powerStat);
             powerStat.setLineSpacing(15);
             powerStat.setWidgetOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
@@ -159,4 +122,8 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
         return EntityEquipmentSlot.HEAD;
     }
 
+    @Override
+    public void onResolutionChanged() {
+        powerStat = null;
+    }
 }

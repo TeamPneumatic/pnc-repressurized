@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.GuiUtils;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
@@ -19,7 +20,6 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
@@ -52,7 +52,7 @@ public class GuiEntityTrackOptions implements IOptionPage {
         warningButton = new GuiButtonSpecial(1, 175, 57, 20, 20, "");
         warningButton.setVisible(false);
         warningButton.visible = false;
-        warningButton.setRenderedIcon(new ResourceLocation(Textures.GUI_PROBLEMS_TEXTURE));
+        warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         gui.getButtonList().add(warningButton);
 
         validateEntityFilter(textField.getText());
@@ -62,7 +62,7 @@ public class GuiEntityTrackOptions implements IOptionPage {
     public void actionPerformed(GuiButton button) {
         if (button.id == 10) {
             Minecraft.getMinecraft().player.closeScreen();
-            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler));
+            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.ENTITY_TRACKER));
         }
     }
 

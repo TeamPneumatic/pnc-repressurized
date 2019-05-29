@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.GuiSearcher;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.SearchUpgradeHandler;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateSearchStack;
@@ -57,7 +58,7 @@ public class GuiSearchUpgradeOptions implements IOptionPage {
             }
             Minecraft.getMinecraft().displayGuiScreen(searchGui);
         } else {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler));
+            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.ITEM_SEARCH));
         }
     }
 

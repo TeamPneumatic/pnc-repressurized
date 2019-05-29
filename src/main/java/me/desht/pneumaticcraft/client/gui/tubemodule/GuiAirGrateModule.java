@@ -38,7 +38,7 @@ public class GuiAirGrateModule extends GuiTubeModule {
 
         warningButton = new GuiButtonSpecial(3, guiLeft + 152, guiTop + 20, 20, 20, "");
         warningButton.setVisible(false);
-        warningButton.setRenderedIcon(new ResourceLocation(Textures.GUI_PROBLEMS_TEXTURE));
+        warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         buttonList.add(warningButton);
 
         validateEntityFilter(textfield.getText());

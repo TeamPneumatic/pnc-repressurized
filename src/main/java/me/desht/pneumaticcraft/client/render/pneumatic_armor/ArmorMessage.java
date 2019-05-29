@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,8 +19,7 @@ public class ArmorMessage {
 
     public ArmorMessage(String title, List<String> message, int duration, int backColor) {
         lifeSpan = duration;
-        MainHelmetHandler mainOptions = HUDHandler.instance().getSpecificRenderer(MainHelmetHandler.class);
-        stat = new GuiAnimatedStat(null, title, "", mainOptions.messagesStatX, mainOptions.messagesStatY, backColor, null, mainOptions.messagesStatLeftSided);
+        stat = new GuiAnimatedStat(null, title, GuiAnimatedStat.StatIcon.NONE, backColor, null, ArmorHUDLayout.INSTANCE.messageStat);
         stat.setMinDimensionsAndReset(0, 0);
         stat.setText(message);
         EntityPlayer player = FMLClientHandler.instance().getClient().player;
@@ -43,6 +42,5 @@ public class ArmorMessage {
             stat.closeWindow();
         }
         stat.render(-1, -1, partialTicks);
-        // PneumaticCraftUtils.getPartOfString(
     }
 }

@@ -12,11 +12,12 @@ import me.desht.pneumaticcraft.client.model.CamoModel;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassBakedModel;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
@@ -24,6 +25,7 @@ import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -34,6 +36,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -66,11 +69,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fluids.*;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Quaternion;
 
@@ -87,6 +92,8 @@ public class ClientEventHandler {
 
     public static float playerRenderPartialTick;
     private final RenderProgressingLine minigunFire = new RenderProgressingLine().setProgress(1);
+    private static int lastWidth = -1;
+    private static int lastHeight = -1;
 
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {
@@ -614,6 +621,32 @@ public class ClientEventHandler {
             Tessellator.getInstance().draw();
             GlStateManager.enableTexture2D();
         }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogin(EntityJoinWorldEvent event) {
+        if (event.getEntity() instanceof EntityPlayerSP) {
+            ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+            ArmorHUDLayout.INSTANCE.maybeImportLegacySettings(sr.getScaledWidth(), sr.getScaledHeight());
+        }
+    }
+
+    @SubscribeEvent
+    public void handleResolutionChange(GuiScreenEvent.InitGuiEvent event) {
+        GuiScreen gui = event.getGui();
+        if (gui.mc.world != null) {
+            ScaledResolution sr = new ScaledResolution(gui.mc);
+            if (sr.getScaledWidth() != lastWidth || sr.getScaledHeight() != lastHeight) {
+                HUDHandler.instance().onResolutionChanged();
+                lastWidth = sr.getScaledWidth();
+                lastHeight = sr.getScaledHeight();
+            }
+        }
+    }
+
+    public static Pair<Integer,Integer> getScaledScreenSize() {
+        //noinspection SuspiciousNameCombination
+        return Pair.of(lastWidth, lastHeight);
     }
 }
 

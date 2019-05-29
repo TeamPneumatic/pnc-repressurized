@@ -11,15 +11,13 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,9 +40,6 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     private static final int BLOCK_TRACKING_RANGE = 30;
     private final List<RenderBlockTarget> blockTargets = new ArrayList<>();
     private GuiAnimatedStat blockTrackInfo;
-    private int statX;
-    private int statY;
-    private boolean statLeftSided;
     private int[] blockTypeCount;
     private int ticksExisted;
     private int updateInterval = 20;
@@ -55,21 +50,6 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     public String getUpgradeName() {
         return "blockTracker";
-    }
-
-    @Override
-    public void initConfig() {
-        statX = ConfigHandler.helmetOptions.blockTrackerX;
-        statY = ConfigHandler.helmetOptions.blockTrackerY;
-        statLeftSided = ConfigHandler.helmetOptions.blockTrackerLeft;
-    }
-
-    @Override
-    public void saveToConfig() {
-        ConfigHandler.helmetOptions.blockTrackerX = statX = blockTrackInfo.getBaseX();
-        ConfigHandler.helmetOptions.blockTrackerY = statY = blockTrackInfo.getBaseY();
-        ConfigHandler.helmetOptions.blockTrackerLeft = statLeftSided = blockTrackInfo.isLeftSided();
-        ConfigHandler.sync();
     }
 
     @Override
@@ -252,9 +232,9 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     public GuiAnimatedStat getAnimatedStat() {
         if (blockTrackInfo == null) {
-            Minecraft minecraft = Minecraft.getMinecraft();
-            ScaledResolution sr = new ScaledResolution(minecraft);
-            blockTrackInfo = new GuiAnimatedStat(null, "Current tracked blocks:", CraftingRegistrator.getUpgrade(EnumUpgrade.BLOCK_TRACKER), statX != -1 ? statX : sr.getScaledWidth() - 2, statY, 0x3000AA00, null, statLeftSided);
+            GuiAnimatedStat.StatIcon icon = GuiAnimatedStat.StatIcon.of(CraftingRegistrator.getUpgrade(EnumUpgrade.BLOCK_TRACKER));
+            blockTrackInfo = new GuiAnimatedStat(null, "Current tracked blocks:",
+                    icon, 0x3000AA00, null, ArmorHUDLayout.INSTANCE.blockTrackerStat);
             blockTrackInfo.setMinDimensionsAndReset(0, 0);
         }
         return blockTrackInfo;
@@ -284,4 +264,8 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
         return false;
     }
 
+    @Override
+    public void onResolutionChanged() {
+        blockTrackInfo = null;
+    }
 }

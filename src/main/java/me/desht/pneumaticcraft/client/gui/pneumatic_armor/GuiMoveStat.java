@@ -8,9 +8,11 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.text.TextFormatting;
@@ -27,14 +29,16 @@ public class GuiMoveStat extends GuiScreen {
     private boolean clicked = false;
     private final List<IGuiAnimatedStat> otherStats = new ArrayList<>();
     private final List<String> helpText = new ArrayList<>();
+    private final ArmorHUDLayout.LayoutTypes layoutItem;
 
-    GuiMoveStat(IUpgradeRenderHandler renderHandler) {
-        this(renderHandler, renderHandler.getAnimatedStat());
+    GuiMoveStat(IUpgradeRenderHandler renderHandler, ArmorHUDLayout.LayoutTypes layoutItem) {
+        this(renderHandler, layoutItem, renderHandler.getAnimatedStat());
     }
 
-    GuiMoveStat(IUpgradeRenderHandler renderHandler, @Nonnull IGuiAnimatedStat movedStat) {
+    GuiMoveStat(IUpgradeRenderHandler renderHandler, ArmorHUDLayout.LayoutTypes layoutItem, @Nonnull IGuiAnimatedStat movedStat) {
         this.movedStat = movedStat;
         this.renderHandler = renderHandler;
+        this.layoutItem = layoutItem;
 
         movedStat.openWindow();
 
@@ -55,7 +59,7 @@ public class GuiMoveStat extends GuiScreen {
         MainHelmetHandler mainOptions = HUDHandler.instance().getSpecificRenderer(MainHelmetHandler.class);
         if (movedStat != mainOptions.testMessageStat) {
             mainOptions.testMessageStat = new GuiAnimatedStat(null, "Test Message, keep in mind messages can be long!",
-                    mainOptions.messagesStatX, mainOptions.messagesStatY, 0x7000AA00, null, mainOptions.messagesStatLeftSided);
+                    GuiAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
             mainOptions.testMessageStat.openWindow();
             otherStats.add(mainOptions.testMessageStat);
         }
@@ -73,7 +77,7 @@ public class GuiMoveStat extends GuiScreen {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (mouseButton == 2) {
             movedStat.setLeftSided(!movedStat.isLeftSided());
-            renderHandler.saveToConfig();
+            save();
         } else if (mouseButton < 2) {
             clicked = true;
             movedStat.setBaseX(mouseX);
@@ -88,7 +92,7 @@ public class GuiMoveStat extends GuiScreen {
                 movedStat.setBaseX(mouseX);
                 movedStat.setBaseY(mouseY);
             }
-            renderHandler.saveToConfig();
+            save();
             clicked = false;
         }
     }
@@ -128,7 +132,8 @@ public class GuiMoveStat extends GuiScreen {
         otherStats.forEach(IGuiAnimatedStat::update);
 
         if (helpText.isEmpty()) {
-            helpText.add(TextFormatting.UNDERLINE + "" + TextFormatting.GREEN + "Moving " + I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandler.getUpgradeName()));
+            helpText.add(TextFormatting.GREEN + "" + TextFormatting.UNDERLINE + "Moving: "
+                    + I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandler.getUpgradeName()));
             helpText.add("");
             helpText.add("Left- or Right-Click: move the highlighted stat");
             helpText.add("...");
@@ -138,5 +143,13 @@ public class GuiMoveStat extends GuiScreen {
 
     private String getDir(boolean left) {
         return TextFormatting.YELLOW + (left ? "Left" : "Right") + TextFormatting.RESET;
+    }
+
+    private void save() {
+        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+        ArmorHUDLayout.INSTANCE.updateLayout(layoutItem,
+                (float)(movedStat.getBaseX() / sr.getScaledWidth_double()),
+                (float)(movedStat.getBaseY() / sr.getScaledHeight_double()),
+                movedStat.isLeftSided());
     }
 }

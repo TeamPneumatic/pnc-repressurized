@@ -24,7 +24,6 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.apache.commons.lang3.text.WordUtils;
@@ -108,7 +107,7 @@ public class GuiLogisticsBase<Logistics extends SemiBlockLogistics> extends GuiP
         GuiButtonSpecial info = new GuiButtonSpecial(19, 36, 41, 20, 20,"");
         info.setVisible(false);
         info.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.logistic_frame.facing.tooltip")));
-        info.setRenderedIcon(new ResourceLocation(Textures.GUI_INFO_LOCATION));
+        info.setRenderedIcon(Textures.GUI_INFO_LOCATION);
         facingTab.addWidget(info);
     }
 

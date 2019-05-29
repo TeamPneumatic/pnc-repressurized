@@ -106,7 +106,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
 
         warningButton = new GuiButtonSpecial(3, guiLeft + 162, guiTop + 123, 20, 20, "");
         warningButton.setVisible(false);
-        warningButton.setRenderedIcon(new ResourceLocation(Textures.GUI_PROBLEMS_TEXTURE));
+        warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         buttonList.add(warningButton);
 
         validateEntityFilter(entityFilter);

@@ -22,7 +22,8 @@ public class ConfigHandler {
             HelmetWidgetDefaults.INSTANCE,
             ThirdPartyConfig.INSTANCE,
             MicromissileDefaults.INSTANCE,
-            BlockHeatPropertiesConfig.INSTANCE
+            BlockHeatPropertiesConfig.INSTANCE,
+            ArmorHUDLayout.INSTANCE
     };
 
     @Config.Name("general")
@@ -57,7 +58,7 @@ public class ConfigHandler {
 
     @Config.Name("helmet")
     @Config.LangKey("gui.config.category.helmet")
-    @Config.Comment("Pneumatic Helmet HUD settings (note: you can also set this up via helmet GUI)")
+    @Config.Comment("Pneumatic Armor HUD layout; use the Armor GUI and 'Move Stat' buttons")
     public static final HelmetOptions helmetOptions = new HelmetOptions();
 
     @Config.Name("minigun")
@@ -259,43 +260,43 @@ public class ConfigHandler {
     }
 
     public static class HelmetOptions {
-        @Config.Comment("Pneumatic helmet power readout X")
+        @Config.Comment("DEPRECATED: Pneumatic helmet power readout X")
         public int powerX = -1;
-        @Config.Comment("Pneumatic helmet power readout Y")
+        @Config.Comment("DEPRECATED: Pneumatic helmet power readout Y")
         public int powerY = 2;
-        @Config.Comment("Pneumatic helmet power readout on left?")
+        @Config.Comment("DEPRECATED: Pneumatic helmet power readout on left?")
         public boolean powerLeft = false;
-        @Config.Comment("Pneumatic helmet message readout X")
+        @Config.Comment("DEPRECATED: Pneumatic helmet message readout X")
         public int messageX = 2;
-        @Config.Comment("Pneumatic helmet message readout Y")
+        @Config.Comment("DEPRECATED: Pneumatic helmet message readout Y")
         public int messageY = 2;
-        @Config.Comment("Pneumatic helmet message readout on left?")
+        @Config.Comment("DEPRECATED: Pneumatic helmet message readout on left?")
         public boolean messageLeft = false;
-        @Config.Comment("Pneumatic helmet block tracker X")
+        @Config.Comment("DEPRECATED: Pneumatic helmet block tracker X")
         public int blockTrackerX = -1;
-        @Config.Comment("Pneumatic helmet block tracker Y")
+        @Config.Comment("DEPRECATED: Pneumatic helmet block tracker Y")
         public int blockTrackerY = 46;
-        @Config.Comment("Pneumatic helmet block tracker on left?")
+        @Config.Comment("DEPRECATED: Pneumatic helmet block tracker on left?")
         public boolean blockTrackerLeft = true;
-        @Config.Comment("Pneumatic helmet entity tracker X")
+        @Config.Comment("DEPRECATED: Pneumatic helmet entity tracker X")
         public int entityTrackerX = -1;
-        @Config.Comment("Pneumatic helmet entity tracker Y")
+        @Config.Comment("DEPRECATED: Pneumatic helmet entity tracker Y")
         public int entityTrackerY = 90;
-        @Config.Comment("Pneumatic helmet entity tracker on left?")
+        @Config.Comment("DEPRECATED: Pneumatic helmet entity tracker on left?")
         public boolean entityTrackerLeft = true;
-        @Config.Comment("Pneumatic helmet item search X")
+        @Config.Comment("DEPRECATED: Pneumatic helmet item search X")
         public int itemSearchX = -1;
-        @Config.Comment("Pneumatic helmet item search Y")
+        @Config.Comment("DEPRECATED: Pneumatic helmet item search Y")
         public int itemSearchY = 17;
-        @Config.Comment("Pneumatic chestplate air conditioning status X")
+        @Config.Comment("DEPRECATED: Pneumatic helmet item search on left?")
+        public boolean itemSearchLeft = true;
+        @Config.Comment("DEPRECATED: Pneumatic chestplate air conditioning status X")
         public int acStatY = 2;
-        @Config.Comment("Pneumatic chestplate air conditioning status Y")
+        @Config.Comment("DEPRECATED: Pneumatic chestplate air conditioning status Y")
         public int acStatX = -25;
-        @Config.Comment("Pneumatic chestplate air conditioning status on left?")
+        @Config.Comment("DEPRECATED: Pneumatic chestplate air conditioning status on left?")
         public boolean acStatLeft = false;
 
-        @Config.Comment("Pneumatic helmet item search on left?")
-        public boolean itemSearchLeft = true;
         @Config.Comment("Pneumatic helmet Path Enabled")
         public boolean pathEnabled = true;
         @Config.Comment("Pneumatic helmet Wire Path")

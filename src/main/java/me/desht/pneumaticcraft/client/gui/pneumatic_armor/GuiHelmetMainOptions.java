@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 
@@ -34,14 +35,14 @@ public class GuiHelmetMainOptions implements IOptionPage {
     public void actionPerformed(GuiButton button) {
         switch (button.id) {
             case 10:
-                Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler));
+                Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.POWER));
                 break;
             case 11:
                 renderHandler.testMessageStat = new GuiAnimatedStat(null, "Test Message, keep in mind messages can be long!",
-                        renderHandler.messagesStatX, renderHandler.messagesStatY, 0x7000AA00,
-                        null, renderHandler.messagesStatLeftSided);
+                        GuiAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
                 renderHandler.testMessageStat.openWindow();
-                Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler, renderHandler.testMessageStat));
+                Minecraft.getMinecraft().displayGuiScreen(
+                        new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.MESSAGE, renderHandler.testMessageStat));
                 break;
             case 12:
                 changeKeybindingButton.toggleKeybindMode();

@@ -70,7 +70,7 @@ public class GuiPressureModule extends GuiTubeModule {
         graphRight = guiLeft + 172;
         addWidget(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY, "gui.redstone"));
         addWidget(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25, "gui.threshold"));
-        addWidget((IGuiWidget) new GuiAnimatedStat(this, "gui.tab.info", Textures.GUI_INFO_LOCATION, xStart, yStart + 5, 0xFF8888FF, null, true).setText("gui.tab.info.tubeModule"));
+        addWidget((IGuiWidget) new GuiAnimatedStat(this, "gui.tab.info", GuiAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true).setText("gui.tab.info.tubeModule"));
         GuiCheckBox advancedMode = new GuiCheckBox(0, guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig").setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
         advancedMode.checked = true;
         addWidget(advancedMode);

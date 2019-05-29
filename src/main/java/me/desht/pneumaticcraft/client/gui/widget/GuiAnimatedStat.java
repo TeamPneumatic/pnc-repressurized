@@ -1,12 +1,13 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.base.Strings;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
-import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -16,8 +17,10 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -25,7 +28,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,13 +35,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetListener {
     private static final int ANIMATED_STAT_SPEED = 30;
     private static final int WIDGET_SCROLLBAR_ID = -1000;
 
     private IGuiAnimatedStat affectingStat;
-    private ItemStack iStack = ItemStack.EMPTY;
-    private String texture;
+
+    private StatIcon statIcon;
+
     private final GuiScreen gui;
     private final List<String> textList = new ArrayList<>();
     private final List<IGuiWidget> widgets = new ArrayList<>();
@@ -61,7 +66,6 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     private String title;
     private boolean leftSided; // determines if the stat is going to expand to the left or right.
     private boolean doneExpanding;
-    private RenderItem itemRenderer;
     private float textSize;
     private float textScale = 1F;
     private IWidgetListener listener;
@@ -84,7 +88,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         this.backGroundColor = backGroundColor;
         calculateColorHighlights(this.backGroundColor);
         setTitle(title);
-        texture = "";
+        statIcon = StatIcon.NONE;
         this.leftSided = leftSided;
         textSize = 1;
 
@@ -100,24 +104,28 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
 
     public GuiAnimatedStat(GuiScreen gui, int backgroundColor, ItemStack icon) {
         this(gui, backgroundColor);
-        iStack = icon;
+        statIcon = StatIcon.of(icon);
     }
 
     public GuiAnimatedStat(GuiScreen gui, int backgroundColor, String texture) {
         this(gui, backgroundColor);
-        this.texture = texture;
+        statIcon = StatIcon.of(RL(texture));
     }
 
-    public GuiAnimatedStat(GuiScreen gui, String title, @Nonnull ItemStack icon, int xPos, int yPos, int backGroundColor,
+    public GuiAnimatedStat(GuiScreen gui, String title, StatIcon icon, int xPos, int yPos, int backGroundColor,
                            IGuiAnimatedStat affectingStat, boolean leftSided) {
         this(gui, title, xPos, yPos, backGroundColor, affectingStat, leftSided);
-        iStack = icon;
+        statIcon = icon;
     }
 
-    public GuiAnimatedStat(GuiScreen gui, String title, String texture, int xPos, int yPos, int backGroundColor,
-                           IGuiAnimatedStat affectingStat, boolean leftSided) {
-        this(gui, title, xPos, yPos, backGroundColor, affectingStat, leftSided);
-        this.texture = texture;
+    public GuiAnimatedStat(GuiScreen gui, String title, StatIcon icon, int backGroundColor,
+                           IGuiAnimatedStat affectingStat, ArmorHUDLayout.LayoutItem layout) {
+        this(gui, title, 0, 0, backGroundColor, affectingStat, layout.isLeftSided());
+        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+        int x = layout.getX() == -1 ? sr.getScaledWidth() - 2 : (int) (sr.getScaledWidth() * layout.getX());
+        setBaseX(x);
+        setBaseY((int) (sr.getScaledHeight() * layout.getY()));
+        statIcon = icon;
     }
 
     @Override
@@ -302,6 +310,16 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
             height = Math.min(maxHeight, height + ANIMATED_STAT_SPEED);
             doneExpanding = width == maxWidth && height == maxHeight;
 
+            Pair<Integer,Integer> size = PneumaticCraftRepressurized.proxy.getScaledScreenSize();
+            if (isLeftSided()) {
+                if (baseX >= size.getLeft()) baseX = size.getLeft();
+            } else {
+                if (baseX < 0) baseX = 1;
+            }
+            if (baseY + height >= size.getRight()) {
+                baseY = size.getRight() - height - 1;
+            }
+
             if (doneExpanding) {
                 for (IGuiWidget widget : widgets) {
                     if (widget.getID() == WIDGET_SCROLLBAR_ID) {
@@ -423,30 +441,8 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
                 widget.render(mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks);
             GlStateManager.popMatrix();
         }
-        if (renderHeight > 16 && renderWidth > 16) {
-            GlStateManager.color(1, 1, 1, 1);
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            if (iStack.isEmpty()) {
-                if (texture.contains(Textures.GUI_LOCATION)) {
-                    GuiPneumaticContainerBase.drawTexture(texture, renderBaseX - (leftSided ? 16 : 0), renderAffectedY);
-                } else {
-                    fontRenderer.drawString(texture, renderBaseX - (leftSided ? 16 : 0), renderAffectedY, 0xFFFFFFFF);
-                }
-            } else if (gui != null || !(iStack.getItem() instanceof ItemBlock)) {
-                if (itemRenderer == null) itemRenderer = Minecraft.getMinecraft().getRenderItem();
-                itemRenderer.zLevel = 1;
-                GlStateManager.pushMatrix();
-                GlStateManager.translate(0, 0, -50);
-                GlStateManager.enableRescaleNormal();
-                RenderHelper.enableGUIStandardItemLighting();
-                itemRenderer.renderItemAndEffectIntoGUI(iStack, renderBaseX - (leftSided ? 16 : 0), renderAffectedY);
-                RenderHelper.disableStandardItemLighting();
-                GlStateManager.disableRescaleNormal();
-                GlStateManager.popMatrix();
-                GlStateManager.enableAlpha();
-            }
-            GlStateManager.disableBlend();
+        if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
+            statIcon.render(gui, renderBaseX, renderAffectedY, leftSided);
         }
     }
 
@@ -629,11 +625,57 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
         this.lineSpacing = lineSpacing;
     }
 
-    public void setTexture(String texture) {
-        this.texture = texture;
+    public void setTexture(ResourceLocation texture) {
+        this.statIcon = StatIcon.of(texture);
     }
 
     public void setTexture(ItemStack itemStack) {
-        this.iStack = itemStack;
+        this.statIcon = StatIcon.of(itemStack);
+    }
+
+    public static class StatIcon {
+        public static final StatIcon NONE = new StatIcon(ItemStack.EMPTY, null);
+
+        private final ItemStack stack;
+        private final ResourceLocation texture;
+
+        private StatIcon(ItemStack stack, ResourceLocation texture) {
+            this.stack = stack;
+            this.texture = texture;
+        }
+
+        public static StatIcon of(ItemStack stack) {
+            return new StatIcon(stack, null);
+        }
+
+        public static StatIcon of(Item item) {
+            return new StatIcon(new ItemStack(item, 1, 0), null);
+        }
+
+        public static StatIcon of(ResourceLocation texture) {
+            return new StatIcon(ItemStack.EMPTY, texture);
+        }
+
+        void render(Gui gui, int x, int y, boolean leftSided) {
+            GlStateManager.color(1, 1, 1, 1);
+            GlStateManager.enableBlend();
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            if (texture != null) {
+                GuiPneumaticContainerBase.drawTexture(texture, x - (leftSided ? 16 : 0), y);
+            } else if (!stack.isEmpty() && gui != null || !(stack.getItem() instanceof ItemBlock)) {
+                RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+                renderItem.zLevel = 1;
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(0, 0, -50);
+                GlStateManager.enableRescaleNormal();
+                RenderHelper.enableGUIStandardItemLighting();
+                renderItem.renderItemAndEffectIntoGUI(stack, x - (leftSided ? 16 : 0), y);
+                RenderHelper.disableStandardItemLighting();
+                GlStateManager.disableRescaleNormal();
+                GlStateManager.popMatrix();
+                GlStateManager.enableAlpha();
+            }
+            GlStateManager.disableBlend();
+        }
     }
 }

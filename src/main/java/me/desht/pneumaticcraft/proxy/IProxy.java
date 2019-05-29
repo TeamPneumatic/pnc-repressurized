@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 
 public interface IProxy {
     World getClientWorld();
@@ -33,4 +34,6 @@ public interface IProxy {
     void suppressItemEquipAnimation();
 
     int particleLevel();
+
+    Pair<Integer,Integer> getScaledScreenSize();
 }

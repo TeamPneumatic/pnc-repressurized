@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiSearchUpgradeOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlock;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
@@ -15,7 +15,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -46,29 +45,11 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     private final List<RenderSearchItemBlock> searchedBlocks = new ArrayList<>();
     @SideOnly(Side.CLIENT)
     private GuiAnimatedStat searchInfo;
-    private int statX;
-    private int statY;
-    private boolean statLeftSided;
 
     @Override
     @SideOnly(Side.CLIENT)
     public String getUpgradeName() {
         return "itemSearcher";
-    }
-
-    @Override
-    public void initConfig() {
-        statX = ConfigHandler.helmetOptions.itemSearchX;
-        statY = ConfigHandler.helmetOptions.itemSearchY;
-        statLeftSided = ConfigHandler.helmetOptions.itemSearchLeft;
-    }
-
-    @Override
-    public void saveToConfig() {
-        ConfigHandler.helmetOptions.itemSearchX = statX = searchInfo.getBaseX();
-        ConfigHandler.helmetOptions.itemSearchY = statY = searchInfo.getBaseY();
-        ConfigHandler.helmetOptions.itemSearchLeft = statLeftSided = searchInfo.isLeftSided();
-        ConfigHandler.sync();
     }
 
     public void addToSearchedItemCounter(int amount) {
@@ -164,7 +145,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
      *
      * @param te TileEntity the tile entity, which is already known to support the item handler capability
      */
-    public void checkInventoryForItems(TileEntity te, EnumFacing face) {
+    void checkInventoryForItems(TileEntity te, EnumFacing face) {
         try {
             ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
             IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face);
@@ -226,12 +207,16 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     @SideOnly(Side.CLIENT)
     public GuiAnimatedStat getAnimatedStat() {
         if (searchInfo == null) {
-            Minecraft minecraft = Minecraft.getMinecraft();
-            ScaledResolution sr = new ScaledResolution(minecraft);
-            searchInfo = new GuiAnimatedStat(null, "Currently searching for:", CraftingRegistrator.getUpgrade(EnumUpgrade.SEARCH), statX != -1 ? statX : sr.getScaledWidth() - 2, statY, 0x3000AA00, null, statLeftSided);
+            GuiAnimatedStat.StatIcon icon = GuiAnimatedStat.StatIcon.of(CraftingRegistrator.getUpgrade(EnumUpgrade.SEARCH));
+            searchInfo = new GuiAnimatedStat(null, "Currently searching for:", icon,
+                    0x3000AA00, null, ArmorHUDLayout.INSTANCE.itemSearchStat);
             searchInfo.setMinDimensionsAndReset(0, 0);
         }
         return searchInfo;
     }
 
+    @Override
+    public void onResolutionChanged() {
+        searchInfo = null;
+    }
 }

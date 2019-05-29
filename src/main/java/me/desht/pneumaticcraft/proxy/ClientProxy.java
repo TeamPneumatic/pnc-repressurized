@@ -230,4 +230,9 @@ public class ClientProxy implements IProxy {
     public int particleLevel() {
         return Minecraft.getMinecraft().gameSettings.particleSetting;
     }
+
+    @Override
+    public Pair<Integer, Integer> getScaledScreenSize() {
+        return ClientEventHandler.getScaledScreenSize();
+    }
 }

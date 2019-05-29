@@ -5,10 +5,11 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiDroneDebuggerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
-import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
 import me.desht.pneumaticcraft.common.network.PacketUpdateDebuggingDrone;
@@ -24,7 +25,6 @@ import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -64,11 +64,9 @@ public class RenderTarget {
             } catch (Throwable e) {
             }
         }
-        if (droppedItem != null) {
-            stat = new GuiAnimatedStat(null, entity.getName(), new ItemStack(droppedItem, 1, 0), 20, -20, 0x3000AA00, null, false);
-        } else {
-            stat = new GuiAnimatedStat(null, entity.getName(), "", 20, -20, 0x3000AA00, null, false);
-        }
+        StatIcon icon = droppedItem == null ? StatIcon.NONE : StatIcon.of(droppedItem);
+        stat = new GuiAnimatedStat(null, entity.getName(), icon,
+                20, -20, 0x3000AA00, null, false);
         stat.setMinDimensionsAndReset(0, 0);
     }
 

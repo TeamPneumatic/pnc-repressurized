@@ -9,16 +9,14 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderTarget;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,9 +45,6 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     public boolean gaveNotAbleToTrackEntityWarning;
     @SideOnly(Side.CLIENT)
     private GuiAnimatedStat entityTrackInfo;
-    private int statX;
-    private int statY;
-    private boolean statLeftSided;
     @Nonnull
     private EntityFilter entityFilter = new EntityFilter("");
 
@@ -171,27 +166,12 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public void initConfig() {
-        statX = ConfigHandler.helmetOptions.entityTrackerX;
-        statY = ConfigHandler.helmetOptions.entityTrackerY;
-        statLeftSided = ConfigHandler.helmetOptions.entityTrackerLeft;
-    }
-
-    @Override
-    public void saveToConfig() {
-        ConfigHandler.helmetOptions.entityTrackerX = statX = entityTrackInfo.getBaseX();
-        ConfigHandler.helmetOptions.entityTrackerY = statY = entityTrackInfo.getBaseY();
-        ConfigHandler.helmetOptions.entityTrackerLeft = statLeftSided = entityTrackInfo.isLeftSided();
-        ConfigHandler.sync();
-    }
-
-    @Override
     @SideOnly(Side.CLIENT)
     public GuiAnimatedStat getAnimatedStat() {
         if (entityTrackInfo == null) {
-            Minecraft minecraft = Minecraft.getMinecraft();
-            ScaledResolution sr = new ScaledResolution(minecraft);
-            entityTrackInfo = new GuiAnimatedStat(null, "Current tracked entities:", CraftingRegistrator.getUpgrade(EnumUpgrade.ENTITY_TRACKER), statX != -1 ? statX : sr.getScaledWidth() - 2, statY, 0x3000AA00, null, statLeftSided);
+            GuiAnimatedStat.StatIcon icon = GuiAnimatedStat.StatIcon.of(CraftingRegistrator.getUpgrade(EnumUpgrade.ENTITY_TRACKER));
+            entityTrackInfo = new GuiAnimatedStat(null, "Current tracked entities:", icon,
+                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.entityTrackerStat);
             entityTrackInfo.setMinDimensionsAndReset(0, 0);
         }
         return entityTrackInfo;
@@ -236,5 +216,10 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
                     && !MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(entity))
                     && super.apply(entity);
         }
+    }
+
+    @Override
+    public void onResolutionChanged() {
+        entityTrackInfo = null;
     }
 }
