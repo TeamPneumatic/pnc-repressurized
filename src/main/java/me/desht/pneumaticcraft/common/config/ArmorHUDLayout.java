@@ -41,13 +41,15 @@ public class ArmorHUDLayout extends JsonConfig {
     protected void readFromJson(JsonObject json) {
         needLegacyImport = json.has("needLegacyImport") && json.get("needLegacyImport").getAsBoolean();
 
-        JsonObject sub = json.getAsJsonObject("stats");
-        powerStat = LayoutItem.fromJson(sub.get("power").getAsJsonObject());
-        messageStat = LayoutItem.fromJson(sub.get("message").getAsJsonObject());
-        blockTrackerStat = LayoutItem.fromJson(sub.get("blockTracker").getAsJsonObject());
-        entityTrackerStat = LayoutItem.fromJson(sub.get("entityTracker").getAsJsonObject());
-        itemSearchStat = LayoutItem.fromJson(sub.get("itemSearch").getAsJsonObject());
-        airConStat = LayoutItem.fromJson(sub.get("airCon").getAsJsonObject());
+        if (json.has("stats")) { // will always be false on dedicated server
+            JsonObject sub = json.getAsJsonObject("stats");
+            powerStat = LayoutItem.fromJson(sub.get("power").getAsJsonObject());
+            messageStat = LayoutItem.fromJson(sub.get("message").getAsJsonObject());
+            blockTrackerStat = LayoutItem.fromJson(sub.get("blockTracker").getAsJsonObject());
+            entityTrackerStat = LayoutItem.fromJson(sub.get("entityTracker").getAsJsonObject());
+            itemSearchStat = LayoutItem.fromJson(sub.get("itemSearch").getAsJsonObject());
+            airConStat = LayoutItem.fromJson(sub.get("airCon").getAsJsonObject());
+        }
     }
 
     @Override
