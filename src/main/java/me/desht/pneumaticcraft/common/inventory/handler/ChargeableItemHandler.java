@@ -1,7 +1,6 @@
-package me.desht.pneumaticcraft.common.inventory;
+package me.desht.pneumaticcraft.common.inventory.handler;
 
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.common.tileentity.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.item.ItemStack;
@@ -41,9 +40,7 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
     public boolean isItemValid(int slot, ItemStack itemStack) {
         if (itemStack.isEmpty()) return true;
 
-        if (getChargingStack().getItem() instanceof IUpgradeAcceptor) {
-            return ((IUpgradeAcceptor) getChargingStack().getItem()).getApplicableUpgrades().contains(itemStack.getItem());
-        }
-        return false;
+        return getChargingStack().getItem() instanceof IUpgradeAcceptor
+                && ((IUpgradeAcceptor) getChargingStack().getItem()).getApplicableUpgrades().contains(itemStack.getItem());
     }
 }

@@ -3,20 +3,16 @@ package me.desht.pneumaticcraft.common.recipes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public enum PlasticMixerRegistry {
     INSTANCE;
 
-    private final Map<String, Integer> fluidRatios = new HashMap<>();
+    private final Set<String> validFluids = new HashSet<>();
     private final Map<Item, Boolean> validItems = new HashMap<>();
 
     private final List<PlasticMixerRecipe> recipes = new ArrayList<>();
@@ -24,12 +20,12 @@ public enum PlasticMixerRegistry {
     public void addPlasticMixerRecipe(@Nonnull FluidStack fluid, @Nonnull ItemStack stack, int temperature, boolean allowMelting, boolean allowSolidifying) {
         if (fluid.amount > 0 && !stack.isEmpty()) {
             recipes.add(new PlasticMixerRecipe(fluid, ItemHandlerHelper.copyStackWithSize(stack, 1), temperature, allowMelting, allowSolidifying));
-            fluidRatios.put(fluid.getFluid().getName(), fluid.amount);
             validItems.put(stack.getItem(), allowMelting);
+            validFluids.add(fluid.getFluid().getName());
         } else {
             recipes.removeIf(record -> record.getFluidStack().getFluid() == fluid.getFluid());
-            fluidRatios.remove(fluid.getFluid().getName());
             validItems.remove(stack.getItem());
+            validFluids.remove(fluid.getFluid().getName());
         }
     }
 
@@ -54,13 +50,9 @@ public enum PlasticMixerRegistry {
         return null;
     }
 
-    public int getFluidRatio(Fluid fluid) {
-        return fluidRatios.getOrDefault(fluid.getName(), 0);
-    }
-
     public void clear() {
         recipes.clear();
-        fluidRatios.clear();
+        validFluids.clear();
         validItems.clear();
     }
 
@@ -75,6 +67,8 @@ public enum PlasticMixerRegistry {
     public boolean isValidOutputItem(ItemStack stack) {
         return validItems.containsKey(stack.getItem());
     }
+
+    public boolean isValidFluid(FluidStack stack) { return validFluids.contains(stack.getFluid().getName()); }
 
     public static class PlasticMixerRecipe {
         private final FluidStack fluidStack;

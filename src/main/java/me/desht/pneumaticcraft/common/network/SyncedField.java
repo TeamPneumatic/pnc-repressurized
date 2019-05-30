@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.inventory;
+package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
@@ -19,13 +19,13 @@ public abstract class SyncedField<T> {
     private boolean isLazy;
     private Class annotation;
 
-    public SyncedField(Object te, Field field) {
+    SyncedField(Object te, Field field) {
         this.field = field;
         field.setAccessible(true);
         this.te = te;
     }
 
-    public SyncedField setArrayIndex(int arrayIndex) {
+    SyncedField setArrayIndex(int arrayIndex) {
         this.arrayIndex = arrayIndex;
         return this;
     }
@@ -63,6 +63,7 @@ public abstract class SyncedField<T> {
     }
 
     protected T retrieveValue(Field field, Object te) throws Exception {
+        //noinspection unchecked
         return (T) field.get(te);
     }
 
@@ -112,7 +113,7 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected void setValueForArray(Object array, int index, Integer value) throws Exception {
+        protected void setValueForArray(Object array, int index, Integer value) {
             ((int[]) array)[index] = value;
         }
 
@@ -120,7 +121,7 @@ public abstract class SyncedField<T> {
 
     public static class SyncedFloat extends SyncedField<Float> {
 
-        public SyncedFloat(Object te, Field field) {
+        SyncedFloat(Object te, Field field) {
             super(te, field);
         }
 
@@ -130,7 +131,7 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected void setValueForArray(Object array, int index, Float value) throws Exception {
+        protected void setValueForArray(Object array, int index, Float value) {
             ((float[]) array)[index] = value;
         }
 
@@ -138,7 +139,7 @@ public abstract class SyncedField<T> {
 
     public static class SyncedDouble extends SyncedField<Double> {
 
-        public SyncedDouble(Object te, Field field) {
+        SyncedDouble(Object te, Field field) {
             super(te, field);
         }
 
@@ -148,7 +149,7 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected void setValueForArray(Object array, int index, Double value) throws Exception {
+        protected void setValueForArray(Object array, int index, Double value) {
             ((double[]) array)[index] = value;
         }
 
@@ -156,7 +157,7 @@ public abstract class SyncedField<T> {
 
     public static class SyncedBoolean extends SyncedField<Boolean> {
 
-        public SyncedBoolean(Object te, Field field) {
+        SyncedBoolean(Object te, Field field) {
             super(te, field);
         }
 
@@ -166,7 +167,7 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected void setValueForArray(Object array, int index, Boolean value) throws Exception {
+        protected void setValueForArray(Object array, int index, Boolean value) {
             ((boolean[]) array)[index] = value;
         }
 
@@ -174,7 +175,7 @@ public abstract class SyncedField<T> {
 
     public static class SyncedString extends SyncedField<String> {
 
-        public SyncedString(Object te, Field field) {
+        SyncedString(Object te, Field field) {
             super(te, field);
         }
 
@@ -184,7 +185,7 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected void setValueForArray(Object array, int index, String value) throws Exception {
+        protected void setValueForArray(Object array, int index, String value) {
             ((String[]) array)[index] = value;
         }
 
@@ -192,7 +193,7 @@ public abstract class SyncedField<T> {
 
     public static class SyncedEnum extends SyncedField<Byte> {
 
-        public SyncedEnum(Object te, Field field) {
+        SyncedEnum(Object te, Field field) {
             super(te, field);
         }
 
@@ -202,7 +203,7 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected void setValueForArray(Object array, int index, Byte value) throws Exception {
+        protected void setValueForArray(Object array, int index, Byte value) {
             ((byte[]) array)[index] = value;
         }
 
@@ -227,7 +228,7 @@ public abstract class SyncedField<T> {
 
     public static class SyncedItemStack extends SyncedField<ItemStack> {
 
-        public SyncedItemStack(Object te, Field field) {
+        SyncedItemStack(Object te, Field field) {
             super(te, field);
         }
 
@@ -237,14 +238,14 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected void setValueForArray(Object array, int index, ItemStack value) throws Exception {
+        protected void setValueForArray(Object array, int index, ItemStack value) {
             ((ItemStack[]) array)[index] = value;
         }
     }
 
     public static class SyncedFluidTank extends SyncedField<FluidStack> {
 
-        public SyncedFluidTank(Object te, Field field) {
+        SyncedFluidTank(Object te, Field field) {
             super(te, field);
         }
 
@@ -254,7 +255,7 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected void setValueForArray(Object array, int index, FluidStack value) throws Exception {
+        protected void setValueForArray(Object array, int index, FluidStack value) {
             ((FluidTank[]) array)[index].setFluid(value);
         }
 
@@ -282,7 +283,7 @@ public abstract class SyncedField<T> {
     }
 
     public static class SyncedItemStackHandler extends SyncedField<ItemStackHandler> {
-        public SyncedItemStackHandler(Object te, Field field) {
+        SyncedItemStackHandler(Object te, Field field) {
             super(te, field);
         }
 
@@ -292,7 +293,7 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected void setValueForArray(Object array, int index, ItemStackHandler value) throws Exception {
+        protected void setValueForArray(Object array, int index, ItemStackHandler value) {
             ((ItemStackHandler[]) array)[index] = value;
         }
 

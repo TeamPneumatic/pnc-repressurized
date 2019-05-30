@@ -1,9 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.NetworkUtils;
-import me.desht.pneumaticcraft.common.network.PacketUpdateGui;
+import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.enchantment.EnchantmentHelper;

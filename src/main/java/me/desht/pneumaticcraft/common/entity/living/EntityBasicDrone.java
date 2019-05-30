@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
-import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
+import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;

@@ -1,8 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.common.inventory.SyncedField;
-import me.desht.pneumaticcraft.common.inventory.SyncedField.*;
+import me.desht.pneumaticcraft.common.network.SyncedField.*;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;

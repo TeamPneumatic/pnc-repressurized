@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
@@ -348,7 +349,7 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
 
         @Override
         public boolean canFillFluidType(FluidStack fluid) {
-            return PlasticMixerRegistry.INSTANCE.getFluidRatio(fluid.getFluid()) > 0;
+            return PlasticMixerRegistry.INSTANCE.isValidFluid(fluid);
         }
     }
 

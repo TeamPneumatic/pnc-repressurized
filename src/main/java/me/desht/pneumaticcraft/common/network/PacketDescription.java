@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
-import me.desht.pneumaticcraft.common.inventory.SyncedField;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import net.minecraft.entity.player.EntityPlayer;

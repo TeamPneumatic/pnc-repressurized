@@ -1,6 +1,5 @@
-package me.desht.pneumaticcraft.common.inventory;
+package me.desht.pneumaticcraft.common.inventory.handler;
 
-import me.desht.pneumaticcraft.common.tileentity.BaseItemStackHandler;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.items.ItemHandlerHelper;

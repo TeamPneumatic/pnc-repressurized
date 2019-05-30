@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.entity.living.EntityBasicDrone;
-import me.desht.pneumaticcraft.common.inventory.ChargeableItemHandler;
+import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
-import me.desht.pneumaticcraft.common.inventory.SyncedField;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import net.minecraft.block.state.IBlockState;

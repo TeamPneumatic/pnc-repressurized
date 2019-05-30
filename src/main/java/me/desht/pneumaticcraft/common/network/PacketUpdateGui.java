@@ -2,8 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
-import me.desht.pneumaticcraft.common.inventory.SyncedField;
-import me.desht.pneumaticcraft.common.inventory.SyncedField.*;
+import me.desht.pneumaticcraft.common.network.SyncedField.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;

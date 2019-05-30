@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.network.SyncedField;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraftforge.energy.CapabilityEnergy;
