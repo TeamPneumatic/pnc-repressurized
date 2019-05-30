@@ -75,7 +75,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     public void onDescUpdate() {
         camoState = ICamouflageableTE.getStateForStack(camoStack);
-        getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+
+        super.onDescUpdate();
     }
 
     @Nonnull

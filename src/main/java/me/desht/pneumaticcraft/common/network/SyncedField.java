@@ -40,6 +40,12 @@ public abstract class SyncedField<T> {
         return "[" + te + "/" + field.getName() + "=" + getValue() + "]";
     }
 
+    /**
+     * Called server-side: retrieve the latest value of this field from the syncable object and return true if
+     * it's changed since the last time update() was called (provided this is not a @LazySynced field).
+     *
+     * @return true if the field has changed and is non-lazy so needs to be sync'd to clients, false otherwise
+     */
     public boolean update() {
         try {
             T value = arrayIndex >= 0 ? getValueForArray(field.get(te), arrayIndex) : retrieveValue(field, te);

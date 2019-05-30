@@ -9,30 +9,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.items.ItemStackHandler;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkUtils {
-
-    /*private static Map<Class, List<Field>> extraMarkedFields = new HashMap<Class, List<Field>>();
-
-    public static void addExtraMarkedField(Class clazz, Field field){
-        List<Field> markedFields = extraMarkedFields.get(clazz);
-        if(markedFields == null) {
-            markedFields = new ArrayList<Field>();
-            extraMarkedFields.put(clazz, markedFields);
-        }
-        markedFields.add(field);
-    }*/
-
-    public static List<SyncedField> getSyncedFields(Object te, Class searchedAnnotation) {
+    /**
+     * Get a list of all the synced fields for a syncable object
+     *
+     * @param syncable the object whose fields we are extracting
+     * @param searchedAnnotation the annotation type to search for
+     * @return a list of all the fields annotated with the given type
+     */
+    public static List<SyncedField> getSyncedFields(Object syncable, Class<? extends Annotation> searchedAnnotation) {
         List<SyncedField> syncedFields = new ArrayList<>();
-        Class examinedClass = te.getClass();
+        Class examinedClass = syncable.getClass();
         while (examinedClass != null) {
             for (Field field : examinedClass.getDeclaredFields()) {
                 if (field.getAnnotation(searchedAnnotation) != null) {
-                    syncedFields.addAll(getSyncedFieldsForField(field, te, searchedAnnotation));
+                    syncedFields.addAll(getSyncedFieldsForField(field, syncable, searchedAnnotation));
                 }
             }
             examinedClass = examinedClass.getSuperclass();
@@ -43,7 +39,7 @@ public class NetworkUtils {
         return syncedFields;
     }
 
-    private static List<SyncedField> getSyncedFieldsForField(Field field, Object te, Class searchedAnnotation) {
+    private static List<SyncedField> getSyncedFieldsForField(Field field, Object te, Class<? extends Annotation> searchedAnnotation) {
         boolean isLazy = field.getAnnotation(LazySynced.class) != null;
         List<SyncedField> syncedFields = new ArrayList<>();
         SyncedField syncedField = getSyncedFieldForField(field, te);
@@ -184,11 +180,11 @@ public class NetworkUtils {
         return null;
     }
 
-    public static void writeBlockPos(ByteBuf buf, BlockPos pos) {
+    static void writeBlockPos(ByteBuf buf, BlockPos pos) {
         new PacketBuffer(buf).writeBlockPos(pos);
     }
 
-    public static BlockPos readBlockPos(ByteBuf buf) {
+    static BlockPos readBlockPos(ByteBuf buf) {
         return new PacketBuffer(buf).readBlockPos();
     }
 

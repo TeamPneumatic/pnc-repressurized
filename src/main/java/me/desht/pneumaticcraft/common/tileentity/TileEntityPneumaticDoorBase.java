@@ -240,7 +240,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     @Override
     public void onDescUpdate() {
         camoState = ICamouflageableTE.getStateForStack(camoStack);
-        rerenderTileEntity();
+
+        super.onDescUpdate();
     }
 
     @Override

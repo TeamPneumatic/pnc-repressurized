@@ -37,11 +37,11 @@ public abstract class LocationIntPacket<REQ extends AbstractPacket<REQ>> extends
         pos = NetworkUtils.readBlockPos(buf);
     }
 
-    public NetworkRegistry.TargetPoint getTargetPoint(World world) {
+    NetworkRegistry.TargetPoint getTargetPoint(World world) {
         return getTargetPoint(world, TileEntityConstants.PACKET_UPDATE_DISTANCE);
     }
 
-    public NetworkRegistry.TargetPoint getTargetPoint(World world, double updateDistance) {
+    NetworkRegistry.TargetPoint getTargetPoint(World world, double updateDistance) {
         return new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), updateDistance);
     }
 

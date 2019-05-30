@@ -104,7 +104,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             if (extension < targetExtension) {
                 if (!getWorld().isRemote && getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
                     targetExtension = extension;
-                    sendDescPacket(256D);
+                    sendDescriptionPacket(256D);
                 }
 
                 float moveBy;
@@ -176,7 +176,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             extension = 0;
         }
         if (!getWorld().isRemote && oldExtension != extension) {
-            sendDescPacket(256);
+            sendDescriptionPacket(256);
         }
     }
 
@@ -353,7 +353,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @Override
     public void onDescUpdate() {
         camoState = ICamouflageableTE.getStateForStack(camoStack);
-        rerenderTileEntity();
+
+        super.onDescUpdate();
     }
 
     private void updateConnections() {
@@ -489,10 +490,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     private void sendDescPacketFromAllElevators() {
         if (multiElevators != null) {
             for (TileEntityElevatorBase base : multiElevators) {
-                base.sendDescPacket(256);
+                base.sendDescriptionPacket(256);
             }
         } else {
-            sendDescPacket(256);
+            sendDescriptionPacket(256);
         }
     }
 

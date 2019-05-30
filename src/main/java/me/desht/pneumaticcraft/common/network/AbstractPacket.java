@@ -30,7 +30,7 @@ public abstract class AbstractPacket<REQ extends AbstractPacket<REQ>> implements
     /**
      * Handle a packet on the server side. Note this occurs after decoding has completed.
      *
-     * @param message
+     * @param message the message
      * @param player  the player reference
      */
     public abstract void handleServerSide(REQ message, EntityPlayer player);

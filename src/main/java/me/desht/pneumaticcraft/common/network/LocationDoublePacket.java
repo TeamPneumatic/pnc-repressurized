@@ -17,10 +17,10 @@ public abstract class LocationDoublePacket<REQ extends AbstractPacket<REQ>> exte
 
     protected double x, y, z;
 
-    public LocationDoublePacket() {
+    LocationDoublePacket() {
     }
 
-    public LocationDoublePacket(double x, double y, double z) {
+    LocationDoublePacket(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -40,11 +40,7 @@ public abstract class LocationDoublePacket<REQ extends AbstractPacket<REQ>> exte
         z = buf.readDouble();
     }
 
-    public NetworkRegistry.TargetPoint getTargetPoint(World world) {
-        return getTargetPoint(world, TileEntityConstants.PACKET_UPDATE_DISTANCE);
-    }
-
-    public NetworkRegistry.TargetPoint getTargetPoint(World world, double updateDistance) {
-        return new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, updateDistance);
+    NetworkRegistry.TargetPoint getTargetPoint(World world) {
+        return new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, TileEntityConstants.PACKET_UPDATE_DISTANCE);
     }
 }

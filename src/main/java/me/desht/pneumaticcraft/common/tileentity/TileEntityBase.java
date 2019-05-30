@@ -46,7 +46,6 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -146,9 +145,11 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     public void sendDescriptionPacket() {
-//        IBlockState state = world.getBlockState(getPos());
-//        world.notifyBlockUpdate(getPos(), state, state, 3);
-        sendDescPacket(256);
+        sendDescriptionPacket(256);
+    }
+
+    void sendDescriptionPacket(double maxPacketDistance) {
+        NetworkHandler.sendToAllAround(new PacketDescription(this), world, maxPacketDistance);
     }
 
     /**
@@ -158,10 +159,11 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         descriptionPacketScheduled = true;
     }
 
-    void sendDescPacket(double maxPacketDistance) {
-        NetworkHandler.sendToAllAround(new PacketDescription(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), maxPacketDistance));
-    }
-
+    /**
+     * A way of dispersing heat to other mods which have their own heat API.
+     *
+     * @param disperser a heat disperser adapter object
+     */
     public static void registerHeatDisperser(IHeatDisperser disperser) {
         moddedDispersers.add(disperser);
     }
@@ -172,7 +174,6 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      */
     void updateImpl() {
         if (firstRun && !world.isRemote) {
-            //firstRun = false;
             onFirstServerUpdate();
             onNeighborTileUpdate();
             onNeighborBlockUpdate();
@@ -228,7 +229,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     protected boolean shouldRerenderChunkOnDescUpdate() {
-        return false;
+        return this instanceof ICamouflageableTE;
     }
 
     /**
@@ -303,7 +304,9 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
 
     @Override
     public void onDescUpdate() {
-        if (shouldRerenderChunkOnDescUpdate()) rerenderTileEntity();
+        if (shouldRerenderChunkOnDescUpdate()) {
+            rerenderTileEntity();
+        }
     }
 
     /**

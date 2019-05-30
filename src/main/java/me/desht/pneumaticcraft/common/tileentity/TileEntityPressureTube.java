@@ -281,7 +281,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public void onDescUpdate() {
         camoState = ICamouflageableTE.getStateForStack(camoStack);
-        rerenderTileEntity();
+
+        super.onDescUpdate();
     }
 
     public static TileEntityPressureTube getTube(TileEntity te) {

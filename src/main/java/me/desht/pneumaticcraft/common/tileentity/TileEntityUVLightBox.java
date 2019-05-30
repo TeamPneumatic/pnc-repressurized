@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
@@ -19,7 +18,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -79,6 +77,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     @Override
     public void update() {
         super.update();
+
         if (!getWorld().isRemote) {
             ticksExisted++;
             ItemStack stack = getLoadedPCB();
@@ -130,12 +129,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         return true;
     }
 
-    @Override
-    public void onNeighborTileUpdate() {
-        super.onNeighborTileUpdate();
-        updateConnections();
-    }
-
     private void setLightsOn(boolean lightsOn) {
         boolean check = areLightsOn != lightsOn;
         areLightsOn = lightsOn;
@@ -147,6 +140,8 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     @Override
     public void onDescUpdate() {
+        super.onDescUpdate();
+
         getWorld().checkLightFor(EnumSkyBlock.BLOCK, getPos());
         getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
     }
@@ -158,18 +153,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     @Override
     public boolean isConnectedTo(EnumFacing side) {
         return side == getRotation().rotateYCCW();
-    }
-
-    private void updateConnections() {
-        boolean leftConnected = false;
-
-        List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
-        for (Pair<EnumFacing, IAirHandler> entry : connections) {
-            if (entry.getKey() == getRotation().rotateY()) { //TODO 1.8 test
-                leftConnected = true;
-            } else if (entry.getKey() == getRotation().rotateYCCW()) {
-            }
-        }
     }
 
     @Override
@@ -232,7 +215,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         return PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX;
     }
 
-    public ItemStack getLoadedPCB() {
+    private ItemStack getLoadedPCB() {
         return inventory.getStackInSlot(PCB_SLOT);
     }
 

@@ -40,7 +40,8 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     @Override
     public void onDescUpdate() {
         camoState = ICamouflageableTE.getStateForStack(camoStack);
-        rerenderTileEntity();
+
+        super.onDescUpdate();
     }
 
     public boolean getEmittingRedstone() {
