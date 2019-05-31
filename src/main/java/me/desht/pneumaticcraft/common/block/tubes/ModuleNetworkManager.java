@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block.tubes;
 import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -43,9 +42,9 @@ public class ModuleNetworkManager {
                 }
             }
             TileEntityCache[] cache = ((AirHandler) tube.getAirHandler(null)).getTileCache();
-            for (EnumFacing d : EnumFacing.VALUES) {
-                if (tube.sidesConnected[d.ordinal()] && !tube.sidesClosed[d.ordinal()]) {
-                    TileEntityPressureTube newTube = TileEntityPressureTube.getTube(cache[d.ordinal()].getTileEntity());
+            for (int dir = 0; dir < 6; dir++) {
+                if (isTubeConnected(tube, dir)) {
+                    TileEntityPressureTube newTube = TileEntityPressureTube.getTube(cache[dir].getTileEntity());
                     if (newTube != null && !traversedTubes.contains(newTube)) {
                         pendingTubes.add(newTube);
                         traversedTubes.add(newTube);
@@ -54,5 +53,10 @@ public class ModuleNetworkManager {
             }
         }
         return modules;
+    }
+
+    private boolean isTubeConnected(TileEntityPressureTube tube, int dir) {
+        return !tube.sidesClosed[dir] &&
+                (tube.sidesConnected[dir] || (tube.modules[dir] != null && tube.modules[dir].isInline()));
     }
 }

@@ -6,16 +6,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.11.1-??? (unreleased)
+### 0.11.1-361 (31 May 2019)
 #### Updates
 * Pneumatic Armor HUD panels (pressure, entity/block tracker, aircon etc.) now reposition themselves better if you change screen resolution and/or scaling.
   * Positioning info is now stored as a resolution-independent proportion from 0.0 to 1.0 in ``config/pneumaticcraft/PneumaticArmorHUDLayout.cfg``, migrated from the main config file ("helmet" section, which is now deprecated)
   * Best efforts are made to migrate the layout, but you might need to reposition the panels (use the "Move X Stat" button for the relevant upgrade in the armor GUI) the first time you start up with this version. If you start the game up at the same resolution you usually play at, you *should* be fine.
   * If your panels are aligned to the right-hand side of the screen, you should have them open to the left, and vice versa.  This will ensure panels stay properly aligned if/when you change resolution and/or scaling.  You can adjust the opening direction in the "Move X Stat" GUI for each panel.
+* Logistics and Redstone Tube Modules can now communicate across tubes divided by inline modules such as the Regulator Module.  Previously, inline modules blocked this communication.
 #### Fixes
 * Fixed Plastic Mixer allowing items to be piped into the output slot.
 * Fixed clicking the tank in the Liquid Compressor GUI causing the machine's redstone mode to be changed.
-* Fixed problem where Plastic Mixer "Item Selection" GUI side tab could sometimes be too small (depending on screen resolution), causing buttons to be outside the tab's area, and unclickable.
+* Fixed problem where the Plastic Mixer "Item Selection" GUI side tab could sometimes be too small (depending on screen resolution), causing buttons to be outside the tab's area, and thus unclickable.
 * Fixed Chestplate upgrades being missing in charging station upgrade GUI when Tough As Nails not installed.
 
 ### 0.11.0-357 (20 May 2019)
