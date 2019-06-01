@@ -44,6 +44,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -65,7 +66,7 @@ public class CommonArmorHandler {
     private static Potion nightVisionPotion;
 
     private final HashMap<String, CommonArmorHandler> playerHudHandlers = new HashMap<>();
-    private final EntityPlayer player;
+    private EntityPlayer player;
     private int magnetRadius;
     private int magnetRadiusSq;
     private final boolean[][] upgradeRenderersInserted = new boolean[4][];
@@ -100,7 +101,7 @@ public class CommonArmorHandler {
     private float speedBoostMult;
     private boolean jetBootsBuilderMode;
 
-    public CommonArmorHandler(EntityPlayer player) {
+    private CommonArmorHandler(EntityPlayer player) {
         this.player = player;
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
             List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
@@ -136,6 +137,15 @@ public class CommonArmorHandler {
     public static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
         // called server side when player logs off
         clearHUDHandlerForPlayer(event.player);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoinWorld(EntityJoinWorldEvent event) {
+        if (event.getEntity() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getEntity();
+            CommonArmorHandler handler = getManagerInstance(player).playerHudHandlers.get(player.getName());
+            if (handler != null) handler.player = player;
+        }
     }
 
     @SubscribeEvent
