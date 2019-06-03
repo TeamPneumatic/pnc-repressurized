@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.model.block.ModelAssemblyControllerScreen;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -23,7 +23,7 @@ public class RenderAssemblyController extends AbstractModelRenderer<TileEntityAs
 
     @Override
     void renderModel(TileEntityAssemblyController te, float partialTicks) {
-        PneumaticCraftUtils.rotateMatrixByMetadata(2);
+        RenderUtils.rotateMatrixByMetadata(2);
 
         // have the screen face the player
         GlStateManager.rotate(180 + Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);

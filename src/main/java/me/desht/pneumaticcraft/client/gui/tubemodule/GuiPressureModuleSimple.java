@@ -73,9 +73,8 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
         super.actionPerformed(widget);
         switch (widget.getID()) {
             case 0:
-                module.advancedConfig = true;//((GuiCheckBox)widget).checked;
-                NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 2, module.advancedConfig ? 1 : 0));
-                // initGui();
+                module.advancedConfig = true;
+                NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 2, 1));
                 break;
             case 1:
                 //Toggle

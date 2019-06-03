@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import me.desht.pneumaticcraft.client.gui.GuiUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;

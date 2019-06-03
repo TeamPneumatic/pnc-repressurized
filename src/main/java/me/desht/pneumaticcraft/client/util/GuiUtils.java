@@ -1,6 +1,5 @@
-package me.desht.pneumaticcraft.client.gui;
+package me.desht.pneumaticcraft.client.util;
 
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -15,8 +14,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -25,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
 public class GuiUtils {
     private static final HashMap<String, ResourceLocation> resourceMap = new HashMap<>();
     private static final int CIRCLE_POINTS = 500;
@@ -141,16 +137,6 @@ public class GuiUtils {
             GlStateManager.popMatrix();
         }
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
-    public static ResourceLocation getResourceLocation(String texture) {
-        if (resourceMap.containsKey(texture)) {
-            return resourceMap.get(texture);
-        } else {
-            ResourceLocation resource = new ResourceLocation(texture);
-            resourceMap.put(texture, resource);
-            return resource;
-        }
     }
 
     public static void drawItemStack(ItemStack stack, int x, int y) {

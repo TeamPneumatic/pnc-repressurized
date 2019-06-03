@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
 import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -16,7 +16,7 @@ public class RenderAphorismTile extends TileEntitySpecialRenderer<TileEntityApho
         GlStateManager.pushMatrix();
         GlStateManager.translate((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
         GlStateManager.scale(1.0F, -1F, -1F);
-        PneumaticCraftUtils.rotateMatrixByMetadata(te.getBlockMetadata());
+        RenderUtils.rotateMatrixByMetadata(te.getBlockMetadata());
         GlStateManager.translate(0, 1, 0.5F - BBConstants.APHORISM_TILE_THICKNESS - 0.01F);
         String[] textLines = te.getTextLines();
         int lineWidth = getMaxLineWidth(textLines);  // TODO we don't need to calculate this every single tick

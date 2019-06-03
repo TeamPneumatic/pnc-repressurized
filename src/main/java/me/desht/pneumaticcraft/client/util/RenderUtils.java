@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
@@ -93,7 +94,6 @@ public class RenderUtils {
     private static void renderOffsetAABB(AxisAlignedBB aabb) {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
-//        wr.setTranslation((double) 0, (double) 0, (double) 0);
 
         wr.pos(aabb.minX, aabb.maxY, aabb.minZ).normal(0, 0, -1).endVertex();
         wr.pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(0, 0, -1).endVertex();
@@ -124,7 +124,43 @@ public class RenderUtils {
         wr.pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(1, 0, 0).endVertex();
         wr.pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(1, 0, 0).endVertex();
         wr.pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(1, 0, 0).endVertex();
-//        wr.setTranslation(0.0D, 0.0D, 0.0D);
         Tessellator.getInstance().draw();
+    }
+
+    /**
+     * Rotates the render matrix dependant on the given metadata of a block. Used in many render methods.
+     *
+     * @param metadata block metadata
+     * @return the angle (in degrees) of resulting rotation around the Y axis
+     */
+    public static double rotateMatrixByMetadata(int metadata) {
+        EnumFacing facing = EnumFacing.byIndex(metadata & 7);
+        float metaRotation;
+        switch (facing) {
+            case UP:
+                metaRotation = 0;
+                GlStateManager.rotate(90, 1, 0, 0);
+                GlStateManager.translate(0, -1, -1);
+                break;
+            case DOWN:
+                metaRotation = 0;
+                GlStateManager.rotate(-90, 1, 0, 0);
+                GlStateManager.translate(0, -1, 1);
+                break;
+            case NORTH:
+                metaRotation = 0;
+                break;
+            case EAST:
+                metaRotation = 90;
+                break;
+            case SOUTH:
+                metaRotation = 180;
+                break;
+            default:
+                metaRotation = 270;
+                break;
+        }
+        GlStateManager.rotate(metaRotation, 0, 1, 0);
+        return metaRotation;
     }
 }

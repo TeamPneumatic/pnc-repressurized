@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
 import me.desht.pneumaticcraft.client.model.block.ModelAirCannon;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
@@ -20,7 +20,7 @@ public class RenderAirCannon extends AbstractModelRenderer<TileEntityAirCannon> 
 
     @Override
     void renderModel(TileEntityAirCannon te, float partialTicks) {
-        float angle = (float) PneumaticCraftUtils.rotateMatrixByMetadata(te.getBlockMetadata());
+        float angle = (float) RenderUtils.rotateMatrixByMetadata(te.getBlockMetadata());
         float rotationAngle = te.rotationAngle - angle + 180F;
         model.renderModel(0.0625F, rotationAngle, te.heightAngle);
     }

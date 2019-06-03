@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
 import me.desht.pneumaticcraft.client.model.block.ModelPressureChamberInterface;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.ResourceLocation;
@@ -28,7 +28,7 @@ public class RenderPressureChamberInterface extends AbstractModelRenderer<TileEn
                 ghostEntityItem.hoverStart = 0.0F;
                 ghostEntityItem.setItem(te.getStackInInterface());
             }
-            PneumaticCraftUtils.rotateMatrixByMetadata(te.getRotation().ordinal());
+            RenderUtils.rotateMatrixByMetadata(te.getRotation().ordinal());
             model.renderModel(0.0625f, te, partialTicks, ghostEntityItem);
         }
     }

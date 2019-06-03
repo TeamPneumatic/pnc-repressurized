@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.model.module;
 
-import me.desht.pneumaticcraft.client.gui.GuiUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModulePressureGauge;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;

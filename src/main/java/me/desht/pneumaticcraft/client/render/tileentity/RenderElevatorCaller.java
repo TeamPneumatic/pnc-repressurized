@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -18,7 +18,7 @@ public class RenderElevatorCaller extends TileEntitySpecialRenderer<TileEntityEl
         GlStateManager.pushMatrix();
         GlStateManager.translate(x + 0.5, y + 1.5, z + 0.5);
         GlStateManager.scale(1.0F, -1F, -1F);
-        PneumaticCraftUtils.rotateMatrixByMetadata(te.getBlockMetadata());
+        RenderUtils.rotateMatrixByMetadata(te.getBlockMetadata());
         GlStateManager.translate(-1, 0, -1);
 
         FontRenderer fontRenderer = Minecraft.getMinecraft().getRenderManager().getFontRenderer();

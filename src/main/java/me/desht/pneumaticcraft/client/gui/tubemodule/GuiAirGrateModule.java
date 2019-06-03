@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
 import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
-import me.desht.pneumaticcraft.client.gui.GuiUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateAirGrateModule;

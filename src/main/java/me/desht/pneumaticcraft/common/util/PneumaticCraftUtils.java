@@ -11,8 +11,6 @@ import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -29,7 +27,6 @@ import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
 import net.minecraft.util.text.TextFormatting;
@@ -44,8 +41,6 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -58,6 +53,7 @@ import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Stream;
@@ -66,7 +62,7 @@ public class PneumaticCraftUtils {
     private static final List<Item> inventoryItemBlacklist = new ArrayList<>();
 
     /**
-     * Returns the ForgeDirection of the facing of the entity given.
+     * Returns the EnumFacing of the given entity.
      *
      * @param entity the entity
      * @param includeUpAndDown false when UP/DOWN should not be included.
@@ -88,6 +84,12 @@ public class PneumaticCraftUtils {
         else return EnumFacing.SOUTH;
     }
 
+    /**
+     * Get a yaw angle from an EnumFacing
+     *
+     * @param facing the facing direction
+     * @return the yaw angle
+     */
     public static int getYawFromFacing(EnumFacing facing) {
         switch (facing) {
             case NORTH:
@@ -103,47 +105,8 @@ public class PneumaticCraftUtils {
         }
     }
 
-    /**
-     * Rotates the render matrix dependant on the given metadata of a block. Used in the render methods of many PneumaticCraft TileEntities.
-     *
-     * @param metadata block metadata
-     * @return the angle (in degrees) of resulting rotation around the Y axis
-     */
-    @SideOnly(Side.CLIENT)
-    public static double rotateMatrixByMetadata(int metadata) {
-        EnumFacing facing = EnumFacing.byIndex(metadata & 7);
-        float metaRotation;
-        switch (facing) {
-            case UP:
-                metaRotation = 0;
-                GlStateManager.rotate(90, 1, 0, 0);
-                GlStateManager.translate(0, -1, -1);
-                break;
-            case DOWN:
-                metaRotation = 0;
-                GlStateManager.rotate(-90, 1, 0, 0);
-                GlStateManager.translate(0, -1, 1);
-                break;
-            case NORTH:
-                metaRotation = 0;
-                break;
-            case EAST:
-                metaRotation = 90;
-                break;
-            case SOUTH:
-                metaRotation = 180;
-                break;
-            default:
-                metaRotation = 270;
-                break;
-        }
-        GlStateManager.rotate(metaRotation, 0, 1, 0);
-        return metaRotation;
-    }
-
     public static final double[] sin;
     public static final double[] cos;
-    public static final double[] tan;
     public static final int CIRCLE_POINTS = 500;
 
     /*
@@ -152,13 +115,11 @@ public class PneumaticCraftUtils {
     static {
         sin = new double[CIRCLE_POINTS];
         cos = new double[CIRCLE_POINTS];
-        tan = new double[CIRCLE_POINTS];
 
         for (int i = 0; i < CIRCLE_POINTS; i++) {
             double angle = 2 * Math.PI * i / CIRCLE_POINTS;
             sin[i] = Math.sin(angle);
             cos[i] = Math.cos(angle);
-            tan[i] = Math.tan(angle);
         }
     }
 
@@ -239,21 +200,23 @@ public class PneumaticCraftUtils {
     /**
      * Rounds numbers down at the given decimal. 1.234 with decimal 1 will result in a string holding "1.2"
      *
-     * @param value a double-precison quantity
+     * @param value a double-precision quantity
      * @param decimals number of digits to the right of the decimal point
      * @return a formatted string representation
      */
     public static String roundNumberTo(double value, int decimals) {
-        double ret = roundNumberToDouble(value, decimals);
-        if (decimals == 0) {
-            return "" + (int) ret;
-        } else {
-            return "" + ret;
-        }
+        return new BigDecimal(value).setScale(decimals, BigDecimal.ROUND_HALF_DOWN).toPlainString();
     }
 
+    /**
+     * Rounds numbers down at the given decimal. 1.234 with decimal 1 will result in a string holding "1.2"
+     *
+     * @param value a double-precision quantity
+     * @param decimals number of digits to the right of the decimal point
+     * @return the rounded value as a double-precision quantity
+     */
     public static double roundNumberToDouble(double value, int decimals) {
-        return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+        return new BigDecimal(value).setScale(decimals, BigDecimal.ROUND_HALF_DOWN).doubleValue();
     }
 
     /**
@@ -278,92 +241,93 @@ public class PneumaticCraftUtils {
         return Math.abs(f1 - f2) < maxDifference;
     }
 
-    /**
-     * Returns the maximum length of characters that an item name has of all the stacks given. Used to know on how many to sort on
-     * bubblesorting the names.
-     *
-     * @param inventoryStacks
-     * @return
-     */
-    private static int getMaxItemNameLength(ItemStack[] inventoryStacks) {
-        int maxLength = 0;
-        for (ItemStack iStack : inventoryStacks) {
-            if (!iStack.isEmpty()) maxLength = Math.max(maxLength, iStack.getDisplayName().length());
+    private static void quickSort(ItemStack[] stacks, int begin, int end) {
+        if (begin < end) {
+            int partitionIndex = _partition(stacks, begin, end);
+
+            quickSort(stacks, begin, partitionIndex-1);
+            quickSort(stacks, partitionIndex+1, end);
         }
-        return maxLength;
     }
 
-    /**
-     * Bubblesorts the itemstacks alphabetically, on the given charIndex. when the index is 2 for example, the stack with an item name
-     * that has a 'B' as second letter will sort in front of a name with a 'D' as second letter.
-     *
-     * @param stackArray
-     * @param charIndex
-     */
-    private static void bubbleSortOnCharIndex(ItemStack[] stackArray, int charIndex) {
-        for (int i = 0; i < stackArray.length - 1; i++) {
-            for (int j = 1; j < stackArray.length - i; j++) {
-                boolean higherStackTooShort = stackArray[j - 1].isEmpty() || stackArray[j - 1].getDisplayName().length() <= charIndex;
-                boolean lowerStackTooShort = stackArray[j].isEmpty() || stackArray[j].getDisplayName().length() <= charIndex;
-                if (stackArray[j - 1].isEmpty() || !stackArray[j].isEmpty() && (lowerStackTooShort || higherStackTooShort || stackArray[j - 1].getDisplayName().charAt(charIndex) > stackArray[j].getDisplayName().charAt(charIndex))) {
-                    ItemStack temp = stackArray[j - 1];
-                    stackArray[j - 1] = stackArray[j];
-                    stackArray[j] = temp;
-                }
+    private static int _partition(ItemStack[] arr, int begin, int end) {
+        ItemStack pivot = arr[end];
+        int i = begin - 1;
+
+        for (int j = begin; j < end; j++) {
+            if (arr[j].getDisplayName().compareToIgnoreCase(pivot.getDisplayName()) <= 0) {
+                i++;
+
+                ItemStack swapTemp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = swapTemp;
             }
         }
+
+        ItemStack swapTemp = arr[i + 1];
+        arr[i + 1] = arr[end];
+        arr[end] = swapTemp;
+
+        return i + 1;
     }
 
     /**
-     * Sorts the stacks given alphabetically, combines them (so 2x64 will become 1x128), and adds the strings into the given string list.
+     * Sorts the stacks given alphabetically, combines them (so 2x64 will become 1x128), and adds the strings into the
+     * given string list.  This method is aware of inventory items implementing the {@link IInventoryItem} interface.
      *
      * @param textList string list to add information to
      * @param originalStacks array of item stacks to sort & combine
      */
     public static void sortCombineItemStacksAndToString(List<String> textList, ItemStack[] originalStacks) {
-        ItemStack[] stacks = new ItemStack[originalStacks.length];
-        Arrays.setAll(stacks, value -> originalStacks[value].copy());
+        sortCombineItemStacksAndToString(textList, originalStacks, "\u2022 ");
+    }
 
-        int maxItemNameLength = getMaxItemNameLength(stacks);
-        for (int i = maxItemNameLength - 1; i >= 0; i--) {
-            bubbleSortOnCharIndex(stacks, i);
-        }
+    /**
+     * Sorts the stacks given alphabetically, combines them (so 2x64 will become 1x128), and adds the strings into the
+     * given string list.  This method is aware of inventory items implementing the {@link IInventoryItem} interface.
+     *
+     * @param textList string list to add information to
+     * @param originalStacks array of item stacks to sort & combine
+     * @param prefix prefix string to prepend to each line of output
+     */
+    public static void sortCombineItemStacksAndToString(List<String> textList, ItemStack[] originalStacks, String prefix) {
+        ItemStack[] stacks = Arrays.copyOf(originalStacks, originalStacks.length);
+        quickSort(stacks, 0, stacks.length - 1);
+
         int itemCount = 0;
-        ItemStack oldItemStack = ItemStack.EMPTY;
-        List<ItemStack> oldInventoryItems = null;
+        ItemStack prevItemStack = ItemStack.EMPTY;
+        List<ItemStack> prevInventoryItems = null;
         for (ItemStack stack : stacks) {
             if (!stack.isEmpty()) {
-                if (oldItemStack.isEmpty() || !stack.isItemEqual(oldItemStack) || oldInventoryItems != null && oldInventoryItems.size() > 0) {
-                    if (!oldItemStack.isEmpty()) {
-                        textList.add("\u2022 " + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + oldItemStack.getDisplayName());
+                if (!stack.isItemEqual(prevItemStack) || prevInventoryItems != null && prevInventoryItems.size() > 0) {
+                    if (!prevItemStack.isEmpty()) {
+                        textList.add(prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName());
                     }
-                    if (oldInventoryItems != null) {
-                        int oldSize = textList.size();
-                        sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[0]));
-                        for (int i = oldSize; i < textList.size(); i++) {
-                            textList.set(i, textList.get(i).replace('\u2022', '\u21b3'));
-                        }
+                    if (prevInventoryItems != null) {
+                        sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), "\u21b3 ");
                     }
-                    oldItemStack = stack;
+                    prevItemStack = stack;
                     itemCount = stack.getCount();
                 } else {
                     itemCount += stack.getCount();
                 }
-                oldInventoryItems = getStacksInItem(stack);
+                prevInventoryItems = getStacksInItem(stack);
             }
         }
-        if (itemCount > 0 && !oldItemStack.isEmpty()) {
-            textList.add("\u2022 " + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + oldItemStack.getDisplayName());
-            if (oldInventoryItems != null) {
-                int oldSize = textList.size();
-                sortCombineItemStacksAndToString(textList, oldInventoryItems.toArray(new ItemStack[0]));
-                for (int i = oldSize; i < textList.size(); i++) {
-                    textList.set(i, textList.get(i).replace('\u2022', '\u21b3'));
-                }
+        if (itemCount > 0 && !prevItemStack.isEmpty()) {
+            textList.add(prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName());
+            if (prevInventoryItems != null) {
+                sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), "\u21b3 ");
             }
         }
     }
 
+    /**
+     * Get a list of the items contained in the given item.  This uses the {@link IInventoryItem} interface.
+     *
+     * @param item the item to check
+     * @return a list of the items contained within the given item
+     */
     public static List<ItemStack> getStacksInItem(@Nonnull ItemStack item) {
         List<ItemStack> items = new ArrayList<>();
         if (item.getItem() instanceof IInventoryItem && !inventoryItemBlacklist.contains(item.getItem())) {
@@ -421,6 +385,16 @@ public class PneumaticCraftUtils {
         return all.toString();
     }
 
+    /**
+     * Get a count of the number of security stations protecting the given blockpos from the given player.
+     *
+     * @param world the world
+     * @param pos the blockpos whose protection is being checked
+     * @param player the player who is being protected from
+     * @param showRangeLines whether to display the stations' range bounding boxes
+     * @param placementRange true when trying to place a block, false when trying to interact with a block
+     * @return the number of security stations preventing access
+     */
     public static int getProtectingSecurityStations(World world, BlockPos pos, EntityPlayer player, boolean showRangeLines, boolean placementRange) {
         int blockingStations = 0;
         Iterator<TileEntitySecurityStation> iterator = getSecurityStations(world, pos, placementRange).iterator();
@@ -585,15 +559,6 @@ public class PneumaticCraftUtils {
                 return "West";
             default:
                 return "Unknown";
-        }
-    }
-
-    public static void dropInventory(IItemHandler inventory, World world, double x, double y, double z) {
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            ItemStack itemStack = inventory.getStackInSlot(i);
-            if (itemStack.getCount() > 0) {
-                dropItemOnGround(itemStack, world, x, y, z);
-            }
         }
     }
 
@@ -816,27 +781,17 @@ public class PneumaticCraftUtils {
         return new ResourceLocation(Names.MOD_ID, path);
     }
 
+    /**
+     * Get a translation string for the given key.  This has support for The One Probe which runs server-side.
+     *
+     * @param s the translation key
+     * @return the translated string (if called server-side, a string which The One Probe will handle client-side)
+     */
     public static String xlate(String s) {
         return PneumaticCraftRepressurized.proxy.xlate(s);
     }
 
     public static String dyeColorDesc(int c) {
-        return TextFormatting.BOLD + WordUtils.capitalize(I18n.format(EnumDyeColor.byDyeDamage(c).getTranslationKey())) + TextFormatting.RESET;
-    }
-
-    /**
-     * Emit particles from just above the given blockpos, which is generally a machine or similar.
-     * Only call this clientside.
-     *
-     * @param world the world
-     * @param pos the block pos
-     * @param particle the particle type
-     */
-    public static void emitParticles(World world, BlockPos pos, EnumParticleTypes particle) {
-        float xOff = world.rand.nextFloat() * 0.6F + 0.2F;
-        float zOff = world.rand.nextFloat() * 0.6F + 0.2F;
-        PneumaticCraftRepressurized.proxy.getClientWorld().spawnParticle(particle,
-                pos.getX() + xOff, pos.getY() + 1.2, pos.getZ() + zOff,
-                0, 0, 0);
+        return TextFormatting.BOLD + WordUtils.capitalize(xlate(EnumDyeColor.byDyeDamage(c).getTranslationKey())) + TextFormatting.RESET;
     }
 }

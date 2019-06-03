@@ -4,12 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -131,7 +131,7 @@ public class TileEntityRefinery extends TileEntityTickableBase
             updateComparatorValue(refineries, hasWork);
         } else if (getWorld().isRemote && lastProgress > 0) {
             for (int i = 0; i < lastProgress; i++) {
-                PneumaticCraftUtils.emitParticles(getWorld(), getPos().offset(EnumFacing.UP, refineryCount - 1), EnumParticleTypes.SMOKE_LARGE);
+                ClientUtils.emitParticles(getWorld(), getPos().offset(EnumFacing.UP, refineryCount - 1), EnumParticleTypes.SMOKE_LARGE);
             }
         }
     }

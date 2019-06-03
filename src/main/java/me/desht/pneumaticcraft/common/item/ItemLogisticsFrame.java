@@ -49,8 +49,8 @@ public class ItemLogisticsFrame extends ItemSemiBlockBase {
             }
             String key = SemiBlockManager.getKeyForSemiBlock(SemiBlockManager.getSemiBlockForItem((ItemSemiBlockBase) stack.getItem()));
             if (sneaking) {
-                if (logistics.isFuzzyMeta()) curInfo.add("- " + PneumaticCraftUtils.xlate("gui.logistic_frame.fuzzyMeta"));
-                if (logistics.isFuzzyNBT()) curInfo.add("- " + PneumaticCraftUtils.xlate("gui.logistic_frame.fuzzyNBT"));
+                if (logistics.isFuzzyMeta()) curInfo.add("\u2022 " + PneumaticCraftUtils.xlate("gui.logistic_frame.fuzzyMeta"));
+                if (logistics.isFuzzyNBT()) curInfo.add("\u2022 " + PneumaticCraftUtils.xlate("gui.logistic_frame.fuzzyNBT"));
                 ItemStack[] stacks = new ItemStack[logistics.getFilters().getSlots()];
                 for (int i = 0; i < logistics.getFilters().getSlots(); i++) {
                     stacks[i] = logistics.getFilters().getStackInSlot(i);

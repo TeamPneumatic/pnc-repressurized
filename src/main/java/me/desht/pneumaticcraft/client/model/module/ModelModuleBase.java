@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.model.module;
 
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -20,7 +20,7 @@ public abstract class ModelModuleBase extends ModelBase {
         GlStateManager.pushMatrix();
 
         FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture());
-        PneumaticCraftUtils.rotateMatrixByMetadata(module.getDirection().ordinal());
+        RenderUtils.rotateMatrixByMetadata(module.getDirection().ordinal());
         renderDynamic(scale, partialTicks);
 
         GlStateManager.popMatrix();

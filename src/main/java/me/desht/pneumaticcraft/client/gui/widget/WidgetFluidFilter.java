@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import me.desht.pneumaticcraft.client.gui.GuiUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 

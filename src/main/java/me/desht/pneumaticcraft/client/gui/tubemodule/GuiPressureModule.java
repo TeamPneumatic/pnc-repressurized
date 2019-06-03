@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
+import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
@@ -68,9 +69,14 @@ public class GuiPressureModule extends GuiTubeModule {
         graphHighY = guiTop + 93;
         graphLeft = guiLeft + 22;
         graphRight = guiLeft + 172;
+
         addWidget(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY, "gui.redstone"));
         addWidget(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25, "gui.threshold"));
-        addWidget((IGuiWidget) new GuiAnimatedStat(this, "gui.tab.info", GuiAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true).setText("gui.tab.info.tubeModule"));
+
+        IGuiAnimatedStat stat = new GuiAnimatedStat(this, "gui.tab.info", GuiAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true).setText("gui.tab.info.tubeModule");
+        stat.setBeveled(true);
+        addWidget((IGuiWidget) stat);
+
         GuiCheckBox advancedMode = new GuiCheckBox(0, guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig").setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
         advancedMode.checked = true;
         addWidget(advancedMode);
