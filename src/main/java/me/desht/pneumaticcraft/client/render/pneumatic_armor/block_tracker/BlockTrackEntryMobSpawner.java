@@ -7,12 +7,13 @@ import me.desht.pneumaticcraft.common.semiblock.SemiBlockSpawnerAgitator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -39,10 +40,8 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
     public void addInformation(World world, BlockPos pos, TileEntity te, List<String> infoList) {
         if (te instanceof TileEntityMobSpawner) {
             MobSpawnerBaseLogic spawner = ((TileEntityMobSpawner) te).getSpawnerBaseLogic();
-            ResourceLocation rl = Reflections.getEntityId(spawner);
-//            infoList.add("Spawner Type: " + I18n.format("entity." + spawner.getEntityNameToSpawn() + ".name"));
-            infoList.add("Spawner Type: " + (rl == null ? "?" : rl.toString()));
-            
+            Entity e = spawner.getCachedEntity();
+            infoList.add("Spawner Type: " + TextFormatting.AQUA + e.getName());
             if (Reflections.isActivated(spawner) || SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockSpawnerAgitator.class, world, pos) != null) {
                 infoList.add("Time until next spawn: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false));
             } else if (HackableMobSpawner.isHacked(world, pos)) {
