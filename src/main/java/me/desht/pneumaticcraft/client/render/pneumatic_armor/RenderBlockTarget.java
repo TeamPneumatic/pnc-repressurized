@@ -26,7 +26,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.MouseEvent;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class RenderBlockTarget {
 
     private final World world;
     private final BlockPos pos;
-    private final RenderBlockArrows arrowRenderer = new RenderBlockArrows();
+    private final RenderBlockHighlight highlightRenderer = new RenderBlockHighlight();
     public int ticksExisted = 0;
     public final GuiAnimatedStat stat;
     private final EntityPlayer player;
@@ -53,19 +52,18 @@ public class RenderBlockTarget {
         this.pos = pos;
         this.te = te;
         this.blockTracker = blockTracker;
-        // oldTicksExisted = entity.ticksExisted;
         String title = world.getBlockState(pos).getBlock().getLocalizedName();
         if (title.contains(".name")) {
             try {
                 IBlockState state = world.getBlockState(pos);
-                ItemStack stack = state.getBlock().getPickBlock(state, FMLClientHandler.instance().getClient().objectMouseOver, world, pos, FMLClientHandler.instance().getClientPlayerEntity());
+                ItemStack stack = state.getBlock().getPickBlock(state, Minecraft.getMinecraft().objectMouseOver, world, pos, player);
                 if (!stack.isEmpty()) title = stack.getDisplayName();
-            } catch (Throwable e) {
+            } catch (Throwable ignored) {
             }
         }
         if (title.contains(".name")) {
             ITextComponent text = te.getDisplayName();
-            title = text == null ? "???" : te.getDisplayName().getFormattedText();
+            title = text == null ? "???" : text.getFormattedText();
         }
         stat = new GuiAnimatedStat(null, title, GuiAnimatedStat.StatIcon.NONE, 20, -20, 0x3000AA00, null, false);
         stat.setMinDimensionsAndReset(0, 0);
@@ -91,6 +89,10 @@ public class RenderBlockTarget {
         return world.getBlockState(pos).getBlock();
     }
 
+    public BlockPos getPos() {
+        return pos;
+    }
+
     public double getDistanceToEntity(Entity entity) {
         return entity.getDistance(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
     }
@@ -111,7 +113,6 @@ public class RenderBlockTarget {
             }
         }
         playerIsLooking = isPlayerLookingAtTarget();
-        arrowRenderer.ticksExisted++;
 
         if (!getBlock().isAir(world.getBlockState(pos), world, pos)) {
             textList = new ArrayList<>();
@@ -137,7 +138,7 @@ public class RenderBlockTarget {
         if (hackTime > 0) {
             IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(world, pos, player);
             if (hackableBlock != null) {
-                hackTime++;// = Math.min(hackTime + 1, hackableBlock.getHackTime(world, blockX, blockY, blockZ, player));
+                hackTime++;
             } else {
                 hackTime = 0;
             }
@@ -152,23 +153,18 @@ public class RenderBlockTarget {
 
         GlStateManager.disableTexture2D();
         GlStateManager.pushMatrix();
-
         GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
-
-        float red = 0.5F;
-        float green = 0.5F;
-        float blue = 1.0F;
-        float alpha = 0.5F;
-
         GlStateManager.translate(x, y, z);
-
-        // for some reason the blend function resets... that's why this line is here.
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        IBlockState state = world.getBlockState(pos);
-        if (!getBlock().isAir(state, world, pos)) arrowRenderer.render(world, pos, partialTicks);
 
-        float targetAcquireProgress = ((ticksExisted + partialTicks - 50) / 0.7F);
+        IBlockState state = world.getBlockState(pos);
+        if (!getBlock().isAir(state, world, pos)) {
+            highlightRenderer.render(world, pos, partialTicks);
+        }
+
+        float targetAcquireProgress = (ticksExisted + partialTicks) / 1.20f;
+
         GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
         if (ticksExisted <= 120 && ticksExisted > 50) {
@@ -179,20 +175,21 @@ public class RenderBlockTarget {
         if (!getBlock().isAir(state, world, pos)) {
             FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 
-            GlStateManager.color(red, green, blue, alpha);
+            GlStateManager.color(0.5F, 1.0F, 0.5F, 0.5F);
             if (ticksExisted > 120) {
                 GlStateManager.scale(0.02D, 0.02D, 0.02D);
                 stat.render(-1, -1, partialTicks);
             } else if (ticksExisted > 50) {
                 GlStateManager.scale(0.02D, 0.02D, 0.02D);
                 fontRenderer.drawString("Acquiring Target...", 0, 0, 0x7F7F7F);
-                fontRenderer.drawString(targetAcquireProgress + "%", 37, 28, 0x002F00);
+                fontRenderer.drawString((int)targetAcquireProgress + "%", 37, 28, 0x002F00);
             } else if (ticksExisted < -30) {
                 GlStateManager.scale(0.03D, 0.03D, 0.03D);
                 stat.render(-1, -1, partialTicks);
                 fontRenderer.drawString("Lost Target!", 0, 0, 0xFF0000);
             }
         }
+
         GlStateManager.popMatrix();
     }
 
@@ -200,7 +197,7 @@ public class RenderBlockTarget {
         return ticksExisted >= 120;
     }
 
-    public void addBlockTrackInfo(List<String> textList) {
+    private void addBlockTrackInfo(List<String> textList) {
         for (IBlockTrackEntry blockTrackEntry : getApplicableEntries())
             blockTrackEntry.addInformation(world, pos, te, textList);
     }

@@ -4,10 +4,10 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.config.HelmetWidgetDefaults;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
@@ -65,6 +65,10 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
 
     public static GuiKeybindCheckBox fromKeyBindingName(String name) {
         return trackedCheckboxes.get(name);
+    }
+
+    public static boolean isHandlerEnabled(IUpgradeRenderHandler handler) {
+        return fromKeyBindingName(GuiKeybindCheckBox.UPGRADE_PREFIX + handler.getUpgradeName()).checked;
     }
 
     @Override

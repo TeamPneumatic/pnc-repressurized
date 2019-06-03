@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiEntityTrackOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderTarget;
@@ -17,6 +18,7 @@ import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,7 +44,6 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     private final Map<Integer, RenderTarget> targets = new HashMap<>();
     private boolean shouldStopSpamOnEntityTracking = false;
 
-    public boolean gaveNotAbleToTrackEntityWarning;
     @SideOnly(Side.CLIENT)
     private GuiAnimatedStat entityTrackInfo;
     @Nonnull
@@ -57,6 +58,12 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public void update(EntityPlayer player, int rangeUpgrades) {
+        SearchUpgradeHandler searchHandler = HUDHandler.instance().getSpecificRenderer(SearchUpgradeHandler.class);
+
+        if (searchHandler != null && (Minecraft.getMinecraft().world.getTotalWorldTime() & 0xf) == 0) {
+            searchHandler.trackItemEntities(player, rangeUpgrades, GuiKeybindCheckBox.isHandlerEnabled(searchHandler));
+        }
+
         ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
         String filterStr = helmetStack.isEmpty() ? "" : NBTUtil.getString(helmetStack, "entityFilter");
         if (!entityFilter.toString().equals(filterStr)) {

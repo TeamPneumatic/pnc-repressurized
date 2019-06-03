@@ -6,6 +6,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.2-??? (unreleased)
+#### Updates
+* Rewrite of the Pneumatic Helmet Block Tracker for huge clientside performance improvements: those nasty FPS drops around busy areas are now basically gone.
+  * You may notice it takes slightly longer to start tracking new blocks as you look around (a second or two); this is due to much friendlier scanning of the surrounding area.
+  * You can adjust the scan aggressiveness with the ``blockTrackerMaxTimePerTick`` clientside setting; this value limits scanning to the given percentage of a client tick.  Raise this for faster block scanning at the expense of performance.
+  * The animating marker arrows have been replaced with a more gently pulsing block outline for a smoother visual appearance.
+* Item Search upgrade is also now much kinder to clientside performance.
+  * The green highlight markers for item searching now pulse gently.
+#### Fixes
+* Fixed Pneumatic Armor becoming non-functional after a dimension change.
+* Fixed Redstone Tube Module channel display (via The One Probe) not working on dedicated server
+
 ### 0.11.1-361 (31 May 2019)
 #### Updates
 * Pneumatic Armor HUD panels (pressure, entity/block tracker, aircon etc.) now reposition themselves better if you change screen resolution and/or scaling.

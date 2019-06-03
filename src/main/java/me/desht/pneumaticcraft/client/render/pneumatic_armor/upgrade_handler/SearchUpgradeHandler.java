@@ -23,8 +23,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -39,10 +39,10 @@ import java.util.Map;
 
 public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     private int totalSearchedItemCount;
-    private int searchedItemCounter;
+    private int itemSearchCount;
     private int ticksExisted;
     private final Map<EntityItem, Integer> searchedItems = new HashMap<>();
-    private final List<RenderSearchItemBlock> searchedBlocks = new ArrayList<>();
+    private final Map<BlockPos, RenderSearchItemBlock> trackedInventories = new HashMap<>();
     @SideOnly(Side.CLIENT)
     private GuiAnimatedStat searchInfo;
 
@@ -52,41 +52,18 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
         return "itemSearcher";
     }
 
-    public void addToSearchedItemCounter(int amount) {
-        searchedItemCounter += amount;
-    }
-
     @Override
     @SideOnly(Side.CLIENT)
     public void update(EntityPlayer player, int rangeUpgrades) {
         ticksExisted++;
-        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
 
-        if (ticksExisted % 20 == 0) {
-            List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class, EntityTrackUpgradeHandler.getAABBFromRange(player, rangeUpgrades));
-            searchedItems.clear();
-            for (EntityItem item : items) {
-                if (!item.getItem().isEmpty() && !searchStack.isEmpty()) {
-                    if (item.getItem().isItemEqual(searchStack))
-                        searchedItems.put(item, item.getItem().getCount());
-                    else {
-                        List<ItemStack> inventoryItems = PneumaticCraftUtils.getStacksInItem(item.getItem());
-                        int itemCount = 0;
-                        for (ItemStack inventoryItem : inventoryItems) {
-                            if (inventoryItem.isItemEqual(searchStack)) {
-                                itemCount += inventoryItem.getCount();
-                            }
-                        }
-                        if (itemCount > 0) searchedItems.put(item, itemCount);
-                    }
-                }
-            }
+        if ((ticksExisted & 0xf) == 0) {
+            // count up all items in tracked inventories, and cull any inventories with no matching items
+            int blockSearchCount = trackInventoryCounts(rangeUpgrades);
 
-            totalSearchedItemCount = searchedItemCounter;
-            searchedItemCounter = 0;
-            for (Integer itemCount : searchedItems.values()) {
-                searchedItemCounter += itemCount;
-            }
+            searchedItems.entrySet().removeIf(e -> !e.getKey().isEntityAlive());
+
+            totalSearchedItemCount = itemSearchCount + blockSearchCount;
         }
     }
 
@@ -102,18 +79,19 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
         GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         Minecraft.getMinecraft().getRenderManager().renderEngine.bindTexture(Textures.GLOW_RESOURCE);
-        //  mc.func_110434_K().func_110577_a(Textures.GLOW_RESOURCE);
-        for (Map.Entry<EntityItem, Integer> entry : searchedItems.entrySet()) {
-            EntityItem item = entry.getKey();
+
+        searchedItems.forEach((item, value) -> {
             float height = MathHelper.sin((item.getAge() + partialTicks) / 10.0F + item.hoverStart) * 0.1F + 0.2F;
-            RenderSearchItemBlock.renderSearch(item.lastTickPosX + (item.posX - item.lastTickPosX) * partialTicks, item.lastTickPosY + (item.posY - item.lastTickPosY) * partialTicks + height, item.lastTickPosZ + (item.posZ - item.lastTickPosZ) * partialTicks, entry.getValue(), totalSearchedItemCount);
-        }
-        for (int i = 0; i < searchedBlocks.size(); i++) {
-            if (!searchedBlocks.get(i).renderSearchBlock(totalSearchedItemCount)) {
-                searchedBlocks.remove(i);
-                i--;
-            }
-        }
+            RenderSearchItemBlock.renderSearch(
+                    item.lastTickPosX + (item.posX - item.lastTickPosX) * partialTicks,
+                    item.lastTickPosY + (item.posY - item.lastTickPosY) * partialTicks + height,
+                    item.lastTickPosZ + (item.posZ - item.lastTickPosZ) * partialTicks, value,
+                    totalSearchedItemCount, partialTicks
+            );
+        });
+
+        trackedInventories.values().forEach(entry -> entry.renderSearchBlock(totalSearchedItemCount, partialTicks));
+
         GlStateManager.enableCull();
         GlStateManager.enableDepth();
         GlStateManager.disableBlend();
@@ -125,7 +103,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public void render2D(float partialTicks, boolean helmetEnabled) {
-        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(Minecraft.getMinecraft().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
         List<String> textList = new ArrayList<>();
         if (searchStack.isEmpty()) {
             textList.add("press '" + Keyboard.getKeyName(KeyHandler.getInstance().keybindOpenOptions.getKeyCode()) + "' to configure");
@@ -140,48 +118,102 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
         return new Item[]{Itemss.upgrades.get(EnumUpgrade.SEARCH)};
     }
 
+    private int trackInventoryCounts(int rangeUpgrades) {
+        int blockSearchCount = 0;
+        int blockTrackRange = BlockTrackUpgradeHandler.BLOCK_TRACKING_RANGE
+                + Math.min(rangeUpgrades, 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
+        int blockTrackRangeSq = blockTrackRange * blockTrackRange;
+
+        EntityPlayer player = Minecraft.getMinecraft().player;
+        List<BlockPos> toRemove = new ArrayList<>();
+        for (Map.Entry<BlockPos,RenderSearchItemBlock> entry : trackedInventories.entrySet()) {
+            int nItems = entry.getKey().distanceSq(player.posX, player.posY, player.posZ) < blockTrackRangeSq ?
+                    entry.getValue().getSearchedItemCount() : 0;
+
+            if (nItems == 0) {
+                toRemove.add(entry.getKey());
+            }
+            blockSearchCount += nItems;
+        }
+        toRemove.forEach(trackedInventories::remove);
+
+        return blockSearchCount;
+    }
+
     /**
-     * This method will be called by the BlockTrackUpgradeHandler when it finds inventories while scanning blocks.
-     *
-     * @param te TileEntity the tile entity, which is already known to support the item handler capability
+     * Called by the EntityTrackerUpgradeHandler every 16 ticks to find items in item entities on the ground.
+     *  @param player the player
+     * @param rangeUpgrades number of range upgrades installed in the helmet
+     * @param handlerEnabled true if the search handler is actually enabled, false otherwise
      */
-    void checkInventoryForItems(TileEntity te, EnumFacing face) {
-        try {
-            ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(FMLClientHandler.instance().getClient().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
-            IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face);
-            assert handler != null;
-            boolean hasFoundItem = false;
-            if (!searchStack.isEmpty()) {
-                for (int l = 0; l < handler.getSlots(); l++) {
-                    if (!handler.getStackInSlot(l).isEmpty()) {
-                        int items = RenderSearchItemBlock.getSearchedItemCount(handler.getStackInSlot(l), searchStack);
-                        if (items > 0) {
-                            hasFoundItem = true;
-                            searchedItemCounter += items;
+    void trackItemEntities(EntityPlayer player, int rangeUpgrades, boolean handlerEnabled) {
+        searchedItems.clear();
+        itemSearchCount = 0;
+
+        if (!handlerEnabled) return;
+
+        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(Minecraft.getMinecraft().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+        List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class, EntityTrackUpgradeHandler.getAABBFromRange(player, rangeUpgrades));
+
+        for (EntityItem item : items) {
+            if (!item.getItem().isEmpty() && !searchStack.isEmpty()) {
+                if (item.getItem().isItemEqual(searchStack)) {
+                    searchedItems.put(item, item.getItem().getCount());
+                    itemSearchCount += item.getItem().getCount();
+                } else {
+                    List<ItemStack> inventoryItems = PneumaticCraftUtils.getStacksInItem(item.getItem());
+                    int itemCount = 0;
+                    for (ItemStack inventoryItem : inventoryItems) {
+                        if (inventoryItem.isItemEqual(searchStack)) {
+                            itemCount += inventoryItem.getCount();
                         }
                     }
-                }
-            }
-            if (hasFoundItem) {
-                boolean inList = false;
-                for (RenderSearchItemBlock trackedBlock : searchedBlocks) {
-                    if (trackedBlock.isAlreadyTrackingCoord(te.getPos())) {
-                        inList = true;
-                        break;
+                    if (itemCount > 0) {
+                        searchedItems.put(item, itemCount);
+                        itemSearchCount += itemCount;
                     }
                 }
-                if (!inList) searchedBlocks.add(new RenderSearchItemBlock(te.getWorld(), te.getPos()));
             }
-        } catch (Throwable ignored) {
-
         }
+    }
+
+    /**
+     * Called by the BlockTrackUpgradeHandler when it finds inventories while scanning blocks.  If
+     * the inventory contains any of the searched item, its position is added to a track list.
+     *
+     * @param te TileEntity the tile entity, which is already known to support the item handler capability
+     * @param handlerEnabled true if the search handler is actually enabled, false otherwise
+     */
+    void checkInventoryForItems(TileEntity te, EnumFacing face, boolean handlerEnabled) {
+        if (!handlerEnabled) {
+            trackedInventories.clear();
+        } else {
+            ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(Minecraft.getMinecraft().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+            IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face);
+            if (!searchStack.isEmpty()) {
+                if (checkForItems(handler, searchStack)) {
+                    trackedInventories.put(te.getPos(), new RenderSearchItemBlock(te.getWorld(), te.getPos()));
+                }
+            }
+        }
+    }
+
+    private boolean checkForItems(IItemHandler handler, ItemStack searchStack) {
+        for (int l = 0; l < handler.getSlots(); l++) {
+            if (!handler.getStackInSlot(l).isEmpty()) {
+                int items = RenderSearchItemBlock.getSearchedItemCount(handler.getStackInSlot(l), searchStack);
+                if (items > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void reset() {
-        searchedBlocks.clear();
-        searchedItemCounter = 0;
+        trackedInventories.clear();
         searchedItems.clear();
         ticksExisted = 0;
         searchInfo = null;

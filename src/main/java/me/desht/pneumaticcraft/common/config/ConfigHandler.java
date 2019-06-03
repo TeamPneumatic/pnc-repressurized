@@ -257,6 +257,8 @@ public class ConfigHandler {
         public boolean alwaysShowPressureDurabilityBar = true;
         @Config.Comment("Should tube modules emit redstone play redstone particle effects when active?")
         public boolean tubeModuleRedstoneParticles = true;
+        @Config.Comment("Maximum time, as a percentage of the tick, that the Pneumatic Helmet Block Tracker may take when active and scanning blocks. Larger values mean more rapid update of block information, but potentially greater impact on client FPS.")
+        public int blockTrackerMaxTimePerTick = 10;
     }
 
     public static class HelmetOptions {
