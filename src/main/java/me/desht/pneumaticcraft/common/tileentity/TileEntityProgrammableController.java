@@ -336,7 +336,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         ownerName = tag.hasKey("ownerName") ? tag.getString("ownerName") : FALLBACK_NAME;
         itemHandlerSideConfigurator.updateHandler("droneInv", droneInventory);
 
-        if (getDroneSlots() != droneInventory.getSlots()) {
+        if (getDroneSlots() != droneInventory.getSlots() && PneumaticCraftRepressurized.proxy.getClientWorld() == null) {
             Log.warning("drone inventory size mismatch: dispenser upgrades = " + getDroneSlots() + ", saved inv size = " + droneInventory.getSlots());
         }
     }
