@@ -4,6 +4,7 @@ import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityGhast;
+import net.minecraft.entity.monster.EntityGuardian;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -22,6 +23,7 @@ public class Reflections {
     public static Class blaze_aiFireballAttack;
     public static Class ghast_aiFireballAttack;
     public static Class shulker_aiAttack;
+    public static Class guardian_aiGuardianAttack;
 
     public static void init() {
         msbl_isActivated = ReflectionHelper.findMethod(MobSpawnerBaseLogic.class, "isActivated", "func_98279_f");
@@ -30,6 +32,7 @@ public class Reflections {
         blaze_aiFireballAttack = findEnclosedClass(EntityBlaze.class, "AIFireballAttack", "a");
         ghast_aiFireballAttack = findEnclosedClass(EntityGhast.class, "AIFireballAttack", "c");
         shulker_aiAttack = findEnclosedClass(EntityShulker.class, "AIAttack", "a");
+        guardian_aiGuardianAttack = findEnclosedClass(EntityGuardian.class, "AIGuardianAttack", "a");
     }
 
     private static Class<?> findEnclosedClass(Class<?> cls, String... enclosedClassNames) {

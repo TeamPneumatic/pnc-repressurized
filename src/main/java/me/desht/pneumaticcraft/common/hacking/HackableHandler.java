@@ -9,11 +9,11 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderTarget;
-import me.desht.pneumaticcraft.common.hacking.block.*;
-import me.desht.pneumaticcraft.common.hacking.entity.*;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.hacking.block.*;
+import me.desht.pneumaticcraft.common.hacking.entity.*;
 import me.desht.pneumaticcraft.common.util.WorldAndCoord;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -82,6 +82,7 @@ public class HackableHandler {
         manager.addHackable(EntityBat.class, HackableBat.class);
         manager.addHackable(EntityHorse.class, HackableHorse.class);
         manager.addHackable(EntityShulker.class, HackableShulker.class);
+        manager.addHackable(EntityGuardian.class, HackableGuardian.class);
     }
 
     public static IHackableEntity getHackableForEntity(Entity entity, EntityPlayer player) {
