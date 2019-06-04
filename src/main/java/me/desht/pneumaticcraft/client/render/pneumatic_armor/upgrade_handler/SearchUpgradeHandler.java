@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
@@ -103,7 +104,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public void render2D(float partialTicks, boolean helmetEnabled) {
-        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(Minecraft.getMinecraft().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD));
         List<String> textList = new ArrayList<>();
         if (searchStack.isEmpty()) {
             textList.add("press '" + Keyboard.getKeyName(KeyHandler.getInstance().keybindOpenOptions.getKeyCode()) + "' to configure");
@@ -124,7 +125,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
                 + Math.min(rangeUpgrades, 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         int blockTrackRangeSq = blockTrackRange * blockTrackRange;
 
-        EntityPlayer player = Minecraft.getMinecraft().player;
+        EntityPlayer player = PneumaticCraftRepressurized.proxy.getClientPlayer();
         List<BlockPos> toRemove = new ArrayList<>();
         for (Map.Entry<BlockPos,RenderSearchItemBlock> entry : trackedInventories.entrySet()) {
             int nItems = entry.getKey().distanceSq(player.posX, player.posY, player.posZ) < blockTrackRangeSq ?
@@ -152,7 +153,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
 
         if (!handlerEnabled) return;
 
-        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(Minecraft.getMinecraft().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD));
         List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class, EntityTrackUpgradeHandler.getAABBFromRange(player, rangeUpgrades));
 
         for (EntityItem item : items) {
@@ -188,7 +189,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
         if (!handlerEnabled) {
             trackedInventories.clear();
         } else {
-            ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(Minecraft.getMinecraft().player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+            ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD));
             IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face);
             if (!searchStack.isEmpty()) {
                 if (checkForItems(handler, searchStack)) {
