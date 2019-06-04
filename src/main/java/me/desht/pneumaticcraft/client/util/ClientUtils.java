@@ -1,9 +1,14 @@
 package me.desht.pneumaticcraft.client.util;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import net.minecraft.client.Minecraft;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import javax.annotation.Nonnull;
 
 /**
  * Miscellaneous client-side utilities
@@ -23,5 +28,10 @@ public class ClientUtils {
         PneumaticCraftRepressurized.proxy.getClientWorld().spawnParticle(particle,
                 pos.getX() + xOff, pos.getY() + 1.2, pos.getZ() + zOff,
                 0, 0, 0);
+    }
+
+    @Nonnull
+    public static ItemStack getWornArmor(EntityEquipmentSlot slot) {
+        return Minecraft.getMinecraft().player.getItemStackFromSlot(slot);
     }
 }

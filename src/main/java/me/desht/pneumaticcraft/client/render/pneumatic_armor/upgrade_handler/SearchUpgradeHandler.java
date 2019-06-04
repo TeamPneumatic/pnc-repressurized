@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiSearchUpgradeOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlock;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
@@ -104,7 +105,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public void render2D(float partialTicks, boolean helmetEnabled) {
-        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(ClientUtils.getWornArmor(EntityEquipmentSlot.HEAD));
         List<String> textList = new ArrayList<>();
         if (searchStack.isEmpty()) {
             textList.add("press '" + Keyboard.getKeyName(KeyHandler.getInstance().keybindOpenOptions.getKeyCode()) + "' to configure");
@@ -153,7 +154,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
 
         if (!handlerEnabled) return;
 
-        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+        ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(ClientUtils.getWornArmor(EntityEquipmentSlot.HEAD));
         List<EntityItem> items = player.world.getEntitiesWithinAABB(EntityItem.class, EntityTrackUpgradeHandler.getAABBFromRange(player, rangeUpgrades));
 
         for (EntityItem item : items) {
@@ -189,7 +190,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
         if (!handlerEnabled) {
             trackedInventories.clear();
         } else {
-            ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD));
+            ItemStack searchStack = ItemPneumaticArmor.getSearchedStack(ClientUtils.getWornArmor(EntityEquipmentSlot.HEAD));
             IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face);
             if (!searchStack.isEmpty()) {
                 if (checkForItems(handler, searchStack)) {
