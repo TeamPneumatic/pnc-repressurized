@@ -23,8 +23,9 @@ public interface IEntityTrackEntry {
      *
      * @param entity the tracked entity
      * @param curInfo list of String to append information to
+     * @param isLookingAtTarget true if the player is focused on the tracked entity
      */
-    void addInfo(Entity entity, List<String> curInfo);
+    void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget);
 
     /**
      * Update is called every (client) tick, and can be used to update something like a timer (e.g. used for the Creeper

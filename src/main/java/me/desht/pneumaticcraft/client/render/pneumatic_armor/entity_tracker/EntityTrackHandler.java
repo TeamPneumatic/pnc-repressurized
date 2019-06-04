@@ -12,11 +12,11 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderDroneAI;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderTarget;
-import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackUpgradeHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -114,7 +114,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<String> curInfo) {
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             curInfo.add("Owner: " + ((EntityDrone) entity).playerName);
             curInfo.add("Routine: " + ((EntityDrone) entity).getLabel());
             EntityPlayer player = PneumaticCraftRepressurized.proxy.getClientPlayer();
@@ -122,7 +122,7 @@ public class EntityTrackHandler {
                 if (NBTUtil.getInteger(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId()) {
                     curInfo.add(TextFormatting.GOLD + "Debugging this drone");
                     curInfo.add(TextFormatting.GOLD + "Press [" + Keyboard.getKeyName(KeyHandler.getInstance().keybindOpenOptions.getKeyCode()) + "] for debugger");
-                } else {
+                } else if (isLookingAtTarget) {
                     curInfo.add(TextFormatting.GOLD + "Press [" + Keyboard.getKeyName(KeyHandler.getInstance().keybindDebuggingDrone.getKeyCode()) + "] to debug");
                 }
             }
@@ -136,7 +136,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<String> curInfo) {
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             curInfo.add("Pressure: " + PneumaticCraftUtils.roundNumberTo(((IPressurizable) entity).getPressure(null), 1) + " bar");
         }
     }
@@ -148,7 +148,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<String> curInfo) {
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             int healthPercentage = (int) (((EntityLivingBase) entity).getHealth() / ((EntityLivingBase) entity).getMaxHealth() * 100F);
             curInfo.add("Health: " + healthPercentage + "%%");
         }
@@ -161,7 +161,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<String> curInfo) {
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             switch (((EntitySlime) entity).getSlimeSize()) {
                 case 1:
                     curInfo.add("Size: Tiny");
@@ -186,7 +186,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<String> curInfo) {
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             Entity target = ((EntityMob) entity).getAttackTarget();
             if (target != null) {
                 curInfo.add("Target: " + target.getName());
@@ -201,7 +201,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<String> curInfo) {
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             int growingAge = ((EntityAgeable) entity).getGrowingAge();
             if (growingAge > 0) {
                 curInfo.add("Can breed in " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(growingAge, false));
@@ -220,7 +220,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<String> curInfo) {
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             EntityLivingBase owner = ((EntityTameable) entity).getOwner();
             if (owner != null) {
                 curInfo.add("Owner: " + owner.getName());
@@ -250,7 +250,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<String> curInfo) {
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             if (creeperInFuseTime > 0) {
                 if (((EntityCreeper) entity).getCreeperState() == 1) {
                     curInfo.add(TextFormatting.RED + "FUSE: " + Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !");
@@ -268,7 +268,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<String> curInfo) {
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             EntityPlayer player = (EntityPlayer) entity;
             boolean isArmorEmpty = true;
             for (ItemStack stack : player.inventory.armorInventory) {
@@ -307,7 +307,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<String> curInfo) {
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
             if (hackable != null) {
                 int hackTime = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
@@ -316,8 +316,10 @@ public class EntityTrackHandler {
                         .map(RenderTarget::getHackTime)
                         .orElse(0);
                 if (hackTime == 0) {
-                    hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
-                    HackUpgradeHandler.addKeybindTooltip(curInfo);
+                    if (isLookingAtTarget) {
+                        hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
+                        HackUpgradeHandler.addKeybindTooltip(curInfo);
+                    }
                 } else {
                     int requiredHackTime = hackable.getHackTime(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
                     int percentageComplete = hackTime * 100 / requiredHackTime;
@@ -325,7 +327,7 @@ public class EntityTrackHandler {
                         curInfo.add("Hacking... (" + percentageComplete + "%%)");
                     } else if (hackTime < requiredHackTime + 20) {
                         hackable.addPostHackInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
-                    } else {
+                    } else if (isLookingAtTarget) {
                         hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
                         HackUpgradeHandler.addKeybindTooltip(curInfo);
                     }

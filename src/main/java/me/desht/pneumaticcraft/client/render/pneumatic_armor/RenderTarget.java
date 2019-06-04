@@ -182,7 +182,7 @@ public class RenderTarget {
             }
             textList = new ArrayList<>();
             for (IEntityTrackEntry tracker : trackEntries) {
-                tracker.addInfo(entity, textList);
+                tracker.addInfo(entity, textList, isLookingAtTarget);
             }
             stat.setText(textList);
             stat.render(-1, -1, partialTicks);
