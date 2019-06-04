@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
@@ -31,9 +31,9 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
     protected final IDroneBase drone;
     protected final Widget widget;
     private final EnumOrder order;
-    protected BlockPos curPos;
+    private BlockPos curPos;
     private final List<BlockPos> area;
-    protected final IBlockAccess worldCache;
+    final IBlockAccess worldCache;
     private final List<BlockPos> blacklist = new ArrayList<>();//a list of position which weren't allowed to be digged in the past.
     private int curY;
     private int lastSuccessfulY;
@@ -41,7 +41,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
     private ThreadedSorter<BlockPos> sorter;
     private boolean aborted;
 
-    protected boolean searching; //true while the drone is searching for a coordinate, false if traveling/processing a coordinate.
+    private boolean searching; //true while the drone is searching for a coordinate, false if traveling/processing a coordinate.
     private int searchIndex;//The current index in the area list the drone is searching at.
     private static final int LOOKUPS_PER_SEARCH_TICK = 30; //How many blocks does the drone access per AI update.
     private int totalActions;
@@ -231,7 +231,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
      *
      * @param pos
      */
-    protected void indicateToListeningPlayers(BlockPos pos) {
+    private void indicateToListeningPlayers(BlockPos pos) {
         for (EntityPlayer player : drone.world().playerEntities) {
             if (player.getDistanceSq(pos) < 1024) {
                 ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);

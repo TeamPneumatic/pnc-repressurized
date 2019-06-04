@@ -101,19 +101,19 @@ public class DroneAILogistics extends EntityAIBase {
 
     public boolean execute(LogisticsTask task) {
         if (!drone.getInv().getStackInSlot(0).isEmpty()) {
-            if (!isPosPathfindable(task.requester.getPos())) return false;
+            if (hasNoPathTo(task.requester.getPos())) return false;
             curAI = new DroneEntityAIInventoryExport(drone,
                     new FakeWidgetLogistics(task.requester.getPos(), task.requester.getSide(), task.transportingItem));
         } else if (drone.getTank().getFluidAmount() > 0) {
-            if (!isPosPathfindable(task.requester.getPos())) return false;
+            if (hasNoPathTo(task.requester.getPos())) return false;
             curAI = new DroneAILiquidExport(drone,
                     new FakeWidgetLogistics(task.requester.getPos(), task.requester.getSide(), task.transportingFluid.stack));
         } else if (!task.transportingItem.isEmpty()) {
-            if (!isPosPathfindable(task.provider.getPos())) return false;
+            if (hasNoPathTo(task.provider.getPos())) return false;
             curAI = new DroneEntityAIInventoryImport(drone,
                     new FakeWidgetLogistics(task.provider.getPos(), task.provider.getSide(), task.transportingItem));
         } else {
-            if (!isPosPathfindable(task.provider.getPos())) return false;
+            if (hasNoPathTo(task.provider.getPos())) return false;
             curAI = new DroneAILiquidImport(drone,
                     new FakeWidgetLogistics(task.provider.getPos(),  task.provider.getSide(), task.transportingFluid.stack));
         }
@@ -125,11 +125,12 @@ public class DroneAILogistics extends EntityAIBase {
         }
     }
 
-    private boolean isPosPathfindable(BlockPos pos) {
+    private boolean hasNoPathTo(BlockPos pos) {
         for (EnumFacing d : EnumFacing.VALUES) {
-            if (drone.isBlockValidPathfindBlock(pos.offset(d))) return true;
+            if (drone.isBlockValidPathfindBlock(pos.offset(d))) return false;
         }
-        return false;
+        drone.addDebugEntry("gui.progWidget.general.debug.cantNavigate", pos);
+        return true;
     }
 
     private static class FakeWidgetLogistics extends ProgWidgetAreaItemBase implements ISidedWidget, ICountWidget,
