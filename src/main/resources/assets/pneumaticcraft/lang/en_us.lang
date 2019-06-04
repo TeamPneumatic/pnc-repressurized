@@ -335,6 +335,7 @@ pneumaticHelmet.hacking.result.stopTeleport=Hack to prevent teleporting
 pneumaticHelmet.hacking.result.callBack=Hack to call back
 pneumaticHelmet.hacking.result.resumeTasks=Hack to resume tasks
 pneumaticHelmet.hacking.result.kill=Hack to kill
+pneumaticHelmet.hacking.result.resetTrades=Hack to reset trades
 
 pneumaticHelmet.hacking.finished.disarmed=Disarmed
 pneumaticHelmet.hacking.finished.neutralized=Neutralized
@@ -354,6 +355,7 @@ pneumaticHelmet.hacking.finished.stopTeleporting=Preventing teleports
 pneumaticHelmet.hacking.finished.calledBack=Called back
 pneumaticHelmet.hacking.finished.resumedTasks=Resumed tasks
 pneumaticHelmet.hacking.finished.killed=Killed
+pneumaticHelmet.hacking.finished.resetTrades=Trades reset
 
 ########## GUI tabs
 
