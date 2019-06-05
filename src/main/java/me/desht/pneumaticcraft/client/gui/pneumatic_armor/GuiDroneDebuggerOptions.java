@@ -22,6 +22,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -129,8 +130,10 @@ public class GuiDroneDebuggerOptions extends Gui implements IOptionPage {
             Minecraft.getMinecraft().fontRenderer.drawString("Routine: " + selectedDrone.getLabel(), screenWidth / 2f, screenHeight - 15, 0xFFFFFFFF, true);
         }
 
+        GlStateManager.translate(0, 0, 300);
         programmerUnit.render(x, y, true, true, true);
         programmerUnit.renderForeground(x, y, null);
+        GlStateManager.translate(0, 0, -300);
 
         followCheckbox.render(x, y, partialTicks);
 
