@@ -8,9 +8,12 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.IWidgetListener;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -30,6 +33,8 @@ public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions impl
         checkBox = new GuiKeybindCheckBox(0, 5, 45, 0xFFFFFFFF, "jetboots.module.builderMode");
         ((GuiHelmetMainScreen) gui).addWidget(checkBox);
         checkBox.setListener(this);
+
+        gui.getButtonList().add(new GuiButton(10, 30, 128, 150, 20, "Move Stat Screen..."));
     }
 
     @Override
@@ -55,5 +60,13 @@ public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions impl
 
     @Override
     public void onKeyTyped(IGuiWidget widget) {
+    }
+
+    @Override
+    public void actionPerformed(GuiButton button) {
+        if (button.id == 10) {
+            Minecraft.getMinecraft().player.closeScreen();
+            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(getRenderHandler(), ArmorHUDLayout.LayoutTypes.JET_BOOTS));
+        }
     }
 }

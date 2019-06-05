@@ -57,15 +57,14 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
                 currentAC--;
         }
 
-        IGuiAnimatedStat stat = getAnimatedStat();
-        if (stat.isClicked()) {
+        if (acStat.isClicked()) {
             int ac = MathHelper.clamp(currentAC, -MAX_AC, MAX_AC);
             String bar = (ac < 0 ? TextFormatting.BLUE : TextFormatting.GOLD)
                     + Strings.repeat("|", Math.abs(ac))
                     + TextFormatting.DARK_GRAY
                     + Strings.repeat("|", MAX_AC - Math.abs(ac));
-            stat.setTitle(TextFormatting.YELLOW + "A/C: " + bar);
-            stat.setBackGroundColor(ac < 0 ? 0x300080FF : (ac == 0 ? 0x3000AA00 : 0x30FFD000));
+            acStat.setTitle(TextFormatting.YELLOW + "A/C: " + bar);
+            acStat.setBackGroundColor(ac < 0 ? 0x300080FF : (ac == 0 ? 0x3000AA00 : 0x30FFD000));
         }
     }
 

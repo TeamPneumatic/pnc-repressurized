@@ -7,13 +7,23 @@ Changes are in reverse chronological order; newest changes at the top.
 ## Minecraft 1.12.2
 
 ### 0.11.2-??? (unreleased)
+#### New
+* Guardians (and Elder Guardians) can now be hacked with the Pneumatic Helmet to disable their ranged attack. In addition, hacking an Elder Guardian will cancel any Mining Fatigue you may have.
+* Villagers can now be hacked to reset the current trade list.  There's also a small chance they might drop something they were trading...
+* The Pneumatic Armor Jet Boots now come with a HUD display showing useful info like player velocity, altitude, heading etc.
 #### Updates
-* Rewrite of the Pneumatic Helmet Block Tracker for huge clientside performance improvements: those nasty FPS drops around busy areas are now basically gone.
+* Rewrite of the Pneumatic Helmet Block Tracker for huge clientside performance improvements: those painful FPS drops are now basically gone.
   * You may notice it takes slightly longer to start tracking new blocks as you look around (a second or two); this is due to much friendlier scanning of the surrounding area.
-  * You can adjust the scan aggressiveness with the ``blockTrackerMaxTimePerTick`` clientside setting; this value limits scanning to the given percentage of a client tick.  Raise this for faster block scanning at the expense of performance.
+  * You can adjust the scan aggressiveness with the ``blockTrackerMaxTimePerTick`` clientside setting; this value limits scanning to the given percentage of a client tick (default: 10%).  Raise this for faster block scanning at the possible expense of performance.
   * The animating marker arrows have been replaced with a more gently pulsing block outline for a smoother visual appearance.
 * Item Search upgrade is also now much kinder to clientside performance.
   * The green highlight markers for item searching now pulse gently.
+* Entity Tracker: "Press [X] to hack" and "Press [X] to debug" messages now only appear if you're looking directly at the entity in question.
+  * Previous functionality of always showing the text was confusing since pressing the hack/debug keys does nothing if not focused on the target entity.
+  * This required an API break in ``IEntityTrackEntry#getInfo()``
+* The GUI for moving Pneumatic Armor HUD elements has had some tweaks:
+  * There is now a "Snap to Grid" checkbox and associated grid size slider to make it easier to line elements up nicely
+  * To drag an element, you now need to click on the element to start the drag (previously you could click anywhere on the screen)
 #### Fixes
 * Fixed Pneumatic Armor becoming non-functional after a dimension change.
 * Fixed Redstone Tube Module channel display (via The One Probe) not working on dedicated server

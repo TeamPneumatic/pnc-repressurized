@@ -35,7 +35,7 @@ public interface IUpgradeRenderHandler {
 
     /**
      * This method will be called every client tick, and should be used to update logic like the tracking and velocities
-     * of stuff.  This is only called for the pneumatic helmet, not for other armor pieces.
+     * of stuff.
      *
      * @param player the player wearing the pneumatic helmet
      * @param rangeUpgrades number of range upgrades installed in the armor piece

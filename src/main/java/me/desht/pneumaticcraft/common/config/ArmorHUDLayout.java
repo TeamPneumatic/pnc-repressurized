@@ -9,12 +9,21 @@ public class ArmorHUDLayout extends JsonConfig {
 
     private boolean needLegacyImport = true;
 
-    public LayoutItem powerStat = new LayoutItem(-1, 0.01f, false);
-    public LayoutItem messageStat = new LayoutItem(0.005f, 0.005f, true);
-    public LayoutItem blockTrackerStat = new LayoutItem(-1, 0.1f, false);
-    public LayoutItem entityTrackerStat = new LayoutItem(-1, 0.2f, false);
-    public LayoutItem itemSearchStat = new LayoutItem(0.005f, 0.1f, true);
-    public LayoutItem airConStat = new LayoutItem(0.5f, 0.005f, false);
+    private static final LayoutItem POWER_DEF = new LayoutItem(0.995f, 0.005f, true);
+    private static final LayoutItem MESSAGE_DEF = new LayoutItem(0.005f, 0.15f, false);
+    private static final LayoutItem BLOCK_TRACKER_DEF = new LayoutItem(0.995f, 0.1f, true);
+    private static final LayoutItem ENTITY_TRACKER_DEF = new LayoutItem(0.995f, 0.2f, true);
+    private static final LayoutItem ITEM_SEARCH_DEF = new LayoutItem(0.005f, 0.1f, false);
+    private static final LayoutItem AIR_CON_DEF = new LayoutItem(0.5f, 0.005f, false);
+    private static final LayoutItem JET_BOOTS_DEF = new LayoutItem(0.7f, 0.005f, true);
+
+    public LayoutItem powerStat = POWER_DEF;
+    public LayoutItem messageStat = MESSAGE_DEF;
+    public LayoutItem blockTrackerStat = BLOCK_TRACKER_DEF;
+    public LayoutItem entityTrackerStat = ENTITY_TRACKER_DEF;
+    public LayoutItem itemSearchStat = ITEM_SEARCH_DEF;
+    public LayoutItem airConStat = AIR_CON_DEF;
+    public LayoutItem jetBootsStat = JET_BOOTS_DEF;
 
     private ArmorHUDLayout() {
         super(false);
@@ -33,6 +42,7 @@ public class ArmorHUDLayout extends JsonConfig {
             sub.add("entityTracker", entityTrackerStat.toJson());
             sub.add("itemSearch", itemSearchStat.toJson());
             sub.add("airCon", airConStat.toJson());
+            sub.add("jetBoots", jetBootsStat.toJson());
             json.add("stats", sub);
         }
     }
@@ -43,13 +53,18 @@ public class ArmorHUDLayout extends JsonConfig {
 
         if (json.has("stats")) { // will always be false on dedicated server
             JsonObject sub = json.getAsJsonObject("stats");
-            powerStat = LayoutItem.fromJson(sub.get("power").getAsJsonObject());
-            messageStat = LayoutItem.fromJson(sub.get("message").getAsJsonObject());
-            blockTrackerStat = LayoutItem.fromJson(sub.get("blockTracker").getAsJsonObject());
-            entityTrackerStat = LayoutItem.fromJson(sub.get("entityTracker").getAsJsonObject());
-            itemSearchStat = LayoutItem.fromJson(sub.get("itemSearch").getAsJsonObject());
-            airConStat = LayoutItem.fromJson(sub.get("airCon").getAsJsonObject());
+            powerStat = readLayout(sub, "power", POWER_DEF);
+            messageStat = readLayout(sub, "message", MESSAGE_DEF);
+            blockTrackerStat = readLayout(sub, "blockTracker", BLOCK_TRACKER_DEF);
+            entityTrackerStat = readLayout(sub, "entityTracker", ENTITY_TRACKER_DEF);
+            itemSearchStat = readLayout(sub, "itemSearch", ITEM_SEARCH_DEF);
+            airConStat = readLayout(sub, "airCon", AIR_CON_DEF);
+            jetBootsStat = readLayout(sub, "jetBoots", JET_BOOTS_DEF);
         }
+    }
+
+    private LayoutItem readLayout(JsonObject json, String name, LayoutItem def) {
+        return json.has(name) ? LayoutItem.fromJson(json.get(name).getAsJsonObject()) : def;
     }
 
     @Override
@@ -74,6 +89,7 @@ public class ArmorHUDLayout extends JsonConfig {
             entityTrackerStat = new LayoutItem(sx, sy, ho.entityTrackerX, ho.entityTrackerY, ho.entityTrackerLeft);
             itemSearchStat = new LayoutItem(sx, sy, ho.itemSearchX, ho.itemSearchY, ho.itemSearchLeft);
             airConStat = new LayoutItem(sx, sy, ho.acStatX, ho.acStatY, ho.acStatLeft);
+            // no legacy import for jetBootsStat
 
             try {
                 writeToFile();
@@ -92,6 +108,7 @@ public class ArmorHUDLayout extends JsonConfig {
             case BLOCK_TRACKER: blockTrackerStat = l; break;
             case ITEM_SEARCH: itemSearchStat = l; break;
             case AIR_CON: airConStat = l; break;
+            case JET_BOOTS: jetBootsStat = l; break;
         }
         try {
             writeToFile();
@@ -152,6 +169,7 @@ public class ArmorHUDLayout extends JsonConfig {
         ENTITY_TRACKER,
         BLOCK_TRACKER,
         ITEM_SEARCH,
-        AIR_CON
+        AIR_CON,
+        JET_BOOTS
     }
 }
