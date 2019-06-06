@@ -58,7 +58,7 @@ public class ItemLogisticsFrame extends ItemSemiBlockBase {
                 curInfo.add(TextFormatting.WHITE + PneumaticCraftUtils.xlate("gui.logistic_frame." + (logistics.isWhitelist() ? "whitelist" : "blacklist")) + ":");
                 int l = curInfo.size();
                 PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks);
-                if (curInfo.size() == l) curInfo.add(PneumaticCraftUtils.xlate("gui.logistic_frame.no_items"));
+                if (curInfo.size() == l) curInfo.add(PneumaticCraftUtils.xlate("gui.misc.no_items"));
                 l = curInfo.size();
                 for (int i = 0; i < 9; i++) {
                     FluidStack fluid = logistics.getTankFilter(i).getFluid();
@@ -66,7 +66,7 @@ public class ItemLogisticsFrame extends ItemSemiBlockBase {
                         curInfo.add("\u2022 " + fluid.amount + "mB " + fluid.getLocalizedName());
                     }
                 }
-                if (curInfo.size() == l) curInfo.add(PneumaticCraftUtils.xlate("gui.logistic_frame.no_fluids"));
+                if (curInfo.size() == l) curInfo.add(PneumaticCraftUtils.xlate("gui.misc.no_fluids"));
             } else {
                 curInfo.add(PneumaticCraftUtils.xlate(String.format("gui.%s.hasFilters", key)));
             }

@@ -115,7 +115,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
             target.update();
             if (target.isLookingAtTarget) {
                 if (target.isInitialized()) {
-                    text.add(TextFormatting.GRAY + target.entity.getName());
+                    text.add(TextFormatting.GRAY + target.entity.getDisplayName().getFormattedText());
                     text.addAll(target.getEntityText());
                 } else {
                     text.add(TextFormatting.GRAY + "Acquiring target...");

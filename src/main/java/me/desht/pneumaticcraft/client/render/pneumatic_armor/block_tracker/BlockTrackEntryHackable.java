@@ -4,9 +4,9 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackUpgradeHandler;
+import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
@@ -44,7 +44,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
             int requiredHackTime = hackableBlock.getHackTime(world, pos, PneumaticCraftRepressurized.proxy.getClientPlayer());
             int percentageComplete = hackTime * 100 / requiredHackTime;
             if (percentageComplete < 100) {
-                infoList.add(I18n.format("pneumaticHelmet.hacking.hacking") + " (" + percentageComplete + "%%)");
+                infoList.add(I18n.format("pneumaticHelmet.hacking.hacking", percentageComplete));
             } else if (hackTime < requiredHackTime + 20) {
                 hackableBlock.addPostHackInfo(world, pos, infoList, PneumaticCraftRepressurized.proxy.getClientPlayer());
             } else {

@@ -65,7 +65,7 @@ public class RenderTarget {
             }
         }
         StatIcon icon = droppedItem == null ? StatIcon.NONE : StatIcon.of(droppedItem);
-        stat = new GuiAnimatedStat(null, entity.getName(), icon,
+        stat = new GuiAnimatedStat(null, entity.getDisplayName().getFormattedText(), icon,
                 20, -20, 0x3000AA00, null, false);
         stat.setMinDimensionsAndReset(0, 0);
     }
@@ -81,7 +81,7 @@ public class RenderTarget {
 
     public void update() {
         stat.update();
-        stat.setTitle(entity.getName());
+        stat.setTitle(entity.getDisplayName().getFormattedText());
         EntityPlayer player = FMLClientHandler.instance().getClient().player;
         if (ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;

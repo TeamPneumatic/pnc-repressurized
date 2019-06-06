@@ -92,12 +92,12 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
                 xl -= jbStat.getWidth();
                 xr -= jbStat.getWidth();
             }
-            fr.drawString(l1, xl, y, 0x404040);
-            fr.drawString(l2, xl, y + fr.FONT_HEIGHT, 0x404040);
-            fr.drawString(l3, xl, y + fr.FONT_HEIGHT * 2, 0x404040);
-            fr.drawString(r1, xr - widestR, y, 0x404040);
-            fr.drawString(r2, xr - widestR, y + fr.FONT_HEIGHT, 0x404040);
-            fr.drawString(r3, xr - widestR, y + fr.FONT_HEIGHT * 2, 0x404040);
+            fr.drawStringWithShadow(l1, xl, y, 0x404040);
+            fr.drawStringWithShadow(l2, xl, y + fr.FONT_HEIGHT, 0x404040);
+            fr.drawStringWithShadow(l3, xl, y + fr.FONT_HEIGHT * 2, 0x404040);
+            fr.drawStringWithShadow(r1, xr - widestR, y, 0x404040);
+            fr.drawStringWithShadow(r2, xr - widestR, y + fr.FONT_HEIGHT, 0x404040);
+            fr.drawStringWithShadow(r3, xr - widestR, y + fr.FONT_HEIGHT * 2, 0x404040);
         }
     }
 
