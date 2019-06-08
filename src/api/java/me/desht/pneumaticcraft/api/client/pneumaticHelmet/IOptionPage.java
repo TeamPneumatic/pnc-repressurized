@@ -99,6 +99,9 @@ public interface IOptionPage {
      */
     default void updateScreen() { }
 
+    /**
+     * Convenience class for simple toggleable armor features with no additional settings.
+     */
     class SimpleToggleableOptions implements IOptionPage {
         private final String name;
         private final IUpgradeRenderHandler renderHandler;

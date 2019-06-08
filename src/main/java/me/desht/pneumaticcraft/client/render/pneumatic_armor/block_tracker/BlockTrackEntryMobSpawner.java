@@ -12,6 +12,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
@@ -37,7 +38,7 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList) {
         if (te instanceof TileEntityMobSpawner) {
             MobSpawnerBaseLogic spawner = ((TileEntityMobSpawner) te).getSpawnerBaseLogic();
             Entity e = spawner.getCachedEntity();

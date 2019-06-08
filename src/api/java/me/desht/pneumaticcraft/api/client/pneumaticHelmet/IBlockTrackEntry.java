@@ -2,9 +2,12 @@ package me.desht.pneumaticcraft.api.client.pneumaticHelmet;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import java.util.List;
 
@@ -59,10 +62,10 @@ public interface IBlockTrackEntry {
      * @param world    The world the block is in.
      * @param pos      The position the block is at.
      * @param te       The TileEntity at the x,y,z.
+     * @param face     The blockface the player is looking at (null if player is not looking directly at the block)
      * @param infoList The list of lines to display.
      */
-    void addInformation(World world, BlockPos pos, TileEntity te, List<String> infoList);
-
+    void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList);
     /**
      * This method is called when displaying the currently tracked blocks.
      * Will be tried to be mapped to the localization file first.
@@ -70,4 +73,18 @@ public interface IBlockTrackEntry {
      * @return the name of the group of this entry.
      */
     String getEntryName();
+
+    /**
+     * Convenience method: check if the given capability provider provides the given capability.
+     *
+     * @param provider the capability provider
+     * @param cap the capability
+     * @return true the provider provides the capability on any face, including the null "face"
+     */
+    static boolean hasCapabilityOnAnyFace(ICapabilityProvider provider, Capability<?> cap) {
+        for (EnumFacing face : EnumFacing.VALUES) {
+            if (provider.hasCapability(cap, face)) return true;
+        }
+        return provider.hasCapability(cap, null);
+    }
 }

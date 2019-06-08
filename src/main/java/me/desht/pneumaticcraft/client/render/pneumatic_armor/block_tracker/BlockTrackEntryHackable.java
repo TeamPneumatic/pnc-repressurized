@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -20,7 +21,8 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
 
     @Override
     public boolean shouldTrackWithThisEntry(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te) {
-        return HackUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer()) && HackableHandler.getHackableForCoord(world, pos, PneumaticCraftRepressurized.proxy.getClientPlayer()) != null;
+        return HackUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer())
+                && HackableHandler.getHackableForCoord(world, pos, PneumaticCraftRepressurized.proxy.getClientPlayer()) != null;
     }
 
     @Override
@@ -34,8 +36,9 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList) {
         IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(world, pos, PneumaticCraftRepressurized.proxy.getClientPlayer());
+        assert hackableBlock != null;
         int hackTime = HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class).getTargetForCoord(pos).getHackTime();
         if (hackTime == 0) {
             hackableBlock.addInfo(world, pos, infoList, PneumaticCraftRepressurized.proxy.getClientPlayer());

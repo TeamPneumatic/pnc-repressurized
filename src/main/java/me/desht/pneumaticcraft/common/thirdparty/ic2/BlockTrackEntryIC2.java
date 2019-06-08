@@ -6,6 +6,7 @@ import ic2.api.energy.tile.IEnergyTile;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -29,7 +30,7 @@ public class BlockTrackEntryIC2 implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList) {
         infoList.add("blockTracker.info.ic2");
         if (te instanceof IEnergySource) {
             infoList.add("Providing Tier " + ((IEnergySource) te).getSourceTier());

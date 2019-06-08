@@ -11,7 +11,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderDroneAI;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderTarget;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackUpgradeHandler;
@@ -25,6 +25,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
@@ -54,6 +56,8 @@ public class EntityTrackHandler {
         manager.registerEntityTrackEntry(EntityTrackEntrySlime.class);
         manager.registerEntityTrackEntry(EntityTrackEntryPlayer.class);
         manager.registerEntityTrackEntry(EntityTrackEntryMob.class);
+        manager.registerEntityTrackEntry(EntityTrackEntryItemFrame.class);
+        manager.registerEntityTrackEntry(EntityTrackEntryPainting.class);
     }
 
     public static void init() {
@@ -306,7 +310,7 @@ public class EntityTrackHandler {
                 int hackTime = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
                         .filter(target -> target.entity == entity)
                         .findFirst()
-                        .map(RenderTarget::getHackTime)
+                        .map(RenderEntityTarget::getHackTime)
                         .orElse(0);
                 if (hackTime == 0) {
                     if (isLookingAtTarget) {
@@ -324,6 +328,42 @@ public class EntityTrackHandler {
                         hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
                         HackUpgradeHandler.addKeybindTooltip(curInfo);
                     }
+                }
+            }
+        }
+    }
+
+    public static class EntityTrackEntryPainting extends EntityTrackEntry {
+        @Override
+        public boolean isApplicable(Entity entity) {
+            return entity instanceof EntityPainting;
+        }
+
+        @Override
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
+            EntityPainting.EnumArt art = ((EntityPainting) entity).art;
+
+            if (art != null) {
+                curInfo.add(I18n.format("entityTracker.info.painting.art", art.title));
+            }
+        }
+    }
+
+    public static class EntityTrackEntryItemFrame extends EntityTrackEntry {
+        @Override
+        public boolean isApplicable(Entity entity) {
+            return entity instanceof EntityItemFrame;
+        }
+
+        @Override
+        public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
+            EntityItemFrame frame = (EntityItemFrame) entity;
+            ItemStack stack = frame.getDisplayedItem();
+
+            if (!stack.isEmpty()) {
+                curInfo.add(I18n.format("entityTracker.info.itemframe.item", stack.getDisplayName()));
+                if (frame.getRotation() != 0) {
+                    curInfo.add(I18n.format("entityTracker.info.itemframe.rotation", frame.getRotation() * 45));
                 }
             }
         }

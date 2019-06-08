@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderTarget;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.Entity;
@@ -37,7 +37,7 @@ public class PacketHackingEntityStart extends AbstractPacket<PacketHackingEntity
             HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
                     .filter(target -> target.entity == entity)
                     .findFirst()
-                    .ifPresent(RenderTarget::onHackConfirmServer);
+                    .ifPresent(RenderEntityTarget::onHackConfirmServer);
         }
 
     }

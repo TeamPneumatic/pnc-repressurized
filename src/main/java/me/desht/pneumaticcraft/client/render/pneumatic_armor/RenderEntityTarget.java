@@ -20,11 +20,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -37,7 +36,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RenderTarget {
+public class RenderEntityTarget {
 
     public final Entity entity;
     private final RenderTargetCircle circle1;
@@ -52,20 +51,13 @@ public class RenderTarget {
     private final List<IEntityTrackEntry> trackEntries;
     private int hackTime;
 
-    public RenderTarget(Entity entity) {
+    public RenderEntityTarget(Entity entity) {
         this.entity = entity;
         trackEntries = EntityTrackHandler.getTrackersForEntity(entity);
         circle1 = new RenderTargetCircle();
         circle2 = new RenderTargetCircle();
-        Item droppedItem = null;
-        if (entity instanceof EntityLiving) {
-            try {
-                droppedItem = null;//TODO 1.8 EntityUtils.getLivingDrop((EntityLiving)entity);
-            } catch (Throwable e) {
-            }
-        }
-        StatIcon icon = droppedItem == null ? StatIcon.NONE : StatIcon.of(droppedItem);
-        stat = new GuiAnimatedStat(null, entity.getDisplayName().getFormattedText(), icon,
+
+        stat = new GuiAnimatedStat(null, entity.getDisplayName().getFormattedText(), StatIcon.NONE,
                 20, -20, 0x3000AA00, null, false);
         stat.setMinDimensionsAndReset(0, 0);
     }
@@ -83,10 +75,12 @@ public class RenderTarget {
         stat.update();
         stat.setTitle(entity.getDisplayName().getFormattedText());
         EntityPlayer player = FMLClientHandler.instance().getClient().player;
+
         if (ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;
             player.world.playSound(player.posX, player.posY, player.posZ, Sounds.HUD_ENTITY_LOCK, SoundCategory.PLAYERS, 0.1F, 1.0F, true);
         }
+
         boolean tagged = NBTUtil.getInteger(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId();
         circle1.setRenderingAsTagged(tagged);
         circle2.setRenderingAsTagged(tagged);
@@ -95,12 +89,13 @@ public class RenderTarget {
         for (IEntityTrackEntry tracker : trackEntries) {
             tracker.update(entity);
         }
+
         isLookingAtTarget = isPlayerLookingAtTarget();
 
         if (hackTime > 0) {
             IHackableEntity hackableEntity = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
             if (hackableEntity != null) {
-                hackTime++;// = Math.min(hackTime + 1, hackableEntity.getHackTime(entity, PneumaticCraft.proxy.getPlayer()));
+                hackTime++;
             } else {
                 hackTime = 0;
             }
@@ -143,6 +138,10 @@ public class RenderTarget {
             red = 1;
             green = 0;
             blue = 0;
+        } else if (entity instanceof EntityHanging) {
+            red = 0;
+            green = 1;
+            blue = 1;
         } else {
             red = 0;
             green = 1;
@@ -191,11 +190,7 @@ public class RenderTarget {
             fontRenderer.drawString((int)targetAcquireProgress + "%", 37, 28, 0x002F00);
         } else if (ticksExisted < -30) {
             stat.closeWindow();
-
-            //if(stat.getWidth() > stat.getMinWidth() || stat.getHeight() > stat.getMinHeight()) {
-            //    stat.setText(new ArrayList<String>());
             stat.render(-1, -1, partialTicks);
-            //            }
             fontRenderer.drawString("Lost Target!", 0, 0, 0xFF0000);
         }
 

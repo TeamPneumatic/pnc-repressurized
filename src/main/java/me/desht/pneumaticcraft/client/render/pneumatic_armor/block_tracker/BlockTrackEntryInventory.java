@@ -10,6 +10,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -29,7 +30,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
         return te != null
                 && !TrackerBlacklistManager.isInventoryBlacklisted(te)
-                && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
                 && !MinecraftForge.EVENT_BUS.post(new InventoryTrackEvent(te));
     }
 
@@ -47,13 +48,13 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
     @Override
     public int spamThreshold() {
-        return 6;
+        return 16;
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList) {
         try {
-            IItemHandler inventory = IOHelper.getInventoryForTE(te);
+            IItemHandler inventory = IOHelper.getInventoryForTE(te, face);
             if (inventory != null) {
                 boolean empty = true;
                 ItemStack[] inventoryStacks = new ItemStack[inventory.getSlots()];

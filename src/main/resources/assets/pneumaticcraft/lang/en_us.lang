@@ -969,9 +969,13 @@ entityTracker.info.creeper.fuse=FUSE: %d
 entityTracker.info.creeper.coolDown=Cooling down: %d
 entityTracker.info.player.armor=Armor:
 entityTracker.info.player.holding=Carrying:
+entityTracker.info.painting.art=Artwork: %s
+entityTracker.info.itemframe.item=Item: %s
+entityTracker.info.itemframe.rotation=Rotation: %d°
 
 blockTracker.module.hackables=Hackables
 blockTracker.module.inventories=Inventories
+blockTracker.module.fluids=Fluid Tanks
 blockTracker.module.misc=Miscellaneous Blocks
 blockTracker.module.bcEnergy=BuildCraft Energy Blocks
 blockTracker.module.hydraulicraft=Hydraulicraft Power Blocks
@@ -991,6 +995,9 @@ blockTracker.info.thaumcraft.nodeModifier=Node Modifier:
 
 blockTracker.info.peripheral.title=ComputerCraft Peripheral
 blockTracker.info.peripheral.availableMethods=Available Methods:
+
+blockTracker.info.fluids.tankFull=Tank %d: %d/%dmB %s
+blockTracker.info.fluids.tankEmpty=Tank %d: 0/%dmB
 
 blockTracker.message.stopSpam=Stopped spam on %s
 

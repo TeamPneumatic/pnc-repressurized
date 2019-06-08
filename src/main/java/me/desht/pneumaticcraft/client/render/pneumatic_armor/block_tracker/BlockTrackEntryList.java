@@ -19,6 +19,7 @@ public class BlockTrackEntryList {
     private BlockTrackEntryList() {
         trackList.add(new BlockTrackEntryHackable());
         trackList.add(new BlockTrackEntryInventory());
+        trackList.add(new BlockTrackEntryFluid());
         trackList.add(new BlockTrackEntryEndPortalFrame());
         trackList.add(new BlockTrackEntryMobSpawner());
         trackList.add(new BlockTrackEntrySimple());

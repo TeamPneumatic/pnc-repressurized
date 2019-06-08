@@ -5,6 +5,7 @@ import net.minecraft.block.BlockEndPortalFrame;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -29,7 +30,7 @@ public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList) {
         if (world.getBlockState(pos).getValue(BlockEndPortalFrame.EYE)) {
             infoList.add("Eye inserted");
         } else {

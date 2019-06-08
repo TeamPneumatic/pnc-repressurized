@@ -144,7 +144,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
 
     /**
      * Called by the EntityTrackerUpgradeHandler every 16 ticks to find items in item entities on the ground.
-     *  @param player the player
+     * @param player the player
      * @param rangeUpgrades number of range upgrades installed in the helmet
      * @param handlerEnabled true if the search handler is actually enabled, false otherwise
      */

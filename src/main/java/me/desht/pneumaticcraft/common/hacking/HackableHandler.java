@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IPneumaticHelmetRegist
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderTarget;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.block.Blockss;
@@ -18,6 +18,8 @@ import me.desht.pneumaticcraft.common.util.WorldAndCoord;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.EntityPlayer;
@@ -81,6 +83,8 @@ public class HackableHandler {
         manager.addHackable(EntityShulker.class, HackableShulker.class);
         manager.addHackable(EntityGuardian.class, HackableGuardian.class);
         manager.addHackable(EntityVillager.class, HackableVillager.class);
+        manager.addHackable(EntityPainting.class, HackablePainting.class);
+        manager.addHackable(EntityItemFrame.class, HackableItemFrame.class);
     }
 
     public static IHackableEntity getHackableForEntity(Entity entity, EntityPlayer player) {
@@ -159,7 +163,7 @@ public class HackableHandler {
 
     private static boolean isInDisplayCooldown(IHackableEntity hackableBlock, Entity entity) {
         if (entity.world.isRemote) {
-            RenderTarget target = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetForEntity(entity);
+            RenderEntityTarget target = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetForEntity(entity);
             int requiredHackTime = hackableBlock.getHackTime(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
             return target != null && target.getHackTime() >= requiredHackTime && target.getHackTime() <= requiredHackTime + 20;
         } else {

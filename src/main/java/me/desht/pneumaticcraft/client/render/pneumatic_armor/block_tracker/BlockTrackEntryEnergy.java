@@ -15,18 +15,9 @@ import java.util.List;
 public class BlockTrackEntryEnergy implements IBlockTrackEntry {
     @Override
     public boolean shouldTrackWithThisEntry(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te) {
-        if (te == null || TrackerBlacklistManager.isEnergyBlacklisted(te)) {
-            return false;
-        }
-        if (te.hasCapability(CapabilityEnergy.ENERGY, null)) {
-            return true;
-        }
-        for (EnumFacing face: EnumFacing.VALUES) {
-            if (te.hasCapability(CapabilityEnergy.ENERGY, face)) {
-                return true;
-            }
-        }
-        return false;
+        return te != null
+                && !TrackerBlacklistManager.isEnergyBlacklisted(te)
+                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityEnergy.ENERGY);
     }
 
     @Override
@@ -40,13 +31,13 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList) {
         try {
             infoList.add("blockTracker.info.rf");
             // TODO: getting capabilities client-side is not a reliable way to do this
             // Need a more formal framework for sync'ing server-side data to the client
             if (te.hasCapability(CapabilityEnergy.ENERGY, null)) {
-                IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, null);
+                IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, face);
                 infoList.add(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " RF");
             }
         } catch (Throwable e) {

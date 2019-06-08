@@ -10,8 +10,8 @@ import net.minecraftforge.items.IItemHandler;
  * Fired when a helmet Block Tracker is about to track an inventory. Can be canceled to prevent tracking.
  * Posted on MinecraftForge.EVENT_BUS
  *
- * The tile inventory is known to support CapabilityItemHandler.ITEM_HANDLER_CAPABILITY on (at least)
- * the "null" face when the event is fired.
+ * The tile inventory is known to support CapabilityItemHandler.ITEM_HANDLER_CAPABILITY on at least one face
+ * when the event is received.
  *
  * @author MineMaarten
  */
