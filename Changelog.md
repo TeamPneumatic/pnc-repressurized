@@ -30,7 +30,8 @@ Changes are in reverse chronological order; newest changes at the top.
   * To drag an element, you now need to click on the element to start the drag (previously you could click anywhere on the screen)
 #### Fixes
 * Fixed Pneumatic Armor becoming non-functional after a dimension change.
-* Fixed Redstone Tube Module channel display (via The One Probe) not working on dedicated server
+* Fixed Redstone Tube Module channel display (via The One Probe) not working on dedicated server.
+* Fixed drones often wrongly showing "Routine: Stopped" in Entity Tracker display, even when they're busy.
 * Pneumatic Armor drone debugging: the debugged widgets now render on top of anything else in the armour GUI.
 
 ### 0.11.1-361 (31 May 2019)

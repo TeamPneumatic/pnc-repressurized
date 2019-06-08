@@ -326,8 +326,8 @@ public class EntityDrone extends EntityDroneBase implements
             if (!world.isRemote) {
                 setHasMinigun(getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0);
                 MinecraftForge.EVENT_BUS.register(this);
+                aiManager.setWidgets(progWidgets);
             }
-            aiManager.setWidgets(progWidgets);
             energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
         }
         boolean enabled = !disabledByHacking && getPressure(null) > 0.01F;

@@ -61,7 +61,11 @@ public class DroneAIManager implements IVariableProvider {
     public DroneAIManager(IDroneBase drone) {
         theProfiler = drone.world().profiler;
         this.drone = drone;
-        setWidgets(drone.getProgWidgets());
+        if (!drone.world().isRemote) {
+            // we normally don't called clientside, but The One Probe can do it
+            // don't set the widgets clientside because there aren't any and that messes up any entity tracker info
+            setWidgets(drone.getProgWidgets());
+        }
     }
 
     public DroneAIManager(IDroneBase drone, List<IProgWidget> progWidgets) {
