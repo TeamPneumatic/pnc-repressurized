@@ -14,25 +14,27 @@ Changes are in reverse chronological order; newest changes at the top.
 * Villagers can now be hacked to reset the current trade list.  There's also a small chance they might drop something they were trading...
 * The Pneumatic Armor Jet Boots now come with a HUD display showing useful info like player velocity, altitude, heading etc.
 #### Updates
-* Rewrite of the Pneumatic Helmet Block Tracker for huge clientside performance improvements: those painful FPS drops are drastically reduced.
+* Rewrite of the Pneumatic Helmet Block Tracker for huge client-side performance improvements: those painful FPS drops are drastically reduced.
   * You may notice it takes slightly longer to start tracking new blocks as you look around (a second or two); this is due to much friendlier scanning of the surrounding area - scanning happens over multiple ticks. 
-  * You can adjust the scan aggressiveness with the ``blockTrackerMaxTimePerTick`` clientside setting; this value limits scanning to the given percentage of a client tick (default: 10%).  Raise this for faster block scanning at the possible expense of performance.
+  * You can adjust the scan aggressiveness with the ``blockTrackerMaxTimePerTick`` client-side setting; this value limits scanning to the given percentage of a client tick (default: 10%).  Raise this for faster block scanning at the possible expense of client-side performance.
   * The animating marker arrows have been replaced with a more gently pulsing block outline for a smoother visual appearance.
   * The Block Tracker is now side-aware, e.g. looking at the top of a Furnace will show different inventory contents than looking at the side of the Furnace.
-    * API break: ``IBlockTrackEntry#addInformation()`` now takes an extra ``EnumFacing`` parameter.
-* Item Search upgrade is also now much kinder to clientside performance.
-  * The green highlight markers for item searching now pulse gently.
+    * API break: ``IBlockTrackEntry#addInformation()`` now takes an extra ``EnumFacing side`` parameter.
+* Item Search upgrade is also now much kinder to client-side performance.
+  * The green highlight markers for item searching now pulse gently, making it easier to spot them in some circumstances.
 * Entity Tracker & Block Tracker: "Press [X] to hack" and "Press [X] to debug" messages now only appear if you're looking directly at the entity in question.
   * Previous functionality of always showing the text was confusing since pressing the hack/debug keys does nothing if not focused on the target.
-  * This required an API break in ``IEntityTrackEntry#getInfo()``
+  * API break: ``IEntityTrackEntry#addInfo()`` now takes an extra ``boolean isLookingAtTarget`` parameter.
 * The GUI for moving Pneumatic Armor HUD elements has had some tweaks:
   * There is now a "Snap to Grid" checkbox and associated grid size slider to make it easier to line elements up nicely
   * To drag an element, you now need to click on the element to start the drag (previously you could click anywhere on the screen)
 #### Fixes
-* Fixed Pneumatic Armor becoming non-functional after a dimension change.
+* Fixed Pneumatic Armor becoming non-functional after a dimension change and requiring a relog to start again.
 * Fixed Redstone Tube Module channel display (via The One Probe) not working on dedicated server.
 * Fixed drones often wrongly showing "Routine: Stopped" in Entity Tracker display, even when they're busy.
 * Pneumatic Armor drone debugging: the debugged widgets now render on top of anything else in the armour GUI.
+* Fixed occasional spurious "Insert in a charging station to install upgrades" message that occasionally wrongly appeared on some items that aren't insertable in a Charging Station.
+* Fixed the upgraded Air Grate Module filter GUI ignoring the "!" entity filter blacklist prefix.
 
 ### 0.11.1-361 (31 May 2019)
 #### Updates

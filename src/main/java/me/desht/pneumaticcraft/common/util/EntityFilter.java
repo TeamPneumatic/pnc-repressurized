@@ -89,7 +89,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
 
     @Override
     public String toString() {
-        return rawFilter;
+        return sense ? rawFilter : "!" + rawFilter;
     }
 
     @Override
