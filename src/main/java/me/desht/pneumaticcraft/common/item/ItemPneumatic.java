@@ -2,9 +2,8 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
-import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
+import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.client.resources.I18n;
@@ -37,7 +36,7 @@ public class ItemPneumatic extends Item {
     static void addStandardTooltip(ItemStack stack, World world, List<String> curInfo, ITooltipFlag flagIn) {
         ItemPressurizable.addPressureTooltip(stack, curInfo);
 
-        if (NBTUtil.hasTag(stack, ChargeableItemHandler.NBT_UPGRADE_TAG)) {
+        if (stack.getItem() instanceof IUpgradeAcceptor) {
             UpgradableItemUtils.addUpgradeInformation(stack, world, curInfo, ITooltipFlag.TooltipFlags.NORMAL);
         }
 

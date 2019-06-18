@@ -12,7 +12,6 @@ import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
-import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -324,7 +323,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                     curInfo.add(TextFormatting.DARK_GREEN + "Stored Air: " + NBTUtil.getInteger(stack, NBT_AIR_AMOUNT) + "mL");
                 }
             }
-            if (NBTUtil.hasTag(stack, ChargeableItemHandler.NBT_UPGRADE_TAG)) {
+            if (stack.getItem() instanceof IUpgradeAcceptor) {
                 UpgradableItemUtils.addUpgradeInformation(stack, world, curInfo, flag);
             }
             if (stack.getTagCompound().hasKey(ISerializableTanks.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
