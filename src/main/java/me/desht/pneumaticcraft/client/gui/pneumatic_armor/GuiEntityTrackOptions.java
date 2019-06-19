@@ -108,7 +108,7 @@ public class GuiEntityTrackOptions implements IOptionPage {
     public void updateScreen() {
         if (sendTimer > 0 && --sendTimer == 0) {
             NBTTagCompound tag = new NBTTagCompound();
-            tag.setString("entityFilter", textField.getText());
+            tag.setString(ItemPneumaticArmor.NBT_ENTITY_FILTER, textField.getText());
             NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EntityEquipmentSlot.HEAD, tag));
         }
     }

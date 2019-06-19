@@ -1,9 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiJetBootsOptions;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -25,11 +24,10 @@ public class PacketUpdateArmorExtraData extends AbstractPacket<PacketUpdateArmor
                 .filter(slot -> slot.getSlotType() == EntityEquipmentSlot.Type.ARMOR)
                 .<Map<String, Integer>>map(slot -> new HashMap<>())
                 .forEach(VALID_KEYS::add);
-        addKey(EntityEquipmentSlot.HEAD, "entityFilter", NBT.TAG_STRING);
-        addKey(EntityEquipmentSlot.LEGS, "speedBoost", NBT.TAG_INT);
-        addKey(EntityEquipmentSlot.LEGS, "jumpBoost", NBT.TAG_INT);
-        addKey(EntityEquipmentSlot.FEET, GuiJetBootsOptions.NBT_BUILDER_MODE, NBT.TAG_BYTE);
-
+        addKey(EntityEquipmentSlot.HEAD, ItemPneumaticArmor.NBT_ENTITY_FILTER, NBT.TAG_STRING);
+        addKey(EntityEquipmentSlot.LEGS, ItemPneumaticArmor.NBT_SPEED_BOOST, NBT.TAG_INT);
+        addKey(EntityEquipmentSlot.LEGS, ItemPneumaticArmor.NBT_JUMP_BOOST, NBT.TAG_INT);
+        addKey(EntityEquipmentSlot.FEET, ItemPneumaticArmor.NBT_BUILDER_MODE, NBT.TAG_BYTE);
     }
 
     private EntityEquipmentSlot slot;

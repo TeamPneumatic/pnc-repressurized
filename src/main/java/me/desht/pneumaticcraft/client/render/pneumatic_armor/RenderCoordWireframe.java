@@ -8,6 +8,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
+import java.util.List;
+
 public class RenderCoordWireframe {
     public final BlockPos pos;
     public final World world;
@@ -18,17 +20,17 @@ public class RenderCoordWireframe {
         this.pos = pos;
     }
 
+    public static void addInfo(List<String> tooltip, World world, BlockPos pos) {
+        RenderCoordWireframe coordHandler = new RenderCoordWireframe(world, pos);
+        for (int i = 0; i < tooltip.size(); i++) {
+            if (tooltip.get(i).contains("Coordinate Tracker")) {
+                tooltip.set(i, tooltip.get(i) + " (tracking " + coordHandler.pos.getX() + ", " + coordHandler.pos.getY() + ", " + coordHandler.pos.getZ() + " in " + coordHandler.world.provider.getDimensionType() + ")");
+                break;
+            }
+        }
+    }
+
     public void render(float partialTicks) {
-        /*
-        Block block = Block.blocksList[world.getBlockId(x, y, z)];
-        block.setBlockBoundsBasedOnState(world, x, y, z);
-        double minX = block.getBlockBoundsMinX();
-        double minY = block.getBlockBoundsMinY();
-        double minZ = block.getBlockBoundsMinZ();
-        double maxX = minX + (block.getBlockBoundsMaxX() - minX) * progress;
-        double maxY = minY + (block.getBlockBoundsMaxY() - minY) * progress;
-        double maxZ = minZ + (block.getBlockBoundsMaxX() - minZ) * progress;
-        */
         double minX = 0;
         double minY = 0;
         double minZ = 0;

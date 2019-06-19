@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import net.minecraft.client.gui.GuiSlider;
 import net.minecraft.inventory.EntityEquipmentSlot;
 
@@ -11,7 +12,7 @@ public class GuiJumpBoostOptions extends GuiSliderOptions {
 
     @Override
     protected String getTagName() {
-        return "jumpBoost";
+        return ItemPneumaticArmor.NBT_JUMP_BOOST;
     }
 
     @Override

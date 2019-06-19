@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiJetBootsOptions;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
@@ -538,10 +537,10 @@ public class CommonArmorHandler {
                 magnetRadiusSq = magnetRadius * magnetRadius;
                 break;
             case LEGS:
-                speedBoostMult = ItemPneumaticArmor.getIntData(armorStack, "speedBoost", 100) / 100f;
+                speedBoostMult = ItemPneumaticArmor.getIntData(armorStack, ItemPneumaticArmor.NBT_SPEED_BOOST, 100) / 100f;
                 break;
             case FEET:
-                jetBootsBuilderMode = ItemPneumaticArmor.getBooleanData(armorStack, GuiJetBootsOptions.NBT_BUILDER_MODE, false);
+                jetBootsBuilderMode = ItemPneumaticArmor.getBooleanData(armorStack, ItemPneumaticArmor.NBT_BUILDER_MODE, false);
                 JetBootsStateTracker.getTracker(player).setJetBootsState(player, isJetBootsEnabled(), isJetBootsActive(), jetBootsBuilderMode);
                 break;
         }
@@ -696,7 +695,7 @@ public class CommonArmorHandler {
     }
 
     /**
-     * Called when a custom NBT field in an armor item has been updated.  Used to
+     * Called both client- and server-side when a custom NBT field in an armor item has been updated.  Used to
      * cache data (e.g. legs speed boost %) for performance reasons.
      *
      * @param slot the armor slot
@@ -705,10 +704,10 @@ public class CommonArmorHandler {
      */
     public void onDataFieldUpdated(EntityEquipmentSlot slot, String key, NBTBase dataTag) {
         switch (key) {
-            case "speedBoost":
+            case ItemPneumaticArmor.NBT_SPEED_BOOST:
                 speedBoostMult = MathHelper.clamp(((NBTTagInt) dataTag).getInt() / 100f, 0.0f, 1.0f);
                 break;
-            case GuiJetBootsOptions.NBT_BUILDER_MODE:
+            case ItemPneumaticArmor.NBT_BUILDER_MODE:
                 jetBootsBuilderMode = ((NBTTagByte) dataTag).getByte() == 1;
                 JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode(jetBootsBuilderMode);
                 break;

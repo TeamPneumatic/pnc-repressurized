@@ -1,17 +1,16 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class PacketCoordTrackUpdate extends LocationIntPacket<PacketCoordTrackUpdate> {
 
-    int dimensionID;
+    private int dimensionID;
 
     public PacketCoordTrackUpdate() {
     }
@@ -41,9 +40,7 @@ public class PacketCoordTrackUpdate extends LocationIntPacket<PacketCoordTrackUp
     public void handleServerSide(PacketCoordTrackUpdate message, EntityPlayer player) {
         ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
         if (!stack.isEmpty()) {
-            NBTTagCompound tag = NBTUtil.getCompoundTag(stack, "CoordTracker");
-            tag.setInteger("dimID", message.dimensionID);
-            NBTUtil.setPos(tag, message.pos);
+            ItemPneumaticArmor.setCoordTrackerPos(stack, message.dimensionID, message.pos);
         }
     }
 

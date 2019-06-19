@@ -2,11 +2,11 @@ package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -198,7 +198,7 @@ public class EventHandlerPneumaticArmor {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (!handler.isJetBootsEnabled() && handler.isArmorReady(EntityEquipmentSlot.LEGS)
                     && handler.isJumpBoostEnabled() && handler.getArmorPressure(EntityEquipmentSlot.LEGS) > 0.01F) {
-                float power = ItemPneumaticArmor.getIntData(stack, "jumpBoost", 100) / 100.0f;
+                float power = ItemPneumaticArmor.getIntData(stack, ItemPneumaticArmor.NBT_JUMP_BOOST, 100) / 100.0f;
                 int rangeUpgrades = handler.getUpgradeCount(EntityEquipmentSlot.LEGS, IItemRegistry.EnumUpgrade.RANGE,
                         player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
                 float actualBoost = Math.max(1.0f, rangeUpgrades * power);

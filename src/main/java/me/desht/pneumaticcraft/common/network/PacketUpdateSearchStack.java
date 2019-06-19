@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -10,6 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class PacketUpdateSearchStack extends AbstractPacket<PacketUpdateSearchStack> {
 
+    private ItemStack stack;
     private int itemId, itemDamage;
 
     public PacketUpdateSearchStack() {
@@ -44,10 +46,9 @@ public class PacketUpdateSearchStack extends AbstractPacket<PacketUpdateSearchSt
     public void handleServerSide(PacketUpdateSearchStack message, EntityPlayer player) {
         ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
         if (!helmetStack.isEmpty()) {
-            NBTTagCompound tag = NBTUtil.getCompoundTag(helmetStack, "SearchStack");
+            NBTTagCompound tag = NBTUtil.getCompoundTag(helmetStack, ItemPneumaticArmor.NBT_SEARCH_STACK);
             tag.setInteger("itemID", message.itemId);
             tag.setInteger("itemDamage", message.itemDamage);
         }
     }
-
 }

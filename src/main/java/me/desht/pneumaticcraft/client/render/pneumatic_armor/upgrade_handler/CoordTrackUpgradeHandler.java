@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiCoordinateTrackerOp
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderCoordWireframe;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderNavigator;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.EntityPathNavigateDrone;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -14,14 +15,12 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketCoordTrackUpdate;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.EnumFacing;
@@ -82,8 +81,11 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
         if (coordTracker != null) {
             coordTracker.ticksExisted++;
         } else {
-            coordTracker = ItemPneumaticArmor.getCoordTrackLocation(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
-            if (coordTracker != null) navigator = new RenderNavigator(coordTracker.world, coordTracker.pos);
+            BlockPos pos = ItemPneumaticArmor.getCoordTrackerPos(ClientUtils.getWornArmor(EntityEquipmentSlot.HEAD), player.world);
+            if (pos != null) {
+                coordTracker = new RenderCoordWireframe(player.world, pos);
+                navigator = new RenderNavigator(coordTracker.world, coordTracker.pos);
+            }
         }
         if (noPathCooldown > 0) {
             noPathCooldown--;
@@ -134,18 +136,16 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @SubscribeEvent
     public boolean onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
-        if (isListeningToCoordTrackerSetting) {
+        if (event.getWorld().isRemote && isListeningToCoordTrackerSetting) {
             isListeningToCoordTrackerSetting = false;
             EnumFacing dir = event.getFace();
+            if (dir == null) return false;
             reset();
             ItemStack stack = event.getEntityPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD);
             if (!stack.isEmpty()) {
-                NBTTagCompound tag = NBTUtil.getCompoundTag(stack, "CoordTracker");
-                tag.setInteger("dimID", event.getEntity().world.provider.getDimension());
-                NBTUtil.setPos(tag, event.getPos().offset(dir));
+                ItemPneumaticArmor.setCoordTrackerPos(stack, event.getWorld().provider.getDimension(), event.getPos().offset(dir));
+                NetworkHandler.sendToServer(new PacketCoordTrackUpdate(event.getEntity().world, event.getPos().offset(dir)));
             }
-            assert dir != null;
-            NetworkHandler.sendToServer(new PacketCoordTrackUpdate(event.getEntity().world, event.getPos().offset(dir)));
         }
         return false;
     }

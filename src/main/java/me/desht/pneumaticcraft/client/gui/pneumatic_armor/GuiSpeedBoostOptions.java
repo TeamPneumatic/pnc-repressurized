@@ -1,20 +1,18 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import net.minecraft.client.gui.GuiSlider;
 import net.minecraft.inventory.EntityEquipmentSlot;
 
 public class GuiSpeedBoostOptions extends GuiSliderOptions {
-    private int pendingVal = -1;
-    private GuiSlider slider;
-
     public GuiSpeedBoostOptions(IUpgradeRenderHandler handler) {
         super(handler);
     }
 
     @Override
     protected String getTagName() {
-        return "speedBoost";
+        return ItemPneumaticArmor.NBT_SPEED_BOOST;
     }
 
     @Override

@@ -28,15 +28,13 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.EnumHelper;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
 import thaumcraft.api.items.IGoggles;
 import thaumcraft.api.items.IRevealer;
@@ -70,6 +68,13 @@ public class ItemPneumaticArmor extends ItemArmor
     };
     private static final int[] VIS_DISCOUNTS = new int[] { 1, 2, 2, 5 };
     private static final List<Set<Item>> applicableUpgrades = new ArrayList<>();
+
+    public static final String NBT_SEARCH_STACK = "SearchStack";
+    public static final String NBT_COORD_TRACKER = "CoordTracker";
+    public static final String NBT_ENTITY_FILTER = "entityFilter";
+    public static final String NBT_JUMP_BOOST = "jumpBoost";
+    public static final String NBT_SPEED_BOOST = "speedBoost";
+    public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
 
     public ItemPneumaticArmor(String name, EntityEquipmentSlot equipmentSlotIn) {
         super(COMPRESSED_IRON_MATERIAL, PneumaticCraftRepressurized.proxy.getArmorRenderID(Textures.ARMOR_PNEUMATIC), equipmentSlotIn);
@@ -135,16 +140,9 @@ public class ItemPneumaticArmor extends ItemArmor
                 }
             }
         }
-        RenderCoordWireframe coordHandler = getCoordTrackLocation(stack);
-        if (coordHandler != null) {
-            for (int i = 0; i < tooltip.size(); i++) {
-                if (tooltip.get(i).contains("Coordinate Tracker")) {
-                    tooltip.set(i, tooltip.get(i) + " (tracking " + coordHandler.pos.getX() + ", " + coordHandler.pos.getY() + ", " + coordHandler.pos.getZ() + " in " + coordHandler.world.provider.getDimensionType() + ")");
-                    break;
-                }
-            }
-        }
 
+        BlockPos pos = getCoordTrackerPos(stack, worldIn);
+        if (pos != null) RenderCoordWireframe.addInfo(tooltip, worldIn, pos);
     }
 
     @Override
@@ -159,12 +157,13 @@ public class ItemPneumaticArmor extends ItemArmor
 
         for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
             Set<Item> upgrades = applicableUpgrades.get(slot.getIndex());
+            // upgrades automatically added due to an upgrade handler being registered
             UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).forEach(
                     handler -> Arrays.stream(handler.getRequiredUpgrades())
                             .filter(Objects::nonNull)
                             .forEach(upgrades::add)
             );
-            // common to all armor pieces but don't have a specific handler
+            // upgrades common to all armor pieces without a specific handler
             addApplicableUpgrade(slot, EnumUpgrade.SPEED);
             addApplicableUpgrade(slot, EnumUpgrade.VOLUME);
             addApplicableUpgrade(slot, EnumUpgrade.ITEM_LIFE);
@@ -270,7 +269,6 @@ public class ItemPneumaticArmor extends ItemArmor
 
     /* ----------- Pneumatic Helmet helpers ---------- */
 
-
     public static int getIntData(ItemStack stack, String key, int def) {
         if (stack.getItem() instanceof ItemPneumaticArmor && stack.hasTagCompound() && stack.getTagCompound().hasKey(key, Constants.NBT.TAG_INT)) {
             return stack.getTagCompound().getInteger(key);
@@ -289,25 +287,42 @@ public class ItemPneumaticArmor extends ItemArmor
 
     @Nonnull
     public static ItemStack getSearchedStack(ItemStack helmetStack) {
-        if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, "SearchStack")) return ItemStack.EMPTY;
-        NBTTagCompound tag = NBTUtil.getCompoundTag(helmetStack, "SearchStack");
+        if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, NBT_SEARCH_STACK)) return ItemStack.EMPTY;
+        NBTTagCompound tag = NBTUtil.getCompoundTag(helmetStack, NBT_SEARCH_STACK);
         if (tag.getInteger("itemID") == -1) return ItemStack.EMPTY;
         return new ItemStack(Item.getItemById(tag.getInteger("itemID")), 1, tag.getInteger("itemDamage"));
     }
 
-    @SideOnly(Side.CLIENT)
-    public static RenderCoordWireframe getCoordTrackLocation(ItemStack helmetStack) {
-        if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, "CoordTracker")) return null;
-        NBTTagCompound tag = NBTUtil.getCompoundTag(helmetStack, "CoordTracker");
-        if (tag.getInteger("y") == -1 || FMLClientHandler.instance().getClient().world.provider.getDimension() != tag.getInteger("dimID"))
+    public static BlockPos getCoordTrackerPos(ItemStack helmetStack, World world) {
+        if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, NBT_COORD_TRACKER)) return null;
+        NBTTagCompound tag = NBTUtil.getCompoundTag(helmetStack, NBT_COORD_TRACKER);
+        if (tag.getInteger("y") == -1 || world.provider.getDimension() != tag.getInteger("dimID")) {
             return null;
-        return new RenderCoordWireframe(FMLClientHandler.instance().getClient().world, NBTUtil.getPos(tag));
+        }
+        return NBTUtil.getPos(tag);
     }
 
-    @SideOnly(Side.CLIENT)
+    public static void setCoordTrackerPos(ItemStack helmetStack, int dimId, BlockPos pos) {
+        NBTTagCompound tag = NBTUtil.getCompoundTag(helmetStack, ItemPneumaticArmor.NBT_COORD_TRACKER);
+        tag.setInteger("dimID", dimId);
+        NBTUtil.setPos(tag, pos);
+    }
+
     public static String getEntityFilter(ItemStack helmetStack) {
-        if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, "entityFilter")) return "";
-        return NBTUtil.getString(helmetStack, "entityFilter");
+        if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, NBT_ENTITY_FILTER)) return "";
+        return NBTUtil.getString(helmetStack, NBT_ENTITY_FILTER);
+    }
+
+    @Override
+    public float getFOVModifier(ItemStack stack, EntityPlayer player, EntityEquipmentSlot slot) {
+        if (slot == EntityEquipmentSlot.LEGS && ConfigHandler.client.leggingsFOVfactor > 0) {
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
+            double boost = handler.getSpeedBoostFromLegs();
+            if (boost > 0) {
+                return 1.0f + (float) (boost * 2.0 * ConfigHandler.client.leggingsFOVfactor);
+            }
+        }
+        return 1.0f;
     }
 
     /*------- Thaumcraft -------- */
@@ -332,17 +347,5 @@ public class ItemPneumaticArmor extends ItemArmor
     @Optional.Method(modid = ModIds.THAUMCRAFT)
     public boolean showNodes(ItemStack itemstack, EntityLivingBase player) {
         return armorType == EntityEquipmentSlot.HEAD && hasThaumcraftUpgradeAndPressure(itemstack);
-    }
-
-    @Override
-    public float getFOVModifier(ItemStack stack, EntityPlayer player, EntityEquipmentSlot slot) {
-        if (slot == EntityEquipmentSlot.LEGS && ConfigHandler.client.leggingsFOVfactor > 0) {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            double boost = handler.getSpeedBoostFromLegs();
-            if (boost > 0) {
-                return 1.0f + (float) (boost * 2.0 * ConfigHandler.client.leggingsFOVfactor);
-            }
-        }
-        return 1.0f;
     }
 }

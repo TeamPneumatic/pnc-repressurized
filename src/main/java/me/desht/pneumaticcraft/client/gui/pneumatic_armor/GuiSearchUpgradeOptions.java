@@ -42,7 +42,7 @@ public class GuiSearchUpgradeOptions implements IOptionPage {
             ItemStack helmetStack = ItemPneumaticArmor.getSearchedStack(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
             if (searchStack.isEmpty() && !helmetStack.isEmpty() || !searchStack.isEmpty() && helmetStack.isEmpty() || !searchStack.isEmpty() && !helmetStack.isEmpty() && !searchStack.isItemEqual(helmetStack)) {
                 NetworkHandler.sendToServer(new PacketUpdateSearchStack(searchStack));
-                NBTTagCompound tag = NBTUtil.getCompoundTag(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD), "SearchStack");
+                NBTTagCompound tag = NBTUtil.getCompoundTag(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD), ItemPneumaticArmor.NBT_SEARCH_STACK);
                 tag.setInteger("itemID", searchStack.isEmpty() ? -1 : Item.getIdFromItem(searchStack.getItem()));
                 tag.setInteger("itemDamage", searchStack.isEmpty() ? -1 : searchStack.getItemDamage());
             }

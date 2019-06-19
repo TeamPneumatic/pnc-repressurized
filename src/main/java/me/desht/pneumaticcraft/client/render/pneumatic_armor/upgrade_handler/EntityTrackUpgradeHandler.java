@@ -12,11 +12,11 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -66,7 +66,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         }
 
         ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-        String filterStr = helmetStack.isEmpty() ? "" : NBTUtil.getString(helmetStack, "entityFilter");
+        String filterStr = helmetStack.isEmpty() ? "" : ItemPneumaticArmor.getEntityFilter(helmetStack);
         if (!entityFilter.toString().equals(filterStr)) {
             EntityFilter newFilter = EntityFilter.fromString(filterStr);
             if (newFilter != null) {
