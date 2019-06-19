@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.11.2-??? (unreleased)
+### 0.11.2-365 (19 Jun 2019)
 #### New
 * Guardians (and Elder Guardians) can now be hacked with the Pneumatic Helmet to disable their ranged attack. In addition, hacking an Elder Guardian will cancel any Mining Fatigue you may have.
 * Item Frames and Paintings can now be tracked (and hacked!) with the Pneumatic Helmet (entity tracker upgrade).
