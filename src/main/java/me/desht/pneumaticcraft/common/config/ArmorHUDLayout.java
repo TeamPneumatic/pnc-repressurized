@@ -89,7 +89,7 @@ public class ArmorHUDLayout extends JsonConfig {
             entityTrackerStat = new LayoutItem(sx, sy, ho.entityTrackerX, ho.entityTrackerY, ho.entityTrackerLeft);
             itemSearchStat = new LayoutItem(sx, sy, ho.itemSearchX, ho.itemSearchY, ho.itemSearchLeft);
             airConStat = new LayoutItem(sx, sy, ho.acStatX, ho.acStatY, ho.acStatLeft);
-            // no legacy import for jetBootsStat
+            jetBootsStat = JET_BOOTS_DEF; // no legacy import for jetBootsStat
 
             try {
                 writeToFile();
