@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common;
 
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class DamageSourcePneumaticCraft extends DamageSource {
     public static final DamageSourcePneumaticCraft PRESSURE = (DamageSourcePneumaticCraft) new DamageSourcePneumaticCraft("pressure", 2).setDamageBypassesArmor();
@@ -42,15 +42,15 @@ public class DamageSourcePneumaticCraft extends DamageSource {
      * Returns the message to be displayed on player death.
      */
     @Override
-    public ITextComponent getDeathMessage(EntityLivingBase par1EntityLivingBase) {
+    public ITextComponent getDeathMessage(LivingEntity par1EntityLivingBase) {
         int messageNumber = par1EntityLivingBase.getRNG().nextInt(deathMessages) + 1;
 
-        EntityLivingBase entitylivingbase1 = par1EntityLivingBase.getAttackingEntity();
+        LivingEntity entitylivingbase1 = par1EntityLivingBase.getAttackingEntity();
         String s = "death.attack." + damageType + messageNumber;
         String s1 = s + ".player";
         return entitylivingbase1 != null && I18n.hasKey(s1) ?
-                new TextComponentTranslation(s1, par1EntityLivingBase.getDisplayName(), entitylivingbase1.getDisplayName()) :
-                new TextComponentTranslation(s, par1EntityLivingBase.getDisplayName());
+                new TranslationTextComponent(s1, par1EntityLivingBase.getDisplayName(), entitylivingbase1.getDisplayName()) :
+                new TranslationTextComponent(s, par1EntityLivingBase.getDisplayName());
     }
 
     public static class DamageSourceDroneOverload extends DamageSourcePneumaticCraft {
@@ -67,8 +67,8 @@ public class DamageSourcePneumaticCraft extends DamageSource {
         }
 
         @Override
-        public ITextComponent getDeathMessage(EntityLivingBase par1EntityLivingBase) {
-            return new TextComponentTranslation("death.drone.overload." + msgKey, params);
+        public ITextComponent getDeathMessage(LivingEntity par1EntityLivingBase) {
+            return new TranslationTextComponent("death.drone.overload." + msgKey, params);
         }
     }
 }

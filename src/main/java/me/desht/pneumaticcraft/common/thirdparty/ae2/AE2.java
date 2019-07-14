@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.thirdparty.ae2;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 
 public class AE2 implements IThirdParty {

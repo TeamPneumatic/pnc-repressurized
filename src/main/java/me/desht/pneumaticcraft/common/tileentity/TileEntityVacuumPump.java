@@ -4,25 +4,32 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
-public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRedstoneControlled, IManoMeasurable {
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRedstoneControlled, IManoMeasurable, INamedContainerProvider {
     @GuiSynced
-    private final IAirHandler vacuumHandler = PneumaticRegistry.getInstance().getAirHandlerSupplier().createTierOneAirHandler(PneumaticValues.VOLUME_VACUUM_PUMP);
+    private final IAirHandler vacuumHandler;
     public int rotation;
     public int oldRotation;
     private int turnTimer = -1;
@@ -33,12 +40,14 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     public int redstoneMode;
 
     public TileEntityVacuumPump() {
-        super(PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.VOLUME_VACUUM_PUMP, 4);
+        super(ModTileEntityTypes.VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.VOLUME_VACUUM_PUMP, 4);
+
+        this.vacuumHandler  = PneumaticRegistry.getInstance().getAirHandlerSupplier().createTierOneAirHandler(PneumaticValues.VOLUME_VACUUM_PUMP);
         addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
     @Override
-    public IAirHandler getAirHandler(EnumFacing side) {
+    public IAirHandler getAirHandler(Direction side) {
         if (side == null || side == getInputSide()) {
             return super.getAirHandler(side);
         } else if (side == getVacuumSide()) {
@@ -60,16 +69,21 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
         vacuumHandler.onNeighborChange();
     }
 
-    public EnumFacing getInputSide() {
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
+    }
+
+    public Direction getInputSide() {
         return getVacuumSide().getOpposite();
     }
 
-    public EnumFacing getVacuumSide() {
+    public Direction getVacuumSide() {
         return getRotation();
     }
 
     @Override
-    public void update() {
+    public void tick() {
         if (!getWorld().isRemote && turnTimer >= 0) {
             turnTimer--;
         }
@@ -97,11 +111,11 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
             rotation += rotationSpeed;
         }
 
-        super.update();
-        vacuumHandler.update();
+        super.tick();
+        vacuumHandler.tick();
 
         IAirHandler inputHandler = getAirHandler(getInputSide());
-        List<Pair<EnumFacing, IAirHandler>> teList = inputHandler.getConnectedPneumatics();
+        List<Pair<Direction, IAirHandler>> teList = inputHandler.getConnectedPneumatics();
         if (teList.size() == 0) inputHandler.airLeak(getInputSide());
         teList = vacuumHandler.getConnectedPneumatics();
         if (teList.size() == 0) vacuumHandler.airLeak(getVacuumSide());
@@ -109,46 +123,40 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        NBTTagCompound vacuum = new NBTTagCompound();
-        vacuumHandler.writeToNBT(vacuum);
-        tag.setTag("vacuum", vacuum);
-        tag.setBoolean("turning", turning);
-        tag.setInteger("redstoneMode", redstoneMode);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.put("vacuum", vacuumHandler.serializeNBT());
+        tag.putBoolean("turning", turning);
+        tag.putInt("redstoneMode", redstoneMode);
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        vacuumHandler.readFromNBT(tag.getCompoundTag("vacuum"));
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+        vacuumHandler.deserializeNBT(tag.getCompound("vacuum"));
         turning = tag.getBoolean("turning");
-        redstoneMode = tag.getInteger("redstoneMode");
+        redstoneMode = tag.getInt("redstoneMode");
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
-        if (buttonID == 0) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
         }
     }
 
     @Override
-    public void printManometerMessage(EntityPlayer player, List<String> curInfo) {
-        curInfo.add(TextFormatting.GREEN + "Input pressure: " + PneumaticCraftUtils.roundNumberTo(getAirHandler(getInputSide()).getPressure(), 1) + " bar. Vacuum pressure: " + PneumaticCraftUtils.roundNumberTo(getAirHandler(getVacuumSide()).getPressure(), 1) + " bar.");
-    }
-
-    @Override
-    public String getName() {
-        return Blockss.VACUUM_PUMP.getTranslationKey();
+    public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
+        String input = PneumaticCraftUtils.roundNumberTo(getAirHandler(getInputSide()).getPressure(), 1);
+        String vac = PneumaticCraftUtils.roundNumberTo(getAirHandler(getVacuumSide()).getPressure(), 1);
+        curInfo.add(xlate("message.vacuum_pump.manometer", input, vac).applyTextStyle(TextFormatting.GREEN));
     }
 
     @Override
@@ -156,4 +164,14 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
         return redstoneMode;
     }
 
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerVacuumPump(i, playerInventory, getPos());
+    }
 }

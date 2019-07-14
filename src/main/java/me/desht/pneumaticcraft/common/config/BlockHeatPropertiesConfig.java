@@ -7,11 +7,11 @@ import com.google.gson.*;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.InvalidBlockStateException;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -125,7 +125,7 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
                 try {
                     CustomHeatEntry che = CustomHeatEntry.fromJson(entry.getKey(), jsonRecord);
                     if (che != null) {
-                        IBlockState state = che.getBlockState();
+                        BlockState state = che.getBlockState();
                         if (entry.getKey().indexOf('[') == -1) {
                             ignoreVariants.add(state.getBlock());
                         }
@@ -144,7 +144,7 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
     }
 
     // TODO remove in 1.13: we will just store by block then
-    private String makeKeyForState(IBlockState blockState) {
+    private String makeKeyForState(BlockState blockState) {
         Block b = blockState.getBlock();
         return ignoreVariants.contains(b) ?
                 b.getRegistryName().toString() :
@@ -155,7 +155,7 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
         return customHeatEntries;
     }
 
-    public CustomHeatEntry getCustomHeatEntry(IBlockState state) {
+    public CustomHeatEntry getCustomHeatEntry(BlockState state) {
         String key = makeKeyForState(state);
         CustomHeatEntry entry = customHeatEntries.get(key);
         if (entry == null) {
@@ -168,8 +168,8 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
         return entry;
     }
 
-    private CustomHeatEntry buildDefaultFluidEntry(IBlockState state, Fluid fluid) {
-        IBlockState transformHot, transformHotFlowing, transformCold, transformColdFlowing;
+    private CustomHeatEntry buildDefaultFluidEntry(BlockState state, Fluid fluid) {
+        BlockState transformHot, transformHotFlowing, transformCold, transformColdFlowing;
         if (fluid.getTemperature() >= 1300) {  // lava temperature
             transformHot = null;
             transformHotFlowing = null;
@@ -201,15 +201,15 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
         private final int totalHeat;
         private final int temperature;
         private final double thermalResistance;
-        private final IBlockState blockState;
-        private final IBlockState transformHot;
-        private final IBlockState transformHotFlowing;
-        private final IBlockState transformCold;
-        private final IBlockState transformColdFlowing;
+        private final BlockState blockState;
+        private final BlockState transformHot;
+        private final BlockState transformHotFlowing;
+        private final BlockState transformCold;
+        private final BlockState transformColdFlowing;
         private final String id;
         private final boolean isDefaultState;
 
-        CustomHeatEntry(String id, IBlockState blockState, IBlockState transformHot, IBlockState transformHotFlowing, IBlockState transformCold, IBlockState transformColdFlowing, int totalHeat, int temperature, double thermalResistance) {
+        CustomHeatEntry(String id, BlockState blockState, BlockState transformHot, BlockState transformHotFlowing, BlockState transformCold, BlockState transformColdFlowing, int totalHeat, int temperature, double thermalResistance) {
             this.totalHeat = totalHeat;
             this.blockState = blockState;
             this.transformHot = transformHot;
@@ -223,12 +223,12 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
         }
 
         static CustomHeatEntry fromJson(String blockStateId, JsonObject value) throws InvalidBlockStateException {
-            IBlockState transformHot = null;
-            IBlockState transformHotFlowing = null;
-            IBlockState transformCold = null;
-            IBlockState transformColdFlowing = null;
+            BlockState transformHot = null;
+            BlockState transformHotFlowing = null;
+            BlockState transformCold = null;
+            BlockState transformColdFlowing = null;
 
-            IBlockState blockState = parseBlockState(blockStateId);
+            BlockState blockState = parseBlockState(blockStateId);
             if (blockState == null || blockState.getBlock() == Blocks.AIR) {
                 return null;
             }
@@ -291,23 +291,23 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
             return thermalResistance;
         }
 
-        public IBlockState getBlockState() {
+        public BlockState getBlockState() {
             return blockState;
         }
 
-        public IBlockState getTransformHot() {
+        public BlockState getTransformHot() {
             return transformHot;
         }
 
-        public IBlockState getTransformCold() {
+        public BlockState getTransformCold() {
             return transformCold;
         }
 
-        public IBlockState getTransformHotFlowing() {
+        public BlockState getTransformHotFlowing() {
             return transformHotFlowing;
         }
 
-        public IBlockState getTransformColdFlowing() {
+        public BlockState getTransformColdFlowing() {
             return transformColdFlowing;
         }
 
@@ -319,11 +319,11 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
             return isDefaultState;
         }
 
-        private static IBlockState maybeParseBlockState(JsonObject value, String field) throws InvalidBlockStateException {
+        private static BlockState maybeParseBlockState(JsonObject value, String field) throws InvalidBlockStateException {
             return value.has(field) ? parseBlockState(value.get(field).getAsString()) : null;
         }
 
-        private static IBlockState parseBlockState(String s) throws InvalidBlockStateException {
+        private static BlockState parseBlockState(String s) throws InvalidBlockStateException {
             // special case
             if (s.equals("minecraft:air")) return Blocks.AIR.getDefaultState();
 
@@ -355,7 +355,7 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
                     return null;
                 }
             }
-            IBlockState state = b.getDefaultState();
+            BlockState state = b.getDefaultState();
             if (variant.isEmpty()) return state;
             BlockStateContainer blockstatecontainer = b.getBlockState();
             for (String v : variant.split(",")) {
@@ -370,7 +370,7 @@ public class BlockHeatPropertiesConfig extends JsonConfig {
             return state;
         }
 
-        private static <T extends Comparable<T>> IBlockState setValueHelper(IBlockState state, IProperty<T> property, String propVal) {
+        private static <T extends Comparable<T>> BlockState setValueHelper(BlockState state, IProperty<T> property, String propVal) {
             //noinspection Guava
             Optional<T> optional = property.parseValue(propVal);
 

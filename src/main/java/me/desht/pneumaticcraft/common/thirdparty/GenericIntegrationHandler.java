@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.thirdparty;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;

@@ -1,62 +1,71 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.pressure.AirHandler;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
-public class TileEntityCreativeCompressor extends TileEntityPneumaticBase {
+import javax.annotation.Nullable;
+
+public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implements INamedContainerProvider {
     @GuiSynced
     private float pressureSetpoint;
 
     public TileEntityCreativeCompressor() {
-        super(30, 30, 50000, 0);
+        super(ModTileEntityTypes.CREATIVE_COMPRESSOR, 30, 30, 50000, 0);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    public void read(CompoundNBT nbt) {
+        super.read(nbt);
         pressureSetpoint = nbt.getFloat("setpoint");
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
-        nbt.setFloat("setpoint", pressureSetpoint);
+    public CompoundNBT write(CompoundNBT nbt) {
+        super.write(nbt);
+        nbt.putFloat("setpoint", pressureSetpoint);
         return nbt;
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
         if (!world.isRemote) {
             ((AirHandler) getAirHandler(null)).setPressure(pressureSetpoint);
         }
     }
 
     @Override
-    public void handleGUIButtonPress(int guiID, EntityPlayer player) {
-        switch (guiID) {
-            case 0:
-                pressureSetpoint -= 1;
-                break;
-            case 1:
-                pressureSetpoint -= 0.1F;
-                break;
-            case 2:
-                pressureSetpoint += 0.1F;
-                break;
-            case 3:
-                pressureSetpoint += 1.0F;
-                break;
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        try {
+            pressureSetpoint += Float.parseFloat(tag);
+            if (pressureSetpoint > 30) pressureSetpoint = 30;
+            if (pressureSetpoint < -1) pressureSetpoint = -1;
+        } catch (IllegalArgumentException ignored) {
         }
-        if (pressureSetpoint > 30) pressureSetpoint = 30;
-        if (pressureSetpoint < -1) pressureSetpoint = -1;
     }
 
     @Override
-    public String getName() {
-        return Blockss.CREATIVE_COMPRESSOR.getTranslationKey();
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerCreativeCompressor(i, playerInventory, getPos());
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
     }
 }

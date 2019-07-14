@@ -1,22 +1,24 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 
+import java.util.function.Consumer;
+
 public class WidgetFluidStack extends WidgetFluidFilter {
     private final IFluidTank tank;
 
-    public WidgetFluidStack(int id, int x, int y, IFluidTank tank) {
-        super(id, x, y);
+    public WidgetFluidStack(int x, int y, IFluidTank tank, Consumer<WidgetFluidFilter> pressable) {
+        super(x, y, pressable);
         this.tank = tank;
     }
 
-    public WidgetFluidStack(int id, int x, int y, FluidStack stack) {
-        super(id, x, y);
+    WidgetFluidStack(int x, int y, FluidStack stack, Consumer<WidgetFluidFilter> pressable) {
+        super(x, y);
         tank = new FluidTank(stack.amount);
         tank.fill(stack, true);
     }
@@ -29,10 +31,10 @@ public class WidgetFluidStack extends WidgetFluidFilter {
             int fluidAmount = tank.getFluidAmount() / 1000;
             String s = fluidAmount + "B";
             if (fluidAmount > 1) {
-                FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-                GlStateManager.translate(0, 0, 400);  // ensure amount is drawn in front of the fluid texture
-                fr.drawString(s, x - fr.getStringWidth(s) + 17, y + 9, 0xFFFFFFFF, true);
-                GlStateManager.translate(0, 0, -400);
+                FontRenderer fr = Minecraft.getInstance().fontRenderer;
+                GlStateManager.translated(0, 0, 400);  // ensure amount is drawn in front of the fluid texture
+                fr.drawStringWithShadow(s, x - fr.getStringWidth(s) + 17, y + 9, 0xFFFFFFFF);
+                GlStateManager.translated(0, 0, -400);
             }
         }
     }

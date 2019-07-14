@@ -1,27 +1,31 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.common.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.text.WordUtils;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class GuiUnitProgrammer extends GuiScreen {
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public class GuiUnitProgrammer extends Screen {
     private final FontRenderer fontRenderer;
     private final List<IProgWidget> progWidgets;
     private final int guiLeft, guiTop;
@@ -35,13 +39,14 @@ public class GuiUnitProgrammer extends GuiScreen {
     private static final float SCALE_PER_STEP = 0.2F;
 
     public GuiUnitProgrammer(List<IProgWidget> progWidgets, FontRenderer fontRenderer, int guiLeft, int guiTop,
-                             int width, int height, int xSize, int startX, int startY, int areaWidth, int areaHeight, int translatedX,
+                             int width, int height, int startX, int startY, int areaWidth, int areaHeight, int translatedX,
                              int translatedY, int lastZoom) {
+        super(new StringTextComponent("Programmer"));
         this.fontRenderer = fontRenderer;
         this.progWidgets = progWidgets;
         this.guiLeft = guiLeft;
         this.guiTop = guiTop;
-        setWorldAndResolution(Minecraft.getMinecraft(), width, height);
+        init(Minecraft.getInstance(), width, height);
         this.startX = startX;
         this.startY = startY;
         this.areaWidth = areaWidth;
@@ -57,54 +62,56 @@ public class GuiUnitProgrammer extends GuiScreen {
         return scaleScroll;
     }
 
-    public int getLastZoom() {
+    int getLastZoom() {
         return lastZoom;
     }
 
-    public int getTranslatedX() {
+    int getTranslatedX() {
         return translatedX;
     }
 
-    public int getTranslatedY() {
+    int getTranslatedY() {
         return translatedY;
     }
 
     public void renderForeground(int x, int y, IProgWidget tooltipExcludingWidget) {
-        IProgWidget widget = getHoveredWidget(x, y);
-        if (widget != null && widget != tooltipExcludingWidget) {
-            List<String> tooltip = new ArrayList<>();
-            widget.getTooltip(tooltip);
+        IProgWidget progWidget = getHoveredWidget(x, y);
+        if (progWidget != null && progWidget != tooltipExcludingWidget) {
+            List<ITextComponent> tooltip = new ArrayList<>();
+            progWidget.getTooltip(tooltip);
 
-            List<String> errors = new ArrayList<>();
-            widget.addErrors(errors, progWidgets);
+            List<ITextComponent> errors = new ArrayList<>();
+            progWidget.addErrors(errors, progWidgets);
             if (errors.size() > 0) {
-                tooltip.add(TextFormatting.RED + I18n.format("gui.programmer.errors"));
-                for (String s : errors) {
-                    String msg = I18n.hasKey(s) ? I18n.format(s) : s;
+                tooltip.add(xlate("gui.programmer.errors").applyTextStyle(TextFormatting.RED));
+                for (ITextComponent s : errors) {
+                    String msg = s.getFormattedText();
                     String[] lines = WordUtils.wrap("- " + msg, 35).split(System.getProperty("line.separator"));
                     for (String line : lines) {
-                        tooltip.add(TextFormatting.RED + /*"   " +*/ line);
+                        tooltip.add(new StringTextComponent(line).applyTextStyle(TextFormatting.RED));
                     }
                 }
             }
 
-            List<String> warnings = new ArrayList<>();
-            widget.addWarnings(warnings, progWidgets);
+            List<ITextComponent> warnings = new ArrayList<>();
+            progWidget.addWarnings(warnings, progWidgets);
             if (warnings.size() > 0) {
-                tooltip.add(TextFormatting.YELLOW + I18n.format("gui.programmer.warnings"));
-                for (String s : warnings) {
-                    String msg = I18n.hasKey(s) ? I18n.format(s) : s;
+                tooltip.add(xlate("gui.programmer.warnings").applyTextStyle(TextFormatting.YELLOW));
+                for (ITextComponent s : warnings) {
+                    String msg = s.getFormattedText();
                     String[] lines = WordUtils.wrap("- " + msg, 35).split(System.getProperty("line.separator"));
                     for (String line : lines) {
-                        tooltip.add(TextFormatting.YELLOW + "   " + line);
+                        tooltip.add(new StringTextComponent(line).applyTextStyle(TextFormatting.YELLOW));
                     }
                 }
             }
-            addAdditionalInfoToTooltip(widget, tooltip);
+            addAdditionalInfoToTooltip(progWidget, tooltip);
 
-            if (tooltip.size() > 0) drawHoveringText(tooltip, x - guiLeft, y - guiTop, fontRenderer);
+            if (!tooltip.isEmpty()) {
+                List<String> t = tooltip.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList());
+                renderTooltip(t, x - guiLeft, y - guiTop, fontRenderer);
+            }
         }
-
     }
 
     public IProgWidget getHoveredWidget(int x, int y) {
@@ -119,15 +126,15 @@ public class GuiUnitProgrammer extends GuiScreen {
         return null;
     }
 
-    protected void addAdditionalInfoToTooltip(IProgWidget widget, List<String> tooltip) {
-        if (widget.getOptionWindow(null) != null) {
-            tooltip.add(TextFormatting.GOLD + "Right click for options");
+    protected void addAdditionalInfoToTooltip(IProgWidget widget, List<ITextComponent> tooltip) {
+        if (ProgWidgetGuiManager.hasGui(widget)) {
+            tooltip.add(new StringTextComponent("Right-click for options").applyTextStyle(TextFormatting.GOLD));
         }
         ThirdPartyManager.instance().docsProvider.addTooltip(tooltip, false);
     }
 
     public void render(int x, int y, boolean showFlow, boolean showInfo, boolean translate) {
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         int origX = x;
         int origY = y;
@@ -149,33 +156,34 @@ public class GuiUnitProgrammer extends GuiScreen {
         }
         lastZoom = scaleScroll.getState();
 
-        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        GL11.glScissor((guiLeft + startX) * sr.getScaleFactor(), (sr.getScaledHeight() - areaHeight - (guiTop + startY)) * sr.getScaleFactor(), areaWidth * sr.getScaleFactor(), areaHeight * sr.getScaleFactor());
+        MainWindow mw = minecraft.mainWindow;
+        int sf = minecraft.gameSettings.guiScale;
+        GL11.glScissor((guiLeft + startX) * sf, (mw.getScaledHeight() - areaHeight - (guiTop + startY)) * sf, areaWidth * sf, areaHeight * sf);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(translatedX, translatedY, 0);
+        GlStateManager.translated(translatedX, translatedY, 0);
 
-        GlStateManager.scale(scale, scale, 1);
+        GlStateManager.scaled(scale, scale, 1);
 
         if (showFlow) showFlow();
 
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
         for (IProgWidget widget : progWidgets) {
             GlStateManager.pushMatrix();
-            GlStateManager.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-            GlStateManager.scale(0.5, 0.5, 1);
+            GlStateManager.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+            GlStateManager.scaled(0.5, 0.5, 1);
             widget.render();
             GlStateManager.popMatrix();
         }
 
         for (IProgWidget widget : progWidgets) {
-            List<String> errors = new ArrayList<>();
+            List<ITextComponent> errors = new ArrayList<>();
             widget.addErrors(errors, progWidgets);
             if (errors.size() > 0) {
                 drawBorder(widget, 0xFFFF0000);
             } else {
-                List<String> warnings = new ArrayList<>();
+                List<ITextComponent> warnings = new ArrayList<>();
                 widget.addWarnings(warnings, progWidgets);
                 if (warnings.size() > 0) {
                     drawBorder(widget, 0xFFFFFF00);
@@ -185,13 +193,13 @@ public class GuiUnitProgrammer extends GuiScreen {
 
         renderAdditionally();
 
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color4f(1, 1, 1, 1);
 
         if (showInfo) {
             for (IProgWidget widget : progWidgets) {
                 GlStateManager.pushMatrix();
-                GlStateManager.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-                GlStateManager.scale(0.5, 0.5, 1);
+                GlStateManager.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+                GlStateManager.scaled(0.5, 0.5, 1);
                 widget.renderExtraInfo();
                 GlStateManager.popMatrix();
             }
@@ -201,7 +209,7 @@ public class GuiUnitProgrammer extends GuiScreen {
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
-        boolean isLeftClicking = Mouse.isButtonDown(0);
+        boolean isLeftClicking = minecraft.gameSettings.keyBindAttack.isKeyDown();
         if (translate && isLeftClicking && wasClicking && !scaleScroll.isDragging() && new Rectangle(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(origX, origY)) {
             translatedX += origX - lastMouseX;
             translatedY += origY - lastMouseY;
@@ -222,19 +230,19 @@ public class GuiUnitProgrammer extends GuiScreen {
 
     protected void drawBorder(IProgWidget widget, int color, int inset) {
         GlStateManager.pushMatrix();
-        GlStateManager.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-        GlStateManager.scale(0.5, 0.5, 1);
-        drawVerticalLine(inset, inset, widget.getHeight() - inset, color);
-        drawVerticalLine(widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
-        drawHorizontalLine(widget.getWidth() - inset, inset, inset, color);
-        drawHorizontalLine(widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
+        GlStateManager.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+        GlStateManager.scaled(0.5, 0.5, 1);
+        vLine(inset, inset, widget.getHeight() - inset, color);
+        vLine(widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
+        hLine(widget.getWidth() - inset, inset, inset, color);
+        hLine(widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
         GlStateManager.popMatrix();
     }
 
     private void showFlow() {
-        GlStateManager.glLineWidth(1);
-        GlStateManager.disableTexture2D();
-        GlStateManager.glBegin(GL11.GL_LINES);
+        GlStateManager.lineWidth(1);
+        GlStateManager.disableTexture();
+        GlStateManager.begin(GL11.GL_LINES);
 
         for (IProgWidget widget : progWidgets) {
             if (widget instanceof IJump) {
@@ -252,18 +260,18 @@ public class GuiUnitProgrammer extends GuiScreen {
                                         int y2 = w.getY() + w.getHeight() / 4;
                                         float midX = (x2 + x1) / 2F;
                                         float midY = (y2 + y1) / 2F;
-                                        GlStateManager.glVertex3f(guiLeft + x1, guiTop + y1, zLevel);
-                                        GlStateManager.glVertex3f(guiLeft + x2, guiTop + y2, zLevel);
+                                        GlStateManager.vertex3f(guiLeft + x1, guiTop + y1, 0.0f);
+                                        GlStateManager.vertex3f(guiLeft + x2, guiTop + y2, 0.0f);
                                         Vec3d arrowVec = new Vec3d(x1 - x2, y1 - y2, 0).normalize();
                                         float arrowAngle = (float) Math.toRadians(30);
                                         float arrowSize = 5;
                                         arrowVec = new Vec3d(arrowVec.x * arrowSize, 0, arrowVec.y * arrowSize);
                                         arrowVec = arrowVec.rotateYaw(arrowAngle);
-                                        GlStateManager.glVertex3f(guiLeft + midX, guiTop + midY, zLevel);
-                                        GlStateManager.glVertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, zLevel);
+                                        GlStateManager.vertex3f(guiLeft + midX, guiTop + midY, 0.0f);
+                                        GlStateManager.vertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
                                         arrowVec = arrowVec.rotateYaw(-2 * arrowAngle);
-                                        GlStateManager.glVertex3f(guiLeft + midX, guiTop + midY, zLevel);
-                                        GlStateManager.glVertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, zLevel);
+                                        GlStateManager.vertex3f(guiLeft + midX, guiTop + midY, 0.0f);
+                                        GlStateManager.vertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
                                     }
                                 }
                             }
@@ -272,16 +280,16 @@ public class GuiUnitProgrammer extends GuiScreen {
                 }
             }
         }
-        GlStateManager.glEnd();
+        GlStateManager.end();
 
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
     }
 
     public float getScale() {
         return 2.0F - scaleScroll.getState() * SCALE_PER_STEP;
     }
 
-    public boolean isOutsideProgrammingArea(IProgWidget widget) {
+    boolean isOutsideProgrammingArea(IProgWidget widget) {
         float scale = getScale();
         int x = (int) ((widget.getX() + guiLeft) * scale);
         int y = (int) ((widget.getY() + guiTop) * scale);

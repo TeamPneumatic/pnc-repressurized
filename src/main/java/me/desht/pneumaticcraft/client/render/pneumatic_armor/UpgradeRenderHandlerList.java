@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,12 +28,12 @@ public class UpgradeRenderHandlerList {
     private final Map<Class<? extends IUpgradeRenderHandler>, IUpgradeRenderHandler> classMap = new HashMap<>();
 
     // convenience
-    public static final EntityEquipmentSlot[] ARMOR_SLOTS = new EntityEquipmentSlot[4];
+    public static final EquipmentSlotType[] ARMOR_SLOTS = new EquipmentSlotType[4];
     static {
-        ARMOR_SLOTS[0] = EntityEquipmentSlot.HEAD;
-        ARMOR_SLOTS[1] = EntityEquipmentSlot.CHEST;
-        ARMOR_SLOTS[2] = EntityEquipmentSlot.LEGS;
-        ARMOR_SLOTS[3] = EntityEquipmentSlot.FEET;
+        ARMOR_SLOTS[0] = EquipmentSlotType.HEAD;
+        ARMOR_SLOTS[1] = EquipmentSlotType.CHEST;
+        ARMOR_SLOTS[2] = EquipmentSlotType.LEGS;
+        ARMOR_SLOTS[3] = EquipmentSlotType.FEET;
     }
 
     private UpgradeRenderHandlerList() {
@@ -63,20 +63,21 @@ public class UpgradeRenderHandlerList {
         addUpgradeRenderer(new KickUpgradeHandler());
     }
 
-    public void addUpgradeRenderer(IUpgradeRenderHandler handler) {
+    void addUpgradeRenderer(IUpgradeRenderHandler handler) {
         upgradeRenderers.get(handler.getEquipmentSlot().getIndex()).add(handler);
         classMap.put(handler.getClass(), handler);
     }
 
-    public <T extends IUpgradeRenderHandler> T getRenderHandler(Class<T> clazz) {
+    <T extends IUpgradeRenderHandler> T getRenderHandler(Class<T> clazz) {
+        //noinspection unchecked
         return (T) classMap.get(clazz);
     }
 
-    public List<IUpgradeRenderHandler> getHandlersForSlot(EntityEquipmentSlot slot) {
+    public List<IUpgradeRenderHandler> getHandlersForSlot(EquipmentSlotType slot) {
         return upgradeRenderers.get(slot.getIndex());
     }
 
-    public float getAirUsage(EntityPlayer player, EntityEquipmentSlot slot, boolean countDisabled) {
+    public float getAirUsage(PlayerEntity player, EquipmentSlotType slot, boolean countDisabled) {
         float totalUsage = 0;
         for (int i = 0; i < upgradeRenderers.get(slot.getIndex()).size(); i++) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);

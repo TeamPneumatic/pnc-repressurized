@@ -1,18 +1,13 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetForEach;
 import me.desht.pneumaticcraft.common.ai.DroneAIForEachCoordinate;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,8 +26,8 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.YELLOW;
+    public DyeColor getColor() {
+        return DyeColor.YELLOW;
     }
 
     @Override
@@ -62,13 +57,13 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
-        tag.setString("variable", elementVariable);
+    public void writeToNBT(CompoundNBT tag) {
+        tag.putString("variable", elementVariable);
         super.writeToNBT(tag);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         elementVariable = tag.getString("variable");
         super.readFromNBT(tag);
     }
@@ -82,7 +77,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         List<String> locations = getPossibleJumpLocations();
         if (locations.size() > 0 && ai != null
-                && (traversedPositions.size() == 1 || !aiManager.getCoordinate(elementVariable).equals(BlockPos.ORIGIN))) {
+                && (traversedPositions.size() == 1 || !aiManager.getCoordinate(elementVariable).equals(BlockPos.ZERO))) {
             BlockPos pos = ai.getCurCoord();
             if (pos != null) {
                 aiManager.setCoordinate(elementVariable, pos);
@@ -103,7 +98,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return ai = new DroneAIForEachCoordinate(drone, (ProgWidgetForEachCoordinate) widget);
     }
 
@@ -114,12 +109,6 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     @Override
     public boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget) {
         return false;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetForEach(this, guiProgrammer);
     }
 
     @Override

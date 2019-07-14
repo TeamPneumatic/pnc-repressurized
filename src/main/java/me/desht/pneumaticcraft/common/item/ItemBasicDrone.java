@@ -4,10 +4,11 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.entity.living.EntityBasicDrone;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -15,36 +16,35 @@ import java.util.function.BiFunction;
 
 public class ItemBasicDrone extends ItemDrone {
 
-    private final BiFunction<World, EntityPlayer, EntityBasicDrone> droneCreator;
+    private final BiFunction<World, PlayerEntity, EntityBasicDrone> droneCreator;
     
-    public ItemBasicDrone(String name, BiFunction<World, EntityPlayer, EntityBasicDrone> droneCreator) {
-        super(name);
+    public ItemBasicDrone(String name, BiFunction<World, PlayerEntity, EntityBasicDrone> droneCreator) {
+        super(DEFAULT_PROPS, name);
         this.droneCreator = droneCreator;
-        setMaxStackSize(64);
     }
 
     @Override
-    public void spawnDrone(EntityPlayer player, World world, BlockPos clickPos, EnumFacing facing, BlockPos placePos, ItemStack iStack){
+    public void spawnDrone(PlayerEntity player, World world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack){
         EntityBasicDrone drone = droneCreator.apply(world, player);
 
         drone.setPosition(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
-        world.spawnEntity(drone);
+        world.addEntity(drone);
 
-        NBTTagCompound stackTag = iStack.getTagCompound();
-        NBTTagCompound entityTag = new NBTTagCompound();
-        drone.writeEntityToNBT(entityTag);
+        CompoundNBT stackTag = iStack.getTag();
+        CompoundNBT entityTag = new CompoundNBT();
+        drone.writeAdditional(entityTag);
         if (stackTag != null) {
-            entityTag.setFloat("currentAir", stackTag.getFloat("currentAir"));
-            entityTag.setInteger("color", stackTag.getInteger("color"));
-            entityTag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, stackTag.getCompoundTag(ChargeableItemHandler.NBT_UPGRADE_TAG));
+            entityTag.putFloat("currentAir", stackTag.getFloat("currentAir"));
+            entityTag.putInt("color", stackTag.getInt("color"));
+            entityTag.put(ChargeableItemHandler.NBT_UPGRADE_TAG, stackTag.getCompound(ChargeableItemHandler.NBT_UPGRADE_TAG));
         }
-        drone.readEntityFromNBT(entityTag);
+        drone.readAdditional(entityTag);
         drone.addProgram(clickPos, facing, placePos, drone.progWidgets);
         TileEntityProgrammer.updatePuzzleConnections(drone.progWidgets);
-        if (iStack.hasDisplayName()) drone.setCustomNameTag(iStack.getDisplayName());
+        if (iStack.hasDisplayName()) drone.setCustomName(iStack.getDisplayName());
 
         drone.naturallySpawned = false;
-        drone.onInitialSpawn(world.getDifficultyForLocation(placePos), null);
+        drone.onInitialSpawn(world, world.getDifficultyForLocation(placePos), SpawnReason.MOB_SUMMONED,  null, null);
     }
 
     @Override

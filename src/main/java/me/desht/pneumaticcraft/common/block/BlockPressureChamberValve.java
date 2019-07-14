@@ -4,17 +4,17 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -22,7 +22,7 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
 
     public static final PropertyBool FORMED = PropertyBool.create("formed");
 
-    BlockPressureChamberValve() {
+    public BlockPressureChamberValve() {
         super(Material.IRON, "pressure_chamber_valve");
         setResistance(2000.0f);
     }
@@ -36,10 +36,10 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
      * Called when the block is placed in the world.
      */
     @Override
-    public void onBlockPlacedBy(World par1World, BlockPos pos, IBlockState state, EntityLivingBase par5EntityLiving, ItemStack iStack) {
+    public void onBlockPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
         super.onBlockPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
-        if (TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos) && par5EntityLiving instanceof EntityPlayerMP) {
-            AdvancementTriggers.PRESSURE_CHAMBER.trigger((EntityPlayerMP) par5EntityLiving);
+        if (TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos) && par5EntityLiving instanceof ServerPlayerEntity) {
+            AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayerEntity) par5EntityLiving);
         }
     }
 
@@ -59,17 +59,17 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
+    public BlockState getStateFromMeta(int meta) {
         return super.getStateFromMeta(meta).withProperty(FORMED, meta >= 6);
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
+    public int getMetaFromState(BlockState state) {
         return super.getMetaFromState(state) + (state.getValue(FORMED) ? 6 : 0);
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
+    public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, Direction side, float par7, float par8, float par9) {
         if (player.isSneaking()) return false;
         TileEntity te = world.getTileEntity(pos);
         if (!world.isRemote && te instanceof TileEntityPressureChamberValve) {
@@ -93,7 +93,7 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
+    public void breakBlock(World world, BlockPos pos, BlockState state) {
         invalidateMultiBlock(world, pos);
         super.breakBlock(world, pos, state);
     }
@@ -115,7 +115,7 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube(BlockState state) {
         return false;
     }
 }

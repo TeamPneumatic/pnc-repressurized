@@ -2,50 +2,44 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.DamageSource;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketUseItem extends AbstractPacket<PacketUseItem> {
+import java.util.function.Supplier;
 
-    private Item item;
-    private int amount;
+/**
+ * Received on: SERVER
+ * Sent by client to consume item(s) from the player's inventory. If client is lying about the item, keeeeeeel them!
+ */
+public class PacketUseItem {
+
+    private ItemStack stack;
 
     public PacketUseItem() {
     }
 
-    public PacketUseItem(Item item, int amount) {
-        this.item = item;
-        this.amount = amount;
+    public PacketUseItem(ItemStack stack) {
+        this.stack = stack;
     }
 
-    @Override
+    public PacketUseItem(PacketBuffer buffer) {
+        this.stack = buffer.readItemStack();
+    }
+
     public void toBytes(ByteBuf buffer) {
-        ByteBufUtils.writeItemStack(buffer, new ItemStack(item, amount, 0));
+        new PacketBuffer(buffer).writeItemStack(stack);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buffer) {
-        ItemStack stack = ByteBufUtils.readItemStack(buffer);
-        item = stack.getItem();
-        amount = stack.getCount();
-    }
-
-    @Override
-    public void handleClientSide(PacketUseItem message, EntityPlayer player) {
-    }
-
-    @Override
-    public void handleServerSide(PacketUseItem message, EntityPlayer player) {
-        for (int i = 0; i < message.amount; i++) {
-            if (!PneumaticCraftUtils.consumeInventoryItem(player.inventory, message.item)) {
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            if (!PneumaticCraftUtils.consumeInventoryItem(ctx.get().getSender().inventory, stack)) {
                 // lying client!
-                player.attackEntityFrom(DamageSource.OUT_OF_WORLD, 2000);
-                break;
+                ctx.get().getSender().attackEntityFrom(DamageSource.OUT_OF_WORLD, 2000);
             }
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
 
 }

@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 
 public class NightVisionUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRenderHandler {
@@ -14,11 +14,11 @@ public class NightVisionUpgradeHandler extends IUpgradeRenderHandler.SimpleToggl
 
     @Override
     public Item[] getRequiredUpgrades() {
-        return new Item[] { Itemss.upgrades.get(IItemRegistry.EnumUpgrade.NIGHT_VISION) };
+        return new Item[] { ModItems.Registration.UPGRADES.get(IItemRegistry.EnumUpgrade.NIGHT_VISION) };
     }
 
     @Override
-    public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.HEAD;
+    public EquipmentSlotType getEquipmentSlot() {
+        return EquipmentSlotType.HEAD;
     }
 }

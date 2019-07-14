@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.lib.TileEntityConstants;
 
 public class NetworkConnectionBackground extends NetworkConnectionHandler {
 
-    public NetworkConnectionBackground(GuiSecurityStationBase gui, TileEntitySecurityStation station, int baseX,
-                                       int baseY, int nodeSpacing, int color) {
+    NetworkConnectionBackground(GuiSecurityStationBase gui, TileEntitySecurityStation station, int baseX,
+                                int baseY, int nodeSpacing, int color) {
         super(gui, station, baseX, baseY, nodeSpacing, color, TileEntityConstants.NETWORK_AI_BRIDGE_SPEED);
     }
 
@@ -15,7 +15,7 @@ public class NetworkConnectionBackground extends NetworkConnectionHandler {
         super(copy);
     }
 
-    public NetworkConnectionBackground(NetworkConnectionBackground copy, int baseX, int baseY) {
+    NetworkConnectionBackground(NetworkConnectionBackground copy, int baseX, int baseY) {
         super(copy, baseX, baseY);
     }
 

@@ -1,19 +1,18 @@
 package me.desht.pneumaticcraft.common.sensor.eventSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.universalSensor.IBlockAndCoordinateEventSensor;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinateEventSensor;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.Rectangle;
+import net.minecraftforge.eventbus.api.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ public class BlockInteractSensor implements IBlockAndCoordinateEventSensor {
 
     @Override
     public Set<Item> getRequiredUpgrades() {
-        return ImmutableSet.of(Itemss.upgrades.get(EnumUpgrade.BLOCK_TRACKER), Itemss.GPS_TOOL);
+        return ImmutableSet.of(IItemRegistry.EnumUpgrade.BLOCK_TRACKER.getItem(), ModItems.GPS_TOOL);
     }
 
     @Override
@@ -58,13 +57,7 @@ public class BlockInteractSensor implements IBlockAndCoordinateEventSensor {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
     }
-
-    @Override
-    public Rectangle needsSlot() {
-        return null;
-    }
-
 }

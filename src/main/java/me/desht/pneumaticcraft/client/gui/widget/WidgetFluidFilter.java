@@ -1,17 +1,25 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.awt.*;
 import java.util.List;
+import java.util.function.Consumer;
 
-public class WidgetFluidFilter extends WidgetBase {
+public class WidgetFluidFilter extends Widget implements ITooltipSupplier {
+    private final Consumer<WidgetFluidFilter> onPressed;
     protected Fluid fluid;
 
-    public WidgetFluidFilter(int id, int x, int y) {
-        super(id, x, y, 16, 16);
+    public WidgetFluidFilter(int x, int y) {
+        this(x, y, null);
+    }
+
+    public WidgetFluidFilter(int x, int y, Consumer<WidgetFluidFilter> onPressed) {
+        super(x, y, 16, 16, "");
+        this.onPressed = onPressed;
     }
 
     @Override
@@ -33,5 +41,12 @@ public class WidgetFluidFilter extends WidgetBase {
 
     public Fluid getFluid() {
         return fluid;
+    }
+
+    @Override
+    public void onClick(double x, double y) {
+        super.onClick(x, y);
+
+        if (onPressed != null) onPressed.accept(this);
     }
 }

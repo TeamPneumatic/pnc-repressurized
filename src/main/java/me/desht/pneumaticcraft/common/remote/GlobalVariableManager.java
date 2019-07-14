@@ -1,13 +1,16 @@
 package me.desht.pneumaticcraft.common.remote;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.ServerWorld;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,28 +21,33 @@ import java.util.Set;
  * Manages global variables. These are prefixed with '#'.
  */
 public class GlobalVariableManager extends WorldSavedData {
+    private static final String DATA_KEY = "PneumaticCraftGlobalVariables";
+    private static final GlobalVariableManager CLIENT_INSTANCE = new GlobalVariableManager();
 
-    public static final String DATA_KEY = "PneumaticCraftGlobalVariables";
-    private static final GlobalVariableManager CLIENT_INSTANCE = new GlobalVariableManager(DATA_KEY);
     private final Map<String, BlockPos> globalVars = new HashMap<>();
     private final Map<String, ItemStack> globalItemVars = new HashMap<>();
-    public static World overworld;
+    public static ServerWorld overworld;
 
     public static GlobalVariableManager getInstance() {
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+        if (EffectiveSide.get() == LogicalSide.CLIENT) {
             return CLIENT_INSTANCE;
         } else {
-            if (overworld != null) {
-                GlobalVariableManager manager = (GlobalVariableManager) overworld.loadData(GlobalVariableManager.class, DATA_KEY);
-                if (manager == null) {
-                    manager = new GlobalVariableManager(DATA_KEY);
-                    overworld.setData(DATA_KEY, manager);
-                }
-                return manager;
-            } else {
-                throw new IllegalStateException("Overworld not initialized");
+            return getOverworld().getSavedData().getOrCreate(GlobalVariableManager::new, DATA_KEY);
+        }
+    }
+
+    private GlobalVariableManager() {
+        super(DATA_KEY);
+    }
+
+    private static ServerWorld getOverworld() {
+        if (overworld == null) {
+            overworld = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), DimensionType.OVERWORLD, false, false);
+            if (overworld == null) {
+                throw new IllegalStateException("Overworld not initialized!");
             }
         }
+        return overworld;
     }
 
     public void set(String varName, boolean value) {
@@ -79,67 +87,63 @@ public class GlobalVariableManager extends WorldSavedData {
     public BlockPos getPos(String varName) {
         BlockPos pos = globalVars.get(varName);
         //if(pos != null) Log.info("getting var: " + varName + " set to " + pos.chunkPosX + ", " + pos.chunkPosY + ", " + pos.chunkPosZ);
-        return pos != null ? pos : BlockPos.ORIGIN;
+        return pos != null ? pos : BlockPos.ZERO;
     }
 
     public ItemStack getItem(String varName) {
         return globalItemVars.getOrDefault(varName, ItemStack.EMPTY);
     }
 
-    public GlobalVariableManager(String dataKey) {
-        super(dataKey);
-    }
-
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void read(CompoundNBT tag) {
         globalVars.clear();
-        NBTTagList list = tag.getTagList("globalVars", 10);
-        for (int i = 0; i < list.tagCount(); i++) {
-            NBTTagCompound t = list.getCompoundTagAt(i);
-            globalVars.put(t.getString("varName"), new BlockPos(t.getInteger("x"), t.getInteger("y"), t.getInteger("z")));
+        ListNBT list = tag.getList("globalVars", 10);
+        for (int i = 0; i < list.size(); i++) {
+            CompoundNBT t = list.getCompound(i);
+            globalVars.put(t.getString("varName"), new BlockPos(t.getInt("x"), t.getInt("y"), t.getInt("z")));
         }
 
         readItemVars(tag, globalItemVars);
     }
 
-    public static void readItemVars(NBTTagCompound tag, Map<String, ItemStack> map) {
+    public static void readItemVars(CompoundNBT tag, Map<String, ItemStack> map) {
         map.clear();
-        NBTTagList list = tag.getTagList("globalItemVars", 10);
-        for (int i = 0; i < list.tagCount(); i++) {
-            NBTTagCompound t = list.getCompoundTagAt(i);
-            map.put(t.getString("varName"), new ItemStack(t.getCompoundTag("item")));
+        ListNBT list = tag.getList("globalItemVars", 10);
+        for (int i = 0; i < list.size(); i++) {
+            CompoundNBT t = list.getCompound(i);
+            map.put(t.getString("varName"), ItemStack.read(t.getCompound("item")));
         }
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        NBTTagList list = new NBTTagList();
+    public CompoundNBT write(CompoundNBT tag) {
+        ListNBT list = new ListNBT();
         for (Map.Entry<String, BlockPos> entry : globalVars.entrySet()) {
-            NBTTagCompound t = new NBTTagCompound();
-            t.setString("varName", entry.getKey());
+            CompoundNBT t = new CompoundNBT();
+            t.putString("varName", entry.getKey());
             BlockPos pos = entry.getValue();
-            t.setInteger("x", pos.getX());
-            t.setInteger("y", pos.getY());
-            t.setInteger("z", pos.getZ());
-            list.appendTag(t);
+            t.putInt("x", pos.getX());
+            t.putInt("y", pos.getY());
+            t.putInt("z", pos.getZ());
+            list.add(t);
         }
-        tag.setTag("globalVars", list);
+        tag.put("globalVars", list);
 
-        writeItemVars(tag, globalItemVars);
+        writeItemVars(tag);
         return tag;
     }
 
-    public void writeItemVars(NBTTagCompound tag, Map<String, ItemStack> map) {
-        NBTTagList list = new NBTTagList();
+    public void writeItemVars(CompoundNBT tag) {
+        ListNBT list = new ListNBT();
         for (Map.Entry<String, ItemStack> entry : globalItemVars.entrySet()) {
-            NBTTagCompound t = new NBTTagCompound();
-            t.setString("varName", entry.getKey());
-            NBTTagCompound itemTag = new NBTTagCompound();
-            entry.getValue().writeToNBT(itemTag);
-            t.setTag("item", itemTag);
-            list.appendTag(t);
+            CompoundNBT t = new CompoundNBT();
+            t.putString("varName", entry.getKey());
+            CompoundNBT itemTag = new CompoundNBT();
+            entry.getValue().write(itemTag);
+            t.put("item", itemTag);
+            list.add(t);
         }
-        tag.setTag("globalItemVars", list);
+        tag.put("globalItemVars", list);
     }
 
     public String[] getAllActiveVariableNames() {

@@ -1,20 +1,15 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetDropItem;
 import me.desht.pneumaticcraft.common.ai.DroneAIImExBase;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +20,11 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     @Override
     public String getWidgetString() {
         return "dropItem";
+    }
+
+    @Override
+    public DyeColor getColor() {
+        return DyeColor.MAGENTA;
     }
 
     @Override
@@ -43,26 +43,20 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setBoolean("dropStraight", dropStraight);
+        tag.putBoolean("dropStraight", dropStraight);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         dropStraight = tag.getBoolean("dropStraight");
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetDropItem(this, guiProgrammer);
-    }
-
-    @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIImExBase(drone, (ProgWidgetAreaItemBase) widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+        return new DroneAIImExBase<ProgWidgetDropItem>(drone, (ProgWidgetDropItem) widget) {
 
             private final Set<BlockPos> visitedPositions = new HashSet<>();
 
@@ -71,7 +65,7 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
                 boolean shouldExecute = false;
                 for (int i = 0; i < drone.getInv().getSlots(); i++) {
                     ItemStack stack = drone.getInv().getStackInSlot(i);
-                    if (widget.isItemValidForFilters(stack)) {
+                    if (progWidget.isItemValidForFilters(stack)) {
                         shouldExecute = super.shouldExecute();
                         break;
                     }
@@ -94,21 +88,19 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
                 visitedPositions.add(pos);
                 for (int i = 0; i < drone.getInv().getSlots(); i++) {
                     ItemStack stack = drone.getInv().getStackInSlot(i);
-                    if (widget.isItemValidForFilters(stack)) {
+                    if (progWidget.isItemValidForFilters(stack)) {
                         if (useCount() && getRemainingCount() < stack.getCount()) {
-                            stack = stack.splitStack(getRemainingCount());
+                            stack = stack.split(getRemainingCount());
                             decreaseCount(getRemainingCount());
                         } else {
                             decreaseCount(stack.getCount());
                             drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
                         }
-                        EntityItem item = new EntityItem(drone.world(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
-                        if (((IItemDropper) widget).dropStraight()) {
-                            item.motionX = 0;
-                            item.motionY = 0;
-                            item.motionZ = 0;
+                        ItemEntity item = new ItemEntity(drone.world(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
+                        if (progWidget.dropStraight()) {
+                            item.setMotion(0, 0, 0);
                         }
-                        drone.world().spawnEntity(item);
+                        drone.world().addEntity(item);
                         if (useCount() && getRemainingCount() == 0) break;
                     }
                 }
@@ -116,11 +108,6 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
             }
 
         };
-    }
-
-    @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.PINK;
     }
 
     @Override

@@ -1,6 +1,6 @@
 {
    "parent" : "item/generated",
    "textures" : {
-      "layer0" : "pneumaticcraft:items/semiblock/passive_provider_frame"
+      "layer0" : "pneumaticcraft:item/semiblock/passive_provider_frame"
    }
 }

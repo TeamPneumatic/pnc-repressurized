@@ -1,106 +1,96 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.programs.ProgramDrill;
 import me.desht.pneumaticcraft.common.recipes.programs.ProgramDrillLaser;
 import me.desht.pneumaticcraft.common.recipes.programs.ProgramLaser;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
-public class ItemAssemblyProgram extends ItemPneumaticSubtyped {
-    public static final int PROGRAMS_AMOUNT = 3;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.BULLET;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-    public static final int DRILL_DAMAGE = 0;
-    public static final int LASER_DAMAGE = 1;
-    public static final int DRILL_LASER_DAMAGE = 2;
+public class ItemAssemblyProgram extends ItemPneumatic {
+    private final AssemblyProgramType programType;
 
-    private AssemblyProgram[] referencePrograms;
+    public enum AssemblyProgramType {
+        DRILL("drill", new ProgramDrill()),
+        LASER("laser", new ProgramLaser()),
+        DRILL_LASER("drill_laser", new ProgramDrillLaser());
 
-    public ItemAssemblyProgram() {
-        super("assembly_program");
-        setHasSubtypes(true);
-    }
+        private final String name;
+        private AssemblyProgram program;
 
-    @Override
-    public String getTranslationKey(ItemStack is) {
-        return super.getTranslationKey(is) + is.getItemDamage();
-    }
-
-    @Override
-    public int getMetadata(int meta) {
-        return meta;
-    }
-
-    @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-        if (isInCreativeTab(tab)) {
-            for (int i = 0; i < PROGRAMS_AMOUNT; i++) {
-                items.add(new ItemStack(this, 1, i));
-            }
+        AssemblyProgramType(String name, AssemblyProgram program) {
+            this.name = name;
+            this.program = program;
         }
+
+        public String getRegistryName() {
+            return name;
+        }
+
+    }
+
+    public ItemAssemblyProgram(AssemblyProgramType programType) {
+        super("assembly_program_" + programType.getRegistryName());
+        this.programType = programType;
+    }
+
+    public AssemblyProgram getProgram() {
+        return programType.program;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
-        infoList.add("Required Machines:");
-        infoList.add("\u2022 " + Blockss.ASSEMBLY_CONTROLLER.getLocalizedName());
+    @OnlyIn(Dist.CLIENT)
+    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
+        infoList.add(new StringTextComponent("Required Machines:"));
+        infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_CONTROLLER.getTranslationKey())));
 
-        if (referencePrograms == null) {
-            referencePrograms = new AssemblyProgram[PROGRAMS_AMOUNT];
-            for (int i = 0; i < PROGRAMS_AMOUNT; i++) {
-                referencePrograms[i] = getProgramFromItem(i);
-            }
-        }
-        AssemblyProgram program = referencePrograms[Math.min(stack.getItemDamage(), PROGRAMS_AMOUNT - 1)];
+        AssemblyProgram program = getProgram();
         AssemblyProgram.EnumMachine[] requiredMachines = program.getRequiredMachines();
         for (AssemblyProgram.EnumMachine machine : requiredMachines) {
             switch (machine) {
                 case PLATFORM:
-                    infoList.add("\u2022 " + Blockss.ASSEMBLY_PLATFORM.getLocalizedName());
+                    infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_PLATFORM.getTranslationKey())));
                     break;
                 case DRILL:
-                    infoList.add("\u2022 " + Blockss.ASSEMBLY_DRILL.getLocalizedName());
+                    infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_DRILL.getTranslationKey())));
                     break;
                 case LASER:
-                    infoList.add("\u2022 " + Blockss.ASSEMBLY_LASER.getLocalizedName());
+                    infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_LASER.getTranslationKey())));
                     break;
                 case IO_UNIT_EXPORT:
-                    infoList.add("\u2022 " + Blockss.ASSEMBLY_IO_UNIT.getLocalizedName() + " (export)");//TODO localize
+                    infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_IO_UNIT.getTranslationKey()).appendText(" (export)")));//TODO localize
                     break;
                 case IO_UNIT_IMPORT:
-                    infoList.add("\u2022 " + Blockss.ASSEMBLY_IO_UNIT.getLocalizedName() + " (import)");
+                    infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_IO_UNIT.getTranslationKey()).appendText(" (import)")));
                     break;
             }
         }
     }
 
-    public static AssemblyProgram getProgramFromItem(int meta) {
-        switch (meta) {
-            case DRILL_DAMAGE:
+    public static AssemblyProgram getProgramForType(AssemblyProgramType t) {
+        switch (t) {
+            case DRILL:
                 return new ProgramDrill();
-            case LASER_DAMAGE:
+            case LASER:
                 return new ProgramLaser();
-            case DRILL_LASER_DAMAGE:
+            case DRILL_LASER:
                 return new ProgramDrillLaser();
         }
         return null;
     }
 
-    public static ItemStack getStackForProgramType(int type, int amount) {
-        return new ItemStack(Itemss.ASSEMBLY_PROGRAM, 1, type);
-    }
-
-    @Override
-    public String getSubtypeModelName(int meta) {
-        return "assembly_program" + meta;
+    public static AssemblyProgram getProgram(ItemStack stack) {
+        return stack.getItem() instanceof ItemAssemblyProgram ? ((ItemAssemblyProgram) stack.getItem()).getProgram() : null;
     }
 }

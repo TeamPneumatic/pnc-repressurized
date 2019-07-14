@@ -1,24 +1,24 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiJetBootsOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRenderHandler {
 
@@ -27,7 +27,7 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
     private String l1, l2, l3, r1, r2, r3;
     private int widestR;
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private IGuiAnimatedStat jbStat;
 
     @Override
@@ -37,7 +37,7 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
 
     @Override
     public Item[] getRequiredUpgrades() {
-        return new Item[] { Itemss.upgrades.get(IItemRegistry.EnumUpgrade.JET_BOOTS) };
+        return new Item[] { EnumUpgrade.JET_BOOTS.getItem() };
     }
 
     @Override
@@ -46,12 +46,12 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
     }
 
     @Override
-    public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.FEET;
+    public EquipmentSlotType getEquipmentSlot() {
+        return EquipmentSlotType.FEET;
     }
 
     @Override
-    public void update(EntityPlayer player, int rangeUpgrades) {
+    public void update(PlayerEntity player, int rangeUpgrades) {
         super.update(player, rangeUpgrades);
 
         String g1 = TextFormatting.WHITE.toString();
@@ -72,9 +72,9 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
             l2 = String.format("  %sAlt: %s%03dm", g1, g2, pos.getY());
             l3 = String.format("%sHead: %s%d° (%s)", g1, g2, yaw, HEADINGS[heading]);
             r1 = String.format("%sGnd: %s%05.2f", g1, g2, vg * 20);
-            r2 = String.format("%sGnd: %s%dm", g1, g2, pos.getY() - player.world.getHeight(pos.getX(), pos.getZ()));
+            r2 = String.format("%sGnd: %s%dm", g1, g2, pos.getY() - player.world.getHeight(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()));
             r3 = String.format("%sPch: %s%d°", g1, g2, (int)-player.rotationPitch);
-            FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+            FontRenderer fr = Minecraft.getInstance().fontRenderer;
             widestR = Math.max(fr.getStringWidth(r1), Math.max(fr.getStringWidth(r2), fr.getStringWidth(r3)));
         }
     }
@@ -84,7 +84,7 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
         super.render2D(partialTicks, helmetEnabled);
 
         if (helmetEnabled && jbStat.isClicked()) {
-            FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+            FontRenderer fr = Minecraft.getInstance().fontRenderer;
             int xl = jbStat.getBaseX() + 5;
             int y = jbStat.getBaseY() + fr.FONT_HEIGHT + 8;
             int xr = jbStat.getBaseX() + jbStat.getWidth() - 5;
@@ -105,7 +105,7 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
     public IGuiAnimatedStat getAnimatedStat() {
         if (jbStat == null) {
             jbStat = new GuiAnimatedStat(null, "Jet Boots",
-                    GuiAnimatedStat.StatIcon.of(CraftingRegistrator.getUpgrade(IItemRegistry.EnumUpgrade.JET_BOOTS)),
+                    GuiAnimatedStat.StatIcon.of(CraftingRegistrator.getUpgrade(EnumUpgrade.JET_BOOTS)),
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.jetBootsStat);
             jbStat.setMinDimensionsAndReset(0, 0);
             jbStat.addPadding(3, 32);

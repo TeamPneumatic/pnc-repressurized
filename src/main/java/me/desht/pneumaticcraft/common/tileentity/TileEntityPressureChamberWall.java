@@ -2,13 +2,17 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberWall;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import java.util.List;
 
@@ -20,11 +24,11 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
     private int valveZ;
 
     public TileEntityPressureChamberWall() {
-        super();
+        this(ModTileEntityTypes.PRESSURE_CHAMBER_WALL, 0);
     }
 
-    public TileEntityPressureChamberWall(int upgradeSize) {
-        super(upgradeSize);
+    TileEntityPressureChamberWall(TileEntityType type, int upgradeSize) {
+        super(type, upgradeSize);
     }
 
     public TileEntityPressureChamberValve getCore() {
@@ -59,9 +63,9 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
         boolean hasChanged = teValve != te;
         teValve = te;
         if (hasChanged && !getWorld().isRemote) {
-            IBlockState curState = getWorld().getBlockState(getPos());
-            if (curState.getBlock() == Blockss.PRESSURE_CHAMBER_WALL) {
-                IBlockState newState = ((BlockPressureChamberWall) Blockss.PRESSURE_CHAMBER_WALL).updateState(curState, getWorld(), getPos());
+            BlockState curState = getWorld().getBlockState(getPos());
+            if (curState.getBlock() == ModBlocks.PRESSURE_CHAMBER_WALL) {
+                BlockState newState = ((BlockPressureChamberWall) ModBlocks.PRESSURE_CHAMBER_WALL).updateState(curState, getWorld(), getPos());
                 getWorld().setBlockState(getPos(), newState, 2);
             }
         }
@@ -73,29 +77,34 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
         teValve = null;
     }
 
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
+    }
+
     /**
      * Reads a tile entity from NBT.
      */
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        valveX = tag.getInteger("valveX");
-        valveY = tag.getInteger("valveY");
-        valveZ = tag.getInteger("valveZ");
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+        valveX = tag.getInt("valveX");
+        valveY = tag.getInt("valveY");
+        valveZ = tag.getInt("valveZ");
         teValve = null;
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setInteger("valveX", valveX);
-        tag.setInteger("valveY", valveY);
-        tag.setInteger("valveZ", valveZ);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putInt("valveX", valveX);
+        tag.putInt("valveY", valveY);
+        tag.putInt("valveZ", valveZ);
         return tag;
     }
 
     @Override
-    public void printManometerMessage(EntityPlayer player, List<String> curInfo) {
+    public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
         if (getCore() != null) {
             teValve.getAirHandler(null).printManometerMessage(player, curInfo);
         }

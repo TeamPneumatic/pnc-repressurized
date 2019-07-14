@@ -2,6 +2,8 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -24,13 +26,13 @@ class EntityFilterPair {
         entityBlacklist = getFilter(widget, false);
     }
 
-    public static void addErrors(IProgWidget widget, List<String> errors) {
+    public static void addErrors(IProgWidget widget, List<ITextComponent> errors) {
         EntityFilterPair filter = new EntityFilterPair(widget);
         if (!filter.errorWhite.isEmpty()) {
-            errors.add("Invalid whitelist filter: " + filter.errorWhite);
+            errors.add(new StringTextComponent("Invalid whitelist filter: " + filter.errorWhite));
         }
         if (!filter.errorBlack.isEmpty()) {
-            errors.add("Invalid blacklist filter: " + filter.errorBlack);
+            errors.add(new StringTextComponent("Invalid blacklist filter: " + filter.errorBlack));
         }
     }
 

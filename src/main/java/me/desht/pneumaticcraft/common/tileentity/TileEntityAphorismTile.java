@@ -1,53 +1,64 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.nbt.NBTTagCompound;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 public class TileEntityAphorismTile extends TileEntityBase {
     private String[] textLines = new String[]{""};
 
     public int textRotation;
-    private int borderColor = EnumDyeColor.BLUE.getDyeDamage();
-    private int backgroundColor = EnumDyeColor.WHITE.getDyeDamage();
+    private int borderColor = DyeColor.BLUE.getId();
+    private int backgroundColor = DyeColor.WHITE.getId();
+
+    public TileEntityAphorismTile() {
+        super(ModTileEntityTypes.APHORISM_TILE);
+    }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
     }
 
     @Override
-    public void writeToPacket(NBTTagCompound tag) {
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
+    }
+
+    @Override
+    public void writeToPacket(CompoundNBT tag) {
         super.writeToPacket(tag);
-        tag.setInteger("lines", textLines.length);
+        tag.putInt("lines", textLines.length);
         for (int i = 0; i < textLines.length; i++) {
-            tag.setString("line" + i, textLines[i]);
+            tag.putString("line" + i, textLines[i]);
         }
-        tag.setInteger("textRot", textRotation);
-        tag.setInteger("border", borderColor);
-        tag.setInteger("background", backgroundColor);
+        tag.putInt("textRot", textRotation);
+        tag.putInt("border", borderColor);
+        tag.putInt("background", backgroundColor);
     }
 
     @Override
-    public void readFromPacket(NBTTagCompound tag) {
+    public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
-        int lines = tag.getInteger("lines");
+        int lines = tag.getInt("lines");
         textLines = new String[lines];
         for (int i = 0; i < lines; i++) {
             textLines[i] = tag.getString("line" + i);
         }
-        textRotation = tag.getInteger("textRot");
-        if (tag.hasKey("border")) {
-            borderColor = tag.getInteger("border");
-            backgroundColor = tag.getInteger("background");
+        textRotation = tag.getInt("textRot");
+        if (tag.contains("border")) {
+            borderColor = tag.getInt("border");
+            backgroundColor = tag.getInt("background");
         } else {
-            borderColor = EnumDyeColor.BLUE.getDyeDamage();
-            backgroundColor = EnumDyeColor.WHITE.getDyeDamage();
+            borderColor = DyeColor.BLUE.getId();
+            backgroundColor = DyeColor.WHITE.getId();
         }
         if (world != null) rerenderTileEntity();
     }

@@ -1,6 +1,6 @@
 {
   "parent" : "item/generated",
   "textures" : {
-    "layer0" : "pneumaticcraft:items/gun_ammo_ap"
+    "layer0" : "pneumaticcraft:item/gun_ammo_ap"
   }
 }

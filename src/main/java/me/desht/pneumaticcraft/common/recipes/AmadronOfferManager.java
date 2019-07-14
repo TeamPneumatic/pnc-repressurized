@@ -4,15 +4,14 @@ import me.desht.pneumaticcraft.common.config.AmadronOfferPeriodicConfig;
 import me.desht.pneumaticcraft.common.config.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.items.IItemHandler;
 
 import java.io.IOException;
@@ -28,7 +27,7 @@ public class AmadronOfferManager {
     private final LinkedHashSet<AmadronOffer> allOffers = new LinkedHashSet<>();
 
     public static AmadronOfferManager getInstance() {
-        return FMLCommonHandler.instance().getSide() == Side.SERVER ? SERVER_INSTANCE : CLIENT_INSTANCE;
+        return EffectiveSide.get() == LogicalSide.SERVER ? SERVER_INSTANCE : CLIENT_INSTANCE;
     }
 
     public Collection<AmadronOffer> getStaticOffers() {
@@ -86,7 +85,6 @@ public class AmadronOfferManager {
      * serialized in single-player instance.  While custom offers may seem pointless in a single-player world, this
      * also applies to 'open to lan' worlds.
      */
-    @SideOnly(Side.CLIENT)
     public void syncOffers(Collection<AmadronOffer> newStaticOffers, Collection<AmadronOffer> newSelectedPeriodicOffers) {
         staticOffers.clear();
         staticOffers.addAll(newStaticOffers);
@@ -141,13 +139,11 @@ public class AmadronOfferManager {
     }
 
     static IItemHandler getItemHandler(TileEntity te) {
-        return te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null) ?
-                te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null) : null;
+        return IOHelper.getInventoryForTE(te).map(handler -> handler).orElse(null);
     }
 
     static IFluidHandler getFluidHandler(TileEntity te) {
-        return te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null) ?
-                te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null) : null;
+        return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).map(handler -> handler).orElse(null);
     }
 
     public void shufflePeriodicOffers() {

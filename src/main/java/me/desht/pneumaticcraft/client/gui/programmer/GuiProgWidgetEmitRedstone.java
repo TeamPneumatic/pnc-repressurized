@@ -2,10 +2,9 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEmitRedstone;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidgetEmitRedstone> {
 
@@ -14,28 +13,22 @@ public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidge
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
-        for (int i = 0; i < 6; i++) {
-            String sideName = PneumaticCraftUtils.getOrientationName(EnumFacing.byIndex(i));
-            GuiCheckBox checkBox = new GuiCheckBox(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF404040, sideName);
-            checkBox.checked = widget.getSides()[i];
-            addWidget(checkBox);
+        for (Direction dir : Direction.VALUES) {
+            String sideName = PneumaticCraftUtils.getOrientationName(dir);
+            GuiCheckBox checkBox = new GuiCheckBox(guiLeft + 4, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
+                    b -> progWidget.getSides()[dir.getIndex()] = b.checked);
+            checkBox.checked = progWidget.getSides()[dir.getIndex()];
+            addButton(checkBox);
         }
     }
 
     @Override
-    public void actionPerformed(IGuiWidget checkBox) {
-        if (checkBox.getID() < 6 && checkBox.getID() >= 0) {
-            widget.getSides()[checkBox.getID()] = ((GuiCheckBox) checkBox).checked;
-        }
-        super.actionPerformed(checkBox);
-    }
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        super.render(mouseX, mouseY, partialTicks);
 
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        fontRenderer.drawString("Affecting sides:", guiLeft + 4, guiTop + 20, 0xFF604040);
+        font.drawString("Affecting sides:", guiLeft + 4, guiTop + 20, 0xFF604040);
     }
 }

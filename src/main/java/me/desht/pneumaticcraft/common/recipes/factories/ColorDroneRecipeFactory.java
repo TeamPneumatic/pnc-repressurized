@@ -2,11 +2,11 @@ package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.common.item.ItemDrone;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.ItemDye;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.IRecipeFactory;
@@ -31,7 +31,7 @@ public class ColorDroneRecipeFactory implements IRecipeFactory {
         }
 
         @Override
-        public boolean matches(InventoryCrafting inv, World world) {
+        public boolean matches(CraftingInventory inv, World world) {
             boolean hasDrone = false, hasDye = false;
             for (int i = 0; i < inv.getSizeInventory(); i++) {
                 ItemStack stack = inv.getStackInSlot(i);
@@ -48,7 +48,7 @@ public class ColorDroneRecipeFactory implements IRecipeFactory {
 
         @Nonnull
         @Override
-        public ItemStack getCraftingResult(InventoryCrafting inv) {
+        public ItemStack getCraftingResult(CraftingInventory inv) {
             ItemStack drone = ItemStack.EMPTY;
             int dyeIndex = -1;
             for (int i = 0; i < inv.getSizeInventory(); i++) {
@@ -61,12 +61,12 @@ public class ColorDroneRecipeFactory implements IRecipeFactory {
                     }
                 }
             }
-            NBTTagCompound droneTag = drone.getTagCompound();
+            CompoundNBT droneTag = drone.getTagCompound();
             if (droneTag == null) {
-                droneTag = new NBTTagCompound();
+                droneTag = new CompoundNBT();
                 drone.setTagCompound(droneTag);
             }
-            droneTag.setInteger("color", ItemDye.DYE_COLORS[dyeIndex]);
+            droneTag.setInteger("color", DyeItem.DYE_COLORS[dyeIndex]);
             return drone;
         }
     }

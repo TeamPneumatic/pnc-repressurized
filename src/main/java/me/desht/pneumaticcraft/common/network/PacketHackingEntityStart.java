@@ -1,15 +1,25 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
-public class PacketHackingEntityStart extends AbstractPacket<PacketHackingEntityStart> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: BOTH
+ * Sent by client when player initiates an entity hack, and by server to confirm initiation
+ */
+public class PacketHackingEntityStart {
     private int entityId;
 
     public PacketHackingEntityStart() {
@@ -19,36 +29,37 @@ public class PacketHackingEntityStart extends AbstractPacket<PacketHackingEntity
         entityId = entity.getEntityId();
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        entityId = buf.readInt();
+    public PacketHackingEntityStart(PacketBuffer buffer) {
+        entityId = buffer.readInt();
     }
 
-    @Override
     public void toBytes(ByteBuf buf) {
         buf.writeInt(entityId);
     }
 
-    @Override
-    public void handleClientSide(PacketHackingEntityStart message, EntityPlayer player) {
-        Entity entity = player.world.getEntityByID(message.entityId);
-        if (entity != null) {
-            CommonArmorHandler.getHandlerForPlayer(player).setHackedEntity(entity);
-            HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
-                    .filter(target -> target.entity == entity)
-                    .findFirst()
-                    .ifPresent(RenderEntityTarget::onHackConfirmServer);
-        }
-
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            if (player == null) {
+                // client
+                PlayerEntity cPlayer = PneumaticCraftRepressurized.proxy.getClientPlayer();
+                Entity entity = cPlayer.world.getEntityByID(entityId);
+                if (entity != null) {
+                    CommonArmorHandler.getHandlerForPlayer(cPlayer).setHackedEntity(entity);
+                    HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
+                            .filter(target -> target.entity == entity)
+                            .findFirst()
+                            .ifPresent(RenderEntityTarget::onHackConfirmServer);
+                }
+            } else {
+                // server
+                Entity entity = player.world.getEntityByID(entityId);
+                if (entity != null) {
+                    CommonArmorHandler.getHandlerForPlayer(player).setHackedEntity(entity);
+                    NetworkHandler.sendToAllAround(this, new PacketDistributor.TargetPoint(entity.posX, entity.posY, entity.posZ, 64, entity.world.getDimension().getType()));
+                }
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
-    @Override
-    public void handleServerSide(PacketHackingEntityStart message, EntityPlayer player) {
-        Entity entity = player.world.getEntityByID(message.entityId);
-        if (entity != null) {
-            CommonArmorHandler.getHandlerForPlayer(player).setHackedEntity(entity);
-            NetworkHandler.sendToAllAround(message, new NetworkRegistry.TargetPoint(entity.world.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 64));
-        }
-    }
-
 }

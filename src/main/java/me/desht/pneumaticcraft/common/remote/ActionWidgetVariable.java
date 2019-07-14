@@ -2,30 +2,30 @@ package me.desht.pneumaticcraft.common.remote;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteVariable;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.nbt.CompoundNBT;
 
-public abstract class ActionWidgetVariable<Widget extends IGuiWidget> extends ActionWidget<Widget> {
+public abstract class ActionWidgetVariable<W extends Widget> extends ActionWidget<W> {
     private String variableName = "";
 
-    public ActionWidgetVariable(Widget widget) {
+    ActionWidgetVariable(W widget) {
         super(widget);
     }
 
-    public ActionWidgetVariable() {
+    ActionWidgetVariable() {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag, int guiLeft, int guiTop) {
+    public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
         variableName = tag.getString("variableName");
     }
 
     @Override
-    public NBTTagCompound toNBT(int guiLeft, int guiTop) {
-        NBTTagCompound tag = super.toNBT(guiLeft, guiTop);
-        tag.setString("variableName", variableName);
+    public CompoundNBT toNBT(int guiLeft, int guiTop) {
+        CompoundNBT tag = super.toNBT(guiLeft, guiTop);
+        tag.putString("variableName", variableName);
         return tag;
     }
 
@@ -38,7 +38,7 @@ public abstract class ActionWidgetVariable<Widget extends IGuiWidget> extends Ac
     }
 
     @Override
-    public GuiScreen getGui(GuiRemoteEditor guiRemote) {
+    public Screen getGui(GuiRemoteEditor guiRemote) {
         return new GuiRemoteVariable(this, guiRemote);
     }
 

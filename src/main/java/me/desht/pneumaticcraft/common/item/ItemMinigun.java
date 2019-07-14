@@ -9,34 +9,42 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
-public class ItemMinigun extends ItemPressurizable implements IChargingStationGUIHolderItem, IUpgradeAcceptor, IFOVModifierItem, IInventoryItem {
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public class ItemMinigun extends ItemPressurizable implements IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem, IInventoryItem {
     private static final int MAGAZINE_SIZE = 4;
 
     private static Set<Item> applicableUpgrades;
@@ -58,7 +66,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
     }
 
     public ItemMinigun() {
-        super("minigun", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
+        super(DEFAULT_PROPS.setTEISR(() -> RenderItemMinigun::new), "minigun", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
 
     public static MagazineHandler getMagazine(ItemStack stack) {
@@ -69,9 +77,9 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
     }
 
     @Override
-    public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean currentItem) {
-        super.onUpdate(stack, world, entity, slot, currentItem);
-        EntityPlayer player = (EntityPlayer) entity;
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean currentItem) {
+        super.inventoryTick(stack, world, entity, slot, currentItem);
+        PlayerEntity player = (PlayerEntity) entity;
         Minigun minigun = getMinigun(stack, player);
         if (!currentItem) {
             minigun.setMinigunSoundCounter(-1);
@@ -103,9 +111,9 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
             boolean repaired = false;
             for (int i = 0; i < handler.getSlots() && p.getPressure(stack) > 0.1; i++) {
                 ItemStack ammo = handler.getStackInSlot(i);
-                if (ammo.getItem() instanceof ItemGunAmmo && ammo.getItemDamage() > 0) {
-                    if (world.getTotalWorldTime() % (475 - itemLife * 75) == 0) {
-                        ammo.setItemDamage(ammo.getItemDamage() - 1);
+                if (ammo.getItem() instanceof ItemGunAmmo && ammo.getDamage() > 0) {
+                    if (world.getGameTime() % (475 - itemLife * 75) == 0) {
+                        ammo.setDamage(ammo.getDamage() - 1);
                         p.addAir(stack, -(2 << itemLife));
                         repaired = true;
                     }
@@ -117,7 +125,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         }
     }
 
-    private Minigun getMinigun(ItemStack stack, EntityPlayer player, ItemStack ammo) {
+    private Minigun getMinigun(ItemStack stack, PlayerEntity player, ItemStack ammo) {
         return new MinigunItem()
                 .setItemStack(stack)
                 .setAmmoStack(ammo)
@@ -126,34 +134,44 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
                 .setWorld(player.world);
     }
 
-    public Minigun getMinigun(ItemStack stack, EntityPlayer player) {
+    public Minigun getMinigun(ItemStack stack, PlayerEntity player) {
         return getMinigun(stack, player, getMagazine(stack).getAmmo());
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn) {
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getHeldItem(handIn);
         if (!world.isRemote) {
             if (player.isSneaking()) {
-                player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.MINIGUN_MAGAZINE.ordinal(), world,
-                        (int) player.posX, (int) player.posY, (int) player.posZ);
+                NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
+                    @Override
+                    public ITextComponent getDisplayName() {
+                        return stack.getDisplayName();
+                    }
+
+                    @Nullable
+                    @Override
+                    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                        return new ContainerMinigunMagazine(i, playerInventory);
+                    }
+                });
             } else {
                 MagazineHandler magazineHandler = getMagazine(stack);
                 ItemStack ammo = magazineHandler.getAmmo();
                 if (!ammo.isEmpty()) {
-                    int prevDamage = ammo.getItemDamage();
+                    int prevDamage = ammo.getDamage();
                     boolean usedAmmo = getMinigun(stack, player, ammo).tryFireMinigun(null);
                     if (usedAmmo) ammo.setCount(0);
-                    if (usedAmmo || ammo.getItemDamage() != prevDamage) {
+                    if (usedAmmo || ammo.getDamage() != prevDamage) {
                         magazineHandler.save();
                     }
                 } else {
-                    NetworkHandler.sendTo(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 1.0f, false), (EntityPlayerMP) player);
-                    player.sendStatusMessage(new TextComponentTranslation("message.minigun.outOfAmmo"), true);
+                    NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 1.0f, false), (ServerPlayerEntity) player);
+                    player.sendStatusMessage(new TranslationTextComponent("message.minigun.outOfAmmo"), true);
                 }
             }
         }
-        return ActionResult.newResult(EnumActionResult.SUCCESS, stack);
+        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
 
     @Override
@@ -166,29 +184,24 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         if (applicableUpgrades == null) {
             IItemRegistry r = PneumaticRegistry.getInstance().getItemRegistry();
             applicableUpgrades = ImmutableSet.of(
-                    r.getUpgrade(EnumUpgrade.SPEED),
-                    r.getUpgrade(EnumUpgrade.RANGE),
-                    r.getUpgrade(EnumUpgrade.DISPENSER),
-                    r.getUpgrade(EnumUpgrade.ENTITY_TRACKER),
-                    r.getUpgrade(EnumUpgrade.ITEM_LIFE),
-                    r.getUpgrade(EnumUpgrade.SECURITY)
+                    EnumUpgrade.SPEED.getItem(),
+                    EnumUpgrade.RANGE.getItem(),
+                    EnumUpgrade.DISPENSER.getItem(),
+                    EnumUpgrade.ENTITY_TRACKER.getItem(),
+                    EnumUpgrade.ITEM_LIFE.getItem(),
+                    EnumUpgrade.SECURITY.getItem()
             );
         }
         return applicableUpgrades;
     }
 
     @Override
-    public String getName() {
-        return getTranslationKey() + ".name";
+    public String getUpgradeAcceptorTranslationKey() {
+        return getTranslationKey();
     }
 
     @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.MINIGUN_UPGRADES;
-    }
-
-    @Override
-    public float getFOVModifier(ItemStack stack, EntityPlayer player, EntityEquipmentSlot slot) {
+    public float getFOVModifier(ItemStack stack, PlayerEntity player, EquipmentSlotType slot) {
         Minigun minigun = getMinigun(stack, player);
         int trackers = minigun.getUpgrades(EnumUpgrade.ENTITY_TRACKER);
         if (!minigun.isMinigunActivated() || trackers == 0) return 1.0f;
@@ -206,8 +219,13 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
     }
 
     @Override
-    public String getInventoryHeader() {
-        return TextFormatting.GREEN + I18n.format("gui.tooltip.gunAmmo.loaded");
+    public ITextComponent getInventoryHeader() {
+        return xlate("gui.tooltip.gunAmmo.loaded").applyTextStyle(TextFormatting.GREEN);
+    }
+
+    @Override
+    public INamedContainerProvider getContainerProvider(TileEntityChargingStation te) {
+        return new IChargeableContainerProvider.Provider(te, ModContainerTypes.CHARGING_MINIGUN);
     }
 
     public static class MagazineHandler extends BaseItemStackHandler {
@@ -217,14 +235,9 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
             super(MAGAZINE_SIZE);
             this.gunStack = gunStack;
 
-            if (gunStack.hasTagCompound() && gunStack.getTagCompound().hasKey(NBT_MAGAZINE)) {
-                deserializeNBT(gunStack.getTagCompound().getCompoundTag(NBT_MAGAZINE));
+            if (gunStack.hasTag() && gunStack.getTag().contains(NBT_MAGAZINE)) {
+                deserializeNBT(gunStack.getTag().getCompound(NBT_MAGAZINE));
             }
-        }
-
-        public MagazineHandler() {
-            super(MAGAZINE_SIZE);
-            gunStack = ItemStack.EMPTY;
         }
 
         @Override
@@ -276,8 +289,8 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         @Override
         public void setAmmoColorStack(@Nonnull ItemStack ammo) {
             if (!ammo.isEmpty() ) {
-                NBTTagCompound tag = new NBTTagCompound();
-                ammo.writeToNBT(tag);
+                CompoundNBT tag = new CompoundNBT();
+                ammo.write(tag);
                 NBTUtil.setCompoundTag(minigunStack, "ammoColorStack", tag);
             } else {
                 NBTUtil.removeTag(minigunStack, "ammoColorStack");
@@ -288,8 +301,8 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         public int getAmmoColor() {
             ItemStack ammo = ItemStack.EMPTY;
             if (NBTUtil.hasTag(minigunStack, "ammoColorStack")) {
-                NBTTagCompound tag = NBTUtil.getCompoundTag(minigunStack, "ammoColorStack");
-                ammo = new ItemStack(tag);
+                CompoundNBT tag = NBTUtil.getCompoundTag(minigunStack, "ammoColorStack");
+                ammo = ItemStack.read(tag);
             }
             return getAmmoColor(ammo);
         }
@@ -365,5 +378,4 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
             return Math.min(MAX_UPGRADES[upgrade.ordinal()], upgrades[upgrade.ordinal()]);
         }
     }
-
 }

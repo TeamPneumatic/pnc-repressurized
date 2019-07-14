@@ -6,20 +6,22 @@ import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.block.tubes.IInfluenceDispersing;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
@@ -33,22 +35,22 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public TubeModule[] modules = new TubeModule[6];
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;
-    private IBlockState camoState;
+    private BlockState camoState;
     private AxisAlignedBB renderBoundingBox = null;
 
     public TileEntityPressureTube() {
-        super(PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
+        this(ModTileEntityTypes.PRESSURE_TUBE, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
     }
 
-    public TileEntityPressureTube(float dangerPressurePressureTube, float maxPressurePressureTube, int volumePressureTube) {
-        super(dangerPressurePressureTube, maxPressurePressureTube, volumePressureTube, 0);
+    TileEntityPressureTube(TileEntityType type, float dangerPressurePressureTube, float maxPressurePressureTube, int volumePressureTube, int upgradeSlots) {
+        super(type, dangerPressurePressureTube, maxPressurePressureTube, volumePressureTube, upgradeSlots);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
+    public void read(CompoundNBT nbt) {
+        super.read(nbt);
 
-        if (nbt.hasKey("sidesConnected")) {
+        if (nbt.contains("sidesConnected")) {
             // new-style: far more compact storage
             byte connected = nbt.getByte("sidesConnected");
             byte closed = nbt.getByte("sidesClosed");
@@ -68,51 +70,51 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
+    public CompoundNBT write(CompoundNBT nbt) {
+        super.write(nbt);
 
         byte connected = 0, closed = 0;
         for (int i = 0; i < 6; i++) {
             if (sidesConnected[i]) connected |= 1 << i;
             if (sidesClosed[i]) closed |= 1 << i;
         }
-        nbt.setByte("sidesConnected", connected);
-        nbt.setByte("sidesClosed", closed);
+        nbt.putByte("sidesConnected", connected);
+        nbt.putByte("sidesClosed", closed);
         ICamouflageableTE.writeCamoStackToNBT(camoStack, nbt);
         return nbt;
     }
 
     @Override
-    public void writeToPacket(NBTTagCompound tag) {
+    public void writeToPacket(CompoundNBT tag) {
         super.writeToPacket(tag);
         writeModulesToNBT(tag);
     }
 
-    public void writeModulesToNBT(NBTTagCompound tag) {
-        NBTTagList moduleList = new NBTTagList();
+    public void writeModulesToNBT(CompoundNBT tag) {
+        ListNBT moduleList = new ListNBT();
         for (int i = 0; i < modules.length; i++) {
             if (modules[i] != null) {
-                NBTTagCompound moduleTag = new NBTTagCompound();
-                moduleTag.setString("type", modules[i].getType());
+                CompoundNBT moduleTag = new CompoundNBT();
+                moduleTag.putString("type", modules[i].getType());
                 modules[i].writeToNBT(moduleTag);
-                moduleTag.setInteger("side", i);
-                moduleList.appendTag(moduleTag);
+                moduleTag.putInt("side", i);
+                moduleList.add(moduleTag);
             }
         }
-        tag.setTag("modules", moduleList);
+        tag.put("modules", moduleList);
     }
 
     @Override
-    public void readFromPacket(NBTTagCompound tag) {
+    public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
         modules = new TubeModule[6];
-        NBTTagList moduleList = tag.getTagList("modules", 10);
-        for (int i = 0; i < moduleList.tagCount(); i++) {
-            NBTTagCompound moduleTag = moduleList.getCompoundTagAt(i);
+        ListNBT moduleList = tag.getList("modules", 10);
+        for (int i = 0; i < moduleList.size(); i++) {
+            CompoundNBT moduleTag = moduleList.getCompound(i);
             TubeModule module = ModuleRegistrator.getModule(moduleTag.getString("type"));
             if (module != null) {
                 module.readFromNBT(moduleTag);
-                setModule(module, EnumFacing.byIndex(moduleTag.getInteger("side")));
+                setModule(module, Direction.byIndex(moduleTag.getInt("side")));
             }
         }
         updateRenderBoundingBox();
@@ -132,8 +134,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
         boolean hasModules = false;
         for (TubeModule module : modules) {
@@ -144,18 +146,18 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             }
         }
 
-        List<Pair<EnumFacing, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
+        List<Pair<Direction, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
 
         if (!hasModules && teList.size() == 1 && !getWorld().isRemote) {
-            for (Pair<EnumFacing, IAirHandler> entry : teList) {
-                if (entry.getKey() != null && modules[entry.getKey().getOpposite().ordinal()] == null && isConnectedTo(entry.getKey().getOpposite()))
+            for (Pair<Direction, IAirHandler> entry : teList) {
+                if (entry.getKey() != null && modules[entry.getKey().getOpposite().ordinal()] == null && canConnectTo(entry.getKey().getOpposite()))
                     getAirHandler(null).airLeak(entry.getKey().getOpposite());
             }
         }
     }
 
     @Override
-    public void onAirDispersion(IAirHandler handler, EnumFacing side, int amount) {
+    public void onAirDispersion(IAirHandler handler, Direction side, int amount) {
         if (side != null) {
             int intSide = side.ordinal();
             if (modules[intSide] instanceof IInfluenceDispersing) {
@@ -165,7 +167,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public int getMaxDispersion(IAirHandler handler, EnumFacing side) {
+    public int getMaxDispersion(IAirHandler handler, Direction side) {
         if (side != null) {
             int intSide = side.ordinal();
             if (modules[intSide] instanceof IInfluenceDispersing) {
@@ -176,10 +178,10 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public void addConnectedPneumatics(List<Pair<EnumFacing, IAirHandler>> pneumatics) {
+    public void addConnectedPneumatics(List<Pair<Direction, IAirHandler>> pneumatics) {
     }
 
-    public void setModule(TubeModule module, EnumFacing side) {
+    public void setModule(TubeModule module, Direction side) {
         if (module != null) {
             module.setDirection(side);
             module.setTube(this);
@@ -192,7 +194,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public boolean isConnectedTo(EnumFacing side) {
+    public boolean canConnectTo(Direction side) {
         return !sidesClosed[side.ordinal()]
                 && (modules[side.ordinal()] == null || modules[side.ordinal()].isInline());
     }
@@ -215,10 +217,15 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         }
     }
 
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
+    }
+
     private void updateConnections() {
-        List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
+        List<Pair<Direction, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);
-        for (Pair<EnumFacing, IAirHandler> entry : connections) {
+        for (Pair<Direction, IAirHandler> entry : connections) {
             sidesConnected[entry.getKey().ordinal()] = true;
         }
 
@@ -237,8 +244,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         if (sidesCount == 1 && !hasModule) {
             for (int i = 0; i < 6; i++) {
                 if (sidesConnected[i]) {
-                    EnumFacing opposite = EnumFacing.byIndex(i).getOpposite();
-                    if (isConnectedTo(opposite)) sidesConnected[opposite.ordinal()] = true;
+                    Direction opposite = Direction.byIndex(i).getOpposite();
+                    if (canConnectTo(opposite)) sidesConnected[opposite.ordinal()] = true;
                     break;
                 }
             }
@@ -249,16 +256,15 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         return renderBoundingBox != null ? renderBoundingBox : new AxisAlignedBB(getPos());
     }
 
     @Override
-    public void printManometerMessage(EntityPlayer player, List<String> text) {
+    public void printManometerMessage(PlayerEntity player, List<ITextComponent> text) {
         RayTraceResult mop = PneumaticCraftUtils.getEntityLookedObject(player);
-        if (mop != null && mop.hitInfo instanceof EnumFacing) {
-            EnumFacing dir = (EnumFacing) mop.hitInfo;
+        if (mop != null && mop.hitInfo instanceof Direction) {
+            Direction dir = (Direction) mop.hitInfo;
             if (modules[dir.ordinal()] != null) {
                 modules[dir.ordinal()].addInfo(text);
             }
@@ -266,12 +272,12 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public IBlockState getCamouflage() {
+    public BlockState getCamouflage() {
         return camoState;
     }
 
     @Override
-    public void setCamouflage(IBlockState state) {
+    public void setCamouflage(BlockState state) {
         camoState = state;
         camoStack = ICamouflageableTE.getStackForState(state);
         sendDescriptionPacket();

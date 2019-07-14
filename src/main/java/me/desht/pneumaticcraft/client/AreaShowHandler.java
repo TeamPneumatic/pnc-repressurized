@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
@@ -30,10 +30,10 @@ public class AreaShowHandler {
     }
 
     private int compileRenderList() {
-        int renderList = GlStateManager.glGenLists(1);
-        GlStateManager.glNewList(renderList, GL11.GL_COMPILE);
+        int renderList = GlStateManager.genLists(1);
+        GlStateManager.newList(renderList, GL11.GL_COMPILE);
 
-        if(disableDepthTest) GlStateManager.disableDepth();
+        if(disableDepthTest) GlStateManager.disableDepthTest();
         
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         RenderUtils.glColorHex(color);
@@ -117,9 +117,9 @@ public class AreaShowHandler {
         wr.setTranslation(0, 0, 0);
         Tessellator.getInstance().draw();
         
-        if(disableDepthTest) GlStateManager.enableDepth();
+        if(disableDepthTest) GlStateManager.enableDepthTest();
         
-        GlStateManager.glEndList();
+        GlStateManager.endList();
         return renderList;
     }
 

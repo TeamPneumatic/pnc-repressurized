@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.util;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -9,43 +8,37 @@ import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.monster.ZombieEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.WalkNodeProcessor;
+import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.ChunkCache;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.oredict.OreDictionary;
-import org.apache.commons.lang3.text.WordUtils;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -56,10 +49,18 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PneumaticCraftUtils {
     private static final List<Item> inventoryItemBlacklist = new ArrayList<>();
+
+    public static final StringTextComponent BULLET = new StringTextComponent("\u2022 ");
+
+    // this may return to Direction.HORIZONTALS one day (like in 1.12.2) but for now...
+    public static final Direction[] HORIZONTALS = new Direction[] {
+            Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST
+    };
 
     /**
      * Returns the EnumFacing of the given entity.
@@ -68,20 +69,20 @@ public class PneumaticCraftUtils {
      * @param includeUpAndDown false when UP/DOWN should not be included.
      * @return the entity's facing direction
      */
-    public static EnumFacing getDirectionFacing(EntityLivingBase entity, boolean includeUpAndDown) {
+    public static Direction getDirectionFacing(LivingEntity entity, boolean includeUpAndDown) {
         double yaw = entity.rotationYaw;
         while (yaw < 0)
             yaw += 360;
         yaw = yaw % 360;
         if (includeUpAndDown) {
-            if (entity.rotationPitch > 45) return EnumFacing.DOWN;
-            else if (entity.rotationPitch < -45) return EnumFacing.UP;
+            if (entity.rotationPitch > 45) return Direction.DOWN;
+            else if (entity.rotationPitch < -45) return Direction.UP;
         }
-        if (yaw < 45) return EnumFacing.SOUTH;
-        else if (yaw < 135) return EnumFacing.WEST;
-        else if (yaw < 225) return EnumFacing.NORTH;
-        else if (yaw < 315) return EnumFacing.EAST;
-        else return EnumFacing.SOUTH;
+        if (yaw < 45) return Direction.SOUTH;
+        else if (yaw < 135) return Direction.WEST;
+        else if (yaw < 225) return Direction.NORTH;
+        else if (yaw < 315) return Direction.EAST;
+        else return Direction.SOUTH;
     }
 
     /**
@@ -90,7 +91,7 @@ public class PneumaticCraftUtils {
      * @param facing the facing direction
      * @return the yaw angle
      */
-    public static int getYawFromFacing(EnumFacing facing) {
+    public static int getYawFromFacing(Direction facing) {
         switch (facing) {
             case NORTH:
                 return 180;
@@ -163,6 +164,10 @@ public class PneumaticCraftUtils {
         }
         textList.add(output.toString());
         return textList;
+    }
+
+    public static List<ITextComponent> asStringComponent(List<String> l) {
+        return l.stream().map(StringTextComponent::new).collect(Collectors.toList());
     }
 
     /**
@@ -255,7 +260,7 @@ public class PneumaticCraftUtils {
         int i = begin - 1;
 
         for (int j = begin; j < end; j++) {
-            if (arr[j].getDisplayName().compareToIgnoreCase(pivot.getDisplayName()) <= 0) {
+            if (arr[j].getDisplayName().toString().compareToIgnoreCase(pivot.getDisplayName().toString()) <= 0) {
                 i++;
 
                 ItemStack swapTemp = arr[i];
@@ -278,7 +283,7 @@ public class PneumaticCraftUtils {
      * @param textList string list to add information to
      * @param originalStacks array of item stacks to sort & combine
      */
-    public static void sortCombineItemStacksAndToString(List<String> textList, ItemStack[] originalStacks) {
+    public static void sortCombineItemStacksAndToString(List<ITextComponent> textList, ItemStack[] originalStacks) {
         sortCombineItemStacksAndToString(textList, originalStacks, "\u2022 ");
     }
 
@@ -290,7 +295,7 @@ public class PneumaticCraftUtils {
      * @param originalStacks array of item stacks to sort & combine
      * @param prefix prefix string to prepend to each line of output
      */
-    public static void sortCombineItemStacksAndToString(List<String> textList, ItemStack[] originalStacks, String prefix) {
+    public static void sortCombineItemStacksAndToString(List<ITextComponent> textList, ItemStack[] originalStacks, String prefix) {
         ItemStack[] stacks = Arrays.copyOf(originalStacks, originalStacks.length);
         quickSort(stacks, 0, stacks.length - 1);
 
@@ -301,7 +306,7 @@ public class PneumaticCraftUtils {
             if (!stack.isEmpty()) {
                 if (!stack.isItemEqual(prevItemStack) || prevInventoryItems != null && prevInventoryItems.size() > 0) {
                     if (!prevItemStack.isEmpty()) {
-                        textList.add(prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName());
+                        addText(textList, prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName());
                     }
                     if (prevInventoryItems != null) {
                         sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), "\u21b3 ");
@@ -315,7 +320,7 @@ public class PneumaticCraftUtils {
             }
         }
         if (itemCount > 0 && !prevItemStack.isEmpty()) {
-            textList.add(prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName());
+            addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName());
             if (prevInventoryItems != null) {
                 sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), "\u21b3 ");
             }
@@ -395,7 +400,7 @@ public class PneumaticCraftUtils {
      * @param placementRange true when trying to place a block, false when trying to interact with a block
      * @return the number of security stations preventing access
      */
-    public static int getProtectingSecurityStations(World world, BlockPos pos, EntityPlayer player, boolean showRangeLines, boolean placementRange) {
+    public static int getProtectingSecurityStations(World world, BlockPos pos, PlayerEntity player, boolean showRangeLines, boolean placementRange) {
         int blockingStations = 0;
         Iterator<TileEntitySecurityStation> iterator = getSecurityStations(world, pos, placementRange).iterator();
         for (TileEntitySecurityStation station; iterator.hasNext();) {
@@ -416,53 +421,45 @@ public class PneumaticCraftUtils {
     
     private static boolean isValidAndInRange(BlockPos pos, boolean placementRange, TileEntitySecurityStation station){
         if (station.hasValidNetwork()) {
-            AxisAlignedBB aabb = station.getAffectingAABB();
+            AxisAlignedBB aabb = station.getAffectedBoundingBox();
             if(placementRange) aabb = aabb.grow(16);
             return aabb.contains(new Vec3d(pos));
         }
         return false;
     }
 
-    public static RayTraceResult getEntityLookedObject(EntityLivingBase entity) {
+    public static RayTraceResult getEntityLookedObject(LivingEntity entity) {
         return getEntityLookedObject(entity, 4.5F);
     }
 
-    public static RayTraceResult getEntityLookedObject(EntityLivingBase entity, float maxDistance) {
+    public static RayTraceResult getEntityLookedObject(LivingEntity entity, float maxDistance) {
         Pair<Vec3d, Vec3d> vecs = getStartAndEndLookVec(entity, maxDistance);
-        return entity.world.rayTraceBlocks(vecs.getLeft(), vecs.getRight());
+        RayTraceContext ctx = new RayTraceContext(vecs.getLeft(), vecs.getRight(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
+        return entity.world.rayTraceBlocks(ctx);
     }
 
-    public static Pair<Vec3d, Vec3d> getStartAndEndLookVec(EntityLivingBase entity) {
+    public static Pair<Vec3d, Vec3d> getStartAndEndLookVec(LivingEntity entity) {
         return getStartAndEndLookVec(entity, 4.5F);
     }
 
-    public static Pair<Vec3d, Vec3d> getStartAndEndLookVec(EntityLivingBase entity, float maxDistance) {
+    public static Pair<Vec3d, Vec3d> getStartAndEndLookVec(LivingEntity entity, float maxDistance) {
         Vec3d entityVec;
-        if (entity.world.isRemote && entity instanceof EntityPlayer) {
+        if (entity.world.isRemote && entity instanceof PlayerEntity) {
             entityVec = new Vec3d(entity.posX, entity.posY + 1.6200000000000001D, entity.posZ);
         } else {
             entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight() - (entity.isSneaking() ? 0.08 : 0), entity.posZ);
         }
         Vec3d entityLookVec = entity.getLook(1.0F);
-        Vec3d maxDistVec = entityVec.add(entityLookVec.x * maxDistance, entityLookVec.y * maxDistance, entityLookVec.z * maxDistance);
+        Vec3d maxDistVec = entityVec.add(entityLookVec.scale(maxDistance));
         return new ImmutablePair<>(entityVec, maxDistVec);
     }
 
-    public static BlockPos getEntityLookedBlock(EntityLivingBase entity, float maxDistance) {
+    public static BlockPos getEntityLookedBlock(LivingEntity entity, float maxDistance) {
         RayTraceResult hit = getEntityLookedObject(entity, maxDistance);
-        if (hit == null || hit.typeOfHit != RayTraceResult.Type.BLOCK) {
+        if (hit.getType() != RayTraceResult.Type.BLOCK) {
             return null;
         }
-        return hit.getBlockPos();
-    }
-
-    @Nonnull
-    public static ItemStack exportStackToInventory(ICapabilityProvider provider, ItemStack stack, EnumFacing side) {
-        if (provider.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)) {
-            IItemHandler handler = provider.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
-            return ItemHandlerHelper.insertItem(handler, stack, false);
-        }
-        return stack;
+        return ((BlockRayTraceResult) hit).getPos();
     }
 
     public static double distBetween(double x1, double y1, double z1, double x2, double y2, double z2) {
@@ -505,7 +502,7 @@ public class PneumaticCraftUtils {
         return distBetween(vec1, vec2.x, vec2.y, vec2.z);
     }
 
-    public static boolean areStacksEqual(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2, boolean checkMeta, boolean checkNBT, boolean checkOreDict, boolean checkModSimilarity) {
+    public static boolean areStacksEqual(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2, boolean checkMeta, boolean checkNBT, boolean checkItemTags, boolean checkModSimilarity) {
         if (stack1.isEmpty() && stack2.isEmpty()) return true;
         if (stack1.isEmpty() || stack2.isEmpty()) return false;
 
@@ -514,36 +511,38 @@ public class PneumaticCraftUtils {
             String mod2 = stack2.getItem().getRegistryName().getNamespace();
             return mod1.equals(mod2);
         }
-        if (checkOreDict) {
-            return isSameOreDictStack(stack1, stack2);
+        if (checkItemTags) {
+            return ItemTagMatcher.matchTags(stack1, stack2);
         }
 
         if (stack1.getItem() != stack2.getItem()) return false;
 
-        boolean metaOK = !checkMeta || (stack1.getItemDamage() == stack2.getItemDamage());
-        boolean nbtOK = !checkNBT || (stack1.hasTagCompound() ? stack1.getTagCompound().equals(stack2.getTagCompound()) : !stack2.hasTagCompound());
+        boolean metaOK = !checkMeta || (stack1.getDamage() == stack2.getDamage());
+        boolean nbtOK = !checkNBT || (stack1.hasTag() ? stack1.getTag().equals(stack2.getTag()) : !stack2.hasTag());
 
         return metaOK && nbtOK;
     }
 
-    public static boolean isSameOreDictStack(ItemStack stack1, ItemStack stack2) {
-        int[] oredictIds = OreDictionary.getOreIDs(stack1);
-        for (int oredictId : oredictIds) {
-            List<ItemStack> oreDictStacks = OreDictionary.getOres(OreDictionary.getOreName(oredictId));
-            for (ItemStack oreDictStack : oreDictStacks) {
-                if (OreDictionary.itemMatches(oreDictStack, stack2, false)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+//    public static boolean isSameOreDictStack(ItemStack stack1, ItemStack stack2) {
+//        int[] oredictIds = OreDictionary.getOreIDs(stack1);
+//        for (int oredictId : oredictIds) {
+//            List<ItemStack> oreDictStacks = OreDictionary.getOres(OreDictionary.getOreName(oredictId));
+//            for (ItemStack oreDictStack : oreDictStacks) {
+//                if (OreDictionary.itemMatches(oreDictStack, stack2, false)) {
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
+    // TODO 1.14 fluids
     public static boolean isBlockLiquid(Block block) {
-        return block instanceof BlockLiquid || block instanceof IFluidBlock;
+        return false;
+//        return block instanceof BlockLiquid || block instanceof IFluidBlock;
     }
 
-    public static String getOrientationName(EnumFacing dir) {
+    public static String getOrientationName(Direction dir) {
         switch (dir) {
             case UP:
                 return "Top";
@@ -571,70 +570,67 @@ public class PneumaticCraftUtils {
         float dY = world.rand.nextFloat() * 0.8F + 0.1F;
         float dZ = world.rand.nextFloat() * 0.8F + 0.1F;
 
-        EntityItem entityItem = new EntityItem(world, x + dX, y + dY, z + dZ, new ItemStack(stack.getItem(), stack.getCount(), stack.getItemDamage()));
+        ItemEntity entityItem = new ItemEntity(world, x + dX, y + dY, z + dZ, stack.copy());
 
-        if (stack.hasTagCompound()) {
-            entityItem.getItem().setTagCompound(stack.getTagCompound().copy());
+        if (stack.hasTag()) {
+            entityItem.getItem().setTag(stack.getTag().copy());
         }
 
         float factor = 0.05F;
-        entityItem.motionX = world.rand.nextGaussian() * factor;
-        entityItem.motionY = world.rand.nextGaussian() * factor + 0.2F;
-        entityItem.motionZ = world.rand.nextGaussian() * factor;
-        world.spawnEntity(entityItem);
+        entityItem.setMotion(world.rand.nextGaussian() * factor, world.rand.nextGaussian() * factor + 0.2, world.rand.nextGaussian() * factor);
+        world.addEntity(entityItem);
         stack.setCount(0);
     }
 
     public static void dropItemOnGroundPrecisely(ItemStack stack, World world, double x, double y, double z) {
-        EntityItem entityItem = new EntityItem(world, x, y, z, new ItemStack(stack.getItem(), stack.getCount(), stack.getItemDamage()));
+        ItemEntity entityItem = new ItemEntity(world, x, y, z, stack.copy());
 
-        if (stack.hasTagCompound()) {
-            entityItem.getItem().setTagCompound(stack.getTagCompound().copy());
+        if (stack.hasTag()) {
+            entityItem.getItem().setTag(stack.getTag().copy());
         }
-        entityItem.motionX = 0;
-        entityItem.motionY = 0;
-        entityItem.motionZ = 0;
-        world.spawnEntity(entityItem);
+        entityItem.setMotion(0, 0, 0);
+        world.addEntity(entityItem);
         stack.setCount(0);
     }
 
-    public static TileEntity getTileEntity(BlockPos pos, int dimension) {
-        World world = DimensionManager.getWorld(dimension);
-        if (world != null && world.isBlockLoaded(pos)) {
-            return world.getTileEntity(pos);
+    public static TileEntity getTileEntity(GlobalPos globalPos) {
+        World world = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), globalPos.getDimension(), false, false);
+        if (world != null && world.isAreaLoaded(globalPos.getPos(), 1)) {
+            return world.getTileEntity(globalPos.getPos());
         }
         return null;
     }
 
-    public static EntityPlayer getPlayerFromId(String uuid) {
-        return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(UUID.fromString(uuid));
+    public static PlayerEntity getPlayerFromId(String uuid) {
+        return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(UUID.fromString(uuid));
     }
 
-    public static EntityPlayer getPlayerFromId(UUID uuid) {
-        return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(uuid);
+    public static PlayerEntity getPlayerFromId(UUID uuid) {
+        return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(uuid);
     }
 
-    public static EntityPlayer getPlayerFromName(String name) {
-        return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(name);
+    public static PlayerEntity getPlayerFromName(String name) {
+        return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(name);
     }
 
-    public static boolean isPlayerOp(EntityPlayer player) {
-        return player.canUseCommand(2, "PneumaticCraftIsPlayerOp");
+    public static boolean isPlayerOp(PlayerEntity player) {
+        return player.hasPermissionLevel(2);
     }
 
-    private static RayTraceResult raytraceEntityBlocks(EntityLivingBase entity, double range) {
+    private static RayTraceResult raytraceEntityBlocks(LivingEntity entity, double range) {
         Pair<Vec3d, Vec3d> startAndEnd = getStartAndEndLookVec(entity, (float) range);
-        return entity.world.rayTraceBlocks(startAndEnd.getLeft(), startAndEnd.getRight(), false, false, true);
+        RayTraceContext ctx = new RayTraceContext(startAndEnd.getLeft(), startAndEnd.getRight(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
+        return entity.world.rayTraceBlocks(ctx);
     }
 
-    public static RayTraceResult getMouseOverServer(EntityLivingBase lookingEntity, double range) {
+    public static RayTraceResult getMouseOverServer(LivingEntity lookingEntity, double range) {
         RayTraceResult result = raytraceEntityBlocks(lookingEntity, range);
         double rangeSq = range * range;
         Pair<Vec3d, Vec3d> startAndEnd = getStartAndEndLookVec(lookingEntity, (float) range);
         Vec3d eyePos = startAndEnd.getLeft();
 
-        if (result != null) {
-            rangeSq = result.hitVec.squareDistanceTo(eyePos);
+        if (result.getType() != RayTraceResult.Type.MISS) {
+            rangeSq = result.getHitVec().squareDistanceTo(eyePos);
         }
 
         double rangeSq2 = rangeSq;
@@ -642,30 +638,30 @@ public class PneumaticCraftUtils {
         Entity focusedEntity = null;
 
         Vec3d lookVec = lookingEntity.getLookVec().scale(range + 1);
-        AxisAlignedBB box = lookingEntity.getEntityBoundingBox().grow(lookVec.x, lookVec.y, lookVec.z);
+        AxisAlignedBB box = lookingEntity.getBoundingBox().grow(lookVec.x, lookVec.y, lookVec.z);
 
         for (Entity entity : lookingEntity.world.getEntitiesInAABBexcluding(lookingEntity, box, Entity::canBeCollidedWith)) {
-            AxisAlignedBB aabb = entity.getEntityBoundingBox().grow(entity.getCollisionBorderSize());
-            RayTraceResult rtr = aabb.calculateIntercept(eyePos, startAndEnd.getRight());
+            AxisAlignedBB aabb = entity.getBoundingBox().grow(entity.getCollisionBorderSize());
+            Optional<Vec3d> vec = aabb.rayTrace(eyePos, startAndEnd.getRight());
 
             if (aabb.contains(eyePos)) {
                 if (rangeSq2 >= 0.0D) {
                     focusedEntity = entity;
-                    hitVec = rtr == null ? eyePos : rtr.hitVec;
+                    hitVec = vec.orElse(eyePos);
                     rangeSq2 = 0.0D;
                 }
-            } else if (rtr != null) {
-                double rangeSq3 = eyePos.squareDistanceTo(rtr.hitVec);
+            } else if (vec.isPresent()) {
+                double rangeSq3 = eyePos.squareDistanceTo(vec.get());
 
                 if (rangeSq3 < rangeSq2 || rangeSq2 == 0.0D) {
                     if (entity == entity.getRidingEntity() && !entity.canRiderInteract()) {
                         if (rangeSq2 == 0.0D) {
                             focusedEntity = entity;
-                            hitVec = rtr.hitVec;
+                            hitVec = vec.get();
                         }
                     } else {
                         focusedEntity = entity;
-                        hitVec = rtr.hitVec;
+                        hitVec = vec.get();
                         rangeSq2 = rangeSq3;
                     }
                 }
@@ -673,7 +669,7 @@ public class PneumaticCraftUtils {
         }
 
         if (focusedEntity != null && (rangeSq2 < rangeSq || result == null)) {
-            result = new RayTraceResult(focusedEntity, hitVec);
+            result = new EntityRayTraceResult(focusedEntity, hitVec);
         }
         return result;
     }
@@ -681,7 +677,7 @@ public class PneumaticCraftUtils {
     public static PathFinder getPathFinder() {
         WalkNodeProcessor processor = new WalkNodeProcessor();
         processor.setCanEnterDoors(true);
-        return new PathFinder(processor);
+        return new PathFinder(processor, CoordTrackUpgradeHandler.SEARCH_RANGE * 16);
     }
 
     /**
@@ -694,10 +690,9 @@ public class PneumaticCraftUtils {
      * @param newState the blockstate to change the position to
      * @return true if the block could be placed, false otherwise
      */
-    public static boolean tryPlaceBlock(World w, BlockPos pos, EntityPlayer player, EnumFacing face, IBlockState newState) {
+    public static boolean tryPlaceBlock(World w, BlockPos pos, PlayerEntity player, Direction face, BlockState newState) {
         BlockSnapshot snapshot = BlockSnapshot.getBlockSnapshot(w, pos);
-        BlockEvent.PlaceEvent event = ForgeEventFactory.onPlayerBlockPlace(player, snapshot, face, EnumHand.MAIN_HAND);
-        if (!event.isCanceled()) {
+        if (!ForgeEventFactory.onBlockPlace(player, snapshot, face)) {
             w.setBlockState(pos, newState);
             return true;
         }
@@ -712,12 +707,12 @@ public class PneumaticCraftUtils {
      * @param player the player to mimic
      * @return a dummy player-sized living entity
      */
-    public static EntityLiving createDummyEntity(EntityPlayer player) {
-        EntityZombie dummy = new EntityZombie(player.world) {
+    public static MobEntity createDummyEntity(PlayerEntity player) {
+        ZombieEntity dummy = new ZombieEntity(player.world) {
             @Override
-            protected void applyEntityAttributes() {
-                super.applyEntityAttributes();
-                this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(CoordTrackUpgradeHandler.SEARCH_RANGE);
+            protected void registerAttributes() {
+                super.registerAttributes();
+                this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(CoordTrackUpgradeHandler.SEARCH_RANGE);
             }
         };
         dummy.setPosition(player.posX, player.posY, player.posZ);
@@ -731,7 +726,7 @@ public class PneumaticCraftUtils {
      * @param item item to consume
      * @return true if an item was consumed
      */
-    public static boolean consumeInventoryItem(InventoryPlayer inv, Item item) {
+    public static boolean consumeInventoryItem(PlayerInventory inv, Item item) {
         for (int i = 0; i < inv.mainInventory.size(); ++i) {
             if (inv.mainInventory.get(i).getItem() == item) {
                 inv.mainInventory.get(i).shrink(1);
@@ -744,32 +739,40 @@ public class PneumaticCraftUtils {
         return false;
     }
 
-    public static boolean consumeInventoryItem(InventoryPlayer inv, ItemStack item) {
+    /**
+     * Convenience method, ported from 1.8.  Try to consume one item from the player's inventory.
+     *
+     * @param inv player's inventory
+     * @param stack item to consume
+     * @return true if an item was consumed
+     */
+    public static boolean consumeInventoryItem(PlayerInventory inv, ItemStack stack) {
+        int toConsume = stack.getCount();
         for (int i = 0; i < inv.mainInventory.size(); ++i) {
-            if (ItemStack.areItemsEqual(inv.mainInventory.get(i), item)) {
-                inv.mainInventory.get(i).shrink(1);
-                if (inv.mainInventory.get(i).getCount() <= 0) {
-                    inv.mainInventory.set(i, ItemStack.EMPTY);
-                }
-                return true;
+            ItemStack invStack = inv.mainInventory.get(i);
+            if (ItemStack.areItemsEqual(invStack, stack)) {
+                int consumed = Math.min(invStack.getCount(), stack.getCount());
+                invStack.shrink(consumed);
+                toConsume -= consumed;
+                if (toConsume <= 0) return true;
             }
         }
-        return false;
+        return toConsume <= 0;
     }
 
-    /**
-     * Gets a tile entity without risking creation of a new one, which can cause all sorts of problems if called
-     * from Block#getActualState or Block#getExtendedState
-     *
-     * @param world the world
-     * @param pos the block position
-     * @return the tile entity, or null if there is none
-     */
-    public static TileEntity getTileEntitySafely(IBlockAccess world, BlockPos pos) {
-        return world instanceof ChunkCache ?
-                ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) :
-                world.getTileEntity(pos);
-    }
+//    /**
+//     * Gets a tile entity without risking creation of a new one, which can cause all sorts of problems if called
+//     * from Block#getActualState or Block#getExtendedState
+//     *
+//     * @param world the world
+//     * @param pos the block position
+//     * @return the tile entity, or null if there is none
+//     */
+//    public static TileEntity getTileEntitySafely(IBlockReader world, BlockPos pos) {
+//        return world instanceof Region ?
+//                ((Region) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) :
+//                world.getTileEntity(pos);
+//    }
 
     /**
      * Get a resource location with the domain of PneumaticCraft: Repressurized's mod ID.
@@ -787,11 +790,49 @@ public class PneumaticCraftUtils {
      * @param s the translation key
      * @return the translated string (if called server-side, a string which The One Probe will handle client-side)
      */
-    public static String xlate(String s) {
-        return PneumaticCraftRepressurized.proxy.xlate(s);
+    public static ITextComponent xlate(String s, Object... args) {
+        return new TranslationTextComponent(s, args);
+    }
+
+    public static void addText(List<ITextComponent> l, String s) {
+        l.add(new StringTextComponent(s));
     }
 
     public static String dyeColorDesc(int c) {
-        return TextFormatting.BOLD + WordUtils.capitalize(xlate(EnumDyeColor.byDyeDamage(c).getTranslationKey())) + TextFormatting.RESET;
+        // TODO 1.14 make this better
+        return TextFormatting.BOLD + DyeColor.byId(c).getTranslationKey() + TextFormatting.RESET;
+    }
+
+    public static CompoundNBT serializeGlobalPos(GlobalPos globalPos) {
+        CompoundNBT tag = new CompoundNBT();
+        tag.put("pos", net.minecraft.nbt.NBTUtil.writeBlockPos(globalPos.getPos()));
+        tag.putString("dim", DimensionType.getKey(globalPos.getDimension()).toString());
+        return tag;
+    }
+
+    public static GlobalPos deserializeGlobalPos(CompoundNBT tag) {
+        return GlobalPos.of(
+                DimensionType.byName(new ResourceLocation(tag.getString("dim"))),
+                NBTUtil.readBlockPos(tag.getCompound("pos"))
+        );
+    }
+
+    /**
+     * Get a world object for the given global pos.  This will not reset the dimension unload delay and will not
+     * force-load the dimension.
+     * @param pos the global pos
+     * @return the world
+     */
+    public static World getWorldForGlobalPos(GlobalPos pos) {
+        return DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), pos.getDimension(), false, false);
+    }
+
+    public static int getBurnTime(ItemStack stack) {
+        int ret = stack.getBurnTime();
+        return ForgeEventFactory.getItemBurnTime(stack, ret == -1 ? AbstractFurnaceTileEntity.getBurnTimes().getOrDefault(stack.getItem(), 0) : ret);
+    }
+
+    public static Vec3d getBlockCentre(BlockPos pos) {
+        return new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 }

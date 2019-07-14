@@ -1,20 +1,18 @@
 package me.desht.pneumaticcraft.common.remote;
 
-import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteButton;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
 public class ActionWidgetButton extends ActionWidgetVariable<GuiButtonSpecial> implements IActionWidgetLabeled {
-
-    public BlockPos settingCoordinate = BlockPos.ORIGIN; // The coordinate the variable is set to when the button is pressed.
+    public BlockPos settingCoordinate = BlockPos.ZERO; // The coordinate the variable is set to when the button is pressed.
 
     public ActionWidgetButton() {
-        super();
     }
 
     public ActionWidgetButton(GuiButtonSpecial widget) {
@@ -22,25 +20,25 @@ public class ActionWidgetButton extends ActionWidgetVariable<GuiButtonSpecial> i
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag, int guiLeft, int guiTop) {
+    public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
-        widget = new GuiButtonSpecial(-1, tag.getInteger("x") + guiLeft, tag.getInteger("y") + guiTop, tag.getInteger("width"), tag.getInteger("height"), tag.getString("text"));
-        settingCoordinate = new BlockPos(tag.getInteger("settingX"), tag.getInteger("settingY"), tag.getInteger("settingZ"));
+        widget = new GuiButtonSpecial(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, tag.getInt("width"), tag.getInt("height"), tag.getString("text"), b -> onActionPerformed());
+        settingCoordinate = new BlockPos(tag.getInt("settingX"), tag.getInt("settingY"), tag.getInt("settingZ"));
         widget.setTooltipText(tag.getString("tooltip"));
     }
 
     @Override
-    public NBTTagCompound toNBT(int guiLeft, int guiTop) {
-        NBTTagCompound tag = super.toNBT(guiLeft, guiTop);
-        tag.setInteger("x", widget.x - guiLeft);
-        tag.setInteger("y", widget.y - guiTop);
-        tag.setInteger("width", widget.width);
-        tag.setInteger("height", widget.height);
-        tag.setString("text", widget.displayString);
-        tag.setInteger("settingX", settingCoordinate.getX());
-        tag.setInteger("settingY", settingCoordinate.getY());
-        tag.setInteger("settingZ", settingCoordinate.getZ());
-        tag.setString("tooltip", widget.getTooltip());
+    public CompoundNBT toNBT(int guiLeft, int guiTop) {
+        CompoundNBT tag = super.toNBT(guiLeft, guiTop);
+        tag.putInt("x", widget.x - guiLeft);
+        tag.putInt("y", widget.y - guiTop);
+        tag.putInt("width", widget.getWidth());
+        tag.putInt("height", widget.getHeight());
+        tag.putString("text", widget.getMessage());
+        tag.putInt("settingX", settingCoordinate.getX());
+        tag.putInt("settingY", settingCoordinate.getY());
+        tag.putInt("settingZ", settingCoordinate.getZ());
+        tag.putString("tooltip", widget.getTooltip());
         return tag;
     }
 
@@ -51,12 +49,12 @@ public class ActionWidgetButton extends ActionWidgetVariable<GuiButtonSpecial> i
 
     @Override
     public void setText(String text) {
-        widget.displayString = text;
+        widget.setMessage(text);
     }
 
     @Override
     public String getText() {
-        return widget.displayString;
+        return widget.getMessage();
     }
 
     @Override
@@ -66,11 +64,10 @@ public class ActionWidgetButton extends ActionWidgetVariable<GuiButtonSpecial> i
 
     @Override
     public void onVariableChange() {
-        // widget.checked = GlobalVariableManager.getBoolean(getVariableName());
     }
 
     @Override
-    public GuiScreen getGui(GuiRemoteEditor guiRemote) {
+    public Screen getGui(GuiRemoteEditor guiRemote) {
         return new GuiRemoteButton(this, guiRemote);
     }
 
@@ -81,19 +78,19 @@ public class ActionWidgetButton extends ActionWidgetVariable<GuiButtonSpecial> i
     }
 
     public void setWidth(int width) {
-        widget.width = width;
+        widget.setWidth(width);
     }
 
     public int getWidth() {
-        return widget.width;
+        return widget.getWidth();
     }
 
     public void setHeight(int height) {
-        widget.height = height;
+        widget.setHeight(height);
     }
 
     public int getHeight() {
-        return widget.height;
+        return widget.getHeight();
     }
 
     @Override

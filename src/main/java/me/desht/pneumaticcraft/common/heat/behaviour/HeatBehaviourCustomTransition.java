@@ -5,9 +5,9 @@ import me.desht.pneumaticcraft.common.config.BlockHeatPropertiesConfig;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -19,7 +19,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
     private BlockHeatPropertiesConfig.CustomHeatEntry heatEntry;
 
     @Override
-    public void initialize(String id, IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, EnumFacing direction) {
+    public void initialize(String id, IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         super.initialize(id, connectedHeatLogic, world, pos, direction);
 
         heatEntry = BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntry(getBlockState());
@@ -45,7 +45,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
 
     @Override
     protected boolean transformBlockHot() {
-        IBlockState hot = getHeatEntry().getTransformHot();
+        BlockState hot = getHeatEntry().getTransformHot();
         if (hot == null) return false;
         if (getFluid() != null) {
             transformFluidBlocks(hot, getHeatEntry().getTransformHotFlowing());
@@ -57,7 +57,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
 
     @Override
     protected boolean transformBlockCold() {
-        IBlockState cold = getHeatEntry().getTransformCold();
+        BlockState cold = getHeatEntry().getTransformCold();
         if (cold == null) return false;
         if (getFluid() != null) {
             transformFluidBlocks(cold, getHeatEntry().getTransformColdFlowing());
@@ -78,7 +78,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
      * @param turningBlockSource blockstate to transform the source block to
      * @param turningBlockFlowing blockstate to transform any flowing blocks to
      */
-    private void transformFluidBlocks(IBlockState turningBlockSource, IBlockState turningBlockFlowing) {
+    private void transformFluidBlocks(BlockState turningBlockSource, BlockState turningBlockFlowing) {
         if (FluidUtils.isSourceBlock(getWorld(), getPos())) {
             getWorld().setBlockState(getPos(), turningBlockSource);
         } else {
@@ -88,7 +88,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
             traversed.add(getPos());
             while (!pending.isEmpty()) {
                 BlockPos pos = pending.pop();
-                for (EnumFacing d : EnumFacing.VALUES) {
+                for (Direction d : Direction.VALUES) {
                     BlockPos newPos = pos.offset(d);
                     Block checkingBlock = getWorld().getBlockState(newPos).getBlock();
                     if (blocksSame(checkingBlock, getBlockState().getBlock()) && traversed.add(newPos)) {

@@ -1,10 +1,13 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
+import net.minecraft.item.DyeColor;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidgetConditionBase extends ProgWidget implements IJump {
 
@@ -24,14 +27,14 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         IProgWidget widget = getConnectedParameters()[getParameters().length - 1];
         IProgWidget widget2 = getConnectedParameters()[getParameters().length * 2 - 1];
         if (widget == null && widget2 == null) {
-            curInfo.add("gui.progWidget.condition.error.noFlowControl");
+            curInfo.add(xlate("gui.progWidget.condition.error.noFlowControl"));
         } else if (widget != null && !(widget instanceof ProgWidgetString) || widget2 != null && !(widget2 instanceof ProgWidgetString)) {
-            curInfo.add("gui.progWidget.condition.error.shouldConnectTextPieces");
+            curInfo.add(xlate("gui.progWidget.condition.error.shouldConnectTextPieces"));
         }
     }
 
@@ -61,8 +64,7 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
     public abstract boolean evaluate(IDroneBase drone, IProgWidget widget);
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.CYAN;
+    public DyeColor getColor() {
+        return DyeColor.CYAN;
     }
-
 }

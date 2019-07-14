@@ -1,9 +1,8 @@
 package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.common.item.ItemPressurizable;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -29,7 +28,7 @@ public class ShapelessPressurizableRecipeFactory implements IRecipeFactory {
 
         @Nonnull
         @Override
-        public ItemStack getCraftingResult(@Nonnull InventoryCrafting inv) {
+        public ItemStack getCraftingResult(@Nonnull CraftingInventory inv) {
             ItemStack newOutput = this.output.copy();
             int totalAir = 0;
             // Relying on the fact that IPressurizable items use item damage to store air

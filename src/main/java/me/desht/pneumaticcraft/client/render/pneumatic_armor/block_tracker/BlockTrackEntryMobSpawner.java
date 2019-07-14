@@ -1,35 +1,36 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.common.hacking.block.HackableMobSpawner;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockSpawnerAgitator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.Reflections;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.MobSpawnerBaseLogic;
+import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.spawner.AbstractSpawner;
 
+import java.util.Collections;
 import java.util.List;
 
 public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
 
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te) {
-        return state.getBlock() == Blocks.MOB_SPAWNER;
+    public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
+        return state.getBlock() == Blocks.SPAWNER;
     }
 
     @Override
-    public boolean shouldBeUpdatedFromServer(TileEntity te) {
-        return true;
+    public List<BlockPos> getServerUpdatePositions(TileEntity te) {
+        return Collections.singletonList(te.getPos());
     }
 
     @Override
@@ -38,9 +39,9 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList) {
-        if (te instanceof TileEntityMobSpawner) {
-            MobSpawnerBaseLogic spawner = ((TileEntityMobSpawner) te).getSpawnerBaseLogic();
+    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList) {
+        if (te instanceof MobSpawnerTileEntity) {
+            AbstractSpawner spawner = ((MobSpawnerTileEntity) te).getSpawnerBaseLogic();
             Entity e = spawner.getCachedEntity();
             infoList.add("Spawner Type: " + TextFormatting.AQUA + e.getName());
             if (Reflections.isActivated(spawner) || SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockSpawnerAgitator.class, world, pos) != null) {
@@ -56,6 +57,6 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
 
     @Override
     public String getEntryName() {
-        return Blocks.MOB_SPAWNER.getTranslationKey() + ".name";
+        return Blocks.SPAWNER.getTranslationKey() + ".name";
     }
 }

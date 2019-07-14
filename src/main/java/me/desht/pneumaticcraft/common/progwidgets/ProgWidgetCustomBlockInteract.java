@@ -3,7 +3,8 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.api.drone.ICustomBlockInteract;
 import me.desht.pneumaticcraft.common.ai.DroneAICustomBlockInteract;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 
 public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
@@ -33,7 +34,7 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return new DroneAICustomBlockInteract(drone, (ProgWidgetAreaItemBase) widget, interactor);
     }
 
@@ -43,8 +44,8 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return interactor.getCraftingColorIndex();
+    public DyeColor getColor() {
+        return interactor.getColor();
     }
 
 }

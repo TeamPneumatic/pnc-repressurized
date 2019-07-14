@@ -8,13 +8,15 @@ import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.Validate;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AmadronOffer {
     public enum TradeType { PLAYER, PERIODIC, STATIC }
@@ -59,7 +61,7 @@ public class AmadronOffer {
     }
 
     public String getVendor() {
-        return I18n.translateToLocal("gui.amadron");
+        return xlate("gui.amadron").getFormattedText();
     }
 
     public int getStock() {
@@ -78,43 +80,43 @@ public class AmadronOffer {
     }
 
     private String getObjectName(Object object) {
-        return object instanceof ItemStack ? ((ItemStack) object).getDisplayName() : ((FluidStack) object).getLocalizedName();
+        return object instanceof ItemStack ? ((ItemStack) object).getDisplayName().getFormattedText() : ((FluidStack) object).getLocalizedName();
     }
 
     public void onTrade(int tradingAmount, String buyingPlayer) {
     }
 
-    public void writeToNBT(NBTTagCompound tag) {
-        NBTTagCompound subTag = new NBTTagCompound();
+    public void writeToNBT(CompoundNBT tag) {
+        CompoundNBT subTag = new CompoundNBT();
         if (input instanceof ItemStack) {
-            ((ItemStack) input).writeToNBT(subTag);
-            tag.setTag("inputItem", subTag);
+            ((ItemStack) input).write(subTag);
+            tag.put("inputItem", subTag);
         } else {
             ((FluidStack) input).writeToNBT(subTag);
-            tag.setTag("inputFluid", subTag);
+            tag.put("inputFluid", subTag);
         }
-        subTag = new NBTTagCompound();
+        subTag = new CompoundNBT();
         if (output instanceof ItemStack) {
-            ((ItemStack) output).writeToNBT(subTag);
-            tag.setTag("outputItem", subTag);
+            ((ItemStack) output).write(subTag);
+            tag.put("outputItem", subTag);
         } else {
             ((FluidStack) output).writeToNBT(subTag);
-            tag.setTag("outputFluid", subTag);
+            tag.put("outputFluid", subTag);
         }
     }
 
-    public static AmadronOffer loadFromNBT(NBTTagCompound tag) {
+    public static AmadronOffer loadFromNBT(CompoundNBT tag) {
         Object input;
-        if (tag.hasKey("inputItem")) {
-            input = new ItemStack(tag.getCompoundTag("inputItem"));
+        if (tag.contains("inputItem")) {
+            input = ItemStack.read(tag.getCompound("inputItem"));
         } else {
-            input = FluidStack.loadFluidStackFromNBT(tag.getCompoundTag("inputFluid"));
+            input = FluidStack.loadFluidStackFromNBT(tag.getCompound("inputFluid"));
         }
         Object output;
-        if (tag.hasKey("outputItem")) {
-            output = new ItemStack(tag.getCompoundTag("outputItem"));
+        if (tag.contains("outputItem")) {
+            output = ItemStack.read(tag.getCompound("outputItem"));
         } else {
-            output = FluidStack.loadFluidStackFromNBT(tag.getCompoundTag("outputFluid"));
+            output = FluidStack.loadFluidStackFromNBT(tag.getCompound("outputFluid"));
         }
         return new AmadronOffer(input, output);
     }
@@ -136,11 +138,10 @@ public class AmadronOffer {
             ItemStack stack = (ItemStack) input;
             ResourceLocation name = stack.getItem().getRegistryName();
             inputObject.addProperty("id", name == null ? "" : name.toString());
-            inputObject.addProperty("damage", stack.getItemDamage());
             inputObject.addProperty("amount", stack.getCount());
-            if (stack.hasTagCompound()) {
+            if (stack.hasTag()) {
                 //noinspection ConstantConditions
-                inputObject.add("nbt", NBTToJsonConverter.getObject(stack.getTagCompound()));
+                inputObject.add("nbt", NBTToJsonConverter.getObject(stack.getTag()));
             }
         } else {
             inputObject.addProperty("id", ((FluidStack) input).getFluid().getName());
@@ -153,11 +154,10 @@ public class AmadronOffer {
             ItemStack stack = (ItemStack) output;
             ResourceLocation name = stack.getItem().getRegistryName();
             outputObject.addProperty("id",  name == null ? "" : name.toString());
-            outputObject.addProperty("damage", stack.getItemDamage());
             outputObject.addProperty("amount", stack.getCount());
-            if (stack.hasTagCompound()) {
+            if (stack.hasTag()) {
                 //noinspection ConstantConditions
-                outputObject.add("nbt", NBTToJsonConverter.getObject(stack.getTagCompound()));
+                outputObject.add("nbt", NBTToJsonConverter.getObject(stack.getTag()));
             }
         } else {
             outputObject.addProperty("id", ((FluidStack) output).getFluid().getName());
@@ -173,11 +173,11 @@ public class AmadronOffer {
         JsonObject inputObject = object.getAsJsonObject("input");
         Object input;
         if (inputObject.has("damage")) {
-            Item item = Item.getByNameOrId(inputObject.get("id").getAsString());
+            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(inputObject.get("id").getAsString()));
             if (item != null) {
-                input = new ItemStack(item, inputObject.get("amount").getAsInt(), inputObject.get("damage").getAsInt());
+                input = new ItemStack(item, inputObject.get("amount").getAsInt());
                 if (inputObject.has("nbt")) {
-                    ((ItemStack) input).setTagCompound(JsonToNBTConverter.getTag(inputObject.getAsJsonObject("nbt")));
+                    ((ItemStack) input).setTag(JsonToNBTConverter.getTag(inputObject.getAsJsonObject("nbt")));
                 }
             } else {
                 Log.error("Invalid Amadron Offer input item. Invalid item name: " + inputObject.get("id").getAsString() + ". Offer will be skipped");
@@ -196,11 +196,11 @@ public class AmadronOffer {
         JsonObject outputObject = object.getAsJsonObject("output");
         Object output;
         if (outputObject.has("damage")) {
-            Item item = Item.getByNameOrId(outputObject.get("id").getAsString());
+            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(inputObject.get("id").getAsString()));
             if (item != null) {
-                output = new ItemStack(item, outputObject.get("amount").getAsInt(), outputObject.get("damage").getAsInt());
+                output = new ItemStack(item, outputObject.get("amount").getAsInt());
                 if (outputObject.has("nbt")) {
-                    ((ItemStack) output).setTagCompound(JsonToNBTConverter.getTag(outputObject.getAsJsonObject("nbt")));
+                    ((ItemStack) output).setTag(JsonToNBTConverter.getTag(outputObject.getAsJsonObject("nbt")));
                 }
             } else {
                 Log.error("Invalid Amadron Offer output item. Invalid item name: " + outputObject.get("id").getAsString() + ". Offer will be skipped");
@@ -239,7 +239,7 @@ public class AmadronOffer {
         } else {
             ItemStack stack = (ItemStack) o;
             ResourceLocation name = stack.getItem().getRegistryName();
-            return (name == null ? 0 : name.hashCode()) + stack.getCount() * 19 + stack.getMetadata() * 37;
+            return (name == null ? 0 : name.hashCode()) + stack.getCount() * 19;
         }
     }
 

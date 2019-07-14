@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.client.util;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
@@ -16,7 +16,7 @@ public class RenderUtils {
         float red = (color >> 16 & 255) / div;
         float green = (color >> 8 & 255) / div;
         float blue = (color & 255) / div;
-        GlStateManager.color(red, green, blue, alpha);
+        GlStateManager.color4f(red, green, blue, alpha);
     }
 
     public static void glColorHex(int color) {
@@ -24,7 +24,7 @@ public class RenderUtils {
         float red = (color >> 16 & 255) / 255F;
         float green = (color >> 8 & 255) / 255F;
         float blue = (color & 255) / 255F;
-        GlStateManager.color(red, green, blue, alpha);
+        GlStateManager.color4f(red, green, blue, alpha);
     }
 
     public static void glColorHex(int color, int alpha) {
@@ -32,7 +32,7 @@ public class RenderUtils {
     }
 
     public static void render3DArrow() {
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         double arrowTipLength = 0.2;
         double arrowTipRadius = 0.25;
         double baseLength = 0.3;
@@ -71,7 +71,7 @@ public class RenderUtils {
         }
         wr.pos(0, baseLength, arrowTipRadius).endVertex();
         Tessellator.getInstance().draw();
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
     }
 
     public static void renderFrame(AxisAlignedBB aabb, double fw) {
@@ -128,24 +128,23 @@ public class RenderUtils {
     }
 
     /**
-     * Rotates the render matrix dependant on the given metadata of a block. Used in many render methods.
+     * Rotates the render matrix dependant on the rotation of a block. Used in many render methods.
      *
-     * @param metadata block metadata
+     * @param facing block facing direction
      * @return the angle (in degrees) of resulting rotation around the Y axis
      */
-    public static double rotateMatrixByMetadata(int metadata) {
-        EnumFacing facing = EnumFacing.byIndex(metadata & 7);
+    public static double rotateMatrixByMetadata(Direction facing) {
         float metaRotation;
         switch (facing) {
             case UP:
                 metaRotation = 0;
-                GlStateManager.rotate(90, 1, 0, 0);
-                GlStateManager.translate(0, -1, -1);
+                GlStateManager.rotated(90, 1, 0, 0);
+                GlStateManager.translated(0, -1, -1);
                 break;
             case DOWN:
                 metaRotation = 0;
-                GlStateManager.rotate(-90, 1, 0, 0);
-                GlStateManager.translate(0, -1, 1);
+                GlStateManager.rotated(-90, 1, 0, 0);
+                GlStateManager.translated(0, -1, 1);
                 break;
             case NORTH:
                 metaRotation = 0;
@@ -160,7 +159,7 @@ public class RenderUtils {
                 metaRotation = 270;
                 break;
         }
-        GlStateManager.rotate(metaRotation, 0, 1, 0);
+        GlStateManager.rotated(metaRotation, 0, 1, 0);
         return metaRotation;
     }
 }

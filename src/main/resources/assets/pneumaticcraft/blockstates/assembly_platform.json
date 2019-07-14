@@ -5,7 +5,7 @@
           "particle": "pneumaticcraft:blocks/assembly_base"
         },
         "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:assembly_platform.obj"
+        "model": "pneumaticcraft:block/assembly_platform.obj"
     },
 	"variants": {
 		"normal": [{}],

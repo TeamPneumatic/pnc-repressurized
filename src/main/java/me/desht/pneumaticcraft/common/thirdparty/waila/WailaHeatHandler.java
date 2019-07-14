@@ -3,15 +3,13 @@ package me.desht.pneumaticcraft.common.thirdparty.waila;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -38,12 +36,12 @@ public class WailaHeatHandler implements IWailaDataProvider {
     }
 
     private static void addTipToMachine(List<String> currenttip, IWailaDataAccessor accessor) {
-        NBTTagCompound tag = accessor.getNBTData();
+        CompoundNBT tag = accessor.getNBTData();
         if (tag.hasKey("heat")) {
-            NBTTagList tagList = tag.getTagList("heat", 10);
+            ListNBT tagList = tag.getTagList("heat", 10);
             for (int i = 0; i < tagList.tagCount(); i++) {
-                NBTTagCompound heatTag = tagList.getCompoundTagAt(i);
-                EnumFacing face = EnumFacing.byIndex(heatTag.getByte("side"));
+                CompoundNBT heatTag = tagList.getCompoundTagAt(i);
+                Direction face = Direction.byIndex(heatTag.getByte("side"));
                 currenttip.add(HeatUtil.formatHeatString(face, heatTag.getInteger("temp")));
             }
         } else {
@@ -58,12 +56,12 @@ public class WailaHeatHandler implements IWailaDataProvider {
 
     @Nonnull
     @Override
-    public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
+    public CompoundNBT getNBTData(ServerPlayerEntity player, TileEntity te, CompoundNBT tag, World world, BlockPos pos) {
         if (te instanceof IHeatExchanger) {
             Set<IHeatExchangerLogic> heatExchangers = new HashSet<>();
             IHeatExchangerLogic logic = null;
             boolean isMultisided = true;
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.VALUES) {
                 logic = ((IHeatExchanger) te).getHeatExchangerLogic(face);
                 if (logic != null) {
                     if (heatExchangers.contains(logic)) {
@@ -76,11 +74,11 @@ public class WailaHeatHandler implements IWailaDataProvider {
             }
 
             if (isMultisided) {
-                NBTTagList tagList = new NBTTagList();
-                for (EnumFacing face : EnumFacing.VALUES) {
+                ListNBT tagList = new ListNBT();
+                for (Direction face : Direction.VALUES) {
                     logic = ((IHeatExchanger) te).getHeatExchangerLogic(face);
                     if (logic != null) {
-                        NBTTagCompound heatTag = new NBTTagCompound();
+                        CompoundNBT heatTag = new CompoundNBT();
                         heatTag.setByte("side", (byte) face.ordinal());
                         heatTag.setInteger("temp", (int) logic.getTemperature());
                         tagList.appendTag(heatTag);

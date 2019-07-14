@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "pneumaticcraft:vortex_cannon"
+    "model": "pneumaticcraft:block/vortex_cannon"
   },
   "variants": {
     "normal": [{ }],

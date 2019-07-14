@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
 
 public interface ICustomItemBlock {
-    ItemBlock getCustomItemBlock();
+    BlockItem getCustomItemBlock();
 }

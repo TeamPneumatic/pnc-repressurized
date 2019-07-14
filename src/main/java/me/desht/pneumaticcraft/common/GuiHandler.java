@@ -12,7 +12,7 @@ import me.desht.pneumaticcraft.common.recipes.AmadronOffer.TradeType;
 import me.desht.pneumaticcraft.common.semiblock.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -38,7 +38,7 @@ public class GuiHandler implements IGuiHandler {
 
     @Nullable
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getServerGuiElement(int ID, PlayerEntity player, World world, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
         TileEntity te = world.isBlockLoaded(pos) ? world.getTileEntity(pos) : null;
         switch (EnumGuiId.values()[ID]) {
@@ -49,7 +49,7 @@ public class GuiHandler implements IGuiHandler {
             case AIR_CANNON:
                 return new ContainerAirCannon(player.inventory, (TileEntityAirCannon) te);
             case PRESSURE_CHAMBER:
-                return new ContainerPressureChamber(player.inventory, (TileEntityPressureChamberValve) te);
+                return new ContainerPressureChamberValve(player.inventory, (TileEntityPressureChamberValve) te);
             case CHARGING_STATION:
                 return new ContainerChargingStation(player.inventory, (TileEntityChargingStation) te);
             case ELEVATOR:
@@ -62,13 +62,13 @@ public class GuiHandler implements IGuiHandler {
             case VACUUM_PUMP:
                 return new ContainerVacuumPump(player.inventory, (TileEntityVacuumPump) te);
             case PNEUMATIC_DOOR:
-                return new ContainerPneumaticDoor(player.inventory, (TileEntityPneumaticDoorBase) te);
+                return new ContainerPneumaticDoorBase(player.inventory, (TileEntityPneumaticDoorBase) te);
             case ASSEMBLY_CONTROLLER:
                 return new ContainerAssemblyController(player.inventory, (TileEntityAssemblyController) te);
             case UV_LIGHT_BOX:
                 return new ContainerUVLightBox(player.inventory, (TileEntityUVLightBox) te);
             case SECURITY_STATION_INVENTORY:
-                return new ContainerSecurityStationInventory(player.inventory, (TileEntitySecurityStation) te);
+                return new ContainerSecurityStationMain(player.inventory, (TileEntitySecurityStation) te);
             case HACKING:
                 return new ContainerSecurityStationHacking(player.inventory, (TileEntitySecurityStation) te);
             case UNIVERSAL_SENSOR:
@@ -103,7 +103,7 @@ public class GuiHandler implements IGuiHandler {
             case LOGISTICS_REQUESTER:
             case LOGISTICS_STORAGE:
             case LOGISTICS_PASSIVE_PROVIDER:
-                return new ContainerLogistics(player.inventory, SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockLogistics.class, world, pos));
+                return new ContainerLogistics(SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockLogistics.class, world, pos), player.inventory);
             case AMADRON:
                 return new ContainerAmadron(player);
             case AMADRON_ADD_PLAYER_TRADE:
@@ -132,7 +132,7 @@ public class GuiHandler implements IGuiHandler {
 
     @Nullable
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getClientGuiElement(int ID, PlayerEntity player, World world, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
         TileEntity te = world.isBlockLoaded(pos) ? world.getTileEntity(pos) : null;
         switch (EnumGuiId.values()[ID]) {

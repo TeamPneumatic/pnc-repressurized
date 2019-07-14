@@ -1,29 +1,29 @@
 package me.desht.pneumaticcraft.client.sound;
 
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
-import me.desht.pneumaticcraft.lib.Sounds;
-import net.minecraft.client.audio.MovingSound;
+import net.minecraft.client.audio.TickableSound;
 import net.minecraft.util.SoundCategory;
 
-public class MovingSoundElevator extends MovingSound {
+public class MovingSoundElevator extends TickableSound {
     private final TileEntityElevatorBase te;
 
-    protected MovingSoundElevator(TileEntityElevatorBase te) {
+    MovingSoundElevator(TileEntityElevatorBase te) {
         super(Sounds.ELEVATOR_MOVING, SoundCategory.BLOCKS);
         this.te = te;
-        xPosF = te.getPos().getX();
-        yPosF = te.getPos().getY() + te.extension / 2;
-        zPosF = te.getPos().getZ();
+        x = te.getPos().getX();
+        y = te.getPos().getY() + te.extension / 2;
+        z = te.getPos().getZ();
         repeat = true;
         repeatDelay = 0;
         volume = 0.9F - (0.05F * Math.min(8, te.multiElevatorCount));
     }
 
     @Override
-    public void update() {
-        if (te.isInvalid() || te.extension == te.getTargetExtension()) {
+    public void tick() {
+        if (te.isRemoved() || te.extension == te.getTargetExtension()) {
             donePlaying = true;
         }
-        yPosF = te.getPos().getY() + te.extension / 2;
+        y = te.getPos().getY() + te.extension / 2;
     }
 }

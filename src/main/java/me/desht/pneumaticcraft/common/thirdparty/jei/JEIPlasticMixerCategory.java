@@ -1,14 +1,14 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.jei.JEIPlasticMixerCategory.PlasticMixerRecipeWrapper;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.IJeiHelpers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -29,7 +29,7 @@ public class JEIPlasticMixerCategory extends PneumaticCraftCategory<PlasticMixer
 
     @Override
     public String getTitle() {
-        return I18n.format(Blockss.PLASTIC_MIXER.getTranslationKey() + ".name");
+        return I18n.format(ModBlocks.PLASTIC_MIXER.getTranslationKey() + ".name");
     }
 
     @Override

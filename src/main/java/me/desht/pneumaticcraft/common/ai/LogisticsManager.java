@@ -8,8 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -19,6 +17,7 @@ import java.util.PriorityQueue;
 
 public class LogisticsManager {
 
+    @SuppressWarnings("unchecked")
     private final List<SemiBlockLogistics>[] logistics = new List[4];  // 4 priority levels
 
     public LogisticsManager() {
@@ -76,8 +75,7 @@ public class LogisticsManager {
     private void tryProvide(SemiBlockLogistics provider, SemiBlockLogistics requester, PriorityQueue<LogisticsTask> tasks) {
         if (provider.getTileEntity() == null) return;
 
-        IItemHandler providingInventory = IOHelper.getInventoryForTE(provider.getTileEntity(), provider.getSide());
-        if (providingInventory != null) {
+        IOHelper.getInventoryForTE(provider.getTileEntity(), provider.getSide()).ifPresent(providingInventory -> {
             if (requester instanceof IProvidingInventoryListener)
                 ((IProvidingInventoryListener) requester).notify(new TileEntityAndFace(provider.getTileEntity(), provider.getSide()));
             for (int i = 0; i < providingInventory.getSlots(); i++) {
@@ -91,13 +89,12 @@ public class LogisticsManager {
                     }
                 }
             }
-        }
+        });
 
-        IFluidHandler handler = provider.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, provider.getSide());
-        if (handler != null) {
-            FluidStack providingStack = handler.drain(16000, false);
+        provider.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, provider.getSide()).ifPresent(fluidHandler -> {
+            FluidStack providingStack = fluidHandler.drain(16000, false);
             if (providingStack != null) {
-                boolean canDrain = Arrays.stream(handler.getTankProperties()).anyMatch(p -> p.canDrainFluidType(providingStack));
+                boolean canDrain = Arrays.stream(fluidHandler.getTankProperties()).anyMatch(p -> p.canDrainFluidType(providingStack));
                 if (canDrain &&
                         (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
                     int requestedAmount = getRequestedAmount(requester, providingStack);
@@ -108,23 +105,7 @@ public class LogisticsManager {
                     }
                 }
             }
-        }
-//        for (EnumFacing d : EnumFacing.VALUES) {
-//            if (provider.getTileEntity() != null && provider.getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d)) {
-//                IFluidHandler handler = provider.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, d);
-//                FluidStack providingStack = handler.drain(16000, false);
-//                boolean canDrain = Arrays.stream(handler.getTankProperties()).anyMatch(p -> p.canDrainFluidType(providingStack));
-//                if (providingStack != null &&
-//                        (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack)) && canDrain) {
-//                    int requestedAmount = getRequestedAmount(requester, providingStack);
-//                    if (requestedAmount > 0) {
-//                        FluidStack stack = providingStack.copy();
-//                        stack.amount = requestedAmount;
-//                        tasks.add(new LogisticsTask(provider, requester, new FluidStackWrapper(stack)));
-//                    }
-//                }
-//            }
-//        }
+        });
     }
 
     private static int getRequestedAmount(SemiBlockLogistics requester, ItemStack providingStack) {
@@ -153,13 +134,12 @@ public class LogisticsManager {
         FluidStack remainder = providingStack.copy();
         remainder.amount += requester.getIncomingFluid(remainder.getFluid());
         if (requester.getTileEntity() == null) return 0;
-        IFluidHandler fluidHandler = requester.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requester.getSide());
-        if (fluidHandler != null) {
+        requester.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requester.getSide()).ifPresent(fluidHandler -> {
             int fluidFilled = fluidHandler.fill(remainder, false);
             if (fluidFilled > 0) {
                 remainder.amount -= fluidFilled;
             }
-        }
+        });
         providingStack.amount -= remainder.amount;
         if (providingStack.amount <= 0) return 0;
         return providingStack.amount;

@@ -2,11 +2,11 @@ package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.client.assemblymachine.IAssemblyRenderOverriding;
+import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -26,40 +26,27 @@ public class GuiRegistry implements IClientRegistry {
     }
 
     @Override
-    public IGuiAnimatedStat getAnimatedStat(GuiScreen gui, int backgroundColor) {
+    public IGuiAnimatedStat getAnimatedStat(Screen gui, int backgroundColor) {
         return new GuiAnimatedStat(gui, backgroundColor);
     }
 
     @Override
-    public IGuiAnimatedStat getAnimatedStat(GuiScreen gui, ItemStack iconStack, int backgroundColor) {
+    public IGuiAnimatedStat getAnimatedStat(Screen gui, ItemStack iconStack, int backgroundColor) {
         return new GuiAnimatedStat(gui, backgroundColor, iconStack);
     }
 
     @Override
-    public IGuiAnimatedStat getAnimatedStat(GuiScreen gui, String iconTexture, int backgroundColor) {
+    public IGuiAnimatedStat getAnimatedStat(Screen gui, String iconTexture, int backgroundColor) {
         return new GuiAnimatedStat(gui, backgroundColor, iconTexture);
     }
 
     @Override
-    public void drawPressureGauge(FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, float zLevel) {
-        GuiUtils.drawPressureGauge(fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos, zLevel);
+    public void drawPressureGauge(FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos) {
+        GuiUtils.drawPressureGauge(fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos, 0x00000000);
     }
 
     @Override
     public void registerRenderOverride(@Nonnull IForgeRegistryEntry<?> entry, @Nonnull IAssemblyRenderOverriding renderOverride) {
         renderOverrides.put(entry.getRegistryName(), renderOverride);
     }
-
-//    public void registerRenderOverride(Block block, IAssemblyRenderOverriding renderOverride) {
-//        if (block == null) throw new NullPointerException("Block is null!");
-//        if (renderOverride == null) throw new NullPointerException("Render override is null!");
-//        renderOverrides.put(block.getRegistryName(), renderOverride);
-//    }
-//
-//    public void registerRenderOverride(Item item, IAssemblyRenderOverriding renderOverride) {
-//        if (item == null) throw new NullPointerException("Item is null!");
-//        if (renderOverride == null) throw new NullPointerException("Render override is null!");
-//        renderOverrides.put(item.getRegistryName(), renderOverride);
-//    }
-
 }

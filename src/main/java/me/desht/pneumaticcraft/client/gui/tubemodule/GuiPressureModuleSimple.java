@@ -1,8 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
-import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModuleRedstoneReceiving;
@@ -10,36 +9,41 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 
 public class GuiPressureModuleSimple extends GuiTubeModule {
     private WidgetTextFieldNumber thresholdField;
     private GuiButtonSpecial moreOrLessButton;
 
-    public GuiPressureModuleSimple(EntityPlayer player, int x, int y, int z) {
-        super(player, x, y, z);
+    GuiPressureModuleSimple(BlockPos pos) {
+        super(pos);
+
         ySize = 57;
     }
 
-    public GuiPressureModuleSimple(TubeModule module) {
+    GuiPressureModuleSimple(TubeModule module) {
         super(module);
+
         ySize = 57;
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
         String title = I18n.format("item." + module.getType() + ".name");
-        addLabel(title, width / 2 - fontRenderer.getStringWidth(title) / 2, guiTop + 5);
+        addLabel(title, width / 2 - font.getStringWidth(title) / 2, guiTop + 5);
 
-        GuiCheckBox advancedMode = new GuiCheckBox(0, guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig").setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
+        GuiCheckBox advancedMode = new GuiCheckBox(guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
+            module.advancedConfig = true;
+            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 2, 1));
+        }).setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
         advancedMode.checked = false;
-        addWidget(advancedMode);
+        addButton(advancedMode);
 
-        thresholdField = new WidgetTextFieldNumber(fontRenderer, guiLeft + 110, guiTop + 33, 30, fontRenderer.FONT_HEIGHT).setDecimals(1);
-        addWidget(thresholdField);
+        thresholdField = new WidgetTextFieldNumber(font, guiLeft + 110, guiTop + 33, 30, font.FONT_HEIGHT).setDecimals(1);
+        addButton(thresholdField);
 
         if (module instanceof TubeModuleRedstoneReceiving) {
             thresholdField.setValue(((TubeModuleRedstoneReceiving) module).getThreshold());
@@ -47,47 +51,36 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
         } else {
             thresholdField.setValue(module.lowerBound);
             addLabel(I18n.format("gui.tubeModule.simpleConfig.turn"), guiLeft + 6, guiTop + 33);
-            moreOrLessButton = new GuiButtonSpecial(1, guiLeft + 85, guiTop + 28, 20, 20, module.lowerBound < module.higherBound ? ">" : "<");
+            moreOrLessButton = new GuiButtonSpecial(guiLeft + 85, guiTop + 28, 20, 20, module.lowerBound < module.higherBound ? ">" : "<", b -> flipThreshold());
             moreOrLessButton.setTooltipText(I18n.format(module.lowerBound < module.higherBound ? "gui.tubeModule.simpleConfig.higherThan" : "gui.tubeModule.simpleConfig.lowerThan"));
-            addWidget(moreOrLessButton);
+            addButton(moreOrLessButton);
         }
         addLabel(I18n.format("gui.general.bar"), guiLeft + 145, guiTop + 34);
     }
 
+    private void flipThreshold() {
+        float temp = module.higherBound;
+        module.higherBound = module.lowerBound;
+        module.lowerBound = temp;
+
+        updateThreshold();
+        moreOrLessButton.setMessage(module.lowerBound < module.higherBound ? ">" : "<");
+        moreOrLessButton.setTooltipText(I18n.format(module.lowerBound < module.higherBound ? "gui.tubeModule.simpleConfig.higherThan" : "gui.tubeModule.simpleConfig.lowerThan"));
+        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
+    }
+
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
         if (module.advancedConfig) {
             module.lowerBound = (float) thresholdField.getDoubleValue();
-            mc.displayGuiScreen(new GuiPressureModule(module));
+            minecraft.displayGuiScreen(new GuiPressureModule(module));
         }
     }
 
     @Override
     protected ResourceLocation getTexture() {
         return Textures.GUI_MODULE_SIMPLE;
-    }
-
-    @Override
-    public void actionPerformed(IGuiWidget widget) {
-        super.actionPerformed(widget);
-        switch (widget.getID()) {
-            case 0:
-                module.advancedConfig = true;
-                NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 2, 1));
-                break;
-            case 1:
-                //Toggle
-                float temp = module.higherBound;
-                module.higherBound = module.lowerBound;
-                module.lowerBound = temp;
-                
-                updateThreshold();
-                moreOrLessButton.displayString = module.lowerBound < module.higherBound ? ">" : "<";
-                moreOrLessButton.setTooltipText(I18n.format(module.lowerBound < module.higherBound ? "gui.tubeModule.simpleConfig.higherThan" : "gui.tubeModule.simpleConfig.lowerThan"));
-                NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
-                break;
-        }
     }
     
     private void updateThreshold(){
@@ -101,10 +94,10 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
     }
 
     @Override
-    public void onGuiClosed() {
+    public void onClose() {
         updateThreshold();
         NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 0, module.lowerBound));
         NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
-        super.onGuiClosed();
+        super.onClose();
     }
 }

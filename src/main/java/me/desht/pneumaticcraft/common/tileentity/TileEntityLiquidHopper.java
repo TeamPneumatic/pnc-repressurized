@@ -2,22 +2,27 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.*;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -34,33 +39,28 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     @LazySynced
     @DescSynced
     @GuiSynced
-    private final HopperTank tank;
+    private final HopperTank tank = new HopperTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
+    private final LazyOptional<IFluidHandler> tankCap = LazyOptional.of(() -> tank);
+    private final WrappedFluidTank inputWrapper = new WrappedFluidTank(tank, true);
+    private final LazyOptional<IFluidHandler> inputCap = LazyOptional.of(() -> inputWrapper);
+    private final WrappedFluidTank outputWrapper = new WrappedFluidTank(tank, false);
+    private final LazyOptional<IFluidHandler> outputCap = LazyOptional.of(() -> outputWrapper);
 
     @SuppressWarnings("unused")
     @DescSynced
     private int fluidAmountScaled;
 
-    private final WrappedFluidTank inputWrapper, outputWrapper;
-
     public TileEntityLiquidHopper() {
         super();
 
-        if (ConfigHandler.machineProperties.liquidHopperDispenser) {
+        if (Config.Common.Machines.liquidHopperDispenser) {
             addApplicableUpgrade(EnumUpgrade.DISPENSER);
         }
-        tank = new HopperTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
-        inputWrapper = new WrappedFluidTank(tank, true);
-        outputWrapper = new WrappedFluidTank(tank, false);
     }
 
     @Override
     protected int getInvSize() {
         return 0;
-    }
-
-    @Override
-    public String getName() {
-        return Blockss.LIQUID_HOPPER.getTranslationKey();
     }
 
     @Override
@@ -75,42 +75,36 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
 
     @Override
     protected boolean doExport(int maxItems) {
-        EnumFacing dir = getRotation();
+        Direction dir = getRotation();
 
         if (tank.getFluid() != null) {
             TileEntity neighbor = getCachedNeighbor(dir);
-            if (neighbor != null && neighbor.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite())) {
-                IFluidHandler fluidHandler = neighbor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
-                int amount = Math.min(maxItems * 100, tank.getFluid().amount - leaveMaterialCount * 1000);
-//                FluidStack transferred;
-//                if (isCreative) {
-//                    transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, false);
-//                    if (transferred != null) fluidHandler.fill(transferred, true);
-//                } else {
-//                }
-                FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
-                return transferred != null && transferred.amount > 0;
+            LazyOptional<IFluidHandler> cap = neighbor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
+            if (cap.isPresent()) {
+                return cap.map(fluidHandler -> {
+                    int amount = Math.min(maxItems * 100, tank.getFluid().amount - leaveMaterialCount * 1000);
+                    FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
+                    return transferred != null && transferred.amount > 0;
+                }).orElse(false);
             }
         }
 
         if (getWorld().isAirBlock(getPos().offset(dir))) {
-            for (EntityItem entity : getNeighborItems(this, dir)) {
+            for (ItemEntity entity : getNeighborItems(this, dir)) {
                 NonNullList<ItemStack> returnedItems = NonNullList.create();
                 if (FluidUtils.tryFluidExtraction(tank, entity.getItem(), returnedItems)) {
-                    if (entity.getItem().getCount() <= 0) entity.setDead();
+                    if (entity.getItem().getCount() <= 0) entity.remove();
                     for (ItemStack stack : returnedItems) {
-                        EntityItem item = new EntityItem(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
-                        item.motionX = entity.motionX;
-                        item.motionY = entity.motionY;
-                        item.motionZ = entity.motionZ;
-                        getWorld().spawnEntity(item);
+                        ItemEntity item = new ItemEntity(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
+                        item.setMotion(entity.getMotion());
+                        getWorld().addEntity(item);
                     }
                     return true;
                 }
             }
         }
 
-        if (ConfigHandler.machineProperties.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (Config.Common.Machines.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             if (getWorld().isAirBlock(getPos().offset(dir))) {
                 FluidStack extractedFluid = tank.drain(1000, false);
                 if (extractedFluid != null && extractedFluid.amount == 1000) {
@@ -130,36 +124,39 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     protected boolean doImport(int maxItems) {
         TileEntity inputInv = getCachedNeighbor(inputDir);
 
-        if (inputInv != null && inputInv.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite())) {
-            IFluidHandler fluidHandler = inputInv.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite());
-            FluidStack fluid = fluidHandler.drain(maxItems * 100, false);
-            if (fluid != null) {
-                int filledFluid = tank.fill(fluid, true);
-                if (filledFluid > 0) {
-                    fluidHandler.drain(filledFluid, true);
-                    return true;
-                }
+        if (inputInv != null) {
+            LazyOptional<IFluidHandler> cap = inputInv.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite());
+            if (cap.isPresent()) {
+                return cap.map(fluidHandler -> {
+                    FluidStack fluid = fluidHandler.drain(maxItems * 100, false);
+                    if (fluid != null) {
+                        int filledFluid = tank.fill(fluid, true);
+                        if (filledFluid > 0) {
+                            fluidHandler.drain(filledFluid, true);
+                            return true;
+                        }
+                    }
+                    return false;
+                }).orElse(false);
             }
         }
 
         if (getWorld().isAirBlock(getPos().offset(inputDir))) {
-            for (EntityItem entity : getNeighborItems(this, inputDir)) {
+            for (ItemEntity entity : getNeighborItems(this, inputDir)) {
                 NonNullList<ItemStack> returnedItems = NonNullList.create();
                 if (FluidUtils.tryFluidInsertion(tank, entity.getItem(), returnedItems)) {
-                    if (entity.getItem().isEmpty()) entity.setDead();
+                    if (entity.getItem().isEmpty()) entity.remove();
                     for (ItemStack stack : returnedItems) {
-                        EntityItem item = new EntityItem(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
-                        item.motionX = entity.motionX;
-                        item.motionY = entity.motionY;
-                        item.motionZ = entity.motionZ;
-                        getWorld().spawnEntity(item);
+                        ItemEntity item = new ItemEntity(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
+                        item.setMotion(entity.getMotion());
+                        getWorld().addEntity(item);
                     }
                     return true;
                 }
             }
         }
 
-        if (ConfigHandler.machineProperties.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (Config.Common.Machines.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             BlockPos neighborPos = getPos().offset(inputDir);
             FluidStack fluidStack = FluidUtils.getFluidAt(getWorld(), neighborPos, false);
             if (fluidStack != null && fluidStack.amount == Fluid.BUCKET_VOLUME) {
@@ -178,44 +175,39 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
         return tank;
     }
 
-    public EnumFacing getInputDirection() {
+    public Direction getInputDirection() {
         return inputDir;
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-
-        NBTTagCompound tankTag = new NBTTagCompound();
-        tank.writeToNBT(tankTag);
-        tag.setTag("tank", tankTag);
-
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        tank.readFromNBT(tag.getCompoundTag("tank"));
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+
         fluidAmountScaled = tank.getScaledFluidAmount();
         comparatorValue = -1;
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             if (facing == inputDir) {
-                return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(inputWrapper);
+                return inputCap.cast();
             } else if (facing == getRotation()) {
-                return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(outputWrapper);
+                return outputCap.cast();
             } else {
-                return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
+                return tankCap.cast();
             }
         } else {
             return super.getCapability(capability, facing);
@@ -223,8 +215,8 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return null;
+    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+        return LazyOptional.empty();
     }
 
     @Nonnull
@@ -248,6 +240,17 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
                 tank.setFluid(new FluidStack(fluidStack.getFluid(), PneumaticValues.NORMAL_TANK_CAPACITY));
             }
         }
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerLiquidHopper(i, playerInventory, getPos());
     }
 
     class HopperTank extends SmartSyncTank {

@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-public class DroneGoToOwner extends EntityAIBase {
+public class DroneGoToOwner extends Goal {
     private final EntityDrone drone;
 
     public DroneGoToOwner(EntityDrone drone) {
@@ -15,7 +15,7 @@ public class DroneGoToOwner extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-        EntityPlayerMP owner = getOnlineOwner();
+        ServerPlayerEntity owner = getOnlineOwner();
         if (owner == null) return false;
 
         Vec3d lookVec = owner.getLookVec().scale(2.0);
@@ -26,12 +26,12 @@ public class DroneGoToOwner extends EntityAIBase {
 
     @Override
     public boolean shouldContinueExecuting() {
-        EntityPlayerMP owner = getOnlineOwner();
+        ServerPlayerEntity owner = getOnlineOwner();
         return owner != null && !drone.getNavigator().noPath() && drone.getDistanceSq(owner) > 6;
     }
 
-    private EntityPlayerMP getOnlineOwner() {
-        for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
+    private ServerPlayerEntity getOnlineOwner() {
+        for (ServerPlayerEntity player : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
             if (player.getGameProfile().equals(drone.getFakePlayer().getGameProfile())) return player;
         }
         return null;

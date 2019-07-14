@@ -2,18 +2,21 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
+ * Received on: SERVER
  * Syncs the offer inventory on the tablet from client to server.
  */
-public class PacketAmadronInvSync extends AbstractPacket<PacketAmadronInvSync> {
+public class PacketAmadronInvSync {
     private static final int INV_SIZE = ContainerAmadron.OFFERS_PER_PAGE * 2;
 
     private final List<ItemStack> items = new ArrayList<>(INV_SIZE);
@@ -27,33 +30,27 @@ public class PacketAmadronInvSync extends AbstractPacket<PacketAmadronInvSync> {
         this.items.addAll(items);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
+    PacketAmadronInvSync(PacketBuffer buffer) {
         for (int i = 0; i < INV_SIZE; i++) {
-            items.add(ByteBufUtils.readItemStack(buf));
+            items.add(buffer.readItemStack());
         }
     }
 
-    @Override
     public void toBytes(ByteBuf buf) {
-        for (ItemStack stack : items) {
-            ByteBufUtils.writeItemStack(buf, stack);
-        }
+        PacketBuffer pb = new PacketBuffer(buf);
+        items.forEach(pb::writeItemStack);
     }
 
-    @Override
-    public void handleClientSide(PacketAmadronInvSync message, EntityPlayer player) {
-
-    }
-
-    @Override
-    public void handleServerSide(PacketAmadronInvSync message, EntityPlayer player) {
-        if (player.openContainer instanceof ContainerAmadron) {
-            ContainerAmadron container = (ContainerAmadron) player.openContainer;
-            for (int i = 0; i < items.size(); i++) {
-                container.setStack(i, items.get(i));
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            if (player.openContainer instanceof ContainerAmadron) {
+                ContainerAmadron container = (ContainerAmadron) player.openContainer;
+                for (int i = 0; i < items.size(); i++) {
+                    container.setStack(i, items.get(i));
+                }
             }
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
 }

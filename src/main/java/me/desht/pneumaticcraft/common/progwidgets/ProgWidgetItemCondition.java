@@ -3,8 +3,11 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
 
@@ -19,13 +22,13 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[0] == null && getConnectedParameters()[3] == null) {
-            curInfo.add("gui.progWidget.conditionItem.error.noCheckingItem");
+            curInfo.add(xlate("gui.progWidget.conditionItem.error.noCheckingItem"));
         }
         if (getConnectedParameters()[1] == null && getConnectedParameters()[4] == null) {
-            curInfo.add("gui.progWidget.conditionItem.error.noFilter");
+            curInfo.add(xlate("gui.progWidget.conditionItem.error.noFilter"));
         }
     }
 
@@ -33,14 +36,20 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
     public boolean evaluate(IDroneBase drone, IProgWidget widget) {
         ProgWidgetItemFilter checkedFilter = (ProgWidgetItemFilter) widget.getConnectedParameters()[0];
         while (checkedFilter != null) {
-            if (!ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(), ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, getParameters().length + 1), null))
+            if (!ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(),
+                    ProgWidget.getConnectedWidgetList(this, 1),
+                    ProgWidget.getConnectedWidgetList(this, getParameters().length + 1),
+                    null))
                 return false;
             checkedFilter = (ProgWidgetItemFilter) checkedFilter.getConnectedParameters()[0];
         }
 
         checkedFilter = (ProgWidgetItemFilter) widget.getConnectedParameters()[3];
         while (checkedFilter != null) {
-            if (ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(), ProgWidget.getConnectedWidgetList(this, 1), ProgWidget.getConnectedWidgetList(this, getParameters().length + 1), null))
+            if (ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(),
+                    ProgWidget.getConnectedWidgetList(this, 1),
+                    ProgWidget.getConnectedWidgetList(this, getParameters().length + 1),
+                    null))
                 return false;
             checkedFilter = (ProgWidgetItemFilter) checkedFilter.getConnectedParameters()[0];
         }

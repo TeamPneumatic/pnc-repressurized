@@ -5,48 +5,49 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketUpdateDebuggingDrone extends AbstractPacket<PacketUpdateDebuggingDrone> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: SERVER
+ * Sent by client when the drone debug key is pressed (for a valid target)
+ */
+public class PacketUpdateDebuggingDrone {
 
     private int entityId;
 
     public PacketUpdateDebuggingDrone() {
-
     }
 
     public PacketUpdateDebuggingDrone(int entityId) {
         this.entityId = entityId;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        entityId = buf.readInt();
+    public PacketUpdateDebuggingDrone(PacketBuffer buffer) {
+        this.entityId = buffer.readInt();
     }
 
-    @Override
     public void toBytes(ByteBuf buf) {
         buf.writeInt(entityId);
     }
 
-    @Override
-    public void handleClientSide(PacketUpdateDebuggingDrone message, EntityPlayer player) {
-
-    }
-
-    @Override
-    public void handleServerSide(PacketUpdateDebuggingDrone message, EntityPlayer player) {
-        ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-        if (!stack.isEmpty()) {
-            NBTUtil.setInteger(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE, message.entityId);
-            Entity entity = player.world.getEntityByID(message.entityId);
-            if (entity instanceof EntityDrone) {
-                ((EntityDrone) entity).trackAsDebugged((EntityPlayerMP) player);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            ItemStack stack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+            if (!stack.isEmpty()) {
+                NBTUtil.setInteger(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE, entityId);
+                Entity entity = player.world.getEntityByID(entityId);
+                if (entity instanceof EntityDrone) {
+                    ((EntityDrone) entity).trackAsDebugged(player);
+                }
             }
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
 }

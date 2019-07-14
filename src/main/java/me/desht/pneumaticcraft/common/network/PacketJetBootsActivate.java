@@ -2,16 +2,21 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 /**
- * Sent from client to server to tell the server the player is activating/deactivating jet boots.  Toggled when
+ * Received on: SERVER
+ * Sent from client to tell the server the player is activating/deactivating jet boots.  Toggled when
  * Jump key is pressed or released.
  */
-public class PacketJetBootsActivate extends AbstractPacket<PacketJetBootsActivate> {
+public class PacketJetBootsActivate {
     private boolean state;
 
     public PacketJetBootsActivate() {
@@ -21,29 +26,25 @@ public class PacketJetBootsActivate extends AbstractPacket<PacketJetBootsActivat
         this.state = state;
     }
 
-    @Override
-    public void handleClientSide(PacketJetBootsActivate message, EntityPlayer player) {
-
+    PacketJetBootsActivate(PacketBuffer buffer) {
+        state = buffer.readBoolean();
     }
 
-    @Override
-    public void handleServerSide(PacketJetBootsActivate message, EntityPlayer player) {
-        if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EntityEquipmentSlot.FEET)) {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) > 0
-                    && (!message.state || handler.isJetBootsEnabled())) {
-                handler.setJetBootsActive(message.state);
-            }
-        }
-    }
-
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        state = buf.readBoolean();
-    }
-
-    @Override
     public void toBytes(ByteBuf buf) {
         buf.writeBoolean(state);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ServerPlayerEntity player = ctx.get().getSender();
+        ctx.get().enqueueWork(() -> {
+            if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+                if (handler.getUpgradeCount(EquipmentSlotType.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) > 0
+                        && (!state || handler.isJetBootsEnabled())) {
+                    handler.setJetBootsActive(state);
+                }
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
 }

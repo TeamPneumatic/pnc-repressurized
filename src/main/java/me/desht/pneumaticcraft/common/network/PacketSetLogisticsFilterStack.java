@@ -4,14 +4,19 @@ import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import javax.annotation.Nonnull;
+import java.util.function.Supplier;
 
-public class PacketSetLogisticsFilterStack extends LocationIntPacket<PacketSetLogisticsFilterStack> {
+/**
+ * Received on: SERVER
+ */
+public class PacketSetLogisticsFilterStack extends LocationIntPacket {
     private ItemStack settingStack;
     private int settingIndex;
 
@@ -24,37 +29,33 @@ public class PacketSetLogisticsFilterStack extends LocationIntPacket<PacketSetLo
         settingIndex = index;
     }
 
+    public PacketSetLogisticsFilterStack(PacketBuffer buffer) {
+        super(buffer);
+        settingStack = buffer.readItemStack();
+        settingIndex = buffer.readInt();
+    }
+
     @Override
     public void toBytes(ByteBuf buf) {
         super.toBytes(buf);
-        ByteBufUtils.writeItemStack(buf, settingStack);
+        new PacketBuffer(buf).writeItemStack(settingStack);
         buf.writeInt(settingIndex);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        super.fromBytes(buf);
-        settingStack = ByteBufUtils.readItemStack(buf);
-        settingIndex = buf.readInt();
-    }
-
-    @Override
-    public void handleClientSide(PacketSetLogisticsFilterStack message, EntityPlayer player) {
-
-    }
-
-    @Override
-    public void handleServerSide(PacketSetLogisticsFilterStack message, EntityPlayer player) {
-        if (message.pos.equals(BlockPos.ORIGIN)) {
-            if (player.openContainer instanceof ContainerLogistics) {
-                ((ContainerLogistics) player.openContainer).logistics.getFilters().setStackInSlot(message.settingIndex, message.settingStack);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            if (pos.equals(BlockPos.ZERO)) {
+                if (player.openContainer instanceof ContainerLogistics) {
+                    ((ContainerLogistics) player.openContainer).logistics.getFilters().setStackInSlot(settingIndex, settingStack);
+                }
+            } else {
+                SemiBlockLogistics semiBlock = SemiBlockManager.getInstance(player.world).getSemiBlock(SemiBlockLogistics.class, player.world, pos);
+                if (semiBlock != null) {
+                    semiBlock.getFilters().setStackInSlot(settingIndex, settingStack);
+                }
             }
-        } else {
-            SemiBlockLogistics semiBlock = SemiBlockManager.getInstance(player.world).getSemiBlock(SemiBlockLogistics.class, player.world, message.pos);
-            if (semiBlock != null) {
-                semiBlock.getFilters().setStackInSlot(message.settingIndex, message.settingStack);
-            }
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
 }

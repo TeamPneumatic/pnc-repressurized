@@ -1,17 +1,15 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.universalSensor.IPollSensorSetting;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.lwjgl.util.Rectangle;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +24,7 @@ public class PlayerHealthSensor implements IPollSensorSetting {
 
     @Override
     public Set<Item> getRequiredUpgrades() {
-        return ImmutableSet.of(Itemss.upgrades.get(EnumUpgrade.ENTITY_TRACKER));
+        return ImmutableSet.of(IItemRegistry.EnumUpgrade.ENTITY_TRACKER.getItem());
     }
 
     @Override
@@ -47,18 +45,13 @@ public class PlayerHealthSensor implements IPollSensorSetting {
     }
 
     @Override
-    public Rectangle needsSlot() {
-        return null;
-    }
-
-    @Override
     public int getPollFrequency(TileEntity te) {
         return 10;
     }
 
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(textBoxText);
+        PlayerEntity player = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(textBoxText);
         if (player != null) {
             return (int) (15 * player.getHealth() / player.getMaxHealth());
         } else {

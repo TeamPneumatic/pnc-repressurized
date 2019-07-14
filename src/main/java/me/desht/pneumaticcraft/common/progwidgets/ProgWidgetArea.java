@@ -1,26 +1,21 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetArea;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
+import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.progwidgets.area.*;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTPrimitive;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -28,6 +23,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+/**
+ * The Area widget itself
+ */
 public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariableWidget {
     public int x1, y1, z1, x2, y2, z2;
     private String coord1Variable = "", coord2Variable = "";
@@ -37,66 +37,29 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     private static final Map<String, Supplier<? extends AreaType>> areaTypes = new LinkedHashMap<>(); //We want to preserve order in the GUI
     private static final Map<Class<? extends AreaType>, String> typeToIDs = new HashMap<>();
-    
-    /**
-     * A way to map from the old to the new format
-     * Remove in 1.13.
-     */
-    @Deprecated
-    private static final Map<EnumAreaType, String> oldFormatToAreaTypes = new HashMap<>();
-    
+
     static{
-        register(AreaTypeBox.ID, AreaTypeBox.class, AreaTypeBox::new, EnumAreaType.FILL, EnumAreaType.WALL, EnumAreaType.FRAME);
-        register(AreaTypeSphere.ID, AreaTypeSphere.class, AreaTypeSphere::new, EnumAreaType.SPHERE);
-        register(AreaTypeLine.ID, AreaTypeLine.class, AreaTypeLine::new, EnumAreaType.LINE);
-        register(AreaTypeWall.ID, AreaTypeWall.class, AreaTypeWall::new, EnumAreaType.X_WALL, EnumAreaType.Y_WALL, EnumAreaType.Z_WALL);
-        register(AreaTypeCylinder.ID, AreaTypeCylinder.class, AreaTypeCylinder::new, EnumAreaType.X_CYLINDER, EnumAreaType.Y_CYLINDER, EnumAreaType.Z_CYLINDER);
-        register(AreaTypePyramid.ID, AreaTypePyramid.class, AreaTypePyramid::new, EnumAreaType.X_PYRAMID, EnumAreaType.Y_PYRAMID, EnumAreaType.Z_PYRAMID);
-        register(AreaTypeGrid.ID, AreaTypeGrid.class, AreaTypeGrid::new, EnumAreaType.GRID);
-        register(AreaTypeRandom.ID, AreaTypeRandom.class, AreaTypeRandom::new, EnumAreaType.RANDOM);
-        if(oldFormatToAreaTypes.size() != EnumAreaType.values().length) throw new IllegalStateException("Not all old formats are handled!");
+        register(AreaTypeBox.ID, AreaTypeBox.class, AreaTypeBox::new);
+        register(AreaTypeSphere.ID, AreaTypeSphere.class, AreaTypeSphere::new);
+        register(AreaTypeLine.ID, AreaTypeLine.class, AreaTypeLine::new);
+        register(AreaTypeWall.ID, AreaTypeWall.class, AreaTypeWall::new);
+        register(AreaTypeCylinder.ID, AreaTypeCylinder.class, AreaTypeCylinder::new);
+        register(AreaTypePyramid.ID, AreaTypePyramid.class, AreaTypePyramid::new);
+        register(AreaTypeGrid.ID, AreaTypeGrid.class, AreaTypeGrid::new);
+        register(AreaTypeRandom.ID, AreaTypeRandom.class, AreaTypeRandom::new);
     }
     
-    private static <T extends AreaType> void register(String id, Class<T> clazz, Supplier<T> creator, EnumAreaType... oldTypes){
-        if(areaTypes.containsKey(id)){
+    private static <T extends AreaType> void register(String id, Class<T> clazz, Supplier<T> creator) {
+        if (areaTypes.containsKey(id)){
             throw new IllegalStateException("Area type " + clazz + " could not be registered, duplicate id: " + id);
         }
         
         areaTypes.put(id, creator);
         typeToIDs.put(clazz, id);
-        
-        for(EnumAreaType oldType : oldTypes){
-            oldFormatToAreaTypes.put(oldType, id);
-        }
     }
    
     public static List<AreaType> getAllAreaTypes(){
         return areaTypes.values().stream().map(Supplier::get).collect(Collectors.toList());
-    }
-    
-    @Deprecated
-    public enum EnumAreaType {
-        FILL("Filled"), FRAME("Frame"), WALL("Walls"), SPHERE("Sphere"), LINE("Line"), X_WALL("X-Wall"), Y_WALL(
-                "Y-Wall"), Z_WALL("Z-Wall"), X_CYLINDER("X-Cylinder"), Y_CYLINDER("Y-Cylinder"), Z_CYLINDER(
-                "Z-Cylinder"), X_PYRAMID("X-Pyramid"), Y_PYRAMID("Y-Pyramid"), Z_PYRAMID("Z-Pyramid"), GRID("Grid",
-                true), RANDOM("Random", true);
-
-        private final String name;
-        public final boolean utilizesTypeInfo;
-
-        EnumAreaType(String name) {
-            this(name, false);
-        }
-
-        EnumAreaType(String name, boolean utilizesTypeInfo) {
-            this.name = name;
-            this.utilizesTypeInfo = utilizesTypeInfo;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
     }
     
     public static ProgWidgetArea fromPosition(BlockPos p1){
@@ -118,7 +81,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public void getTooltip(List<String> curTooltip) {
+    public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
 
         String c1;
@@ -140,33 +103,33 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
         if (c1 != null) {
             if (c2 != null) {
-                curTooltip.add("Contains the points:");
-                curTooltip.add(c1.replace("%s", "1"));
-                curTooltip.add(c2.replace("%s", "2"));
+                curTooltip.add(new StringTextComponent("Contains the points:"));
+                curTooltip.add(new StringTextComponent(c1.replace("%s", "1")));
+                curTooltip.add(new StringTextComponent(c2.replace("%s", "2")));
             } else {
-                curTooltip.add("Contains the point:");
-                curTooltip.add(c1.replace("%s", "1"));
+                curTooltip.add(new StringTextComponent("Contains the point:"));
+                curTooltip.add(new StringTextComponent(c1.replace("%s", "1")));
             }
         }
 
         addAreaTypeTooltip(curTooltip);
     }
     
-    public void addAreaTypeTooltip(List<String> curTooltip){
-        curTooltip.add("Area type: " + type.getName());
+    public void addAreaTypeTooltip(List<ITextComponent> curTooltip){
+        curTooltip.add(xlate("gui.progWidget.area.type").appendText(type.getName()));
         
         List<AreaTypeWidget> widgets = new ArrayList<>();
         type.addUIWidgets(widgets);
         for(AreaTypeWidget widget : widgets){
-            curTooltip.add(String.format("%s %s", I18n.format(widget.title), widget.getCurValue()));
+            curTooltip.add(xlate(widget.title).appendText(" ").appendText(widget.getCurValue()));
         }
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (coord1Variable.equals("") && coord2Variable.equals("") && x1 == 0 && y1 == 0 && z1 == 0 && x2 == 0 && y2 == 0 && z2 == 0) {
-            curInfo.add("gui.progWidget.area.error.noArea");
+            curInfo.add(xlate("gui.progWidget.area.error.noArea"));
         }
     }
     
@@ -275,15 +238,16 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/95
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/104
         int size = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
-        if (size > ConfigHandler.general.maxProgrammingArea) { // Prevent memory problems when getting to ridiculous areas.
+        final int maxSize = Config.Common.General.maxProgrammingArea;
+        if (size > maxSize) { // Prevent memory problems when getting to ridiculous areas.
             if (aiManager != null) {
                 // We still need to do run-time checks:
                 // 1) Drones programmed before the compile-time validation was added
                 // 2) Programs using variables where we don't necessarily have the values at compile-time
                 IDroneBase drone = aiManager.getDrone();
-                Log.warning(String.format("Drone @ %s (DIM %d) was killed due to excessively large area (%d > %d). See 'I:maxProgrammingArea' in config.",
-                        drone.getDronePos().toString(), drone.world().provider.getDimension(), size, ConfigHandler.general.maxProgrammingArea));
-                drone.overload("areaTooLarge", ConfigHandler.general.maxProgrammingArea);
+                Log.warning(String.format("Drone @ %s (DIM %s) was killed due to excessively large area (%d > %d). See 'I:maxProgrammingArea' in config.",
+                        drone.getDronePos().toString(), drone.world().getDimension().getType().toString(), size, maxSize));
+                drone.overload("areaTooLarge", maxSize);
                 return;
             }
             // We're in the Programmer (no AI manager).  Continue to update the area,
@@ -291,7 +255,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         }
 
         Consumer<BlockPos> addFunc = p -> {
-            if (p.getY() >= 0 && p.getY() < 256 && area.add(p) && area.size() > ConfigHandler.general.maxProgrammingArea){
+            if (p.getY() >= 0 && p.getY() < 256 && area.add(p) && area.size() > maxSize) {
                 throw new AreaTooBigException();
             }
         };
@@ -334,48 +298,40 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setInteger("x1", x1);
-        tag.setInteger("y1", y1);
-        tag.setInteger("z1", z1);
-        tag.setInteger("x2", x2);
-        tag.setInteger("y2", y2);
-        tag.setInteger("z2", z2);
+        tag.putInt("x1", x1);
+        tag.putInt("y1", y1);
+        tag.putInt("z1", z1);
+        tag.putInt("x2", x2);
+        tag.putInt("y2", y2);
+        tag.putInt("z2", z2);
         
         String typeId = typeToIDs.get(type.getClass());
-        if(typeId == null){
+        if (typeId == null) {
             Log.error("No type id for area type " + type + "! Substituting Box.");
             typeId = AreaTypeBox.ID;
-        }else{
+        } else {
             type.writeToNBT(tag);
         }
-        tag.setString("type", typeId);
+        tag.putString("type", typeId);
         
-        tag.setString("coord1Variable", coord1Variable);
-        tag.setString("coord2Variable", coord2Variable);
+        tag.putString("coord1Variable", coord1Variable);
+        tag.putString("coord2Variable", coord2Variable);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        x1 = tag.getInteger("x1");
-        y1 = tag.getInteger("y1");
-        z1 = tag.getInteger("z1");
-        x2 = tag.getInteger("x2");
-        y2 = tag.getInteger("y2");
-        z2 = tag.getInteger("z2");
-        
-        if(tag.getTag("type") instanceof NBTPrimitive){ 
-            //Old format
-            EnumAreaType oldType = EnumAreaType.values()[tag.getInteger("type")];
-            int typeInfo = tag.getInteger("typeInfo");
-            type = convertFromLegacyFormat(oldType, typeInfo);
-        }else{
-            //New format
-            type = createType(tag.getString("type"));
-            type.readFromNBT(tag);
-        }
+        x1 = tag.getInt("x1");
+        y1 = tag.getInt("y1");
+        z1 = tag.getInt("z1");
+        x2 = tag.getInt("x2");
+        y2 = tag.getInt("y2");
+        z2 = tag.getInt("z2");
+
+        type = createType(tag.getString("type"));
+        type.readFromNBT(tag);
         
         coord1Variable = tag.getString("coord1Variable");
         coord2Variable = tag.getString("coord2Variable");
@@ -390,31 +346,6 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             return new AreaTypeBox();
         }
     }
-    
-    /**
-     * Remove in 1.13
-     * @param oldType
-     * @param typeInfo
-     * @return
-     */
-    @Deprecated
-    public static AreaType convertFromLegacyFormat(EnumAreaType oldType, int typeInfo){
-        String newTypeId = oldFormatToAreaTypes.get(oldType);
-        if(newTypeId == null){
-            Log.error("No area converter found for EnumAreaType " + oldType + "! Substituting Box.");
-            return new AreaTypeBox();
-        }else{
-            AreaType type = createType(newTypeId);
-            type.convertFromLegacy(oldType, typeInfo);
-            return type;
-        }
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetArea(this, guiProgrammer);
-    }
 
     @Override
     public WidgetDifficulty getDifficulty() {
@@ -422,8 +353,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.GREEN;
+    public DyeColor getColor() {
+        return DyeColor.GREEN;
     }
 
     public String getCoord1Variable() {

@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "pneumaticcraft:pneumatic_dynamo",
+    "model": "pneumaticcraft:block/pneumatic_dynamo",
     "textures": {
       "particle": "pneumaticcraft:blocks/pneumatic_dynamo_off",
       "dynamo": "pneumaticcraft:blocks/pneumatic_dynamo_on"

@@ -3,10 +3,10 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.drone.IBlockInteractHandler;
 import me.desht.pneumaticcraft.api.drone.ICustomBlockInteract;
 import me.desht.pneumaticcraft.api.drone.IDrone;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.item.DyeColor;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -25,37 +25,44 @@ public class DroneInteractRFImport implements ICustomBlockInteract {
 
     @Override
     public boolean doInteract(BlockPos pos, IDrone drone, IBlockInteractHandler interactHandler, boolean simulate) {
-        if (!drone.hasCapability(CapabilityEnergy.ENERGY, null)) return false;
+        return drone.getCapability(CapabilityEnergy.ENERGY)
+                .map(droneStorage -> tryTransfer(pos, drone, interactHandler, simulate, droneStorage))
+                .orElse(false);
+    }
 
-        IEnergyStorage droneStorage = drone.getCapability(CapabilityEnergy.ENERGY, null);
+    private boolean tryTransfer(BlockPos pos, IDrone drone, IBlockInteractHandler interactHandler, boolean simulate, IEnergyStorage droneStorage) {
+        boolean didWork = false;
+
         if (droneStorage.getEnergyStored() == droneStorage.getMaxEnergyStored()) {
             interactHandler.abort();
-            return false;
         } else {
             TileEntity te = drone.world().getTileEntity(pos);
             if (te == null) return false;
-            for (EnumFacing face : EnumFacing.VALUES) {
-                if (interactHandler.isSideAccessible(face) && te.hasCapability(CapabilityEnergy.ENERGY, face)) {
-                    IEnergyStorage teStorage = te.getCapability(CapabilityEnergy.ENERGY, face);
-                    int extractedEnergy = teStorage.extractEnergy(interactHandler.useCount() ?
-                            interactHandler.getRemainingCount() : Integer.MAX_VALUE, true);
-                    int transferredEnergy = droneStorage.receiveEnergy(extractedEnergy, true);
-                    if (transferredEnergy > 0) {
-                        if (!simulate) {
-                            interactHandler.decreaseCount(transferredEnergy);
-                            droneStorage.receiveEnergy(transferredEnergy, false);
-                            teStorage.extractEnergy(transferredEnergy, false);
+            for (Direction face : Direction.VALUES) {
+                if (interactHandler.isSideAccessible(face)) {
+                    didWork = te.getCapability(CapabilityEnergy.ENERGY, face).map(teStorage -> {
+                        int extractedEnergy = teStorage.extractEnergy(interactHandler.useCount() ?
+                                interactHandler.getRemainingCount() : Integer.MAX_VALUE, true);
+                        int transferredEnergy = droneStorage.receiveEnergy(extractedEnergy, true);
+                        if (transferredEnergy > 0) {
+                            if (!simulate) {
+                                interactHandler.decreaseCount(transferredEnergy);
+                                droneStorage.receiveEnergy(transferredEnergy, false);
+                                teStorage.extractEnergy(transferredEnergy, false);
+                            }
+                            return true;
                         }
-                        return true;
-                    }
+                        return false;
+                    }).orElse(false);
                 }
+                if (didWork) break;
             }
         }
-        return false;
+        return didWork;
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.BLUE;
+    public DyeColor getColor() {
+        return DyeColor.BLUE;
     }
 }

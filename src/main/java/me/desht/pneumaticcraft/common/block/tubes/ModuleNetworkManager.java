@@ -3,18 +3,19 @@ package me.desht.pneumaticcraft.common.block.tubes;
 import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import java.util.*;
 
 public class ModuleNetworkManager {
-    private static final Map<Integer, ModuleNetworkManager> INSTANCES = new HashMap<>();
+    private static final Map<ResourceLocation, ModuleNetworkManager> INSTANCES = new HashMap<>();
 
     private final Map<TubeModule, Set<TubeModule>> connectionCache = new HashMap<>();
     private boolean needInvalidate = false;
 
     public static ModuleNetworkManager getInstance(World w) {
-        return INSTANCES.computeIfAbsent(w.provider.getDimension(), dimId -> new ModuleNetworkManager());
+        return INSTANCES.computeIfAbsent(w.getDimension().getType().getRegistryName(), dimId -> new ModuleNetworkManager());
     }
 
     Set<TubeModule> getConnectedModules(TubeModule module) {

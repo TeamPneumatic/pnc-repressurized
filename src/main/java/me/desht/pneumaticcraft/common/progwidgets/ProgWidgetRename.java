@@ -2,14 +2,16 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.common.remote.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Set;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVariableWidget {
     private DroneAIManager aiManager;
@@ -35,8 +37,8 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.WHITE;
+    public DyeColor getColor() {
+        return DyeColor.WHITE;
     }
 
     @Override
@@ -50,22 +52,22 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
     }
 
     @Override
-    public EntityAIBase getWidgetAI(final IDroneBase drone, final IProgWidget widget) {
+    public Goal getWidgetAI(final IDroneBase drone, final IProgWidget widget) {
         return new DroneAIRename(drone, (IRenamingWidget) widget);
     }
 
-    private class DroneAIRename extends EntityAIBase {
+    private class DroneAIRename extends Goal {
         private final IDroneBase drone;
         private final IRenamingWidget widget;
 
-        public DroneAIRename(IDroneBase drone, IRenamingWidget widget) {
+        DroneAIRename(IDroneBase drone, IRenamingWidget widget) {
             this.drone = drone;
             this.widget = widget;
         }
 
         @Override
         public boolean shouldExecute() {
-            drone.setName(widget.getNewName() != null ? widget.getNewName() : I18n.format("entity.PneumaticCraft.Drone.name"));
+            drone.setName(widget.getNewName() != null ? new StringTextComponent(widget.getNewName()) : xlate("entity.PneumaticCraft.Drone.name"));
             return false;
         }
 

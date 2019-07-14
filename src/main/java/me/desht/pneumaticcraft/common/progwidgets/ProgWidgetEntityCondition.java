@@ -1,15 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetCondition;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -45,21 +40,5 @@ public class ProgWidgetEntityCondition extends ProgWidgetCondition {
     @Override
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_CONDITION_ENTITY;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetCondition(this, guiProgrammer) {
-            @Override
-            protected boolean isSidedWidget() {
-                return false;
-            }
-
-            @Override
-            protected boolean isUsingAndOr() {
-                return false;
-            }
-        };
     }
 }

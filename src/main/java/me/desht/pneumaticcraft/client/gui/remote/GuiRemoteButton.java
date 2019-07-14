@@ -16,8 +16,8 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
         addLabel(I18n.format("gui.remote.button.settingValue"), guiLeft + 10, guiTop + 95);
         addLabel("X:", guiLeft + 10, guiTop + 106);
@@ -28,37 +28,38 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
 
         String valueTooltip = I18n.format("gui.remote.button.value.tooltip");
 
-        xValueField = new WidgetTextFieldNumber(fontRenderer, guiLeft + 20, guiTop + 105, 38, 10);
+        xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 105, 38, 10);
         xValueField.setValue(widget.settingCoordinate.getX());
         xValueField.setTooltip(valueTooltip);
-        addWidget(xValueField);
+        addButton(xValueField);
 
-        yValueField = new WidgetTextFieldNumber(fontRenderer, guiLeft + 78, guiTop + 105, 38, 10);
+        yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 105, 38, 10);
         yValueField.setValue(widget.settingCoordinate.getY());
         yValueField.setTooltip(valueTooltip);
-        addWidget(yValueField);
+        addButton(yValueField);
 
-        zValueField = new WidgetTextFieldNumber(fontRenderer, guiLeft + 136, guiTop + 105, 38, 10);
+        zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 105, 38, 10);
         zValueField.setValue(widget.settingCoordinate.getZ());
         zValueField.setTooltip(valueTooltip);
-        addWidget(zValueField);
+        addButton(zValueField);
 
-        widthField = new WidgetTextFieldNumber(fontRenderer, guiLeft + 100, guiTop + 123, 60, 10);
+        widthField = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 123, 60, 10);
         widthField.setValue(widget.getWidth());
         widthField.minValue = 10;
-        addWidget(widthField);
+        addButton(widthField);
 
-        heightField = new WidgetTextFieldNumber(fontRenderer, guiLeft + 100, guiTop + 138, 60, 10);
+        heightField = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 138, 60, 10);
         heightField.setValue(widget.getHeight());
         heightField.minValue = 10;
         heightField.maxValue = 20;
-        addWidget(heightField);
+        addButton(heightField);
 
     }
 
     @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
+    public void onClose() {
+        super.onClose();
+
         widget.settingCoordinate = new BlockPos(xValueField.getValue(), yValueField.getValue(), zValueField.getValue());
         widget.setWidth(widthField.getValue());
         widget.setHeight(heightField.getValue());

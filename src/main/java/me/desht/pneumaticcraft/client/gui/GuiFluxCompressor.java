@@ -3,50 +3,49 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
-import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
+import me.desht.pneumaticcraft.common.inventory.ContainerFluxCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluxCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiFluxCompressor extends GuiPneumaticContainerBase<TileEntityFluxCompressor> {
+public class GuiFluxCompressor extends GuiPneumaticContainerBase<ContainerFluxCompressor,TileEntityFluxCompressor> {
     private GuiAnimatedStat inputStat;
 
-    public GuiFluxCompressor(Container container, TileEntityFluxCompressor te) {
-        super(container, te, Textures.GUI_4UPGRADE_SLOTS);
-    }
-
-    public GuiFluxCompressor(InventoryPlayer inventoryPlayer, TileEntityFluxCompressor te) {
-        super(new ContainerEnergy(inventoryPlayer, te), te, Textures.GUI_4UPGRADE_SLOTS);
+    public GuiFluxCompressor(ContainerFluxCompressor container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        inputStat = addAnimatedStat("Input", Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
+    public void init() {
+        super.init();
 
-        IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, null);
-        addWidget(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage));
-        addWidget(new WidgetTemperature(0, guiLeft + 87, guiTop + 20, 273, 675,
-                te.getHeatExchangerLogic(null), 325, 625));
+        inputStat = addAnimatedStat("Input", Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
+        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addButton(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage)));
+        addButton(new WidgetTemperature(guiLeft + 87, guiTop + 20, 273, 675, te.getHeatExchangerLogic(null), 325, 625));
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        fontRenderer.drawString("Upgr.", 53, 19, 4210752);
+        font.drawString("Upgr.", 53, 19, 4210752);
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_4UPGRADE_SLOTS;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
         inputStat.setText(getOutputStat());
     }
 

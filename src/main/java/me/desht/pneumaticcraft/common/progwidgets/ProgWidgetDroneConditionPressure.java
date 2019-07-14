@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
-public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneEvaluation {
+public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneCondition {
 
     @Override
     public Class<? extends IProgWidget>[] getParameters() {

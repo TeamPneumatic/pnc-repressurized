@@ -4,11 +4,11 @@ import me.desht.pneumaticcraft.common.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -16,14 +16,17 @@ import java.util.List;
 
 public class ItemLogisticsConfigurator extends ItemPressurizable {
 
-    ItemLogisticsConfigurator() {
+    public ItemLogisticsConfigurator() {
         super("logistics_configurator", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
 
     @Override
-    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
-        ItemStack stack = player.getHeldItem(hand);
-        if (!world.isRemote && stack.getMaxDamage() - stack.getItemDamage() >= 100) {
+    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext ctx) {
+        PlayerEntity player = ctx.getPlayer();
+        World world = ctx.getWorld();
+        BlockPos pos = ctx.getPos();
+        Direction side = ctx.getFace();
+        if (!world.isRemote && stack.getMaxDamage() - stack.getDamage() >= 100) {
             List<ISemiBlock> semiBlocks = SemiBlockManager.getInstance(world).getSemiBlocksAsList(world, pos);
             
             if(semiBlocks.isEmpty()){
@@ -38,18 +41,18 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
                             SemiBlockManager.getInstance(world).breakSemiBlock(s, player);
                         }
                     }
-                    return EnumActionResult.SUCCESS;
+                    return ActionResultType.SUCCESS;
                 } else {
                     //TODO raytrace?
                     if (semiBlocks.stream().anyMatch(s -> s.onRightClickWithConfigurator(player, side))) {
                         addAir(stack, -PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR);
-                        return EnumActionResult.SUCCESS;
+                        return ActionResultType.SUCCESS;
                     }
                 }
             }
         } else if (world.isRemote) {
-            return EnumActionResult.SUCCESS;
+            return ActionResultType.SUCCESS;
         }
-        return EnumActionResult.PASS;
+        return ActionResultType.PASS;
     }
 }

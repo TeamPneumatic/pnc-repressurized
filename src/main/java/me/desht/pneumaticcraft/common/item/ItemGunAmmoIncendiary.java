@@ -1,24 +1,17 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.BlockRayTraceResult;
 
 public class ItemGunAmmoIncendiary extends ItemGunAmmo {
     public ItemGunAmmoIncendiary() {
-        super("gun_ammo_incendiary");
-    }
-
-    @Override
-    protected int getCartridgeSize() {
-        return ConfigHandler.minigun.incendiaryAmmoCartridgeSize;
+        super(DEFAULT_PROPS.maxDamage(Config.Common.Minigun.incendiaryAmmoCartridgeSize), "gun_ammo_incendiary");
     }
 
     @Override
@@ -33,26 +26,26 @@ public class ItemGunAmmoIncendiary extends ItemGunAmmo {
 
     @Override
     protected float getDamageMultiplier(Entity target, ItemStack ammoStack) {
-        float mult = super.getDamageMultiplier(target, ammoStack);
+        double mult = super.getDamageMultiplier(target, ammoStack);
         if (target != null && target.isImmuneToFire()) {
             mult *= 0.1;
         }
-        return mult;
+        return (float) mult;
     }
 
     @Override
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
-        if (minigun.dispenserWeightedPercentage(ConfigHandler.minigun.incendiaryAmmoEntityIgniteChance)) {
-            target.setFire(ConfigHandler.minigun.incendiaryAmmoFireDuration);
+        if (minigun.dispenserWeightedPercentage(Config.Common.Minigun.incendiaryAmmoEntityIgniteChance)) {
+            target.setFire(Config.Common.Minigun.incendiaryAmmoFireDuration);
         }
         return super.onTargetHit(minigun, ammo, target);
     }
 
     @Override
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face, Vec3d hitVec) {
-        if (minigun.dispenserWeightedPercentage(ConfigHandler.minigun.incendiaryAmmoBlockIgniteChance)) {
-            PneumaticCraftUtils.tryPlaceBlock(minigun.getWorld(), pos.offset(face), minigun.getPlayer(), face, Blocks.FIRE.getDefaultState());
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
+        if (minigun.dispenserWeightedPercentage(Config.Common.Minigun.incendiaryAmmoBlockIgniteChance)) {
+            PneumaticCraftUtils.tryPlaceBlock(minigun.getWorld(), brtr.getPos().offset(brtr.getFace()), minigun.getPlayer(), brtr.getFace(), Blocks.FIRE.getDefaultState());
         }
-        return super.onBlockHit(minigun, ammo, pos, face, hitVec);
+        return super.onBlockHit(minigun, ammo, brtr);
     }
 }

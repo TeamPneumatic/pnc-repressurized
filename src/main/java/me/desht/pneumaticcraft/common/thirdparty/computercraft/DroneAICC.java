@@ -2,16 +2,16 @@ package me.desht.pneumaticcraft.common.thirdparty.computercraft;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Set;
 
-class DroneAICC extends EntityAIBase {
+class DroneAICC extends Goal {
     private final EntityDrone drone;
     private final ProgWidgetCC widget;
-    private EntityAIBase curAction;
+    private Goal curAction;
     private boolean curActionActive;
     private final TileEntityDroneInterface droneInterface;
     private boolean newAction;
@@ -71,7 +71,7 @@ class DroneAICC extends EntityAIBase {
         if (curActionActive && curAction != null) curAction.updateTask();
     }
 
-    synchronized void setAction(IProgWidget widget, EntityAIBase ai) throws IllegalArgumentException {
+    synchronized void setAction(IProgWidget widget, Goal ai) throws IllegalArgumentException {
         curAction = ai;
         newAction = true;
         curActionActive = true;

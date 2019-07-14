@@ -3,7 +3,7 @@
     "defaults": {
         "textures": {},
         "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:heat_frame.obj"
+        "model": "pneumaticcraft:block/heat_frame.obj"
     },
 	"variants": {
 		"normal": [{

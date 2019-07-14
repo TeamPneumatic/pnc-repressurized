@@ -1,8 +1,7 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.universalSensor.IPollSensorSetting;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -19,7 +18,7 @@ abstract class EntityPollSensor implements IPollSensorSetting {
     @Override
     public Set<Item> getRequiredUpgrades() {
         Set<Item> upgrades = new HashSet<>();
-        upgrades.add(Itemss.upgrades.get(EnumUpgrade.ENTITY_TRACKER));
+        upgrades.add(EnumUpgrade.ENTITY_TRACKER.getItem());
         return upgrades;
     }
 

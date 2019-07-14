@@ -5,12 +5,12 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.IWorld;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -28,7 +28,7 @@ public class GlobalTileEntityCacheManager{
     private static final GlobalTileEntityCacheManager SERVER_INSTANCE = new GlobalTileEntityCacheManager();
     
     public static GlobalTileEntityCacheManager getInstance(){
-        return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? CLIENT_INSTANCE : SERVER_INSTANCE;
+        return EffectiveSide.get() == LogicalSide.CLIENT ? CLIENT_INSTANCE : SERVER_INSTANCE;
     }
     
     @SubscribeEvent
@@ -40,7 +40,7 @@ public class GlobalTileEntityCacheManager{
     public final GlobalTileEntityCache<TileEntityChargingStation> chargingStations = new GlobalTileEntityCache<>();
     public final GlobalTileEntityCache<TileEntitySecurityStation> securityStations = new GlobalTileEntityCache<>();
     
-    private void removeFromWorld(World world){
+    private void removeFromWorld(IWorld world){
         universalSensors.removeFromWorld(world);
         chargingStations.removeFromWorld(world);
         securityStations.removeFromWorld(world);
@@ -57,7 +57,7 @@ public class GlobalTileEntityCacheManager{
             tileEntities.remove(te);
         }
         
-        public void removeFromWorld(World world){
+        public void removeFromWorld(IWorld world){
             tileEntities.removeIf(te -> te.getWorld() == world);
         }
         

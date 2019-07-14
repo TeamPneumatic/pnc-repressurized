@@ -3,9 +3,12 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 public class TileEntityCompressedIronBlock extends TileEntityTickableBase implements IHeatExchanger, IComparatorSupport, IHeatTinted {
 
@@ -15,11 +18,16 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     private int oldComparatorOutput = 0;
 
     public TileEntityCompressedIronBlock() {
+        this(ModTileEntityTypes.COMPRESSED_IRON_BLOCK);
+    }
+
+    TileEntityCompressedIronBlock(TileEntityType type) {
+        super(type);
         heatExchanger.setThermalResistance(0.01);
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
+    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
         return heatExchanger;
     }
 
@@ -28,8 +36,8 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
         if (!getWorld().isRemote) {
             heatLevel = HeatUtil.getHeatLevelForTemperature(heatExchanger.getTemperature());
@@ -45,6 +53,11 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     @Override
     protected boolean shouldRerenderChunkOnDescUpdate() {
         return true;
+    }
+
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
     }
 
     @Override

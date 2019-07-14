@@ -1,33 +1,40 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.Sounds;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall implements ITickable, IGUITextFieldSensitive, IRedstoneControlled {
+public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall implements ITickableTileEntity, IGUITextFieldSensitive, IRedstoneControlled, INamedContainerProvider {
     public static final int MAX_PROGRESS = 40;
     public static final int INVENTORY_SIZE = 1;
     private static final int FILTER_SIZE = 9;
@@ -35,6 +42,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @DescSynced
     private final PressureChamberInterfaceHandler inventory = new PressureChamberInterfaceHandler();
+    private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventory);
     @DescSynced
     @LazySynced
     public int inputProgress;
@@ -44,13 +52,11 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     public int outputProgress;
     public int oldOutputProgress;
     @GuiSynced
-    public EnumInterfaceMode interfaceMode = EnumInterfaceMode.NONE;
+    public InterfaceDirection interfaceMode = InterfaceDirection.NONE;
     @GuiSynced
     private boolean enoughAir = true;
     @DescSynced
-    public EnumFilterMode filterMode = EnumFilterMode.ITEM;
-    @GuiSynced
-    public int creativeTabID;
+    public FilterMode filterMode = FilterMode.ITEM;
     @DescSynced
     public String itemNameFilter = "";
     private boolean isOpeningI; // used to determine sounds.
@@ -64,22 +70,33 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     private int oldItemCount;
     private final PressureChamberFilterHandler filterHandler = new PressureChamberFilterHandler();
 
-    public enum EnumInterfaceMode {
+    public enum InterfaceDirection {
         NONE, IMPORT, EXPORT
     }
 
-    public enum EnumFilterMode {
-        ITEM, CREATIVE_TAB, NAME_BEGINS, NAME_CONTAINS
+    public enum FilterMode {
+        ITEM, NAME_BEGINS, NAME_CONTAINS
     }
 
     public TileEntityPressureChamberInterface() {
-        super(4);
+        super(ModTileEntityTypes.PRESSURE_CHAMBER_INTERFACE, 4);
         addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
     @Override
-    public void update() {
-        updateImpl();
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerPressureChamberInterface(i, playerInventory, getPos());
+    }
+
+    @Override
+    public void tick() {
+        tickImpl();
 
         boolean wasOpeningI = isOpeningI;
         boolean wasOpeningO = isOpeningO;
@@ -97,13 +114,13 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             interfaceMode = getInterfaceMode(core);
             enoughAir = true;
 
-            if (interfaceMode != EnumInterfaceMode.NONE) {
+            if (interfaceMode != InterfaceDirection.NONE) {
                 if (!inventory.getStackInSlot(0).isEmpty() && ++inputTimeOut > 10) {
                     shouldOpenInput = false;
                     if (inputProgress == 0) {
                         shouldOpenOutput = true;
                         if (outputProgress == MAX_PROGRESS) {
-                            if (interfaceMode == EnumInterfaceMode.IMPORT) {
+                            if (interfaceMode == InterfaceDirection.IMPORT) {
                                 outputInChamber();
                             } else {
                                 exportToInventory();
@@ -114,7 +131,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                     shouldOpenOutput = false;
                     if (outputProgress == 0) {
                         shouldOpenInput = true;
-                        if (interfaceMode == EnumInterfaceMode.EXPORT && inputProgress == MAX_PROGRESS && redstoneAllows()) {
+                        if (interfaceMode == InterfaceDirection.EXPORT && inputProgress == MAX_PROGRESS && redstoneAllows()) {
                             importFromChamber(core);
                         }
                     }
@@ -154,12 +171,12 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     private void exportToInventory() {
-        EnumFacing facing = getRotation();
+        Direction facing = getRotation();
         TileEntity te = getCachedNeighbor(facing);
         if (te != null) {
             ItemStack stack = inventory.getStackInSlot(0);
             int count = stack.getCount();
-            ItemStack leftoverStack = PneumaticCraftUtils.exportStackToInventory(te, stack.copy(), facing.getOpposite());
+            ItemStack leftoverStack = IOHelper.insert(te, stack.copy(), facing.getOpposite(), false);
             stack.shrink(count - leftoverStack.getCount());
         }
     }
@@ -179,7 +196,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                         maxAllowedItems = Math.min(maxAllowedItems, chamberStack.getMaxStackSize() - inputStack.getCount());
                     }
                     int transferredItems = Math.min(chamberStack.getCount(), maxAllowedItems);
-                    ItemStack toTransferStack = chamberStack.copy().splitStack(transferredItems);
+                    ItemStack toTransferStack = chamberStack.copy().split(transferredItems);
                     ItemStack excess = inventory.insertItem(0, toTransferStack, true);
                     if (excess.getCount() < toTransferStack.getCount()) {
                         // we can transfer at least some of the items
@@ -211,32 +228,32 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     // Figure out whether the Interface is exporting or importing.
-    private EnumInterfaceMode getInterfaceMode(TileEntityPressureChamberValve core) {
+    private InterfaceDirection getInterfaceMode(TileEntityPressureChamberValve core) {
         if (core != null) {
             boolean xMid = getPos().getX() != core.multiBlockX && getPos().getX() != core.multiBlockX + core.multiBlockSize - 1;
             boolean yMid = getPos().getY() != core.multiBlockY && getPos().getY() != core.multiBlockY + core.multiBlockSize - 1;
             boolean zMid = getPos().getZ() != core.multiBlockZ && getPos().getZ() != core.multiBlockZ + core.multiBlockSize - 1;
-            EnumFacing rotation = getRotation();
-            if (xMid && yMid && rotation == EnumFacing.NORTH || xMid && zMid && rotation == EnumFacing.DOWN || yMid && zMid && rotation == EnumFacing.WEST) {
+            Direction rotation = getRotation();
+            if (xMid && yMid && rotation == Direction.NORTH || xMid && zMid && rotation == Direction.DOWN || yMid && zMid && rotation == Direction.WEST) {
                 if (getPos().getX() == core.multiBlockX || getPos().getY() == core.multiBlockY || getPos().getZ() == core.multiBlockZ) {
-                    return EnumInterfaceMode.EXPORT;
+                    return InterfaceDirection.EXPORT;
                 } else {
-                    return EnumInterfaceMode.IMPORT;
+                    return InterfaceDirection.IMPORT;
                 }
-            } else if (xMid && yMid && rotation == EnumFacing.SOUTH || xMid && zMid && rotation == EnumFacing.UP || yMid && zMid && rotation == EnumFacing.EAST) {
+            } else if (xMid && yMid && rotation == Direction.SOUTH || xMid && zMid && rotation == Direction.UP || yMid && zMid && rotation == Direction.EAST) {
                 if (getPos().getX() == core.multiBlockX || getPos().getY() == core.multiBlockY || getPos().getZ() == core.multiBlockZ) {
-                    return EnumInterfaceMode.IMPORT;
+                    return InterfaceDirection.IMPORT;
                 } else {
-                    return EnumInterfaceMode.EXPORT;
+                    return InterfaceDirection.EXPORT;
                 }
             }
         }
-        return EnumInterfaceMode.NONE;
+        return InterfaceDirection.NONE;
     }
 
     public List<String> getProblemStat() {
         List<String> textList = new ArrayList<>();
-        if (interfaceMode == EnumInterfaceMode.NONE) {
+        if (interfaceMode == InterfaceDirection.NONE) {
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The Interface can't work:"));
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70\u2022 The Interface is not in a properly formed Pressure Chamber, and/or"));
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70\u2022 The Interface is not adjacent to an air block of the Pressure Chamber, and/or"));
@@ -253,66 +270,52 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
 
-        inventory.deserializeNBT(tag.getCompoundTag("Items"));
-        filterHandler.deserializeNBT(tag.getCompoundTag("filter"));
-        outputProgress = tag.getInteger("outputProgress");
-        inputProgress = tag.getInteger("inputProgress");
-        interfaceMode = EnumInterfaceMode.values()[tag.getInteger("interfaceMode")];
-        filterMode = EnumFilterMode.values()[tag.getInteger("filterMode")];
-        creativeTabID = tag.getInteger("creativeTabID");
+        inventory.deserializeNBT(tag.getCompound("Items"));
+        filterHandler.deserializeNBT(tag.getCompound("filter"));
+        outputProgress = tag.getInt("outputProgress");
+        inputProgress = tag.getInt("inputProgress");
+        interfaceMode = InterfaceDirection.values()[tag.getInt("interfaceMode")];
+        filterMode = FilterMode.values()[tag.getInt("filterMode")];
         itemNameFilter = tag.getString("itemNameFilter");
-        redstoneMode = tag.getInteger("redstoneMode");
+        redstoneMode = tag.getInt("redstoneMode");
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setTag("Items", inventory.serializeNBT());
-        tag.setTag("filter", filterHandler.serializeNBT());
-        tag.setInteger("outputProgress", outputProgress);
-        tag.setInteger("inputProgress", inputProgress);
-        tag.setInteger("interfaceMode", interfaceMode.ordinal());
-        tag.setInteger("filterMode", filterMode.ordinal());
-        tag.setInteger("creativeTabID", creativeTabID);
-        tag.setString("itemNameFilter", itemNameFilter);
-        tag.setInteger("redstoneMode", redstoneMode);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.put("Items", inventory.serializeNBT());
+        tag.put("filter", filterHandler.serializeNBT());
+        tag.putInt("outputProgress", outputProgress);
+        tag.putInt("inputProgress", inputProgress);
+        tag.putInt("interfaceMode", interfaceMode.ordinal());
+        tag.putInt("filterMode", filterMode.ordinal());
+        tag.putString("itemNameFilter", itemNameFilter);
+        tag.putInt("redstoneMode", redstoneMode);
         return tag;
     }
 
     @Override
-    public String getName() {
-        return Blockss.PRESSURE_CHAMBER_INTERFACE.getTranslationKey();
-    }
-
-    @Override
-    public boolean isGuiUseableByPlayer(EntityPlayer player) {
+    public boolean isGuiUseableByPlayer(PlayerEntity player) {
         return getWorld().getTileEntity(getPos()) == this
                 && player.getDistanceSq(getPos().getX() + 0.5D, getPos().getY() + 0.5D, getPos().getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
-    public void handleGUIButtonPress(int guiID, EntityPlayer player) {
-        if (guiID == 1) {
-            if (filterMode.ordinal() >= EnumFilterMode.values().length - 1) {
-                filterMode = EnumFilterMode.ITEM;
-            } else {
-                filterMode = EnumFilterMode.values()[filterMode.ordinal() + 1];
-            }
-            //when an SideOnly exception is thrown this method automatically will set the filter mode to Item.
-            filterHandler.doesItemMatchFilter(new ItemStack(Items.STICK));
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return inventory;
+    }
 
-        } else if (guiID == 2) {
-            creativeTabID++;
-            if (creativeTabID == 5 || creativeTabID == 11) creativeTabID++;
-            if (creativeTabID >= CreativeTabs.CREATIVE_TAB_ARRAY.length) {
-                creativeTabID = 0;
-            }
-        } else if (guiID == 0) {
+    @Override
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
+        } else if (tag.equals("filter_mode")) {
+            int n = (filterMode.ordinal() + 1) % FilterMode.values().length;
+            filterMode = FilterMode.values()[n];
         }
     }
 
@@ -332,8 +335,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return inventory;
+    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+        return invCap;
     }
 
     public IItemHandler getFilterHandler() {
@@ -361,24 +364,17 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                         }
                     }
                     return filterEmpty;
-                case CREATIVE_TAB:
-                    try {
-                        int itemCreativeTabIndex = itemStack.getItem().getCreativeTab() != null ? itemStack.getItem().getCreativeTab().getIndex() : -1;
-                        if (itemCreativeTabIndex == creativeTabID) {
-                            return true;
-                        }
-                    } catch (Throwable e) {
-                        //when we are SMP getCreativeTab() is client only.
-                        filterMode = EnumFilterMode.NAME_BEGINS;
-                    }
-                    return false;
                 case NAME_BEGINS:
-                    return itemStack.getDisplayName().toLowerCase().startsWith(itemNameFilter.toLowerCase());
+                    return asPlainString(itemStack.getDisplayName()).startsWith(itemNameFilter.toLowerCase());
                 case NAME_CONTAINS:
-                    return itemStack.getDisplayName().toLowerCase().contains(itemNameFilter.toLowerCase());
+                    return asPlainString(itemStack.getDisplayName()).contains(itemNameFilter.toLowerCase());
             }
             return false;
         }
+    }
+
+    private static String asPlainString(ITextComponent text) {
+        return TextFormatting.getTextWithoutFormattingCodes(text.getFormattedText()).toLowerCase();
     }
 
     private class PressureChamberInterfaceHandler extends BaseItemStackHandler {

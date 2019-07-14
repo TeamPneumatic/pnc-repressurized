@@ -2,18 +2,20 @@ package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
-import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.world.IBlockReader;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
  * Some helper methods to manage items which can store upgrades (Pneumatic Armor, Drones...)
@@ -28,7 +30,7 @@ public class UpgradableItemUtils {
      * @param flag tooltip flag
      * @return number of (unique) upgrades in the item
      */
-    public static int addUpgradeInformation(ItemStack iStack, World world, List<String> textList, ITooltipFlag flag) {
+    public static int addUpgradeInformation(ItemStack iStack, IBlockReader world, List<ITextComponent> textList, ITooltipFlag flag) {
         ItemStack[] inventoryStacks = getUpgradeStacks(iStack);
         boolean isItemEmpty = true;
         for (ItemStack stack : inventoryStacks) {
@@ -38,9 +40,9 @@ public class UpgradableItemUtils {
             }
         }
         if (isItemEmpty) {
-            textList.add(TextFormatting.DARK_GREEN + I18n.format("gui.tooltip.upgrades.empty"));
+            textList.add(xlate("gui.tooltip.upgrades.empty").applyTextStyle(TextFormatting.DARK_GREEN));
         } else {
-            textList.add(TextFormatting.GREEN + I18n.format("gui.tooltip.upgrades.not_empty"));
+            textList.add(xlate("gui.tooltip.upgrades.not_empty").applyTextStyle(TextFormatting.GREEN));
             PneumaticCraftUtils.sortCombineItemStacksAndToString(textList, inventoryStacks);
         }
         return inventoryStacks.length;
@@ -50,22 +52,22 @@ public class UpgradableItemUtils {
      * Retrieves the upgrades currently installed on the given itemstack.
      */
     public static ItemStack[] getUpgradeStacks(ItemStack iStack) {
-        NBTTagCompound tag = NBTUtil.getCompoundTag(iStack, ChargeableItemHandler.NBT_UPGRADE_TAG);
+        CompoundNBT tag = NBTUtil.getCompoundTag(iStack, ChargeableItemHandler.NBT_UPGRADE_TAG);
         ItemStack[] inventoryStacks = new ItemStack[9];
         Arrays.fill(inventoryStacks, ItemStack.EMPTY);
-        NBTTagList itemList = tag.getTagList("Items", 10);
-        for (int i = 0; i < itemList.tagCount(); i++) {
-            NBTTagCompound slotEntry = itemList.getCompoundTagAt(i);
+        ListNBT itemList = tag.getList("Items", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < itemList.size(); i++) {
+            CompoundNBT slotEntry = itemList.getCompound(i);
             int j = slotEntry.getByte("Slot");
             if (j >= 0 && j < 9) {
-                inventoryStacks[j] = new ItemStack(slotEntry);
+                inventoryStacks[j] = ItemStack.read(slotEntry);
             }
         }
         return inventoryStacks;
     }
 
     public static int getUpgrades(EnumUpgrade upgrade, ItemStack stack) {
-        return getUpgrades(Itemss.upgrades.get(upgrade), stack);
+        return getUpgrades(upgrade.getItem(), stack);
     }
 
     public static int getUpgrades(Item upgrade, ItemStack iStack) {

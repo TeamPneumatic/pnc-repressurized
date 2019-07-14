@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory.handler;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -22,7 +22,7 @@ public class ComparatorItemStackHandler extends BaseItemStackHandler {
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
+    public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
         signalLevel = -1;
     }

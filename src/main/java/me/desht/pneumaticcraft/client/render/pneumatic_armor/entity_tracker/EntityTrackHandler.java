@@ -2,10 +2,10 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IEntityTrackEntry;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IEntityTrackEntry.EntityTrackEntry;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IPneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry.EntityTrackEntry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
@@ -22,24 +22,26 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItemFrame;
-import net.minecraft.entity.item.EntityPainting;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemFrameEntity;
+import net.minecraft.entity.item.PaintingEntity;
+import net.minecraft.entity.item.PaintingType;
+import net.minecraft.entity.monster.CreeperEntity;
+import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.monster.SlimeEntity;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EntityTrackHandler {
     private static final List<IEntityTrackEntry> trackEntries = new ArrayList<>();
@@ -122,15 +124,15 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             curInfo.add(I18n.format("entityTracker.info.tamed", ((EntityDrone) entity).playerName));
             curInfo.add(I18n.format("entityTracker.info.drone.routine", ((EntityDrone) entity).getLabel()));
-            EntityPlayer player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+            PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
             if (DroneDebugUpgradeHandler.enabledForPlayer(player)) {
-                if (NBTUtil.getInteger(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId()) {
+                if (NBTUtil.getInteger(player.getItemStackFromSlot(EquipmentSlotType.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId()) {
                     curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.debugging"));
                     curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.debugging.key",
-                            Keyboard.getKeyName(KeyHandler.getInstance().keybindOpenOptions.getKeyCode())));
+                            KeyHandler.getInstance().keybindOpenOptions.getKeyDescription()));
                 } else if (isLookingAtTarget) {
                     curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.pressDebugKey",
-                            Keyboard.getKeyName(KeyHandler.getInstance().keybindDebuggingDrone.getKeyCode())));
+                            KeyHandler.getInstance().keybindDebuggingDrone.getKeyDescription()));
                 }
             }
         }
@@ -152,12 +154,12 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryLivingBase extends EntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof EntityLivingBase;
+            return entity instanceof LivingEntity;
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            int healthPercentage = (int) (((EntityLivingBase) entity).getHealth() / ((EntityLivingBase) entity).getMaxHealth() * 100F);
+            int healthPercentage = (int) (((LivingEntity) entity).getHealth() / ((LivingEntity) entity).getMaxHealth() * 100F);
             curInfo.add(I18n.format("entityTracker.info.health", healthPercentage));
         }
     }
@@ -165,12 +167,12 @@ public class EntityTrackHandler {
     public static class EntityTrackEntrySlime extends EntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof EntitySlime;
+            return entity instanceof SlimeEntity;
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            switch (((EntitySlime) entity).getSlimeSize()) {
+            switch (((SlimeEntity) entity).getSlimeSize()) {
                 case 1:
                     curInfo.add("Size: Tiny");
                     break;
@@ -181,7 +183,7 @@ public class EntityTrackHandler {
                     curInfo.add("Size: Big");
                     break;
                 default:
-                    curInfo.add("Size: " + ((EntitySlime) entity).getSlimeSize());
+                    curInfo.add("Size: " + ((SlimeEntity) entity).getSlimeSize());
                     break;
             }
         }
@@ -190,14 +192,14 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryMob extends EntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof EntityMob;
+            return entity instanceof MonsterEntity;
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            Entity target = ((EntityMob) entity).getAttackTarget();
+            Entity target = ((MonsterEntity) entity).getAttackTarget();
             if (target != null) {
-                curInfo.add("Target: " + target.getDisplayName().getUnformattedText());
+                curInfo.add("Target: " + target.getDisplayName().getFormattedText());
             }
         }
     }
@@ -207,12 +209,12 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryAgeable extends EntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof EntityAgeable;
+            return entity instanceof AgeableEntity;
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            int growingAge = ((EntityAgeable) entity).getGrowingAge();
+            int growingAge = ((AgeableEntity) entity).getGrowingAge();
             if (growingAge > 0) {
                 curInfo.add(I18n.format("entityTracker.info.canBreedIn", PneumaticCraftUtils.convertTicksToMinutesAndSeconds(growingAge, false)));
             } else if (growingAge < 0) {
@@ -226,14 +228,14 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryTameable extends EntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof EntityTameable;
+            return entity instanceof TameableEntity;
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            EntityLivingBase owner = ((EntityTameable) entity).getOwner();
+            LivingEntity owner = ((TameableEntity) entity).getOwner();
             if (owner != null) {
-                curInfo.add(I18n.format("entityTracker.info.tamed", owner.getDisplayName().getUnformattedText()));
+                curInfo.add(I18n.format("entityTracker.info.tamed", owner.getDisplayName().getFormattedText()));
             } else {
                 curInfo.add(I18n.format("entityTracker.info.canTame"));
             }
@@ -245,12 +247,12 @@ public class EntityTrackHandler {
 
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof EntityCreeper;
+            return entity instanceof CreeperEntity;
         }
 
         @Override
         public void update(Entity entity) {
-            if (((EntityCreeper) entity).getCreeperState() == 1) {
+            if (((CreeperEntity) entity).getCreeperState() == 1) {
                 creeperInFuseTime++;
                 if (creeperInFuseTime > 30) creeperInFuseTime = 30;
             } else {
@@ -262,7 +264,7 @@ public class EntityTrackHandler {
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             if (creeperInFuseTime > 0) {
-                if (((EntityCreeper) entity).getCreeperState() == 1) {
+                if (((CreeperEntity) entity).getCreeperState() == 1) {
                     curInfo.add(TextFormatting.RED + I18n.format("entityTracker.info.creeper.fuse", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !"));
                 } else {
                     curInfo.add(TextFormatting.DARK_GREEN + I18n.format("entityTracker.info.creeper.coolDown", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !"));
@@ -274,22 +276,26 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryPlayer extends EntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof EntityPlayer;
+            return entity instanceof PlayerEntity;
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            EntityPlayer player = (EntityPlayer) entity;
+            PlayerEntity player = (PlayerEntity) entity;
 
-            curInfo.add(TextFormatting.GRAY + I18n.format("entityTracker.info.player.armor"));
-            int l = curInfo.size();
-            PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, asItemStackArray(player.inventory.armorInventory));
-            if (l == curInfo.size()) curInfo.add(I18n.format("gui.misc.no_items"));
+            addInventory("entityTracker.info.player.armor", curInfo, player.inventory.armorInventory);
+            addInventory("entityTracker.info.player.holding", curInfo, player.inventory.mainInventory);
+        }
 
-            l = curInfo.size();
-            curInfo.add(TextFormatting.GRAY + I18n.format("entityTracker.info.player.holding"));
-            PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, asItemStackArray(player.inventory.mainInventory));
-            if (l == curInfo.size()) curInfo.add(I18n.format("gui.misc.no_items"));
+        private static void addInventory(String title, List<String> curInfo, NonNullList<ItemStack> stacks) {
+            curInfo.add(TextFormatting.GRAY + I18n.format(title));
+            List<ITextComponent> l = new ArrayList<>();
+            PneumaticCraftUtils.sortCombineItemStacksAndToString(l, asItemStackArray(stacks));
+            if (l.isEmpty()) {
+                curInfo.add(I18n.format("gui.misc.no_items"));
+            } else {
+                curInfo.addAll(l.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()));
+            }
         }
     }
 
@@ -336,15 +342,15 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryPainting extends EntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof EntityPainting;
+            return entity instanceof PaintingEntity;
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            EntityPainting.EnumArt art = ((EntityPainting) entity).art;
+            PaintingType art = ((PaintingEntity) entity).art;
 
             if (art != null) {
-                curInfo.add(I18n.format("entityTracker.info.painting.art", art.title));
+                curInfo.add(I18n.format("entityTracker.info.painting.art", art.getRegistryName().getPath()));
             }
         }
     }
@@ -352,12 +358,12 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryItemFrame extends EntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof EntityItemFrame;
+            return entity instanceof ItemFrameEntity;
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            EntityItemFrame frame = (EntityItemFrame) entity;
+            ItemFrameEntity frame = (ItemFrameEntity) entity;
             ItemStack stack = frame.getDisplayedItem();
 
             if (!stack.isEmpty()) {

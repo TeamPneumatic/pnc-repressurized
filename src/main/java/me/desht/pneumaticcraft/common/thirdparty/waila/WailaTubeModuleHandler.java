@@ -6,12 +6,12 @@ import mcp.mobius.waila.api.IWailaDataProvider;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -30,16 +30,16 @@ public class WailaTubeModuleHandler implements IWailaDataProvider {
 
     @Override
     public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-        EnumFacing face = accessor.getMOP().sideHit;
+        Direction face = accessor.getMOP().sideHit;
         addModuleInfo(currenttip, (TileEntityPressureTube) accessor.getTileEntity(), accessor.getNBTData(), face);
         return currenttip;
     }
 
-    private static void addModuleInfo(List<String> currenttip, TileEntityPressureTube tube, NBTTagCompound tubeTag, EnumFacing face) {
-        NBTTagList moduleList = tubeTag.getTagList("modules", 10);
+    private static void addModuleInfo(List<String> currenttip, TileEntityPressureTube tube, CompoundNBT tubeTag, Direction face) {
+        ListNBT moduleList = tubeTag.getTagList("modules", 10);
         int side = tubeTag.getInteger("lookedSide");
         for (int i = 0; i < moduleList.tagCount(); i++) {
-            NBTTagCompound moduleTag = moduleList.getCompoundTagAt(i);
+            CompoundNBT moduleTag = moduleList.getCompoundTagAt(i);
             if (side == moduleTag.getInteger("side")) {
                 TubeModule module = tube.modules[side];
                 if (module != null) {
@@ -57,9 +57,9 @@ public class WailaTubeModuleHandler implements IWailaDataProvider {
     }
 
     @Override
-    public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
+    public CompoundNBT getNBTData(ServerPlayerEntity player, TileEntity te, CompoundNBT tag, World world, BlockPos pos) {
         if (te instanceof TileEntityPressureTube) {
-            TubeModule module = BlockPressureTube.getLookedModule(world, pos, player);
+            TubeModule module = BlockPressureTube.getFocusedModule(world, pos, player);
             ((TileEntityPressureTube) te).writeModulesToNBT(tag);
             if (module != null) {
                 tag.setInteger("lookedSide", module.getDirection().getIndex());

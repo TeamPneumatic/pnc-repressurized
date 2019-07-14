@@ -1,18 +1,21 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import net.minecraft.client.gui.widget.Widget;
+
 import java.util.Collections;
 import java.util.List;
 
-public class WidgetTooltipArea extends WidgetBase {
+public class WidgetTooltipArea extends Widget implements ITooltipSupplier {
     public final String[] tooltip;
 
     public WidgetTooltipArea(int x, int y, int width, int height, String... tooltip) {
-        super(0, x, y, width, height);
+        super(x, y, width, height, "");
         this.tooltip = tooltip;
     }
 
     @Override
-    public void onMouseClicked(int mouseX, int mouseY, int button) {
+    public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
+        // nothing
     }
 
     @Override

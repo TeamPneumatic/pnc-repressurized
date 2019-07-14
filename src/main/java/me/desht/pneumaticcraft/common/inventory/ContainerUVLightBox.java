@@ -1,20 +1,25 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerUVLightBox extends ContainerPneumaticBase<TileEntityUVLightBox> {
 
-    public ContainerUVLightBox(InventoryPlayer inventoryPlayer, TileEntityUVLightBox te) {
-        super(te);
+    public ContainerUVLightBox(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+        this(i, playerInventory, getTilePos(buffer));
+    }
 
-        addSlotToContainer(new SlotItemSpecific(te.getPrimaryInventory(), Itemss.EMPTY_PCB, 0, 71, 36));
+    public ContainerUVLightBox(int i, PlayerInventory playerInventory, BlockPos pos) {
+        super(ModContainerTypes.UV_LIGHT_BOX, i, playerInventory, pos);
+
+        addSlot(new SlotItemSpecific(te.getPrimaryInventory(), ModItems.EMPTY_PCB, 0, 71, 36));
 
         addUpgradeSlots(21, 29);
 
-        addPlayerSlots(inventoryPlayer, 84);
-
+        addPlayerSlots(playerInventory, 84);
     }
-
 }

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.computercraft;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -20,8 +20,8 @@ public abstract class LuaMethod implements ILuaMethod {
         return methodName;
     }
 
-    protected EnumFacing getDirForString(String luaParm) {
-        for (EnumFacing dir : EnumFacing.VALUES) {
+    protected Direction getDirForString(String luaParm) {
+        for (Direction dir : Direction.VALUES) {
             if (dir.toString().toLowerCase().equals(luaParm.toLowerCase())) {
                 return dir;
             }

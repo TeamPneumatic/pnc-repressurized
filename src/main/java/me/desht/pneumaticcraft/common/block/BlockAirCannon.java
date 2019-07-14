@@ -1,33 +1,25 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
-import me.desht.pneumaticcraft.lib.BBConstants;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
 
-public class BlockAirCannon extends BlockPneumaticCraftModeled {
-    private static final AxisAlignedBB bounds = new AxisAlignedBB(
-            BBConstants.AIR_CANNON_MIN_POS_SIDE, 0F, BBConstants.AIR_CANNON_MIN_POS_SIDE,
-            BBConstants.AIR_CANNON_MAX_POS_SIDE, BBConstants.AIR_CANNON_MAX_POS_TOP, BBConstants.AIR_CANNON_MAX_POS_SIDE
-    );
+public class BlockAirCannon extends BlockPneumaticCraft {
+    private static final VoxelShape SHAPE = Block.makeCuboidShape(1, 0, 1, 15, 10, 15);
 
-    BlockAirCannon() {
+    public BlockAirCannon() {
         super(Material.IRON, "air_cannon");
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return bounds;
-    }
-
-    @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.AIR_CANNON;
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+        return SHAPE;
     }
 
     @Override

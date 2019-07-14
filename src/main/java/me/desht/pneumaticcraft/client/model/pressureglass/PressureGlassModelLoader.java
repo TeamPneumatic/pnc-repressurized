@@ -1,16 +1,19 @@
 package me.desht.pneumaticcraft.client.model.pressureglass;
 
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.IUnbakedModel;
+import net.minecraft.client.renderer.model.ModelBakery;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.client.renderer.texture.ISprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ICustomModelLoader;
-import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.common.model.IModelState;
 
+import java.util.Collection;
+import java.util.Set;
 import java.util.function.Function;
 
 public enum PressureGlassModelLoader implements ICustomModelLoader {
@@ -28,7 +31,7 @@ public enum PressureGlassModelLoader implements ICustomModelLoader {
     }
 
     @Override
-    public IModel loadModel(ResourceLocation modelLocation) throws Exception {
+    public IUnbakedModel loadModel(ResourceLocation modelLocation) {
         return MODEL;
     }
 
@@ -36,10 +39,20 @@ public enum PressureGlassModelLoader implements ICustomModelLoader {
     public void onResourceManagerReload(IResourceManager resourceManager) {
     }
 
-    public static class PressureGlassModel implements IModel {
+    public static class PressureGlassModel implements IUnbakedModel {
         @Override
-        public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
-            return new PressureGlassBakedModel(state, format, bakedTextureGetter);
+        public IBakedModel bake(ModelBakery bakery, Function<ResourceLocation, TextureAtlasSprite> spriteGetter, ISprite sprite, VertexFormat format) {
+            return new PressureGlassBakedModel(format);
+        }
+
+        @Override
+        public Collection<ResourceLocation> getDependencies() {
+            return null;
+        }
+
+        @Override
+        public Collection<ResourceLocation> getTextures(Function<ResourceLocation, IUnbakedModel> modelGetter, Set<String> missingTextureErrors) {
+            return null;
         }
     }
 }

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.jei.JEIRefineryCategory.RefineryRecipeWrapper;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -23,7 +23,7 @@ public class JEIRefineryCategory extends PneumaticCraftCategory<RefineryRecipeWr
 
     @Override
     public String getTitle() {
-        return I18n.format(Blockss.REFINERY.getTranslationKey() + ".name");
+        return I18n.format(ModBlocks.REFINERY.getTranslationKey() + ".name");
     }
 
     @Override

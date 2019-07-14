@@ -3,7 +3,7 @@
     "defaults": {
         "textures": {},
 		"custom": { "flip-v": true },
-        "model": "pneumaticcraft:creative_compressor.obj"
+        "model": "pneumaticcraft:block/creative_compressor.obj"
     },
 	"variants": {
 		"normal": [{}],

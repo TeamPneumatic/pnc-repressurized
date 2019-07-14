@@ -1,33 +1,35 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackUpgradeHandler;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
+import java.util.Collections;
 import java.util.List;
 
 public class BlockTrackEntryHackable implements IBlockTrackEntry {
 
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te) {
+    public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
         return HackUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer())
-                && HackableHandler.getHackableForCoord(world, pos, PneumaticCraftRepressurized.proxy.getClientPlayer()) != null;
+                && world instanceof World
+                && HackableHandler.getHackableForCoord((World) world, pos, PneumaticCraftRepressurized.proxy.getClientPlayer()) != null;
     }
 
     @Override
-    public boolean shouldBeUpdatedFromServer(TileEntity te) {
-        return false;
+    public List<BlockPos> getServerUpdatePositions(TileEntity te) {
+        return Collections.emptyList();
     }
 
     @Override
@@ -36,7 +38,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList) {
         IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(world, pos, PneumaticCraftRepressurized.proxy.getClientPlayer());
         assert hackableBlock != null;
         int hackTime = HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class).getTargetForCoord(pos).getHackTime();

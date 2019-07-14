@@ -1,17 +1,17 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
-import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
-import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -24,8 +24,8 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class DroneAILogistics extends EntityAIBase {
-    private EntityAIBase curAI;
+public class DroneAILogistics extends Goal {
+    private Goal curAI;
     private final IDroneBase drone;
     private final ProgWidgetAreaItemBase widget;
     private LogisticsTask curTask;
@@ -126,22 +126,20 @@ public class DroneAILogistics extends EntityAIBase {
     }
 
     private boolean hasNoPathTo(BlockPos pos) {
-        for (EnumFacing d : EnumFacing.VALUES) {
+        for (Direction d : Direction.VALUES) {
             if (drone.isBlockValidPathfindBlock(pos.offset(d))) return false;
         }
         drone.addDebugEntry("gui.progWidget.general.debug.cantNavigate", pos);
         return true;
     }
 
-    private static class FakeWidgetLogistics extends ProgWidgetAreaItemBase implements ISidedWidget, ICountWidget,
-            ILiquidFiltered {
-        @Nonnull
+    private static class FakeWidgetLogistics extends ProgWidgetInventoryBase implements ILiquidFiltered {
         private final ItemStack stack;
         private final FluidStack fluid;
         private final Set<BlockPos> area;
         private final boolean[] sides = new boolean[6];
 
-        FakeWidgetLogistics(BlockPos pos, EnumFacing side, @Nonnull ItemStack stack) {
+        FakeWidgetLogistics(BlockPos pos, Direction side, @Nonnull ItemStack stack) {
             this.stack = stack;
             this.fluid = null;
             area = new HashSet<>();
@@ -149,7 +147,7 @@ public class DroneAILogistics extends EntityAIBase {
             sides[side.getIndex()] = true;
         }
 
-        FakeWidgetLogistics(BlockPos pos, EnumFacing side, FluidStack fluid) {
+        FakeWidgetLogistics(BlockPos pos, Direction side, FluidStack fluid) {
             this.stack = ItemStack.EMPTY;
             this.fluid = fluid;
             area = new HashSet<>();
@@ -163,8 +161,8 @@ public class DroneAILogistics extends EntityAIBase {
         }
 
         @Override
-        public int getCraftingColorIndex() {
-            return 0;
+        public DyeColor getColor() {
+            return DyeColor.WHITE;  // arbitrary
         }
 
         @Override

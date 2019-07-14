@@ -1,36 +1,36 @@
 package me.desht.pneumaticcraft.client.sound;
 
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
-import me.desht.pneumaticcraft.lib.Sounds;
-import net.minecraft.client.audio.MovingSound;
+import net.minecraft.client.audio.TickableSound;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 
-public class MovingSoundMinigun extends MovingSound {
+public class MovingSoundMinigun extends TickableSound {
     private final Entity entity;
     private final TileEntity tileEntity;
 
-    protected MovingSoundMinigun(Entity entity) {
+    MovingSoundMinigun(Entity entity) {
         super(Sounds.MINIGUN, SoundCategory.NEUTRAL);
         this.entity = entity;
         this.tileEntity = null;
         init();
     }
 
-    public MovingSoundMinigun(TileEntity tileEntity) {
+    MovingSoundMinigun(TileEntity tileEntity) {
         super(Sounds.MINIGUN, SoundCategory.NEUTRAL);
         this.entity = null;
         this.tileEntity = tileEntity;
-        xPosF = tileEntity.getPos().getX();
-        yPosF = tileEntity.getPos().getY();
-        zPosF = tileEntity.getPos().getZ();
+        x = tileEntity.getPos().getX();
+        y = tileEntity.getPos().getY();
+        z = tileEntity.getPos().getZ();
         init();
     }
 
@@ -41,27 +41,27 @@ public class MovingSoundMinigun extends MovingSound {
     }
 
     @Override
-    public void update() {
+    public void tick() {
         Minigun minigun = null;
         if (entity != null) {
-            if (entity.isDead) {
+            if (!entity.isAlive()) {
                 donePlaying = true;
                 return;
             }
-            xPosF = (float) entity.posX;
-            yPosF = (float) entity.posY;
-            zPosF = (float) entity.posZ;
-            if (entity instanceof EntityPlayer) {
-                EntityPlayer player = (EntityPlayer) entity;
+            x = (float) entity.posX;
+            y = (float) entity.posY;
+            z = (float) entity.posZ;
+            if (entity instanceof PlayerEntity) {
+                PlayerEntity player = (PlayerEntity) entity;
                 ItemStack curItem = player.getHeldItemMainhand();
-                if (curItem.getItem() == Itemss.MINIGUN) {
-                    minigun = ((ItemMinigun) Itemss.MINIGUN).getMinigun(curItem, player);
+                if (curItem.getItem() == ModItems.MINIGUN) {
+                    minigun = ((ItemMinigun) ModItems.MINIGUN).getMinigun(curItem, player);
                 }
             } else if (entity instanceof EntityDrone) {
                 minigun = ((EntityDrone) entity).getMinigun();
             }
         } else if (tileEntity != null) {
-            if (tileEntity.isInvalid()) {
+            if (tileEntity.isRemoved()) {
                 donePlaying = true;
                 return;
             }

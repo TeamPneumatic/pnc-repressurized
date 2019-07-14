@@ -3,10 +3,10 @@ package me.desht.pneumaticcraft.common.heat;
 import me.desht.pneumaticcraft.common.config.BlockHeatPropertiesConfig;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.FluidRegistry;
 
 public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
-    public static final double BASE_AMBIENT_TEMP = FluidRegistry.WATER.getTemperature();
+    // todo 1.14 fluids
+    public static final double BASE_AMBIENT_TEMP = 300; // FluidRegistry.WATER.getTemperature();
 
     private static final HeatExchangerLogicAmbient DEFAULT_AIR_EXCHANGER = new HeatExchangerLogicAmbient(BASE_AMBIENT_TEMP);
 

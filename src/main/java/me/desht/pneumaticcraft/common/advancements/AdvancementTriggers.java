@@ -1,11 +1,8 @@
 package me.desht.pneumaticcraft.common.advancements;
 
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.ICriterionTrigger;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.Arrays;
 
 public class AdvancementTriggers {
     public static final CustomTrigger EXPLODE_IRON = new CustomTrigger("root");
@@ -35,15 +32,6 @@ public class AdvancementTriggers {
     };
 
     public static void registerTriggers() {
-        Method method;
-        try {
-            method = ReflectionHelper.findMethod(CriteriaTriggers.class, "register", "func_192118_a", ICriterionTrigger.class);
-            method.setAccessible(true);
-            for (CustomTrigger trigger : ALL_TRIGGERS) {
-                method.invoke(null, trigger);
-            }
-        } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        Arrays.stream(ALL_TRIGGERS).forEach(CriteriaTriggers::register);
     }
 }

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
@@ -12,17 +12,15 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Mai
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiSlider;
-import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +43,8 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     }
 
     GuiMoveStat(IUpgradeRenderHandler renderHandler, ArmorHUDLayout.LayoutTypes layoutItem, @Nonnull IGuiAnimatedStat movedStat) {
+        super(new StringTextComponent("Move Gui"));
+
         this.movedStat = movedStat;
         this.renderHandler = renderHandler;
         this.layoutItem = layoutItem;
@@ -52,7 +52,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         movedStat.openWindow();
 
         CommonArmorHandler hudHandler = CommonArmorHandler.getHandlerForPlayer();
-        for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
             List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
             for (int i = 0; i < renderHandlers.size(); i++) {
                 IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
@@ -75,15 +75,16 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
-        snapToGrid = new GuiCheckBox(1, 10, (height * 3) / 5, 0xC0C0C0, "Snap To Grid");
+        snapToGrid = new GuiCheckBox(10, (height * 3) / 5, 0xC0C0C0, "Snap To Grid");
         snapToGrid.x = (width - snapToGrid.getBounds().width) / 2;
         snapToGrid.checked = snap;
-        addWidget(snapToGrid);
+        addButton(snapToGrid);
 
-        gridSlider = new GuiSlider(2, snapToGrid.x, snapToGrid.y + 12, snapToGrid.getBounds().width, 10, "", "", 1, 12, gridSize, false, true);
+        gridSlider = new GuiSlider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getBounds().width, 10,
+                "", "", 1, 12, gridSize, false, true, b -> {}, null);
         addButton(gridSlider);
     }
 
@@ -93,14 +94,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     }
 
     @Override
-    protected void mouseClickMove(int x, int y, int lastButtonClicked, long timeSinceMouseClick) {
-        if (clicked) {
-            reposition(movedStat, x, y);
-        }
-    }
-
-    @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if (movedStat.getBounds().contains(mouseX, mouseY)) {
             if (mouseButton == 2) {
                 movedStat.setLeftSided(!movedStat.isLeftSided());
@@ -109,48 +103,55 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
                 clicked = true;
                 reposition(movedStat, mouseX, mouseY);
             }
-        } else {
-            super.mouseClicked(mouseX, mouseY, mouseButton);
+            return true;
         }
+        return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
         if (clicked) {
             if (mouseButton == 0 || mouseButton == 1) {
                 reposition(movedStat, mouseX, mouseY);
             }
             save();
             clicked = false;
+            return true;
         }
-        super.mouseReleased(mouseX, mouseY, mouseButton);
+        return super.mouseReleased(mouseX, mouseY, mouseButton);
     }
 
-    private void reposition(IGuiAnimatedStat stat, int x, int y) {
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dx, double dy) {
+        if (clicked) {
+            reposition(movedStat, mouseX, mouseY);
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, mouseButton, dx, dy);
+    }
+
+    private void reposition(IGuiAnimatedStat stat, double x, double y) {
         if (snap) {
             x = x - (x % gridSize);
             y = y - (y % gridSize);
         }
-        stat.setBaseX(x);
-        stat.setBaseY(y);
+        stat.setBaseX((int) x);
+        stat.setBaseY((int) y);
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        if (keyCode == Keyboard.KEY_ESCAPE) {
-            Minecraft.getMinecraft().displayGuiScreen(GuiHelmetMainScreen.getInstance());
-        } else {
-            super.keyTyped(typedChar, keyCode);
-        }
+    public void onClose() {
+        minecraft.displayGuiScreen(GuiHelmetMainScreen.getInstance());
     }
 
+
     @Override
-    public void drawScreen(int x, int y, float partialTicks) {
-        drawDefaultBackground();
+    public void render(int x, int y, float partialTicks) {
+        renderBackground();
 
-        GuiUtils.showPopupHelpScreen(this, fontRenderer, helpText);
+        GuiUtils.showPopupHelpScreen(this, font, helpText);
 
-        super.drawScreen(x, y, partialTicks);
+        super.render(x, y, partialTicks);
 
         movedStat.render(-1, -1, partialTicks);
 
@@ -163,15 +164,15 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
 
         snap = snapToGrid.checked;
         gridSize = gridSlider.getValueInt();
         gridSlider.visible = snap;
 
-        movedStat.update();
-        otherStats.forEach(IGuiAnimatedStat::update);
+        movedStat.tick();
+        otherStats.forEach(IGuiAnimatedStat::tick);
 
         if (helpText.isEmpty()) {
             helpText.add(TextFormatting.GREEN + "" + TextFormatting.UNDERLINE + "Moving: "
@@ -188,10 +189,10 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     }
 
     private void save() {
-        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+        MainWindow sr = minecraft.mainWindow;
         ArmorHUDLayout.INSTANCE.updateLayout(layoutItem,
-                (float)(movedStat.getBaseX() / sr.getScaledWidth_double()),
-                (float)(movedStat.getBaseY() / sr.getScaledHeight_double()),
+                ((float) movedStat.getBaseX() / (float) sr.getScaledWidth()),
+                ((float) movedStat.getBaseY() / (float) sr.getScaledHeight()),
                 movedStat.isLeftSided());
     }
 }

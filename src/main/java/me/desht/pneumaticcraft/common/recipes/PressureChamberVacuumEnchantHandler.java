@@ -7,9 +7,9 @@ import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.init.Enchantments;
-import net.minecraft.init.Items;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemStackHandler;
 

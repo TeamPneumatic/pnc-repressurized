@@ -1,25 +1,25 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.FluidTrackEvent;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
-import net.minecraft.block.state.IBlockState;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.FluidTrackEvent;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
+import java.util.Collections;
 import java.util.List;
 
 public class BlockTrackEntryFluid implements IBlockTrackEntry {
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te) {
+    public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
         return te != null
                 && !TrackerBlacklistManager.isFluidBlacklisted(te)
                 && IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
@@ -27,8 +27,8 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     }
 
     @Override
-    public boolean shouldBeUpdatedFromServer(TileEntity te) {
-        return true;
+    public List<BlockPos> getServerUpdatePositions(TileEntity te) {
+        return Collections.singletonList(te.getPos());
     }
 
     @Override
@@ -37,11 +37,9 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList) {
         try {
-            IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face);
-
-            if (handler != null) {
+            te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).ifPresent(handler -> {
                 int i = 1;
                 for (IFluidTankProperties tank : handler.getTankProperties()) {
                     FluidStack stack = tank.getContents();
@@ -52,7 +50,7 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
                     }
                     i++;
                 }
-            }
+            });
         } catch (Throwable e) {
             TrackerBlacklistManager.addFluidTEToBlacklist(te, e);
         }

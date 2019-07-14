@@ -1,14 +1,11 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetString;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 
@@ -22,9 +19,9 @@ public class ProgWidgetString extends ProgWidget {
     }
     
     @Override
-    public void getTooltip(List<String> curTooltip) {
+    public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        if (addToTooltip()) curTooltip.add("Value: \"" + string + "\"");
+        if (addToTooltip()) curTooltip.add(new StringTextComponent("Value: \"" + string + "\""));
     }
 
     protected boolean addToTooltip() {
@@ -62,21 +59,15 @@ public class ProgWidgetString extends ProgWidget {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setString("string", string);
+        tag.putString("string", string);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         string = tag.getString("string");
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetString(this, guiProgrammer);
     }
 
     @Override
@@ -85,8 +76,7 @@ public class ProgWidgetString extends ProgWidget {
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.LIGHT_BLUE;
+    public DyeColor getColor() {
+        return DyeColor.LIGHT_BLUE;
     }
-
 }

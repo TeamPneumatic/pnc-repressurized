@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerSentryTurret;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -9,67 +10,60 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import org.lwjgl.glfw.GLFW;
 
-import java.io.IOException;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
-public class GuiSentryTurret extends GuiPneumaticContainerBase<TileEntitySentryTurret> {
-
+public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTurret,TileEntitySentryTurret> {
     private WidgetTextField entityFilter;
+    private int sendDelay = -1;
 
-    public GuiSentryTurret(InventoryPlayer player, TileEntitySentryTurret te) {
-
-        super(new ContainerSentryTurret(player, te), te, Textures.GUI_SENTRY_TURRET);
+    public GuiSentryTurret(ContainerSentryTurret container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        addWidget(entityFilter = new WidgetTextField(fontRenderer, guiLeft + 80, guiTop + 63, 70, fontRenderer.FONT_HEIGHT));
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_SENTRY_TURRET;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        addButton(entityFilter = new WidgetTextField(font, guiLeft + 80, guiTop + 63, 70, font.FONT_HEIGHT));
+        entityFilter.func_212954_a(s -> sendDelay = 5);
 
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
+
         if (!entityFilter.isFocused()) entityFilter.setText(te.getText(0));
-    }
 
-    @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-        if (!entityFilter.isFocused()) {
+        if (sendDelay > 0 && --sendDelay == 0) {
             te.setText(0, entityFilter.getText());
             NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
+            sendDelay = 5;
         }
-    }
-
-    @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
-
-        te.setText(0, entityFilter.getText());
-        NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        fontRenderer.drawString("Upgr.", 28, 19, 4210752);
-        fontRenderer.drawString(I18n.format("gui.sentryTurret.ammo"), 80, 19, 4210752);
-        fontRenderer.drawString(I18n.format("gui.sentryTurret.targetFilter"), 80, 53, 4210752);
-        if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(this, fontRenderer,
+        font.drawString("Upgr.", 28, 19, 0x404040);
+        font.drawString(I18n.format("gui.sentryTurret.ammo"), 80, 19, 0x404040);
+        font.drawString(I18n.format("gui.sentryTurret.targetFilter"), 80, 53, 0x404040);
+        if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
+            GuiUtils.showPopupHelpScreen(this, font,
                     PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
         } else if (x >= guiLeft + 76 && y >= guiTop + 51 && x <= guiLeft + 153 && y <= guiTop + 74) {
             // cursor inside the entity filter area
             String str = I18n.format("gui.entityFilter");
-            fontRenderer.drawString(str, (xSize - fontRenderer.getStringWidth(str)) / 2, ySize + 5, 0x808080);
+            font.drawString(str, (xSize - font.getStringWidth(str)) / 2f, ySize + 5, 0x808080);
         }
     }
 

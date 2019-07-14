@@ -5,15 +5,16 @@ import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetString;
+import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.BoatEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
@@ -167,7 +168,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
             if (typeClass != null) {
                 ok = typeClass.isAssignableFrom(entity.getClass());
             } else if (regex != null) {
-                Matcher m = regex.matcher(entity.getName());
+                Matcher m = regex.matcher(TextFormatting.getTextWithoutFormattingCodes(entity.getName().getFormattedText()));
                 ok = m.matches();
             }
             return ok && matchModifiers(entity);
@@ -180,14 +181,14 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
                 boolean ret = false;
                 switch (modifier) {
                     case AGE:
-                        if (entity instanceof EntityAgeable) {
-                            ret = ((EntityAgeable) entity).getGrowingAge() >= 0 ?
+                        if (entity instanceof AgeableEntity) {
+                            ret = ((AgeableEntity) entity).getGrowingAge() >= 0 ?
                                     val.equalsIgnoreCase("adult") : val.equalsIgnoreCase("baby");
                         }
                         break;
                     case BREEDABLE:
-                        if (entity instanceof EntityAnimal) {
-                            ret = ((EntityAnimal) entity).getGrowingAge() == 0 ?
+                        if (entity instanceof AnimalEntity) {
+                            ret = ((AnimalEntity) entity).getGrowingAge() == 0 ?
                                     val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
                         }
                         break;
@@ -204,25 +205,25 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
                     typeClass = IMob.class;  // IMob matches some hostile creatures that EntityMob doesn't
                     break;
                 case "animal":
-                    typeClass = EntityAnimal.class;
+                    typeClass = AnimalEntity.class;
                     break;
                 case "living":
-                    typeClass = EntityLivingBase.class;
+                    typeClass = LivingEntity.class;
                     break;
                 case "player":
-                    typeClass = EntityPlayer.class;
+                    typeClass = PlayerEntity.class;
                     break;
                 case "item":
-                    typeClass = EntityItem.class;
+                    typeClass = ItemEntity.class;
                     break;
                 case "minecart":
-                    typeClass = EntityMinecart.class;
+                    typeClass = AbstractMinecartEntity.class;
                     break;
                 case "drone":
                     typeClass = EntityDrone.class;
                     break;
                 case "boat":
-                    typeClass = EntityBoat.class;
+                    typeClass = BoatEntity.class;
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown entity type specifier: @" + substring);

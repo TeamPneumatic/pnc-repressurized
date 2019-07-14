@@ -2,7 +2,7 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {},
-    "model": "pneumaticcraft:aphorism_tile"
+    "model": "pneumaticcraft:block/aphorism_tile"
   },
   "variants": {
     "facing": {

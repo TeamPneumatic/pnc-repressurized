@@ -1,8 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
@@ -11,195 +10,177 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class ItemAmadronTablet extends ItemPressurizable implements IPositionProvider {
 
     public ItemAmadronTablet() {
         super("amadron_tablet", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
-        setMaxStackSize(1);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        if (handIn != EnumHand.MAIN_HAND) return ActionResult.newResult(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (!worldIn.isRemote) {
-            NetworkHandler.sendTo(new PacketSyncAmadronOffers(playerIn), (EntityPlayerMP) playerIn);
-            playerIn.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON.ordinal(), playerIn.world, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
+            NetworkHandler.sendToPlayer(new PacketSyncAmadronOffers(playerIn), (ServerPlayerEntity) playerIn);
+            NetworkHooks.openGui((ServerPlayerEntity) playerIn, new INamedContainerProvider() {
+                @Override
+                public ITextComponent getDisplayName() {
+                    return playerIn.getHeldItem(handIn).getDisplayName();
+                }
+
+                @Nullable
+                @Override
+                public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                    return new ContainerAmadron(windowId, playerInventory, handIn);
+                }
+            }, buf -> buf.writeBoolean(handIn == Hand.MAIN_HAND));
         }
-        return ActionResult.newResult(EnumActionResult.SUCCESS, playerIn.getHeldItemMainhand());
+        return ActionResult.newResult(ActionResultType.SUCCESS, playerIn.getHeldItemMainhand());
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (hand != EnumHand.MAIN_HAND) return EnumActionResult.PASS;
+    public ActionResultType onItemUse(ItemUseContext ctx) {
+        Direction facing = ctx.getFace();
+        PlayerEntity player = ctx.getPlayer();
+        World worldIn = ctx.getWorld();
+        BlockPos pos = ctx.getPos();
+
         TileEntity te = worldIn.getTileEntity(pos);
-        if (te == null) return EnumActionResult.PASS;
-        if (te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)) {
+        if (te == null) return ActionResultType.PASS;
+
+        if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent()) {
             if (!worldIn.isRemote) {
-                setLiquidProvidingLocation(player.getHeldItemMainhand(), pos, worldIn.provider.getDimension());
-                player.sendStatusMessage(new TextComponentTranslation("message.amadronTable.setLiquidProvidingLocation", pos.getX(), pos.getY(), pos.getZ(),
-                        worldIn.provider.getDimension(), worldIn.provider.getDimensionType().toString()), false);
+                setLiquidProvidingLocation(player.getHeldItem(ctx.getHand()), GlobalPos.of(worldIn.getDimension().getType(), pos));
             }
-        } else if (te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing)) {
+        } else if (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()) {
             if (!worldIn.isRemote) {
-                setItemProvidingLocation(player.getHeldItemMainhand(), pos, worldIn.provider.getDimension());
-                player.sendStatusMessage(new TextComponentTranslation("message.amadronTable.setItemProvidingLocation", pos.getX(), pos.getY(), pos.getZ(),
-                        worldIn.provider.getDimension(), worldIn.provider.getDimensionType().toString()), false);
+                setItemProvidingLocation(player.getHeldItem(ctx.getHand()), GlobalPos.of(worldIn.getDimension().getType(), pos));
             }
         } else {
-            return EnumActionResult.PASS;
+            return ActionResultType.PASS;
         }
-        return EnumActionResult.SUCCESS;
-
+        return ActionResultType.SUCCESS;
     }
 
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag flag) {
+    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag flag) {
         super.addInformation(stack, worldIn, infoList, flag);
-        BlockPos pos = getItemProvidingLocation(stack);
-        if (pos != null) {
-            int dim = getItemProvidingDimension(stack);
-            infoList.add(I18n.format("gui.tooltip.amadronTablet.itemLocation", pos.getX(), pos.getY(), pos.getZ(), dim));
+        GlobalPos gPos = getItemProvidingLocation(stack);
+        if (gPos != null) {
+            infoList.add(xlate("gui.tooltip.amadronTablet.itemLocation", gPos.toString()));
         } else {
-            infoList.add(I18n.format("gui.tooltip.amadronTablet.selectItemLocation"));
+            infoList.add(xlate("gui.tooltip.amadronTablet.selectItemLocation"));
         }
 
-        pos = getLiquidProvidingLocation(stack);
-        if (pos != null) {
-            int dim = getLiquidProvidingDimension(stack);
-            infoList.add(I18n.format("gui.tooltip.amadronTablet.fluidLocation", pos.getX(), pos.getY(), pos.getZ(), dim));
+        gPos = getFluidProvidingLocation(stack);
+        if (gPos != null) {
+            infoList.add(xlate("gui.tooltip.amadronTablet.fluidLocation", gPos));
         } else {
-            infoList.add(I18n.format("gui.tooltip.amadronTablet.selectFluidLocation"));
+            infoList.add(xlate("gui.tooltip.amadronTablet.selectFluidLocation"));
         }
     }
 
-    public static IItemHandler getItemProvider(ItemStack tablet) {
-        BlockPos pos = getItemProvidingLocation(tablet);
+    public static LazyOptional<IItemHandler> getItemProvider(ItemStack tablet) {
+        GlobalPos pos = getItemProvidingLocation(tablet);
         if (pos != null) {
-            int dimension = getItemProvidingDimension(tablet);
-            TileEntity te = PneumaticCraftUtils.getTileEntity(pos, dimension);
+            TileEntity te = PneumaticCraftUtils.getTileEntity(pos);
             return IOHelper.getInventoryForTE(te);
         }
         return null;
     }
 
-    public static BlockPos getItemProvidingLocation(ItemStack tablet) {
-        NBTTagCompound compound = tablet.getTagCompound();
-        if (compound != null) {
-            int x = compound.getInteger("itemX");
-            int y = compound.getInteger("itemY");
-            int z = compound.getInteger("itemZ");
-            if (x != 0 || y != 0 || z != 0) {
-                return new BlockPos(x, y, z);
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
+    public static GlobalPos getItemProvidingLocation(ItemStack tablet) {
+        return tablet.hasTag() && tablet.getTag().contains("itemPos") ?
+                PneumaticCraftUtils.deserializeGlobalPos(tablet.getTag().getCompound("itemPos")) :
+                null;
     }
 
-    public static int getItemProvidingDimension(ItemStack tablet) {
-        return tablet.hasTagCompound() ? tablet.getTagCompound().getInteger("itemDim") : 0;
+    private static void setItemProvidingLocation(ItemStack tablet, GlobalPos globalPos) {
+        NBTUtil.setCompoundTag(tablet, "itemPos", PneumaticCraftUtils.serializeGlobalPos(globalPos));
     }
 
-    public static void setItemProvidingLocation(ItemStack tablet, BlockPos pos, int dimensionId) {
-        NBTUtil.setInteger(tablet, "itemX", pos.getX());
-        NBTUtil.setInteger(tablet, "itemY", pos.getY());
-        NBTUtil.setInteger(tablet, "itemZ", pos.getZ());
-        NBTUtil.setInteger(tablet, "itemDim", dimensionId);
-    }
-
-    public static IFluidHandler getLiquidProvider(ItemStack tablet) {
-        BlockPos pos = getLiquidProvidingLocation(tablet);
+    public static LazyOptional<IFluidHandler> getFluidProvider(ItemStack tablet) {
+        GlobalPos pos = getFluidProvidingLocation(tablet);
         if (pos != null) {
-            int dimension = getLiquidProvidingDimension(tablet);
-            return FluidUtil.getFluidHandler(DimensionManager.getWorld(dimension), pos, null);
+            World world = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), pos.getDimension(), false, false);
+            return world == null ? LazyOptional.empty() : FluidUtil.getFluidHandler(world, pos.getPos(), null);
         }
         return null;
     }
 
-    public static BlockPos getLiquidProvidingLocation(ItemStack tablet) {
-        NBTTagCompound compound = tablet.getTagCompound();
-        if (compound != null) {
-            int x = compound.getInteger("liquidX");
-            int y = compound.getInteger("liquidY");
-            int z = compound.getInteger("liquidZ");
-            if (x != 0 || y != 0 || z != 0) {
-                return new BlockPos(x, y, z);
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
+    public static GlobalPos getFluidProvidingLocation(ItemStack tablet) {
+        return tablet.hasTag() && tablet.getTag().contains("liquidPos") ?
+                PneumaticCraftUtils.deserializeGlobalPos(tablet.getTag().getCompound("liquidPos")) :
+                null;
     }
 
-    public static int getLiquidProvidingDimension(ItemStack tablet) {
-        return tablet.hasTagCompound() ? tablet.getTagCompound().getInteger("liquidDim") : 0;
-    }
-
-    public static void setLiquidProvidingLocation(ItemStack tablet, BlockPos pos, int dimensionId) {
-        NBTUtil.setInteger(tablet, "liquidX", pos.getX());
-        NBTUtil.setInteger(tablet, "liquidY", pos.getY());
-        NBTUtil.setInteger(tablet, "liquidZ", pos.getZ());
-        NBTUtil.setInteger(tablet, "liquidDim", dimensionId);
+    private static void setLiquidProvidingLocation(ItemStack tablet, GlobalPos globalPos) {
+        NBTUtil.setCompoundTag(tablet, "liquidPos", PneumaticCraftUtils.serializeGlobalPos(globalPos));
     }
 
     public static Map<AmadronOffer, Integer> getShoppingCart(ItemStack tablet) {
         Map<AmadronOffer, Integer> offers = new HashMap<>();
 
-        if (tablet.hasTagCompound() && tablet.getTagCompound().hasKey("shoppingCart")) {
-            NBTTagList list = tablet.getTagCompound().getTagList("shoppingCart", 10);
-            for (int i = 0; i < list.tagCount(); i++) {
-                NBTTagCompound tag = list.getCompoundTagAt(i);
-                offers.put(tag.hasKey("inStock") ? AmadronOfferCustom.loadFromNBT(tag) : AmadronOffer.loadFromNBT(tag), tag.getInteger("amount"));
+        if (tablet.hasTag() && tablet.getTag().contains("shoppingCart")) {
+            ListNBT list = tablet.getTag().getList("shoppingCart", 10);
+            for (int i = 0; i < list.size(); i++) {
+                CompoundNBT tag = list.getCompound(i);
+                offers.put(tag.contains("inStock") ? AmadronOfferCustom.loadFromNBT(tag) : AmadronOffer.loadFromNBT(tag), tag.getInt("amount"));
             }
         }
         return offers;
     }
 
     public static void setShoppingCart(ItemStack tablet, Map<AmadronOffer, Integer> cart) {
-        NBTTagList list = new NBTTagList();
+        ListNBT list = new ListNBT();
         for (Map.Entry<AmadronOffer, Integer> entry : cart.entrySet()) {
-            NBTTagCompound tag = new NBTTagCompound();
+            CompoundNBT tag = new CompoundNBT();
             entry.getKey().writeToNBT(tag);
-            tag.setInteger("amount", entry.getValue());
-            list.appendTag(tag);
+            tag.putInt("amount", entry.getValue());
+            list.add(tag.size(), tag);
         }
         NBTUtil.setCompoundTag(tablet, "shoppingCart", list);
     }
 
     @Override
     public List<BlockPos> getStoredPositions(@Nonnull ItemStack stack) {
-        return Arrays.asList(getItemProvidingLocation(stack), getLiquidProvidingLocation(stack));
+        return Arrays.asList(getItemProvidingLocation(stack).getPos(), getFluidProvidingLocation(stack).getPos());
     }
 
     @Override

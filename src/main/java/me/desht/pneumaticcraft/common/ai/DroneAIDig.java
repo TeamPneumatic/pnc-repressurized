@@ -4,17 +4,17 @@ import me.desht.pneumaticcraft.common.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.management.PlayerInteractionManager;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.ServerWorld;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootParameters;
 
-import javax.annotation.Nonnull;
+import java.util.List;
 
 public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
 
@@ -28,23 +28,17 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
-        IBlockState blockState = worldCache.getBlockState(pos);
+        BlockState blockState = worldCache.getBlockState(pos);
         Block block = blockState.getBlock();
         if (!worldCache.isAirBlock(pos) && !ignoreBlock(block)) {
-            NonNullList<ItemStack> droppedStacks = NonNullList.create();
-            if (block.canSilkHarvest(drone.world(), pos, blockState, drone.getFakePlayer())) {
-                droppedStacks.add(getSilkTouchBlock(block, blockState));
-            } else {
-                block.getDrops(droppedStacks, drone.world(), pos, blockState, 0);
-            }
-            for (ItemStack droppedStack : droppedStacks) {
-                if (widget.isItemValidForFilters(droppedStack, blockState)) {
-                    return swapBestItemToFirstSlot(pos) || !((IToolUser)widget).requiresTool();
+            for (ItemStack droppedStack : getDrops(worldCache, pos, drone)) {
+                if (progWidget.isItemValidForFilters(droppedStack, blockState)) {
+                    return swapBestItemToFirstSlot(pos) || !((IToolUser) progWidget).requiresTool();
                 }
             }
-            if (widget.isItemValidForFilters(ItemStack.EMPTY, blockState)) {
+            if (progWidget.isItemValidForFilters(ItemStack.EMPTY, blockState)) {
                 // try a by-block check
-                return swapBestItemToFirstSlot(pos) || !((IToolUser)widget).requiresTool();
+                return swapBestItemToFirstSlot(pos) || !((IToolUser) progWidget).requiresTool();
             }
         }
         return false;
@@ -91,23 +85,17 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
     protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
         PlayerInteractionManager manager = drone.getFakePlayer().interactionManager;
         if (!manager.isDestroyingBlock || !manager.receivedFinishDiggingPacket) { //is not destroying and is not acknowledged.
-            IBlockState blockState = worldCache.getBlockState(pos);
+            BlockState blockState = worldCache.getBlockState(pos);
             Block block = blockState.getBlock();
-            if (!ignoreBlock(block) && isBlockValidForFilter(worldCache, drone, pos, widget)) {
+            if (!ignoreBlock(block) && isBlockValidForFilter(worldCache, pos, drone, progWidget)) {
                 if (blockState.getBlockHardness(drone.world(), pos) < 0) {
                     addToBlacklist(pos);
                     drone.addDebugEntry("gui.progWidget.dig.debug.cantDigBlock", pos);
                     drone.setDugBlock(null);
                     return false;
                 }
-                manager.onBlockClicked(pos, EnumFacing.DOWN);
-                manager.blockRemoving(pos);
-                /*if (!manager.isDestroyingBlock) { Commenting this a fix for #142? This statement always holds when blockRemoving(pos) is called.
-                    addToBlacklist(pos);
-                    drone.addDebugEntry("gui.progWidget.dig.debug.cantDigBlock", pos);
-                    drone.setDugBlock(null);
-                    return false;
-                }*/
+                manager.startDestroyBlock(pos, Direction.DOWN);
+                manager.stopDestroyBlock(pos);
                 drone.setDugBlock(pos);
                 return true;
             }
@@ -118,18 +106,12 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
         }
     }
 
-    public static boolean isBlockValidForFilter(IBlockAccess worldCache, IDroneBase drone, BlockPos pos, ProgWidgetAreaItemBase widget) {
-        IBlockState blockState = worldCache.getBlockState(pos);
+    public static boolean isBlockValidForFilter(IWorldReader worldCache, BlockPos pos, IDroneBase drone, ProgWidgetAreaItemBase widget) {
+        BlockState blockState = worldCache.getBlockState(pos);
         Block block = blockState.getBlock();
 
         if (!block.isAir(blockState, worldCache, pos)) {
-            NonNullList<ItemStack> droppedStacks = NonNullList.create();
-            if (block.canSilkHarvest(drone.world(), pos, blockState, drone.getFakePlayer())) {
-                droppedStacks.add(getSilkTouchBlock(block, blockState));
-            } else {
-                block.getDrops(droppedStacks, drone.world(), pos, blockState, 0);
-            }
-            for (ItemStack droppedStack : droppedStacks) {
+            for (ItemStack droppedStack : getDrops(worldCache, pos, drone)) {
                 if (widget.isItemValidForFilters(droppedStack, blockState)) {
                     return true;
                 }
@@ -139,14 +121,12 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
         return false;
     }
 
-    @Nonnull
-    private static ItemStack getSilkTouchBlock(Block block, IBlockState state) {
-        Item item = Item.getItemFromBlock(block);
-        if (item == Items.AIR) {
-            return ItemStack.EMPTY;
-        } else {
-            return new ItemStack(item, 1, block.getMetaFromState(state));
-        }
+    private static List<ItemStack> getDrops(IWorldReader worldCache, BlockPos pos, IDroneBase drone) {
+        return worldCache.getBlockState(pos).getDrops(
+                new LootContext.Builder((ServerWorld) drone.world())
+                        .withParameter(LootParameters.POSITION, pos)
+                        .withParameter(LootParameters.TOOL, drone.getInv().getStackInSlot(0))
+        );
     }
 
     private static boolean ignoreBlock(Block block) {

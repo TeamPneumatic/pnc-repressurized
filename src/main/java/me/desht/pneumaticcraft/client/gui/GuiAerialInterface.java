@@ -2,55 +2,51 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
-import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
+import me.desht.pneumaticcraft.common.inventory.ContainerAerialInterface;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface.FeedMode;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
-public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAerialInterface> {
+public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAerialInterface,TileEntityAerialInterface> {
     private final GuiButtonSpecial[] modeButtons = new GuiButtonSpecial[3];
     private GuiButtonSpecial xpButton;
 
-    public GuiAerialInterface(InventoryPlayer player, TileEntityAerialInterface te) {
-        super(new ContainerEnergy(player, te), te, Textures.GUI_4UPGRADE_SLOTS);
+    public GuiAerialInterface(ContainerAerialInterface container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
         addAnimatedStat("gui.tab.info.aerialInterface.interfacingRF.info.title",
-                Textures.GUI_BUILDCRAFT_ENERGY, 0xFFa02222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
+                Textures.GUI_BUILDCRAFT_ENERGY, 0xFFA02222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
 
-        if (te.hasCapability(CapabilityEnergy.ENERGY, null)) {
-            IEnergyStorage storage = te.getCapability(CapabilityEnergy.ENERGY, null);
-            addWidget(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage));
-        }
+        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addButton(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage)));
 
         if (te.dispenserUpgradeInserted) {
             // Experience Tab
@@ -58,10 +54,15 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
                 GuiAnimatedStat xpStat = addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title",
                         new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false);
                 xpStat.setText(getLiquidXPText());
-                xpButton = new GuiButtonSpecial(4, 20, 15, 20, 20, "");
-                xpButton.setListener(this);
+                xpButton = new GuiButtonSpecial(20, 15, 20, 20, "", b -> {
+                    te.curXPFluidIndex++;
+                    if (te.curXPFluidIndex >= PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.size()) {
+                        te.curXPFluidIndex = -1;
+                    }
+                    setupXPButton();
+                }).withTag("xpType");
                 setupXPButton();
-                xpStat.addWidget(xpButton);
+                xpStat.addSubWidget(xpButton);
             }
 
             // Feeding Tab
@@ -69,22 +70,25 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
                     new ItemStack(Items.BEEF), 0xFFFFCC00, false);
             optionStat.addPadding(4, 16);
 
-            GuiButtonSpecial button = new GuiButtonSpecial(1, 5, 20, 20, 20, "");
+            GuiButtonSpecial button = new GuiButtonSpecial(5, 20, 20, 20, "")
+                    .withTag(FeedMode.FULLY_UTILIZE.toString());
             button.setRenderStacks(new ItemStack(Items.BEEF));
             button.setTooltipText(I18n.format("gui.tab.aerialInterface.feedMode.feedFullyUtilize"));
-            optionStat.addWidget(button);
+            optionStat.addSubWidget(button);
             modeButtons[0] = button;
 
-            button = new GuiButtonSpecial(2, 30, 20, 20, 20, "");
+            button = new GuiButtonSpecial(30, 20, 20, 20, "")
+                    .withTag(FeedMode.WHEN_POSSIBLE.toString());
             button.setRenderStacks(new ItemStack(Items.APPLE));
             button.setTooltipText(I18n.format("gui.tab.aerialInterface.feedMode.feedWhenPossible"));
-            optionStat.addWidget(button);
+            optionStat.addSubWidget(button);
             modeButtons[1] = button;
 
-            button = new GuiButtonSpecial(3, 55, 20, 20, 20, "");
+            button = new GuiButtonSpecial(55, 20, 20, 20, "")
+                    .withTag(FeedMode.FULLY_ELSE_WHEN_POSSIBLE.toString());
             button.setRenderStacks(new ItemStack(Items.GOLDEN_APPLE));
             button.setTooltipText(Arrays.asList(WordUtils.wrap(I18n.format("gui.tab.aerialInterface.feedMode.utilizeFullHealthElsePossible"), 40).split(System.getProperty("line.separator"))));
-            optionStat.addWidget(button);
+            optionStat.addSubWidget(button);
             modeButtons[2] = button;
 
             addAnimatedStat("gui.tab.info.aerialInterface.interfacingFood", new ItemStack(Items.BREAD), 0xFFA0A0A0, false)
@@ -104,31 +108,15 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
         if (te.dispenserUpgradeInserted) {
             if (modeButtons[0] != null) {
                 for (int i = 0; i < modeButtons.length; i++) {
-                    modeButtons[i].enabled = te.feedMode != i;
+                    modeButtons[i].active = te.feedMode != FeedMode.values()[i];
                 }
-            } else {
-                refreshScreen();
             }
-        } else if (modeButtons[0] != null) {
-            refreshScreen();
         }
-    }
-
-    @Override
-    public void actionPerformed(IGuiWidget widget) {
-        if (widget.getID() == 4) {
-            te.curXPFluidIndex++;
-            if (te.curXPFluidIndex >= PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.size()) {
-                te.curXPFluidIndex = -1;
-            }
-            setupXPButton();
-        }
-        super.actionPerformed(widget);
     }
 
     private void setupXPButton() {
@@ -167,8 +155,13 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<TileEntityAeri
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        fontRenderer.drawString("Upgr.", 53, 19, 4210752);
+        font.drawString("Upgr.", 53, 19, 0x404040);
 
+    }
+
+    @Override
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_4UPGRADE_SLOTS;
     }
 
     @Override

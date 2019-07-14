@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 
@@ -23,7 +23,7 @@ public class EnderIO implements IThirdParty {
     }
 
     private void registerFuel(Fluid fluid, int powerPerCycle, int burnTime) {
-        NBTTagCompound tag = new NBTTagCompound();
+        CompoundNBT tag = new CompoundNBT();
         tag.setString("fluidName", fluid.getName());
         tag.setInteger("powerPerCycle", powerPerCycle);
         tag.setInteger("totalBurnTime", burnTime);

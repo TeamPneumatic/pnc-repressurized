@@ -6,10 +6,17 @@ import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockRequester;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketSetLogisticsMinAmounts extends LocationIntPacket<PacketSetLogisticsMinAmounts> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: SERVER
+ */
+public class PacketSetLogisticsMinAmounts extends LocationIntPacket {
     private int minItems;
     private int minFluid;
 
@@ -22,6 +29,12 @@ public class PacketSetLogisticsMinAmounts extends LocationIntPacket<PacketSetLog
         this.minFluid = minFluid;
     }
 
+    public PacketSetLogisticsMinAmounts(PacketBuffer buffer) {
+        super(buffer);
+        this.minItems = buffer.readInt();
+        this.minFluid = buffer.readInt();
+    }
+
     @Override
     public void toBytes(ByteBuf buf) {
         super.toBytes(buf);
@@ -29,30 +42,22 @@ public class PacketSetLogisticsMinAmounts extends LocationIntPacket<PacketSetLog
         buf.writeInt(minFluid);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        super.fromBytes(buf);
-        minItems = buf.readInt();
-        minFluid = buf.readInt();
-    }
-
-    @Override
-    public void handleClientSide(PacketSetLogisticsMinAmounts message, EntityPlayer player) {
-    }
-
-    @Override
-    public void handleServerSide(PacketSetLogisticsMinAmounts message, EntityPlayer player) {
-        if (message.pos.equals(BlockPos.ORIGIN)) {
-            // frame in hand
-            if (player.openContainer instanceof ContainerLogistics) {
-                setMinAmounts(((ContainerLogistics) player.openContainer).logistics, message.minItems, message.minFluid);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            if (pos.equals(BlockPos.ZERO)) {
+                // frame in hand
+                if (player.openContainer instanceof ContainerLogistics) {
+                    setMinAmounts(((ContainerLogistics) player.openContainer).logistics, minItems, minFluid);
+                }
+            } else {
+                // frame in world
+                SemiBlockLogistics semiBlock = SemiBlockManager.getInstance(player.world)
+                        .getSemiBlock(SemiBlockLogistics.class, player.world, pos);
+                setMinAmounts(semiBlock, minItems, minFluid);
             }
-        } else {
-            // frame in world
-            SemiBlockLogistics semiBlock = SemiBlockManager.getInstance(player.world)
-                    .getSemiBlock(SemiBlockLogistics.class, player.world, message.pos);
-            setMinAmounts(semiBlock, message.minItems, message.minFluid);
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
 
     private void setMinAmounts(SemiBlockLogistics logistics, int minItems, int minFluid) {

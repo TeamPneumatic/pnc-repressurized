@@ -6,12 +6,12 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.ObjectHolder;
 
-@GameRegistry.ObjectHolder(ModIds.IMMERSIVEENGINEERING)
+@ObjectHolder(ModIds.IMMERSIVEENGINEERING)
 public class ImmersiveEngineering implements IThirdParty {
 
-    @GameRegistry.ObjectHolder("hemp")
+    @ObjectHolder("hemp")
     private static final Block HEMP_BLOCK = null;
 
     @Override

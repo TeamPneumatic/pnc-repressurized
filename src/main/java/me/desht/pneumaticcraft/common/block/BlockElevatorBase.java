@@ -1,20 +1,18 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.common.property.ExtendedBlockState;
 
 public class BlockElevatorBase extends BlockPneumaticCraftCamo {
 
@@ -23,8 +21,8 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
-        super.onBlockAdded(world, pos, state);
+    public void onBlockAdded(BlockState newState, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onBlockAdded(newState, world, pos, oldState, isMoving);
         TileEntityElevatorBase elevatorBase = getCoreTileEntity(world, pos);
         if (elevatorBase != null) {
             elevatorBase.updateMaxElevatorHeight();
@@ -32,25 +30,9 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new ExtendedBlockState(this,
-                new IProperty[] { BlockPneumaticCraft.NORTH, BlockPneumaticCraft.SOUTH, BlockPneumaticCraft.WEST, BlockPneumaticCraft.EAST },
-                UNLISTED_CAMO_PROPERTIES);
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return 0;
-    }
-
-    @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-        state = super.getActualState(state, worldIn, pos);
-        TileEntityElevatorBase te = (TileEntityElevatorBase) PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
-        for (int i = 2; i < 6; i++) {  // 2..5 = horizontal directions
-            state = state.withProperty(BlockPneumaticCraft.CONNECTION_PROPERTIES[i], te.sidesConnected[i]);
-        }
-        return state;
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        builder.add(BlockPneumaticCraft.NORTH, BlockPneumaticCraft.SOUTH, BlockPneumaticCraft.WEST, BlockPneumaticCraft.EAST);
     }
 
     @Override
@@ -59,18 +41,13 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.ELEVATOR;
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+        return super.onBlockActivated(state, world, getCoreElevatorPos(world, pos), player, hand, brtr);
     }
 
-    @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
-        return super.onBlockActivated(world, getCoreElevatorPos(world, pos), state, player, hand, side, par7, par8, par9);
-    }
-
-    public static BlockPos getCoreElevatorPos(World world, BlockPos pos) {
-        if (world.getBlockState(pos.offset(EnumFacing.UP)).getBlock() == Blockss.ELEVATOR_BASE) {
-            return getCoreElevatorPos(world, pos.offset(EnumFacing.UP));
+    private static BlockPos getCoreElevatorPos(World world, BlockPos pos) {
+        if (world.getBlockState(pos.offset(Direction.UP)).getBlock() == ModBlocks.ELEVATOR_BASE) {
+            return getCoreElevatorPos(world, pos.offset(Direction.UP));
         } else {
             return pos;
         }
@@ -81,15 +58,17 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
-        if (world.getBlockState(pos.offset(EnumFacing.DOWN)).getBlock() == Blockss.ELEVATOR_BASE) {
-            TileEntity te = world.getTileEntity(pos.offset(EnumFacing.DOWN));
-            ((TileEntityElevatorBase) te).moveInventoryToThis();
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() == ModBlocks.ELEVATOR_BASE) {
+                TileEntity te = world.getTileEntity(pos.offset(Direction.DOWN));
+                ((TileEntityElevatorBase) te).moveUpgradesFromAbove();
+            }
+            TileEntityElevatorBase elevatorBase = getCoreTileEntity(world, pos);
+            if (elevatorBase != null) {
+                elevatorBase.updateMaxElevatorHeight();
+            }
         }
-        TileEntityElevatorBase elevatorBase = getCoreTileEntity(world, pos);
-        if (elevatorBase != null) {
-            elevatorBase.updateMaxElevatorHeight();
-        }
-        super.breakBlock(world, pos, state);
+        super.onReplaced(state, world, pos, newState, isMoving);
     }
 }

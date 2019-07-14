@@ -1,12 +1,11 @@
 package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.common.item.ItemPressurizable;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
 import net.minecraftforge.common.crafting.IRecipeFactory;
@@ -29,7 +28,7 @@ public class ShapedPressurizableRecipeFactory implements IRecipeFactory {
         ShapedPrimer primer = new ShapedPrimer();
         primer.width = recipe.getRecipeWidth();
         primer.height = recipe.getRecipeHeight();
-        primer.mirrored = JsonUtils.getBoolean(json, "mirrored", true);
+        primer.mirrored = JSONUtils.getBoolean(json, "mirrored", true);
         primer.input = recipe.getIngredients();
 
         return new ShapedPressurizableRecipe(RL("shaped_pressurizable"), recipe.getRecipeOutput(), primer);
@@ -42,7 +41,7 @@ public class ShapedPressurizableRecipeFactory implements IRecipeFactory {
 
         @Nonnull
         @Override
-        public ItemStack getCraftingResult(@Nonnull InventoryCrafting var1) {
+        public ItemStack getCraftingResult(@Nonnull CraftingInventory var1) {
             ItemStack newOutput = this.output.copy();
             int totalAir = 0;
             // Relying on the fact that IPressurizable items use item damage to store air

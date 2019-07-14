@@ -26,16 +26,13 @@ import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.network.IGuiHandler;
+import net.minecraftforge.fml.ModList;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ThirdPartyManager implements IGuiHandler {
+public class ThirdPartyManager {
 
     private static final ThirdPartyManager INSTANCE = new ThirdPartyManager();
     private final List<IThirdParty> thirdPartyMods = new ArrayList<>();
@@ -53,7 +50,7 @@ public class ThirdPartyManager implements IGuiHandler {
             thirdPartyClasses.put(ModIds.BUILDCRAFT, BuildCraft.class);
             thirdPartyClasses.put(ModIds.IGWMOD, IGWMod.class);
             thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft.class);
-            if (!Loader.isModLoaded(ModIds.COMPUTERCRAFT)) {
+            if (!ModList.get().isLoaded(ModIds.COMPUTERCRAFT)) {
                 thirdPartyClasses.put(ModIds.OPEN_COMPUTERS, OpenComputers.class);
             }
             thirdPartyClasses.put(ModIds.AE2, AE2.class);
@@ -81,10 +78,10 @@ public class ThirdPartyManager implements IGuiHandler {
 
         Set<String> enabledThirdParty = thirdPartyClasses.keySet().stream().filter(ThirdPartyConfig::isEnabled).collect(Collectors.toSet());
 
-        PneumaticCraftRepressurized.logger.info("Thirdparty integration activated for [" + Strings.join(enabledThirdParty, ", ") + "]");
+        PneumaticCraftRepressurized.LOGGER.info("Thirdparty integration activated for [" + Strings.join(enabledThirdParty, ", ") + "]");
 
         for (Map.Entry<String, Class<? extends IThirdParty>> entry : thirdPartyClasses.entrySet()) {
-            if (enabledThirdParty.contains(entry.getKey()) && Loader.isModLoaded(entry.getKey())) {
+            if (enabledThirdParty.contains(entry.getKey()) && ModList.get().isLoaded(entry.getKey())) {
                 try {
                     thirdPartyMods.add(entry.getValue().newInstance());
                 } catch (Throwable e) {
@@ -108,6 +105,7 @@ public class ThirdPartyManager implements IGuiHandler {
     }
 
     public void preInit() {
+        index();
         generic.preInit();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
@@ -169,47 +167,26 @@ public class ThirdPartyManager implements IGuiHandler {
         }
     }
 
-    /*TODO FMP dep @Optional.Method(modid = ModIds.FMP)
-    public TMultiPart getPart(String partName){
-        for(IThirdParty thirdParty : thirdPartyMods) {
-            if(thirdParty instanceof FMPLoader) {
-                return ((FMPLoader)thirdParty).fmp.createPart(partName, false);
-            }
-        }
-        return null;
-    }
-
-    @Optional.Method(modid = ModIds.FMP)
-    public void registerPart(String partName, Class<? extends TMultiPart> multipart){
-        for(IThirdParty thirdParty : thirdPartyMods) {
-            if(thirdParty instanceof FMPLoader) {
-                ((FMPLoader)thirdParty).fmp.registerPart(partName, multipart);
-                return;
-            }
-        }
-        throw new IllegalStateException("No FMP found!");
-    }*/
-
-    @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        for (IThirdParty thirdParty : thirdPartyMods) {
-            if (thirdParty instanceof IGuiHandler) {
-                Object obj = ((IGuiHandler) thirdParty).getServerGuiElement(ID, player, world, x, y, z);
-                if (obj != null) return obj;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        for (IThirdParty thirdParty : thirdPartyMods) {
-            if (thirdParty instanceof IGuiHandler) {
-                Object obj = ((IGuiHandler) thirdParty).getClientGuiElement(ID, player, world, x, y, z);
-                if (obj != null) return obj;
-            }
-        }
-        return null;
-    }
+//    @Override
+//    public Object getServerGuiElement(int ID, Pl player, World world, int x, int y, int z) {
+//        for (IThirdParty thirdParty : thirdPartyMods) {
+//            if (thirdParty instanceof IGuiHandler) {
+//                Object obj = ((IGuiHandler) thirdParty).getServerGuiElement(ID, player, world, x, y, z);
+//                if (obj != null) return obj;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    @Override
+//    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+//        for (IThirdParty thirdParty : thirdPartyMods) {
+//            if (thirdParty instanceof IGuiHandler) {
+//                Object obj = ((IGuiHandler) thirdParty).getClientGuiElement(ID, player, world, x, y, z);
+//                if (obj != null) return obj;
+//            }
+//        }
+//        return null;
+//    }
 
 }

@@ -6,22 +6,23 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 
-public class DroneGoToChargingStation extends EntityAIBase {
+public class DroneGoToChargingStation extends Goal {
     private final EntityDrone drone;
     public boolean isExecuting;
-    public TileEntityChargingStation curCharger;
+    private TileEntityChargingStation curCharger;
     private int chargingTime;
 
     public DroneGoToChargingStation(EntityDrone drone) {
         this.drone = drone;
-        setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
+        setMutexFlags(EnumSet.allOf(Flag.class)); // exclusive to all other AI tasks.
     }
 
     /**
@@ -72,7 +73,7 @@ public class DroneGoToChargingStation extends EntityAIBase {
      */
     @Override
     public boolean shouldContinueExecuting() {
-        if (curCharger.getUpgrades(EnumUpgrade.DISPENSER) == 0 || curCharger.isInvalid()) {//If our path was blocked.
+        if (curCharger.getUpgrades(EnumUpgrade.DISPENSER) == 0 || curCharger.isRemoved()) {
             isExecuting = false;
             return false;
         } else if (!drone.getPathNavigator().isGoingToTeleport() && (drone.getNavigator().getPath() == null || drone.getNavigator().getPath().isFinished())) {

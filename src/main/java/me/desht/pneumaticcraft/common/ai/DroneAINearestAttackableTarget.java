@@ -4,22 +4,23 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAITarget;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.TargetGoal;
 
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 
-public class DroneAINearestAttackableTarget extends EntityAITarget {
+public class DroneAINearestAttackableTarget extends TargetGoal {
     private final EntityDrone drone;
     private final ProgWidget widget;
 
     /**
      * Instance of EntityAINearestAttackableTargetSorter.
      */
-    private final EntityAINearestAttackableTarget.Sorter theNearestAttackableTargetSorter;
+    private final Sorter theNearestAttackableTargetSorter;
 
-    private EntityLivingBase targetEntity;
+    private LivingEntity targetEntity;
 
     public DroneAINearestAttackableTarget(EntityDrone drone, int par3, boolean checkSight, ProgWidget widget) {
         this(drone, checkSight, false, widget);
@@ -30,8 +31,8 @@ public class DroneAINearestAttackableTarget extends EntityAITarget {
         super(drone, checkSight, easyTargetsOnly);
         this.drone = drone;
         this.widget = widget;
-        theNearestAttackableTargetSorter = new EntityAINearestAttackableTarget.Sorter(drone);
-        setMutexBits(1);
+        theNearestAttackableTargetSorter = new Sorter(drone);
+        setMutexFlags(EnumSet.of(Flag.TARGET));
     }
 
     /**
@@ -39,12 +40,14 @@ public class DroneAINearestAttackableTarget extends EntityAITarget {
      */
     @Override
     public boolean shouldExecute() {
-        if (drone.hasMinigun() && drone.getAmmo().isEmpty()) return false;
+        if (drone.hasMinigun() && drone.getAmmo().isEmpty()) {
+            return false;
+        }
         List<Entity> list = ((IEntityProvider) widget).getValidEntities(drone.world);
         list.sort(theNearestAttackableTargetSorter);
         for (Entity entity : list) {
-            if (entity != taskOwner && entity instanceof EntityLivingBase) {
-                targetEntity = (EntityLivingBase) entity;
+            if (entity != goalOwner && entity instanceof LivingEntity) {
+                targetEntity = (LivingEntity) entity;
                 return true;
             }
         }
@@ -56,7 +59,27 @@ public class DroneAINearestAttackableTarget extends EntityAITarget {
      */
     @Override
     public void startExecuting() {
-        taskOwner.setAttackTarget(targetEntity);
+        goalOwner.setAttackTarget(targetEntity);
         super.startExecuting();
+    }
+
+    // lifted from 1.12.2
+    public static class Sorter implements Comparator<Entity> {
+        private final Entity entity;
+
+        Sorter(Entity entityIn) {
+            this.entity = entityIn;
+        }
+
+        public int compare(Entity e1, Entity e2) {
+            double d0 = this.entity.getDistanceSq(e1);
+            double d1 = this.entity.getDistanceSq(e2);
+
+            if (d0 < d1) {
+                return -1;
+            } else {
+                return d0 > d1 ? 1 : 0;
+            }
+        }
     }
 }

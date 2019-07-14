@@ -1,6 +1,6 @@
 {
   "textures" : {
-     "layer0" : "pneumaticcraft:items/manometer"
+     "layer0" : "pneumaticcraft:item/manometer"
   },
   "parent" : "item/generated",
   "display": {

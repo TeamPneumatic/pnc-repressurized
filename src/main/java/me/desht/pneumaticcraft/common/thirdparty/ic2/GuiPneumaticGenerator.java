@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.common.inventory.Container4UpgradeSlots;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -19,7 +19,7 @@ import java.util.List;
 public class GuiPneumaticGenerator extends GuiPneumaticContainerBase<TileEntityPneumaticGenerator> {
     private GuiAnimatedStat outputStat;
 
-    public GuiPneumaticGenerator(InventoryPlayer inventory, TileEntityPneumaticGenerator te) {
+    public GuiPneumaticGenerator(PlayerInventory inventory, TileEntityPneumaticGenerator te) {
         super(new Container4UpgradeSlots(inventory, te), te, Textures.GUI_4UPGRADE_SLOTS);
     }
 

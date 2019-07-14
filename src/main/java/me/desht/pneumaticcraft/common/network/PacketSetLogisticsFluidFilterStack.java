@@ -4,13 +4,19 @@ import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketSetLogisticsFluidFilterStack extends LocationIntPacket<PacketSetLogisticsFluidFilterStack> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: SERVER
+ */
+public class PacketSetLogisticsFluidFilterStack extends LocationIntPacket {
     private FluidStack settingStack;
     private int settingIndex;
 
@@ -23,43 +29,38 @@ public class PacketSetLogisticsFluidFilterStack extends LocationIntPacket<Packet
         settingIndex = index;
     }
 
+    public PacketSetLogisticsFluidFilterStack(PacketBuffer buffer) {
+        super(buffer);
+        if (buffer.readBoolean())
+            settingStack = FluidStack.loadFluidStackFromNBT(buffer.readCompoundTag());
+        settingIndex = buffer.readInt();
+    }
+
     @Override
     public void toBytes(ByteBuf buf) {
         super.toBytes(buf);
         buf.writeBoolean(settingStack != null);
         if (settingStack != null) {
-            ByteBufUtils.writeUTF8String(buf, settingStack.getFluid().getName());
-            buf.writeInt(settingStack.amount);
-            ByteBufUtils.writeTag(buf, settingStack.tag);
+            new PacketBuffer(buf).writeCompoundTag(settingStack.writeToNBT(new CompoundNBT()));
         }
         buf.writeInt(settingIndex);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        super.fromBytes(buf);
-        if (buf.readBoolean())
-            settingStack = new FluidStack(FluidRegistry.getFluid(ByteBufUtils.readUTF8String(buf)), buf.readInt(), ByteBufUtils.readTag(buf));
-        settingIndex = buf.readInt();
-    }
-
-    @Override
-    public void handleClientSide(PacketSetLogisticsFluidFilterStack message, EntityPlayer player) {
-
-    }
-
-    @Override
-    public void handleServerSide(PacketSetLogisticsFluidFilterStack message, EntityPlayer player) {
-        if (message.pos.equals(BlockPos.ORIGIN)) {
-            if (player.openContainer instanceof ContainerLogistics) {
-                ((ContainerLogistics) player.openContainer).logistics.setFilter(message.settingIndex, message.settingStack);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            if (pos.equals(BlockPos.ZERO)) {
+                if (player.openContainer instanceof ContainerLogistics) {
+                    ((ContainerLogistics) player.openContainer).logistics.setFilter(settingIndex, settingStack);
+                }
+            } else {
+                SemiBlockLogistics semiBlock = SemiBlockManager.getInstance(player.world).getSemiBlock(SemiBlockLogistics.class, player.world, pos);
+                if (semiBlock != null) {
+                    semiBlock.setFilter(settingIndex, settingStack);
+                }
             }
-        } else {
-            SemiBlockLogistics semiBlock = SemiBlockManager.getInstance(player.world).getSemiBlock(SemiBlockLogistics.class, player.world, message.pos);
-            if (semiBlock != null) {
-                semiBlock.setFilter(message.settingIndex, message.settingStack);
-            }
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
 
 }

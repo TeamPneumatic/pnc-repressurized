@@ -2,8 +2,7 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.client.model.module.ModelRedstone;
-import me.desht.pneumaticcraft.common.GuiHandler;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
@@ -11,17 +10,16 @@ import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.oredict.DyeUtils;
 
 import java.util.List;
-import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 // since this is both a receiver and an emitter, we won't use either redstone superclass here
@@ -46,8 +44,8 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    protected GuiHandler.EnumGuiId getGuiId() {
-        return GuiHandler.EnumGuiId.REDSTONE_MODULE;
+    public boolean hasGui() {
+        return true;
     }
 
     @Override
@@ -125,7 +123,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             case COMPARE:
                 return s1 > constantVal ? 15 : 0;
             case CLOCK:
-                return s1 == 0 && getTube().world().getTotalWorldTime() % constantVal < 2 ? 15 : 0;
+                return s1 == 0 && getTube().world().getGameTime() % constantVal < 2 ? 15 : 0;
             case TOGGLE:
                 if (s1 > prevLevels[getColorChannel()]) {
                     return lastOutput > 0 ? 0 : 15;
@@ -147,28 +145,28 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
 
-        tag.setBoolean("input", redstoneDirection == EnumRedstoneDirection.INPUT);
-        tag.setByte("channel", (byte) colorChannel);
-        tag.setByte("outputLevel", (byte) outputLevel);
-        tag.setString("op", operation.toString());
-        tag.setByte("color2", (byte) otherColor);
-        tag.setByte("const", (byte) constantVal);
-        tag.setBoolean("invert", invert);
-        tag.setLong("prevLevels", encodeLevels(prevLevels));
+        tag.putBoolean("input", redstoneDirection == EnumRedstoneDirection.INPUT);
+        tag.putByte("channel", (byte) colorChannel);
+        tag.putByte("outputLevel", (byte) outputLevel);
+        tag.putString("op", operation.toString());
+        tag.putByte("color2", (byte) otherColor);
+        tag.putByte("const", (byte) constantVal);
+        tag.putBoolean("invert", invert);
+        tag.putLong("prevLevels", encodeLevels(prevLevels));
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
 
         redstoneDirection = tag.getBoolean("input") ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT;
         colorChannel = tag.getByte("channel");
         outputLevel = tag.getByte("outputLevel"); // for sync'ing to clients on login
         try {
-            operation = tag.hasKey("op") ? Operation.valueOf(tag.getString("op")) : Operation.PASSTHROUGH;
+            operation = tag.contains("op") ? Operation.valueOf(tag.getString("op")) : Operation.PASSTHROUGH;
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             operation = Operation.PASSTHROUGH;
@@ -266,12 +264,13 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public boolean onActivated(EntityPlayer player, EnumHand hand) {
+    public boolean onActivated(PlayerEntity player, Hand hand) {
         ItemStack heldStack = player.getHeldItem(hand);
-        OptionalInt colorIndex = DyeUtils.dyeDamageFromStack(heldStack);
-        if (colorIndex.isPresent()) {
-            setColorChannel(colorIndex.getAsInt());
-            if (ConfigHandler.general.useUpDyesWhenColoring && !player.capabilities.isCreativeMode) {
+        DyeColor dyeColor = DyeColor.getColor(heldStack);
+        if (dyeColor != null) {
+            int colorId = dyeColor.getId();
+            setColorChannel(colorId);
+            if (Config.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
                 heldStack.shrink(1);
             }
             return true;
@@ -283,7 +282,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             }
             return true;
         } else if (!getTube().world().isRemote && upgraded && getRedstoneDirection() == EnumRedstoneDirection.OUTPUT) {
-            NetworkHandler.sendTo(new PacketOpenTubeModuleGui(getGuiId().ordinal(), pressureTube.pos()), (EntityPlayerMP) player);
+            NetworkHandler.sendToPlayer(new PacketOpenTubeModuleGui(getType(), pressureTube.pos()), (ServerPlayerEntity) player);
             return true;
         }
         return false;

@@ -1,21 +1,21 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.EntityHorse;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.passive.horse.HorseEntity;
+import net.minecraft.entity.player.PlayerEntity;
 
 /**
  * Horses, although tameable, don't extend EntityTameable.  Yay.
  */
 public class HackableHorse extends HackableTameable {
     @Override
-    public boolean canHack(Entity entity, EntityPlayer player) {
-        return !player.getUniqueID().equals(((EntityHorse) entity).getOwnerUniqueId());
+    public boolean canHack(Entity entity, PlayerEntity player) {
+        return !player.getUniqueID().equals(((HorseEntity) entity).getOwnerUniqueId());
     }
 
     @Override
-    public void onHackFinished(Entity entity, EntityPlayer player) {
-        EntityHorse horse = (EntityHorse) entity;
+    public void onHackFinished(Entity entity, PlayerEntity player) {
+        HorseEntity horse = (HorseEntity) entity;
         if (entity.world.isRemote) {
             horse.handleStatusUpdate((byte) 7);
         } else {

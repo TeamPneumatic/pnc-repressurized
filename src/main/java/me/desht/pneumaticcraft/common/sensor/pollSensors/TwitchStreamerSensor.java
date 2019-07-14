@@ -1,16 +1,14 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.universalSensor.IPollSensorSetting;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import org.lwjgl.util.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +23,7 @@ public class TwitchStreamerSensor implements IPollSensorSetting {
 
     @Override
     public Set<Item> getRequiredUpgrades() {
-        return ImmutableSet.of(Itemss.upgrades.get(EnumUpgrade.DISPENSER));
+        return ImmutableSet.of(IItemRegistry.EnumUpgrade.DISPENSER.getItem());
     }
 
     @Override
@@ -43,11 +41,6 @@ public class TwitchStreamerSensor implements IPollSensorSetting {
         List<String> info = new ArrayList<>();
         info.add(TextFormatting.BLACK + "Emits a redstone signal when the name of the streamer typed in is streaming at this moment.");
         return info;
-    }
-
-    @Override
-    public Rectangle needsSlot() {
-        return null;
     }
 
     @Override

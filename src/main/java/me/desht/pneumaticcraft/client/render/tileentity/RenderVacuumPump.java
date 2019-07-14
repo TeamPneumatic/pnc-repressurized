@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.model.block.ModelVacuumPump;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderVacuumPump extends AbstractModelRenderer<TileEntityVacuumPump> {
@@ -22,8 +22,8 @@ public class RenderVacuumPump extends AbstractModelRenderer<TileEntityVacuumPump
     @Override
     void renderModel(TileEntityVacuumPump te, float partialTicks) {
         if (te != null) {
-            RenderUtils.rotateMatrixByMetadata(te.getBlockMetadata());
-            GlStateManager.rotate(-90, 0, 1, 0);
+            RenderUtils.rotateMatrixByMetadata(te.getRotation());
+            GlStateManager.rotated(-90, 0, 1, 0);
             model.renderModel(0.0625f, te.oldRotation + (te.rotation - te.oldRotation) * partialTicks);
         } else {
             model.renderModel(0.0625f, 0);

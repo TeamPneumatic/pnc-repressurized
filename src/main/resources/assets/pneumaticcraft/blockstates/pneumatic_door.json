@@ -3,7 +3,7 @@
   "defaults": {
     "textures": {},
     "custom": { "flip-v" : true},
-    "model": "pneumaticcraft:pneumatic_door.obj"
+    "model": "pneumaticcraft:block/pneumatic_door.obj"
   },
   "variants": {
     "facing": {
@@ -40,7 +40,7 @@
     "door_state": {
       "open": {},
       "closed": {},
-      "moving": { "model": "pneumaticcraft:blank" }
+      "moving": { "model": "pneumaticcraft:block/blank" }
     },
     "top_door": {
       "false": {

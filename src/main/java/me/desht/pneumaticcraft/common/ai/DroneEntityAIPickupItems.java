@@ -3,25 +3,25 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.EnumSet;
 import java.util.List;
 
-public class DroneEntityAIPickupItems extends EntityAIBase {
+public class DroneEntityAIPickupItems extends Goal {
     private final IDroneBase drone;
     private final ProgWidgetAreaItemBase itemPickupWidget;
-    private EntityItem curPickingUpEntity;
+    private ItemEntity curPickingUpEntity;
     private final DistanceEntitySorter theNearestAttackableTargetSorter;
 
     public DroneEntityAIPickupItems(IDroneBase drone, ProgWidgetAreaItemBase progWidgetPickupItem) {
         this.drone = drone;
-        setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
+        setMutexFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
         itemPickupWidget = progWidgetPickupItem;
         theNearestAttackableTargetSorter = new DistanceEntitySorter(drone);
     }
@@ -31,7 +31,7 @@ public class DroneEntityAIPickupItems extends EntityAIBase {
      */
     @Override
     public boolean shouldExecute() {
-        List<Entity> pickableItems = itemPickupWidget.getEntitiesInArea(drone.world(), entity -> entity instanceof EntityItem && entity.isEntityAlive());
+        List<Entity> pickableItems = itemPickupWidget.getEntitiesInArea(drone.world(), entity -> entity instanceof ItemEntity && entity.isAlive());
 
         if (pickableItems.isEmpty()) {
             drone.addDebugEntry("gui.progWidget.itemPickup.debug.noItems");
@@ -39,11 +39,11 @@ public class DroneEntityAIPickupItems extends EntityAIBase {
         }
         pickableItems.sort(theNearestAttackableTargetSorter);
         for (Entity ent : pickableItems) {
-            ItemStack stack = ((EntityItem) ent).getItem();
+            ItemStack stack = ((ItemEntity) ent).getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
                 if (IOHelper.insert(drone, stack, null, true).isEmpty()) {
                     if (drone.getPathNavigator().moveToEntity(ent)) {
-                        curPickingUpEntity = (EntityItem) ent;
+                        curPickingUpEntity = (ItemEntity) ent;
                         return true;
                     }
                 }
@@ -60,7 +60,7 @@ public class DroneEntityAIPickupItems extends EntityAIBase {
      */
     @Override
     public boolean shouldContinueExecuting() {
-        if (curPickingUpEntity.isDead) return false;
+        if (!curPickingUpEntity.isAlive()) return false;
         if (new Vec3d(curPickingUpEntity.posX, curPickingUpEntity.posY, curPickingUpEntity.posZ).squareDistanceTo(drone.getDronePos()) < 2.25) {
             ItemStack stack = curPickingUpEntity.getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
@@ -71,17 +71,17 @@ public class DroneEntityAIPickupItems extends EntityAIBase {
         return !drone.getPathNavigator().hasNoPath();
     }
 
-    static void tryPickupItem(IDrone drone, EntityItem itemEntity){
+    static void tryPickupItem(IDrone drone, ItemEntity itemEntity){
         ItemStack stack = itemEntity.getItem();
         int stackSize = stack.getCount();
 
-        ItemStack remainder = PneumaticCraftUtils.exportStackToInventory(drone, stack, EnumFacing.UP);
+        ItemStack remainder = IOHelper.insert(drone, stack, Direction.UP, false);
         int collected = stackSize - remainder.getCount();
         if (collected > 0) {
             drone.onItemPickupEvent(itemEntity, collected);
         }
         if (remainder.isEmpty()) {
-            itemEntity.setDead();
+            itemEntity.remove();
         } else if (collected > 0) {
             itemEntity.setItem(remainder);
         }

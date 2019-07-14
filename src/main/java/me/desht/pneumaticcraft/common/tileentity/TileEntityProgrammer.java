@@ -3,8 +3,11 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.AreaShowManager;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
-import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ProgWidgetConfig;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
 import me.desht.pneumaticcraft.common.network.*;
@@ -12,29 +15,37 @@ import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableWidget;
 import me.desht.pneumaticcraft.common.progwidgets.WidgetRegistrator;
-import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Sounds;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class TileEntityProgrammer extends TileEntityTickableBase implements IGUITextFieldSensitive {
+public class TileEntityProgrammer extends TileEntityTickableBase implements IGUITextFieldSensitive, INamedContainerProvider {
     private static final int PROGRAM_SLOT = 0;
     private static final int INVENTORY_SIZE = 1;
 
@@ -43,67 +54,71 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public int redstoneMode;
 
     private final ProgrammerItemHandler inventory = new ProgrammerItemHandler();
+    private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventory);
 
     // Client side variables that are used to prevent resetting.
     public int translatedX, translatedY, zoomState;
     public boolean showInfo = true, showFlow = true;
     @GuiSynced
     public boolean canUndo, canRedo;
-    private NBTTagList history = new NBTTagList();//Used to undo/redo.
+    private ListNBT history = new ListNBT();//Used to undo/redo.
     private int historyIndex;
     @DescSynced
     @LazySynced
     public boolean recentreStartPiece = false;
 
     public TileEntityProgrammer() {
+        super(ModTileEntityTypes.PROGRAMMER);
+
         saveToHistory();
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        redstoneMode = tag.getInteger("redstoneMode");
-        inventory.deserializeNBT(tag.getCompoundTag("Items"));
-        history = tag.getTagList("history", 10);
-        if (history.tagCount() == 0) saveToHistory();
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+        redstoneMode = tag.getInt("redstoneMode");
+        inventory.deserializeNBT(tag.getCompound("Items"));
+        history = tag.getList("history", 10);
+        if (history.size() == 0) saveToHistory();
     }
 
     @Override
-    public void readFromPacket(NBTTagCompound tag) {
+    public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
         readProgWidgetsFromNBT(tag);
         recentreStartPiece = tag.getBoolean("recentreStartPiece");
     }
 
     @Override
-    public void invalidate() {
-        super.invalidate();
+    public void remove() {
+        super.remove();
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setInteger("redstoneMode", redstoneMode);
-        tag.setTag("Items", inventory.serializeNBT());
-        tag.setTag("history", history);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putInt("redstoneMode", redstoneMode);
+        tag.put("Items", inventory.serializeNBT());
+        tag.put("history", history);
         return tag;
     }
 
     @Override
-    public void writeToPacket(NBTTagCompound tag) {
+    public void writeToPacket(CompoundNBT tag) {
         super.writeToPacket(tag);
         writeProgWidgetsToNBT(tag);
-        tag.setBoolean("recentreStartPiece", recentreStartPiece);
+        tag.putBoolean("recentreStartPiece", recentreStartPiece);
         recentreStartPiece = false;
     }
 
-    public void readProgWidgetsFromNBT(NBTTagCompound tag) {
+    public void readProgWidgetsFromNBT(CompoundNBT tag) {
         progWidgets.clear();
         getWidgetsFromNBT(tag, progWidgets);
     }
 
-    public void writeProgWidgetsToNBT(NBTTagCompound tag) {
+    public CompoundNBT writeProgWidgetsToNBT(CompoundNBT tag) {
         setWidgetsToNBT(progWidgets, tag);
+        return tag;
     }
 
     @Nonnull
@@ -112,20 +127,20 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return inventory;
+    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+        return invCap;
     }
 
-    public static List<IProgWidget> getWidgetsFromNBT(NBTTagCompound tag) {
+    public static List<IProgWidget> getWidgetsFromNBT(CompoundNBT tag) {
         List<IProgWidget> progWidgets = new ArrayList<>();
         getWidgetsFromNBT(tag, progWidgets);
         return progWidgets;
     }
 
-    private static void getWidgetsFromNBT(NBTTagCompound tag, List<IProgWidget> progWidgets) {
-        NBTTagList widgetTags = tag.getTagList("widgets", NBT.TAG_COMPOUND);
-        for (int i = 0; i < widgetTags.tagCount(); i++) {
-            NBTTagCompound widgetTag = widgetTags.getCompoundTagAt(i);
+    private static void getWidgetsFromNBT(CompoundNBT tag, List<IProgWidget> progWidgets) {
+        ListNBT widgetTags = tag.getList("widgets", NBT.TAG_COMPOUND);
+        for (int i = 0; i < widgetTags.size(); i++) {
+            CompoundNBT widgetTag = widgetTags.getCompound(i);
             String widgetName = widgetTag.getString("name");
             if (!ProgWidgetConfig.blacklistedPieces.contains(widgetName)) {
                 IProgWidget widget = WidgetRegistrator.getWidgetFromName(widgetName);
@@ -139,14 +154,15 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         updatePuzzleConnections(progWidgets);
     }
 
-    public static void setWidgetsToNBT(List<IProgWidget> widgets, NBTTagCompound tag) {
-        NBTTagList widgetTags = new NBTTagList();
+    public static CompoundNBT setWidgetsToNBT(List<IProgWidget> widgets, CompoundNBT tag) {
+        ListNBT widgetTags = new ListNBT();
         for (IProgWidget widget : widgets) {
-            NBTTagCompound widgetTag = new NBTTagCompound();
+            CompoundNBT widgetTag = new CompoundNBT();
             widget.writeToNBT(widgetTag);
-            widgetTags.appendTag(widgetTag);
+            widgetTags.add(widgetTags.size(), widgetTag);
         }
-        tag.setTag("widgets", widgetTags);
+        tag.put("widgets", widgetTags);
+        return tag;
     }
 
     public static void updatePuzzleConnections(List<IProgWidget> progWidgets) {
@@ -212,28 +228,28 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
-        switch (buttonID) {
-            case 0:
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        switch (tag) {
+            case IGUIButtonSensitive.REDSTONE_TAG:
                 if (++redstoneMode > 1) redstoneMode = 0;
                 break;
-            case 1:
+            case "import":
                 ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
-                NBTTagCompound tag = stack.isEmpty() ? null : stack.getTagCompound();
-                if (tag != null) {
-                    readProgWidgetsFromNBT(tag);
+                CompoundNBT nbt = stack.isEmpty() ? null : stack.getTag();
+                if (nbt != null) {
+                    readProgWidgetsFromNBT(nbt);
                     recentreStartPiece = true;
                 } else {
                     progWidgets.clear();
                 }
                 break;
-            case 2:
+            case "program":
                 tryProgramDrone(player);
                 break;
-            case 9:
+            case "undo":
                 undo();
                 break;
-            case 10:
+            case "redo":
                 redo();
                 break;
         }
@@ -241,198 +257,123 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return inventory;
+    }
+
+    @Override
     public void setText(int textFieldID, String text) {
         ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT).copy();
         if (textFieldID == 0 && !stack.isEmpty()) {
-            stack.setStackDisplayName(text);
+            stack.setDisplayName(new StringTextComponent(text));
             inventory.setStackInSlot(PROGRAM_SLOT, stack);
         }
     }
 
     @Override
     public String getText(int textFieldID) {
-        return inventory.getStackInSlot(PROGRAM_SLOT).getDisplayName();
+        return inventory.getStackInSlot(PROGRAM_SLOT).getDisplayName().getFormattedText();
     }
 
-    private void tryProgramDrone(EntityPlayer player) {
-        if (!inventory.getStackInSlot(PROGRAM_SLOT).isEmpty()) {
-            if (player == null || !player.capabilities.isCreativeMode) {
-                List<ItemStack> requiredStacks = getRequiredPuzzleStacks();
-                for (ItemStack stack : requiredStacks) {
-                    if (!hasEnoughPuzzleStacks(player, stack)) return;
-                }
-                for (ItemStack stack : requiredStacks) {
-                    int left = stack.getCount();
-                    if (player != null) {
-                        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                            if (PneumaticCraftUtils.areStacksEqual(stack, player.inventory.getStackInSlot(i), true, true, false, false)) {
-                                left -= player.inventory.decrStackSize(i, left).getCount();
-                                if (left <= 0) break;
-                            }
-                        }
-                    }
-                    if (left > 0) {
-                        for (EnumFacing d : EnumFacing.VALUES) {
-                            IItemHandler neighbor = IOHelper.getInventoryForTE(getWorld().getTileEntity(getPos().offset(d)), d.getOpposite());
-                            if (neighbor != null) {
-                                for (int slot = 0; slot < neighbor.getSlots(); slot++) {
-                                    ItemStack neighborStack = neighbor.extractItem(slot, left, true);
-                                    if (PneumaticCraftUtils.areStacksEqual(neighborStack, stack, true, true, false, false)) {
-                                        neighborStack = neighbor.extractItem(slot, left, false);
-                                        left -= neighborStack.getCount();
-                                        if (left <= 0) break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                List<ItemStack> returnedStacks = getReturnedPuzzleStacks();
-                for (ItemStack stack : returnedStacks) {
-                    for (EnumFacing d : EnumFacing.VALUES) {
-                        TileEntity te = getWorld().getTileEntity(getPos().offset(d));
-                        if (te != null) {
-                            stack = IOHelper.insert(te, stack, d.getOpposite(), false);
-                            if (stack.isEmpty()) break;
-                        }
-                    }
-                    if (player != null && !stack.isEmpty()) {
-                        if (!player.inventory.addItemStackToInventory(stack)) {
-                            player.dropItem(stack.copy(), false);
-                            stack = ItemStack.EMPTY;
-                        }
-                    }
-                    if (!stack.isEmpty()) {
-                        getWorld().spawnEntity(new EntityItem(getWorld(), getPos().getX() + 0.5, getPos().getY() + 1.5, getPos().getZ() + 0.5, stack));
+    private void tryProgramDrone(PlayerEntity player) {
+        if (inventory.getStackInSlot(PROGRAM_SLOT).getItem() instanceof IProgrammable) {
+            if (player == null || !player.isCreative()) {
+                int required = getRequiredPuzzleCount();
+                if (required > 0) {
+                    if (!takePuzzleStacks(player, true)) return;
+                    takePuzzleStacks(player, false);
+                } else if (required < 0) {
+                    ItemStack stack = new ItemStack(ModItems.PROGRAMMING_PUZZLE);
+                    while (required < 0) {
+                        int size = Math.min(required, stack.getMaxStackSize());
+                        ItemHandlerHelper.giveItemToPlayer(player, ItemHandlerHelper.copyStackWithSize(stack, size));
+                        required += size;
                     }
                 }
             }
             ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
-            if (!stack.hasTagCompound()) {
-                stack.setTagCompound(new NBTTagCompound());
-                inventory.setStackInSlot(PROGRAM_SLOT, stack);
+            if (!stack.hasTag()) {
+                stack.setTag(new CompoundNBT());
             }
-            writeProgWidgetsToNBT(stack.getTagCompound());
+            writeProgWidgetsToNBT(stack.getTag());
             if (player != null) {
-                NetworkHandler.sendTo(new PacketPlaySound(Sounds.HUD_INIT_COMPLETE, SoundCategory.NEUTRAL, getPos(), 1.0f, 1.0f, false), (EntityPlayerMP) player);
-                AdvancementTriggers.PROGRAM_DRONE.trigger((EntityPlayerMP) player);
+                NetworkHandler.sendToPlayer(new PacketPlaySound(Sounds.HUD_INIT_COMPLETE, SoundCategory.BLOCKS, getPos(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
+                AdvancementTriggers.PROGRAM_DRONE.trigger((ServerPlayerEntity) player);
             }
         }
     }
 
-    public List<ItemStack> getRequiredPuzzleStacks() {
+    /**
+     * Get the number of puzzle pieces required to program the drone (or other item) in the programming slot.  This can
+     * be negative, which means pieces would be returned when programming the drone.
+     *
+     * @return a piece count
+     */
+    public int getRequiredPuzzleCount() {
         ItemStack stackInSlot = inventory.getStackInSlot(PROGRAM_SLOT);
-        List<ItemStack> stacks = new ArrayList<>();
         if (!stackInSlot.isEmpty() && ((IProgrammable) stackInSlot.getItem()).usesPieces(stackInSlot)) {
-            Map<Integer, Integer> tePieces = getPuzzleSummary(progWidgets);
-            Map<Integer, Integer> dronePieces = getPuzzleSummary(getProgWidgets(stackInSlot));
-            for (Integer includedWidget : tePieces.keySet()) {
-                Integer existingWidgets = dronePieces.get(includedWidget);
-                if (existingWidgets != null) {
-                    Integer neededWidgets = tePieces.get(includedWidget);
-                    if (neededWidgets > existingWidgets) {
-                        ItemStack stack = ItemProgrammingPuzzle.getStackForColor(includedWidget);
-                        stack.setCount((neededWidgets - existingWidgets) * stackInSlot.getCount());
-                        stacks.add(stack);
-                    }
-                } else {
-                    ItemStack stack = ItemProgrammingPuzzle.getStackForColor(includedWidget);
-                    stack.setCount(tePieces.get(includedWidget) * stackInSlot.getCount());
-                    stacks.add(stack);
-                }
-            }
+            int dronePieces = getProgWidgets(stackInSlot).size();
+            return progWidgets.size() - dronePieces;
+        } else {
+            return 0;
         }
-        return stacks;
-    }
-
-    public List<ItemStack> getReturnedPuzzleStacks() {
-        ItemStack stackInSlot = inventory.getStackInSlot(PROGRAM_SLOT);
-        List<ItemStack> stacks = new ArrayList<>();
-        if (!stackInSlot.isEmpty() && ((IProgrammable) stackInSlot.getItem()).usesPieces(stackInSlot)) {
-            Map<Integer, Integer> tePieces = getPuzzleSummary(progWidgets);
-            Map<Integer, Integer> dronePieces = getPuzzleSummary(getProgWidgets(stackInSlot));
-
-            for (Integer availableWidget : dronePieces.keySet()) {
-                Integer requiredWidget = tePieces.get(availableWidget);
-                if (requiredWidget != null) {
-                    Integer availableWidgets = dronePieces.get(availableWidget);
-                    if (availableWidgets > requiredWidget) {
-                        ItemStack stack = ItemProgrammingPuzzle.getStackForColor(availableWidget);
-                        stack.setCount((availableWidgets - requiredWidget) * stackInSlot.getCount());
-                        while (stack.getCount() > stack.getMaxStackSize()) {
-                            stacks.add(stack.splitStack(stack.getMaxStackSize()));
-                        }
-                        stacks.add(stack);
-                    }
-                } else {
-                    ItemStack stack = ItemProgrammingPuzzle.getStackForColor(availableWidget);
-                    stack.setCount(dronePieces.get(availableWidget) * stackInSlot.getCount());
-                    while (stack.getCount() > stack.getMaxStackSize()) {
-                        stacks.add(stack.splitStack(stack.getMaxStackSize()));
-                    }
-                    stacks.add(stack);
-                }
-            }
-        }
-        return stacks;
     }
 
     public static List<IProgWidget> getProgWidgets(ItemStack iStack) {
         if (NBTUtil.hasTag(iStack, "widgets")) {
-            return TileEntityProgrammer.getWidgetsFromNBT(iStack.getTagCompound());
+            return TileEntityProgrammer.getWidgetsFromNBT(iStack.getTag());
         } else {
             return new ArrayList<>();
         }
     }
 
-    public boolean hasEnoughPuzzleStacks(EntityPlayer player, ItemStack stack) {
-        int amountLeft = stack.getCount();
+    /**
+     * Extract puzzle stacks from the player, then from adjacent inventories.
+     *
+     * @param player the player, may be null
+     * @param simulate true if extraction should only be simulated
+     * @return true if enough stacks to fulfill the current programming required are available
+     */
+    private boolean takePuzzleStacks(@Nullable PlayerEntity player, final boolean simulate) {
+        int required = getRequiredPuzzleCount();
+        if (required <= 0) return true;
+
+        int found = 0;
+
+        // look in player's inventory
         if (player != null) {
-            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                ItemStack playerStack = player.inventory.getStackInSlot(i);
-                if (PneumaticCraftUtils.areStacksEqual(playerStack, stack, true, true, false, false)) {
-                    amountLeft -= playerStack.getCount();
-                    if (amountLeft <= 0) return true;
-                }
-            }
+            found += extractPuzzlePieces(new PlayerMainInvWrapper(player.inventory), required, simulate);
+            if (found >= required) return true;
         }
 
-        for (EnumFacing d : EnumFacing.VALUES) {
-            TileEntity te = getWorld().getTileEntity(getPos().offset(d));
-            if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite())) {
-                IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite());
-                for (int slot = 0; slot < handler.getSlots(); slot++) {
-                    ItemStack neighborStack = handler.getStackInSlot(slot);
-                    if (PneumaticCraftUtils.areStacksEqual(neighborStack, stack, true, true, false, false)) {
-                        amountLeft -= neighborStack.getCount();
-                        if (amountLeft <= 0) return true;
-                    }
-                }
+        // look in adjacent inventories
+        for (Direction d : Direction.VALUES) {
+            TileEntity te = getTileCache()[d.getIndex()].getTileEntity();
+            if (te != null) {
+                final int r = required - found;
+                found += te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite())
+                        .map(h -> extractPuzzlePieces(h, r, simulate))
+                        .orElse(0);
+                if (found >= required) return true;
             }
         }
-
         return false;
     }
 
-    public static Map<Integer, Integer> getPuzzleSummary(List<IProgWidget> widgets) {
-        Map<Integer, Integer> map = new HashMap<>();
-        for (IProgWidget widget : widgets) {
-            if (widget.getCraftingColorIndex() != -1) {
-                if (!map.containsKey(widget.getCraftingColorIndex())) {
-                    map.put(widget.getCraftingColorIndex(), 1);
-                } else {
-                    map.put(widget.getCraftingColorIndex(), map.get(widget.getCraftingColorIndex()) + 1);
-                }
+
+    private int extractPuzzlePieces(IItemHandler handler, int max, boolean simulate) {
+        int n = 0;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stackInSlot = handler.getStackInSlot(i);
+            if (stackInSlot.getItem() instanceof ItemProgrammingPuzzle) {
+                ItemStack extracted = handler.extractItem(i, Math.min(max, stackInSlot.getMaxStackSize()), simulate);
+                n += extracted.getCount();
+                if (n >= max) return n;
             }
         }
-        return map;
+        return n;
     }
 
-    /**
-     * Returns a set with all variables that are used in the program.
-     *
-     * @return
-     */
     public Set<String> getAllVariables() {
         Set<String> variables = new HashSet<>();
         for (IProgWidget widget : progWidgets) {
@@ -443,22 +384,11 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
-    public String getName() {
-        return Blockss.PROGRAMMER.getTranslationKey();
+    public void tick() {
+        super.tick();
     }
 
-    @Override
-    public void update() {
-        super.update();
-    }
-
-    @Override
-    protected void onFirstServerUpdate() {
-        super.onFirstServerUpdate();
-
-    }
-
-    public boolean previewArea(int widgetX, int widgetY) {
+    public void previewArea(int widgetX, int widgetY) {
         for (IProgWidget w : progWidgets) {
             if (w.getX() == widgetX && w.getY() == widgetY && w instanceof IAreaProvider) {
                 Set<BlockPos> area = new HashSet<>();
@@ -466,42 +396,52 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                 AreaShowManager.getInstance().showArea(area, 0x9000FF00, this);
             }
         }
-        return true;
     }
 
     public void saveToHistory() {
-        NBTTagCompound tag = new NBTTagCompound();
+        CompoundNBT tag = new CompoundNBT();
         writeProgWidgetsToNBT(tag);
-        if (history.tagCount() == 0 || !history.getCompoundTagAt(historyIndex).equals(tag)) {
-            while (history.tagCount() > historyIndex + 1) {
-                history.removeTag(historyIndex + 1);
+        if (history.size() == 0 || !history.getCompound(historyIndex).equals(tag)) {
+            while (history.size() > historyIndex + 1) {
+                history.remove(historyIndex + 1);
             }
-            history.appendTag(tag);
-            if (history.tagCount() > 20) history.removeTag(0);//Only save up to 20 steps back.
-            historyIndex = history.tagCount() - 1;
+            history.add(tag);
+            if (history.size() > 20) history.remove(0);//Only save up to 20 steps back.
+            historyIndex = history.size() - 1;
             updateUndoRedoState();
         }
     }
 
-    public void undo() {
+    private void undo() {
         if (canUndo) {
             historyIndex--;
-            readProgWidgetsFromNBT(history.getCompoundTagAt(historyIndex));
+            readProgWidgetsFromNBT(history.getCompound(historyIndex));
             updateUndoRedoState();
         }
     }
 
-    public void redo() {
+    private void redo() {
         if (canRedo) {
             historyIndex++;
-            readProgWidgetsFromNBT(history.getCompoundTagAt(historyIndex));
+            readProgWidgetsFromNBT(history.getCompound(historyIndex));
             updateUndoRedoState();
         }
     }
 
     private void updateUndoRedoState() {
         canUndo = historyIndex > 0;
-        canRedo = historyIndex < history.tagCount() - 1;
+        canRedo = historyIndex < history.size() - 1;
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerProgrammer(i, playerInventory, getPos());
     }
 
     private class ProgrammerItemHandler extends BaseItemStackHandler {

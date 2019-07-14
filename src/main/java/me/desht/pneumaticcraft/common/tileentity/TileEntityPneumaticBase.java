@@ -1,40 +1,50 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.tubes.IPneumaticPosProvider;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import me.desht.pneumaticcraft.lib.NBTKeys;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 
-public class TileEntityPneumaticBase extends TileEntityTickableBase implements IPneumaticPosProvider {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public abstract class TileEntityPneumaticBase extends TileEntityTickableBase implements IPneumaticPosProvider {
     @GuiSynced
     final IAirHandler airHandler;
     public final float dangerPressure, criticalPressure;
     private final int defaultVolume;
+    private final LazyOptional<IAirHandler> airHandlerCap;
 
-    public TileEntityPneumaticBase(float dangerPressure, float criticalPressure, int volume, int upgradeSlots) {
-        super(upgradeSlots);
-        airHandler = PneumaticRegistry.getInstance().getAirHandlerSupplier().createAirHandler(dangerPressure, criticalPressure, volume);
-        for (Item upgrade : airHandler.getApplicableUpgrades()) {
-            addApplicableUpgrade(upgrade);
-        }
+    public TileEntityPneumaticBase(TileEntityType type, float dangerPressure, float criticalPressure, int volume, int upgradeSlots) {
+        super(type, upgradeSlots);
 
+        this.airHandler = PneumaticRegistry.getInstance().getAirHandlerSupplier().createAirHandler(dangerPressure, criticalPressure, volume);
+        this.airHandlerCap = LazyOptional.of(() -> airHandler);
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
-        defaultVolume = volume;
+        this.defaultVolume = volume;
+
+        addApplicableUpgrade(IItemRegistry.EnumUpgrade.VOLUME);
+        addApplicableUpgrade(IItemRegistry.EnumUpgrade.SECURITY);
+
     }
 
     @Override
-    public void update() {
-        super.update();
-        airHandler.update();
+    public void tick() {
+        super.tick();
+        airHandler.tick();
     }
 
     @Override
@@ -43,17 +53,28 @@ public class TileEntityPneumaticBase extends TileEntityTickableBase implements I
         airHandler.validate(this);
     }
 
+    @Nonnull
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        airHandler.writeToNBT(tag);
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == PneumaticRegistry.AIR_HANDLER_CAPABILITY) {
+            return side == null || canConnectTo(side) ? airHandlerCap.cast() : LazyOptional.empty();
+        } else {
+            return super.getCapability(cap, side);
+        }
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.put(NBTKeys.NBT_AIR_HANDLER, airHandler.serializeNBT());
+        tag.putInt(NBTKeys.NBT_AIR_AMOUNT, airHandler.getAir());  // for copying to itemstack NBT
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        airHandler.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+        airHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_AIR_HANDLER));
     }
 
     @Override
@@ -69,15 +90,15 @@ public class TileEntityPneumaticBase extends TileEntityTickableBase implements I
     }
 
     @Override
-    public void writeToPacket(NBTTagCompound tag) {
+    public void writeToPacket(CompoundNBT tag) {
         super.writeToPacket(tag);
-        airHandler.writeToNBT(tag);
+        tag.put(NBTKeys.NBT_AIR_HANDLER, airHandler.serializeNBT());
     }
 
     @Override
-    public void readFromPacket(NBTTagCompound tag) {
+    public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
-        airHandler.readFromNBT(tag);
+        airHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_AIR_HANDLER));
     }
 
     @Override
@@ -127,8 +148,8 @@ public class TileEntityPneumaticBase extends TileEntityTickableBase implements I
     }
 
     @Override
-    public IAirHandler getAirHandler(EnumFacing side) {
-        return side == null || isConnectedTo(side) ? airHandler : null;
+    public IAirHandler getAirHandler(Direction side) {
+        return side == null || canConnectTo(side) ? airHandler : null;
     }
 
     public float getPressure() {
@@ -145,7 +166,7 @@ public class TileEntityPneumaticBase extends TileEntityTickableBase implements I
      * @param side the side to check
      * @return true if connected, false otherwise
      */
-    public boolean isConnectedTo(EnumFacing side) {
+    public boolean canConnectTo(Direction side) {
         return true;
     }
 

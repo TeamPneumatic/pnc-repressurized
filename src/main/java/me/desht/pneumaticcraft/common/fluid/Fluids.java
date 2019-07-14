@@ -5,19 +5,19 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.BlockFluidEtchingAcid;
 import me.desht.pneumaticcraft.common.block.BlockFluidPneumaticCraft;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.block.material.MaterialLiquid;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.*;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public class Fluids {
     public static final Fluid ETCHING_ACID = createFluid("etchacid",
             fluid -> ((FluidPneumaticCraft)fluid).setCustomColor(0xFFA05C00), BlockFluidEtchingAcid::new);
     public static final Fluid PLASTIC = createFluid("plastic",
-            fluid -> {}, fluid -> new BlockFluidPneumaticCraft(fluid, new MaterialLiquid(MapColor.GRAY)));
+            fluid -> {}, fluid -> new BlockFluidPneumaticCraft(fluid, new MaterialLiquid(MaterialColor.GRAY)));
     public static final Fluid OIL = createFluid("oil",
             fluid -> fluid.setDensity(800).setViscosity(10000), BlockFluidPneumaticCraft::new);
     public static final Fluid LPG = createFluid("lpg",
@@ -68,7 +68,7 @@ public class Fluids {
 
         // no magnet'ing PCB's out of etching acid pools
         PneumaticCraftAPIHandler.getInstance().getItemRegistry().registerMagnetSuppressor(
-                e -> e instanceof EntityItem && ((EntityItem) e).getItem().getItem() == Itemss.EMPTY_PCB
+                e -> e instanceof ItemEntity && ((ItemEntity) e).getItem().getItem() == ModItems.EMPTY_PCB
                         && e.getEntityWorld().getBlockState(e.getPosition()).getBlock() == Fluids.ETCHING_ACID.getBlock()
         );
     }
@@ -119,7 +119,7 @@ public class Fluids {
             final IForgeRegistry<Item> registry = event.getRegistry();
             for (final IFluidBlock fluidBlock : MOD_FLUID_BLOCKS) {
                 final Block block = (Block) fluidBlock;
-                final ItemBlock itemBlock = new ItemBlock(block);
+                final BlockItem itemBlock = new BlockItem(block);
                 itemBlock.setRegistryName(block.getRegistryName());
                 registry.register(itemBlock);
             }

@@ -1,48 +1,45 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.Validate;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
-@SideOnly(Side.CLIENT)
-public class GuiRadioButton extends Gui implements IGuiWidget {
+public class GuiRadioButton extends Widget implements ITooltipSupplier {
     public boolean checked, enabled = true;
-    public final int x, y, color;
-    private final int id;
-    public final String text;
-    private final FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
+    public final int color;
+    private final Consumer<GuiRadioButton> pressable;
+    private final FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
     private List<String> tooltip = new ArrayList<>();
     public List<GuiRadioButton> otherChoices;
-    private IWidgetListener listener;
 
     private static final int BUTTON_WIDTH = 10;
     private static final int BUTTON_HEIGHT = 10;
 
-    public GuiRadioButton(int id, int x, int y, int color, String text) {
-        this.id = id;
-        this.x = x;
-        this.y = y;
+    public GuiRadioButton(int x, int y, int color, String text) {
+        super(x, y, text);
         this.color = color;
-        this.text = text;
+        this.pressable = null;
     }
 
-    @Override
-    public int getID() {
-        return id;
+    public GuiRadioButton(int x, int y, int color, String text, Consumer<GuiRadioButton> pressable) {
+        super(x, y, text);
+        this.color = color;
+        this.pressable = pressable;
     }
+
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
@@ -51,7 +48,8 @@ public class GuiRadioButton extends Gui implements IGuiWidget {
         if (checked) {
             drawCircle(x + BUTTON_WIDTH / 2, y + BUTTON_HEIGHT / 2, 1, enabled ? 0xFFFFFFFF : 0xFFAAAAAA);
         }
-        fontRenderer.drawString(I18n.format(text), x + 1 + BUTTON_WIDTH, y + BUTTON_HEIGHT / 2 - fontRenderer.FONT_HEIGHT / 2, enabled ? color : 0xFF888888);
+        fontRenderer.drawString(I18n.format(getMessage()), x + 1 + BUTTON_WIDTH,
+                y + BUTTON_HEIGHT / 2f - fontRenderer.FONT_HEIGHT / 2f, enabled ? color : 0xFF888888);
     }
 
     private void drawCircle(int x, int y, int radius, int color) {
@@ -61,44 +59,35 @@ public class GuiRadioButton extends Gui implements IGuiWidget {
         float f2 = (color >> 8 & 255) / 255.0F;
         float f3 = (color & 255) / 255.0F;
         GlStateManager.enableBlend();
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.color(f1, f2, f3, f);
+        GlStateManager.color4f(f1, f2, f3, f);
         wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
         int points = 20;
         for (int i = 0; i < points; i++) {
             double sin = Math.sin((double) i / points * Math.PI * 2);
             double cos = Math.cos((double) i / points * Math.PI * 2);
-            wr.pos(x + sin * radius, y + cos * radius, zLevel).endVertex();
+            wr.pos(x + sin * radius, y + cos * radius, 0.0).endVertex();
         }
         Tessellator.getInstance().draw();
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
         GlStateManager.disableBlend();
     }
 
-    @Override
     public Rectangle getBounds() {
-        return new Rectangle(x, y, BUTTON_WIDTH + fontRenderer.getStringWidth(text), BUTTON_HEIGHT);
+        return new Rectangle(x, y, BUTTON_WIDTH + fontRenderer.getStringWidth(getMessage()), BUTTON_HEIGHT);
     }
 
     @Override
-    public void onMouseClicked(int mouseX, int mouseY, int button) {
+    public void onClick(double mouseX, double mouseY) {
         if (enabled) {
-            if (otherChoices != null) {
-                for (GuiRadioButton radioButton : otherChoices) {
-                    radioButton.checked = false;
-                }
-            } else {
-                throw new IllegalArgumentException("A radio button needs more than one choice! You need to set the GuiRadioButton#otherChoices field!");
+            Validate.notNull(otherChoices, "A radio button needs more than one choice! You need to set the GuiRadioButton#otherChoices field!");
+            for (GuiRadioButton radioButton : otherChoices) {
+                radioButton.checked = false;
             }
             checked = true;
-            listener.actionPerformed(this);
+            if (pressable != null) pressable.accept(this);
         }
-    }
-
-    @Override
-    public void onMouseClickedOutsideBounds(int mouseX, int mouseY, int button) {
-
     }
 
     public void setTooltip(String tooltip) {
@@ -112,28 +101,5 @@ public class GuiRadioButton extends Gui implements IGuiWidget {
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed) {
         curTooltip.addAll(tooltip);
-    }
-
-    @Override
-    public boolean onKey(char key, int keyCode) {
-        return false;
-    }
-
-    @Override
-    public void setListener(IWidgetListener gui) {
-        listener = gui;
-    }
-
-    @Override
-    public void update() {
-    }
-
-    @Override
-    public void handleMouseInput() {
-    }
-
-    @Override
-    public void postRender(int mouseX, int mouseY, float partialTick) {
-
     }
 }

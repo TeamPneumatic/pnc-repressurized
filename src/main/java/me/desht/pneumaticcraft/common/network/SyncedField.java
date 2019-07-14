@@ -1,12 +1,16 @@
 package me.desht.pneumaticcraft.common.network;
 
+import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.EmptyHandler;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
@@ -85,7 +89,7 @@ public abstract class SyncedField<T> {
         return lastValue;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void setValue(T value) {
         try {
             if (arrayIndex >= 0) {
@@ -340,6 +344,91 @@ public abstract class SyncedField<T> {
                 result.setStackInSlot(i, stack.isEmpty() ? ItemStack.EMPTY : stack.copy());
             }
             return result;
+        }
+    }
+
+    /*************** Utility Methods ***************************/
+
+    public static byte getType(SyncedField syncedField) {
+        if (syncedField instanceof SyncedInt) return 0;
+        else if (syncedField instanceof SyncedFloat) return 1;
+        else if (syncedField instanceof SyncedDouble) return 2;
+        else if (syncedField instanceof SyncedBoolean) return 3;
+        else if (syncedField instanceof SyncedString) return 4;
+        else if (syncedField instanceof SyncedEnum) return 5;
+        else if (syncedField instanceof SyncedItemStack) return 6;
+        else if (syncedField instanceof SyncedFluidTank) return 7;
+        else if (syncedField instanceof SyncedItemStackHandler) return 8;
+        else {
+            throw new IllegalArgumentException("Invalid sync type! " + syncedField);
+        }
+    }
+
+    static Object fromBytes(ByteBuf buf, int type) {
+        switch (type) {
+            case 0:
+                return buf.readInt();
+            case 1:
+                return buf.readFloat();
+            case 2:
+                return buf.readDouble();
+            case 3:
+                return buf.readBoolean();
+            case 4:
+                return PacketUtil.readUTF8String(buf);
+            case 5:
+                return buf.readByte();
+            case 6:
+                return new PacketBuffer(buf).readItemStack();
+            case 7:
+                if (!buf.readBoolean()) return null;
+                return FluidStack.loadFluidStackFromNBT(new PacketBuffer(buf).readCompoundTag());
+            case 8:
+                PacketBuffer packetBuffer = new PacketBuffer(buf);
+                CompoundNBT tag = packetBuffer.readCompoundTag();
+                if (tag == null) return EmptyHandler.INSTANCE;
+                ItemStackHandler handler = new ItemStackHandler();
+                handler.deserializeNBT(tag);
+                return handler;
+        }
+        throw new IllegalArgumentException("Invalid sync type! " + type);
+    }
+
+    static void toBytes(ByteBuf buf, Object value, int type) {
+        switch (type) {
+            case 0:
+                buf.writeInt((Integer) value);
+                break;
+            case 1:
+                buf.writeFloat((Float) value);
+                break;
+            case 2:
+                buf.writeDouble((Double) value);
+                break;
+            case 3:
+                buf.writeBoolean((Boolean) value);
+                break;
+            case 4:
+                PacketUtil.writeUTF8String(buf, (String) value);
+                break;
+            case 5:
+                buf.writeByte((Byte) value);
+                break;
+            case 6:
+                new PacketBuffer(buf).writeItemStack(value == null ? ItemStack.EMPTY : (ItemStack) value);
+                break;
+            case 7:
+                buf.writeBoolean(value != null);
+                if (value != null) {
+                    FluidStack stack = (FluidStack) value;
+                    new PacketBuffer(buf).writeCompoundTag(stack.writeToNBT(new CompoundNBT()));
+                }
+                break;
+            case 8:
+                CompoundNBT tag = ((ItemStackHandler) value).serializeNBT();
+                PacketBuffer packetBuffer = new PacketBuffer(buf);
+                packetBuffer.writeCompoundTag(tag);
+                break;
         }
     }
 }

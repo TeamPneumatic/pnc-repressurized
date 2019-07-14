@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.List;
@@ -12,6 +12,6 @@ public class RenderPlasticMixer extends FastFluidTESR<TileEntityPlasticMixer> {
 
     @Override
     List<TankRenderInfo> getTanksToRender(TileEntityPlasticMixer te) {
-        return ImmutableList.of(new TankRenderInfo(te.getTank(), TANK_BOUNDS).without(EnumFacing.DOWN));
+        return ImmutableList.of(new TankRenderInfo(te.getTank(), TANK_BOUNDS).without(Direction.DOWN));
     }
 }

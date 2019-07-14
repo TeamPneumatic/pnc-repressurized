@@ -1,16 +1,22 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
-import net.minecraft.entity.player.InventoryPlayer;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerAdvancedAirCompressor extends ContainerAirCompressor {
 
-    public ContainerAdvancedAirCompressor(InventoryPlayer inventoryPlayer, TileEntityAirCompressor te) {
-        super(inventoryPlayer, te);
+    public ContainerAdvancedAirCompressor(int windowId, PlayerInventory invPlayer, PacketBuffer extra) {
+        this(windowId, invPlayer, getTilePos(extra));
+    }
+
+    public ContainerAdvancedAirCompressor(int windowId, PlayerInventory invPlayer, BlockPos tePos) {
+        super(ModContainerTypes.ADVANCED_AIR_COMPRESSOR, windowId, invPlayer, tePos);
     }
 
     @Override
     protected int getFuelSlotXOffset() {
-        return 69;
+        return 69;  // dude
     }
 }

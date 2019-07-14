@@ -4,9 +4,9 @@ import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -27,7 +27,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private static boolean isAddingOrRemovingLogic;
 
     @Override
-    public void initializeAsHull(World world, BlockPos pos, EnumFacing... validSides) {
+    public void initializeAsHull(World world, BlockPos pos, Direction... validSides) {
         if (ambientTemperature < 0) {
             initializeAmbientTemperature(world, pos);
         }
@@ -39,24 +39,14 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         }
         hullExchangers.clear();
         newBehaviours = new ArrayList<>();
-        for (EnumFacing dir : EnumFacing.VALUES) {
-            if (isSideValid(validSides, dir)) {
-                HeatBehaviourManager.getInstance().addHeatBehaviours(world, pos.offset(dir), dir, this, newBehaviours);
-                IHeatExchangerLogic logic = HeatExchangerManager.getInstance().getLogic(world, pos.offset(dir), dir.getOpposite());
-                if (logic != null) {
-                    hullExchangers.add(logic);
-                    addConnectedExchanger(logic);
-                }
+        for (Direction dir : validSides) {
+            HeatBehaviourManager.getInstance().addHeatBehaviours(world, pos.offset(dir), dir, this, newBehaviours);
+            IHeatExchangerLogic logic = HeatExchangerManager.getInstance().getLogic(world, pos.offset(dir), dir.getOpposite());
+            if (logic != null) {
+                hullExchangers.add(logic);
+                addConnectedExchanger(logic);
             }
         }
-    }
-
-    private boolean isSideValid(EnumFacing[] validSides, EnumFacing side) {
-        if (validSides.length == 0) return true;
-        for (EnumFacing d : validSides) {
-            if (d == side) return true;
-        }
-        return false;
     }
 
     @Override
@@ -119,35 +109,36 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
-        tag.setDouble("temperature", temperature);
-        NBTTagList tagList = new NBTTagList();
+    public CompoundNBT serializeNBT() {
+        CompoundNBT tag = new CompoundNBT();
+        tag.putDouble("temperature", temperature);
+        ListNBT tagList = new ListNBT();
         for (HeatBehaviour behaviour : behaviours) {
-            NBTTagCompound t = new NBTTagCompound();
-            t.setString("id", behaviour.getId());
-            behaviour.writeToNBT(t);
-            tagList.appendTag(t);
+            CompoundNBT t = behaviour.serializeNBT();
+            t.putString("id", behaviour.getId());
+            tagList.add(t);
         }
-        tag.setTag("behaviours", tagList);
+        tag.put("behaviours", tagList);
+        return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        temperature = tag.getDouble("temperature");
+    public void deserializeNBT(CompoundNBT nbt) {
+        temperature = nbt.getDouble("temperature");
         behaviours.clear();
-        NBTTagList tagList = tag.getTagList("behaviours", 10);
-        for (int i = 0; i < tagList.tagCount(); i++) {
-            NBTTagCompound t = tagList.getCompoundTagAt(i);
-            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().getNewBehaviourForId(t.getString("id"));
+        ListNBT tagList = nbt.getList("behaviours", 10);
+        for (int i = 0; i < tagList.size(); i++) {
+            CompoundNBT t = tagList.getCompound(i);
+            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().makeNewBehaviourForId(t.getString("id"));
             if (behaviour != null) {
-                behaviour.readFromNBT(t);
+                behaviour.deserializeNBT(t);
                 behaviours.add(behaviour);
             }
         }
     }
 
     @Override
-    public void update() {
+    public void tick() {
         temperatureInt = (int) temperature;
 
         if (getThermalCapacity() < 0.1D) {
@@ -161,9 +152,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
             for (HeatBehaviour oldBehaviour : oldBehaviours) {//Transfer over equal heat behaviour's info.
                 int equalBehaviourIndex = behaviours.indexOf(oldBehaviour);
                 if (equalBehaviourIndex >= 0) {
-                    NBTTagCompound tag = new NBTTagCompound();
-                    oldBehaviour.writeToNBT(tag);
-                    behaviours.get(equalBehaviourIndex).readFromNBT(tag);
+                    behaviours.get(equalBehaviourIndex).deserializeNBT(oldBehaviour.serializeNBT());
                 }
             }
         }

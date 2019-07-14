@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -23,11 +23,11 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     }
 
     @Override
-    public void update() {
+    public void tick() {
     }
 
     @Override
-    public void initializeAsHull(World world, BlockPos pos, EnumFacing... validSides) {
+    public void initializeAsHull(World world, BlockPos pos, Direction... validSides) {
     }
 
     @Override
@@ -70,13 +70,6 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
         return thermalResistance;
     }
 
-    @Override
-    public void writeToNBT(NBTTagCompound tag) {
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tag) {
-    }
 
     @Override
     public void setThermalCapacity(double capacity) {
@@ -89,7 +82,14 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
 
     @Override
     public void addHeat(double amount) {
-
     }
 
+    @Override
+    public CompoundNBT serializeNBT() {
+        return new CompoundNBT();
+    }
+
+    @Override
+    public void deserializeNBT(CompoundNBT nbt) {
+    }
 }

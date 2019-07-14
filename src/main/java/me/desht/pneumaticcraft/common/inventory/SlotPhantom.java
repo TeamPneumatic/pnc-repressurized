@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -15,7 +15,7 @@ public class SlotPhantom extends SlotItemHandler implements IPhantomSlot {
     }
 
     @Override
-    public boolean canTakeStack(EntityPlayer par1EntityPlayer) {
+    public boolean canTakeStack(PlayerEntity par1EntityPlayer) {
         return false;
     }
 

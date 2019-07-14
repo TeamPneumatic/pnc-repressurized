@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.EntityTrackEvent;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.EntityTrackEvent;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiEntityTrackOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
@@ -13,25 +13,24 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityHanging;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.HangingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -45,27 +44,27 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     private final Map<Integer, RenderEntityTarget> targets = new HashMap<>();
     private boolean shouldStopSpamOnEntityTracking = false;
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private GuiAnimatedStat entityTrackInfo;
     @Nonnull
     private EntityFilter entityFilter = new EntityFilter("");
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public String getUpgradeName() {
         return UPGRADE_NAME;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void update(EntityPlayer player, int rangeUpgrades) {
+    @OnlyIn(Dist.CLIENT)
+    public void update(PlayerEntity player, int rangeUpgrades) {
         SearchUpgradeHandler searchHandler = HUDHandler.instance().getSpecificRenderer(SearchUpgradeHandler.class);
 
-        if (searchHandler != null && (Minecraft.getMinecraft().world.getTotalWorldTime() & 0xf) == 0) {
+        if (searchHandler != null && (Minecraft.getInstance().world.getGameTime() & 0xf) == 0) {
             searchHandler.trackItemEntities(player, rangeUpgrades, GuiKeybindCheckBox.isHandlerEnabled(searchHandler));
         }
 
-        ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+        ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
         String filterStr = helmetStack.isEmpty() ? "" : ItemPneumaticArmor.getEntityFilter(helmetStack);
         if (!entityFilter.toString().equals(filterStr)) {
             EntityFilter newFilter = EntityFilter.fromString(filterStr);
@@ -90,7 +89,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         List<Integer> toRemove = new ArrayList<>();
         for (Map.Entry<Integer, RenderEntityTarget> entry : targets.entrySet()) {
             RenderEntityTarget target = entry.getValue();
-            if (target.entity.isDead || player.getDistance(target.entity) > entityTrackRange + 5 || !entityFilter.test(target.entity)) {
+            if (!target.entity.isAlive() || player.getDistance(target.entity) > entityTrackRange + 5 || !entityFilter.test(target.entity)) {
                 if (target.ticksExisted > 0) {
                     target.ticksExisted = -60;
                 } else if (target.ticksExisted == -1) {
@@ -111,7 +110,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         List<String> text = new ArrayList<>();
         for (RenderEntityTarget target : targets.values()) {
             boolean wasNegative = target.ticksExisted < 0;
-            target.ticksExisted += CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EntityEquipmentSlot.HEAD);
+            target.ticksExisted += CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EquipmentSlotType.HEAD);
             if (target.ticksExisted >= 0 && wasNegative) target.ticksExisted = -1;
             target.update();
             if (target.isLookingAtTarget) {
@@ -129,52 +128,52 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         entityTrackInfo.setText(text);
     }
 
-    static AxisAlignedBB getAABBFromRange(EntityPlayer player, int rangeUpgrades) {
+    static AxisAlignedBB getAABBFromRange(PlayerEntity player, int rangeUpgrades) {
         double entityTrackRange = ENTITY_TRACKING_RANGE + Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
 
         return new AxisAlignedBB(player.posX - entityTrackRange, player.posY - entityTrackRange, player.posZ - entityTrackRange, player.posX + entityTrackRange, player.posY + entityTrackRange, player.posZ + entityTrackRange);
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void render3D(float partialTicks) {
         targets.values().forEach(target -> target.render(partialTicks, shouldStopSpamOnEntityTracking));
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void render2D(float partialTicks, boolean upgradeEnabled) {
     }
 
     @Override
     public Item[] getRequiredUpgrades() {
-        return new Item[]{Itemss.upgrades.get(EnumUpgrade.ENTITY_TRACKER)};
+        return new Item[]{ EnumUpgrade.ENTITY_TRACKER.getItem() };
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void reset() {
         targets.clear();
     }
 
     @Override
-    public float getEnergyUsage(int rangeUpgrades, EntityPlayer player) {
-        return PneumaticValues.USAGE_ENTITY_TRACKER * (1 + (float) Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / ENTITY_TRACKING_RANGE) * CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EntityEquipmentSlot.HEAD);
+    public float getEnergyUsage(int rangeUpgrades, PlayerEntity player) {
+        return PneumaticValues.USAGE_ENTITY_TRACKER * (1 + (float) Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / ENTITY_TRACKING_RANGE) * CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EquipmentSlotType.HEAD);
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public IOptionPage getGuiOptionsPage() {
         return new GuiEntityTrackOptions(this);
     }
 
     @Override
-    public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.HEAD;
+    public EquipmentSlotType getEquipmentSlot() {
+        return EquipmentSlotType.HEAD;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public GuiAnimatedStat getAnimatedStat() {
         if (entityTrackInfo == null) {
             GuiAnimatedStat.StatIcon icon = GuiAnimatedStat.StatIcon.of(CraftingRegistrator.getUpgrade(EnumUpgrade.ENTITY_TRACKER));
@@ -202,15 +201,15 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         getTargetsStream().forEach(RenderEntityTarget::selectAsDebuggingTarget);
     }
 
-    public boolean scroll(MouseEvent event) {
+    public boolean scroll(GuiScreenEvent.MouseScrollEvent.Post event) {
         return getTargetsStream().anyMatch(target -> target.scroll(event));
     }
 
     private class EntityTrackerSelector extends StringFilterEntitySelector {
-        private final EntityPlayer player;
+        private final PlayerEntity player;
         private final double threshold;
 
-        private EntityTrackerSelector(EntityPlayer player, EntityFilter filter, double threshold) {
+        private EntityTrackerSelector(PlayerEntity player, EntityFilter filter, double threshold) {
             this.player = player;
             this.threshold = threshold;
             setFilter(Collections.singletonList(filter));
@@ -219,8 +218,8 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         @Override
         public boolean apply(Entity entity) {
             return entity != player
-                    && (entity instanceof EntityLivingBase || entity instanceof EntityHanging)
-                    && !entity.isDead
+                    && (entity instanceof LivingEntity || entity instanceof HangingEntity)
+                    && entity.isAlive()
                     && player.getDistance(entity) < threshold
                     && !MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(entity))
                     && super.apply(entity);

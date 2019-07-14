@@ -62,11 +62,11 @@ public class WidgetRegistrator {
         register(new ProgWidgetPressureCondition());
         register(new ProgWidgetItemCondition());
         register(new ProgWidgetDroneConditionItem());
-        register(new ProgWidgetDroneConditionLiquid());
+        register(new ProgWidgetDroneConditionFluid());
         register(new ProgWidgetDroneConditionEntity());
         register(new ProgWidgetDroneConditionPressure());
-        register(new ProgWidgetRFCondition());
-        register(new ProgWidgetDroneConditionRF());
+        register(new ProgWidgetEnergyCondition());
+        register(new ProgWidgetDroneConditionEnergy());
 
         // TODO: should really be their own widgets, but historical reasons...
         register(new ProgWidgetCustomBlockInteract().setInteractor(new DroneInteractRFExport()));

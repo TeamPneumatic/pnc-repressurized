@@ -7,12 +7,14 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.recipes.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -37,8 +39,8 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     }
 
     @Override
-    public boolean canPlace(EnumFacing facing) {
-        return getTileEntity() != null && getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+    public boolean canPlace(Direction facing) {
+        return getTileEntity() != null && getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
     }
 
     public int getHeatLevel() {
@@ -46,8 +48,8 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
         if (!getWorld().isRemote) {
             heatLevel = HeatUtil.getHeatLevelForTemperature(logic.getTemperature());
             if (logic.getTemperature() > 374) {
@@ -58,8 +60,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
                     cookingProgress += progress;
                 }
                 if (cookingProgress >= 100) {
-                    IItemHandler handler = IOHelper.getInventoryForTE(getTileEntity());
-                    if (handler != null) {
+                    IOHelper.getInventoryForTE(getTileEntity()).ifPresent(handler -> {
                         if (!tryCookSlot(handler, lastValidSlot)) {
                             for (int i = 0; i < handler.getSlots(); i++) {
                                 if (tryCookSlot(handler, i)) {
@@ -70,7 +71,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
                         } else {
                             cookingProgress -= 100;
                         }
-                    }
+                    });
                 }
             } else if (logic.getTemperature() < 273) {
                 if (coolingProgress < 100) {
@@ -80,8 +81,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
                     coolingProgress += progress;
                 }
                 if (coolingProgress >= 100) {
-                    IItemHandler handler = IOHelper.getInventoryForTE(getTileEntity());
-                    if (handler != null) {
+                    IOHelper.getInventoryForTE(getTileEntity()).ifPresent(handler -> {
                         if (!tryCoolSlot(handler, lastValidSlot)) {
                             for (int i = 0; i < handler.getSlots(); i++) {
                                 if (tryCoolSlot(handler, i)) {
@@ -92,7 +92,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
                         } else {
                             coolingProgress -= 100;
                         }
-                    }
+                    });
                 }
             }
         }
@@ -101,16 +101,21 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     private boolean tryCookSlot(IItemHandler handler, int slot) {
         ItemStack stack = handler.getStackInSlot(slot);
         if (!stack.isEmpty()) {
-            ItemStack result = FurnaceRecipes.instance().getSmeltingResult(stack);
-            if (!result.isEmpty()) {
-                ItemStack remainder = IOHelper.insert(getTileEntity(), result, true);
-                if (remainder.isEmpty()) {
-                    IOHelper.insert(getTileEntity(), result, false);
-                    handler.extractItem(slot, 1, false);
-                    lastValidSlot = slot;
-                    return true;
+            Inventory inv = new Inventory(1);
+            inv.setInventorySlotContents(0, stack);
+            return world.getRecipeManager().getRecipe(IRecipeType.SMELTING, inv, this.world).map(recipe -> {
+                ItemStack result = recipe.getRecipeOutput();
+                if (!result.isEmpty()) {
+                    ItemStack remainder = IOHelper.insert(getTileEntity(), result, true);
+                    if (remainder.isEmpty()) {
+                        IOHelper.insert(getTileEntity(), result, false);
+                        handler.extractItem(slot, 1, false);
+                        lastValidSlot = slot;
+                        return true;
+                    }
                 }
-            }
+                return false;
+            }).orElse(false);
         }
         return false;
     }
@@ -157,49 +162,49 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         logic.writeToNBT(tag);
-        tag.setInteger("cookingProgress", cookingProgress);
-        tag.setInteger("coolingProgress", coolingProgress);
+        tag.putInt("cookingProgress", cookingProgress);
+        tag.putInt("coolingProgress", coolingProgress);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         logic.readFromNBT(tag);
-        cookingProgress = tag.getInteger("cookingProgress");
-        coolingProgress = tag.getInteger("coolingProgress");
+        cookingProgress = tag.getInt("cookingProgress");
+        coolingProgress = tag.getInt("coolingProgress");
     }
 
     @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing) {
+    public void onPlaced(PlayerEntity player, ItemStack stack, Direction facing) {
         super.onPlaced(player, stack, facing);
-        getWorld().notifyNeighborsOfStateChange(getPos(), getBlockState().getBlock(), true);
+        getWorld().notifyNeighborsOfStateChange(getPos(), getBlockState().getBlock());
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
+    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
         return logic;
     }
 
     @Override
     public void invalidate() {
         super.invalidate();
-        getWorld().notifyNeighborsOfStateChange(getPos(), getBlockState().getBlock(), true);
+        getWorld().notifyNeighborsOfStateChange(getPos(), getBlockState().getBlock());
     }
 
     @Override
-    public void addWailaInfoToTag(NBTTagCompound tag) {
+    public void addWailaInfoToTag(CompoundNBT tag) {
         super.addWailaInfoToTag(tag);
-        tag.setInteger("temp", (int) logic.getTemperature());
+        tag.putInt("temp", (int) logic.getTemperature());
     }
 
     @Override
-    public void addTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
+    public void addTooltip(List<ITextComponent> curInfo, CompoundNBT tag, boolean extended) {
         super.addTooltip(curInfo, tag, extended);
         // WAILA sync's the temperature via NBT, TOP runs serverside and gets it here
-        int temp = tag != null && tag.hasKey("temp") ? tag.getInteger("temp") : (int) logic.getTemperature();
+        int temp = tag != null && tag.contains("temp") ? tag.getInt("temp") : (int) logic.getTemperature();
         curInfo.add(HeatUtil.formatHeatString(temp));
     }
 }

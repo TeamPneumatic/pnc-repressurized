@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets.area;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
@@ -132,14 +132,14 @@ public class AreaTypeCylinder extends AreaType{
     }
     
     @Override
-    public void writeToNBT(NBTTagCompound tag){
+    public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);
         tag.setByte("axis", (byte)axis.ordinal());
         tag.setByte("cylinderType", (byte)cylinderType.ordinal());
     }
     
     @Override
-    public void readFromNBT(NBTTagCompound tag){
+    public void readFromNBT(CompoundNBT tag){
         super.readFromNBT(tag);
         axis = EnumAxis.values()[tag.getByte("axis")];
         cylinderType = EnumCylinderType.values()[tag.getByte("cylinderType")];

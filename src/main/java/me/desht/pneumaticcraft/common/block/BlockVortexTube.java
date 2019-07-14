@@ -2,10 +2,10 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVortexTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -15,7 +15,7 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 
 public class BlockVortexTube extends BlockPneumaticCraftModeled {
 
-    BlockVortexTube() {
+    public BlockVortexTube() {
         super(Material.IRON, "vortex_tube");
     }
 
@@ -42,7 +42,7 @@ public class BlockVortexTube extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+    public BlockState getActualState(BlockState state, IBlockAccess worldIn, BlockPos pos) {
         state = super.getActualState(state, worldIn, pos);
         TileEntityVortexTube tube = (TileEntityVortexTube) PneumaticCraftUtils.getTileEntitySafely(worldIn, pos); //worldIn.getTileEntity(pos);
         for (int i = 0; i < 6; i++) {

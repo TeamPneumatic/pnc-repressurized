@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.block;
 
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
-import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 
-public class BlockFluidPneumaticCraft extends BlockFluidClassic {
+public class BlockFluidPneumaticCraft extends FlowingFluidBlock {
 
     public BlockFluidPneumaticCraft(Fluid fluid, Material material) {
         super(fluid, material);

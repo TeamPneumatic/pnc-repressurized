@@ -1,10 +1,15 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAmadronOffer;
 import me.desht.pneumaticcraft.common.config.AmadronOfferSettings;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PacketAmadronTradeRemoved extends PacketAbstractAmadronTrade<PacketAmadronTradeRemoved> {
 
@@ -15,17 +20,20 @@ public class PacketAmadronTradeRemoved extends PacketAbstractAmadronTrade<Packet
         super(offer);
     }
 
-    @Override
-    public void handleClientSide(PacketAmadronTradeRemoved message, EntityPlayer player) {
-        if (AmadronOfferSettings.notifyOfTradeRemoval)
-            player.sendStatusMessage(new TextComponentTranslation("message.amadron.playerRemovedTrade",
-                    message.getOffer().getVendor(),
-                    WidgetAmadronOffer.getStringForObject(message.getOffer().getInput()),
-                    WidgetAmadronOffer.getStringForObject(message.getOffer().getOutput())),
-                    false);
+    public PacketAmadronTradeRemoved(PacketBuffer buffer) {
+        super(buffer);
     }
 
-    @Override
-    public void handleServerSide(PacketAmadronTradeRemoved message, EntityPlayer player) {
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            if (AmadronOfferSettings.notifyOfTradeRemoval)
+                PneumaticCraftRepressurized.proxy.getClientPlayer().sendStatusMessage(
+                        xlate("message.amadron.playerRemovedTrade",
+                                getOffer().getVendor(),
+                                WidgetAmadronOffer.getStringForObject(getOffer().getInput()),
+                                WidgetAmadronOffer.getStringForObject(getOffer().getOutput())
+                        ), false);
+        });
+        ctx.get().setPacketHandled(true);
     }
 }

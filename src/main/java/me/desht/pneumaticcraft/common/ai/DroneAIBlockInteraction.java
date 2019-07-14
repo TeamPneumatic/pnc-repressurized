@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -12,28 +12,29 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetDigAndPlace;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetPlace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.ThreadedSorter;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.particles.RedstoneParticleData;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IWorldReader;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemBase> extends EntityAIBase {
+public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> extends Goal {
     protected final IDroneBase drone;
-    protected final Widget widget;
+    protected final W progWidget;
     private final EnumOrder order;
     private BlockPos curPos;
     private final List<BlockPos> area;
-    final IBlockAccess worldCache;
+    final IWorldReader worldCache;
     private final List<BlockPos> blacklist = new ArrayList<>();//a list of position which weren't allowed to be digged in the past.
     private int curY;
     private int lastSuccessfulY;
@@ -49,14 +50,14 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
 
     /**
      * @param drone the drone
-     * @param widget needs to implement IBlockOrdered
+     * @param progWidget needs to implement IBlockOrdered
      */
-    public DroneAIBlockInteraction(IDroneBase drone, Widget widget) {
+    public DroneAIBlockInteraction(IDroneBase drone, W progWidget) {
         this.drone = drone;
-        setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
-        this.widget = widget;
-        order = widget instanceof IBlockOrdered ? ((IBlockOrdered) widget).getOrder() : EnumOrder.CLOSEST;
-        area = widget.getCachedAreaList();
+        setMutexFlags(EnumSet.allOf(Flag.class)); // exclusive to all other AI tasks
+        this.progWidget = progWidget;
+        order = progWidget instanceof IBlockOrdered ? ((IBlockOrdered) progWidget).getOrder() : EnumOrder.CLOSEST;
+        area = progWidget.getCachedAreaList();
         worldCache = ProgWidgetAreaItemBase.getCache(area, drone.world());
         if (area.size() > 0) {
             Iterator<BlockPos> iterator = area.iterator();
@@ -110,7 +111,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
         return order == ProgWidgetPlace.EnumOrder.CLOSEST || y == curY;
     }
 
-    public DroneAIBlockInteraction<Widget> setMaxActions(int maxActions) {
+    public DroneAIBlockInteraction<W> setMaxActions(int maxActions) {
         this.maxActions = maxActions;
         return this;
     }
@@ -181,7 +182,7 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
                 return movedToBlockOK(pos);
             }
         } else {
-            for (EnumFacing dir : EnumFacing.VALUES) {
+            for (Direction dir : Direction.VALUES) {
                 if (drone.getPathNavigator().moveToXYZ(curPos.getX() + dir.getXOffset(), curPos.getY() + dir.getYOffset() + 0.5, curPos.getZ() + dir.getZOffset())) {
                     return movedToBlockOK(pos);
                 }
@@ -232,15 +233,15 @@ public abstract class DroneAIBlockInteraction<Widget extends ProgWidgetAreaItemB
      * @param pos
      */
     private void indicateToListeningPlayers(BlockPos pos) {
-        for (EntityPlayer player : drone.world().playerEntities) {
-            if (player.getDistanceSq(pos) < 1024) {
-                ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-                if (helmet.getItem() == Itemss.PNEUMATIC_HELMET) {
+        for (PlayerEntity player : drone.world().getPlayers()) {
+            if (player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) < 1024) {
+                ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+                if (helmet.getItem() == ModItems.PNEUMATIC_HELMET) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                    if (handler.isArmorReady(EntityEquipmentSlot.HEAD) && handler.isEntityTrackerEnabled()
-                            && handler.getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.ENTITY_TRACKER) > 0
-                            && handler.getUpgradeCount(EntityEquipmentSlot.HEAD, EnumUpgrade.DISPENSER) > 0) {
-                        NetworkHandler.sendTo(new PacketSpawnParticle(EnumParticleTypes.REDSTONE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0), (EntityPlayerMP) player);
+                    if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isEntityTrackerEnabled()
+                            && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.ENTITY_TRACKER) > 0
+                            && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.DISPENSER) > 0) {
+                        NetworkHandler.sendToPlayer(new PacketSpawnParticle(new RedstoneParticleData(1.0f, 1.0f, 0.5f, 1.0f), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0), (ServerPlayerEntity) player);
                     }
                 }
             }

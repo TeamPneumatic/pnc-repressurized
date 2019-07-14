@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
 import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.common.network.PacketUtil;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 
-public class DebugEntry /*implements Comparable<DebugEntry>*/ {
+public class DebugEntry {
     private final int progWidgetId;
     private final String message;
     private final BlockPos pos;
@@ -19,7 +19,7 @@ public class DebugEntry /*implements Comparable<DebugEntry>*/ {
      */
     DebugEntry(String message, int progWidgetId, BlockPos pos) {
         this.message = message;
-        this.pos = pos != null ? pos : BlockPos.ORIGIN;
+        this.pos = pos != null ? pos : BlockPos.ZERO;
         this.progWidgetId = progWidgetId;
     }
 
@@ -29,14 +29,14 @@ public class DebugEntry /*implements Comparable<DebugEntry>*/ {
      * @param buf message buffer
      */
     public DebugEntry(ByteBuf buf) {
-        message = ByteBufUtils.readUTF8String(buf);
+        message = PacketUtil.readUTF8String(buf);
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         progWidgetId = buf.readInt();
         receivedTime = System.currentTimeMillis();
     }
 
     public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeUTF8String(buf, message);
+        PacketUtil.writeUTF8String(buf, message);
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());

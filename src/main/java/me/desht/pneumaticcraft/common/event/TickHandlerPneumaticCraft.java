@@ -6,9 +6,9 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketServerTickTime;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class TickHandlerPneumaticCraft {
 
@@ -17,9 +17,10 @@ public class TickHandlerPneumaticCraft {
         if (event.phase == TickEvent.Phase.END && !event.world.isRemote) {
             World world = event.world;
             DroneClaimManager.getInstance(world).update();
-            if (event.world.getTotalWorldTime() % 100 == 0) {
-                double tickTime = net.minecraft.util.math.MathHelper.average(FMLCommonHandler.instance().getMinecraftServerInstance().tickTimeArray) * 1.0E-6D;//In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
-                NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.provider.getDimension());
+            if (event.world.getGameTime() % 100 == 0) {
+                double tickTime = net.minecraft.util.math.MathHelper.average(ServerLifecycleHooks.getCurrentServer().tickTimeArray) * 1.0E-6D;
+                // In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
+                NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.getDimension().getType());
             }
         }
     }
@@ -27,7 +28,7 @@ public class TickHandlerPneumaticCraft {
     @SubscribeEvent
     public void onServerTickEnd(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            int ticks = FMLCommonHandler.instance().getMinecraftServerInstance().getTickCounter();
+            int ticks = ServerLifecycleHooks.getCurrentServer().getTickCounter();
             if (ticks % (24000 / AmadronOfferPeriodicConfig.timesPerDay) == 1) {
                 AmadronOfferManager.getInstance().shufflePeriodicOffers();
             }

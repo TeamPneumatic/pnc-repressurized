@@ -2,10 +2,10 @@ package me.desht.pneumaticcraft.common.thirdparty.computercraft;
 
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftModeled;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +27,7 @@ public class BlockDroneInterface extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+    public BlockState getActualState(BlockState state, IBlockAccess worldIn, BlockPos pos) {
         TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
         return te instanceof TileEntityDroneInterface ?
                 state.withProperty(CONNECTED, ((TileEntityDroneInterface) te).isDroneConnected()) :
@@ -35,7 +35,7 @@ public class BlockDroneInterface extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
+    public int getMetaFromState(BlockState state) {
         return 0;
     }
 

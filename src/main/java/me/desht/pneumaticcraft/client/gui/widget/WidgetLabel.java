@@ -2,14 +2,14 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.widget.Widget;
 
 import java.awt.*;
 
-public class WidgetLabel extends WidgetBase {
+public class WidgetLabel extends Widget {
     public enum Alignment {
         LEFT, CENTRE, RIGHT
     }
-    public String text;
     private int color;
     private Alignment alignment = Alignment.LEFT;
     public boolean visible = true;
@@ -19,9 +19,7 @@ public class WidgetLabel extends WidgetBase {
     }
 
     public WidgetLabel(int x, int y, String text, int color) {
-        super(-1, x, y, 0, 0);
-        this.text = text;
-        this.color = color;
+        super(x, y, 0, 0, text);
     }
 
     public WidgetLabel setAlignment(Alignment alignment) {
@@ -37,26 +35,26 @@ public class WidgetLabel extends WidgetBase {
     public void render(int mouseX, int mouseY, float partialTick) {
         if (visible) {
             int drawX;
-            FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+            FontRenderer fr = Minecraft.getInstance().fontRenderer;
             switch (alignment) {
                 case LEFT:
                 default:
                     drawX = x;
                     break;
                 case CENTRE:
-                    drawX = x - fr.getStringWidth(text) / 2;
+                    drawX = x - fr.getStringWidth(getMessage()) / 2;
                     break;
                 case RIGHT:
-                    drawX = x - fr.getStringWidth(text);
+                    drawX = x - fr.getStringWidth(getMessage());
                     break;
             }
-            fr.drawString(text, drawX, y, color);
+            fr.drawString(getMessage(), drawX, y, color);
         }
     }
 
-    @Override
     public Rectangle getBounds() {
-        return new Rectangle(x, y, Minecraft.getMinecraft().fontRenderer.getStringWidth(text), Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT);
+        FontRenderer fr = Minecraft.getInstance().fontRenderer;
+        return new Rectangle(x, y, fr.getStringWidth(getMessage()), fr.FONT_HEIGHT);
     }
 
 }

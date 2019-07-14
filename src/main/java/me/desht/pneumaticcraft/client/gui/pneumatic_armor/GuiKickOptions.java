@@ -1,9 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
-import net.minecraft.client.gui.GuiButton;
 
 public class GuiKickOptions implements IOptionPage {
     private KeybindingButton changeKeybindingButton;
@@ -18,40 +17,36 @@ public class GuiKickOptions implements IOptionPage {
 
     @Override
     public void initGui(IGuiScreen gui) {
-        changeKeybindingButton = new KeybindingButton(10, 30, 128, 150, 20, "Change Kick Key...", KeyHandler.getInstance().keybindKick);
-        gui.getButtonList().add(changeKeybindingButton);
+        changeKeybindingButton = new KeybindingButton(30, 128, 150, 20,
+                "Change Kick Key...", KeyHandler.getInstance().keybindKick, b -> changeKeybindingButton.toggleKeybindMode());
+        gui.getWidgetList().add(changeKeybindingButton);
+    }
+
+    public void renderPre(int x, int y, float partialTicks) {
+
+    }
+
+    public void renderPost(int x, int y, float partialTicks) {
+
     }
 
     @Override
-    public void actionPerformed(GuiButton button) {
-        if (button.id == 10) {
-            changeKeybindingButton.toggleKeybindMode();
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (changeKeybindingButton != null) {
+            changeKeybindingButton.receiveKey(keyCode);
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void drawPreButtons(int x, int y, float partialTicks) {
-
+    public boolean mouseClicked(double x, double y, int button) {
+        return false;
     }
 
     @Override
-    public void drawScreen(int x, int y, float partialTicks) {
-
-    }
-
-    @Override
-    public void keyTyped(char ch, int key) {
-        if (changeKeybindingButton != null) changeKeybindingButton.receiveKey(key);
-    }
-
-    @Override
-    public void mouseClicked(int x, int y, int button) {
-
-    }
-
-    @Override
-    public void handleMouseInput() {
-
+    public boolean mouseScrolled(double x, double y, double dir) {
+        return false;
     }
 
     @Override
@@ -59,8 +54,7 @@ public class GuiKickOptions implements IOptionPage {
         return false;
     }
 
-    @Override
-    public boolean displaySettingsText() {
+    public boolean displaySettingsHeader() {
         return false;
     }
 }

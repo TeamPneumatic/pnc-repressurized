@@ -2,27 +2,36 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implements IRedstoneControlled, IHeatExchanger, IMinWorkingPressure {
+public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implements IRedstoneControlled, IHeatExchanger, IMinWorkingPressure, INamedContainerProvider {
 
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
+    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
     @GuiSynced
     private int rfPerTick;
@@ -36,13 +45,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
 
     public TileEntityPneumaticDynamo() {
-        this(PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO, 4);
-    }
-
-    public TileEntityPneumaticDynamo(float dangerPressure, float criticalPressure, int volume, int upgradeSlots) {
-        super(dangerPressure, criticalPressure, volume, upgradeSlots);
-        addApplicableUpgrade(IItemRegistry.EnumUpgrade.SPEED);
-        heatExchanger.setThermalCapacity(100);
+        super(ModTileEntityTypes.PNEUMATIC_DYNAMO, PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO, 4);
     }
 
     public int getEfficiency() {
@@ -50,13 +53,12 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
         if (!world.isRemote) {
-            if (world.getTotalWorldTime() % 20 == 0) {
-                int efficiency = ConfigHandler.machineProperties.pneumaticDynamoEfficiency;
-                if (efficiency < 1) efficiency = 1;
+            if (world.getGameTime() % 20 == 0) {
+                int efficiency = Math.max(1, Config.Common.Machines.pneumaticDynamoEfficiency);
                 airPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * 100 / efficiency);
                 rfPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * getEfficiency() / 100);
             }
@@ -70,19 +72,20 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
             } else {
                 newEnabled = false;
             }
-            if (world.getTotalWorldTime() % 20 == 0 && newEnabled != isEnabled) {
+            if (world.getGameTime() % 20 == 0 && newEnabled != isEnabled) {
                 isEnabled = newEnabled;
                 sendDescriptionPacket();
             }
 
             TileEntity receiver = getTileCache()[getRotation().ordinal()].getTileEntity();
-            if (receiver != null && receiver.hasCapability(CapabilityEnergy.ENERGY, getRotation().getOpposite())) {
-                IEnergyStorage neighborStorage = receiver.getCapability(CapabilityEnergy.ENERGY, getRotation().getOpposite());
-                int extracted = energy.extractEnergy(rfPerTick * 2, true);
-                int energyPushed = neighborStorage.receiveEnergy(extracted, true);
-                if (energyPushed > 0) {
-                    neighborStorage.receiveEnergy(energy.extractEnergy(energyPushed, false), false);
-                }
+            if (receiver != null) {
+                receiver.getCapability(CapabilityEnergy.ENERGY, getRotation().getOpposite()).ifPresent(neighborStorage -> {
+                    int extracted = energy.extractEnergy(rfPerTick * 2, true);
+                    int energyPushed = neighborStorage.receiveEnergy(extracted, true);
+                    if (energyPushed > 0) {
+                        neighborStorage.receiveEnergy(energy.extractEnergy(energyPushed, false), false);
+                    }
+                });
             }
         }
     }
@@ -98,17 +101,19 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player){
-        if(buttonID == 0 && ++redstoneMode > 2) redstoneMode = 0;
+    public void handleGUIButtonPress(String tag, PlayerEntity player){
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG) && ++redstoneMode > 2) {
+            redstoneMode = 0;
+        }
     }
 
     @Override
-    public String getName() {
-        return Blockss.PNEUMATIC_DYNAMO.getTranslationKey();
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
     }
 
     @Override
-    public boolean isConnectedTo(EnumFacing side) {
+    public boolean canConnectTo(Direction side) {
         return side == getRotation().getOpposite();
     }
 
@@ -118,7 +123,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
+    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
         return heatExchanger;
     }
 
@@ -134,32 +139,37 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
         return energy.getEnergyStored();
     }
 
+    @Nonnull
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityEnergy.ENERGY && (facing == getRotation() || facing == null)
-                || super.hasCapability(capability, facing);
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
         return capability == CapabilityEnergy.ENERGY && (facing == getRotation() || facing == null) ?
-                CapabilityEnergy.ENERGY.cast(energy) :
+                energyCap.cast() :
                 super.getCapability(capability, facing);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
         energy.writeToNBT(tag);
-        tag.setByte("redstoneMode", (byte)redstoneMode);
+        tag.putByte("redstoneMode", (byte)redstoneMode);
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
         energy.readFromNBT(tag);
         redstoneMode = tag.getByte("redstoneMode");
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerEnergy(ModContainerTypes.PNEUMATIC_DYNAMO, i, playerInventory, getPos());
     }
 }

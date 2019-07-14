@@ -3,46 +3,49 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketToggleArmorFeature extends AbstractPacket<PacketToggleArmorFeature> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: SERVER
+ * Sent by client to switch an armor module on or off
+ */
+public class PacketToggleArmorFeature {
     private byte featureIndex;
     private boolean state;
-    private EntityEquipmentSlot slot;
+    private EquipmentSlotType slot;
 
     public PacketToggleArmorFeature() {
     }
 
-    public PacketToggleArmorFeature(byte featureIndex, boolean state, EntityEquipmentSlot slot) {
+    public PacketToggleArmorFeature(byte featureIndex, boolean state, EquipmentSlotType slot) {
         this.featureIndex = featureIndex;
         this.state = state;
         this.slot = slot;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        featureIndex = buf.readByte();
-        state = buf.readBoolean();
-        slot = EntityEquipmentSlot.values()[buf.readByte()];
+    PacketToggleArmorFeature(PacketBuffer buffer) {
+        featureIndex = buffer.readByte();
+        state = buffer.readBoolean();
+        slot = EquipmentSlotType.values()[buffer.readByte()];
     }
 
-    @Override
     public void toBytes(ByteBuf buf) {
         buf.writeByte(featureIndex);
         buf.writeBoolean(state);
         buf.writeByte(slot.ordinal());
     }
 
-    @Override
-    public void handleClientSide(PacketToggleArmorFeature message, EntityPlayer player) {
-    }
-
-    @Override
-    public void handleServerSide(PacketToggleArmorFeature message, EntityPlayer player) {
-        if (message.featureIndex >= 0 && message.featureIndex < UpgradeRenderHandlerList.instance().getHandlersForSlot(message.slot).size()) {
-            CommonArmorHandler.getHandlerForPlayer(player).setUpgradeRenderEnabled(message.slot, message.featureIndex, message.state);
-        }
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            if (featureIndex >= 0 && featureIndex < UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).size()) {
+                CommonArmorHandler.getHandlerForPlayer(ctx.get().getSender()).setUpgradeRenderEnabled(slot, featureIndex, state);
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
 
 }

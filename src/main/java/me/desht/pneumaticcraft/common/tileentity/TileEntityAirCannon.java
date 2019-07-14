@@ -2,11 +2,15 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.client.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
+import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
@@ -14,45 +18,50 @@ import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
-import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.Sounds;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.item.*;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.item.minecart.MinecartEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.*;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.Map.Entry;
 
 public class TileEntityAirCannon extends TileEntityPneumaticBase
-        implements IMinWorkingPressure, IRedstoneControl, IGUIButtonSensitive {
+        implements IMinWorkingPressure, IRedstoneControl, IGUIButtonSensitive, INamedContainerProvider {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle",
@@ -60,7 +69,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             "gui.tab.redstoneBehaviour.airCannon.button.highAndSpace"
     );
 
-    private final AirCannonStackHandler inventory = new AirCannonStackHandler(this);
+    private final AirCannonStackHandler itemHandler = new AirCannonStackHandler(this);
+    private final LazyOptional<IItemHandlerModifiable> inventory = LazyOptional.of(() -> itemHandler);
+
     @DescSynced
     @LazySynced
     public float rotationAngle;
@@ -88,10 +99,10 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private int oldRangeUpgrades;
     private boolean externalControl;//used in the CC API, to disallow the Cannon to update its angles when things like range upgrades / GPS Tool have changed.
     private boolean entityUpgradeInserted, dispenserUpgradeInserted;
-    private final List<EntityItem> trackedItems = new ArrayList<>(); //Items that are being checked to be hoppering into inventories.
+    private final List<ItemEntity> trackedItems = new ArrayList<>(); //Items that are being checked to be hoppering into inventories.
     private Set<UUID> trackedItemIds;
     private BlockPos lastInsertingInventory; // Last coordinate where the item went into the inventory (as a result of the Block Tracker upgrade).
-    private EnumFacing lastInsertingInventorySide;
+    private Direction lastInsertingInventorySide;
     @GuiSynced
     public boolean insertingInventoryHasSpace = true;
     private boolean gpsSlotChanged = true;
@@ -102,12 +113,12 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private static final int GPS_SLOT = 1;
 
     public TileEntityAirCannon() {
-        super(PneumaticValues.DANGER_PRESSURE_AIR_CANNON, PneumaticValues.MAX_PRESSURE_AIR_CANNON, PneumaticValues.VOLUME_AIR_CANNON, 4);
+        super(ModTileEntityTypes.AIR_CANNON, PneumaticValues.DANGER_PRESSURE_AIR_CANNON, PneumaticValues.MAX_PRESSURE_AIR_CANNON, PneumaticValues.VOLUME_AIR_CANNON, 4);
         addApplicableUpgrade(EnumUpgrade.RANGE, EnumUpgrade.SPEED, EnumUpgrade.DISPENSER, EnumUpgrade.ENTITY_TRACKER, EnumUpgrade.BLOCK_TRACKER, EnumUpgrade.ITEM_LIFE);
     }
 
     @Override
-    public void update() {
+    public void tick() {
         boolean destUpdateNeeded = false;
 
         if (gpsSlotChanged) {
@@ -133,16 +144,16 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         updateRotationAngles();
         updateTrackedItems();
 
-        super.update();
+        super.tick();
 
         if (!getWorld().isRemote) {
-            List<Pair<EnumFacing, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
+            List<Pair<Direction, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
             if (teList.size() == 0) getAirHandler(null).airLeak(getRotation());
         }
     }
 
     private boolean checkGPSSlot() {
-        ItemStack gpsStack = inventory.getStackInSlot(GPS_SLOT);
+        ItemStack gpsStack = itemHandler.getStackInSlot(GPS_SLOT);
         if (gpsStack.getItem() instanceof IPositionProvider && !externalControl) {
             List<BlockPos> posList = ((IPositionProvider) gpsStack.getItem()).getStoredPositions(gpsStack);
             if (posList != null && !posList.isEmpty()) {
@@ -204,42 +215,45 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private void updateTrackedItems() {
         if (trackedItemIds != null) {
             trackedItems.clear();
-            for (Entity entity : getWorld().loadedEntityList) {
-                if (trackedItemIds.contains(entity.getUniqueID()) && entity instanceof EntityItem) {
-                    trackedItems.add((EntityItem) entity);
+            for (Entity entity : PneumaticCraftRepressurized.proxy.getAllEntities(getWorld())) {
+                if (trackedItemIds.contains(entity.getUniqueID()) && entity instanceof ItemEntity) {
+                    trackedItems.add((ItemEntity) entity);
                 }
             }
             trackedItemIds = null;
         }
-        Iterator<EntityItem> iterator = trackedItems.iterator();
+        Iterator<ItemEntity> iterator = trackedItems.iterator();
         while (iterator.hasNext()) {
-            EntityItem item = iterator.next();
-            if (item.world != getWorld() || item.isDead) {
+            ItemEntity item = iterator.next();
+            if (item.world != getWorld() || !item.isAlive()) {
                 iterator.remove();
             } else {
-                Map<BlockPos, EnumFacing> positions = new HashMap<>();
+                Map<BlockPos, Direction> positions = new HashMap<>();
                 double range = 0.2;
-                for (EnumFacing d : EnumFacing.VALUES) {
+                for (Direction d : Direction.values()) {
                     double posX = item.posX + d.getXOffset() * range;
                     double posY = item.posY + d.getYOffset() * range;
                     double posZ = item.posZ + d.getZOffset() * range;
                     positions.put(new BlockPos((int) Math.floor(posX), (int) Math.floor(posY), (int) Math.floor(posZ)), d.getOpposite());
                 }
-                for (Entry<BlockPos, EnumFacing> entry : positions.entrySet()) {
+                for (Entry<BlockPos, Direction> entry : positions.entrySet()) {
                     BlockPos pos = entry.getKey();
                     TileEntity te = getWorld().getTileEntity(pos);
                     if (te == null) continue;
-                    IItemHandler inv = IOHelper.getInventoryForTE(te, entry.getValue());
-                    ItemStack remainder = ItemHandlerHelper.insertItem(inv, item.getItem(), false);
-                    if (!remainder.isEmpty()) {
-                        item.setItem(remainder);
-                    } else {
-                        item.setDead();
-                        iterator.remove();
-                        lastInsertingInventory = te.getPos();
-                        lastInsertingInventorySide = entry.getValue();
-                        break;
-                    }
+                    boolean inserted = IOHelper.getInventoryForTE(te, entry.getValue()).map(inv -> {
+                        ItemStack remainder = ItemHandlerHelper.insertItem(inv, item.getItem(), false);
+                        if (!remainder.isEmpty()) {
+                            item.setItem(remainder);
+                            return false;
+                        } else {
+                            item.remove();
+                            iterator.remove();
+                            lastInsertingInventory = te.getPos();
+                            lastInsertingInventorySide = entry.getValue();
+                            return true;
+                        }
+                    }).orElse(false);
+                    if (inserted) break;
                 }
             }
         }
@@ -256,9 +270,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0) {
             payloadFrictionX = 0.91D;
             payloadGravity = 0.08D;
-        } else if (getUpgrades(EnumUpgrade.DISPENSER) > 0 && !inventory.getStackInSlot(CANNON_SLOT).isEmpty()) {
-            Item item = inventory.getStackInSlot(CANNON_SLOT).getItem();
-            if (item == Items.POTIONITEM || item == Items.EXPERIENCE_BOTTLE || item == Items.EGG || item == Items.SNOWBALL) {// EntityThrowable
+        } else if (getUpgrades(EnumUpgrade.DISPENSER) > 0 && !itemHandler.getStackInSlot(CANNON_SLOT).isEmpty()) {
+            Item item = itemHandler.getStackInSlot(CANNON_SLOT).getItem();
+            if (item == Items.POTION || item == Items.EXPERIENCE_BOTTLE || item == Items.EGG || item == Items.SNOWBALL) {// EntityThrowable
                 payloadFrictionY = 0.99D;
                 payloadGravity = 0.03D;
             } else if (item == Items.ARROW) {
@@ -266,12 +280,12 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                 payloadGravity = 0.05D;
             } else if (item == Items.MINECART || item == Items.CHEST_MINECART || item == Items.HOPPER_MINECART || item == Items.TNT_MINECART || item == Items.FURNACE_MINECART) {
                 payloadFrictionY = 0.95D;
-            } else if (item == Items.FIREWORK_CHARGE) {
+            } else if (item == Items.FIRE_CHARGE) {
                 payloadGravity = 0;
             }
 
             // family items (throwable) which only differ in gravity.
-            if (item == Items.POTIONITEM) {
+            if (item == Items.POTION) {
                 payloadGravity = 0.05D;
             } else if (item == Items.EXPERIENCE_BOTTLE) {
                 payloadGravity = 0.07D;
@@ -280,11 +294,11 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             payloadFrictionX = payloadFrictionY;
 
             // items which have different frictions for each axis.
-            if (item == Items.BOAT) {
+            if (item instanceof BoatItem) {
                 payloadFrictionX = 0.99D;
                 payloadFrictionY = 0.95D;
             }
-            if (item == Items.SPAWN_EGG) {
+            if (item instanceof SpawnEggItem) {
                 payloadFrictionY = 0.98D;
                 payloadFrictionX = 0.91D;
                 payloadGravity = 0.08D;
@@ -378,7 +392,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     // PNEUMATIC METHODS -----------------------------------------
 
     @Override
-    public boolean isConnectedTo(EnumFacing side) {
+    public boolean canConnectTo(Direction side) {
         return getRotation() == side;
     }
 
@@ -387,35 +401,30 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public String getName() {
-        return Blockss.AIR_CANNON.getTranslationKey();
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
         targetRotationAngle = tag.getFloat("targetRotationAngle");
         targetHeightAngle = tag.getFloat("targetHeightAngle");
         rotationAngle = tag.getFloat("rotationAngle");
         heightAngle = tag.getFloat("heightAngle");
-        gpsX = tag.getInteger("gpsX");
-        gpsY = tag.getInteger("gpsY");
-        gpsZ = tag.getInteger("gpsZ");
+        gpsX = tag.getInt("gpsX");
+        gpsY = tag.getInt("gpsY");
+        gpsZ = tag.getInt("gpsZ");
         redstoneMode = tag.getByte("redstoneMode");
         coordWithinReach = tag.getBoolean("targetWithinReach");
-        inventory.deserializeNBT(tag.getCompoundTag("Items"));
-        forceMult = tag.getInteger("forceMult");
+        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        forceMult = tag.getInt("forceMult");
 
         trackedItemIds = new HashSet<>();
-        NBTTagList tagList = tag.getTagList("trackedItems", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < tagList.tagCount(); i++) {
-            NBTTagCompound t = tagList.getCompoundTagAt(i);
+        ListNBT tagList = tag.getList("trackedItems", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < tagList.size(); i++) {
+            CompoundNBT t = tagList.getCompound(i);
             trackedItemIds.add(new UUID(t.getLong("UUIDMost"), t.getLong("UUIDLeast")));
         }
 
-        if (tag.hasKey("inventoryX")) {
-            lastInsertingInventory = new BlockPos(tag.getInteger("inventoryX"), tag.getInteger("inventoryY"), tag.getInteger("inventoryZ"));
-            lastInsertingInventorySide = EnumFacing.byIndex(tag.getByte("inventorySide"));
+        if (tag.contains("inventoryX")) {
+            lastInsertingInventory = new BlockPos(tag.getInt("inventoryX"), tag.getInt("inventoryY"), tag.getInt("inventoryZ"));
+            lastInsertingInventorySide = Direction.byIndex(tag.getByte("inventorySide"));
         } else {
             lastInsertingInventory = null;
             lastInsertingInventorySide = null;
@@ -423,38 +432,49 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setFloat("targetRotationAngle", targetRotationAngle);
-        tag.setFloat("targetHeightAngle", targetHeightAngle);
-        tag.setFloat("rotationAngle", rotationAngle);
-        tag.setFloat("heightAngle", heightAngle);
-        tag.setInteger("gpsX", gpsX);
-        tag.setInteger("gpsY", gpsY);
-        tag.setInteger("gpsZ", gpsZ);
-        tag.setByte("redstoneMode", (byte) redstoneMode);
-        tag.setBoolean("targetWithinReach", coordWithinReach);
-        tag.setTag("Items", inventory.serializeNBT());
-        tag.setInteger("forceMult", forceMult);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putFloat("targetRotationAngle", targetRotationAngle);
+        tag.putFloat("targetHeightAngle", targetHeightAngle);
+        tag.putFloat("rotationAngle", rotationAngle);
+        tag.putFloat("heightAngle", heightAngle);
+        tag.putInt("gpsX", gpsX);
+        tag.putInt("gpsY", gpsY);
+        tag.putInt("gpsZ", gpsZ);
+        tag.putByte("redstoneMode", (byte) redstoneMode);
+        tag.putBoolean("targetWithinReach", coordWithinReach);
+        tag.put("Items", itemHandler.serializeNBT());
+        tag.putInt("forceMult", forceMult);
 
-        NBTTagList tagList = new NBTTagList();
-        for (EntityItem entity : trackedItems) {
+        ListNBT tagList = new ListNBT();
+        for (ItemEntity entity : trackedItems) {
             UUID uuid = entity.getUniqueID();
-            NBTTagCompound t = new NBTTagCompound();
-            t.setLong("UUIDMost", uuid.getMostSignificantBits());
-            t.setLong("UUIDLeast", uuid.getLeastSignificantBits());
-            tagList.appendTag(t);
+            CompoundNBT t = new CompoundNBT();
+            t.putLong("UUIDMost", uuid.getMostSignificantBits());
+            t.putLong("UUIDLeast", uuid.getLeastSignificantBits());
+            tagList.add(t);
         }
-        tag.setTag("trackedItems", tagList);
+        tag.put("trackedItems", tagList);
 
         if (lastInsertingInventory != null) {
-            tag.setInteger("inventoryX", lastInsertingInventory.getX());
-            tag.setInteger("inventoryY", lastInsertingInventory.getY());
-            tag.setInteger("inventoryZ", lastInsertingInventory.getZ());
-            tag.setByte("inventorySide", (byte) lastInsertingInventorySide.ordinal());
+            tag.putInt("inventoryX", lastInsertingInventory.getX());
+            tag.putInt("inventoryY", lastInsertingInventory.getY());
+            tag.putInt("inventoryZ", lastInsertingInventory.getZ());
+            tag.putByte("inventorySide", (byte) lastInsertingInventorySide.ordinal());
         }
 
         return tag;
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerAirCannon(i, playerInventory, getPos());
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
     }
 
     private class AirCannonStackHandler extends BaseItemStackHandler {
@@ -481,23 +501,23 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
         int oldForceMult = forceMult;
-        switch (buttonID) {
-            case 0:
+        switch (tag) {
+            case IGUIButtonSensitive.REDSTONE_TAG:
                 if (++redstoneMode > 2) redstoneMode = 0;
                 if (redstoneMode == 2 && getUpgrades(EnumUpgrade.BLOCK_TRACKER) == 0) redstoneMode = 0;
                 break;
-            case 1:
+            case "--":
                 forceMult = Math.max(forceMult - 10, 0);
                 break;
-            case 2:
+            case "-":
                 forceMult = Math.max(forceMult - 1, 0);
                 break;
-            case 3:
+            case "+":
                 forceMult = Math.min(forceMult + 1, 100);
                 break;
-            case 4:
+            case "++":
                 forceMult = Math.min(forceMult + 10, 100);
                 break;
         }
@@ -518,24 +538,24 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         insertingInventoryHasSpace = true;
         if (lastInsertingInventory == null)
             return true;
-        if (inventory.getStackInSlot(CANNON_SLOT).isEmpty())
+        if (itemHandler.getStackInSlot(CANNON_SLOT).isEmpty())
             return true;
+
         TileEntity te = getWorld().getTileEntity(lastInsertingInventory);
-        IItemHandler inv = IOHelper.getInventoryForTE(te, lastInsertingInventorySide);
-        if (inv != null) {
-            ItemStack remainder = ItemHandlerHelper.insertItem(inv, inventory.getStackInSlot(CANNON_SLOT).copy(), true);
+        return IOHelper.getInventoryForTE(te, lastInsertingInventorySide).map(inv -> {
+            ItemStack remainder = ItemHandlerHelper.insertItem(inv, itemHandler.getStackInSlot(CANNON_SLOT).copy(), true);
             insertingInventoryHasSpace = remainder.isEmpty();
             return insertingInventoryHasSpace;
-        } else {
+        }).orElseGet(() -> {
             lastInsertingInventory = null;
             lastInsertingInventorySide = null;
             return true;
-        }
+        });
     }
 
     private synchronized boolean fire() {
         Entity launchedEntity = getCloseEntityIfUpgraded();
-        if (getPressure() >= PneumaticValues.MIN_PRESSURE_AIR_CANNON && (launchedEntity != null || !inventory.getStackInSlot(CANNON_SLOT).isEmpty())) {
+        if (getPressure() >= PneumaticValues.MIN_PRESSURE_AIR_CANNON && (launchedEntity != null || !itemHandler.getStackInSlot(CANNON_SLOT).isEmpty())) {
             float force = getForce();
             double[] velocity = getVelocityVector(heightAngle, rotationAngle, force);
             addAir((int) (-500 * force));
@@ -543,20 +563,21 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             if (launchedEntity == null) {
                 shootingInventory = true;
                 launchedEntity = getPayloadEntity();
-                if (launchedEntity instanceof EntityItem) {
-                    inventory.setStackInSlot(CANNON_SLOT, ItemStack.EMPTY);
+                if (launchedEntity instanceof ItemEntity) {
+                    itemHandler.setStackInSlot(CANNON_SLOT, ItemStack.EMPTY);
                     if (getUpgrades(EnumUpgrade.BLOCK_TRACKER) > 0) {
-                        trackedItems.add((EntityItem) launchedEntity);
+                        trackedItems.add((ItemEntity) launchedEntity);
                     }
-                    ((EntityItem) launchedEntity).setPickupDelay(20);
+                    ((ItemEntity) launchedEntity).setPickupDelay(20);
                 } else {
-                    inventory.extractItem(CANNON_SLOT, 1, false);
+                    itemHandler.extractItem(CANNON_SLOT, 1, false);
                 }
-            } else if (launchedEntity instanceof EntityPlayer) {
-                EntityPlayerMP entityplayermp = (EntityPlayerMP) launchedEntity;
+            } else if (launchedEntity instanceof PlayerEntity) {
+                ServerPlayerEntity entityplayermp = (ServerPlayerEntity) launchedEntity;
                 if (entityplayermp.connection.getNetworkManager().isChannelOpen()) {
                     // This is a nasty hack to get around "player moved wrongly!" messages, which can be caused if player movement
                     // triggers a player teleport (e.g. player moves onto pressure plate, triggers air cannon with an entity tracker).
+                    // todo 1.14 reflection
                     entityplayermp.invulnerableDimensionChange = true;
                     entityplayermp.setPositionAndUpdate(getPos().getX() + 0.5D, getPos().getY() + 1.8D, getPos().getZ() + 0.5D);
                 }
@@ -573,21 +594,21 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     private Entity getPayloadEntity() {
-        Entity e = getEntityToLaunch(getWorld(), inventory.getStackInSlot(CANNON_SLOT), getFakePlayer(),
+        Entity e = getEntityToLaunch(getWorld(), itemHandler.getStackInSlot(CANNON_SLOT), getFakePlayer(),
                 getUpgrades(EnumUpgrade.DISPENSER) > 0, false);
-        if (e instanceof EntityItem) {
+        if (e instanceof ItemEntity) {
             // 1200 ticks left to live = 60s
-            ((EntityItem) e).setAgeToCreativeDespawnTime();
+            ((ItemEntity) e).setAgeToCreativeDespawnTime();
             // + 30s per item life upgrade, to a max of 5 mins
-            ((EntityItem) e).lifespan += Math.min(getUpgrades(EnumUpgrade.ITEM_LIFE) * 600, 4800);
+            ((ItemEntity) e).lifespan += Math.min(getUpgrades(EnumUpgrade.ITEM_LIFE) * 600, 4800);
         }
         return e;
     }
 
-    private EntityPlayer getFakePlayer() {
+    private PlayerEntity getFakePlayer() {
         if (fakePlayer == null) {
-            fakePlayer = FakePlayerFactory.get((WorldServer) getWorld(), new GameProfile(null, "[Air Cannon]"));
-            fakePlayer.connection = new FakeNetHandlerPlayerServer(FMLCommonHandler.instance().getMinecraftServerInstance(), fakePlayer);
+            fakePlayer = FakePlayerFactory.get((ServerWorld) getWorld(), new GameProfile(null, "[Air Cannon]"));
+            fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
             fakePlayer.posX = getPos().getX() + 0.5;
             fakePlayer.posY = getPos().getY() + 0.5;
             fakePlayer.posZ = getPos().getZ() + 0.5;
@@ -598,36 +619,34 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     public static void launchEntity(Entity launchedEntity, Vec3d initialPos, Vec3d velocity, boolean doSpawn) {
         World world = launchedEntity.getEntityWorld();
 
-        if (launchedEntity.isRiding()) {
-            launchedEntity.dismountRidingEntity();
+        if (launchedEntity.getRidingEntity() != null) {
+            launchedEntity.stopRiding();
         }
 
         launchedEntity.setPosition(initialPos.x, initialPos.y, initialPos.z);
-        NetworkHandler.sendToAllAround(new PacketSetEntityMotion(launchedEntity, velocity.x, velocity.y, velocity.z),
-                new TargetPoint(world.provider.getDimension(), initialPos.x, initialPos.y, initialPos.z, 64));
-        if (launchedEntity instanceof EntityFireball) {
+        NetworkHandler.sendToAllAround(new PacketSetEntityMotion(launchedEntity, velocity),
+                new PacketDistributor.TargetPoint(initialPos.x, initialPos.y, initialPos.z, 64, world.getDimension().getType()));
+        if (launchedEntity instanceof FireballEntity) {
             // fireball velocity is handled a little differently...
-            EntityFireball fireball = (EntityFireball) launchedEntity;
+            FireballEntity fireball = (FireballEntity) launchedEntity;
             fireball.accelerationX = velocity.x * 0.05;
             fireball.accelerationY = velocity.y * 0.05;
             fireball.accelerationZ = velocity.z * 0.05;
         } else {
-            launchedEntity.motionX = velocity.x;
-            launchedEntity.motionY = velocity.y;
-            launchedEntity.motionZ = velocity.z;
+            launchedEntity.setMotion(velocity);
         }
         launchedEntity.onGround = false;
         launchedEntity.collided = false;
         launchedEntity.collidedHorizontally = false;
         launchedEntity.collidedVertically = false;
 
-        if (doSpawn && !world.isRemote) world.spawnEntity(launchedEntity);
+        if (doSpawn && !world.isRemote) world.addEntity(launchedEntity);
 
         for (int i = 0; i < 5; i++) {
             double velX = velocity.x * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
             double velY = velocity.y * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
             double velZ = velocity.z * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, initialPos.x, initialPos.y, initialPos.z, velX, velY, velZ), world);
+            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, initialPos.x, initialPos.y, initialPos.z, velX, velY, velZ), world);
         }
         NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.CANNON_SOUND, SoundCategory.BLOCKS, initialPos.x, initialPos.y, initialPos.z, 1.0F, world.rand.nextFloat() / 4F + 0.75F, true), world);
     }
@@ -641,43 +660,46 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
      * @param fallingBlocks true if block items should be spawned as falling block entities rather than item entities
      * @return the entity to launch
      */
-    public static Entity getEntityToLaunch(World world, ItemStack stack, EntityPlayer player, boolean hasDispenser, boolean fallingBlocks) {
+    public static Entity getEntityToLaunch(World world, ItemStack stack, PlayerEntity player, boolean hasDispenser, boolean fallingBlocks) {
         Item item = stack.getItem();
         if (hasDispenser) {
-            if (item == Item.getItemFromBlock(Blocks.TNT)) {
-                EntityTNTPrimed tnt = new EntityTNTPrimed(world, 0, 0, 0, player);
+            if (item == Blocks.TNT.asItem()) {
+                TNTEntity tnt = new TNTEntity(world, 0, 0, 0, player);
                 tnt.setFuse(80);
                 return tnt;
             } else if (item == Items.EXPERIENCE_BOTTLE) {
-                return new EntityExpBottle(world, player);
-            } else if (item instanceof ItemPotion) {
-                return new EntityPotion(world, player, stack);
-            } else if (item instanceof ItemArrow) {
-                return ((ItemArrow) item).createArrow(world, stack, player);
+                return new ExperienceBottleEntity(world, player);
+            } else if (item instanceof PotionItem) {
+                PotionEntity potionEntity = new PotionEntity(world, player);
+                potionEntity.setItem(stack);
+                return potionEntity;
+            } else if (item instanceof ArrowItem) {
+                return ((ArrowItem) item).createArrow(world, stack, player);
             } else if (item == Items.EGG) {
-                return new EntityEgg(world, player);
+                return new EggEntity(world, player);
             } else if (item == Items.FIRE_CHARGE) {
-                return new EntitySmallFireball(world, player, 0, 0, 0);
+                return new SmallFireballEntity(world, player, 0, 0, 0);
             } else if (item == Items.SNOWBALL) {
-                return new EntitySnowball(world, player);
-            } else if (item == Items.SPAWN_EGG) {
-                Entity e = ItemMonsterPlacer.spawnCreature(world, ItemMonsterPlacer.getNamedIdFrom(stack), 0, 0, 0);
-                if (e instanceof EntityLivingBase && stack.hasDisplayName()) {
-                    e.setCustomNameTag(stack.getDisplayName());
+                return new SnowballEntity(world, player);
+            } else if (item instanceof SpawnEggItem) {
+                EntityType<?> type = ((SpawnEggItem) item).getType(stack.getTag());
+                Entity e = type.spawn(world, stack, player, player.getPosition(), SpawnReason.SPAWN_EGG, false, false);
+                if (e instanceof LivingEntity && stack.hasDisplayName()) {
+                    e.setCustomName(stack.getDisplayName());
                 }
                 return e;
-            } else if (item instanceof ItemMinecart) {
-                return EntityMinecart.create(world, 0, 0, 0, ((ItemMinecart) item).minecartType);
-            }  else if (item instanceof ItemBoat) {
-                return new EntityBoat(world);
-            } else if (item == Items.FIREWORKS) {
-                return new EntityFireworkRocket(world, 0, 0, 0, stack);
+            } else if (item instanceof MinecartItem) {
+                return MinecartEntity.create(world, 0, 0, 0, ((MinecartItem) item).minecartType);
+            }  else if (item instanceof BoatItem) {
+                return new BoatEntity(world, 0, 0, 0);
+            } else if (item == Items.FIREWORK_ROCKET) {
+                return new FireworkRocketEntity(world, 0, 0, 0, stack);
             }
         }
-        if (fallingBlocks && item instanceof ItemBlock) {
+        if (fallingBlocks && item instanceof BlockItem) {
             return new EntityTumblingBlock(world, 0, 0, 0, stack);
         } else {
-            EntityItem e = new EntityItem(world, 0, 0, 0, stack);
+            ItemEntity e = new ItemEntity(world, 0, 0, 0, stack);
             e.setPickupDelay(20);
             return e;
         }
@@ -687,7 +709,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         int entityUpgrades = getUpgrades(EnumUpgrade.ENTITY_TRACKER);
         if (entityUpgrades > 0) {
             entityUpgrades = Math.min(entityUpgrades, 5);
-            List<EntityLivingBase> entities = getWorld().getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(getPos().add(-entityUpgrades, -entityUpgrades, -entityUpgrades), getPos().add(1 + entityUpgrades, 1 + entityUpgrades, 1 + entityUpgrades)));
+            List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, new AxisAlignedBB(getPos().add(-entityUpgrades, -entityUpgrades, -entityUpgrades), getPos().add(1 + entityUpgrades, 1 + entityUpgrades, 1 + entityUpgrades)));
             Entity closestEntity = null;
             for (Entity entity : entities) {
                 if (closestEntity == null || PneumaticCraftUtils.distBetween(closestEntity.posX, closestEntity.posY, closestEntity.posZ, getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5) > PneumaticCraftUtils.distBetween(entity.posX, entity.posY, entity.posZ, getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5)) {
@@ -702,10 +724,10 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     /********************************
      *  ComputerCraft API
      */
-    @Override
-    public String getType() {
-        return "airCannon";
-    }
+//    @Override
+//    public String getType() {
+//        return "airCannon";
+//    }
 
     @Override
     protected void addLuaMethods(LuaMethodRegistry registry) {
@@ -769,8 +791,13 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return inventory;
+    }
+
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return itemHandler;
     }
 
     @Override

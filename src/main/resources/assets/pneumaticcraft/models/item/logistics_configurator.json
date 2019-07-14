@@ -1,6 +1,6 @@
 {
   "textures" : {
-    "layer0" : "pneumaticcraft:items/logistics_configurator"
+    "layer0" : "pneumaticcraft:item/logistics_configurator"
   },
   "parent" : "item/generated",
   "display": {

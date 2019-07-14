@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAmadronOffer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -26,7 +26,7 @@ public class JEIAmadronTradeCategory extends PneumaticCraftCategory<JEIAmadronTr
 
     @Override
     public String getTitle() {
-        return I18n.format(Itemss.AMADRON_TABLET.getTranslationKey() + ".name");
+        return I18n.format(ModItems.AMADRON_TABLET.getTranslationKey() + ".name");
     }
 
     @Override

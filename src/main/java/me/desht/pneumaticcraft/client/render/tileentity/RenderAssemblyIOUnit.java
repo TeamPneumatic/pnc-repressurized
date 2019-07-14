@@ -4,8 +4,9 @@ import me.desht.pneumaticcraft.client.model.block.ModelAssemblyIOUnit;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyIOUnit;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderAssemblyIOUnit extends AbstractModelRenderer<TileEntityAssemblyIOUnit> {
@@ -28,13 +29,13 @@ public class RenderAssemblyIOUnit extends AbstractModelRenderer<TileEntityAssemb
                 renderAngles[i] = te.oldAngles[i] + (te.angles[i] - te.oldAngles[i]) * partialTicks;
             }
 
-            EntityItem ghostEntityItem = null;
+            ItemEntity ghostEntityItem = null;
             if (!te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
-                ghostEntityItem = new EntityItem(te.getWorld());
-                ghostEntityItem.hoverStart = 0.0F;
+                ghostEntityItem = new ItemEntity(EntityType.ITEM, te.getWorld());
+//                ghostEntityItem.hoverStart = 0.0F;
                 ghostEntityItem.setItem(te.getPrimaryInventory().getStackInSlot(0));
             }
-            RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+            EntityRendererManager renderManager = Minecraft.getInstance().getRenderManager();
             boolean fancySetting = renderManager.options.fancyGraphics;
             renderManager.options.fancyGraphics = true;
             model.renderModel(0.0625F, renderAngles, te.oldClawProgress + (te.clawProgress - te.oldClawProgress) * partialTicks, ghostEntityItem);

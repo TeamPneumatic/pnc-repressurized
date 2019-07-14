@@ -1,10 +1,17 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.tileentity.IRangeLineShower;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketRenderRangeLines extends LocationIntPacket<PacketRenderRangeLines> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: CLIENT
+ * Sent by server to tell the client-side tile entity to render its area of effect
+ */
+public class PacketRenderRangeLines extends LocationIntPacket {
 
     public PacketRenderRangeLines() {
     }
@@ -13,16 +20,17 @@ public class PacketRenderRangeLines extends LocationIntPacket<PacketRenderRangeL
         super(te.getPos());
     }
 
-    @Override
-    public void handleClientSide(PacketRenderRangeLines message, EntityPlayer player) {
-        TileEntity te = message.getTileEntity(player.getEntityWorld());
-        if (te instanceof IRangeLineShower) {
-            ((IRangeLineShower) te).showRangeLines();
-        }
+    public PacketRenderRangeLines(PacketBuffer buffer) {
+        super(buffer);
     }
 
-    @Override
-    public void handleServerSide(PacketRenderRangeLines message, EntityPlayer player) {
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            TileEntity te = getTileEntity(ctx);
+            if (te instanceof IRangeLineShower) {
+                ((IRangeLineShower) te).showRangeLines();
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
 }

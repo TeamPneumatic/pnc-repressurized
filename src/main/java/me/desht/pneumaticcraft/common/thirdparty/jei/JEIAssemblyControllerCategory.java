@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -30,7 +30,7 @@ public class JEIAssemblyControllerCategory extends PneumaticCraftCategory<JEIAss
 
     @Override
     public String getTitle() {
-        return I18n.format(Blockss.ASSEMBLY_CONTROLLER.getTranslationKey() + ".name");
+        return I18n.format(ModBlocks.ASSEMBLY_CONTROLLER.getTranslationKey() + ".name");
     }
 
     @Override
@@ -65,13 +65,13 @@ public class JEIAssemblyControllerCategory extends PneumaticCraftCategory<JEIAss
             for (int i = 0; i < requiredMachines.length; i++) {
                 switch (requiredMachines[i]) {
                     case PLATFORM:
-                        machineStacks[i] = new ItemStack(Blockss.ASSEMBLY_PLATFORM);
+                        machineStacks[i] = new ItemStack(ModBlocks.ASSEMBLY_PLATFORM);
                         break;
                     case DRILL:
-                        machineStacks[i] = new ItemStack(Blockss.ASSEMBLY_DRILL);
+                        machineStacks[i] = new ItemStack(ModBlocks.ASSEMBLY_DRILL);
                         break;
                     case LASER:
-                        machineStacks[i] = new ItemStack(Blockss.ASSEMBLY_LASER);
+                        machineStacks[i] = new ItemStack(ModBlocks.ASSEMBLY_LASER);
                         break;
                     case IO_UNIT_IMPORT:
                         machineStacks[i] = makeIOUnitStack(IO_UNIT_IMPORT);
@@ -87,7 +87,7 @@ public class JEIAssemblyControllerCategory extends PneumaticCraftCategory<JEIAss
 
     @Nonnull
     private static ItemStack makeIOUnitStack(AssemblyProgram.EnumMachine what) {
-        ItemStack stack = new ItemStack(Blockss.ASSEMBLY_IO_UNIT, 1, what == IO_UNIT_IMPORT ? 0 : 1);
+        ItemStack stack = new ItemStack(ModBlocks.ASSEMBLY_IO_UNIT, 1, what == IO_UNIT_IMPORT ? 0 : 1);
         return stack.setStackDisplayName(TextFormatting.RESET.toString() + TextFormatting.WHITE +
                 stack.getDisplayName() + (what == IO_UNIT_IMPORT ? " (import)" : " (export)"));
     }

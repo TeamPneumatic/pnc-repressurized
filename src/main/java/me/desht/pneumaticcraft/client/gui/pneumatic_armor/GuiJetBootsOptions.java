@@ -1,12 +1,11 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
-import me.desht.pneumaticcraft.client.gui.widget.IWidgetListener;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -14,11 +13,10 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.nbt.CompoundNBT;
 
-public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions implements IWidgetListener {
+public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions {
 
     private GuiKeybindCheckBox checkBox;
 
@@ -30,43 +28,28 @@ public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions impl
     public void initGui(IGuiScreen gui) {
         super.initGui(gui);
 
-        checkBox = new GuiKeybindCheckBox(0, 5, 45, 0xFFFFFFFF, "jetboots.module.builderMode");
-        ((GuiHelmetMainScreen) gui).addWidget(checkBox);
-        checkBox.setListener(this);
+        checkBox = new GuiKeybindCheckBox(5, 45, 0xFFFFFFFF, "jetboots.module.builderMode", b -> setBuilderMode(b.checked));
+        gui.addButton(checkBox);
 
-        gui.getButtonList().add(new GuiButton(10, 30, 128, 150, 20, "Move Stat Screen..."));
+        gui.getWidgetList().add(new GuiButtonSpecial(30, 128, 150, 20, "Move Stat Screen...", b -> {
+            Minecraft.getInstance().player.closeScreen();
+            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getRenderHandler(), ArmorHUDLayout.LayoutTypes.JET_BOOTS));
+        }));
     }
 
-    @Override
-    public void updateScreen() {
+    private void setBuilderMode(boolean enabled) {
+        CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
+        if (commonArmorHandler.getUpgradeCount(EquipmentSlotType.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) >= 8) {
+            CompoundNBT tag = new CompoundNBT();
+            tag.putBoolean(ItemPneumaticArmor.NBT_BUILDER_MODE, enabled);
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.FEET, tag));
+            CommonArmorHandler.getHandlerForPlayer().onDataFieldUpdated(EquipmentSlotType.FEET, ItemPneumaticArmor.NBT_BUILDER_MODE, tag.get(ItemPneumaticArmor.NBT_BUILDER_MODE));
+            HUDHandler.instance().addFeatureToggleMessage(getRenderHandler(), checkBox.getMessage(), enabled);
+        }
+    }
+
+    public void tick() {
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-        checkBox.enabled = handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) >= 8;
-    }
-
-    @Override
-    public void actionPerformed(IGuiWidget widget) {
-        if (widget == GuiKeybindCheckBox.fromKeyBindingName("jetboots.module.builderMode")) {
-            CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
-            if (commonArmorHandler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) >= 8) {
-                boolean checked = ((GuiKeybindCheckBox) widget).checked;
-                NBTTagCompound tag = new NBTTagCompound();
-                tag.setBoolean(ItemPneumaticArmor.NBT_BUILDER_MODE, checked);
-                NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EntityEquipmentSlot.FEET, tag));
-                CommonArmorHandler.getHandlerForPlayer().onDataFieldUpdated(EntityEquipmentSlot.FEET, ItemPneumaticArmor.NBT_BUILDER_MODE, tag.getTag(ItemPneumaticArmor.NBT_BUILDER_MODE));
-                HUDHandler.instance().addFeatureToggleMessage(getRenderHandler(), checkBox.text, checked);
-            }
-        }
-    }
-
-    @Override
-    public void onKeyTyped(IGuiWidget widget) {
-    }
-
-    @Override
-    public void actionPerformed(GuiButton button) {
-        if (button.id == 10) {
-            Minecraft.getMinecraft().player.closeScreen();
-            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(getRenderHandler(), ArmorHUDLayout.LayoutTypes.JET_BOOTS));
-        }
+        checkBox.enabled = handler.getUpgradeCount(EquipmentSlotType.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) >= 8;
     }
 }

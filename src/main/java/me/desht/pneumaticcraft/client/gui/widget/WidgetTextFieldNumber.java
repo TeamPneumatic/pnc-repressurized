@@ -28,20 +28,6 @@ public class WidgetTextFieldNumber extends WidgetTextField {
         return this;
     }
 
-    @Override
-    public void onMouseClicked(int mouseX, int mouseY, int button) {
-        boolean wasFocused = isFocused();
-        super.onMouseClicked(mouseX, mouseY, button);
-        if (isFocused()) {
-            if (!wasFocused) { //setText("");
-                setCursorPositionEnd();
-                setSelectionPos(0);
-            }
-        } else {
-            setValue(getDoubleValue());
-        }
-    }
-
     public WidgetTextFieldNumber setValue(double value) {
         setText(PneumaticCraftUtils.roundNumberTo(value, decimals));
         return this;

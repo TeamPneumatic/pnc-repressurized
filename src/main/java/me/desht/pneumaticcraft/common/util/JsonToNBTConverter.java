@@ -4,9 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.IntArrayNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.Map;
 
@@ -17,62 +18,62 @@ public class JsonToNBTConverter {
         this.jsonString = jsonString;
     }
 
-    public NBTTagCompound convert() {
+    public CompoundNBT convert() {
         JsonParser parser = new JsonParser();
         JsonElement el = parser.parse(jsonString);
         return getTag((JsonObject) el);
     }
 
-    public static NBTTagCompound getTag(JsonObject object) {
-        NBTTagCompound nbt = new NBTTagCompound();
+    public static CompoundNBT getTag(JsonObject object) {
+        CompoundNBT nbt = new CompoundNBT();
         for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
             JsonObject keyObject = entry.getValue().getAsJsonObject();
             int type = keyObject.get("type").getAsInt();
             JsonElement element = keyObject.get("value");
 
             switch (type) {
-                case 1:
-                    nbt.setByte(entry.getKey(), (byte) element.getAsDouble());
+                case Constants.NBT.TAG_BYTE:
+                    nbt.putByte(entry.getKey(), (byte) element.getAsDouble());
                     break;
-                case 2:
-                    nbt.setShort(entry.getKey(), (short) element.getAsDouble());
-
-                case 3:
-                    nbt.setInteger(entry.getKey(), (int) element.getAsDouble());
+                case Constants.NBT.TAG_SHORT:
+                    nbt.putShort(entry.getKey(), (short) element.getAsDouble());
                     break;
-                case 4:
-                    nbt.setLong(entry.getKey(), (long) element.getAsDouble());
+                case Constants.NBT.TAG_INT:
+                    nbt.putInt(entry.getKey(), (int) element.getAsDouble());
                     break;
-                case 5:
-                    nbt.setFloat(entry.getKey(), (float) element.getAsDouble());
+                case Constants.NBT.TAG_LONG:
+                    nbt.putLong(entry.getKey(), (long) element.getAsDouble());
                     break;
-                case 6:
-                    nbt.setDouble(entry.getKey(), element.getAsDouble());
+                case Constants.NBT.TAG_FLOAT:
+                    nbt.putFloat(entry.getKey(), (float) element.getAsDouble());
+                    break;
+                case Constants.NBT.TAG_DOUBLE:
+                    nbt.putDouble(entry.getKey(), element.getAsDouble());
                     break;
                 //   case 7:
                 //       return new NBTTagByteArray();
                 //   break;
-                case 8:
-                    nbt.setString(entry.getKey(), element.getAsString());
+                case Constants.NBT.TAG_STRING:
+                    nbt.putString(entry.getKey(), element.getAsString());
                     break;
-                case 9:
+                case Constants.NBT.TAG_LIST:
                     JsonArray array = element.getAsJsonArray();
-                    NBTTagList tagList = new NBTTagList();
+                    ListNBT tagList = new ListNBT();
                     for (JsonElement e : array) {
-                        tagList.appendTag(getTag(e.getAsJsonObject()));
+                        tagList.add(tagList.size(), getTag(e.getAsJsonObject()));
                     }
-                    nbt.setTag(entry.getKey(), tagList);
+                    nbt.put(entry.getKey(), tagList);
                     break;
-                case 10:
-                    nbt.setTag(entry.getKey(), getTag(element.getAsJsonObject()));
+                case Constants.NBT.TAG_COMPOUND:
+                    nbt.put(entry.getKey(), getTag(element.getAsJsonObject()));
                     break;
-                case 11:
+                case Constants.NBT.TAG_INT_ARRAY:
                     array = element.getAsJsonArray();
                     int[] intArray = new int[array.size()];
                     for (int i = 0; i < array.size(); i++) {
                         intArray[i] = array.get(i).getAsInt();
                     }
-                    nbt.setTag(entry.getKey(), new NBTTagIntArray(intArray));
+                    nbt.put(entry.getKey(), new IntArrayNBT(intArray));
                     break;
                 default:
                     throw new IllegalArgumentException("NBT type no " + type + " is not supported by the Json to NBT converter!");

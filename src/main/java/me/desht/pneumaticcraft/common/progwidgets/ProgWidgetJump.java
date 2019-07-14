@@ -1,21 +1,24 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class ProgWidgetJump extends ProgWidget implements IJump {
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (getConnectedParameters()[0] == null) curInfo.add("gui.progWidget.label.error.noJumpLocation");
+        if (getConnectedParameters()[0] == null) curInfo.add(xlate("gui.progWidget.label.error.noJumpLocation"));
     }
 
     @Override
@@ -40,15 +43,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
         return null;
     }
 
-    /**
-     * Used by condition pieces
-     *
-     * @param drone
-     * @param allWidgets
-     * @param conditionValue
-     * @return
-     */
-    public static IProgWidget jumpToLabel(IDroneBase drone, List<IProgWidget> allWidgets, IProgWidget conditionWidget, boolean conditionValue) {
+    static IProgWidget jumpToLabel(IDroneBase drone, List<IProgWidget> allWidgets, IProgWidget conditionWidget, boolean conditionValue) {
         ProgWidgetString textWidget = (ProgWidgetString) (conditionValue ? conditionWidget.getConnectedParameters()[conditionWidget.getParameters().length - 1] : conditionWidget.getConnectedParameters()[conditionWidget.getParameters().length * 2 - 1]);
         if (textWidget != null) {
             return jumpToLabel(drone, allWidgets, textWidget.string);
@@ -59,7 +54,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
         }
     }
 
-    public static IProgWidget jumpToLabel(IDroneBase drone, List<IProgWidget> allWidgets, String label) {
+    static IProgWidget jumpToLabel(IDroneBase drone, List<IProgWidget> allWidgets, String label) {
         drone.getAIManager().setLabel(label);
         List<IProgWidget> possibleJumpLocations = new ArrayList<>();
         for (IProgWidget widget : allWidgets) {
@@ -124,7 +119,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.WHITE;
+    public DyeColor getColor() {
+        return DyeColor.WHITE;
     }
 }

@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.util;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -14,7 +14,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
@@ -67,7 +66,7 @@ public class FluidUtils {
      * @param hand the hand being used
      * @return true if any fluid was inserted, false otherwise
      */
-    public static boolean tryFluidInsertion(TileEntity te, EnumFacing face, EntityPlayer player, EnumHand hand) {
+    public static boolean tryFluidInsertion(TileEntity te, Direction face, PlayerEntity player, Hand hand) {
         return doFluidInteraction(te, face, player, hand, true);
     }
 
@@ -81,28 +80,31 @@ public class FluidUtils {
      * @param hand the hand being used
      * @return true if any fluid was extracted, false otherwise
      */
-    public static boolean tryFluidExtraction(TileEntity te, EnumFacing face, EntityPlayer player, EnumHand hand) {
+    public static boolean tryFluidExtraction(TileEntity te, Direction face, PlayerEntity player, Hand hand) {
         return doFluidInteraction(te, face, player, hand, false);
     }
 
-    private static boolean doFluidInteraction(TileEntity te, EnumFacing face, EntityPlayer player, EnumHand hand, boolean isInserting) {
+    private static boolean doFluidInteraction(TileEntity te, Direction face, PlayerEntity player, Hand hand, boolean isInserting) {
         ItemStack stack = player.getHeldItem(hand);
-        IFluidHandlerItem stackHandler = FluidUtil.getFluidHandler(stack);
-        if (stackHandler != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face)) {
-            IFluidTankProperties[] properties = stackHandler.getTankProperties();
-            if (properties.length == 0) return false;
-            int capacity = properties[0].getCapacity();
-            IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face);
-            PlayerInvWrapper invWrapper = new PlayerInvWrapper(player.inventory);
-            FluidActionResult result = isInserting ?
-                    FluidUtil.tryEmptyContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player, true) :
-                    FluidUtil.tryFillContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player, true);
-            if (result.isSuccess()) {
-                player.setHeldItem(hand, result.getResult());
-                return true;
+        return FluidUtil.getFluidHandler(stack).map(stackHandler -> {
+            if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).isPresent()) {
+                IFluidTankProperties[] properties = stackHandler.getTankProperties();
+                if (properties.length == 0) return false;
+                int capacity = properties[0].getCapacity();
+                return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).map(handler -> {
+                    PlayerInvWrapper invWrapper = new PlayerInvWrapper(player.inventory);
+                    FluidActionResult result = isInserting ?
+                            FluidUtil.tryEmptyContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player, true) :
+                            FluidUtil.tryFillContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player, true);
+                    if (result.isSuccess()) {
+                        player.setHeldItem(hand, result.getResult());
+                        return true;
+                    }
+                    return false;
+                }).orElse(false);
             }
-        }
-        return false;
+            return false;
+        }).orElse(false);
     }
 
     /**
@@ -117,7 +119,7 @@ public class FluidUtils {
     }
 
     /**
-     * Check if the given blockpos contains a fluid source block of a certain fluid (os possibly any fluid)
+     * Check if the given blockpos contains a fluid source block of a certain fluid (or possibly any fluid)
      *
      * @param world the world
      * @param pos the blockpos
@@ -125,12 +127,10 @@ public class FluidUtils {
      * @return true if there is a fluid source block of the right fluid at the given blockpos, false otherwise
      */
     public static boolean isSourceBlock(World world, BlockPos pos, Fluid fluid) {
-        IFluidHandler handler = FluidUtil.getFluidHandler(world, pos, EnumFacing.UP);
-        if (handler != null) {
+        return FluidUtil.getFluidHandler(world, pos, Direction.UP).map(handler -> {
             FluidStack fluidStack = handler.drain(Fluid.BUCKET_VOLUME, false);
             return fluidStack != null && fluidStack.amount == Fluid.BUCKET_VOLUME && (fluid == null || fluidStack.getFluid().getName().equals(fluid.getName()));
-        }
-        return false;
+        }).orElse(false);
     }
 
     /**
@@ -142,7 +142,7 @@ public class FluidUtils {
      * @return a fluidstack of the fluid, or null if no fluid could be drained
      */
     public static FluidStack getFluidAt(World world, BlockPos pos, boolean doDrain) {
-        IFluidHandler handler = FluidUtil.getFluidHandler(world, pos, EnumFacing.UP);
-        return handler != null ? handler.drain(Fluid.BUCKET_VOLUME, doDrain) : null;
+        return FluidUtil.getFluidHandler(world, pos, Direction.UP)
+                .map(handler -> handler.drain(Fluid.BUCKET_VOLUME, doDrain)).orElse(null);
     }
 }

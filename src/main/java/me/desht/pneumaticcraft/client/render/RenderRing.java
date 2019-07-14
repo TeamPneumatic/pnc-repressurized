@@ -1,13 +1,13 @@
 package me.desht.pneumaticcraft.client.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 public class RenderRing extends RenderProgressingLine {
@@ -18,13 +18,13 @@ public class RenderRing extends RenderProgressingLine {
         this.color = color;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void renderInterpolated(RenderProgressingLine lastTickLine, float partialTick, float rotationYaw, float rotationPitch) {
         GlStateManager.pushMatrix();
         double renderProgress = getInter(progress, lastTickLine.progress, partialTick);
-        GlStateManager.translate((getInter(endX, lastTickLine.endX, partialTick) - startX) * renderProgress, (getInter(endY, lastTickLine.endY, partialTick) - startY) * renderProgress, (getInter(endZ, lastTickLine.endZ, partialTick) - startZ) * renderProgress);
-        GlStateManager.rotate(rotationYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(rotationPitch, 0.0F, 0.0F, 1.0F);
+        GlStateManager.translated((getInter(endX, lastTickLine.endX, partialTick) - startX) * renderProgress, (getInter(endY, lastTickLine.endY, partialTick) - startY) * renderProgress, (getInter(endZ, lastTickLine.endZ, partialTick) - startZ) * renderProgress);
+        GlStateManager.rotated(rotationYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotated(rotationPitch, 0.0F, 0.0F, 1.0F);
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);

@@ -1,16 +1,16 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderEntityItem;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.model.RendererModel;
+import net.minecraft.client.renderer.model.Model;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraft.util.math.ChunkPos;
 
-public abstract class AbstractModelRenderer<T extends TileEntityBase> extends TileEntitySpecialRenderer<T> {
+public abstract class AbstractModelRenderer<T extends TileEntityBase> extends TileEntityRenderer<T> {
     abstract ResourceLocation getTexture(T te);
 
     abstract void renderModel(T te, float partialTicks);
@@ -20,15 +20,15 @@ public abstract class AbstractModelRenderer<T extends TileEntityBase> extends Ti
     }
 
     @Override
-    public void render(T te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+    public void render(T te, double x, double y, double z, float partialTicks, int destroyStage) {
         // boilerplate translation code, common to all model renders, done here
 
-        if (!shouldRender(te) || te.getWorld().getChunkProvider().provideChunk(te.getPos().getX() >> 4, te.getPos().getZ() >> 4).isEmpty()) return;
+        if (!shouldRender(te) || !te.getWorld().getChunkProvider().isChunkLoaded(new ChunkPos(te.getPos()))) return;
 
         GlStateManager.pushMatrix();
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture(te));
-        GlStateManager.translate((float)x + 0.5F, (float)y + 1.5F, (float)z + 0.5F); // size
-        GlStateManager.scale(1.0F, -1F, -1F); // to make your block have a normal positioning. comment out to see what happens
+        Minecraft.getInstance().getTextureManager().bindTexture(getTexture(te));
+        GlStateManager.translated((float)x + 0.5F, (float)y + 1.5F, (float)z + 0.5F); // size
+        GlStateManager.scaled(1.0F, -1F, -1F); // to make your block have a normal positioning. comment out to see what happens
 
         // actual model rendering work
         renderModel(te, partialTicks);
@@ -36,17 +36,17 @@ public abstract class AbstractModelRenderer<T extends TileEntityBase> extends Ti
         GlStateManager.popMatrix();
     }
 
-    public static abstract class BaseModel extends ModelBase {
-        public void setRotation(ModelRenderer model, float x, float y, float z){
+    public static abstract class BaseModel extends Model {
+        public void setRotation(RendererModel model, float x, float y, float z){
             model.rotateAngleX = x;
             model.rotateAngleY = y;
             model.rotateAngleZ = z;
         }
     }
 
-    public static class NoBobItemRenderer extends RenderEntityItem {
+    public static class NoBobItemRenderer extends ItemRenderer {
         public NoBobItemRenderer() {
-            super(Minecraft.getMinecraft().getRenderManager(), Minecraft.getMinecraft().getRenderItem());
+            super(Minecraft.getInstance().getRenderManager(), Minecraft.getInstance().getItemRenderer());
         }
 
         @Override

@@ -1,12 +1,13 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.*;
-import me.desht.pneumaticcraft.api.hacking.CapabilityHacking;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.tags.Tag;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
@@ -57,7 +58,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
         if (iHackable == null) throw new NullPointerException("IHackableBlock is null! block = " + block.getRegistryName());
 
         if (Block.class.isAssignableFrom(iHackable)) {
-            Log.warning("Blocks that implement IHackableBlock shouldn't be registered as hackable! Registering block: " + block.getLocalizedName());
+            Log.warning("Blocks that implement IHackableBlock shouldn't be registered as hackable! Registering block: " + block.getRegistryName());
         } else {
             try {
                 IHackableBlock hackableBlock = iHackable.newInstance();
@@ -74,15 +75,15 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     }
 
     @Override
-    public List<IHackableEntity> getCurrentEntityHacks(Entity entity) {
-        IHacking hacking = entity.getCapability(CapabilityHacking.HACKING_CAPABILITY, null);
-        if (hacking != null) {
-            return hacking.getCurrentHacks();
-        } else {
-            Log.warning("Hacking capability couldn't be found in the entity " + entity.getName());
+    public void addHackable(Tag<Block> blockTag, Class<? extends IHackableBlock> iHackable) {
+        for (Block b : blockTag.getAllElements()) {
+            addHackable(b, iHackable);
         }
-        return Collections.emptyList();
+    }
 
+    @Override
+    public List<IHackableEntity> getCurrentEntityHacks(Entity entity) {
+        return entity.getCapability(PneumaticRegistry.HACKING_CAPABILITY).map(IHacking::getCurrentHacks).orElse(Collections.emptyList());
     }
 
     @Override

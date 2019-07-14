@@ -1,32 +1,36 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
 public class ContainerInventorySearcher extends Container {
-    public ContainerInventorySearcher(InventoryPlayer inventoryPlayer) {
+    public ContainerInventorySearcher(int windowId, PlayerInventory inv, PacketBuffer data) {
+        super(ModContainerTypes.INVENTORY_SEARCHER, windowId);
+
         // Add the player's inventory slots to the container
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
-                addSlotToContainer(new Slot(inventoryPlayer, col + row * 9 + 9, 8 + col * 18, 48 + row * 18));
+                addSlot(new Slot(inv, col + row * 9 + 9, 8 + col * 18, 48 + row * 18));
             }
         }
 
         // Add the player's action bar slots to the container
         for (int slot = 0; slot < 9; ++slot) {
-            addSlotToContainer(new Slot(inventoryPlayer, slot, 8 + slot * 18, 106));
+            addSlot(new Slot(inv, slot, 8 + slot * 18, 106));
         }
     }
 
     public void init(IItemHandler inv) {
-        addSlotToContainer(new SlotItemHandler(inv, 0, 80, 23));
+        addSlot(new SlotItemHandler(inv, 0, 80, 23));
     }
 
     /**
@@ -34,7 +38,7 @@ public class ContainerInventorySearcher extends Container {
      */
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2) {
+    public ItemStack transferStackInSlot(PlayerEntity par1EntityPlayer, int par2) {
         return ItemStack.EMPTY;
     }
 
@@ -44,7 +48,7 @@ public class ContainerInventorySearcher extends Container {
     }
 
     @Override
-    public boolean canInteractWith(@Nonnull EntityPlayer entityplayer) {
+    public boolean canInteractWith(@Nonnull PlayerEntity entityplayer) {
         return true;
     }
 

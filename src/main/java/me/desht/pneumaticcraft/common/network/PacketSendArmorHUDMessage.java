@@ -4,15 +4,20 @@ import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
-public class PacketSendArmorHUDMessage extends AbstractPacket<PacketSendArmorHUDMessage> {
+/**
+ * Received on: CLIENT
+ * Sent by server to get a message displayed on the Pneumatic Armor HUD
+ */
+public class PacketSendArmorHUDMessage {
     private String title;
     private int duration;
     private int color;
@@ -32,34 +37,30 @@ public class PacketSendArmorHUDMessage extends AbstractPacket<PacketSendArmorHUD
         this.args = Arrays.asList(args);
     }
 
-    @Override
-    public void handleClientSide(PacketSendArmorHUDMessage message, EntityPlayer player) {
-        String msg = I18n.format(message.title, message.args.toArray());
-        HUDHandler.instance().addMessage(new ArmorMessage(msg, Collections.emptyList(), message.duration, message.color));
-    }
-
-    @Override
-    public void handleServerSide(PacketSendArmorHUDMessage message, EntityPlayer player) {
-    }
-
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        this.title = ByteBufUtils.readUTF8String(buf);
-        this.duration = buf.readInt();
-        this.color = buf.readInt();
+    PacketSendArmorHUDMessage(PacketBuffer buffer) {
+        this.title = PacketUtil.readUTF8String(buffer);
+        this.duration = buffer.readInt();
+        this.color = buffer.readInt();
         this.args = new ArrayList<>();
-        int n = buf.readByte();
+        int n = buffer.readByte();
         for (int i = 0; i < n; i++) {
-            this.args.add(ByteBufUtils.readUTF8String(buf));
+            this.args.add(PacketUtil.readUTF8String(buffer));
         }
     }
 
-    @Override
     public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeUTF8String(buf, this.title);
+        PacketUtil.writeUTF8String(buf, this.title);
         buf.writeInt(this.duration);
         buf.writeInt(this.color);
         buf.writeByte(this.args.size());
-        this.args.forEach(s -> ByteBufUtils.writeUTF8String(buf, s));
+        this.args.forEach(s -> PacketUtil.writeUTF8String(buf, s));
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            String msg = I18n.format(title, args.toArray());
+            HUDHandler.instance().addMessage(new ArmorMessage(msg, Collections.emptyList(), duration, color));
+        });
+        ctx.get().setPacketHandled(true);
     }
 }

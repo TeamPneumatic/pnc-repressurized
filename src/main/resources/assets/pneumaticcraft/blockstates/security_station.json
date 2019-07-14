@@ -3,7 +3,7 @@
     "defaults": {
         "textures": {},
         "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:security_station.obj"
+        "model": "pneumaticcraft:block/security_station.obj"
     },
 	"variants": {
 		"facing": {

@@ -5,8 +5,8 @@ import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -50,12 +50,12 @@ public class MicromissileDefaults extends JsonConfig {
         return "MicromissileDefaults";
     }
 
-    public void setDefaults(EntityPlayer player, Entry record) {
+    public void setDefaults(PlayerEntity player, Entry record) {
         record.playerName = player.getName();
         defaults.put(player.getUniqueID(), record);
     }
 
-    public Entry getDefaults(EntityPlayer player) {
+    public Entry getDefaults(PlayerEntity player) {
         return defaults.get(player.getUniqueID());
     }
 
@@ -104,8 +104,8 @@ public class MicromissileDefaults extends JsonConfig {
             return obj;
         }
 
-        public NBTTagCompound toNBT() {
-            NBTTagCompound tag = new NBTTagCompound();
+        public CompoundNBT toNBT() {
+            CompoundNBT tag = new CompoundNBT();
             tag.setFloat(ItemMicromissiles.NBT_TOP_SPEED, topSpeed);
             tag.setFloat(ItemMicromissiles.NBT_TURN_SPEED, turnSpeed);
             tag.setFloat(ItemMicromissiles.NBT_DAMAGE, damage);

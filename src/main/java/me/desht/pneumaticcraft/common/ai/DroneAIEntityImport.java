@@ -1,21 +1,21 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
+import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.BoatEntity;
+import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 
-public class DroneAIEntityImport extends DroneEntityBase<IProgWidget, Entity> {
+public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity> {
 
-    public DroneAIEntityImport(IDroneBase drone, IProgWidget progWidget) {
+    public DroneAIEntityImport(IDroneBase drone, IEntityProvider progWidget) {
         super(drone, progWidget);
     }
 
     @Override
     protected boolean isEntityValid(Entity entity) {
         return drone.getCarryingEntities().isEmpty() &&
-                (entity instanceof EntityLivingBase || entity instanceof EntityMinecart || entity instanceof EntityBoat);
+                (entity instanceof LivingEntity || entity instanceof AbstractMinecartEntity || entity instanceof BoatEntity);
     }
 
     @Override

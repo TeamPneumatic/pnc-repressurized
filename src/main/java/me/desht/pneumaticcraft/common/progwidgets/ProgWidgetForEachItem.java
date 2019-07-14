@@ -1,17 +1,12 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetForEach;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +23,8 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.YELLOW;
+    public DyeColor getColor() {
+        return DyeColor.YELLOW;
     }
 
     @Override
@@ -58,13 +53,13 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
-        tag.setString("variable", elementVariable);
+    public void writeToNBT(CompoundNBT tag) {
+        tag.putString("variable", elementVariable);
         super.writeToNBT(tag);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         elementVariable = tag.getString("variable");
         super.readFromNBT(tag);
     }
@@ -102,12 +97,6 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
         List<String> locations = new ArrayList<>();
         if (textWidget != null) locations.add(textWidget.string);
         return locations;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetForEach(this, guiProgrammer);
     }
 
     @Override

@@ -1,10 +1,13 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetStart extends ProgWidget {
 
@@ -44,16 +47,16 @@ public class ProgWidgetStart extends ProgWidget {
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.LIME;
+    public DyeColor getColor() {
+        return DyeColor.LIME;
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         for (IProgWidget widget : widgets) {
             if (widget != this && widget instanceof ProgWidgetStart) {
-                curInfo.add("gui.progWidget.general.error.multipleStartPieces");
+                curInfo.add(xlate("gui.progWidget.general.error.multipleStartPieces"));
                 break;
             }
         }

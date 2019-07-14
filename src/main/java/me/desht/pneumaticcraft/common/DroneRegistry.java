@@ -7,10 +7,9 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCustomBlockInteract;
 import me.desht.pneumaticcraft.common.progwidgets.WidgetRegistrator;
 import me.desht.pneumaticcraft.common.util.ProgrammedDroneUtils;
 import net.minecraft.block.Block;
-import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.HashMap;
@@ -36,22 +35,22 @@ public class DroneRegistry implements IDroneRegistry {
     }
 
     @Override
-    public EntityCreature deliverItemsAmazonStyle(World world, BlockPos pos, ItemStack... deliveredStacks) {
-        return ProgrammedDroneUtils.deliverItemsAmazonStyle(world, pos, deliveredStacks);
+    public CreatureEntity deliverItemsAmazonStyle(GlobalPos globalPos, ItemStack... deliveredStacks) {
+        return ProgrammedDroneUtils.deliverItemsAmazonStyle(globalPos, deliveredStacks);
     }
 
     @Override
-    public EntityCreature retrieveItemsAmazonStyle(World world, BlockPos pos, ItemStack... queriedStacks) {
-        return ProgrammedDroneUtils.retrieveItemsAmazonStyle(world, pos, queriedStacks);
+    public CreatureEntity retrieveItemsAmazonStyle(GlobalPos globalPos, ItemStack... queriedStacks) {
+        return ProgrammedDroneUtils.retrieveItemsAmazonStyle(globalPos, queriedStacks);
     }
 
     @Override
-    public EntityCreature deliverFluidAmazonStyle(World world, BlockPos pos, FluidStack deliveredFluid) {
-        return ProgrammedDroneUtils.deliverFluidAmazonStyle(world, pos, deliveredFluid);
+    public CreatureEntity deliverFluidAmazonStyle(GlobalPos globalPos, FluidStack deliveredFluid) {
+        return ProgrammedDroneUtils.deliverFluidAmazonStyle(globalPos, deliveredFluid);
     }
 
     @Override
-    public EntityCreature retrieveFluidAmazonStyle(World world, BlockPos pos, FluidStack queriedFluid) {
-        return ProgrammedDroneUtils.retrieveFluidAmazonStyle(world, pos, queriedFluid);
+    public CreatureEntity retrieveFluidAmazonStyle(GlobalPos globalPos, FluidStack queriedFluid) {
+        return ProgrammedDroneUtils.retrieveFluidAmazonStyle(globalPos, queriedFluid);
     }
 }

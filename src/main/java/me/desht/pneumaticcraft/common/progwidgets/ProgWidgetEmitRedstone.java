@@ -1,20 +1,19 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetEmitRedstone;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmissionWidget, ISidedWidget {
     private boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
@@ -39,21 +38,21 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
 
         boolean sideActive = false;
         for (boolean bool : accessingSides) {
             sideActive |= bool;
         }
-        if (!sideActive) curInfo.add("gui.progWidget.general.error.noSideActive");
+        if (!sideActive) curInfo.add(xlate("gui.progWidget.general.error.noSideActive"));
     }
 
     @Override
-    public void getTooltip(List<String> curTooltip) {
+    public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add("Affecting sides:");
-        curTooltip.add(getExtraStringInfo());
+        curTooltip.add(xlate("gui.progWidget.general.affectingSides"));
+        curTooltip.add(new StringTextComponent(getExtraStringInfo()));
     }
 
     @Override
@@ -75,7 +74,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
             StringBuilder tipBuilder = new StringBuilder();
             for (int i = 0; i < 6; i++) {
                 if (accessingSides[i]) {
-                    switch (EnumFacing.byIndex(i)) {
+                    switch (Direction.byIndex(i)) {
                         case UP:
                             tipBuilder.append("top, ");
                             break;
@@ -103,18 +102,18 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         for (int i = 0; i < 6; i++) {
-            tag.setBoolean(EnumFacing.byIndex(i).name(), accessingSides[i]);
+            tag.putBoolean(Direction.byIndex(i).name(), accessingSides[i]);
         }
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         for (int i = 0; i < 6; i++) {
-            accessingSides[i] = tag.getBoolean(EnumFacing.byIndex(i).name());
+            accessingSides[i] = tag.getBoolean(Direction.byIndex(i).name());
         }
     }
 
@@ -144,8 +143,8 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.RED;
+    public DyeColor getColor() {
+        return DyeColor.RED;
     }
 
     @Override
@@ -159,22 +158,16 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetEmitRedstone(this, guiProgrammer);
-    }
-
-    @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return new DroneAIEmitRedstone(drone, widget);
     }
 
-    private static class DroneAIEmitRedstone extends EntityAIBase {
+    private static class DroneAIEmitRedstone extends Goal {
 
         private final IProgWidget widget;
         private final IDroneBase drone;
 
-        public DroneAIEmitRedstone(IDroneBase drone, IProgWidget widget) {
+        DroneAIEmitRedstone(IDroneBase drone, IProgWidget widget) {
             this.widget = widget;
             this.drone = drone;
         }
@@ -184,7 +177,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
             boolean[] sides = ((ISidedWidget) widget).getSides();
             for (int i = 0; i < 6; i++) {
                 if (sides[i]) {
-                    drone.setEmittingRedstone(EnumFacing.byIndex(i), ((IRedstoneEmissionWidget) widget).getEmittingRedstone());
+                    drone.setEmittingRedstone(Direction.byIndex(i), ((IRedstoneEmissionWidget) widget).getEmittingRedstone());
                 }
             }
             return false;

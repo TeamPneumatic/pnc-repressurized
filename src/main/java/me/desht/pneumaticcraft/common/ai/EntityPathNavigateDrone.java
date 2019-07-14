@@ -1,22 +1,23 @@
 package me.desht.pneumaticcraft.common.ai;
 
+import com.google.common.collect.Lists;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
-import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.pathfinding.FlyingPathNavigator;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathFinder;
-import net.minecraft.pathfinding.PathNavigateFlying;
 import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -24,7 +25,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class EntityPathNavigateDrone extends PathNavigateFlying implements IPathNavigator {
+public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPathNavigator {
 
     private final EntityDrone pathfindingEntity;
     public boolean pathThroughLiquid;
@@ -48,9 +49,9 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
      */
     @Override
     public Path getPathToEntityLiving(Entity par1Entity) {
-        BlockPos pos = new BlockPos(par1Entity.posX, par1Entity.getEntityBoundingBox().minY, par1Entity.posZ);
+        BlockPos pos = new BlockPos(par1Entity.posX, par1Entity.getBoundingBox().minY, par1Entity.posZ);
 
-        if ((par1Entity instanceof EntityItem && !pathfindingEntity.isBlockValidPathfindBlock(pos)) || par1Entity instanceof EntityMinecart) {
+        if ((par1Entity instanceof ItemEntity && !pathfindingEntity.isBlockValidPathfindBlock(pos)) || par1Entity instanceof AbstractMinecartEntity) {
             // items can end up with a blockpos of the ground they're sitting on,
             // which will prevent the drone pathfinding to them
             // minecarts apparently prevent the drone moving to the same blockpos
@@ -61,10 +62,9 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
         return getPathToPos(pos);
     }
 
-    public void setForceTeleport(boolean forceTeleport) {
+    void setForceTeleport(boolean forceTeleport) {
         this.forceTeleport = forceTeleport;
     }
-
 
     @Nullable
     @Override
@@ -74,10 +74,8 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
             return null;
 
         // 0.75 is the squared dist from a block corner to its center (0.5^2 + 0.5^2 + 0.5^2)
-        if(pathfindingEntity.getDistanceSqToCenter(pos) < 0.75){
-            return new Path(new PathPoint[]{
-               new PathPoint(pos.getX(), pos.getY(), pos.getZ())     
-            });
+        if(pathfindingEntity.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 0.75) {
+            return new Path(Lists.newArrayList(new PathPoint(pos.getX(), pos.getY(), pos.getZ())));
         }
 
         //Store the potential teleport destination
@@ -127,7 +125,7 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
     }
 
     @Override
-    public void onUpdateNavigation() {
+    public void tick() {
         if (isGoingToTeleport()) {
             if (teleportCounter == 0 || teleportCounter == 60) {
                 NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.HUD_INIT, SoundCategory.PLAYERS, pathfindingEntity.posX, pathfindingEntity.posY, pathfindingEntity.posZ, 0.1F, teleportCounter == 0 ? 0.7F : 1F, true), pathfindingEntity.world);
@@ -138,7 +136,7 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
                 float f = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f1 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f2 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
-                NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.PORTAL, pathfindingEntity.posX, pathfindingEntity.posY, pathfindingEntity.posZ, f, f1, f2), pathfindingEntity.world);
+                NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.PORTAL, pathfindingEntity.posX, pathfindingEntity.posY, pathfindingEntity.posZ, f, f1, f2), pathfindingEntity.world);
             }
 
             if (++teleportCounter > TELEPORT_TICKS) {
@@ -167,10 +165,9 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
     }
 
     public void teleport() {
-
         Random rand = pathfindingEntity.getRNG();
-        double width = pathfindingEntity.width;
-        double height = pathfindingEntity.height;
+        double width = pathfindingEntity.getWidth();
+        double height = pathfindingEntity.getHeight();
 
         short short1 = 128;
 
@@ -182,10 +179,10 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
             double d7 = pathfindingEntity.posX + (telPos.getX() + 0.5 - pathfindingEntity.posX) * d6 + (rand.nextDouble() - 0.5D) * width * 2.0D;
             double d8 = pathfindingEntity.posY + (telPos.getY() - pathfindingEntity.posY) * d6 + rand.nextDouble() * height;
             double d9 = pathfindingEntity.posZ + (telPos.getZ() + 0.5 - pathfindingEntity.posZ) * d6 + (rand.nextDouble() - 0.5D) * width * 2.0D;
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.PORTAL, d7, d8, d9, f, f1, f2), pathfindingEntity.world);
+            NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.PORTAL, d7, d8, d9, f, f1, f2), pathfindingEntity.world);
         }
 
-        pathfindingEntity.playSound(SoundEvents.ENTITY_ENDERMEN_TELEPORT, 1.0F, 1.0F);
+        pathfindingEntity.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
         pathfindingEntity.setPosition(telPos.getX() + 0.5, telPos.getY() + 0.5, telPos.getZ() + 0.5);
     }
 
@@ -204,7 +201,7 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
     }
     
     /**
-     * Override to prevent {@link net.minecraft.entity.EntityLiving#updateEntityActionState()} to assign a path with a higher speed.
+     * Override to prevent MobEntity#updateEntityActionState() assigning a path with a higher speed.
      */
     @Override
     public boolean setPath(Path pathentityIn, double speedIn){
@@ -216,8 +213,8 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
      */
     private void forceRidingEntityPaths(){
         for(Entity ridingEntity : pathfindingEntity.getPassengers()){
-            if(ridingEntity instanceof EntityLiving){
-                EntityLiving ridingLiving = (EntityLiving)ridingEntity;
+            if(ridingEntity instanceof MobEntity){
+                MobEntity ridingLiving = (MobEntity)ridingEntity;
                 ridingLiving.getNavigator().setPath(pathfindingEntity.getNavigator().getPath(), pathfindingEntity.getSpeed());
             }
         }
@@ -234,9 +231,10 @@ public class EntityPathNavigateDrone extends PathNavigateFlying implements IPath
     }
 
     @Override
-    protected PathFinder getPathFinder() {
+    protected PathFinder getPathFinder(int r) {
         this.nodeProcessor = new NodeProcessorDrone();
-        return new PathfinderDrone(this.nodeProcessor);
+        // no longer a need for PathFinderDrone subclass, since vanilla PathFinder takes a max distance param.
+        return new PathFinder(this.nodeProcessor, Integer.MAX_VALUE);
     }
 
     @Override

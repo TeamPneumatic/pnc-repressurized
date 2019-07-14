@@ -1,22 +1,28 @@
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerThermopneumaticProcessingPlant extends
         ContainerPneumaticBase<TileEntityThermopneumaticProcessingPlant> {
 
-    public ContainerThermopneumaticProcessingPlant(InventoryPlayer inventoryPlayer,
-                                                   TileEntityThermopneumaticProcessingPlant te) {
-        super(te);
+    public ContainerThermopneumaticProcessingPlant(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+        this(i, playerInventory, getTilePos(buffer));
+    }
+
+    public ContainerThermopneumaticProcessingPlant(int windowId, PlayerInventory playerInventory, BlockPos pos) {
+        super(ModContainerTypes.THERMOPNEUMATIC_PROCESSING_PLANT, windowId, playerInventory, pos);
 
         // add upgrade slots
-        for (int i = 0; i < 4; i++)
-            addSlotToContainer(new SlotItemHandler(te.getUpgradesInventory(), i, 80 + 18 * i, 93));
+        for (int i = 0; i < 4; i++) {
+            addSlot(new SlotUpgrade(te, i, 80 + i * 18, 93));
+        }
+        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 46, 14));
 
-        addSlotToContainer(new SlotItemHandler(te.getPrimaryInventory(), 0, 46, 14));
-
-        addPlayerSlots(inventoryPlayer, 115);
+        addPlayerSlots(playerInventory, 115);
     }
 }

@@ -1,59 +1,68 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
-import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketChangeGPSToolCoordinate extends LocationIntPacket<PacketChangeGPSToolCoordinate> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: SERVER
+ * Send when the GPS Tool GUI is closed, to update the held GPS tool settings
+ */
+public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
+    private Hand hand;
     private String variable;
     private int metadata;
 
     public PacketChangeGPSToolCoordinate() {
     }
 
-    public PacketChangeGPSToolCoordinate(BlockPos pos, String variable, int metadata) {
+    public PacketChangeGPSToolCoordinate(BlockPos pos, Hand hand, String variable, int metadata) {
         super(pos);
+        this.hand = hand;
         this.variable = variable;
         this.metadata = metadata;
+    }
+
+    public PacketChangeGPSToolCoordinate(PacketBuffer buf) {
+        super(buf);
+        variable = PacketUtil.readUTF8String(buf);
+        metadata = buf.readInt();
+        hand = buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         super.toBytes(buf);
-        ByteBufUtils.writeUTF8String(buf, variable);
+        PacketUtil.writeUTF8String(buf, variable);
         buf.writeInt(metadata);
+        buf.writeBoolean(hand == Hand.MAIN_HAND);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        super.fromBytes(buf);
-        variable = ByteBufUtils.readUTF8String(buf);
-        metadata = buf.readInt();
-    }
-
-    @Override
-    public void handleClientSide(PacketChangeGPSToolCoordinate message, EntityPlayer player) {
-    }
-
-    @Override
-    public void handleServerSide(PacketChangeGPSToolCoordinate message, EntityPlayer player) {
-        ItemStack playerStack = player.getHeldItemMainhand();
-        if (playerStack.getItem() == Itemss.GPS_TOOL) {
-            ItemGPSTool.setVariable(playerStack, message.variable);
-            if (message.pos.getY() >= 0) {
-                playerStack.getItem().onItemUse(player, player.world, message.pos, EnumHand.MAIN_HAND, null, 0, 0, 0);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            ItemStack playerStack = player.getHeldItem(hand);
+            if (playerStack.getItem() == ModItems.GPS_TOOL) {
+                ItemGPSTool.setVariable(playerStack, variable);
+                if (pos.getY() >= 0) {
+                    ItemGPSTool.setGPSLocation(playerStack, pos);
+                }
+            } else if (playerStack.getItem() == ModItems.GPS_AREA_TOOL) {
+                ItemGPSAreaTool.setVariable(playerStack, variable, metadata);
+                if (pos.getY() >= 0) {
+                    ItemGPSAreaTool.setGPSPosAndNotify(player, pos, hand, metadata);
+                }
             }
-        }else if(playerStack.getItem() == Itemss.GPS_AREA_TOOL){
-            ItemGPSAreaTool.setVariable(playerStack, message.variable, message.metadata);
-            if(message.pos.getY() >= 0){
-                ItemGPSAreaTool.setGPSPosAndNotify(player, message.pos, message.metadata);
-            }
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
 }

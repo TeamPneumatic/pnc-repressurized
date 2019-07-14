@@ -1,26 +1,42 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.List;
+import java.util.function.Supplier;
 
-public class PacketProgrammerUpdate extends LocationIntPacket<PacketProgrammerUpdate> implements ILargePayload {
-    private NBTTagCompound progWidgets;
+/**
+ * Received on: SERVER
+ * Sent by clientside programmer GUI to push the current program to the server-side TE
+ */
+public class PacketProgrammerUpdate extends LocationIntPacket implements ILargePayload {
+    private CompoundNBT progWidgets;
 
     public PacketProgrammerUpdate() {
     }
 
     public PacketProgrammerUpdate(TileEntityProgrammer te) {
         super(te.getPos());
-        progWidgets = new NBTTagCompound();
+        progWidgets = new CompoundNBT();
         te.writeProgWidgetsToNBT(progWidgets);
+    }
+
+    public PacketProgrammerUpdate(PacketBuffer buffer) {
+        super(buffer);
+        try {
+            progWidgets = new PacketBuffer(buffer).readCompoundTag();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -33,40 +49,39 @@ public class PacketProgrammerUpdate extends LocationIntPacket<PacketProgrammerUp
         }
     }
 
-    @Override
-    public void fromBytes(ByteBuf buffer) {
-        super.fromBytes(buffer);
-        try {
-            progWidgets = new PacketBuffer(buffer).readCompoundTag();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> updateTE(getTileEntity(ctx), ctx.get().getSender()));
+        ctx.get().setPacketHandled(true);
     }
 
-    @Override
-    public void handleClientSide(PacketProgrammerUpdate message, EntityPlayer player) {
-        handleServerSide(null, player);
-    }
-
-    @Override
-    public void handleServerSide(PacketProgrammerUpdate message, EntityPlayer player) {
-        TileEntity te = message.getTileEntity(player.getEntityWorld());
+    private void updateTE(TileEntity te, PlayerEntity player) {
         if (te instanceof TileEntityProgrammer) {
-            ((TileEntityProgrammer) te).readProgWidgetsFromNBT(message.progWidgets);
+            ((TileEntityProgrammer) te).readProgWidgetsFromNBT(progWidgets);
             ((TileEntityProgrammer) te).saveToHistory();
-            if (!player.world.isRemote) {
-                message.updateOtherWatchingPlayers((TileEntityProgrammer) te, player);
+            if (!te.getWorld().isRemote) {
+                updateOtherWatchingPlayers((TileEntityProgrammer) te, player);
             }
         }
     }
 
-    private void updateOtherWatchingPlayers(TileEntityProgrammer te, EntityPlayer changingPlayer) {
-        List<EntityPlayerMP> players = changingPlayer.world.getEntitiesWithinAABB(EntityPlayerMP.class, new AxisAlignedBB(pos.add(-5, -5, -5), pos.add(6, 6, 6)));
-        for (EntityPlayerMP player : players) {
+    private void updateOtherWatchingPlayers(TileEntityProgrammer te, PlayerEntity changingPlayer) {
+        List<ServerPlayerEntity> players = changingPlayer.world.getEntitiesWithinAABB(ServerPlayerEntity.class, new AxisAlignedBB(pos.add(-5, -5, -5), pos.add(6, 6, 6)));
+        for (ServerPlayerEntity player : players) {
             if (player != changingPlayer) {
-                NetworkHandler.sendTo(new PacketProgrammerUpdate(te), player);
+                NetworkHandler.sendToPlayer(new PacketProgrammerUpdate(te), player);
             }
         }
     }
 
+    @Override
+    public ByteBuf dumpToBuffer() {
+        ByteBuf buf = Unpooled.buffer();
+        toBytes(buf);
+        return buf;
+    }
+
+    @Override
+    public void handleLargePayload(PlayerEntity player) {
+        updateTE(player.world.getTileEntity(pos), player);
+    }
 }

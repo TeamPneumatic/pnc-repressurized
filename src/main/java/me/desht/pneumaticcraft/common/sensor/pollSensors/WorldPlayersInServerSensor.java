@@ -1,9 +1,8 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.universalSensor.IPollSensorSetting;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.server.management.PlayerList;
@@ -11,10 +10,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.Rectangle;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +27,7 @@ public class WorldPlayersInServerSensor implements IPollSensorSetting {
 
     @Override
     public Set<Item> getRequiredUpgrades() {
-        return ImmutableSet.of(Itemss.upgrades.get(EnumUpgrade.DISPENSER));
+        return ImmutableSet.of(IItemRegistry.EnumUpgrade.DISPENSER.getItem());
     }
 
     @Override
@@ -52,7 +50,7 @@ public class WorldPlayersInServerSensor implements IPollSensorSetting {
 
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        PlayerList playerList = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList();
+        PlayerList playerList = ServerLifecycleHooks.getCurrentServer().getPlayerList();
         if (textBoxText.equals("")) {
             return Math.min(15, playerList.getCurrentPlayerCount());
         } else {
@@ -64,13 +62,8 @@ public class WorldPlayersInServerSensor implements IPollSensorSetting {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
         fontRenderer.drawString("Player Name", 70, 48, 0x404040);
-    }
-
-    @Override
-    public Rectangle needsSlot() {
-        return null;
     }
 }

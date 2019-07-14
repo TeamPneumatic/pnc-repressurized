@@ -4,9 +4,16 @@ import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleLogistics;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketUpdateLogisticModule extends LocationIntPacket<PacketUpdateLogisticModule> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: CLIENT
+ * Sent by server when the status or colour of a logistic module is updated
+ */
+public class PacketUpdateLogisticModule extends LocationIntPacket {
 
     private int side;
     private int colorIndex;
@@ -26,6 +33,13 @@ public class PacketUpdateLogisticModule extends LocationIntPacket<PacketUpdateLo
         }
     }
 
+    public PacketUpdateLogisticModule(PacketBuffer buffer) {
+        super(buffer);
+        side = buffer.readByte();
+        colorIndex = buffer.readByte();
+        status = buffer.readByte();
+    }
+
     @Override
     public void toBytes(ByteBuf buf) {
         super.toBytes(buf);
@@ -34,28 +48,16 @@ public class PacketUpdateLogisticModule extends LocationIntPacket<PacketUpdateLo
         buf.writeByte(status);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        super.fromBytes(buf);
-        side = buf.readByte();
-        colorIndex = buf.readByte();
-        status = buf.readByte();
-    }
-
-    @Override
-    public void handleClientSide(PacketUpdateLogisticModule message, EntityPlayer player) {
-        TileEntityPressureTube te = TileEntityPressureTube.getTube(message.getTileEntity(player.world));
-        if (te != null) {
-            TubeModule module = te.modules[message.side];
-            if (module instanceof ModuleLogistics) {
-                ((ModuleLogistics) module).onUpdatePacket(message.status, message.colorIndex);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            TileEntityPressureTube te = TileEntityPressureTube.getTube(getTileEntity(ctx));
+            if (te != null) {
+                TubeModule module = te.modules[side];
+                if (module instanceof ModuleLogistics) {
+                    ((ModuleLogistics) module).onUpdatePacket(status, colorIndex);
+                }
             }
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
-    @Override
-    public void handleServerSide(PacketUpdateLogisticModule message, EntityPlayer player) {
-
-    }
-
 }

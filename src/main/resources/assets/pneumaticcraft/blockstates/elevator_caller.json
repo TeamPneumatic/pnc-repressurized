@@ -1,12 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "pneumaticcraft:elevator_caller"
+    "model": "pneumaticcraft:block/elevator_caller"
   },
   "variants":{
-    "normal": { "model": "pneumaticcraft:elevator_caller" },
+    "normal": { "model": "pneumaticcraft:block/elevator_caller" },
     "inventory": [{
-      "model": "pneumaticcraft:elevator_caller"
+      "model": "pneumaticcraft:block/elevator_caller"
     }],
     "facing": {
       "down": {},

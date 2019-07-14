@@ -1,75 +1,67 @@
 buildscript {
     repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
 
 repositories {
-    maven {
-        name = "CoFH Maven"
-        url = "http://maven.covers1624.net"
-    }
-    maven {
-        name = "JEI"
-        url = "http://dvs1.progwml6.com/files/maven"
-    }
-    maven {
-        name = "MCMP"
-        url = "http://maven.amadornes.com/"
-    }
-    maven {
-        name = "OpenComputers"
-        url = "http://maven.cil.li/"
-    }
-    maven {
-        name = "ComputerCraft"
-        url = "http://cc.crzd.me/maven"
-    }
-    maven {
-        name = "hwyla"
-        url = 'http://tehnut.info/maven/'
-    }
+//    maven {
+//        name = "CoFH Maven"
+//        url = "http://maven.covers1624.net"
+//    }
+//    maven {
+//        name = "JEI"
+//        url = "http://dvs1.progwml6.com/files/maven"
+//    }
+//    maven {
+//        name = "MCMP"
+//        url = "http://maven.amadornes.com/"
+//    }
+//    maven {
+//        name = "OpenComputers"
+//        url = "http://maven.cil.li/"
+//    }
+//    maven {
+//        name = "ComputerCraft"
+//        url = "http://cc.crzd.me/maven"
+//    }
+//    maven {
+//        name = "hwyla"
+//        url = 'http://tehnut.info/maven/'
+//    }
     maven { // TOP
         name = "tterrag maven"
         url = "http://maven.tterrag.com/"
     }
-    maven {
-        name = 'BlameJared - Crafttweaker/Patchouli'
-        url = 'http://maven.blamejared.com/'
-    }
-    maven {
-        name = "K-4u Mod maven"
-        url = "https://modmaven.k-4u.nl/"
-    }
-    maven {
-        name = "ic2"
-        url = "http://maven.ic2.player.to/"
-    }
-    maven {
-        name = "Curseforge"
-        url = "https://minecraft.curseforge.com/api/maven/"
-    }
-    maven { // Albedo Lights
-        url = 'https://repo.elytradev.com/'
-    }
-    maven { // Baubles
-        name = "thiakil"
-        url = "http://maven.thiakil.com"
-    }
-}
-
-task copyCIArtifacts << {
-    if (System.getenv("CIRCLECI").equals("true")) {
-        copy {
-            from(file('build/libs/').listFiles())
-            into System.getenv('CIRCLE_ARTIFACTS')
-        }
-    }
+//    maven {
+//        name = 'BlameJared - Crafttweaker/Patchouli'
+//        url = 'http://maven.blamejared.com/'
+//    }
+//    maven {
+//        name = "K-4u Mod maven"
+//        url = "https://modmaven.k-4u.nl/"
+//    }
+//    maven {
+//        name = "ic2"
+//        url = "http://maven.ic2.player.to/"
+//    }
+//    maven {
+//        name = "Curseforge"
+//        url = "https://minecraft.curseforge.com/api/maven/"
+//    }
+//    maven { // Albedo Lights
+//        url = 'https://repo.elytradev.com/'
+//    }
+//    maven { // Baubles
+//        name = "thiakil"
+//        url = "http://maven.thiakil.com"
+//    }
 }
 
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
@@ -93,23 +85,21 @@ allprojects {
 }
 
 jar {
-    from sourceSets.main.output
-    from sourceSets.api.output
+    manifest {
+        attributes 'FMLAT': 'pneumaticcraft_at.cfg'
+    }
 }
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allJava
-    from sourceSets.api.allJava
 }
 
 task apiJar(type: Jar) {
     classifier = 'api'
-    from sourceSets.api.java
-    // TODO: when FG bug is fixed, remove allJava from the api jar.
-    // https://github.com/MinecraftForge/ForgeGradle/issues/369
-    // Gradle should be able to pull them from the -sources jar.
-    from sourceSets.api.allJava
+    from(sourceSets.main.output) {
+        include "me/desht/pneumaticcraft/api/**"
+    }
 }
 
 task("uploadJars", dependsOn:"reobf") {
@@ -136,75 +126,57 @@ compileJava {
 }
 
 minecraft {
-    version = "${forge_version}"
-    runDir = "run"
-    mappings = "${mappings_version}"
-    clientJvmArgs += "-Dfml.coreMods.load=elucent.albedo.asm.FMLPlugin"
-    replace '@VERSION@', project.version
-    replaceIn 'PneumaticCraftRepressurized.java'
-    replace '@MASSIVE@', mod_version_massive
-    replaceIn 'lib/Versions.java'
-    replace '@MAJOR@', mod_version_major
-    replaceIn 'lib/Versions.java'
-    replace '@MINOR@', mod_version_minor
-    replaceIn 'lib/Versions.java'
-    replace '@MC_VERSION@', version
-    replaceIn 'lib/Versions.java'
-    if (System.getenv("BUILD_NUMBER") != null) {
-        replace '@BUILD_NUMBER@', System.getenv("BUILD_NUMBER")
-    } else {
-        replace '@BUILD_NUMBER@', 0
+    mappings channel: 'snapshot', version: '20190708-1.14.3'
+    accessTransformer = file('src/main/resources/META-INF/pneumaticcraft_at.cfg')
+    //accessTransformer = file('my_at.cfg')
+    runs {
+        client = {
+            // recommended logging data for a userdev environment
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            // recommended logging level for the console
+            properties 'forge.logging.console.level': 'debug'
+            workingDirectory project.file('run').canonicalPath
+            source sourceSets.main
+        }
+        server = {
+            // recommended logging data for a userdev environment
+            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
+            // recommended logging level for the console
+            properties 'forge.logging.console.level': 'debug'
+            workingDirectory project.file('run').canonicalPath
+            source sourceSets.main
+        }
     }
 }
 
 dependencies {
-    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
-    compileOnly("mekanism:Mekanism:${mekanism_version}:api") { exclude group: "mezz.jei" }
-    compileOnly "mezz.jei:jei_${mc_version}:${jei_version}"
-    compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
-    compileOnly "MCMultiPart2:MCMultiPart:${mcmultipart_version}"
-    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
-    compileOnly "dan200.computercraft:ComputerCraft:${computercraft_version}"
-    compileOnly "mcp.mobius.waila:Hwyla:${hwyla_version}"
-    compileOnly "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
-    compileOnly "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
-    compileOnly "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
-    compileOnly "igwmod:IGW-Mod-1.12.2:${igwmod_version}:universal"  // using universal instead of userdev for now
-    compileOnly "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
-    compileOnly "thaumcraft:Thaumcraft:${thaumcraft_version}"
-    compileOnly "team.chisel.ctm:CTM:${ctm_version}:api"
-    compileOnly "vazkii.botania:Botania:${botania_version}"
-    compileOnly("appeng:appliedenergistics2:${ae2_version}:api")
-    //compileOnly "elucent:albedo:${albedo_version}"
-    compileOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
-    compileOnly "blusunrize:ImmersiveEngineering:${immersive_engineering_version}"
-    compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
-    compileOnly "com.github.glitchfiend.biomesoplenty:ToughAsNails:${tan_version}:universal"
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    compile fg.deobf (project.dependencies.create("mcjty.theoneprobe:TheOneProbe-1.14:${top_version}") {
+        transitive = false
+    })
+//    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
+//    compileOnly("mekanism:Mekanism:${mekanism_version}:api") { exclude group: "mezz.jei" }
+//    compileOnly "mezz.jei:jei_${mc_version}:${jei_version}"
+//    compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
+//    compileOnly "MCMultiPart2:MCMultiPart:${mcmultipart_version}"
+//    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
+//    compileOnly "dan200.computercraft:ComputerCraft:${computercraft_version}"
+//    compileOnly "mcp.mobius.waila:Hwyla:${hwyla_version}"
+//    compileOnly "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
+//    compileOnly "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
+//    compileOnly "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
+//    compileOnly "igwmod:IGW-Mod-1.12.2:${igwmod_version}:universal"  // using universal instead of userdev for now
+//    compileOnly "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
+//    compileOnly "thaumcraft:Thaumcraft:${thaumcraft_version}"
+//    compileOnly "team.chisel.ctm:CTM:${ctm_version}:api"
+//    compileOnly "vazkii.botania:Botania:${botania_version}"
+//    compileOnly("appeng:appliedenergistics2:${ae2_version}:api")
+//    //compileOnly "elucent:albedo:${albedo_version}"
+//    compileOnly "vazkii.patchouli:Patchouli:${patchouli_version}"
+//    compileOnly "blusunrize:ImmersiveEngineering:${immersive_engineering_version}"
+//    compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
+//    compileOnly "com.github.glitchfiend.biomesoplenty:ToughAsNails:${tan_version}:universal"
 }
 
-processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+//idea { module { inheritOutputDirs = true } }
 
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-
-    // copy everything else except the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-}
-
-idea { module { inheritOutputDirs = true } }
-
-jar {
-    manifest {
-        attributes 'FMLAT': 'pneumaticcraft_at.cfg'
-    }
-}

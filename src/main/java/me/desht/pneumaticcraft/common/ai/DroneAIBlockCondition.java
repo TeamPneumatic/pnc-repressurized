@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import net.minecraft.util.math.BlockPos;
 
-public abstract class DroneAIBlockCondition extends DroneAIBlockInteraction {
+public abstract class DroneAIBlockCondition extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
 
     private boolean result;
 
@@ -15,7 +15,7 @@ public abstract class DroneAIBlockCondition extends DroneAIBlockInteraction {
     @Override
     public boolean shouldExecute() {
         if (super.shouldExecute()) {
-            result = ((ICondition) widget).isAndFunction();//set the initial value, so it can be modified by the 'evaluate' method later.
+            result = ((ICondition) progWidget).isAndFunction();//set the initial value, so it can be modified by the 'evaluate' method later.
             return true;
         } else {
             return false;
@@ -24,7 +24,7 @@ public abstract class DroneAIBlockCondition extends DroneAIBlockInteraction {
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
-        if (evaluate(pos) != ((ICondition) widget).isAndFunction()) {
+        if (evaluate(pos) != ((ICondition) progWidget).isAndFunction()) {
             result = !result;
             if (result) {
                 drone.addDebugEntry("gui.progWidget.blockCondition.debug.blockMatches", pos);

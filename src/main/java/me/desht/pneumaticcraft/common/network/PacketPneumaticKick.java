@@ -2,49 +2,60 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Supplier;
 
-public class PacketPneumaticKick extends AbstractPacket<PacketPneumaticKick> {
+public class PacketPneumaticKick {
     public PacketPneumaticKick() {
+        // empty
     }
 
-    @Override
-    public void handleClientSide(PacketPneumaticKick message, EntityPlayer player) {
+    PacketPneumaticKick(PacketBuffer buffer) {
+        // empty
     }
 
-    @Override
-    public void handleServerSide(PacketPneumaticKick message, EntityPlayer player) {
-        if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EntityEquipmentSlot.FEET)) {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.isArmorEnabled() && handler.isArmorReady(EntityEquipmentSlot.FEET) && handler.getArmorPressure(EntityEquipmentSlot.FEET) > 0.1f) {
-                int upgrades = handler.getUpgradeCount(EntityEquipmentSlot.FEET, IItemRegistry.EnumUpgrade.DISPENSER);
-                if (upgrades > 0) {
-                    handleKick(player, Math.min(PneumaticValues.PNEUMATIC_KICK_MAX_UPGRADES, upgrades));
+    public void toBytes(ByteBuf buf) {
+        // empty
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+                if (handler.isArmorEnabled() && handler.isArmorReady(EquipmentSlotType.FEET) && handler.getArmorPressure(EquipmentSlotType.FEET) > 0.1f) {
+                    int upgrades = handler.getUpgradeCount(EquipmentSlotType.FEET, IItemRegistry.EnumUpgrade.DISPENSER);
+                    if (upgrades > 0) {
+                        handleKick(player, Math.min(PneumaticValues.PNEUMATIC_KICK_MAX_UPGRADES, upgrades));
+                    }
                 }
             }
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
 
-    private void handleKick(EntityPlayer player, int upgrades) {
+    private void handleKick(PlayerEntity player, int upgrades) {
         Vec3d lookVec = player.getLookVec().normalize();
 
-        double playerFootY = player.posY - player.height / 4;
+        double playerFootY = player.posY - player.getHeight() / 4;
         AxisAlignedBB box = new AxisAlignedBB(player.posX, playerFootY, player.posZ, player.posX, playerFootY, player.posZ)
                 .grow(1.0, 1.0, 1.0).offset(lookVec);
         List<Entity> entities = player.world.getEntitiesWithinAABBExcludingEntity(player, box);
@@ -52,25 +63,14 @@ public class PacketPneumaticKick extends AbstractPacket<PacketPneumaticKick> {
         entities.sort(Comparator.comparingDouble(o -> o.getDistanceSq(player)));
 
         Entity target = entities.get(0);
-        if (target instanceof EntityLiving) {
+        if (target instanceof MobEntity) {
             target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3.0f + upgrades * 0.5f);
         }
-        lookVec = lookVec.scale(1.0 + upgrades * 0.5f);
-        target.motionX += lookVec.x;
-        target.motionY += lookVec.y;
-        target.motionZ += lookVec.z;
+        target.setMotion(target.getMotion().add(lookVec.scale(1.0 + upgrades * 0.5f)));
 
         NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PUNCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0f, 1.0f, false), player.world);
-        NetworkHandler.sendToAllAround(new PacketSetEntityMotion(target, target.motionX, target.motionY, target.motionZ), player.world);
-        NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumParticleTypes.EXPLOSION_LARGE, target.posX, target.posY, target.posZ, 1.0D, 0.0D, 0.0D), player.world);
-        CommonArmorHandler.getHandlerForPlayer(player).addAir(EntityEquipmentSlot.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * (2 << upgrades));
-    }
-
-    @Override
-    public void fromBytes(ByteBuf buf) {
-    }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
+        NetworkHandler.sendToAllAround(new PacketSetEntityMotion(target, target.getMotion()), player.world);
+        NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.posX, target.posY, target.posZ, 1.0D, 0.0D, 0.0D), player.world);
+        CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlotType.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * (2 << upgrades));
     }
 }

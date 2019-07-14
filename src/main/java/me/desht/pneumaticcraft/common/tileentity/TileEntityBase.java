@@ -2,61 +2,50 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.lua.LuaException;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import dan200.computercraft.api.peripheral.IPeripheral;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.IHeatDisperser;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
-import me.desht.pneumaticcraft.common.thirdparty.mekanism.Mekanism;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
-import me.desht.pneumaticcraft.lib.ModIds;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-@Optional.InterfaceList({
-        @Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)
-})
-public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IPeripheral {
+//@Optional.InterfaceList({
+//        @Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)
+//})
+public abstract class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor /*, IPeripheral*/ {
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.button.anySignal",
             "gui.tab.redstoneBehaviour.button.highSignal",
@@ -69,33 +58,40 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     private final Set<String> applicableCustomUpgrades = new HashSet<>();
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
-    UpgradeHandler upgradeHandler;
+    private final UpgradeHandler upgradeHandler;
     boolean firstRun = true;  // True only the first time updateEntity invokes in a session
     int poweredRedstone; // The redstone strength currently applied to the block.
     private boolean descriptionPacketScheduled;
     private List<SyncedField> descriptionFields;
     private TileEntityCache[] tileCache;
-    private IBlockState cachedBlockState;
+    private BlockState cachedBlockState;
     private boolean preserveStateOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
-    private LuaMethodRegistry luaMethodRegistry = null;
+//    private LuaMethodRegistry luaMethodRegistry = null;
 
-    public TileEntityBase() {
-        this(0);
+    public TileEntityBase(TileEntityType type) {
+        this(type, 0);
     }
 
-    public TileEntityBase(int upgradeSize) {
+    public TileEntityBase(TileEntityType type, int upgradeSize) {
+        super(type);
+
         this.upgradeHandler = new UpgradeHandler(upgradeSize);
     }
 
+    @Override
+    public String getUpgradeAcceptorTranslationKey() {
+        return getBlockTranslationKey();
+    }
+
     private static String makeUpgradeKey(ItemStack stack) {
-        return stack.getItem().getRegistryName() + ":" + stack.getMetadata();
+        return stack.getItem().getRegistryName().toString();
     }
 
     protected void addApplicableUpgrade(IItemRegistry.EnumUpgrade... upgrades) {
         for (IItemRegistry.EnumUpgrade upgrade : upgrades)
-            addApplicableUpgrade(Itemss.upgrades.get(upgrade));
+            addApplicableUpgrade(ModItems.Registration.UPGRADES.get(upgrade));
     }
 
     protected void addApplicableUpgrade(Item upgrade) {
@@ -108,19 +104,31 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         }
     }
 
+    private String getBlockTranslationKey() {
+        return "block.pneumaticcraft." + getType().getRegistryName().getPath();
+    }
+
+    /**
+     * Call this from {@link INamedContainerProvider#getDisplayName()}
+     * @return display name for this TE's GUI
+     */
+    ITextComponent getDisplayNameInternal() {
+        return new TranslationTextComponent(getBlockTranslationKey());
+    }
+
     // server side, chunk sending
     @Override
-    public NBTTagCompound getUpdateTag() {
-        NBTTagCompound compound = super.getUpdateTag();
+    public CompoundNBT getUpdateTag() {
+        CompoundNBT compound = super.getUpdateTag();
         return new PacketDescription(this).writeNBT(compound);
     }
 
     // client side, chunk sending
     @Override
-    public void handleUpdateTag(NBTTagCompound tag) {
+    public void handleUpdateTag(CompoundNBT tag) {
         super.handleUpdateTag(tag);
-        PacketDescription packet = new PacketDescription(tag);
-        packet.handleClientSide(packet, PneumaticCraftRepressurized.proxy.getClientPlayer());
+
+        new PacketDescription(tag).process();
     }
 
     /***********
@@ -169,10 +177,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     /*
-     * Even though this class doesn't implement ITickable, we'll keep the base update() logic here; classes
+     * Even though this class doesn't implement ITickableTileEntity, we'll keep the base update() logic here; classes
      * which extend non-tickable subclasses might need it (e.g. TileEntityPressureChamberInterface)
      */
-    void updateImpl() {
+    void tickImpl() {
         if (firstRun && !world.isRemote) {
             onFirstServerUpdate();
             onNeighborTileUpdate();
@@ -180,11 +188,9 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         }
         firstRun = false;
 
-        upgradeCache.validate();
-
         if (!world.isRemote) {
             if (this instanceof IHeatExchanger) {
-                ((IHeatExchanger) this).getHeatExchangerLogic(null).update();
+                ((IHeatExchanger) this).getHeatExchangerLogic(null).tick();
                 for (IHeatDisperser disperser : moddedDispersers) {
                     disperser.disperseHeat(this, tileCache);
                 }
@@ -213,7 +219,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     protected void updateNeighbours() {
-        world.notifyNeighborsOfStateChange(getPos(), getBlockType(), true);
+        world.notifyNeighborsOfStateChange(getPos(), getBlockState().getBlock());
     }
 
     public void onBlockRotated() {
@@ -225,7 +231,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     void rerenderTileEntity() {
-        world.markBlockRangeForRenderUpdate(getPos(), getPos());
+        world.markForRerender(getPos());
     }
 
     protected boolean shouldRerenderChunkOnDescUpdate() {
@@ -233,7 +239,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data written by writeToNBT().
+     * Encoded into the description packet. Also included in saved data written by write().
      *
      * Prefer to use @DescSynced - only use this for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
@@ -241,18 +247,14 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      * @param tag NBT tag
      */
     @Override
-    public void writeToPacket(NBTTagCompound tag) {
+    public void writeToPacket(CompoundNBT tag) {
         if (this instanceof ISideConfigurable) {
-            NBTTagCompound sides = new NBTTagCompound();
-            for (SideConfigurator sc : ((ISideConfigurable) this).getSideConfigurators()) {
-                sides.setTag(sc.getID(), sc.serializeNBT());
-            }
-            tag.setTag("SideConfigurator", sides);
+            tag.put(NBTKeys.SIDE_CONFIGURATION, SideConfigurator.writeToNBT((ISideConfigurable) this));
         }
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data read by readFromNBT().
+     * Encoded into the description packet. Also included in saved data read by read().
      *
      * Prefer to use @DescSynced - only use this for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
@@ -260,40 +262,44 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      * @param tag NBT tag
      */
     @Override
-    public void readFromPacket(NBTTagCompound tag) {
+    public void readFromPacket(CompoundNBT tag) {
         if (this instanceof ISideConfigurable) {
-            NBTTagCompound sides = tag.getCompoundTag("SideConfigurator");
-            for (SideConfigurator sc : ((ISideConfigurable) this).getSideConfigurators()) {
-                sc.deserializeNBT(sides.getCompoundTag(sc.getID()));
-            }
+            SideConfigurator.readFromNBT(tag.getCompound(NBTKeys.SIDE_CONFIGURATION), (ISideConfigurable) this);
         }
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        if (upgradeHandler != null && upgradeHandler.getSlots() > 0) {
-            tag.setTag("Upgrades", upgradeHandler.serializeNBT());
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+
+        if (upgradeHandler.getSlots() > 0) {
+            tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, upgradeHandler.serializeNBT());
+        }
+        if (this instanceof IHeatExchanger) {
+            tag.put(NBTKeys.NBT_HEAT_EXCHANGER, ((IHeatExchanger) this).getHeatExchangerLogic(null).serializeNBT());
+        }
+        if (this instanceof ISerializableTanks) {
+            tag.put(NBTKeys.NBT_SAVED_TANKS, ((ISerializableTanks) this).serializeTanks());
         }
         writeToPacket(tag);
-        if (this instanceof IHeatExchanger) {
-            ((IHeatExchanger) this).getHeatExchangerLogic(null).writeToNBT(tag);
-        }
+
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        if (tag.hasKey("Upgrades") && upgradeHandler != null) {
-            upgradeHandler = new UpgradeHandler(upgradeHandler.getSlots());
-            upgradeHandler.deserializeNBT(tag.getCompoundTag("Upgrades"));
-            upgradeCache.validate();
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+
+        if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && upgradeHandler != null) {
+            upgradeHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
+        }
+        if (this instanceof IHeatExchanger) {
+            ((IHeatExchanger) this).getHeatExchangerLogic(null).deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER));
+        }
+        if (this instanceof ISerializableTanks) {
+            ((ISerializableTanks) this).deserializeTanks(tag.getCompound(NBTKeys.NBT_SAVED_TANKS));
         }
         readFromPacket(tag);
-        if (this instanceof IHeatExchanger) {
-            ((IHeatExchanger) this).getHeatExchangerLogic(null).readFromNBT(tag);
-        }
     }
 
     @Override
@@ -315,11 +321,11 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     public void onGuiUpdate() {
     }
 
-    public EnumFacing getRotation() {
+    public Direction getRotation() {
         if (cachedBlockState == null) {
             cachedBlockState = world.getBlockState(getPos());
         }
-        return cachedBlockState.getValue(BlockPneumaticCraft.ROTATION);
+        return cachedBlockState.get(BlockPneumaticCraft.ROTATION);
     }
 
     @Override
@@ -356,10 +362,10 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
     }
 
     @Override
-    public void handleGUIButtonPress(int guiID, EntityPlayer player) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
     }
 
-    public boolean isGuiUseableByPlayer(EntityPlayer player) {
+    public boolean isGuiUseableByPlayer(PlayerEntity player) {
         return getWorld().getTileEntity(getPos()) == this && player.getDistanceSq(getPos().getX() + 0.5D, getPos().getY() + 0.5D, getPos().getZ() + 0.5D) <= 64.0D;
     }
 
@@ -375,7 +381,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         return tileCache;
     }
 
-    TileEntity getCachedNeighbor(EnumFacing dir) {
+    TileEntity getCachedNeighbor(Direction dir) {
         return getTileCache()[dir.getIndex()].getTileEntity();
     }
 
@@ -406,7 +412,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         }
     }
 
-    void initializeHeatExchanger(IHeatExchangerLogic heatExchanger, EnumFacing... connectedSides) {
+    void initializeHeatExchanger(IHeatExchangerLogic heatExchanger, Direction... connectedSides) {
         heatExchanger.initializeAsHull(getWorld(), getPos(), connectedSides);
     }
 
@@ -415,8 +421,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      *
      * @return an array of valid sides
      */
-    protected EnumFacing[] getConnectedHeatExchangerSides() {
-        return new EnumFacing[0];
+    protected Direction[] getConnectedHeatExchangerSides() {
+        return new Direction[0];
     }
 
     @Override
@@ -432,73 +438,65 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      * @param outputSlot output slot
      */
     void processFluidItem(int inputSlot, int outputSlot) {
-        if (!hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
-                || !hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))
-            return;
-        IItemHandler itemHandler = getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-
-        ItemStack fluidContainer = itemHandler.getStackInSlot(inputSlot);
-        IFluidHandlerItem fluidHandlerItem = FluidUtil.getFluidHandler(fluidContainer);
-        if (fluidHandlerItem == null) {
-            return;
-        }
-        if (fluidContainer.getCount() > 1) {
-            FluidStack stack = fluidHandlerItem.drain(1, false);
-            if (stack != null && stack.amount > 0) {
-                // disallow multiple filled items (shouldn't normally happen anyway but let's be paranoid)
-                return;
-            } else {
-                // multiple empty items OK, but be sure to only fill one of them...
-                ItemStack itemToFill = fluidContainer.copy();
-                itemToFill.setCount(1);
-                fluidHandlerItem = FluidUtil.getFluidHandler(fluidContainer);
-            }
-        }
-
-        IFluidHandler fluidHandler = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-
-        FluidStack itemContents = fluidHandlerItem.drain(1000, false);
-        if (itemContents != null && itemContents.amount > 0) {
-            // input item contains fluid: drain from input item into tank, move to output if empty
-            FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.amount, true);
-            if (transferred != null && transferred.amount == itemContents.amount) {
-                // all transferred; move empty container to output if possible
-                ItemStack emptyContainerStack = fluidHandlerItem.getContainer();
-                ItemStack excess = itemHandler.insertItem(outputSlot, emptyContainerStack, false);
-                if (excess.isEmpty()) {
-                    itemHandler.extractItem(inputSlot, 1, false);
-                }
-            }
-        } else if (itemHandler.getStackInSlot(outputSlot).isEmpty()) {
-            // input item(s) is/are empty: drain from tank to one input item, move to output
-            FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandlerItem, fluidHandler, Integer.MAX_VALUE, true);
-            if (transferred != null && transferred.amount > 0) {
-                itemHandler.extractItem(inputSlot, 1, false);
-                ItemStack filledContainerStack = fluidHandlerItem.getContainer();
-                itemHandler.insertItem(outputSlot, filledContainerStack, false);
-            }
-        }
+        // todo 1.14 fluids
+//        if (!hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+//                || !hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))
+//            return;
+//        IItemHandler itemHandler = getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+//
+//        ItemStack fluidContainer = itemHandler.getStackInSlot(inputSlot);
+//        IFluidHandlerItem fluidHandlerItem = FluidUtil.getFluidHandler(fluidContainer);
+//        if (fluidHandlerItem == null) {
+//            return;
+//        }
+//        if (fluidContainer.getCount() > 1) {
+//            FluidStack stack = fluidHandlerItem.drain(1, false);
+//            if (stack != null && stack.amount > 0) {
+//                // disallow multiple filled items (shouldn't normally happen anyway but let's be paranoid)
+//                return;
+//            } else {
+//                // multiple empty items OK, but be sure to only fill one of them...
+//                ItemStack itemToFill = fluidContainer.copy();
+//                itemToFill.setCount(1);
+//                fluidHandlerItem = FluidUtil.getFluidHandler(fluidContainer);
+//            }
+//        }
+//
+//        IFluidHandler fluidHandler = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
+//
+//        FluidStack itemContents = fluidHandlerItem.drain(1000, false);
+//        if (itemContents != null && itemContents.amount > 0) {
+//            // input item contains fluid: drain from input item into tank, move to output if empty
+//            FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.amount, true);
+//            if (transferred != null && transferred.amount == itemContents.amount) {
+//                // all transferred; move empty container to output if possible
+//                ItemStack emptyContainerStack = fluidHandlerItem.getContainer();
+//                ItemStack excess = itemHandler.insertItem(outputSlot, emptyContainerStack, false);
+//                if (excess.isEmpty()) {
+//                    itemHandler.extractItem(inputSlot, 1, false);
+//                }
+//            }
+//        } else if (itemHandler.getStackInSlot(outputSlot).isEmpty()) {
+//            // input item(s) is/are empty: drain from tank to one input item, move to output
+//            FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandlerItem, fluidHandler, Integer.MAX_VALUE, true);
+//            if (transferred != null && transferred.amount > 0) {
+//                itemHandler.extractItem(inputSlot, 1, false);
+//                ItemStack filledContainerStack = fluidHandlerItem.getContainer();
+//                itemHandler.insertItem(outputSlot, filledContainerStack, false);
+//            }
+//        }
     }
 
-    @Override
-    public ITextComponent getDisplayName() {
-        return getName() == null ? new TextComponentString("???") : new TextComponentTranslation(getName());
-    }
 
     @Override
     public Set<Item> getApplicableUpgrades() {
         return applicableUpgrades;
     }
 
-    @Override
-    public String getName() {
-        return null; //Is called directly from the block instead.
-    }
-
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-        return oldState.getBlock() != newSate.getBlock();
-    }
+//    @Override
+//    public boolean shouldRefresh(World world, BlockPos pos, BlockState oldState, BlockState newSate) {
+//        return oldState.getBlock() != newSate.getBlock();
+//    }
 
     protected void addLuaMethods(LuaMethodRegistry registry) {
         if (this instanceof IHeatExchanger) {
@@ -518,94 +516,88 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         }
     }
 
-    private LuaMethodRegistry getLuaMethodRegistry() {
-        if (luaMethodRegistry == null) {
-            luaMethodRegistry = new LuaMethodRegistry();
-            addLuaMethods(luaMethodRegistry);
-        }
-        return luaMethodRegistry;
+    // todo 1.14 computercraft
+//    private LuaMethodRegistry getLuaMethodRegistry() {
+//        if (luaMethodRegistry == null) {
+//            luaMethodRegistry = new LuaMethodRegistry();
+//            addLuaMethods(luaMethodRegistry);
+//        }
+//        return luaMethodRegistry;
+//    }
+//
+//    @Override
+//    public String getType() {
+//        return getBlockType().getTranslationKey().substring(5);
+//    }
+//
+//    @Override
+//    public String[] getMethodNames() {
+//        return getLuaMethodRegistry().getMethodNames();
+//    }
+//
+//    public Object[] callLuaMethod(String methodName, Object... args) throws Exception {
+//        return getLuaMethodRegistry().getMethod(methodName).call(args);
+//    }
+//
+//    @Override
+//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+//    public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException {
+//        try {
+//            return getLuaMethodRegistry().getMethod(method).call(arguments);
+//        } catch (Exception e) {
+//            throw new LuaException(e.getMessage());
+//        }
+//    }
+//
+//    @Override
+//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+//    public void attach(IComputerAccess computer) {
+//    }
+//
+//    @Override
+//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+//    public void detach(IComputerAccess computer) {
+//    }
+//
+//    @Override
+//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+//    public boolean equals(IPeripheral other) {
+//        if (other == null) {
+//            return false;
+//        }
+//        if (this == other) {
+//            return true;
+//        }
+//        if (other instanceof TileEntity) {
+//            TileEntity otherTE = (TileEntity) other;
+//            return otherTE.getWorld().equals(getWorld()) && otherTE.getPos().equals(getPos());
+//        }
+//
+//        return false;
+//    }
+
+    public abstract IItemHandlerModifiable getPrimaryInventory();
+
+    @Nonnull
+    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+        return LazyOptional.empty();
     }
 
-    @Override
-    public String getType() {
-        return getBlockType().getTranslationKey().substring(5);
-    }
-
-    @Override
-    public String[] getMethodNames() {
-        return getLuaMethodRegistry().getMethodNames();
-    }
-
-    public Object[] callLuaMethod(String methodName, Object... args) throws Exception {
-        return getLuaMethodRegistry().getMethod(methodName).call(args);
-    }
-
-    @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException {
-        try {
-            return getLuaMethodRegistry().getMethod(method).call(arguments);
-        } catch (Exception e) {
-            throw new LuaException(e.getMessage());
-        }
-    }
-
-    @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    public void attach(IComputerAccess computer) {
-    }
-
-    @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    public void detach(IComputerAccess computer) {
-    }
-
-    @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    public boolean equals(IPeripheral other) {
-        if (other == null) {
-            return false;
-        }
-        if (this == other) {
-            return true;
-        }
-        if (other instanceof TileEntity) {
-            TileEntity otherTE = (TileEntity) other;
-            return otherTE.getWorld().equals(getWorld()) && otherTE.getPos().equals(getPos());
-        }
-
-        return false;
-    }
-
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return null;
-    }
-
-    public UpgradeHandler getUpgradesInventory() {
+    public UpgradeHandler getUpgradeHandler() {
         return upgradeHandler;
     }
 
+    @Nonnull
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return getPrimaryInventory() != null;
-        } else if (capability == Mekanism.CAPABILITY_HEAT_TRANSFER && ConfigHandler.integration.mekHeatEfficiency > 0) {
-            return this instanceof IHeatExchanger && ((IHeatExchanger) this).getHeatExchangerLogic(facing) != null;
-        } else {
-            return super.hasCapability(capability, facing);
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return getInventoryCap().cast();
+//        } else if (cap == Mekanism.CAPABILITY_HEAT_TRANSFER && this instanceof IHeatExchanger) {
+//            return Mekanism.getHeatAdapter(this, side).cast();
         }
+        return super.getCapability(cap, side);
     }
 
-    @Nullable
-    @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && getPrimaryInventory() != null) {
-            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(getPrimaryInventory());
-        } else if (capability == Mekanism.CAPABILITY_HEAT_TRANSFER && this instanceof IHeatExchanger) {
-            return Mekanism.CAPABILITY_HEAT_TRANSFER.cast(Mekanism.getHeatAdapter(this, facing));
-        }
-        return super.getCapability(capability, facing);
-    }
 
     /**
      * Collect all items which should be dropped when this TE is broken.  Override and extend this in subclassing
@@ -614,25 +606,24 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      * @param drops list in which to collect dropped items
      */
     public void getContentsToDrop(NonNullList<ItemStack> drops) {
-        if (getPrimaryInventory() != null) {
-            for (int i = 0; i < getPrimaryInventory().getSlots(); i++) {
-                drops.add(getPrimaryInventory().getStackInSlot(i));
+        getInventoryCap().ifPresent(h -> {
+            for (int i = 0; i < h.getSlots(); i++) {
+                if (!h.getStackInSlot(i).isEmpty()) {
+                    drops.add(h.getStackInSlot(i));
+                }
             }
-        }
+        });
 
         if (!shouldPreserveStateOnBreak()) {
-            IItemHandler upgrades = getUpgradesInventory();
-            if (upgrades != null) {
-                for (int i = 0; i < upgrades.getSlots(); i++) {
-                    if (!upgrades.getStackInSlot(i).isEmpty()) {
-                        drops.add(upgrades.getStackInSlot(i));
-                    }
+            for (int i = 0; i < upgradeHandler.getSlots(); i++) {
+                if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
+                    drops.add(upgradeHandler.getStackInSlot(i));
                 }
             }
         }
 
         if (this instanceof ICamouflageableTE) {
-            IBlockState camoState = ((ICamouflageableTE) this).getCamouflage();
+            BlockState camoState = ((ICamouflageableTE) this).getCamouflage();
             if (camoState != null) {
                 drops.add(ICamouflageableTE.getStackForState(camoState));
             }
@@ -685,8 +676,8 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
      * remember to call the super method!
      */
     protected void onUpgradesChanged() {
-        actualSpeedMult = (float) Math.pow(ConfigHandler.machineProperties.speedUpgradeSpeedMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
-        actualUsageMult = (float) Math.pow(ConfigHandler.machineProperties.speedUpgradeUsageMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
+        actualSpeedMult = (float) Math.pow(Config.Common.Machines.speedUpgradeSpeedMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
+        actualUsageMult = (float) Math.pow(Config.Common.Machines.speedUpgradeUsageMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
     }
 
     public UpgradeCache getUpgradeCache() {
@@ -716,7 +707,7 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         private Map<String,Integer> customUpgradeCount;
         private final TileEntityBase te;
         private boolean isValid = false;
-        private EnumFacing ejectDirection;
+        private Direction ejectDirection;
 
         UpgradeCache(TileEntityBase te) {
             this.te = te;
@@ -728,17 +719,16 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
             Arrays.fill(upgradeCount, 0);
             customUpgradeCount = null;
             ejectDirection = null;
-            IItemHandler inv = te.getUpgradesInventory();
-            for (int i = 0; i < inv.getSlots(); i++) {
-                ItemStack stack = inv.getStackInSlot(i);
+            for (int i = 0; i < upgradeHandler.getSlots(); i++) {
+                ItemStack stack = upgradeHandler.getStackInSlot(i);
                 if (stack.getItem() instanceof ItemMachineUpgrade) {
                     // native upgrade
                     IItemRegistry.EnumUpgrade type = ((ItemMachineUpgrade) stack.getItem()).getUpgradeType();
-                    upgradeCount[type.ordinal()] += inv.getStackInSlot(i).getCount();
-                    if (type == IItemRegistry.EnumUpgrade.DISPENSER && stack.hasTagCompound()) {
-                        ejectDirection = EnumFacing.byName(NBTUtil.getString(stack, ItemMachineUpgrade.NBT_DIRECTION));
+                    upgradeCount[type.ordinal()] += upgradeHandler.getStackInSlot(i).getCount();
+                    if (type == IItemRegistry.EnumUpgrade.DISPENSER && stack.hasTag()) {
+                        ejectDirection = Direction.byName(NBTUtil.getString(stack, ItemMachineUpgrade.NBT_DIRECTION));
                     }
-                } else if (!inv.getStackInSlot(i).isEmpty()) {
+                } else if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
                     // custom upgrade from another mod
                     if (customUpgradeCount == null)
                         customUpgradeCount = Maps.newHashMap();
@@ -758,14 +748,16 @@ public class TileEntityBase extends TileEntity implements IGUIButtonSensitive, I
         }
 
         public int getUpgrades(IItemRegistry.EnumUpgrade type) {
+            validate();
             return upgradeCount[type.ordinal()];
         }
 
         public int getUpgrades(ItemStack stack) {
+            validate();
             return customUpgradeCount == null ? 0 : customUpgradeCount.getOrDefault(makeUpgradeKey(stack), 0);
         }
 
-        EnumFacing getEjectDirection() {
+        Direction getEjectDirection() {
             return ejectDirection;
         }
     }

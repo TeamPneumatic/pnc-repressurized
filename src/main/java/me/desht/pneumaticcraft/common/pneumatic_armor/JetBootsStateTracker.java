@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsStateSync;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,7 @@ public class JetBootsStateTracker {
         return serverTracker;
     }
 
-    public static JetBootsStateTracker getTracker(EntityPlayer player) {
+    public static JetBootsStateTracker getTracker(PlayerEntity player) {
         return player.world.isRemote ? getClientTracker() : getServerTracker();
     }
 
@@ -38,7 +38,7 @@ public class JetBootsStateTracker {
      * @param active jet boots firing?
      * @param builderMode in builder mode?
      */
-    void setJetBootsState(EntityPlayer player, boolean enabled, boolean active, boolean builderMode) {
+    void setJetBootsState(PlayerEntity player, boolean enabled, boolean active, boolean builderMode) {
         if (!player.world.isRemote) {
             JetBootsState state = stateMap.computeIfAbsent(player.getUniqueID(), uuid -> new JetBootsState(false, false, false));
 
@@ -46,7 +46,7 @@ public class JetBootsStateTracker {
             state.enabled = enabled;
             state.active = active;
             state.builderMode = builderMode;
-            if (sendPacket) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(player, state), player.world.provider.getDimension());
+            if (sendPacket) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(player, state), player.world.getDimension().getType());
         }
     }
 
@@ -60,22 +60,7 @@ public class JetBootsStateTracker {
         stateMap.put(playerId, state);
     }
 
-    public boolean areJetBootsEnabled(EntityPlayer player) {
-        JetBootsState state = stateMap.get(player.getUniqueID());
-        return state != null && state.enabled;
-    }
-
-    public boolean areJetBootsActive(EntityPlayer player) {
-        JetBootsState state = stateMap.get(player.getUniqueID());
-        return state != null && state.active;
-    }
-
-    public boolean isBuilderMode(EntityPlayer player) {
-        JetBootsState state = stateMap.get(player.getUniqueID());
-        return state != null && state.builderMode;
-    }
-
-    public JetBootsState getJetBootsState(EntityPlayer player) {
+    public JetBootsState getJetBootsState(PlayerEntity player) {
         return stateMap.getOrDefault(player.getUniqueID(), new JetBootsState(false, false, false));
     }
 

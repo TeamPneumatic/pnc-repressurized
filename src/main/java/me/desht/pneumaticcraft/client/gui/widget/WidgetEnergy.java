@@ -1,7 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.energy.IEnergyStorage;
 
@@ -9,14 +10,14 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-public class WidgetEnergy extends WidgetBase {
+public class WidgetEnergy extends Widget implements ITooltipSupplier {
     private static final ResourceLocation DEFAULT_TEXTURE = RL("textures/gui/widget/energy.png");
     private static final int DEFAULT_SCALE = 42;
 
     private final IEnergyStorage storage;
 
     public WidgetEnergy(int x, int y, IEnergyStorage storage) {
-        super(-1, x, y, 16, DEFAULT_SCALE);
+        super(x, y, 16, DEFAULT_SCALE, "");
         this.storage = storage;
     }
 
@@ -24,9 +25,9 @@ public class WidgetEnergy extends WidgetBase {
     public void render(int mouseX, int mouseY, float partialTick){
         int amount = getScaled();
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(DEFAULT_TEXTURE);
-        Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, getBounds().width, getBounds().height, 32, 64);
-        Gui.drawModalRectWithCustomSizedTexture(x, y + DEFAULT_SCALE - amount, 16, DEFAULT_SCALE - amount, getBounds().width, amount, 32, 64);
+        Minecraft.getInstance().getTextureManager().bindTexture(DEFAULT_TEXTURE);
+        AbstractGui.blit(x, y, 0, 0, width, height, 32, 64);
+        AbstractGui.blit(x, y + DEFAULT_SCALE - amount, 16, DEFAULT_SCALE - amount, width, amount, 32, 64);
     }
 
     @Override
@@ -35,9 +36,9 @@ public class WidgetEnergy extends WidgetBase {
     }
 
     private int getScaled(){
-        if(storage.getMaxEnergyStored() <= 0) {
-            return getBounds().height;
+        if (storage.getMaxEnergyStored() <= 0) {
+            return height;
         }
-        return storage.getEnergyStored() * getBounds().height / storage.getMaxEnergyStored();
+        return storage.getEnergyStored() * height / storage.getMaxEnergyStored();
     }
 }

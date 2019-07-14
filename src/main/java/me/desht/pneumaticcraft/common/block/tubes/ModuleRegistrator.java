@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashMap;
@@ -32,7 +32,7 @@ public class ModuleRegistrator {
 
     private static void registerModule(IForgeRegistry<Item> registry, TubeModule module) {
         Item moduleItem = new ItemTubeModule(module.getType());
-        Itemss.registerItem(registry, moduleItem);
+        ModItems.Registration.registerItem(registry, moduleItem);
         module2class.put(module.getType(), module.getClass());
         module2Item.put(module.getType(), moduleItem);
     }

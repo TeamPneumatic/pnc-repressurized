@@ -3,13 +3,13 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
@@ -19,7 +19,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 public class BlockRefinery extends BlockPneumaticCraftModeled {
 
-    BlockRefinery() {
+    public BlockRefinery() {
         super(Material.IRON, "refinery");
     }
 
@@ -29,7 +29,7 @@ public class BlockRefinery extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
+    public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, Direction side, float par7, float par8, float par9) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityRefinery) {
             // normally, activating any refinery block would open the master TE's gui, but if we

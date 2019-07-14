@@ -3,36 +3,40 @@ package me.desht.pneumaticcraft.common.semiblock;
 import com.google.common.collect.HashBiMap;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.event.SemiblockEvent;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.SoundType;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumActionResult;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.Validate;
 
 import java.lang.reflect.Constructor;
@@ -43,10 +47,10 @@ import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber
 public class SemiBlockManager {
-    private final Map<Chunk, Map<BlockPos, List<ISemiBlock>>> semiBlocks = new HashMap<>();
+    private final Map<IChunk, Map<BlockPos, List<ISemiBlock>>> semiBlocks = new HashMap<>();
     private final List<ISemiBlock> addingBlocks = new LinkedList<>();
-    private final Map<Chunk, Set<EntityPlayer>> syncList = new HashMap<>();
-    private final Set<Chunk> chunksMarkedForRemoval = new HashSet<>();
+    private final Map<IChunk, Set<PlayerEntity>> syncList = new HashMap<>();
+    private final Set<IChunk> chunksMarkedForRemoval = new HashSet<>();
     private static final int SYNC_DISTANCE_SQ = 64 * 64;
     private static final int SYNC_DISTANCE_SQ5 = 69 * 69;
     private static final int SYNC_DISTANCE_SQ10 = 74 * 74;
@@ -108,14 +112,9 @@ public class SemiBlockManager {
 
     public static ISemiBlock getSemiBlockForKey(String key) {
         try {
-            Class<? extends ISemiBlock> clazz = registeredTypes.get(key);
-            if (clazz != null) {
-                return clazz.newInstance();
-            } else {
-                Log.warning("Semi Block with id \"" + key + "\" isn't registered!");
-                return null;
-            }
-        } catch (Exception e) {
+            Validate.isTrue(registeredTypes.containsKey(key), "Semi Block with id '" + key + "' isn't registered!");
+            return registeredTypes.get(key).newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
             return null;
         }
@@ -124,13 +123,13 @@ public class SemiBlockManager {
     @SubscribeEvent
     public static void onItemRegistration(RegistryEvent.Register<Item> event) {
         for (ItemSemiBlockBase item : semiBlockToItems.values()) {
-            Itemss.registerItem(event.getRegistry(), item);
+            ModItems.Registration.registerItem(event.getRegistry(), item);
         }
     }
 
     @SubscribeEvent
     public void onChunkUnLoad(ChunkEvent.Unload event) {
-        if (!event.getWorld().isRemote) {
+        if (!event.getWorld().getWorld().isRemote) {
             chunksMarkedForRemoval.add(event.getChunk());
         }
     }
@@ -139,39 +138,40 @@ public class SemiBlockManager {
     public void onChunkSave(ChunkDataEvent.Save event) {
         Map<BlockPos, List<ISemiBlock>> map = semiBlocks.get(event.getChunk());
         if (map != null && map.size() > 0) {
-            NBTTagList tagList = new NBTTagList();
+            ListNBT tagList = new ListNBT();
             for (Map.Entry<BlockPos, List<ISemiBlock>> entry : map.entrySet()) {
                 for(ISemiBlock semiBlock : entry.getValue()){
-                    NBTTagCompound t = new NBTTagCompound();
+                    CompoundNBT t = new CompoundNBT();
                     semiBlock.writeToNBT(t);
                     NBTUtil.setPos(t, entry.getKey());
-                    t.setString("type", getKeyForSemiBlock(semiBlock));
-                    tagList.appendTag(t);
+                    t.putString("type", getKeyForSemiBlock(semiBlock));
+                    tagList.add(t);
                 }
             }
-            event.getData().setTag("SemiBlocks", tagList);
+            event.getData().put("SemiBlocks", tagList);
         }
     }
 
     @SubscribeEvent
     public void onChunkLoad(ChunkDataEvent.Load event) {
         try {
-            if (!event.getWorld().isRemote) {
-                if (event.getData().hasKey("SemiBlocks")) {
-                    //Posting on the queue because of suspicion of mods off-thread loading chunks https://github.com/TeamPneumatic/pnc-repressurized/issues/234
-                    PneumaticCraftRepressurized.proxy.addScheduledTask(() -> {
+            if (!event.getWorld().getWorld().isRemote) {
+                if (event.getData().contains("SemiBlocks")) {
+                    // Posting on the queue because of suspicion of mods off-thread loading chunks
+                    // https://github.com/TeamPneumatic/pnc-repressurized/issues/234
+                    ServerLifecycleHooks.getCurrentServer().runAsync(() -> {
                         Map<BlockPos, List<ISemiBlock>> map = getOrCreateMap(event.getChunk());
                         map.clear();
-                        NBTTagList tagList = event.getData().getTagList("SemiBlocks", 10);
-                        for (int i = 0; i < tagList.tagCount(); i++) {
-                            NBTTagCompound t = tagList.getCompoundTagAt(i);
+                        ListNBT tagList = event.getData().getList("SemiBlocks", 10);
+                        for (int i = 0; i < tagList.size(); i++) {
+                            CompoundNBT t = tagList.getCompound(i);
                             ISemiBlock semiBlock = getSemiBlockForKey(t.getString("type"));
                             if (semiBlock != null) {
                                 semiBlock.readFromNBT(t);
-                                addSemiBlock(event.getWorld(), NBTUtil.getPos(t), semiBlock, event.getChunk());
+                                addSemiBlock(event.getWorld().getWorld(), NBTUtil.getPos(t), semiBlock, event.getChunk());
                             }
                         }
-                    }, true);                    
+                    });
                 }
             }
         } catch (Throwable e) {
@@ -184,23 +184,23 @@ public class SemiBlockManager {
         if (event.phase == TickEvent.Phase.START) return;
 
         for (ISemiBlock semiBlock : addingBlocks) {
-            Chunk chunk = semiBlock.getWorld().getChunk(semiBlock.getPos());
+            IChunk chunk = semiBlock.getWorld().getChunk(semiBlock.getPos());
             addPendingBlock(chunk, semiBlock);
-            chunk.markDirty();
+            chunk.setModified(true);
 
-            for (EntityPlayer player : syncList.get(chunk)) {
-                NetworkHandler.sendTo(new PacketAddSemiBlock(semiBlock), (EntityPlayerMP) player);
+            for (PlayerEntity player : syncList.get(chunk)) {
+                NetworkHandler.sendToPlayer(new PacketAddSemiBlock(semiBlock), (ServerPlayerEntity) player);
                 PacketDescription descPacket = semiBlock.getDescriptionPacket();
-                if (descPacket != null) NetworkHandler.sendTo(descPacket, (EntityPlayerMP) player);
+                if (descPacket != null) NetworkHandler.sendToPlayer(descPacket, (ServerPlayerEntity) player);
             }
         }
         addingBlocks.clear();
 
-        for (Chunk removingChunk : chunksMarkedForRemoval) {
-            if (!removingChunk.isLoaded()) {
+        for (IChunk removingChunk : chunksMarkedForRemoval) {
+//            if (!removingChunk.isLoaded()) {
                 semiBlocks.remove(removingChunk);
                 syncList.remove(removingChunk);
-            }
+//            }
         }
         chunksMarkedForRemoval.clear();
 
@@ -214,24 +214,24 @@ public class SemiBlockManager {
         if (this == getServerInstance()) {
             getClientOldInstance().onClientTick(event);
         } else {
-            EntityPlayer player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+            PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
             if (player != null) {
                 for (Iterator<ISemiBlock> iterator = addingBlocks.iterator(); iterator.hasNext(); ) {
                     // on the client, we can't assume the chunk is actually available yet; if we get an empty
                     // chunk for the given blockpos, don't add the semiblock but leave it in the pending list
                     // and try again next tick
                     ISemiBlock semiBlock = iterator.next();
-                    Chunk chunk = semiBlock.getWorld().getChunk(semiBlock.getPos());
-                    if (!chunk.isEmpty()) {
+                    IChunk chunk = semiBlock.getWorld().getChunk(semiBlock.getPos());
+                    if (chunk instanceof Chunk && !((Chunk) chunk).isEmpty()) {
                         addPendingBlock(chunk, semiBlock);
                         iterator.remove();
                     }
                 }
 
-                Iterator<Map.Entry<Chunk, Map<BlockPos, List<ISemiBlock>>>> iterator = semiBlocks.entrySet().iterator();
+                Iterator<Map.Entry<IChunk, Map<BlockPos, List<ISemiBlock>>>> iterator = semiBlocks.entrySet().iterator();
                 while (iterator.hasNext()) {
-                    Map.Entry<Chunk, Map<BlockPos, List<ISemiBlock>>> entry = iterator.next();
-                    if (PneumaticCraftUtils.distBetweenSq(player.posX, 0, player.posZ, entry.getKey().x * 16 - 8, 0, entry.getKey().z * 16 - 8) > SYNC_DISTANCE_SQ10) {
+                    Map.Entry<IChunk, Map<BlockPos, List<ISemiBlock>>> entry = iterator.next();
+                    if (PneumaticCraftUtils.distBetweenSq(player.posX, 0, player.posZ, entry.getKey().getPos().x * 16 - 8, 0, entry.getKey().getPos().z * 16 - 8) > SYNC_DISTANCE_SQ10) {
                         iterator.remove();
                     } else {
                         update(entry.getValue());
@@ -243,7 +243,7 @@ public class SemiBlockManager {
         }
     }
 
-    private void addPendingBlock(Chunk chunk, ISemiBlock semiBlock){
+    private void addPendingBlock(IChunk chunk, ISemiBlock semiBlock){
         Map<BlockPos, List<ISemiBlock>> map = getOrCreateMap(chunk);
         List<ISemiBlock> semiBlocksForPos = map.computeIfAbsent(semiBlock.getPos(), k -> new ArrayList<>());
 //        for (int i = 0; i < semiBlocksForPos.size(); i++) {
@@ -259,7 +259,7 @@ public class SemiBlockManager {
     private void update(Map<BlockPos, List<ISemiBlock>> map){
         for (List<ISemiBlock> semiBlocks : map.values()) {
             for(ISemiBlock semiBlock : semiBlocks){
-                if (!semiBlock.isInvalid()) semiBlock.update();
+                if (!semiBlock.isInvalid()) semiBlock.tick();
             }
             semiBlocks.removeIf(ISemiBlock::isInvalid);
         }
@@ -274,23 +274,23 @@ public class SemiBlockManager {
     }
 
     private void syncWithPlayers(World world) {
-        List<EntityPlayer> players = world.playerEntities;
-        for (Map.Entry<Chunk, Set<EntityPlayer>> entry : syncList.entrySet()) {
-            Chunk chunk = entry.getKey();
-            Set<EntityPlayer> syncedPlayers = entry.getValue();
-            int chunkX = chunk.x * 16 - 8;
-            int chunkZ = chunk.z * 16 - 8;
-            for (EntityPlayer player : players) {
-                if (chunk.getWorld() == world) {
+        List<? extends PlayerEntity> players = world.getPlayers();
+        for (Map.Entry<IChunk, Set<PlayerEntity>> entry : syncList.entrySet()) {
+            IChunk chunk = entry.getKey();
+            Set<PlayerEntity> syncedPlayers = entry.getValue();
+            int chunkX = chunk.getPos().x * 16 - 8;
+            int chunkZ = chunk.getPos().z * 16 - 8;
+            for (PlayerEntity player : players) {
+                if (chunk.getWorldForge() == world) {
                     double dist = PneumaticCraftUtils.distBetweenSq(player.posX, 0, player.posZ, chunkX, 0, chunkZ);
                     if (dist < SYNC_DISTANCE_SQ) {
                         if (syncedPlayers.add(player)) {
                             for(List<ISemiBlock> semiBlockList : semiBlocks.get(chunk).values()){
                                 for (ISemiBlock semiBlock : semiBlockList) {
                                     if (!semiBlock.isInvalid()) {
-                                        NetworkHandler.sendTo(new PacketAddSemiBlock(semiBlock), (EntityPlayerMP) player);
+                                        NetworkHandler.sendToPlayer(new PacketAddSemiBlock(semiBlock), (ServerPlayerEntity) player);
                                         PacketDescription descPacket = semiBlock.getDescriptionPacket();
-                                        if (descPacket != null) NetworkHandler.sendTo(descPacket, (EntityPlayerMP) player);
+                                        if (descPacket != null) NetworkHandler.sendToPlayer(descPacket, (ServerPlayerEntity) player);
                                     }
                                 }
                             }
@@ -321,10 +321,9 @@ public class SemiBlockManager {
 
             // Still can't be placed? If it has a GUI, open it.
             if (!success) {
-                ISemiBlock block = ((ISemiBlockItem) curItem.getItem()).getSemiBlock(event.getWorld(), null, curItem);
-                if (block.getGuiID() != null) {
-                    event.getEntityPlayer().openGui(PneumaticCraftRepressurized.instance, block.getGuiID().ordinal(), event.getWorld(),
-                            event.getPos().getX(), event.getPos().getY(), event.getPos().getZ());
+                ISemiBlock block = ((ISemiBlockItem) curItem.getItem()).getSemiBlock(event.getWorld(), event.getPos(), curItem);
+                if (block instanceof INamedContainerProvider && event.getEntityPlayer() instanceof ServerPlayerEntity) {
+                    NetworkHooks.openGui((ServerPlayerEntity) event.getEntityPlayer(), (INamedContainerProvider) block, event.getPos());
                     success = true;
                 }
             }
@@ -332,8 +331,7 @@ public class SemiBlockManager {
 
         } else {
             // client side
-            BlockPos pos = event.getPos();
-            event.setCancellationResult(EnumActionResult.SUCCESS);
+            event.setCancellationResult(ActionResultType.SUCCESS);
             event.setCanceled(true);
         }
     }
@@ -348,7 +346,7 @@ public class SemiBlockManager {
         
         if (!collidingBlocks.isEmpty()) {
             for(ISemiBlock collidingBlock : collidingBlocks){
-                if (event.getEntityPlayer().capabilities.isCreativeMode) {
+                if (event.getEntityPlayer().isCreative()) {
                     removeSemiBlock(collidingBlock);
                 } else {
                     breakSemiBlock(collidingBlock, event.getEntityPlayer());
@@ -360,7 +358,7 @@ public class SemiBlockManager {
             if (newBlock.canPlace(event.getFace())) {
                 addSemiBlock(event.getWorld(), pos, newBlock);
                 newBlock.onPlaced(event.getEntityPlayer(), curItem, event.getFace());
-                if (!event.getEntityPlayer().capabilities.isCreativeMode) {
+                if (!event.getEntityPlayer().isCreative()) {
                     curItem.shrink(1);
                 }
                 NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_METAL_PLACE, SoundCategory.BLOCKS,
@@ -373,7 +371,7 @@ public class SemiBlockManager {
         return false;
     }
 
-    private Map<BlockPos, List<ISemiBlock>> getOrCreateMap(Chunk chunk) {
+    private Map<BlockPos, List<ISemiBlock>> getOrCreateMap(IChunk chunk) {
         Map<BlockPos, List<ISemiBlock>> map = semiBlocks.get(chunk);
         if (map == null) {
             map = new HashMap<>();
@@ -387,15 +385,15 @@ public class SemiBlockManager {
         breakSemiBlock(semiBlock, null);
     }
 
-    public void breakSemiBlock(ISemiBlock semiBlock, EntityPlayer player) {
+    public void breakSemiBlock(ISemiBlock semiBlock, PlayerEntity player) {
         if (!semiBlock.isInvalid()) {
             World world = semiBlock.getWorld();
             BlockPos pos = semiBlock.getPos();
             NonNullList<ItemStack> drops = NonNullList.create();
             semiBlock.addDrops(drops);
             for (ItemStack stack : drops) {
-                EntityItem item = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
-                world.spawnEntity(item);
+                ItemEntity item = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
+                world.addEntity(item);
                 if (player != null) item.onCollideWithPlayer(player);
             }
             removeSemiBlock(semiBlock);
@@ -411,14 +409,14 @@ public class SemiBlockManager {
         //Notify other semi blocks in the same pos
         World world = semiBlock.getWorld();
         BlockPos pos = semiBlock.getPos();
-        Chunk chunk = world.getChunk(pos);
+        IChunk chunk = world.getChunk(pos);
         List<ISemiBlock> currentBlocks = getOrCreateMap(chunk).get(pos);
         currentBlocks.forEach(s -> s.onSemiBlockRemovedFromThisPos(semiBlock));
-        for (EntityPlayer player : syncList.get(chunk)) {
-            NetworkHandler.sendTo(new PacketRemoveSemiBlock(semiBlock, index), (EntityPlayerMP) player);
+        for (PlayerEntity player : syncList.get(chunk)) {
+            NetworkHandler.sendToPlayer(new PacketRemoveSemiBlock(semiBlock, index), (ServerPlayerEntity) player);
         }
         MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(world, pos));
-        chunk.markDirty();
+        chunk.setModified(true);
     }
 
     public void addSemiBlock(World world, BlockPos pos, ISemiBlock semiBlock) {
@@ -432,16 +430,16 @@ public class SemiBlockManager {
      * @param semiBlock the semiblock to add
      * @param chunk the chunk that the blockpos is in
      */
-    private void addSemiBlock(World world, BlockPos pos, ISemiBlock semiBlock, Chunk chunk) {
+    private void addSemiBlock(World world, BlockPos pos, ISemiBlock semiBlock, IChunk chunk) {
         Validate.notNull(semiBlock);
         if (!registeredTypes.containsValue(semiBlock.getClass()))
             throw new IllegalStateException("ISemiBlock \"" + semiBlock + "\" was not registered!");
 
         semiBlock.initialize(world, pos);
         addingBlocks.add(semiBlock);
-        MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(world, pos));
+        MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(world.getWorld(), pos));
 
-        chunk.markDirty();
+        chunk.setModified(true);
     }
     
     public <T extends ISemiBlock> T getSemiBlock(Class<T> clazz, World world, BlockPos pos){
@@ -462,7 +460,7 @@ public class SemiBlockManager {
 
     public Stream<ISemiBlock> getSemiBlocks(World world, BlockPos pos) {
         Stream<ISemiBlock> stream = null;
-        Chunk chunk = world.getChunk(pos);
+        IChunk chunk = world.getChunk(pos);
         Map<BlockPos, List<ISemiBlock>> map = semiBlocks.get(chunk);
         if (map != null) {
             List<ISemiBlock> semiblocks = map.get(pos);
@@ -484,7 +482,7 @@ public class SemiBlockManager {
     }
     
     public Stream<ISemiBlock> getSemiBlocksInArea(World world, AxisAlignedBB aabb){
-        List<Chunk> applicableChunks = new ArrayList<>();
+        List<IChunk> applicableChunks = new ArrayList<>();
         int minX = (int)aabb.minX;
         int minY = (int)aabb.minY;
         int minZ = (int)aabb.minZ;
@@ -495,7 +493,7 @@ public class SemiBlockManager {
         //Get the relevant chunks.
         for (int x = minX; x < maxX + 16; x += 16) {
             for (int z = minZ; z < maxZ + 16; z += 16) {
-                Chunk chunk = world.getChunk(new BlockPos(x, 0, z));
+                IChunk chunk = world.getChunk(new BlockPos(x, 0, z));
                 applicableChunks.add(chunk);
             }
         }
@@ -514,7 +512,7 @@ public class SemiBlockManager {
                                                minZ <= s.getPos().getZ() && s.getPos().getZ() <= maxZ);
     }
 
-    public Map<Chunk, Map<BlockPos, List<ISemiBlock>>> getSemiBlocks() {
+    public Map<IChunk, Map<BlockPos, List<ISemiBlock>>> getSemiBlocks() {
         return semiBlocks;
     }
 

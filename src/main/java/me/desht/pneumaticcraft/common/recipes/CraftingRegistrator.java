@@ -5,41 +5,41 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
-import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.util.NonNullList;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.registries.ObjectHolder;
 
 public class CraftingRegistrator {
-    @GameRegistry.ObjectHolder("theoneprobe:probe")
+    @ObjectHolder("theoneprobe:probe")
     public static final Item ONE_PROBE = null;
 
     private static ItemStack emptyPCB;
 
     public static void init() {
         // All crafting recipes are now defined in JSON
-        emptyPCB = new ItemStack(Itemss.EMPTY_PCB);
-        emptyPCB.setItemDamage(emptyPCB.getMaxDamage());
+        emptyPCB = new ItemStack(ModItems.EMPTY_PCB);
+        emptyPCB.setDamage(emptyPCB.getMaxDamage());
 
-        GameRegistry.addSmelting(Itemss.FAILED_PCB, emptyPCB, 0);
+        GameRegistry.addSmelting(ModItems.FAILED_PCB, emptyPCB, 0);
 
         addPressureChamberRecipes();
         addAssemblyRecipes();
@@ -51,14 +51,14 @@ public class CraftingRegistrator {
     }
 
     public static ItemStack getUpgrade(EnumUpgrade upgrade) {
-        return new ItemStack(Itemss.upgrades.get(upgrade), 1);
+        return new ItemStack(ModItems.Registration.UPGRADES.get(upgrade), 1);
     }
 
     private static void addExplosionCraftingRecipes() {
         IPneumaticRecipeRegistry registry = PneumaticRegistry.getInstance().getRecipeRegistry();
 
-        registry.registerExplosionCraftingRecipe("ingotIron", new ItemStack(Itemss.INGOT_IRON_COMPRESSED), ConfigHandler.general.configCompressedIngotLossRate);
-        registry.registerExplosionCraftingRecipe("blockIron", new ItemStack(Blockss.COMPRESSED_IRON), ConfigHandler.general.configCompressedIngotLossRate);
+        registry.registerExplosionCraftingRecipe("ingotIron", new ItemStack(ModItems.INGOT_IRON_COMPRESSED), ConfigHandler.general.configCompressedIngotLossRate);
+        registry.registerExplosionCraftingRecipe("blockIron", new ItemStack(ModBlocks.COMPRESSED_IRON), ConfigHandler.general.configCompressedIngotLossRate);
     }
 
     private static void addPressureChamberRecipes() {
@@ -76,11 +76,11 @@ public class CraftingRegistrator {
         registry.registerPressureChamberRecipe(
                 new ItemIngredient[]{new ItemIngredient("ingotIron", 1)},
                 2F,
-                new ItemStack[]{new ItemStack(Itemss.INGOT_IRON_COMPRESSED, 1, 0)});
+                new ItemStack[]{new ItemStack(ModItems.INGOT_IRON_COMPRESSED, 1, 0)});
         registry.registerPressureChamberRecipe(
                 new ItemIngredient[]{new ItemIngredient("blockIron", 1)},
                 2F,
-                new ItemStack[]{new ItemStack(Blockss.COMPRESSED_IRON, 1, 0)});
+                new ItemStack[]{new ItemStack(ModBlocks.COMPRESSED_IRON, 1, 0)});
 
         // turbine blade
         registry.registerPressureChamberRecipe(
@@ -88,12 +88,12 @@ public class CraftingRegistrator {
                         new ItemIngredient(new ItemStack(Items.REDSTONE, 2)),
                         new ItemIngredient("ingotGold", 1)},
                 1F,
-                new ItemStack[]{new ItemStack(Itemss.TURBINE_BLADE, 1, 0)});
+                new ItemStack[]{new ItemStack(ModItems.TURBINE_BLADE, 1, 0)});
 
         // Empty PCB
         registry.registerPressureChamberRecipe(
                 new ItemIngredient[]{
-                        new ItemIngredient(Itemss.PLASTIC, 1, ItemPlastic.GREEN),
+                        new ItemIngredient(ModItems.PLASTIC, 1, ItemPlastic.GREEN),
                         new ItemIngredient(Names.INGOT_IRON_COMPRESSED, 1)},
                 1.5F,
                 new ItemStack[]{emptyPCB});
@@ -101,7 +101,7 @@ public class CraftingRegistrator {
         // Etching Acid Bucket
         registry.registerPressureChamberRecipe(
                 new ItemIngredient[]{
-                        new ItemIngredient(Itemss.PLASTIC, 2, ItemPlastic.GREEN),
+                        new ItemIngredient(ModItems.PLASTIC, 2, ItemPlastic.GREEN),
                         new ItemIngredient(Items.ROTTEN_FLESH, 2, 0),
                         new ItemIngredient(Items.GUNPOWDER, 2, 0),
                         new ItemIngredient(Items.SPIDER_EYE, 2, 0),
@@ -112,20 +112,20 @@ public class CraftingRegistrator {
         // Transistor
         registry.registerPressureChamberRecipe(
                 new ItemIngredient[]{
-                new ItemIngredient(Itemss.PLASTIC, 1, ItemPlastic.BLACK),
+                new ItemIngredient(ModItems.PLASTIC, 1, ItemPlastic.BLACK),
                         new ItemIngredient("ingotIronCompressed", 1),
                         new ItemIngredient("dustRedstone", 1)},
                 1.0F,
-                new ItemStack[]{new ItemStack(Itemss.TRANSISTOR)});
+                new ItemStack[]{new ItemStack(ModItems.TRANSISTOR)});
 
         // Capacitor
         registry.registerPressureChamberRecipe(
                 new ItemIngredient[]{
-                        new ItemIngredient(Itemss.PLASTIC, 1, ItemPlastic.CYAN),
+                        new ItemIngredient(ModItems.PLASTIC, 1, ItemPlastic.CYAN),
                         new ItemIngredient("ingotIronCompressed", 1),
                         new ItemIngredient("dustRedstone", 1)},
                 1.0F,
-                new ItemStack[]{new ItemStack(Itemss.CAPACITOR)});
+                new ItemStack[]{new ItemStack(ModItems.CAPACITOR)});
 
         // Pressure enchanting
         registry.registerPressureChamberRecipe(new PressureChamberPressureEnchantHandler());
@@ -135,11 +135,11 @@ public class CraftingRegistrator {
     }
 
     private static void addAssemblyRecipes() {
-        AssemblyRecipe.addLaserRecipe(emptyPCB, Itemss.UNASSEMBLED_PCB);
-        AssemblyRecipe.addLaserRecipe(new ItemStack(Blockss.PRESSURE_CHAMBER_VALVE, 20, 0), new ItemStack(Blockss.ADVANCED_PRESSURE_TUBE, 8, 0));
-        AssemblyRecipe.addLaserRecipe(Blocks.QUARTZ_BLOCK, new ItemStack(Blockss.APHORISM_TILE, 4, 0));
+        AssemblyRecipe.addLaserRecipe(emptyPCB, ModItems.UNASSEMBLED_PCB);
+        AssemblyRecipe.addLaserRecipe(new ItemStack(ModBlocks.PRESSURE_CHAMBER_VALVE, 20, 0), new ItemStack(ModBlocks.ADVANCED_PRESSURE_TUBE, 8, 0));
+        AssemblyRecipe.addLaserRecipe(Blocks.QUARTZ_BLOCK, new ItemStack(ModBlocks.APHORISM_TILE, 4, 0));
 
-        AssemblyRecipe.addDrillRecipe(new ItemStack(Blockss.COMPRESSED_IRON, 1, 0), new ItemStack(Blockss.PRESSURE_CHAMBER_VALVE, 20, 0));
+        AssemblyRecipe.addDrillRecipe(new ItemStack(ModBlocks.COMPRESSED_IRON, 1, 0), new ItemStack(ModBlocks.PRESSURE_CHAMBER_VALVE, 20, 0));
         AssemblyRecipe.addDrillRecipe(new ItemStack(Items.REDSTONE, 1, 0), new ItemStack(Items.DYE, 5, 1));
     }
 
@@ -149,8 +149,8 @@ public class CraftingRegistrator {
     public static void addPressureChamberStorageBlockRecipes() {
         // search for a 3x3 recipe where all 9 ingredients are the same
         for (IRecipe recipe : CraftingManager.REGISTRY) {
-            if (recipe instanceof ShapedRecipes) {
-                ShapedRecipes shaped = (ShapedRecipes) recipe;
+            if (recipe instanceof ShapedRecipe) {
+                ShapedRecipe shaped = (ShapedRecipe) recipe;
                 NonNullList<Ingredient> ingredients = recipe.getIngredients();
                 ItemStack ref = ingredients.get(0).getMatchingStacks()[0];
                 if (ref.isEmpty() || ingredients.size() < 9) continue;
@@ -197,10 +197,10 @@ public class CraftingRegistrator {
 
     private static void registerAmadronOffers() {
         PneumaticRecipeRegistry registry = PneumaticRecipeRegistry.getInstance();
-        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.EMERALD, 8), new ItemStack(Itemss.PCB_BLUEPRINT));
-        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.EMERALD, 8), new ItemStack(Itemss.ASSEMBLY_PROGRAM, 1, 0));
-        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.EMERALD, 8), new ItemStack(Itemss.ASSEMBLY_PROGRAM, 1, 1));
-        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.EMERALD, 14), new ItemStack(Itemss.ASSEMBLY_PROGRAM, 1, 2));
+        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.EMERALD, 8), new ItemStack(ModItems.PCB_BLUEPRINT));
+        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.EMERALD, 8), new ItemStack(ModItems.ASSEMBLY_PROGRAM, 1, 0));
+        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.EMERALD, 8), new ItemStack(ModItems.ASSEMBLY_PROGRAM, 1, 1));
+        registry.registerDefaultStaticAmadronOffer(new ItemStack(Items.EMERALD, 14), new ItemStack(ModItems.ASSEMBLY_PROGRAM, 1, 2));
         registry.registerDefaultStaticAmadronOffer(new FluidStack(Fluids.OIL, 5000), new ItemStack(Items.EMERALD, 1));
         registry.registerDefaultStaticAmadronOffer(new FluidStack(Fluids.DIESEL, 4000), new ItemStack(Items.EMERALD, 1));
         registry.registerDefaultStaticAmadronOffer(new FluidStack(Fluids.LUBRICANT, 2500), new ItemStack(Items.EMERALD, 1));
@@ -213,7 +213,7 @@ public class CraftingRegistrator {
         for (int i = 0; i < 256; i++) {
             try {
                 for (int j = 0; j < 10; j++) {
-                    EntityVillager villager = new EntityVillager(null, i);
+                    VillagerEntity villager = new VillagerEntity(null, i);
                     MerchantRecipeList list = villager.getRecipes(null);
                     for (MerchantRecipe recipe : list) {
                         if (recipe.getSecondItemToBuy().isEmpty() && !recipe.getItemToBuy().isEmpty() && !recipe.getItemToSell().isEmpty()) {
@@ -235,7 +235,7 @@ public class CraftingRegistrator {
     private static void addPlasticMixerRecipes() {
         PneumaticCraftAPIHandler.getInstance().getRecipeRegistry().registerPlasticMixerRecipe(
                 new FluidStack(Fluids.PLASTIC, ConfigHandler.machineProperties.plasticMixerPlasticRatio),
-                new ItemStack(Itemss.PLASTIC),
+                new ItemStack(ModItems.PLASTIC),
                 PneumaticValues.PLASTIC_MIXER_MELTING_TEMP, true, true
         );
     }

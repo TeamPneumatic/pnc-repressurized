@@ -6,45 +6,53 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
-import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.Sounds;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Stack;
 
 public class TileEntityElevatorBase extends TileEntityPneumaticBase
-        implements IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure, IAirListener, ICamouflageableTE {
+        implements IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure, IAirListener, ICamouflageableTE, INamedContainerProvider {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.elevator.button.redstone",
             "gui.tab.redstoneBehaviour.elevator.button.elevatorCallers"
     );
 
-    @DescSynced
-    public final boolean[] sidesConnected = new boolean[6];
     public float oldExtension;
     @DescSynced
     @LazySynced
@@ -65,20 +73,20 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     private int redstoneInputLevel; // current redstone input level
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;
-    private IBlockState camoState;
+    private BlockState camoState;
 
     public TileEntityElevatorBase() {
-        super(PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
+        super(ModTileEntityTypes.ELEVATOR_BASE, PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
         addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.CHARGING);
     }
 
     @Override
-    public void update() {
+    public void tick() {
         oldExtension = extension;
-        if (getWorld().isRemote && (getWorld().getTotalWorldTime() & 0x3f) == 0)
+        if (getWorld().isRemote && (getWorld().getGameTime() & 0x3f) == 0)
             coreElevator = null;//reset this because the client doesn't get notified of neighbor block updates.
         if (isCoreElevator()) {
-            super.update();
+            super.tick();
             if (!getWorld().isRemote && isControlledByRedstone()) {
                 float oldTargetExtension = targetExtension;
                 float maxExtension = getMaxElevatorHeight();
@@ -121,7 +129,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                     soundName = Sounds.ELEVATOR_START;
                     isStopped = false;
                     if (!world.isRemote) {
-                        NetworkRegistry.TargetPoint tp = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32);
+                        PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
                         NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                     }
                 }
@@ -153,7 +161,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                     soundName = Sounds.ELEVATOR_START;
                     isStopped = false;
                     if (!world.isRemote) {
-                        NetworkRegistry.TargetPoint tp = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32);
+                        PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
                         NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                     }
                 }
@@ -181,21 +189,21 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
-        if (buttonID == 0) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 1) redstoneMode = 0;
 
             if (multiElevators != null) {
                 for (TileEntityElevatorBase base : multiElevators) {
                     while (base.redstoneMode != redstoneMode) {
-                        base.handleGUIButtonPress(buttonID, player);
+                        base.handleGUIButtonPress(tag, player);
                     }
                 }
             }
 
             int i = -1;
-            TileEntity te = getWorld().getTileEntity(getPos().offset(EnumFacing.DOWN));
+            TileEntity te = getWorld().getTileEntity(getPos().offset(Direction.DOWN));
             while (te instanceof TileEntityElevatorBase) {
                 ((TileEntityElevatorBase) te).redstoneMode = redstoneMode;
                 i--;
@@ -219,7 +227,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         int maxRedstone = 0;
         for (TileEntityElevatorBase base : multiElevators) {
             int i = 0;
-            while (getWorld().getBlockState(base.getPos().add(0, i, 0)).getBlock() == Blockss.ELEVATOR_BASE) {
+            while (getWorld().getBlockState(base.getPos().add(0, i, 0)).getBlock() == ModBlocks.ELEVATOR_BASE) {
                 maxRedstone = Math.max(maxRedstone, PneumaticCraftUtils.getRedstoneLevel(getWorld(), base.getPos().add(0, i, 0)));
                 i--;
             }
@@ -243,74 +251,68 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         int i = -1;
         do {
             i++;
-        } while (getWorld().getBlockState(getPos().add(0, i + 1, 0)).getBlock() == Blockss.ELEVATOR_FRAME);
+        } while (getWorld().getBlockState(getPos().add(0, i + 1, 0)).getBlock() == ModBlocks.ELEVATOR_FRAME);
         int elevatorBases = 0;
         do {
             elevatorBases++;
-        } while (getWorld().getBlockState(getPos().add(0, -elevatorBases, 0)).getBlock() == Blockss.ELEVATOR_BASE);
+        } while (getWorld().getBlockState(getPos().add(0, -elevatorBases, 0)).getBlock() == ModBlocks.ELEVATOR_BASE);
 
-        maxFloorHeight = Math.min(i, elevatorBases * ConfigHandler.machineProperties.elevatorBaseBlocksPerBase);
+        maxFloorHeight = Math.min(i, elevatorBases * Config.Common.Machines.elevatorBaseBlocksPerBase);
     }
 
     // NBT methods-----------------------------------------------
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
         extension = tag.getFloat("extension");
         targetExtension = tag.getFloat("targetExtension");
-        redstoneMode = tag.getInteger("redstoneMode");
-        if (!tag.hasKey("maxFloorHeight")) {//backwards compatibility implementation.
+        redstoneMode = tag.getInt("redstoneMode");
+        if (!tag.contains("maxFloorHeight")) {//backwards compatibility implementation.
             updateMaxElevatorHeight();
         } else {
-            maxFloorHeight = tag.getInteger("maxFloorHeight");
-        }
-        for (int i = 0; i < 6; i++) {
-            sidesConnected[i] = tag.getBoolean("sideConnected" + i);
+            maxFloorHeight = tag.getInt("maxFloorHeight");
         }
         camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
         camoState = ICamouflageableTE.getStateForStack(camoStack);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setFloat("extension", extension);
-        tag.setFloat("targetExtension", targetExtension);
-        tag.setInteger("redstoneMode", redstoneMode);
-        tag.setInteger("maxFloorHeight", maxFloorHeight);
-        for (int i = 0; i < 6; i++) {
-            tag.setBoolean("sideConnected" + i, sidesConnected[i]);
-        }
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putFloat("extension", extension);
+        tag.putFloat("targetExtension", targetExtension);
+        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt("maxFloorHeight", maxFloorHeight);
         ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         return tag;
     }
 
     @Override
-    public void readFromPacket(NBTTagCompound tag) {
+    public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
         floorHeights = tag.getIntArray("floorHeights");
 
         floorNames.clear();
-        NBTTagList floorNameList = tag.getTagList("floorNames", 10);
-        for (int i = 0; i < floorNameList.tagCount(); i++) {
-            NBTTagCompound floorName = floorNameList.getCompoundTagAt(i);
-            floorNames.put(floorName.getInteger("floorHeight"), floorName.getString("floorName"));
+        ListNBT floorNameList = tag.getList("floorNames", 10);
+        for (int i = 0; i < floorNameList.size(); i++) {
+            CompoundNBT floorName = floorNameList.getCompound(i);
+            floorNames.put(floorName.getInt("floorHeight"), floorName.getString("floorName"));
         }
     }
 
     @Override
-    public void writeToPacket(NBTTagCompound tag) {
+    public void writeToPacket(CompoundNBT tag) {
         super.writeToPacket(tag);
-        tag.setIntArray("floorHeights", floorHeights);
+        tag.putIntArray("floorHeights", floorHeights);
 
-        NBTTagList floorNameList = new NBTTagList();
+        ListNBT floorNameList = new ListNBT();
         for (int key : floorNames.keySet()) {
-            NBTTagCompound floorNameTag = new NBTTagCompound();
-            floorNameTag.setInteger("floorHeight", key);
-            floorNameTag.setString("floorName", floorNames.get(key));
-            floorNameList.appendTag(floorNameTag);
+            CompoundNBT floorNameTag = new CompoundNBT();
+            floorNameTag.putInt("floorHeight", key);
+            floorNameTag.putString("floorName", floorNames.get(key));
+            floorNameList.add(floorNameTag);
         }
-        tag.setTag("floorNames", floorNameList);
+        tag.put("floorNames", floorNameList);
     }
 
     @Override
@@ -330,9 +332,9 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 if (curElevator.isCoreElevator() && !multiElevators.contains(curElevator)) {
                     multiElevators.add(curElevator);
                     curElevator.multiElevators = multiElevators;
-                    for (EnumFacing face : EnumFacing.HORIZONTALS) {
+                    for (Direction face : PneumaticCraftUtils.HORIZONTALS) {
                         TileEntity te = curElevator.getCachedNeighbor(face);
-                        if (te instanceof TileEntityElevatorBase && !te.isInvalid()) {
+                        if (te instanceof TileEntityElevatorBase && !te.isRemoved()) {
                             todo.push((TileEntityElevatorBase) te);
                         }
                     }
@@ -358,16 +360,13 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     private void updateConnections() {
-        List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
-        Arrays.fill(sidesConnected, false);
-        for (Pair<EnumFacing, IAirHandler> entry : connections) {
-            sidesConnected[entry.getKey().ordinal()] = true;
-        }
+        BlockState newState = AirHandler.getBlockConnectionState(getBlockState(), getAirHandler(null));
+        world.setBlockState(pos, newState);
 
-        if (getWorld().getBlockState(getPos().offset(EnumFacing.UP)).getBlock() != Blockss.ELEVATOR_BASE) {
+        if (getWorld().getBlockState(getPos().offset(Direction.UP)).getBlock() != ModBlocks.ELEVATOR_BASE) {
             coreElevator = this;
             int i = -1;
-            TileEntity te = getWorld().getTileEntity(getPos().offset(EnumFacing.DOWN));
+            TileEntity te = getWorld().getTileEntity(getPos().offset(Direction.DOWN));
             while (te instanceof TileEntityElevatorBase) {
                 ((TileEntityElevatorBase) te).coreElevator = this;
                 i--;
@@ -376,16 +375,20 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         }
     }
 
-    public void moveInventoryToThis() {
-        TileEntity te = getWorld().getTileEntity(getPos().offset(EnumFacing.UP));
-        if (te instanceof TileEntityElevatorBase) {
-            camoStack = ((TileEntityElevatorBase) te).camoStack;
+    /**
+     * Elevator above us has just been broken; move its upgrades & camo to this elevator base, if possible.
+     */
+    public void moveUpgradesFromAbove() {
+        TileEntity brokenTE = getWorld().getTileEntity(getPos().offset(Direction.UP));
+        if (brokenTE instanceof TileEntityElevatorBase) {
+            camoStack = ((TileEntityElevatorBase) brokenTE).camoStack;
             sendDescriptionPacket();
-            for (int i = 0; i < upgradeHandler.getSlots(); i++) {
-                ItemStack stack = ((TileEntityElevatorBase) te).getUpgradesInventory().getStackInSlot(i);
-                ItemStack excess = ItemHandlerHelper.insertItem(upgradeHandler, stack, false);
+
+            for (int i = 0; i < getUpgradeHandler().getSlots(); i++) {
+                ItemStack stack = ((TileEntityElevatorBase) brokenTE).getUpgradeHandler().getStackInSlot(i);
+                ItemStack excess = ItemHandlerHelper.insertItem(getUpgradeHandler(), stack, false);
                 if (!excess.isEmpty()) PneumaticCraftUtils.dropItemOnGround(excess, world, getPos());
-                ((TileEntityElevatorBase) te).getUpgradesInventory().setStackInSlot(i, ItemStack.EMPTY);
+                ((TileEntityElevatorBase) brokenTE).getUpgradeHandler().setStackInSlot(i, ItemStack.EMPTY);
             }
         }
     }
@@ -400,9 +403,9 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             while (!shouldBreak) {
                 boolean registeredThisFloor = false;
                 for (TileEntityElevatorBase base : multiElevators) {
-                    for (EnumFacing dir : EnumFacing.HORIZONTALS) {
+                    for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
                         BlockPos checkPos = base.getPos().offset(dir).up(yOffset + 2);
-                        if (base.world.getBlockState(checkPos).getBlock() == Blockss.ELEVATOR_CALLER) {
+                        if (base.world.getBlockState(checkPos).getBlock() == ModBlocks.ELEVATOR_CALLER) {
                             callerList.add(checkPos);
                             if (!registeredThisFloor) floorList.add(yOffset);
                             registeredThisFloor = true;
@@ -412,7 +415,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
                 yOffset++;
                 for (TileEntityElevatorBase base : multiElevators) {
-                    if (base.world.getBlockState(base.getPos().up(yOffset)).getBlock() != Blockss.ELEVATOR_FRAME) {
+                    if (base.world.getBlockState(base.getPos().up(yOffset)).getBlock() != ModBlocks.ELEVATOR_FRAME) {
                         shouldBreak = true;
                         break;
                     }
@@ -468,8 +471,12 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     public void goToFloor(int floor) {
-        if (getCoreElevator().isControlledByRedstone()) getCoreElevator().handleGUIButtonPress(0, null);
-        if (floor >= 0 && floor < floorHeights.length) setTargetHeight(floorHeights[floor]);
+        if (getCoreElevator().isControlledByRedstone()) {
+            getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, null);
+        }
+        if (floor >= 0 && floor < floorHeights.length) {
+            setTargetHeight(floorHeights[floor]);
+        }
         updateFloors();
         sendDescPacketFromAllElevators();
     }
@@ -498,17 +505,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public String getName() {
-        return Blockss.ELEVATOR_BASE.getTranslationKey();
-    }
-
-    @Override
     public AxisAlignedBB getRenderBoundingBox() {
         return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1 + extension, getPos().getZ() + 1);
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public double getMaxRenderDistanceSquared() {
         return 65536D;
     }
@@ -525,12 +526,12 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public boolean isConnectedTo(EnumFacing side) {
-        return side != EnumFacing.UP && side != EnumFacing.DOWN || getWorld().getBlockState(getPos().offset(side)).getBlock() != Blockss.ELEVATOR_BASE;
+    public boolean canConnectTo(Direction side) {
+        return side != Direction.UP && side != Direction.DOWN || getWorld().getBlockState(getPos().offset(side)).getBlock() != ModBlocks.ELEVATOR_BASE;
     }
 
     @Override
-    public IAirHandler getAirHandler(EnumFacing sideRequested) {
+    public IAirHandler getAirHandler(Direction sideRequested) {
         if (isCoreElevator()) {
             return super.getAirHandler(sideRequested);
         } else {
@@ -539,19 +540,19 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public void addConnectedPneumatics(List<Pair<EnumFacing, IAirHandler>> connectedMachines) {
-        TileEntity te = getTileCache()[EnumFacing.DOWN.ordinal()].getTileEntity();
+    public void addConnectedPneumatics(List<Pair<Direction, IAirHandler>> connectedMachines) {
+        TileEntity te = getTileCache()[Direction.DOWN.ordinal()].getTileEntity();
         if (te instanceof TileEntityElevatorBase) {
             connectedMachines.addAll(((TileEntityElevatorBase) te).airHandler.getConnectedPneumatics());
         }
     }
 
     @Override
-    public void onAirDispersion(IAirHandler handler, EnumFacing dir, int airAdded) {
+    public void onAirDispersion(IAirHandler handler, Direction dir, int airAdded) {
     }
 
     @Override
-    public int getMaxDispersion(IAirHandler handler, EnumFacing dir) {
+    public int getMaxDispersion(IAirHandler handler, Direction dir) {
         return Integer.MAX_VALUE;
     }
 
@@ -577,7 +578,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public boolean isGuiUseableByPlayer(EntityPlayer par1EntityPlayer) {
+    public boolean isGuiUseableByPlayer(PlayerEntity par1EntityPlayer) {
         return getWorld().getTileEntity(getPos()) == this;
     }
 
@@ -585,10 +586,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
      * COMPUTERCRAFT API
      */
 
-    @Override
-    public String getType() {
-        return "elevator";
-    }
+//    @Override
+//    public String getType() {
+//        return "elevator";
+//    }
 
     @Override
     protected void addLuaMethods(LuaMethodRegistry registry) {
@@ -600,7 +601,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 requireArgs(args, 1, "height (in blocks)");
                 setTargetHeight(((Double) args[0]).floatValue());
                 if (getCoreElevator().isControlledByRedstone()) {
-                    getCoreElevator().handleGUIButtonPress(0, null);
+                    getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, null);
                 }
                 getCoreElevator().sendDescPacketFromAllElevators();
                 return null;
@@ -628,11 +629,16 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 requireArgs(args, 1, "true/false");
                 if ((Boolean) args[0] && getCoreElevator().isControlledByRedstone()
                         || !(Boolean) args[0] && !getCoreElevator().isControlledByRedstone()) {
-                    getCoreElevator().handleGUIButtonPress(0, null);
+                    getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, null);
                 }
                 return null;
             }
         });
+    }
+
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
     }
 
     @Override
@@ -646,12 +652,12 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public IBlockState getCamouflage() {
+    public BlockState getCamouflage() {
         return camoState;
     }
 
     @Override
-    public void setCamouflage(IBlockState state) {
+    public void setCamouflage(BlockState state) {
         camoState = state;
         camoStack = ICamouflageableTE.getStackForState(state);
         sendDescriptionPacket();
@@ -666,5 +672,16 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @Override
     protected List<String> getRedstoneButtonLabels() {
         return REDSTONE_LABELS;
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerElevator(i, playerInventory, getPos());
     }
 }

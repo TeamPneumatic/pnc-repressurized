@@ -2,9 +2,8 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.client.model.module.ModelFlowDetector;
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
@@ -57,27 +56,22 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         rotation = tag.getFloat("rotation");
-        oldFlow = tag.getInteger("flow");//taggin it for waila purposes.
+        oldFlow = tag.getInt("flow");//taggin it for waila purposes.
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setFloat("rotation", rotation);
-        tag.setInteger("flow", oldFlow);
+        tag.putFloat("rotation", rotation);
+        tag.putInt("flow", oldFlow);
     }
 
     @Override
     public boolean canUpgrade() {
         return false;
-    }
-
-    @Override
-    protected EnumGuiId getGuiId() {
-        return null;
     }
 
     @Override

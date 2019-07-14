@@ -1,44 +1,43 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public abstract class PacketSecurityStation<REQ extends PacketSecurityStation<REQ>> extends LocationIntPacket<REQ> {
+import java.util.UUID;
+import java.util.function.Supplier;
 
-    protected String username;
+public abstract class PacketSecurityStation extends LocationIntPacket {
+
+    protected UUID username;
 
     public PacketSecurityStation() {
     }
 
-    public PacketSecurityStation(TileEntity te, String player) {
+    public PacketSecurityStation(TileEntity te, UUID player) {
         super(te.getPos());
         this.username = player;
     }
 
-    @Override
+    public PacketSecurityStation(PacketBuffer buffer) {
+        super(buffer);
+        username = UUID.fromString(PacketUtil.readUTF8String(buffer));
+    }
+
     public void toBytes(ByteBuf buffer) {
         super.toBytes(buffer);
-        ByteBufUtils.writeUTF8String(buffer, username);
+        PacketUtil.writeUTF8String(buffer, username.toString());
     }
 
-    @Override
-    public void fromBytes(ByteBuf buffer) {
-        super.fromBytes(buffer);
-        username = ByteBufUtils.readUTF8String(buffer);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            TileEntity te = getTileEntity(ctx);
+            handle(te, username);
+        });
+        ctx.get().setPacketHandled(true);
     }
 
-    @Override
-    public void handleClientSide(REQ message, EntityPlayer player) {
-    }
-
-    @Override
-    public void handleServerSide(REQ message, EntityPlayer player) {
-        TileEntity te = message.getTileEntity(player.getEntityWorld());
-        handleServerSide(te, message.username);
-    }
-
-    protected abstract void handleServerSide(TileEntity te, String username);
+    protected abstract void handle(TileEntity te, UUID username);
 
 }

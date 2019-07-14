@@ -1,36 +1,36 @@
 package me.desht.pneumaticcraft.common.remote;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
-public abstract class ActionWidget<Widget extends IGuiWidget> {
-    protected Widget widget;
+public abstract class ActionWidget<W extends Widget> {
+    protected W widget;
     private String enableVariable = "";
-    private BlockPos enablingValue = BlockPos.ORIGIN;
+    private BlockPos enablingValue = BlockPos.ZERO;
 
-    public ActionWidget(Widget widget) {
+    ActionWidget(W widget) {
         this.widget = widget;
     }
 
-    public ActionWidget() {
+    ActionWidget() {
     }
 
-    public void readFromNBT(NBTTagCompound tag, int guiLeft, int guiTop) {
+    public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
         enableVariable = tag.getString("enableVariable");
-        enablingValue = tag.hasKey("enablingX") ? new BlockPos(tag.getInteger("enablingX"), tag.getInteger("enablingY"), tag.getInteger("enablingZ")) : new BlockPos(1, 0, 0);
+        enablingValue = tag.contains("enablingX") ? new BlockPos(tag.getInt("enablingX"), tag.getInt("enablingY"), tag.getInt("enablingZ")) : new BlockPos(1, 0, 0);
     }
 
-    public NBTTagCompound toNBT(int guiLeft, int guitTop) {
-        NBTTagCompound tag = new NBTTagCompound();
-        tag.setString("id", getId());
-        tag.setString("enableVariable", enableVariable);
-        tag.setInteger("enablingX", enablingValue.getX());
-        tag.setInteger("enablingY", enablingValue.getY());
-        tag.setInteger("enablingZ", enablingValue.getZ());
+    public CompoundNBT toNBT(int guiLeft, int guitTop) {
+        CompoundNBT tag = new CompoundNBT();
+        tag.putString("id", getId());
+        tag.putString("enableVariable", enableVariable);
+        tag.putInt("enablingX", enablingValue.getX());
+        tag.putInt("enablingY", enablingValue.getY());
+        tag.putInt("enablingZ", enablingValue.getZ());
         return tag;
     }
 
@@ -46,7 +46,7 @@ public abstract class ActionWidget<Widget extends IGuiWidget> {
         }
     }
 
-    public Widget getWidget() {
+    public W getWidget() {
         return widget;
     }
 
@@ -54,7 +54,7 @@ public abstract class ActionWidget<Widget extends IGuiWidget> {
 
     public abstract String getId();
 
-    public GuiScreen getGui(GuiRemoteEditor guiRemote) {
+    public Screen getGui(GuiRemoteEditor guiRemote) {
         return null;
     }
 

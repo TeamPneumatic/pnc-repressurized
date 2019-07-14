@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.recipes;
 import me.desht.pneumaticcraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ItemTagMatcher;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -39,7 +39,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
         }
         if (!this.inputItem.isEmpty()) {
             if (inputItem.isEmpty()) return false;
-            if (!inputItem.isItemEqual(this.inputItem) && !PneumaticCraftUtils.isSameOreDictStack(inputItem, this.inputItem))
+            if (!inputItem.isItemEqual(this.inputItem) && !ItemTagMatcher.matchTags(inputItem, this.inputItem))
                 return false;
             return inputItem.getCount() >= this.inputItem.getCount();
         }
@@ -53,7 +53,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
     
     @Override
     public boolean isValidInput(ItemStack inputItem){
-        return !this.inputItem.isEmpty() && inputItem.isItemEqual(this.inputItem) || PneumaticCraftUtils.isSameOreDictStack(inputItem, this.inputItem);
+        return !this.inputItem.isEmpty() && inputItem.isItemEqual(this.inputItem) || ItemTagMatcher.matchTags(inputItem, this.inputItem);
     }
 
     @Override

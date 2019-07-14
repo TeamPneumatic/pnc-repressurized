@@ -1,34 +1,35 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-public class BlockOmnidirectionalHopper extends BlockPneumaticCraftModeled {
+public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
 
-    private static final PropertyEnum<EnumFacing> INPUT = PropertyEnum.create("input", EnumFacing.class);
+    private static final EnumProperty<Direction> INPUT = EnumProperty.create("input", Direction.class);
 
     BlockOmnidirectionalHopper(String registryName) {
         super(Material.IRON, registryName);
     }
 
-    BlockOmnidirectionalHopper() {
+    public BlockOmnidirectionalHopper() {
         super(Material.IRON, "omnidirectional_hopper");
     }
 
@@ -38,60 +39,46 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.OMNIDIRECTIONAL_HOPPER;
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        builder.add(INPUT);
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, ROTATION, INPUT);
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return super.getStateFromMeta(meta).withProperty(INPUT, EnumFacing.VALUES[meta / 6 % 6]);
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return 0;//super.getMetaFromState(state) + state.getValue(OUTPUT).ordinal() * 6;
-    }
-
-    @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+    public BlockState getActualState(BlockState state, IBlockAccess worldIn, BlockPos pos) {
         state = super.getActualState(state, worldIn, pos);
         TileEntityOmnidirectionalHopper te = (TileEntityOmnidirectionalHopper) PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
         return state.withProperty(INPUT, te.getInputDirection()).withProperty(ROTATION, te.getRotation());
     }
 
     @Override
-    protected EnumFacing getRotation(IBlockAccess world, BlockPos pos) {
+    protected Direction getRotation(IBlockReader world, BlockPos pos) {
         TileEntityOmnidirectionalHopper hopper = (TileEntityOmnidirectionalHopper) world.getTileEntity(pos);
         return hopper.getRotation();
     }
 
     @Override
-    protected void setRotation(World world, BlockPos pos, EnumFacing rotation) {
+    protected void setRotation(World world, BlockPos pos, Direction rotation) {
         TileEntityOmnidirectionalHopper hopper = (TileEntityOmnidirectionalHopper) world.getTileEntity(pos);
         hopper.setRotation(rotation);
     }
 
-    @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-        return this.getDefaultState()
-                .withProperty(ROTATION, facing.getOpposite())
-                .withProperty(INPUT, PneumaticCraftUtils.getDirectionFacing(placer, true).getOpposite());
-    }
+//    @Override
+//    public BlockState getStateForPlacement(BlockState state, Direction facing, BlockState state2, IWorld world, BlockPos pos1, BlockPos pos2, Hand hand) {
+//        return this.getDefaultState()
+//                .with(ROTATION, facing.getOpposite())
+//                .with(INPUT, PneumaticCraftUtils.getDirectionFacing(placer, true).getOpposite());
+//    }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase par5EntityLiving, ItemStack par6ItemStack) {
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack par6ItemStack) {
         super.onBlockPlacedBy(world, pos, state, par5EntityLiving, par6ItemStack);
 
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityOmnidirectionalHopper) {
             TileEntityOmnidirectionalHopper hopper = (TileEntityOmnidirectionalHopper) te;
-            hopper.setInputDirection(state.getValue(INPUT));
-            hopper.setRotation(state.getValue(ROTATION));
+            hopper.setInputDirection(state.get(INPUT));
+            hopper.setRotation(state.get(ROTATION));
         }
     }
 
@@ -106,19 +93,19 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing face, EnumHand hand) {
+    public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction face, Hand hand) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityOmnidirectionalHopper) {
             TileEntityOmnidirectionalHopper teOh = (TileEntityOmnidirectionalHopper) te;
             if (player != null && player.isSneaking()) {
-                EnumFacing rotation = getRotation(world, pos);
-                rotation = EnumFacing.byIndex(rotation.ordinal() + 1);
-                if (rotation == teOh.getInputDirection()) rotation = EnumFacing.byIndex(rotation.ordinal() + 1);
+                Direction rotation = getRotation(world, pos);
+                rotation = Direction.byIndex(rotation.ordinal() + 1);
+                if (rotation == teOh.getInputDirection()) rotation = Direction.byIndex(rotation.ordinal() + 1);
                 setRotation(world, pos, rotation);
             } else {
-                EnumFacing rotation = teOh.getInputDirection();
-                rotation = EnumFacing.byIndex(rotation.ordinal() + 1);
-                if (rotation == getRotation(world, pos)) rotation = EnumFacing.byIndex(rotation.ordinal() + 1);
+                Direction rotation = teOh.getInputDirection();
+                rotation = Direction.byIndex(rotation.ordinal() + 1);
+                if (rotation == getRotation(world, pos)) rotation = Direction.byIndex(rotation.ordinal() + 1);
                 teOh.setInputDirection(rotation);
             }
             return true;
@@ -127,10 +114,10 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public RayTraceResult collisionRayTrace(IBlockState blockState, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
+    public RayTraceResult collisionRayTrace(BlockState blockState, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityOmnidirectionalHopper) {
-            EnumFacing o = ((TileEntityOmnidirectionalHopper) te).getInputDirection();
+            Direction o = ((TileEntityOmnidirectionalHopper) te).getInputDirection();
             boolean isColliding = false;
             setBlockBounds(new AxisAlignedBB(o.getXOffset() == 1 ? 10 / 16F : 0, o.getYOffset() == 1 ? 10 / 16F : 0, o.getZOffset() == 1 ? 10 / 16F : 0, o.getXOffset() == -1 ? 6 / 16F : 1, o.getYOffset() == -1 ? 6 / 16F : 1, o.getZOffset() == -1 ? 6 / 16F : 1));
             if (super.collisionRayTrace(blockState, world, pos, origin, direction) != null) isColliding = true;

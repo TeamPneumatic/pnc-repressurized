@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "pneumaticcraft:drone_interface",
+    "model": "pneumaticcraft:block/drone_interface",
     "textures": {
       "top": "pneumaticcraft:blocks/generic/plain_base",
       "bottom": "pneumaticcraft:blocks/generic/plain_base",

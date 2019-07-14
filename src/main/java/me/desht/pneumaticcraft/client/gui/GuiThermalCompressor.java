@@ -6,35 +6,41 @@ import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.util.List;
 
-public class GuiThermalCompressor extends GuiPneumaticContainerBase<TileEntityThermalCompressor> {
-
-    public GuiThermalCompressor(InventoryPlayer inv, TileEntityThermalCompressor te) {
-        super(new ContainerThermalCompressor(inv, te), te, Textures.GUI_THERMAL_COMPRESSOR_LOCATION);
+public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThermalCompressor,TileEntityThermalCompressor> {
+    public GuiThermalCompressor(ContainerThermalCompressor container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
-        addWidget(new WidgetTemperatureSided(EnumFacing.NORTH, 63));
-        addWidget(new WidgetTemperatureSided(EnumFacing.SOUTH, 73));
+        addButton(new WidgetTemperatureSided(Direction.NORTH, 63));
+        addButton(new WidgetTemperatureSided(Direction.SOUTH, 73));
 
-        addWidget(new WidgetTemperatureSided(EnumFacing.WEST, 88));
-        addWidget(new WidgetTemperatureSided(EnumFacing.EAST, 98));
+        addButton(new WidgetTemperatureSided(Direction.WEST, 88));
+        addButton(new WidgetTemperatureSided(Direction.EAST, 98));
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
 
-        fontRenderer.drawString("Upgr.", 28, 19, 4210752);
+        font.drawString("Upgr.", 28, 19, 4210752);
+    }
+
+    @Override
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_THERMAL_COMPRESSOR_LOCATION;
     }
 
     @Override
@@ -44,7 +50,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<TileEntityTh
         return new Point(xStart + (int)(xSize * 0.82), yStart + ySize / 4 + 4);
     }
 
-    private int getTemperatureDifferential(EnumFacing side) {
+    private int getTemperatureDifferential(Direction side) {
         return Math.abs(te.getHeatExchangerLogic(side).getTemperatureAsInt()
                 - te.getHeatExchangerLogic(side.getOpposite()).getTemperatureAsInt());
     }
@@ -53,7 +59,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<TileEntityTh
     protected void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
 
-        int d = getTemperatureDifferential(EnumFacing.NORTH) + getTemperatureDifferential(EnumFacing.EAST);
+        int d = getTemperatureDifferential(Direction.NORTH) + getTemperatureDifferential(Direction.EAST);
         if (d == 0) {
             curInfo.add("\u00a7fNo temperature differential");
             curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Place a hot block on any side of the compressor, and a cold block on the opposite side."));
@@ -64,7 +70,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<TileEntityTh
     protected void addWarnings(List<String> curInfo) {
         super.addWarnings(curInfo);
 
-        int d = getTemperatureDifferential(EnumFacing.NORTH) + getTemperatureDifferential(EnumFacing.EAST);
+        int d = getTemperatureDifferential(Direction.NORTH) + getTemperatureDifferential(Direction.EAST);
         if (d > 0 && d < 20) {
             curInfo.add("\u00a7fPoor temperature differential");
             curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Place a hot block on any side of the compressor, and a cold block on the opposite side."));
@@ -72,10 +78,10 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<TileEntityTh
     }
 
     private class WidgetTemperatureSided extends WidgetTemperature {
-        private final EnumFacing side;
+        private final Direction side;
 
-        WidgetTemperatureSided(EnumFacing side, int x) {
-            super(side.getHorizontalIndex(), guiLeft + x, guiTop + 20, 0, 2000, ((IHeatExchanger) te).getHeatExchangerLogic(side));
+        WidgetTemperatureSided(Direction side, int x) {
+            super(guiLeft + x, guiTop + 20, 0, 2000, ((IHeatExchanger) te).getHeatExchangerLogic(side));
             this.side = side;
         }
 

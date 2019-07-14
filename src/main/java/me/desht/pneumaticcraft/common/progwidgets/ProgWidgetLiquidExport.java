@@ -1,18 +1,13 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetLiquidExport;
 import me.desht.pneumaticcraft.common.ai.DroneAILiquidExport;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements ILiquidFiltered, ILiquidExport {
 
@@ -39,23 +34,23 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return new DroneAILiquidExport(drone, (ProgWidgetAreaItemBase) widget);
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.ORANGE;
+    public DyeColor getColor() {
+        return DyeColor.ORANGE;
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setBoolean("placeFluidBlocks", placeFluidBlocks);
+        tag.putBoolean("placeFluidBlocks", placeFluidBlocks);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         placeFluidBlocks = tag.getBoolean("placeFluidBlocks");
     }
@@ -68,12 +63,6 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
     @Override
     public boolean isPlacingFluidBlocks() {
         return placeFluidBlocks;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetLiquidExport(this, guiProgrammer);
     }
 
 }

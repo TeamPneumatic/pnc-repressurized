@@ -1,21 +1,19 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetLiquidFilter;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetLiquidFilter extends ProgWidget {
     private Fluid fluid;
@@ -27,9 +25,9 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (fluid == null) curInfo.add("gui.progWidget.liquidFilter.error.noLiquid");
+        if (fluid == null) curInfo.add(xlate("gui.progWidget.liquidFilter.error.noLiquid"));
     }
 
     @Override
@@ -58,30 +56,34 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        fluid = FluidRegistry.getFluid(tag.getString("fluid"));
+        // todo 1.14 fluids
+//        fluid = FluidRegistry.getFluid(tag.getString("fluid"));
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        if (fluid != null) tag.setString("fluid", fluid.getName());
+        if (fluid != null) tag.putString("fluid", fluid.getName());
     }
 
     @Override
-    public void getTooltip(List<String> curTooltip) {
+    public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         if (fluid != null) {
-            curTooltip.add(TextFormatting.AQUA + "Fluid: " + TextFormatting.WHITE + getExtraStringInfo());
+            curTooltip.add(new StringTextComponent("Fluid: " )
+                    .applyTextStyle(TextFormatting.AQUA)
+                    .appendText(getExtraStringInfo())
+                    .applyTextStyle(TextFormatting.WHITE));
         }
     }
 
-    public boolean isLiquidValid(Fluid fluid) {
+    private boolean isLiquidValid(Fluid fluid) {
         return this.fluid == null || fluid == this.fluid;
     }
 
-    public static boolean isLiquidValid(Fluid fluid, IProgWidget mainWidget, int filterIndex) {
+    static boolean isLiquidValid(Fluid fluid, IProgWidget mainWidget, int filterIndex) {
         ProgWidgetLiquidFilter widget = (ProgWidgetLiquidFilter) mainWidget.getConnectedParameters()[mainWidget.getParameters().length + filterIndex];
         while (widget != null) {
             if (!widget.isLiquidValid(fluid)) return false;
@@ -117,12 +119,6 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         return fluid != null ? fluid.getLocalizedName(new FluidStack(fluid, 1)) : I18n.format("gui.progWidget.liquidFilter.noFluid");
     }
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetLiquidFilter(this, guiProgrammer);
-    }
-
     public void setFluid(Fluid fluid) {
         this.fluid = fluid;
     }
@@ -132,7 +128,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.RED;
+    public DyeColor getColor() {
+        return DyeColor.RED;
     }
 }

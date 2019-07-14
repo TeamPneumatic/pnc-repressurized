@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 public class SimpleHeatExchanger implements IHeatExchanger {
     private final IHeatExchangerLogic logic;
@@ -12,7 +12,7 @@ public class SimpleHeatExchanger implements IHeatExchanger {
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
+    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
         return logic;
     }
 

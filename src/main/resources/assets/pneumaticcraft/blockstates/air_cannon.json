@@ -3,7 +3,7 @@
   "defaults": {
     "textures": {},
     "custom": { "flip-v" : true},
-    "model": "pneumaticcraft:air_cannon.obj"
+    "model": "pneumaticcraft:block/air_cannon.obj"
   },
   "variants": {
     "facing": {
@@ -38,7 +38,7 @@
       }
     },
     "inventory": [{
-      "model": "pneumaticcraft:air_cannon_inv.obj",
+      "model": "pneumaticcraft:block/air_cannon_inv.obj",
       "transform": "forge:default-block"
     }]
   }

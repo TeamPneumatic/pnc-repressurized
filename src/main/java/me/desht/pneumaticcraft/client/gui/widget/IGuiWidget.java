@@ -12,15 +12,15 @@ public interface IGuiWidget {
 
     void postRender(int mouseX, int mouseY, float partialTick);
 
-    void onMouseClicked(int mouseX, int mouseY, int button);
+    boolean onMouseClicked(double mouseX, double mouseY, int button);
 
-    void onMouseClickedOutsideBounds(int mouseX, int mouseY, int button);
+    boolean onMouseClickedOutsideBounds(double mouseX, double mouseY, int button);
 
     Rectangle getBounds();
 
     void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed);
 
-    boolean onKey(char key, int keyCode);
+    boolean onKey(int keyCode, int modifiers);
 
     void update();
 

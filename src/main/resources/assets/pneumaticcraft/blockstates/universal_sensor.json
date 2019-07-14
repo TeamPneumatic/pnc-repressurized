@@ -4,12 +4,12 @@
     "textures": {
       "pipe": "pneumaticcraft:blocks/pressure_tube"
     },
-    "model": "pneumaticcraft:universal_sensor"
+    "model": "pneumaticcraft:block/universal_sensor"
   },
   "variants": {
     "normal": [{}],
     "inventory": [{
-      "model": "pneumaticcraft:universal_sensor_inv.obj",
+      "model": "pneumaticcraft:block/universal_sensor_inv.obj",
       "custom": { "flip-v" : true},
       "transform": "forge:default-block"
     }],
@@ -21,7 +21,7 @@
       "false": {},
       "true": {
         "submodel": {
-          "north": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ 0, 0, -0.3749 ], "rotation": { "y": 180 } } }
+          "north": { "model": "pneumaticcraft:block/assembly_connector",  "transform": { "translation": [ 0, 0, -0.3749 ], "rotation": { "y": 180 } } }
         }
       }
     },
@@ -29,7 +29,7 @@
       "false": {},
       "true": {
         "submodel": {
-          "south": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ 0, 0, 0.3749 ]} }
+          "south": { "model": "pneumaticcraft:block/assembly_connector",  "transform": { "translation": [ 0, 0, 0.3749 ]} }
         }
       }
     },
@@ -37,7 +37,7 @@
       "false": {},
       "true": {
         "submodel": {
-          "west": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ -0.3749, 0, 0 ], "rotation": { "y": 270 } } }
+          "west": { "model": "pneumaticcraft:block/assembly_connector",  "transform": { "translation": [ -0.3749, 0, 0 ], "rotation": { "y": 270 } } }
         }
       }
     },
@@ -45,7 +45,7 @@
       "false": {},
       "true": {
         "submodel": {
-          "east": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ 0.3749, 0, -0 ], "rotation": { "y": 90 } } }
+          "east": { "model": "pneumaticcraft:block/assembly_connector",  "transform": { "translation": [ 0.3749, 0, -0 ], "rotation": { "y": 90 } } }
         }
       }
     }

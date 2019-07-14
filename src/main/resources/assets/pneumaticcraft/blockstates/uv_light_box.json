@@ -6,7 +6,7 @@
       "face": "pneumaticcraft:blocks/uv_light_box",
       "blueprint": "pneumaticcraft:items/pcb_blueprint"
     },
-    "model": "pneumaticcraft:uv_light_box"
+    "model": "pneumaticcraft:block/uv_light_box"
   },
   "variants": {
     "facing": {
@@ -33,7 +33,7 @@
       }
     },
     "loaded": {
-      "true": { "submodel": { "pcb": { "model": "pneumaticcraft:pcb" } } },
+      "true": { "submodel": { "pcb": { "model": "pneumaticcraft:block/pcb" } } },
       "false": { }
     },
     "inventory": [{

@@ -13,7 +13,7 @@ public class DroneAIForEachCoordinate extends DroneAIBlockInteraction<ProgWidget
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
-        if (widget.isValidPosition(pos)) {
+        if (progWidget.isValidPosition(pos)) {
             curCoord = pos;
             abort();
         }
@@ -31,6 +31,6 @@ public class DroneAIForEachCoordinate extends DroneAIBlockInteraction<ProgWidget
 
     @Override
     protected void addEndingDebugEntry() {
-
+        // nothing
     }
 }

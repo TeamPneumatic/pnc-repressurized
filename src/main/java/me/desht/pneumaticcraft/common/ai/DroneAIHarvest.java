@@ -4,12 +4,12 @@ import me.desht.pneumaticcraft.api.harvesting.IHarvestHandler;
 import me.desht.pneumaticcraft.common.harvesting.HarvestRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -36,7 +36,7 @@ public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBa
     }
     
     private boolean abortIfRequiredHoeIsMissing(){
-        if(((IToolUser)widget).requiresTool() && getDamageableHoe() == null){
+        if(((IToolUser) progWidget).requiresTool() && getDamageableHoe() == null){
             abort();
             drone.addDebugEntry("gui.progWidget.harvest.debug.missingHoe");
             return true;
@@ -46,7 +46,7 @@ public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBa
     }
     
     private IHarvestHandler getApplicableHandler(BlockPos pos){
-        IBlockState state = worldCache.getBlockState(pos); 
+        BlockState state = worldCache.getBlockState(pos);
         return HarvestRegistry.getInstance()
                               .getHarvestHandlers()
                               .stream()
@@ -56,13 +56,10 @@ public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBa
                               .orElse(null);
     }
     
-    private boolean hasApplicableItemFilters(IHarvestHandler harvestHandler, BlockPos pos, IBlockState blockState){
-        NonNullList<ItemStack> droppedStacks = NonNullList.create();
-        
-        harvestHandler.addFilterItems(drone.world(), worldCache, pos, blockState, droppedStacks, drone);
-        
+    private boolean hasApplicableItemFilters(IHarvestHandler harvestHandler, BlockPos pos, BlockState blockState){
+        List<ItemStack> droppedStacks = harvestHandler.addFilterItems(drone.world(), worldCache, pos, blockState, drone);
         for (ItemStack droppedStack : droppedStacks) {
-            if (widget.isItemValidForFilters(droppedStack, blockState)) {
+            if (progWidget.isItemValidForFilters(droppedStack, blockState)) {
                 return true;
             }
         }
@@ -78,9 +75,9 @@ public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBa
     protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
         IHarvestHandler applicableHandler = getApplicableHandler(pos);
         if(applicableHandler != null){
-            IBlockState state = worldCache.getBlockState(pos);
+            BlockState state = worldCache.getBlockState(pos);
             if(applicableHandler.canHarvest(drone.world(), worldCache, pos, state, drone)){
-                Consumer<EntityPlayer> damageableHoe = getDamageableHoe();
+                Consumer<PlayerEntity> damageableHoe = getDamageableHoe();
                 if(damageableHoe != null){
                     if(applicableHandler.harvestAndReplant(drone.world(), worldCache, pos, state, drone)){
                         damageableHoe.accept(drone.getFakePlayer());
@@ -94,10 +91,10 @@ public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBa
         return false;
     }
     
-    private Consumer<EntityPlayer> getDamageableHoe(){
+    private Consumer<PlayerEntity> getDamageableHoe(){
         for(int i = 0; i < drone.getInv().getSlots(); i++){
             ItemStack stack = drone.getInv().getStackInSlot(i);
-            BiConsumer<ItemStack, EntityPlayer> damageableHoe = HarvestRegistry.getInstance().getDamageableHoe(stack);
+            BiConsumer<ItemStack, PlayerEntity> damageableHoe = HarvestRegistry.getInstance().getDamageableHoe(stack);
             if(damageableHoe != null) return player -> damageableHoe.accept(stack, player);
         }
         return null;

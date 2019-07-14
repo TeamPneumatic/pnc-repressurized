@@ -5,62 +5,69 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-public class PacketChestplateLauncher extends AbstractPacket<PacketChestplateLauncher> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: SERVER
+ * Sent by client to launch an item from the chestplate launcher
+ */
+public class PacketChestplateLauncher {
     private static final float SCALE_FACTOR = 0.7f;
 
     private float amount;
 
     public PacketChestplateLauncher() {
+        // empty
     }
 
     public PacketChestplateLauncher(float amount) {
         this.amount = amount;
     }
 
-    @Override
-    public void handleClientSide(PacketChestplateLauncher message, EntityPlayer player) {
+    PacketChestplateLauncher(PacketBuffer buffer) {
+        this.amount = buffer.readFloat();
     }
 
-    @Override
-    public void handleServerSide(PacketChestplateLauncher message, EntityPlayer player) {
-        ItemStack stack = player.getHeldItemOffhand();
-        CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-        int upgrades = handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.DISPENSER, 4);
-
-        if (handler.getArmorPressure(EntityEquipmentSlot.CHEST) > 0.1f && handler.isArmorReady(EntityEquipmentSlot.CHEST) && upgrades > 0 && !stack.isEmpty()) {
-            ItemStack toFire = player.capabilities.isCreativeMode ? ItemHandlerHelper.copyStackWithSize(stack, 1) : stack.splitStack(1);
-            Entity launchedEntity = TileEntityAirCannon.getEntityToLaunch(player.getEntityWorld(), toFire, player,true, true);
-
-            if (launchedEntity instanceof EntityArrow) {
-                EntityArrow arrow = (EntityArrow) launchedEntity;
-                arrow.pickupStatus = player.capabilities.isCreativeMode ? EntityArrow.PickupStatus.CREATIVE_ONLY : EntityArrow.PickupStatus.ALLOWED;
-                arrow.setDamage(arrow.getDamage() + 0.25 * upgrades * message.amount);
-            }
-
-            Vec3d velocity = player.getLookVec().normalize().scale(message.amount * upgrades * SCALE_FACTOR);
-            TileEntityAirCannon.launchEntity(launchedEntity, player.getPositionEyes(1f).add(0, -0.1, 0), velocity, true);
-
-            int usedAir = (int) (20 * upgrades * message.amount);
-            if (!player.capabilities.isCreativeMode) {
-                handler.addAir(EntityEquipmentSlot.CHEST, -usedAir);
-            }
-        }
-    }
-
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        amount = buf.readFloat();
-    }
-
-    @Override
     public void toBytes(ByteBuf buf) {
         buf.writeFloat(amount);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> handleLaunch(ctx.get().getSender()));
+        ctx.get().setPacketHandled(true);
+    }
+
+    private void handleLaunch(ServerPlayerEntity player) {
+        ItemStack stack = player.getHeldItemOffhand();
+        CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+        int upgrades = handler.getUpgradeCount(EquipmentSlotType.CHEST, IItemRegistry.EnumUpgrade.DISPENSER, 4);
+
+        if (handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1f && handler.isArmorReady(EquipmentSlotType.CHEST) && upgrades > 0 && !stack.isEmpty()) {
+            ItemStack toFire = player.isCreative() ? ItemHandlerHelper.copyStackWithSize(stack, 1) : stack.split(1);
+            Entity launchedEntity = TileEntityAirCannon.getEntityToLaunch(player.getEntityWorld(), toFire, player,true, true);
+
+            if (launchedEntity instanceof AbstractArrowEntity) {
+                AbstractArrowEntity arrow = (AbstractArrowEntity) launchedEntity;
+                arrow.pickupStatus = player.isCreative() ? AbstractArrowEntity.PickupStatus.CREATIVE_ONLY : AbstractArrowEntity.PickupStatus.ALLOWED;
+                arrow.setDamage(arrow.getDamage() + 0.25 * upgrades * amount);
+            }
+
+            Vec3d velocity = player.getLookVec().normalize().scale(amount * upgrades * SCALE_FACTOR);
+            TileEntityAirCannon.launchEntity(launchedEntity, player.getEyePosition(1f).add(0, -0.1, 0), velocity, true);
+
+            if (!player.isCreative()) {
+                int usedAir = (int) (20 * upgrades * amount);
+                handler.addAir(EquipmentSlotType.CHEST, -usedAir);
+            }
+        }
     }
 }

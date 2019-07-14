@@ -6,12 +6,12 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.text.WordUtils;
 
 public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
@@ -27,33 +27,33 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
     public ActionWidgetDropdown(WidgetComboBox widget) {
         super(widget);
-        width = widget.width;
-        height = widget.height;
+        width = widget.getWidth();
+        height = widget.getHeight();
         widget.setText(I18n.format("remote.dropdown.name"));
         widget.setTooltip(WordUtils.wrap(I18n.format("remote.dropdown.tooltip"), 50).split(System.getProperty("line.separator")));
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag, int guiLeft, int guiTop) {
+    public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
-        x = tag.getInteger("x") + guiLeft;
-        y = tag.getInteger("y") + guiTop;
-        width = tag.getInteger("width");
-        height = tag.getInteger("height");
+        x = tag.getInt("x") + guiLeft;
+        y = tag.getInt("y") + guiTop;
+        width = tag.getInt("width");
+        height = tag.getInt("height");
         dropDownElements = tag.getString("dropDownElements");
         sorted = tag.getBoolean("sorted");
         updateWidget();
     }
 
     @Override
-    public NBTTagCompound toNBT(int guiLeft, int guiTop) {
-        NBTTagCompound tag = super.toNBT(guiLeft, guiTop);
-        tag.setInteger("x", x - guiLeft);
-        tag.setInteger("y", y - guiTop);
-        tag.setInteger("width", width);
-        tag.setInteger("height", height);
-        tag.setString("dropDownElements", dropDownElements);
-        tag.setBoolean("sorted", sorted);
+    public CompoundNBT toNBT(int guiLeft, int guiTop) {
+        CompoundNBT tag = super.toNBT(guiLeft, guiTop);
+        tag.putInt("x", x - guiLeft);
+        tag.putInt("y", y - guiTop);
+        tag.putInt("width", width);
+        tag.putInt("height", height);
+        tag.putString("dropDownElements", dropDownElements);
+        tag.putBoolean("sorted", sorted);
 
         return tag;
     }
@@ -90,7 +90,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     @Override
     public WidgetComboBox getWidget() {
         if (widget == null) {
-            widget = new WidgetComboBox(Minecraft.getMinecraft().fontRenderer, x, y, width, height);
+            widget = new WidgetComboBox(Minecraft.getInstance().fontRenderer, x, y, width, height);
             widget.setElements(getDropdownElements());
             widget.setFixedOptions();
             widget.setShouldSort(sorted);
@@ -110,8 +110,8 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         if (widget != null) {
             widget.x = x;
             widget.y = y;
-            widget.width = width;
-            widget.height = height;
+            widget.setWidth(width);
+            widget.setHeight(height);
             widget.setElements(getDropdownElements());
             widget.setText(selectedElement);
             widget.setShouldSort(sorted);
@@ -149,8 +149,8 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getGui(GuiRemoteEditor guiRemote) {
+    @OnlyIn(Dist.CLIENT)
+    public Screen getGui(GuiRemoteEditor guiRemote) {
         return new GuiRemoteDropdown(this, guiRemote);
     }
 }

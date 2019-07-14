@@ -1,21 +1,17 @@
 package me.desht.pneumaticcraft.client.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
-@SideOnly(Side.CLIENT)
 public class RenderLaser {
 
     private int ticksExisted;
@@ -35,8 +31,7 @@ public class RenderLaser {
     }
 
     public void render(float partialTicks, double x1, double y1, double z1, double x2, double y2, double z2) {
-        Minecraft mc = FMLClientHandler.instance().getClient();
-        TextureManager textureManager = mc.renderEngine;
+        TextureManager textureManager = Minecraft.getInstance().getTextureManager();
 
         double laserLength = PneumaticCraftUtils.distBetween(x1, y1, z1, x2, y2, z2);
         double laserSize = 0.4;
@@ -46,7 +41,7 @@ public class RenderLaser {
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-        GlStateManager.translate(x1, y1, z1);
+        GlStateManager.translated(x1, y1, z1);
 
         double dx = x2 - x1;
         double dy = y2 - y1;
@@ -55,15 +50,15 @@ public class RenderLaser {
         double rotYaw = Math.atan2(dx, dz) * 180.0D / Math.PI;
         double rotPitch = 90 - (float) (Math.atan2(dy, f3) * 180.0D / Math.PI);
 
-        GlStateManager.rotate((float)rotYaw, 0, 1, 0);
-        GlStateManager.rotate((float)rotPitch, 1, 0, 0);
+        GlStateManager.rotated((float)rotYaw, 0, 1, 0);
+        GlStateManager.rotated((float)rotPitch, 1, 0, 0);
 
-        GlStateManager.scale(laserSize, laserSize, laserSize);
-        GlStateManager.translate(0, 0.6, 0);
-        GlStateManager.rotate((ticksExisted + partialTicks) * 200, 0, 1, 0);
+        GlStateManager.scaled(laserSize, laserSize, laserSize);
+        GlStateManager.translated(0, 0.6, 0);
+        GlStateManager.rotated((ticksExisted + partialTicks) * 200, 0, 1, 0);
 
         GlStateManager.pushMatrix();
-        GlStateManager.scale(1, laserLength / laserSize, 1);
+        GlStateManager.scaled(1, laserLength / laserSize, 1);
 
         /*   GlStateManager.translate(0, -0.01, 0);
            textureManager.bindTexture(Textures.RENDER_LASER_ANIMATION);
@@ -76,7 +71,7 @@ public class RenderLaser {
         renderQuad(coreColor);
         GlStateManager.popMatrix();
 
-        GlStateManager.rotate(180, 1, 0, 0);
+        GlStateManager.rotated(180, 1, 0, 0);
         textureManager.bindTexture(Textures.RENDER_LASER_START);
         renderQuad(glowColor);
         textureManager.bindTexture(Textures.RENDER_LASER_START_OVERLAY);
@@ -86,7 +81,7 @@ public class RenderLaser {
         GlStateManager.enableCull();
         GlStateManager.enableLighting();
 
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color4f(1, 1, 1, 1);
     }
 
     private void renderQuad(int color) {

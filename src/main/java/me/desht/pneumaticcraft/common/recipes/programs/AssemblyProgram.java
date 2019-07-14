@@ -1,13 +1,13 @@
 package me.desht.pneumaticcraft.common.recipes.programs;
 
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
@@ -43,9 +43,9 @@ public abstract class AssemblyProgram {
      */
     public abstract boolean executeStep(TileEntityAssemblyController.AssemblySystem system);
 
-    public abstract void writeToNBT(NBTTagCompound tag);
+    public abstract void writeToNBT(CompoundNBT tag);
 
-    public abstract void readFromNBT(NBTTagCompound tag);
+    public abstract void readFromNBT(CompoundNBT tag);
 
     public abstract List<AssemblyRecipe> getRecipeList();
 
@@ -74,12 +74,12 @@ public abstract class AssemblyProgram {
 
     public static AssemblyProgram fromRecipe(AssemblyRecipe recipe) {
         int meta = recipe.getProgramStack().getMetadata();
-        return ItemAssemblyProgram.getProgramFromItem(meta);
+        return ItemAssemblyProgram.getProgramForType(meta);
     }
 
     public ItemStack getItemStack(int amount) {
-        return new ItemStack(Itemss.ASSEMBLY_PROGRAM, amount, getItemMeta());
+        return new ItemStack(getItem(), amount);
     }
 
-    protected abstract int getItemMeta();
+    protected abstract Item getItem();
 }

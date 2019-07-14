@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.common.remote;
 
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,11 +35,11 @@ public class RemoteLayout {
     }
 
     public RemoteLayout(ItemStack remote, int guiLeft, int guiTop) {
-        NBTTagCompound tag = remote.getTagCompound();
+        CompoundNBT tag = remote.getTag();
         if (tag != null) {
-            NBTTagList tagList = tag.getTagList("actionWidgets", 10);
-            for (int i = 0; i < tagList.tagCount(); i++) {
-                NBTTagCompound widgetTag = tagList.getCompoundTagAt(i);
+            ListNBT tagList = tag.getList("actionWidgets", Constants.NBT.TAG_COMPOUND);
+            for (int i = 0; i < tagList.size(); i++) {
+                CompoundNBT widgetTag = tagList.getCompound(i);
                 String id = widgetTag.getString("id");
                 Class<? extends ActionWidget> clazz = registeredWidgets.get(id);
                 try {
@@ -52,14 +53,14 @@ public class RemoteLayout {
         }
     }
 
-    public NBTTagCompound toNBT(int guiLeft, int guiTop) {
-        NBTTagCompound tag = new NBTTagCompound();
+    public CompoundNBT toNBT(int guiLeft, int guiTop) {
+        CompoundNBT tag = new CompoundNBT();
 
-        NBTTagList tagList = new NBTTagList();
+        ListNBT tagList = new ListNBT();
         for (ActionWidget actionWidget : actionWidgets) {
-            tagList.appendTag(actionWidget.toNBT(guiLeft, guiTop));
+            tagList.add(actionWidget.toNBT(guiLeft, guiTop));
         }
-        tag.setTag("actionWidgets", tagList);
+        tag.put("actionWidgets", tagList);
         return tag;
     }
 
@@ -71,8 +72,8 @@ public class RemoteLayout {
         return actionWidgets;
     }
 
-    public List<IGuiWidget> getWidgets(boolean filterDisabledWidgets) {
-        List<IGuiWidget> widgets = new ArrayList<>();
+    public List<Widget> getWidgets(boolean filterDisabledWidgets) {
+        List<Widget> widgets = new ArrayList<>();
         for (ActionWidget actionWidget : actionWidgets) {
             if (!filterDisabledWidgets || actionWidget.isEnabled()) {
                 widgets.add(actionWidget.getWidget());

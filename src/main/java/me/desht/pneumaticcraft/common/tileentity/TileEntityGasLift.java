@@ -1,101 +1,119 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.ai.ChunkPositionSorter;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
 public class TileEntityGasLift extends TileEntityPneumaticBase
-        implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks, IAutoFluidEjecting {
+        implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks, IAutoFluidEjecting, INamedContainerProvider {
     private static final int INVENTORY_SIZE = 1;
 
     public enum Status {
         IDLE("idling"), PUMPING("pumping"), DIGGING("diggingDown"), RETRACTING("retracting"), STUCK("stuck");
+
         public final String desc;
         Status(String desc) {
             this.desc = desc;
         }
     }
 
+    public enum PumpMode {
+        PUMP_EMPTY, PUMP_LEAVE_FLUID, RETRACT
+    }
+
     @GuiSynced
-    private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+    private final FluidTank tank = new GasLiftFluidTank();
+    private LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
+
     private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty()
-                    || itemStack.getItem() instanceof ItemBlock && ((ItemBlock) itemStack.getItem()).getBlock() instanceof BlockPressureTube;
+                    || itemStack.getItem() instanceof BlockItem && ((BlockItem) itemStack.getItem()).getBlock() instanceof BlockPressureTube;
         }
     };
+    private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> inventory);
     @GuiSynced
     public int currentDepth;
     @GuiSynced
-    public int redstoneMode, mode;
+    public int redstoneMode;
+    @GuiSynced
+    public PumpMode pumpMode = PumpMode.PUMP_EMPTY;
     @GuiSynced
     public Status status = Status.IDLE;
-    @DescSynced
-    public final boolean[] sidesConnected = new boolean[6];
     private int workTimer;
     private int ticker;
     private List<BlockPos> pumpingLake;
     private static final int MAX_PUMP_RANGE_SQUARED = 15 * 15;
 
     public TileEntityGasLift() {
-        super(5, 7, 3000, 4);
-        addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.DISPENSER);
+        super(ModTileEntityTypes.GAS_LIFT, 5, 7, 3000, 4);
+
+        addApplicableUpgrade(IItemRegistry.EnumUpgrade.SPEED, IItemRegistry.EnumUpgrade.DISPENSER);
     }
 
     @Override
-    public boolean isConnectedTo(EnumFacing d) {
-        return d != EnumFacing.DOWN;
+    public boolean canConnectTo(Direction d) {
+        return d != Direction.DOWN;
     }
 
-    private void updateConnections() {
-        List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
-        Arrays.fill(sidesConnected, false);
-        for (Pair<EnumFacing, IAirHandler> entry : connections) {
-            sidesConnected[entry.getKey().ordinal()] = true;
-        }
+    private void updateConnectionState() {
+        BlockState newState = AirHandler.getBlockConnectionState(getBlockState(), getAirHandler(null));
+        newState = newState.with(BlockPneumaticCraft.DOWN, false);  // never connects from below
+        world.setBlockState(pos, newState);
     }
 
     @Override
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
-        updateConnections();
+        updateConnectionState();
+    }
+
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return inventory;
     }
 
     @Override
     public void onNeighborTileUpdate() {
         super.onNeighborTileUpdate();
-        updateConnections();
+        updateConnectionState();
     }
 
     @Override
@@ -104,13 +122,13 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
         if (!getWorld().isRemote) {
             ticker++;
             if (currentDepth > 0) {
                 int curCheckingPipe = ticker % currentDepth;
-                if (curCheckingPipe > 0 && !isPipe(world, getPos().offset(EnumFacing.DOWN, curCheckingPipe))) {
+                if (curCheckingPipe > 0 && !isPipe(world, getPos().offset(Direction.DOWN, curCheckingPipe))) {
                     currentDepth = curCheckingPipe - 1;
                 }
             }
@@ -124,7 +142,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
                 while (workTimer > 20) {
                     workTimer -= 20;
                     status = Status.IDLE;
-                    if (mode == 2) {
+                    if (pumpMode == PumpMode.RETRACT) {
                         retractPipes();
                     } else {
                         if (!suckLiquid() && !tryDigDown()) {
@@ -142,7 +160,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
         if (currentDepth > 0) {
             status = Status.RETRACTING;
             if (isPipe(world, getPos().add(0, -currentDepth, 0))) {
-                BlockPos pos1 = getPos().offset(EnumFacing.DOWN, currentDepth);
+                BlockPos pos1 = getPos().offset(Direction.DOWN, currentDepth);
                 ItemStack toInsert = new ItemStack(world.getBlockState(pos1).getBlock());
                 if (inventory.insertItem(0, toInsert, true).isEmpty()) {
                     inventory.insertItem(0, toInsert, false);
@@ -159,17 +177,17 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     private boolean tryDigDown() {
-        if (isUnbreakable(getPos().offset(EnumFacing.DOWN, currentDepth + 1))) {
+        if (isUnbreakable(getPos().offset(Direction.DOWN, currentDepth + 1))) {
             status = Status.STUCK;
         } else if (getPos().getY() - currentDepth >= 0) {
             status = Status.DIGGING;
             currentDepth++;
-            BlockPos pos1 = getPos().offset(EnumFacing.DOWN, currentDepth);
+            BlockPos pos1 = getPos().offset(Direction.DOWN, currentDepth);
             if (!isPipe(world, pos1)) {
                 ItemStack extracted = inventory.extractItem(0, 1, true);
-                if (extracted.getItem() instanceof ItemBlock) {
-                    IBlockState currentState = world.getBlockState(pos1);
-                    IBlockState newState = ((ItemBlock) extracted.getItem()).getBlock().getDefaultState();
+                if (extracted.getItem() instanceof BlockItem) {
+                    BlockState currentState = world.getBlockState(pos1);
+                    BlockState newState = ((BlockItem) extracted.getItem()).getBlock().getDefaultState();
 
                     int airRequired = Math.round(66.66f * currentState.getBlockHardness(world, pos1));
                     if (getPipeTier(newState) > 1) airRequired /= 2;
@@ -201,7 +219,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
         return getPipeTier(world.getBlockState(pos)) >= 1;
     }
 
-    private int getPipeTier(IBlockState state) {
+    private int getPipeTier(BlockState state) {
         Block b = state.getBlock();
         return b instanceof BlockPressureTube ? ((BlockPressureTube) b).getTier() : 0;
     }
@@ -212,7 +230,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
 
 
     private boolean suckLiquid() {
-        BlockPos pos = getPos().offset(EnumFacing.DOWN, currentDepth + 1);
+        BlockPos pos = getPos().offset(Direction.DOWN, currentDepth + 1);
 
         FluidStack fluidStack = FluidUtils.getFluidAt(world, pos, false);
         if (fluidStack == null || fluidStack.amount < Fluid.BUCKET_VOLUME) {
@@ -251,13 +269,13 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     private void findLake(Fluid fluid) {
         pumpingLake = new ArrayList<>();
         Stack<BlockPos> pendingPositions = new Stack<>();
-        BlockPos thisPos = getPos().offset(EnumFacing.DOWN, currentDepth + 1);
+        BlockPos thisPos = getPos().offset(Direction.DOWN, currentDepth + 1);
         pendingPositions.add(thisPos);
         pumpingLake.add(thisPos);
         while (!pendingPositions.empty()) {
             BlockPos checkingPos = pendingPositions.pop();
-            for (EnumFacing d : EnumFacing.VALUES) {
-                if (d == EnumFacing.DOWN) continue;
+            for (Direction d : Direction.VALUES) {
+                if (d == Direction.DOWN) continue;
                 BlockPos newPos = checkingPos.offset(d);
                 if (PneumaticCraftUtils.distBetweenSq(newPos, thisPos) <= MAX_PUMP_RANGE_SQUARED
                         && FluidUtils.isSourceBlock(getWorld(), newPos, fluid)
@@ -272,12 +290,16 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
-        if (buttonID == 0) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
-        } else if (buttonID > 0 && buttonID < 4) {
-            mode = buttonID - 1;
+        } else {
+            try {
+                pumpMode = PumpMode.valueOf(tag);
+            } catch (IllegalArgumentException ignored) {
+
+            }
         }
     }
 
@@ -292,47 +314,38 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setTag("Items", inventory.serializeNBT());
-        tag.setByte("redstoneMode", (byte) redstoneMode);
-        tag.setByte("mode", (byte) mode);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
 
-        NBTTagCompound tankTag = new NBTTagCompound();
-        tank.writeToNBT(tankTag);
-        tag.setTag("tank", tankTag);
-        tag.setInteger("currentDepth", currentDepth);
-
+        tag.put("Items", inventory.serializeNBT());
+        tag.putByte("redstoneMode", (byte) redstoneMode);
+        tag.putString("mode", pumpMode.toString());
+        tag.putInt("currentDepth", currentDepth);
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        inventory.deserializeNBT(tag.getCompoundTag("Items"));
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+
+        inventory.deserializeNBT(tag.getCompound("Items"));
         redstoneMode = tag.getByte("redstoneMode");
-        mode = tag.getByte("mode");
-        tank.readFromNBT(tag.getCompoundTag("tank"));
-        currentDepth = tag.getInteger("currentDepth");
+        pumpMode = PumpMode.valueOf(tag.getString("mode"));
+        currentDepth = tag.getInt("currentDepth");
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return inventory;
+    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+        return inventoryCap;
     }
 
+    @Nonnull
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction facing) {
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            return fluidCap.cast();
         } else {
-            return super.getCapability(capability, facing);
+            return super.getCapability(cap, facing);
         }
     }
 
@@ -340,17 +353,33 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
         return tank;
     }
 
-    /**
-     * Returns the name of the inventory.
-     */
     @Override
-    public String getName() {
-        return Blockss.GAS_LIFT.getTranslationKey();
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerGasLift(i, playerInventory, getPos());
     }
 
     @Nonnull
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
         return ImmutableMap.of("Tank", tank);
+    }
+
+    private class GasLiftFluidTank extends FluidTank {
+        GasLiftFluidTank() {
+            super(PneumaticValues.NORMAL_TANK_CAPACITY);
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, boolean doDrain) {
+            int inTank = fluid != null ? fluid.amount : 0;
+            int amount = pumpMode == PumpMode.PUMP_LEAVE_FLUID ? Math.max(0, inTank - 1) : inTank;
+            return super.drain(amount, doDrain);
+        }
     }
 }

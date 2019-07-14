@@ -5,10 +5,10 @@ import me.desht.pneumaticcraft.common.fluid.Fluids;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.ChunkGeneratorFlat;
-import net.minecraft.world.gen.IChunkGenerator;
-import net.minecraft.world.gen.feature.WorldGenLakes;
+import net.minecraft.world.chunk.AbstractChunkProvider;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.FlatChunkGenerator;
+import net.minecraft.world.gen.feature.LakesFeature;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
@@ -23,7 +23,7 @@ public class WorldGeneratorPneumaticCraft implements IWorldGenerator {
     }
 
     @Override
-    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
+    public void generate(Random random, int chunkX, int chunkZ, World world, ChunkGenerator chunkGenerator, AbstractChunkProvider chunkProvider) {
         if (worldGenDisabled) {
             return;
         }
@@ -36,7 +36,7 @@ public class WorldGeneratorPneumaticCraft implements IWorldGenerator {
             }
         }
 
-        if (!(chunkGenerator instanceof ChunkGeneratorFlat)) { //don't generate on flatworlds
+        if (!(chunkGenerator instanceof FlatChunkGenerator)) { //don't generate on flatworlds
             switch (world.provider.getDimension()) {
                 case 0:
                     generateSurface(world, random, chunkX * 16, chunkZ * 16);
@@ -63,7 +63,7 @@ public class WorldGeneratorPneumaticCraft implements IWorldGenerator {
     private void generateSurface(World world, Random rand, int chunkX, int chunkZ) {
         if (!isBlacklisted(world.provider.getDimension()) && rand.nextDouble() < ConfigHandler.general.oilGenerationChance / 100D) {
             int y = rand.nextInt(rand.nextInt(128) + 8);
-            new WorldGenLakes(oilBlock).generate(world, rand, new BlockPos(chunkX + 8, y, chunkZ + 8));
+            new LakesFeature(oilBlock).generate(world, rand, new BlockPos(chunkX + 8, y, chunkZ + 8));
         }
     }
 

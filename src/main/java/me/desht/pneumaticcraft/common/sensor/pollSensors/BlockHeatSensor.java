@@ -4,21 +4,20 @@ import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.api.universalSensor.IBlockAndCoordinatePollSensor;
+import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSensor;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.lwjgl.util.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
 
     @Override
     public Set<Item> getRequiredUpgrades() {
-        return ImmutableSet.of(Itemss.upgrades.get(EnumUpgrade.BLOCK_TRACKER), Itemss.GPS_TOOL);
+        return ImmutableSet.of(EnumUpgrade.BLOCK_TRACKER.getItem(), ModItems.GPS_TOOL);
     }
 
     @Override
@@ -60,7 +59,7 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
             TileEntity te = world.getTileEntity(p);
             if (te instanceof IHeatExchanger) {
                 IHeatExchanger exchanger = (IHeatExchanger) te;
-                for (EnumFacing d : EnumFacing.VALUES) {
+                for (Direction d : Direction.VALUES) {
                     IHeatExchangerLogic logic = exchanger.getHeatExchangerLogic(d);
                     if (logic != null) temperature = Math.max(temperature, logic.getTemperature());
                 }
@@ -72,14 +71,8 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
         fontRenderer.drawString("Temperature", 70, 48, 0x404040);
     }
-
-    @Override
-    public Rectangle needsSlot() {
-        return null;
-    }
-
 }

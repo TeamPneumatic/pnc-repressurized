@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import mezz.jei.api.gui.IDrawable;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.ResourceLocation;
 
 public class ResourceDrawable implements IDrawable {
@@ -54,7 +54,7 @@ public class ResourceDrawable implements IDrawable {
     @Override
     public void draw(Minecraft minecraft, int xOffset, int yOffset) {
         minecraft.getTextureManager().bindTexture(resource);
-        Gui.drawModalRectWithCustomSizedTexture(x + xOffset, y + yOffset, u, v, drawWidth, drawHeight, texWidth, texHeight);
+        AbstractGui.drawModalRectWithCustomSizedTexture(x + xOffset, y + yOffset, u, v, drawWidth, drawHeight, texWidth, texHeight);
     }
 
 }

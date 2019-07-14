@@ -1,7 +1,7 @@
 {
   "textures": {
-    "refinery": "pneumaticcraft:blocks/refinery",
-    "particle": "pneumaticcraft:blocks/refinery"
+    "refinery": "pneumaticcraft:block/refinery",
+    "particle": "pneumaticcraft:block/refinery"
   },
   "elements": [
     {

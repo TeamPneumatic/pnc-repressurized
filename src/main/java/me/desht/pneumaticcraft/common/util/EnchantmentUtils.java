@@ -2,12 +2,11 @@ package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemEnchantedBook;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeHooks;
 
 import java.util.List;
 
@@ -24,11 +23,11 @@ public class EnchantmentUtils {
      * @param player
      * @return
      */
-    public static int getPlayerXP(EntityPlayer player) {
+    public static int getPlayerXP(PlayerEntity player) {
         return (int)(EnchantmentUtils.getExperienceForLevel(player.experienceLevel) + (player.experience * player.xpBarCap()));
     }
 
-    public static void addPlayerXP(EntityPlayer player, int amount) {
+    public static void addPlayerXP(PlayerEntity player, int amount) {
         int experience = getPlayerXP(player) + amount;
         player.experienceTotal = experience;
         player.experienceLevel = EnchantmentUtils.getLevelForExperience(experience);
@@ -81,13 +80,13 @@ public class EnchantmentUtils {
                 if ((deltaZ != 0 || deltaX != 0)
                         && world.isAirBlock(position.add(deltaX, 0, deltaZ))
                         && world.isAirBlock(position.add(deltaX, 1, deltaZ))) {
-                    power += ForgeHooks.getEnchantPower(world, position.add(deltaX * 2, 0, deltaZ * 2));
-                    power += ForgeHooks.getEnchantPower(world, position.add(deltaX * 2, 1, deltaZ * 2));
+                    power += getEnchantPower(world, position.add(deltaX * 2, 0, deltaZ * 2));
+                    power += getEnchantPower(world, position.add(deltaX * 2, 1, deltaZ * 2));
                     if (deltaX != 0 && deltaZ != 0) {
-                        power += ForgeHooks.getEnchantPower(world, position.add(deltaX * 2, 0, deltaZ));
-                        power += ForgeHooks.getEnchantPower(world, position.add(deltaX * 2, 1, deltaZ));
-                        power += ForgeHooks.getEnchantPower(world, position.add(deltaX, 0, deltaZ * 2));
-                        power += ForgeHooks.getEnchantPower(world, position.add(deltaX, 1, deltaZ * 2));
+                        power += getEnchantPower(world, position.add(deltaX * 2, 0, deltaZ));
+                        power += getEnchantPower(world, position.add(deltaX * 2, 1, deltaZ));
+                        power += getEnchantPower(world, position.add(deltaX, 0, deltaZ * 2));
+                        power += getEnchantPower(world, position.add(deltaX, 1, deltaZ * 2));
                     }
                 }
             }
@@ -95,8 +94,12 @@ public class EnchantmentUtils {
         return power;
     }
 
+    public static float getEnchantPower(World world, BlockPos pos) {
+        return world.getBlockState(pos).getEnchantPowerBonus(world, pos);
+    }
+
     public static void addAllBooks(Enchantment enchantment, List<ItemStack> items) {
         for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++)
-            items.add(ItemEnchantedBook.getEnchantedItemStack(new EnchantmentData(enchantment, i)));
+            items.add(EnchantedBookItem.getEnchantedItemStack(new EnchantmentData(enchantment, i)));
     }
 }

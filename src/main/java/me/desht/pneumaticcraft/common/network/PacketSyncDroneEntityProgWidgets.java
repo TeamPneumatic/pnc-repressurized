@@ -1,23 +1,29 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.List;
+import java.util.function.Supplier;
 
-public class PacketSyncDroneEntityProgWidgets extends AbstractPacket<PacketSyncDroneEntityProgWidgets> {
+/**
+ * Received on: CLIENT
+ * Sent by server to sync a (debugged) drone's programming widgets
+ */
+public class PacketSyncDroneEntityProgWidgets {
 
     private List<IProgWidget> progWidgets;
     private int entityId;
 
     public PacketSyncDroneEntityProgWidgets() {
-
+        // empty
     }
 
     public PacketSyncDroneEntityProgWidgets(EntityDrone drone) {
@@ -25,34 +31,27 @@ public class PacketSyncDroneEntityProgWidgets extends AbstractPacket<PacketSyncD
         entityId = drone.getEntityId();
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        progWidgets = TileEntityProgrammer.getWidgetsFromNBT(ByteBufUtils.readTag(buf));
-        entityId = buf.readInt();
+    PacketSyncDroneEntityProgWidgets(PacketBuffer buffer) {
+        progWidgets = TileEntityProgrammer.getWidgetsFromNBT(buffer.readCompoundTag());
+        entityId = buffer.readInt();
     }
 
-    @Override
     public void toBytes(ByteBuf buf) {
-        NBTTagCompound tag = new NBTTagCompound();
-        TileEntityProgrammer.setWidgetsToNBT(progWidgets, tag);
-        ByteBufUtils.writeTag(buf, tag);
-
+        new PacketBuffer(buf).writeCompoundTag(TileEntityProgrammer.setWidgetsToNBT(progWidgets, new CompoundNBT()));
         buf.writeInt(entityId);
     }
 
-    @Override
-    public void handleClientSide(PacketSyncDroneEntityProgWidgets message, EntityPlayer player) {
-        Entity entity = player.world.getEntityByID(message.entityId);
-        if (entity instanceof EntityDrone) {
-            EntityDrone drone = (EntityDrone) entity;
-            List<IProgWidget> widgets = drone.getProgWidgets();
-            widgets.clear();
-            widgets.addAll(message.progWidgets);
-        }
-    }
-
-    @Override
-    public void handleServerSide(PacketSyncDroneEntityProgWidgets message, EntityPlayer player) {
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            Entity entity = PneumaticCraftRepressurized.proxy.getClientWorld().getEntityByID(entityId);
+            if (entity instanceof EntityDrone) {
+                EntityDrone drone = (EntityDrone) entity;
+                List<IProgWidget> widgets = drone.getProgWidgets();
+                widgets.clear();
+                widgets.addAll(progWidgets);
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
 
 }

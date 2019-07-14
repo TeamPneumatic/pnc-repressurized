@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 
 public class StepAssistUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRenderHandler {
@@ -16,7 +16,7 @@ public class StepAssistUpgradeHandler extends IUpgradeRenderHandler.SimpleToggle
     }
 
     @Override
-    public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.FEET;
+    public EquipmentSlotType getEquipmentSlot() {
+        return EquipmentSlotType.FEET;
     }
 }

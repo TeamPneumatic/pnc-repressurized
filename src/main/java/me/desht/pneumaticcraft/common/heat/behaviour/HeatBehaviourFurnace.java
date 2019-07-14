@@ -2,10 +2,10 @@ package me.desht.pneumaticcraft.common.heat.behaviour;
 
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.block.BlockFurnace;
-import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.block.FurnaceBlock;
+import net.minecraft.tileentity.FurnaceTileEntity;
 
-public class HeatBehaviourFurnace extends HeatBehaviour<TileEntityFurnace> {
+public class HeatBehaviourFurnace extends HeatBehaviour<FurnaceTileEntity> {
     @Override
     public String getId() {
         return Names.MOD_ID + ":furnace";
@@ -13,17 +13,17 @@ public class HeatBehaviourFurnace extends HeatBehaviour<TileEntityFurnace> {
 
     @Override
     public boolean isApplicable() {
-        return getTileEntity() instanceof TileEntityFurnace;
+        return getTileEntity() instanceof FurnaceTileEntity;
     }
 
     @Override
     public void update() {
-        TileEntityFurnace furnace = getTileEntity();
+        FurnaceTileEntity furnace = getTileEntity();
         if (getHeatExchanger().getTemperature() > 373) {
             int furnaceBurnTime = furnace.getField(0);
             int furnaceCookTime = furnace.getField(2);
             if (furnaceBurnTime < 190 && !furnace.getStackInSlot(0).isEmpty()) {
-                if (furnaceBurnTime == 0) BlockFurnace.setState(true, furnace.getWorld(), furnace.getPos());
+                if (furnaceBurnTime == 0) FurnaceBlock.setState(true, furnace.getWorld(), furnace.getPos());
                 furnace.setField(1, 200); // currentItemBurnTime
                 furnace.setField(0, furnaceBurnTime + 10); // furnaceBurnTime
                 getHeatExchanger().addHeat(-1);

@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
@@ -14,27 +14,17 @@ import java.util.List;
 public class NetworkConnectionHandler implements INeedTickUpdate {
     protected final GuiSecurityStationBase gui;
     protected final TileEntitySecurityStation station;
-    protected int baseX;
-    protected int baseY;
-    protected final int nodeSpacing;
+    private int baseX;
+    private int baseY;
+    private final int nodeSpacing;
     protected final int color;
-    protected final List<RenderProgressingLine> lineList = new ArrayList<>();
-    protected final boolean[] slotHacked = new boolean[35];
-    public final boolean[] slotFortified = new boolean[35];
+    final List<RenderProgressingLine> lineList = new ArrayList<>();
+    final boolean[] slotHacked = new boolean[35];
+    final boolean[] slotFortified = new boolean[35];
     private final float baseBridgeSpeed;
 
-    /**
-     * Normal constructor
-     *
-     * @param gui
-     * @param station
-     * @param baseX
-     * @param baseY
-     * @param nodeSpacing
-     * @param color
-     */
-    public NetworkConnectionHandler(GuiSecurityStationBase gui, TileEntitySecurityStation station, int baseX,
-                                    int baseY, int nodeSpacing, int color, float baseBridgeSpeed) {
+    NetworkConnectionHandler(GuiSecurityStationBase gui, TileEntitySecurityStation station, int baseX,
+                             int baseY, int nodeSpacing, int color, float baseBridgeSpeed) {
         this.gui = gui;
         this.station = station;
         this.baseX = baseX;
@@ -45,12 +35,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         ClientTickHandler.instance().registerUpdatedObject(this);
     }
 
-    /**
-     * Copy-constructor
-     *
-     * @param copy
-     */
-    public NetworkConnectionHandler(NetworkConnectionHandler copy) {
+    NetworkConnectionHandler(NetworkConnectionHandler copy) {
         this(copy.gui, copy.station, copy.baseX, copy.baseY, copy.nodeSpacing, copy.color, copy.baseBridgeSpeed);
         for (int i = 0; i < slotHacked.length; i++) {
             slotHacked[i] = copy.slotHacked[i];
@@ -64,11 +49,11 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
     /**
      * Constructor used when resolution gets updated.
      *
-     * @param copy
+     * @param copy object to copy
      * @param baseX
      * @param baseY
      */
-    public NetworkConnectionHandler(NetworkConnectionHandler copy, int baseX, int baseY) {
+    NetworkConnectionHandler(NetworkConnectionHandler copy, int baseX, int baseY) {
         this(copy);
         this.baseX = baseX;
         this.baseY = baseY;
@@ -86,13 +71,13 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         float f2 = (color >> 8 & 255) / 255.0F;
         float f3 = (color & 255) / 255.0F;
         GlStateManager.enableBlend();
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.color(f1, f2, f3, f);
+        GlStateManager.color4f(f1, f2, f3, f);
         for (RenderProgressingLine line : lineList) {
             line.render();
         }
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
         GlStateManager.disableBlend();
     }
 
@@ -114,7 +99,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
     protected void onSlotHack(int slot, boolean nuked) {
     }
 
-    protected void addConnection(int firstSlot, int secondSlot) {
+    void addConnection(int firstSlot, int secondSlot) {
         double startX = baseX + firstSlot % 5.0 * nodeSpacing;
         double startY = baseY + firstSlot / 5.0 * nodeSpacing;
         double endX = baseX + secondSlot % 5.0 * nodeSpacing;
@@ -125,7 +110,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         lineList.add(new RenderProgressingLine(startX, startY, endX, endY));
     }
 
-    protected void removeConnection(int firstSlot, int secondSlot) {
+    void removeConnection(int firstSlot, int secondSlot) {
         double startX = baseX + firstSlot % 5.0 * nodeSpacing;
         double startY = baseY + firstSlot / 5.0 * nodeSpacing;
         double endX = baseX + secondSlot % 5.0 * nodeSpacing;
@@ -138,7 +123,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         }
     }
 
-    protected boolean tryToHackSlot(int slotNumber) {
+    boolean tryToHackSlot(int slotNumber) {
         boolean successfullyHacked = false;
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
@@ -151,7 +136,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         return successfullyHacked;
     }
 
-    public boolean canHackSlot(int slotNumber) {
+    boolean canHackSlot(int slotNumber) {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (station.connects(slotNumber, slotNumber + i + j * 5) && slotHacked[slotNumber + i + j * 5]) {

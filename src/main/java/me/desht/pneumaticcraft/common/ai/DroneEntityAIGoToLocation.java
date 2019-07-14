@@ -3,16 +3,13 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IGotoWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class DroneEntityAIGoToLocation extends EntityAIBase {
+public class DroneEntityAIGoToLocation extends Goal {
     protected final IDroneBase drone;
     private final ProgWidget gotoWidget;
     private final ChunkPositionSorter positionSorter;
@@ -20,7 +17,7 @@ public class DroneEntityAIGoToLocation extends EntityAIBase {
 
     public DroneEntityAIGoToLocation(IDroneBase drone, ProgWidget gotoWidget) {
         this.drone = drone;
-        setMutexBits(63);//binary 111111, so it won't run along with other AI tasks.
+        setMutexFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
         this.gotoWidget = gotoWidget;
         Set<BlockPos> set = new HashSet<>();
         ((IAreaProvider) gotoWidget).getArea(set);

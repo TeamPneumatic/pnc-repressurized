@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.igwmod;
 
 import igwmod.gui.GuiWiki;
 import igwmod.gui.tabs.BaseWikiTab;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -56,7 +56,7 @@ public class PneumaticCraftWikiTab extends BaseWikiTab {
 
     @Override
     public ItemStack renderTabIcon(GuiWiki gui) {
-        return new ItemStack(Blockss.AIR_CANNON);
+        return new ItemStack(ModBlocks.AIR_CANNON);
     }
 
     @Override

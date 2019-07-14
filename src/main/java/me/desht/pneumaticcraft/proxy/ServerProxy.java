@@ -1,10 +1,12 @@
 package me.desht.pneumaticcraft.proxy;
 
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
-import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ServerProxy implements IProxy {
@@ -15,12 +17,18 @@ public class ServerProxy implements IProxy {
     }
 
     @Override
+    public World getWorldFor(NetworkEvent.Context ctx) {
+        assert ctx.getSender() != null;
+        return ctx.getSender().world;
+    }
+
+    @Override
     public World getClientWorld() {
         return null;
     }
 
     @Override
-    public EntityPlayer getClientPlayer() {
+    public PlayerEntity getClientPlayer() {
         return null;
     }
 
@@ -52,15 +60,6 @@ public class ServerProxy implements IProxy {
     }
 
     @Override
-    public void addScheduledTask(Runnable runnable, boolean serverSide) {
-        FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(runnable);
-    }
-
-    @Override
-    public void playCustomParticle(EnumCustomParticleType enumCustomParticleType, World w, double x, double y, double z, double dx, double dy, double dz) {
-    }
-
-    @Override
     public String xlate(String key) {
         return "{*" + key + "*}";  // for TheOneProbe formatting
     }
@@ -77,5 +76,19 @@ public class ServerProxy implements IProxy {
     @Override
     public Pair<Integer, Integer> getScaledScreenSize() {
         return Pair.of(0, 0);
+    }
+
+    @Override
+    public Iterable<? extends Entity> getAllEntities(World world) {
+        return ((ServerWorld)world).getEntities()::iterator;
+    }
+
+    @Override
+    public boolean isScreenHiRes() {
+        return false;
+    }
+
+    @Override
+    public void openGui(Screen gui) {
     }
 }

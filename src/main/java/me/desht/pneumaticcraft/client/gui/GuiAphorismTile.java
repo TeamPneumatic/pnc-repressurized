@@ -1,22 +1,25 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAphorismTileUpdate;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import me.desht.pneumaticcraft.common.util.DramaSplash;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ChatAllowedCharacters;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.SharedConstants;
 import org.apache.commons.lang3.ArrayUtils;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
-import java.io.IOException;
 import java.util.List;
 
-public class GuiAphorismTile extends GuiScreen {
+public class GuiAphorismTile extends Screen {
     public final TileEntityAphorismTile tile;
     private String[] textLines;
     public int cursorY;
@@ -24,43 +27,52 @@ public class GuiAphorismTile extends GuiScreen {
     public int updateCounter;
 
     public GuiAphorismTile(TileEntityAphorismTile tile) {
+        super(new ItemStack(ModBlocks.APHORISM_TILE).getDisplayName());
+
         this.tile = tile;
         textLines = tile.getTextLines();
-        if (ConfigHandler.client.aphorismDrama && textLines.length == 1 && textLines[0].equals("")) {
+        if (Config.Client.aphorismDrama && textLines.length == 1 && textLines[0].equals("")) {
             List<String> l = PneumaticCraftUtils.convertStringIntoList(DramaSplash.getInstance().getSplash(), 20);
             tile.setTextLines(l.toArray(new String[0]));
         }
         NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
     }
 
+    public static void openGui(TileEntityAphorismTile te) {
+        if (te instanceof TileEntityAphorismTile) {
+            Minecraft.getInstance().displayGuiScreen(new GuiAphorismTile(te));
+        }
+    }
+
     @Override
-    public void updateScreen() {
+    public void tick() {
         updateCounter++;
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(this, fontRenderer,
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        super.render(mouseX, mouseY, partialTicks);
+
+        if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
+            GuiUtils.showPopupHelpScreen(this, font,
                     PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.aphorismTile.helpText"), 40));
         }
     }
 
     @Override
-    protected void keyTyped(char par1, int par2) throws IOException {
-        if (par2 == Keyboard.KEY_ESCAPE) {
+    public boolean charTyped(char ch, int keyCode) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
-        } else if (par2 == Keyboard.KEY_LEFT || par2 == Keyboard.KEY_UP) {
+        } else if (keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_UP) {
             cursorY--;
             if (cursorY < 0) cursorY = textLines.length - 1;
-        } else if (par2 == Keyboard.KEY_DOWN || par2 == Keyboard.KEY_NUMPADENTER) {
+        } else if (keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             cursorY++;
             if (cursorY >= textLines.length) cursorY = 0;
-        } else if (par2 == Keyboard.KEY_RETURN) {
+        } else if (keyCode == GLFW.GLFW_KEY_ENTER) {
             cursorY++;
-            textLines = ArrayUtils.add(textLines, cursorY, "");
-        } else if (par2 == Keyboard.KEY_BACK) {
+            textLines = ArrayUtils.insert(cursorY, textLines, "");
+        } else if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
             if (textLines[cursorY].length() > 0) {
                 textLines[cursorY] = textLines[cursorY].substring(0, textLines[cursorY].length() - 1);
                 if (textLines[cursorY].endsWith("\u00a7")) {
@@ -71,8 +83,8 @@ public class GuiAphorismTile extends GuiScreen {
                 cursorY--;
                 if (cursorY < 0) cursorY = 0;
             }
-        } else if (par2 == Keyboard.KEY_DELETE) {
-            if (GuiScreen.isShiftKeyDown()) {
+        } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
+            if (Screen.hasShiftDown()) {
                 textLines = new String[1];
                 textLines[0] = "";
                 cursorY = 0;
@@ -83,26 +95,26 @@ public class GuiAphorismTile extends GuiScreen {
                         cursorY = textLines.length - 1;
                 }
             }
-        } else if (ChatAllowedCharacters.isAllowedCharacter(par1)) {
-            if (GuiScreen.isAltKeyDown()) {
-                if (par1 >= 'a' && par1 <= 'f' || par1 >= 'l' && par1 <= 'o' || par1 == 'r' || par1 >= '0' && par1 <= '9') {
-                    textLines[cursorY] = textLines[cursorY] + "\u00a7" + par1;
+        } else if (SharedConstants.isAllowedCharacter(ch)) {
+            if (Screen.hasAltDown()) {
+                if (ch >= 'a' && ch <= 'f' || ch >= 'l' && ch <= 'o' || ch == 'r' || ch >= '0' && ch <= '9') {
+                    textLines[cursorY] = textLines[cursorY] + "\u00a7" + ch;
                 }
             } else {
-                textLines[cursorY] = textLines[cursorY] + par1;
+                textLines[cursorY] = textLines[cursorY] + ch;
             }
         }
         tile.setTextLines(textLines);
-        super.keyTyped(par1, par2);
+        return super.charTyped(ch, keyCode);
     }
 
     @Override
-    public void initGui() {
-        Keyboard.enableRepeatEvents(true);
+    public void init() {
+        minecraft.keyboardListener.enableRepeatEvents(true);
     }
 
     @Override
-    public void onGuiClosed() {
-        Keyboard.enableRepeatEvents(false);
+    public void onClose() {
+        minecraft.keyboardListener.enableRepeatEvents(false);
     }
 }

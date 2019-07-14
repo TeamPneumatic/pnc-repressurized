@@ -5,15 +5,15 @@
     "custom": {
       "flip-v": true
     },
-    "model": "pneumaticcraft:advanced_air_compressor.obj"
+    "model": "pneumaticcraft:block/advanced_air_compressor.obj"
   },
   "variants": {
     "on": {
       "true": {
-        "model": "pneumaticcraft:advanced_air_compressor_active.obj"
+        "model": "pneumaticcraft:block/advanced_air_compressor_active.obj"
       },
       "false": {
-        "model": "pneumaticcraft:advanced_air_compressor.obj"
+        "model": "pneumaticcraft:block/advanced_air_compressor.obj"
       }
     },
     "facing": {

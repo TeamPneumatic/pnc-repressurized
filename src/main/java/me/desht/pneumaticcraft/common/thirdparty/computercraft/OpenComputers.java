@@ -1,8 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.computercraft;
 
 import li.cil.oc.api.Driver;
-import me.desht.pneumaticcraft.api.event.PuzzleRegistryEvent;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.progwidgets.WidgetRegistrator;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -22,7 +21,7 @@ public class OpenComputers implements IThirdParty {
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        Blockss.registerBlock(event.getRegistry(), new BlockDroneInterface());
+        ModBlocks.registerBlock(event.getRegistry(), new BlockDroneInterface());
     }
 
     @Override

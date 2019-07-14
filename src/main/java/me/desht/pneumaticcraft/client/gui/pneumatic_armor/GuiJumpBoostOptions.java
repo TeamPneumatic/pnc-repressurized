@@ -1,9 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
-import net.minecraft.client.gui.GuiSlider;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.EquipmentSlotType;
 
 public class GuiJumpBoostOptions extends GuiSliderOptions {
     public GuiJumpBoostOptions(IUpgradeRenderHandler handler) {
@@ -16,12 +15,17 @@ public class GuiJumpBoostOptions extends GuiSliderOptions {
     }
 
     @Override
-    protected EntityEquipmentSlot getSlot() {
-        return EntityEquipmentSlot.LEGS;
+    protected EquipmentSlotType getSlot() {
+        return EquipmentSlotType.LEGS;
     }
 
     @Override
-    protected GuiSlider.FormatHelper getFormatHelper() {
-        return (id, name, value) -> "Boost: " + (int) value + "%";
+    protected String getPrefix() {
+        return "Boost: ";
+    }
+
+    @Override
+    protected String getSuffix() {
+        return "%";
     }
 }

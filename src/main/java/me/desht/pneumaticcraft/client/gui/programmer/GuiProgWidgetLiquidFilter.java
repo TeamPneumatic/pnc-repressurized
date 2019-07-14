@@ -1,21 +1,15 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetFluidFilter;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLiquidFilter;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidgetLiquidFilter> {
@@ -23,9 +17,9 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
     private static final int GRID_WIDTH = 8;
     private static final int GRID_HEIGHT = 6;
     private WidgetFluidFilter mainFilter;
-    private WidgetTextField searchField;
     private WidgetVerticalScrollbar scrollbar;
     private int lastScroll;
+    private final List<WidgetFluidFilter> visibleFluidWidgets = new ArrayList<>();
 
     public GuiProgWidgetLiquidFilter(ProgWidgetLiquidFilter widget, GuiProgrammer guiProgrammer) {
         super(widget, guiProgrammer);
@@ -35,29 +29,32 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
 
     @Override
     protected ResourceLocation getTexture() {
-        return new ResourceLocation(Textures.GUI_ITEM_SEARCHER_LOCATION);
+        return Textures.GUI_ITEM_SEARCHER_LOCATION;
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
-        mainFilter = new WidgetFluidFilter(-1, guiLeft + 124, guiTop + 25).setFluid(widget.getFluid());
-        addWidget(mainFilter);
+        mainFilter = new WidgetFluidFilter(guiLeft + 124, guiTop + 25, b -> b.setFluid(null)).setFluid(progWidget.getFluid());
+        addButton(mainFilter);
 
         for (int x = 0; x < GRID_WIDTH; x++) {
             for (int y = 0; y < GRID_HEIGHT; y++) {
-                addWidget(new WidgetFluidFilter(x + y * GRID_WIDTH, guiLeft + 8 + x * 18, guiTop + 52 + y * 18));
+                WidgetFluidFilter f = new WidgetFluidFilter(guiLeft + 8 + x * 18, guiTop + 52 + y * 18, b -> mainFilter.setFluid(b.getFluid()));
+                addButton(f);
+                visibleFluidWidgets.add(f);
             }
         }
 
-        searchField = new WidgetTextField(Minecraft.getMinecraft().fontRenderer, guiLeft + 10, guiTop + 30, 90, 10);
-        addWidget(searchField);
-        searchField.setFocused(true);
+        WidgetTextField searchField = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 90, 10);
+        addButton(searchField);
+        searchField.setFocused2(true);
+        searchField.func_212954_a(s -> addValidFluids());
 
         scrollbar = new WidgetVerticalScrollbar(guiLeft + 155, guiTop + 47, 112);
         scrollbar.setListening(true);
-        addWidget(scrollbar);
+        addButton(scrollbar);
 
         addValidFluids();
     }
@@ -66,47 +63,32 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
 
         List<Fluid> fluids = new ArrayList<>();
 
-        for (Fluid fluid : FluidRegistry.getRegisteredFluids().values()) {
-            if (fluid.getLocalizedName(new FluidStack(fluid, 1)).toLowerCase().contains(searchField.getText())) {
-                fluids.add(fluid);
-            }
-        }
-        fluids.sort(Comparator.comparing(Fluid::getName));
+        // todo 1.14 fluids
+//        String filter = searchField.getText();
+//        for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
+//            if (filter.isEmpty() || fluid.getLocalizedName(new FluidStack(fluid, 1)).toLowerCase().contains(filter)) {
+//                fluids.add(fluid);
+//            }
+//        }
+//        fluids.sort(Comparator.comparing(Fluid::getName));
 
         scrollbar.setStates(Math.max(0, (fluids.size() - GRID_WIDTH * GRID_HEIGHT + GRID_WIDTH - 1) / GRID_WIDTH));
 
         int offset = scrollbar.getState() * GRID_WIDTH;
-        for (IGuiWidget widget : widgets) {
-            if (widget.getID() >= 0 && widget instanceof WidgetFluidFilter) {
-                int idWithOffset = widget.getID() + offset;
-                ((WidgetFluidFilter) widget).setFluid(idWithOffset >= 0 && idWithOffset < fluids.size() ? fluids.get(idWithOffset) : null);
+        for (int i = 0; i < visibleFluidWidgets.size(); i++) {
+            if (i + offset < fluids.size()) {
+                visibleFluidWidgets.get(i).setFluid(fluids.get(i + offset));
             }
         }
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
+
         if (lastScroll != scrollbar.getState()) {
             lastScroll = scrollbar.getState();
             addValidFluids();
         }
-    }
-
-    @Override
-    public void keyTyped(char key, int keyCode) throws IOException {
-        super.keyTyped(key, keyCode);
-        addValidFluids();
-    }
-
-    @Override
-    public void actionPerformed(IGuiWidget widget) {
-        if (widget == mainFilter) {
-            ((WidgetFluidFilter) widget).setFluid(null);
-        } else if (widget instanceof WidgetFluidFilter) {
-            mainFilter.setFluid(((WidgetFluidFilter) widget).getFluid());
-        }
-        this.widget.setFluid(mainFilter.getFluid());
-        super.actionPerformed(widget);
     }
 }

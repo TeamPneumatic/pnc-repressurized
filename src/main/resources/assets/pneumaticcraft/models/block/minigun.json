@@ -1,6 +1,6 @@
 {
   "textures": {
-    "face": "pneumaticcraft:blocks/minigun"
+    "face": "pneumaticcraft:block/minigun"
   },
   "elements": [
     {

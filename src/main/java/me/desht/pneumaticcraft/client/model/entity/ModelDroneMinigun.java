@@ -6,88 +6,88 @@
 
 package me.desht.pneumaticcraft.client.model.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.model.RendererModel;
+import net.minecraft.client.renderer.model.Model;
 import net.minecraft.entity.Entity;
 
-public class ModelDroneMinigun extends ModelBase {
+public class ModelDroneMinigun extends Model {
     //fields
-    private final ModelRenderer barrel;
-    private final ModelRenderer support1;
-    private final ModelRenderer support2;
-    private final ModelRenderer support3;
-    private final ModelRenderer support4;
-    private final ModelRenderer support5;
-    private final ModelRenderer main;
-    private final ModelRenderer magazine;
-    private final ModelRenderer mount;
-    private final ModelRenderer magazineColor;
+    private final RendererModel barrel;
+    private final RendererModel support1;
+    private final RendererModel support2;
+    private final RendererModel support3;
+    private final RendererModel support4;
+    private final RendererModel support5;
+    private final RendererModel main;
+    private final RendererModel magazine;
+    private final RendererModel mount;
+    private final RendererModel magazineColor;
 
     public ModelDroneMinigun() {
         textureWidth = 64;
         textureHeight = 32;
 
-        barrel = new ModelRenderer(this, 30, 15);
+        barrel = new RendererModel(this, 30, 15);
         barrel.addBox(-0.5F, 1.5F, 0F, 1, 1, 16);
         barrel.setRotationPoint(0F, 20.96667F, -8F);
         barrel.setTextureSize(64, 32);
         barrel.mirror = true;
         setRotation(barrel, 0F, 0F, 0F);
-        support1 = new ModelRenderer(this, 0, 0);
+        support1 = new RendererModel(this, 0, 0);
         support1.addBox(-1.5F, -1.5F, 0F, 3, 3, 1);
         support1.setRotationPoint(0F, 21F, -6F);
         support1.setTextureSize(64, 32);
         support1.mirror = true;
         setRotation(support1, 0F, 0F, 0F);
-        support2 = new ModelRenderer(this, 0, 4);
+        support2 = new RendererModel(this, 0, 4);
         support2.addBox(-1F, 1.5F, 0F, 2, 1, 1);
         support2.setRotationPoint(0F, 21F, -6F);
         support2.setTextureSize(64, 32);
         support2.mirror = true;
         setRotation(support2, 0F, 0F, 0F);
-        support3 = new ModelRenderer(this, 0, 6);
+        support3 = new RendererModel(this, 0, 6);
         support3.addBox(-1F, -2.5F, 0F, 2, 1, 1);
         support3.setRotationPoint(0F, 21F, -6F);
         support3.setTextureSize(64, 32);
         support3.mirror = true;
         setRotation(support3, 0F, 0F, 0F);
-        support4 = new ModelRenderer(this, 0, 8);
+        support4 = new RendererModel(this, 0, 8);
         support4.addBox(1.5F, -1F, 0F, 1, 2, 1);
         support4.setRotationPoint(0F, 21F, -6F);
         support4.setTextureSize(64, 32);
         support4.mirror = true;
         setRotation(support4, 0F, 0F, 0F);
-        support5 = new ModelRenderer(this, 0, 11);
+        support5 = new RendererModel(this, 0, 11);
         support5.addBox(-2.5F, -1F, 0F, 1, 2, 1);
         support5.setRotationPoint(0F, 21F, -6F);
         support5.setTextureSize(64, 32);
         support5.mirror = true;
         setRotation(support5, 0F, 0F, 0F);
-        main = new ModelRenderer(this, 36, 0);
+        main = new RendererModel(this, 36, 0);
         main.addBox(0F, 0F, 0F, 6, 6, 8);
         main.setRotationPoint(-3F, 18F, 8F);
         main.setTextureSize(64, 32);
         main.mirror = true;
         setRotation(main, 0F, 0F, 0F);
-        magazine = new ModelRenderer(this, 0, 14);
+        magazine = new RendererModel(this, 0, 14);
         magazine.addBox(0F, 0F, 0F, 2, 3, 6);
         magazine.setRotationPoint(3F, 22F, 9F);
         magazine.setTextureSize(64, 32);
         magazine.mirror = true;
         setRotation(magazine, 0F, 0F, 0F);
-        mount = new ModelRenderer(this, 0, 23);
+        mount = new RendererModel(this, 0, 23);
         mount.addBox(0F, 0F, 0F, 2, 4, 2);
         mount.setRotationPoint(-1F, 15F, 11F);
         mount.setTextureSize(64, 32);
         mount.mirror = true;
         setRotation(mount, 0F, 0F, 0F);
-        magazineColor = new ModelRenderer(this, 8, 0);
+        magazineColor = new RendererModel(this, 8, 0);
         magazineColor.addBox(0F, 0F, 0F, 1, 2, 4);
         magazineColor.setRotationPoint(4.3F, 22.5F, 10F);
         magazineColor.setTextureSize(64, 32);
@@ -95,22 +95,21 @@ public class ModelDroneMinigun extends ModelBase {
         setRotation(magazineColor, 0F, 0F, 0F);
     }
 
-    @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        super.render(entity, f, f1, f2, f3, f4, f5);
-        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+//        super.render(entity, f, f1, f2, f3, f4, f5);
+//        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
         EntityDrone drone = (EntityDrone) entity;
         renderMinigun(drone != null ? drone.getMinigun() : null, f5, 0, true);
     }
 
     public void renderMinigun(Minigun minigun, float size, float partialTick, boolean renderMount) {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.MODEL_DRONE_MINIGUN);
-        GlStateManager.color(1, 1, 1, 1);
+        Minecraft.getInstance().getTextureManager().bindTexture(Textures.MODEL_DRONE_MINIGUN);
+        GlStateManager.color4f(1, 1, 1, 1);
         GlStateManager.pushMatrix();
         if (renderMount) {
-            GlStateManager.translate(0, 5 / 16D, -12 / 16D);
+            GlStateManager.translated(0, 5 / 16D, -12 / 16D);
             mount.render(size);
-            GlStateManager.translate(0, -5 / 16D, 12 / 16D);
+            GlStateManager.translated(0, -5 / 16D, 12 / 16D);
         }
 
         float barrelRotation = 0;
@@ -119,10 +118,10 @@ public class ModelDroneMinigun extends ModelBase {
             double yaw = minigun.oldMinigunYaw + partialTick * (minigun.minigunYaw - minigun.oldMinigunYaw);
             double pitch = minigun.oldMinigunPitch + partialTick * (minigun.minigunPitch - minigun.oldMinigunPitch);
 
-            GlStateManager.translate(0, 23 / 16D, 0);
-            GlStateManager.rotate((float)yaw, 0, 1, 0);
-            GlStateManager.rotate((float)pitch, 1, 0, 0);
-            GlStateManager.translate(0, -18 / 16D, -12 / 16D);
+            GlStateManager.translated(0, 23 / 16D, 0);
+            GlStateManager.rotated((float)yaw, 0, 1, 0);
+            GlStateManager.rotated((float)pitch, 1, 0, 0);
+            GlStateManager.translated(0, -18 / 16D, -12 / 16D);
         }
         barrel.rotateAngleY = 0;
         barrel.rotateAngleX = 0;
@@ -142,15 +141,15 @@ public class ModelDroneMinigun extends ModelBase {
         support5.render(size);
         magazine.render(size);
         main.render(size);
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         RenderUtils.glColorHex(minigun != null ? 0xFF000000 | minigun.getAmmoColor() : 0xFF313131);
         magazineColor.render(size);
-        GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.enableTexture2D();
+        GlStateManager.color4f(1, 1, 1, 1);
+        GlStateManager.enableTexture();
         GlStateManager.popMatrix();
     }
 
-    private void setRotation(ModelRenderer model, float x, float y, float z) {
+    private void setRotation(RendererModel model, float x, float y, float z) {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;

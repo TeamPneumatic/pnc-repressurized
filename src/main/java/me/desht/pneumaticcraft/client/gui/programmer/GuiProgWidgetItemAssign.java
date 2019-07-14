@@ -13,20 +13,22 @@ public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetI
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        textfield = new WidgetComboBox(fontRenderer, guiLeft + 10, guiTop + 40, 160, 10);
+    public void init() {
+        super.init();
+
+        textfield = new WidgetComboBox(font, guiLeft + 10, guiTop + 40, 160, 10);
         textfield.setElements(guiProgrammer.te.getAllVariables());
         textfield.setMaxStringLength(1000);
-        textfield.setText(widget.getVariable());
-        addWidget(textfield);
+        textfield.setText(progWidget.getVariable());
+        addButton(textfield);
 
-        addWidget(new WidgetLabel(guiLeft + 10, guiTop + 30, "Setting variable:"));
+        addButton(new WidgetLabel(guiLeft + 10, guiTop + 30, "Setting variable:"));
     }
 
     @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
-        widget.setVariable(textfield.getText());
+    public void onClose() {
+        super.onClose();
+
+        progWidget.setVariable(textfield.getText());
     }
 }

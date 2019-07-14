@@ -7,8 +7,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.advancements.PlayerAdvancements;
-import net.minecraft.advancements.critereon.AbstractCriterionInstance;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.advancements.criterion.CriterionInstance;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
@@ -89,7 +89,7 @@ public class CustomTrigger implements ICriterionTrigger {
      *
      * @param parPlayer the player
      */
-    public void trigger(EntityPlayerMP parPlayer) {
+    public void trigger(ServerPlayerEntity parPlayer) {
         CustomTrigger.Listeners tameanimaltrigger$listeners = this.listeners.get(parPlayer.getAdvancements());
 
         if (tameanimaltrigger$listeners != null) {
@@ -97,7 +97,7 @@ public class CustomTrigger implements ICriterionTrigger {
         }
     }
 
-    public static class Instance extends AbstractCriterionInstance {
+    public static class Instance extends CriterionInstance {
         /**
          * Instantiates a new instance.
          */
@@ -160,7 +160,7 @@ public class CustomTrigger implements ICriterionTrigger {
          *
          * @param player the player
          */
-        public void trigger(EntityPlayerMP player) {
+        public void trigger(ServerPlayerEntity player) {
             List<ICriterionTrigger.Listener<CustomTrigger.Instance>> list = null;
 
             for (ICriterionTrigger.Listener<CustomTrigger.Instance> listener : this.listeners) {

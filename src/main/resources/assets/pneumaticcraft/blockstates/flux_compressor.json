@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "pneumaticcraft:flux_compressor"
+    "model": "pneumaticcraft:block/flux_compressor"
   },
   "variants": {
     "normal": [{}],

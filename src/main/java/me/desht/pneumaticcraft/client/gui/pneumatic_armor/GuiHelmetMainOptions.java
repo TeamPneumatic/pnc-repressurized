@@ -1,13 +1,13 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 
 public class GuiHelmetMainOptions implements IOptionPage {
 
@@ -25,52 +25,50 @@ public class GuiHelmetMainOptions implements IOptionPage {
 
     @Override
     public void initGui(IGuiScreen gui) {
-        gui.getButtonList().add(new GuiButton(10, 30, 128, 150, 20, "Move Pressure Stat Screen..."));
-        gui.getButtonList().add(new GuiButton(11, 30, 150, 150, 20, "Move Message Screen..."));
-        changeKeybindingButton = new KeybindingButton(12, 30, 172, 150, 20, "Change open menu key...", KeyHandler.getInstance().keybindOpenOptions);
-        gui.getButtonList().add(changeKeybindingButton);
+        gui.getWidgetList().add(new GuiButtonSpecial(30, 128, 150, 20,
+                "Move Pressure Stat Screen...",
+                b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.POWER)))
+        );
+
+        gui.getWidgetList().add(new GuiButtonSpecial(30, 150, 150, 20,
+                "Move Message Screen...", b -> {
+            renderHandler.testMessageStat = new GuiAnimatedStat(null, "Test Message, keep in mind messages can be long!",
+                    GuiAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
+            renderHandler.testMessageStat.openWindow();
+            Minecraft.getInstance().displayGuiScreen(
+                    new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.MESSAGE, renderHandler.testMessageStat));
+        }));
+
+        changeKeybindingButton = new KeybindingButton(30, 172, 150, 20,
+                "Change open menu key...", KeyHandler.getInstance().keybindOpenOptions,
+                b -> changeKeybindingButton.toggleKeybindMode()
+        );
+        gui.getWidgetList().add(changeKeybindingButton);
+    }
+
+    public void renderPre(int x, int y, float partialTicks) {
+    }
+
+    public void renderPost(int x, int y, float partialTicks) {
     }
 
     @Override
-    public void actionPerformed(GuiButton button) {
-        switch (button.id) {
-            case 10:
-                Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.POWER));
-                break;
-            case 11:
-                renderHandler.testMessageStat = new GuiAnimatedStat(null, "Test Message, keep in mind messages can be long!",
-                        GuiAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
-                renderHandler.testMessageStat.openWindow();
-                Minecraft.getMinecraft().displayGuiScreen(
-                        new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.MESSAGE, renderHandler.testMessageStat));
-                break;
-            case 12:
-                changeKeybindingButton.toggleKeybindMode();
-                break;
-        }
-    }
-
-    @Override
-    public void keyTyped(char ch, int key) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (changeKeybindingButton != null) {
-            changeKeybindingButton.receiveKey(key);
+            changeKeybindingButton.receiveKey(keyCode);
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void mouseClicked(int x, int y, int button) {
+    public boolean mouseClicked(double x, double y, int button) {
+        return false;
     }
 
     @Override
-    public void drawPreButtons(int x, int y, float partialTicks) {
-    }
-
-    @Override
-    public void drawScreen(int x, int y, float partialTicks) {
-    }
-
-    @Override
-    public void handleMouseInput() {
+    public boolean mouseScrolled(double x, double y, double dir) {
+        return false;
     }
 
     @Override
@@ -79,7 +77,7 @@ public class GuiHelmetMainOptions implements IOptionPage {
     }
 
     @Override
-    public boolean displaySettingsText() {
+    public boolean displaySettingsHeader() {
         return true;
     }
 }

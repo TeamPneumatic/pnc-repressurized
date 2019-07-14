@@ -1,26 +1,26 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-@SideOnly(Side.CLIENT)
 public class GuiCoordinateTrackerOptions implements IOptionPage {
-    private GuiButton wirePath;
-    private GuiButton pathEnabled;
-    private GuiButton xRayEnabled;
-    private GuiButton pathUpdateRate;
+    private Button wirePath;
+    private Button pathEnabled;
+    private Button xRayEnabled;
+    private Button pathUpdateRate;
+    private final CoordTrackUpgradeHandler coordHandler = HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class);
+    private final Minecraft mc = Minecraft.getInstance();
 
     @Override
     public String getPageName() {
@@ -29,105 +29,109 @@ public class GuiCoordinateTrackerOptions implements IOptionPage {
 
     @Override
     public void initGui(IGuiScreen gui) {
-        gui.getButtonList().add(new GuiButton(10, 30, 40, 150, 20, "Select Target..."));
-        gui.getButtonList().add(new GuiButton(11, 30, 62, 150, 20, "Navigate to Surface..."));
-        pathEnabled = new GuiButton(12, 30, 128, 150, 20, "");
-        wirePath = new GuiButton(13, 30, 150, 150, 20, "");
-        xRayEnabled = new GuiButton(14, 30, 172, 150, 20, "");
-        pathUpdateRate = new GuiButton(15, 30, 194, 150, 20, "");
-        gui.getButtonList().add(pathEnabled);
-        gui.getButtonList().add(wirePath);
-        gui.getButtonList().add(xRayEnabled);
-        gui.getButtonList().add(pathUpdateRate);
+        gui.addButton(new GuiButtonSpecial(30, 40, 150, 20,
+                "Select Target...", b -> selectTarget()));
+        gui.addButton(new GuiButtonSpecial(30, 62, 150, 20,
+                "Navigate to Surface...", b -> navigateToSurface()));
+        pathEnabled = new GuiButtonSpecial(30, 128, 150, 20, "",
+                b -> {
+                    coordHandler.pathEnabled = !coordHandler.pathEnabled;
+                    updateButtonTexts();
+                    coordHandler.saveToConfig();
+                });
+        wirePath = new GuiButtonSpecial(30, 150, 150, 20, "",
+                b -> {
+                    coordHandler.wirePath = !coordHandler.wirePath;
+                    updateButtonTexts();
+                    coordHandler.saveToConfig();
+                });
+        xRayEnabled = new GuiButtonSpecial(30, 172, 150, 20, "",
+                b -> {
+                    coordHandler.xRayEnabled = !coordHandler.xRayEnabled;
+                    updateButtonTexts();
+                    coordHandler.saveToConfig();
+                });
+        pathUpdateRate = new GuiButtonSpecial(30, 194, 150, 20, "",
+                b -> {
+                    coordHandler.pathUpdateSetting = (coordHandler.pathUpdateSetting + 1) % 3;
+                    updateButtonTexts();
+                    coordHandler.saveToConfig();
+                });
+        gui.addButton(pathEnabled);
+        gui.addButton(wirePath);
+        gui.addButton(xRayEnabled);
+        gui.addButton(pathUpdateRate);
         updateButtonTexts();
     }
 
-    @Override
-    public void actionPerformed(GuiButton button) {
-        Minecraft mc = FMLClientHandler.instance().getClient();
-        CoordTrackUpgradeHandler coordHandler = HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class);
-        switch (button.id) {
-            case 10:
-                mc.displayGuiScreen(null);
-                mc.setIngameFocus();
-                coordHandler.isListeningToCoordTrackerSetting = true;
-                HUDHandler.instance().addMessage(new ArmorMessage("Changing Coordinate Tracker coordinate...", Collections.singletonList("Right-click the desired coordinate"), 90, 0x7000AA00));
-                break;
-            case 11:
-                mc.displayGuiScreen(null);
-                mc.setIngameFocus();
-                switch (coordHandler.navigateToSurface(mc.player)) {
-                    case EASY_PATH:
-                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.routeFound"), new ArrayList<>(), 90, 0x7000AA00));
-                        break;
-                    case DRONE_PATH:
-                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.harderRouteFound"), new ArrayList<>(), 90, 0x7044AA00));
-                        break;
-                    case NO_PATH:
-                        HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.noRouteFound"), new ArrayList<>(), 90, 0x70FF0000));
-                        break;
-                }
+    /**
+     * See also: {@link CoordTrackUpgradeHandler#onPlayerInteract(PlayerInteractEvent.RightClickBlock)}
+     */
+    private void selectTarget() {
+        mc.player.closeScreen();
+        mc.setGameFocused(true);
+        coordHandler.isListeningToCoordTrackerSetting = true;
+        HUDHandler.instance().addMessage(new ArmorMessage("Changing Coordinate Tracker coordinate...",
+                Collections.singletonList("Right-click the desired coordinate"), 90, 0x7000AA00)
+        );
+    }
 
+    private void navigateToSurface() {
+        mc.player.closeScreen();
+        mc.setGameFocused(true);
+        switch (coordHandler.navigateToSurface(mc.player)) {
+            case EASY_PATH:
+                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.routeFound"), new ArrayList<>(), 90, 0x7000AA00));
                 break;
-            case 12:
-                coordHandler.pathEnabled = !coordHandler.pathEnabled;
+            case DRONE_PATH:
+                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.harderRouteFound"), new ArrayList<>(), 90, 0x7044AA00));
                 break;
-            case 13:
-                coordHandler.wirePath = !coordHandler.wirePath;
-                break;
-            case 14:
-                coordHandler.xRayEnabled = !coordHandler.xRayEnabled;
-                break;
-            case 15:
-                coordHandler.pathUpdateSetting++;
-                if (coordHandler.pathUpdateSetting > 2) {
-                    coordHandler.pathUpdateSetting = 0;
-                }
+            case NO_PATH:
+                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.noRouteFound"), new ArrayList<>(), 90, 0x70FF0000));
                 break;
         }
-        updateButtonTexts();
-        coordHandler.saveToConfig();
+    }
+
+    public void renderPre(int x, int y, float partialTicks) {
+    }
+
+    public void renderPost(int x, int y, float partialTicks) {
     }
 
     @Override
-    public void drawPreButtons(int x, int y, float partialTicks) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return false;
     }
 
     @Override
-    public void drawScreen(int x, int y, float partialTicks) {
+    public boolean mouseClicked(double x, double y, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double x, double y, double dir) {
+        return false;
     }
 
     private void updateButtonTexts() {
         CoordTrackUpgradeHandler coordHandler = HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class);
-        pathEnabled.displayString = coordHandler.pathEnabled ? "Navigation Enabled" : "Navigation Disabled";
-        wirePath.displayString = coordHandler.wirePath ? "Wire Navigation" : "Tile Navigation";
-        xRayEnabled.displayString = coordHandler.xRayEnabled ? "X-Ray Enabled" : "X-Ray Disabled";
+        pathEnabled.setMessage(coordHandler.pathEnabled ? "Navigation Enabled" : "Navigation Disabled");
+        wirePath.setMessage(coordHandler.wirePath ? "Wire Navigation" : "Tile Navigation");
+        xRayEnabled.setMessage(coordHandler.xRayEnabled ? "X-Ray Enabled" : "X-Ray Disabled");
         switch (coordHandler.pathUpdateSetting) {
             case 0:
-                pathUpdateRate.displayString = "Path update rate: Low";
+                pathUpdateRate.setMessage("Path update rate: Low");
                 break;
             case 1:
-                pathUpdateRate.displayString = "Path update rate: Normal";
+                pathUpdateRate.setMessage("Path update rate: Normal");
                 break;
             case 2:
-                pathUpdateRate.displayString = "Path update rate: Fast";
+                pathUpdateRate.setMessage("Path update rate: Fast");
                 break;
         }
-        wirePath.enabled = coordHandler.pathEnabled;
-        xRayEnabled.enabled = coordHandler.pathEnabled;
-        pathUpdateRate.enabled = coordHandler.pathEnabled;
-    }
-
-    @Override
-    public void keyTyped(char ch, int key) {
-    }
-
-    @Override
-    public void mouseClicked(int x, int y, int button) {
-    }
-
-    @Override
-    public void handleMouseInput() {
+        wirePath.active = coordHandler.pathEnabled;
+        xRayEnabled.active = coordHandler.pathEnabled;
+        pathUpdateRate.active = coordHandler.pathEnabled;
     }
 
     @Override
@@ -136,7 +140,7 @@ public class GuiCoordinateTrackerOptions implements IOptionPage {
     }
 
     @Override
-    public boolean displaySettingsText() {
+    public boolean displaySettingsHeader() {
         return true;
     }
 }

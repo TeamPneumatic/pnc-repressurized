@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -40,11 +40,11 @@ public class ProgWidgetWait extends ProgWidget {
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return widget instanceof ProgWidgetWait ? widget.getConnectedParameters()[0] != null ? new DroneAIWait((ProgWidgetString) widget.getConnectedParameters()[0]) : null : null;
     }
 
-    private static class DroneAIWait extends EntityAIBase {
+    private static class DroneAIWait extends Goal {
 
         private final int maxTicks;
         private int ticks;
@@ -81,7 +81,7 @@ public class ProgWidgetWait extends ProgWidget {
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.WHITE;
+    public DyeColor getColor() {
+        return DyeColor.WHITE;
     }
 }

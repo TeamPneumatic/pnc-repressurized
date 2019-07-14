@@ -1,19 +1,18 @@
 package me.desht.pneumaticcraft.client.sound;
 
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.lib.Sounds;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.audio.MovingSound;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.audio.TickableSound;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
 
-public class MovingSoundJetBoots extends MovingSound {
-    private final EntityPlayer player;
+public class MovingSoundJetBoots extends TickableSound {
+    private final PlayerEntity player;
     private final CommonArmorHandler handler;
     private float targetPitch;
     private int endTimer = -1;
 
-    public MovingSoundJetBoots(EntityPlayer player) {
+    MovingSoundJetBoots(PlayerEntity player) {
         super(Sounds.LEAKING_GAS_LOW, SoundCategory.NEUTRAL);
 
         this.player = player;
@@ -27,7 +26,7 @@ public class MovingSoundJetBoots extends MovingSound {
     }
 
     @Override
-    public void update() {
+    public void tick() {
         if (!handler.isValid() || !handler.isArmorEnabled()) {
             // handler gets invalidated if the tracked player disconnects
             donePlaying = true;
@@ -41,16 +40,16 @@ public class MovingSoundJetBoots extends MovingSound {
             donePlaying = true;
         }
 
-        xPosF = (float) player.posX;
-        yPosF = (float) player.posY;
-        zPosF = (float) player.posZ;
+        x = (float) player.posX;
+        y = (float) player.posY;
+        z = (float) player.posZ;
 
         if (endTimer > 0) {
             targetPitch = 0.5F;
             volume = 0.5F - ((20 - endTimer) / 50F);
         } else {
             if (handler.isJetBootsActive()) {
-                double vel = Math.sqrt(player.motionX * player.motionX + player.motionY * player.motionY + player.motionZ * player.motionZ);
+                double vel = player.getMotion().length();
                 targetPitch = 0.7F + (float) vel / 15;
                 volume = 0.5F + (float) vel / 15;
             } else {
@@ -59,7 +58,7 @@ public class MovingSoundJetBoots extends MovingSound {
             }
         }
         pitch += (targetPitch - pitch) / 10F;
-        if (player.isInsideOfMaterial(Material.WATER)) {
+        if (player.isInWater()) {
             pitch *= 0.75f;
             volume *= 0.5f;
         }

@@ -1,27 +1,30 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
@@ -31,9 +34,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> implements INamedContainerProvider {
     private static final String NBT_INVISIBLE = "invisible";
-    private static final String NBT_FUZZY_META = "fuzzyMeta";
+    private static final String NBT_FUZZY_DAMAGE = "fuzzyDamage";
     private static final String NBT_FUZZY_NBT = "fuzzyNBT";
     private static final String NBT_WHITELIST = "whitelist";
     private static final String NBT_FILTERS = "filters";
@@ -48,14 +53,14 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     @GuiSynced
     private boolean invisible;
     @GuiSynced
-    private boolean fuzzyMeta = false;  // TODO: remove in 1.13
+    private boolean fuzzyDamage = true;
     @GuiSynced
     private boolean fuzzyNBT = true;
     @GuiSynced
     private boolean whitelist = true;
     @DescSynced
     @GuiSynced
-    private EnumFacing side = EnumFacing.UP;
+    private Direction side = Direction.UP;
 
     private int alpha = 255;
 
@@ -67,10 +72,10 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     }
 
     @Override
-    public boolean canPlace(EnumFacing facing) {
+    public boolean canPlace(Direction facing) {
         return getTileEntity() != null &&
-                (getTileEntity().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing)
-                || getTileEntity().hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing));
+                (getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()
+                || getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent());
     }
 
     @Override
@@ -94,17 +99,17 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
         return alpha;
     }
 
-    public EnumFacing getSide() {
+    public Direction getSide() {
         return side;
     }
 
-    public void setSide(EnumFacing side) {
+    public void setSide(Direction side) {
         this.side = side;
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
         if (!world.isRemote) {
             Iterator<Map.Entry<ItemStack, Integer>> iterator = incomingStacks.entrySet().iterator();
             while (iterator.hasNext()) {
@@ -136,12 +141,12 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private boolean playerIsHoldingLogisticItems() {
-        EntityPlayer player = Minecraft.getMinecraft().player;
+        PlayerEntity player = Minecraft.getInstance().player;
         ItemStack stack = player.getHeldItemMainhand();
-        return (stack.getItem() == Itemss.LOGISTICS_CONFIGURATOR
-                || stack.getItem() == Itemss.LOGISTICS_DRONE
+        return (stack.getItem() == ModItems.LOGISTICS_CONFIGURATOR
+                || stack.getItem() == ModItems.LOGISTIC_DRONE
                 || stack.getItem() instanceof ItemSemiBlockBase);
     }
 
@@ -180,44 +185,44 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setTag(NBT_FILTERS, filters.serializeNBT());
+        tag.put(NBT_FILTERS, filters.serializeNBT());
 
-        NBTTagList tagList = new NBTTagList();
+        ListNBT tagList = new ListNBT();
         for (int i = 0; i < fluidFilters.length; i++) {
             FluidTank filter = fluidFilters[i];
             if (filter.getFluid() != null) {
-                NBTTagCompound t = new NBTTagCompound();
-                t.setInteger("index", i);
+                CompoundNBT t = new CompoundNBT();
+                t.putInt("index", i);
                 filter.writeToNBT(t);
-                tagList.appendTag(t);
+                tagList.add(t);
             }
         }
-        tag.setTag(NBT_FLUID_FILTERS, tagList);
+        tag.put(NBT_FLUID_FILTERS, tagList);
 
-        tag.setBoolean(NBT_INVISIBLE, invisible);
-        tag.setBoolean(NBT_FUZZY_META, fuzzyMeta);
-        tag.setBoolean(NBT_FUZZY_NBT, fuzzyNBT);
-        tag.setBoolean(NBT_WHITELIST, whitelist);
-        if (side != null) tag.setString(NBT_SIDE, side.getName());
+        tag.putBoolean(NBT_INVISIBLE, invisible);
+        tag.putBoolean(NBT_FUZZY_DAMAGE, fuzzyDamage);
+        tag.putBoolean(NBT_FUZZY_NBT, fuzzyNBT);
+        tag.putBoolean(NBT_WHITELIST, whitelist);
+        if (side != null) tag.putByte(NBT_SIDE, (byte) side.getIndex());
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        filters.deserializeNBT(tag.getCompoundTag(NBT_FILTERS));
+        filters.deserializeNBT(tag.getCompound(NBT_FILTERS));
 
-        NBTTagList tagList = tag.getTagList(NBT_FLUID_FILTERS, 10);
-        for (int i = 0; i < tagList.tagCount(); i++) {
-            fluidFilters[tagList.getCompoundTagAt(i).getInteger("index")].readFromNBT(tagList.getCompoundTagAt(i));
+        ListNBT tagList = tag.getList(NBT_FLUID_FILTERS, 10);
+        for (int i = 0; i < tagList.size(); i++) {
+            fluidFilters[tagList.getCompound(i).getInt("index")].readFromNBT(tagList.getCompound(i));
         }
 
         invisible = NBTUtil.fromTag(tag, NBT_INVISIBLE, false);
-        fuzzyMeta = NBTUtil.fromTag(tag, NBT_FUZZY_META, false);
+        fuzzyDamage = NBTUtil.fromTag(tag, NBT_FUZZY_DAMAGE, true);
         fuzzyNBT = NBTUtil.fromTag(tag, NBT_FUZZY_NBT, true);
         whitelist = NBTUtil.fromTag(tag, NBT_WHITELIST, true);
-        side = tag.hasKey(NBT_SIDE) ? EnumFacing.byName(tag.getString(NBT_SIDE)) : EnumFacing.UP;
+        side = tag.contains(NBT_SIDE) ? Direction.byIndex(tag.getByte(NBT_SIDE)) : Direction.UP;
     }
 
     public void setFilter(int filterIndex, FluidStack stack) {
@@ -246,7 +251,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
             if (fluidFilter.getFluidAmount() > 0) return true;
         }
 
-        return invisible || fuzzyMeta || !fuzzyNBT || !whitelist || side != EnumFacing.UP;
+        return invisible || !fuzzyNBT || !whitelist || side != Direction.UP;
     }
 
     @Override
@@ -255,15 +260,15 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
 
         if (shouldSaveNBT()) {
             ItemStack drop = drops.get(0);
-            NBTTagCompound tag = new NBTTagCompound();
+            CompoundNBT tag = new CompoundNBT();
             writeToNBT(tag);
-            drop.setTagCompound(tag);
+            drop.setTag(tag);
         }
     }
 
     @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing) {
-        NBTTagCompound tag = stack.getTagCompound();
+    public void onPlaced(PlayerEntity player, ItemStack stack, Direction facing) {
+        CompoundNBT tag = stack.getTag();
         if (tag != null) {
             readFromNBT(tag);
         }
@@ -271,9 +276,9 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     }
 
     @Override
-    public boolean onRightClickWithConfigurator(EntityPlayer player, EnumFacing side) {
-        if (getGuiID() != null) {
-            player.openGui(PneumaticCraftRepressurized.instance, getGuiID().ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
+    public boolean onRightClickWithConfigurator(PlayerEntity player, Direction side) {
+        if (player instanceof ServerPlayerEntity) {
+            NetworkHooks.openGui((ServerPlayerEntity) player, this, getPos());
         }
         return true;
     }
@@ -283,17 +288,10 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     }
 
     boolean tryMatch(ItemStack s1, ItemStack s2) {
-        boolean matched;
-        if (!fuzzyMeta && !fuzzyNBT) {
-            matched = ItemStack.areItemStacksEqual(s1, s2);
-        } else if (fuzzyMeta && !fuzzyNBT) {
-            matched = !s1.isEmpty() && s1.getItem() == s2.getItem() && ItemStack.areItemStackTagsEqual(s1, s2);
-        } else if (!fuzzyMeta) {
-            matched = s1.isItemEqual(s2);
-        } else {
-            matched = !s1.isEmpty() && s1.getItem() == s2.getItem();
-        }
-        return matched == whitelist;
+        boolean isItemMatched = fuzzyDamage ? ItemStack.areItemsEqualIgnoreDurability(s1, s2) : ItemStack.areItemsEqual(s1, s2);
+        boolean isNBTMatched = fuzzyNBT || ItemStack.areItemStackTagsEqual(s1, s2);
+
+        return (isItemMatched && isNBTMatched) == whitelist;
     }
 
     boolean passesFilter(ItemStack stack) {
@@ -320,41 +318,44 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> {
     }
 
     @Override
-    public void handleGUIButtonPress(int guiID, EntityPlayer player) {
-        if (guiID == 9) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals("invisible")) {
             invisible = !invisible;
-        } else if (guiID == 10) {
-            fuzzyMeta = !fuzzyMeta;
-        } else if (guiID == 11) {
+        } else if (tag.equals("fuzzyDamage")) {
+            fuzzyDamage = !fuzzyDamage;
+        } else if (tag.equals("fuzzyNBT")) {
             fuzzyNBT = !fuzzyNBT;
-        } else if (guiID == 12 && supportsBlacklisting()) {
+        } else if (tag.equals("whitelist") && supportsBlacklisting()) {
             whitelist = !whitelist;
-        } else if (guiID >= 13 && guiID <= 18) {
-            setSide(EnumFacing.byIndex(guiID - 13));
+        } else if (tag.startsWith("side:")) {
+            try {
+                setSide(Direction.byIndex(Integer.parseInt(tag.split(":")[1])));
+            } catch (NumberFormatException ignored) {
+            }
         }
     }
 
     @Override
-    public void addTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
+    public void addTooltip(List<ITextComponent> curInfo, CompoundNBT tag, boolean extended) {
         super.addTooltip(curInfo, tag, extended);
-        curInfo.add(PneumaticCraftUtils.xlate("gui.logistic_frame.facing") + ": " + side);
+        curInfo.add(xlate("gui.logistic_frame.facing", side.toString()));
         if (extended) {
             NonNullList<ItemStack> drops = NonNullList.create();
             addDrops(drops);
             if (!drops.isEmpty()) {
-                drops.get(0).setTagCompound(tag);
+                drops.get(0).setTag(tag);
                 ItemLogisticsFrame.addTooltip(drops.get(0), PneumaticCraftRepressurized.proxy.getClientWorld(), curInfo, true);
             }
         }
     }
 
     @Override
-    public void addWailaInfoToTag(NBTTagCompound tag) {
+    public void addWailaInfoToTag(CompoundNBT tag) {
         writeToNBT(tag);
     }
 
-    public boolean isFuzzyMeta() {
-        return fuzzyMeta;
+    public boolean isFuzzyDamage() {
+        return fuzzyDamage;
     }
 
     public boolean isFuzzyNBT() {

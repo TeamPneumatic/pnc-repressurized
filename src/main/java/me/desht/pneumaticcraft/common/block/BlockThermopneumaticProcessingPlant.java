@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -13,12 +13,12 @@ import net.minecraft.world.IBlockAccess;
 public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraftModeled {
     private static final AxisAlignedBB BLOCK_BOUNDS = new AxisAlignedBB(0, 0, 0, 1, 12 / 16F, 1);
 
-    BlockThermopneumaticProcessingPlant() {
+    public BlockThermopneumaticProcessingPlant() {
         super(Material.IRON, "thermopneumatic_processing_plant");
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public AxisAlignedBB getBoundingBox(BlockState state, IBlockAccess source, BlockPos pos) {
         return BLOCK_BOUNDS;
     }
 

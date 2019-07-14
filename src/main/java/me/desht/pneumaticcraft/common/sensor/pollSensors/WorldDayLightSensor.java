@@ -1,20 +1,18 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.universalSensor.IPollSensorSetting;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.Rectangle;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +27,7 @@ public class WorldDayLightSensor implements IPollSensorSetting {
 
     @Override
     public Set<Item> getRequiredUpgrades() {
-        return ImmutableSet.of(Itemss.upgrades.get(EnumUpgrade.DISPENSER));
+        return ImmutableSet.of(IItemRegistry.EnumUpgrade.DISPENSER.getItem());
     }
 
     @Override
@@ -55,8 +53,8 @@ public class WorldDayLightSensor implements IPollSensorSetting {
     }
 
     private int updatePower(World worldIn, BlockPos pos) {
-        if (worldIn.provider.hasSkyLight()) {
-            int i = worldIn.getLightFor(EnumSkyBlock.SKY, pos) - worldIn.getSkylightSubtracted();
+        if (worldIn.dimension.hasSkyLight()) {
+            int i = worldIn.getLightFor(LightType.SKY, pos) - worldIn.getSkylightSubtracted();
             float f = worldIn.getCelestialAngleRadians(1.0F);
             float f1 = f < (float) Math.PI ? 0.0F : (float) Math.PI * 2F;
             f = f + (f1 - f) * 0.2F;
@@ -68,12 +66,7 @@ public class WorldDayLightSensor implements IPollSensorSetting {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
-    }
-
-    @Override
-    public Rectangle needsSlot() {
-        return null;
     }
 }

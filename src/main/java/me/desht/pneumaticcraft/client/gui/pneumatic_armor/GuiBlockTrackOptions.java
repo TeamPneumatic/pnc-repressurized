@@ -1,18 +1,16 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
-import me.desht.pneumaticcraft.client.gui.widget.IWidgetListener;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 
-public class GuiBlockTrackOptions extends IOptionPage.SimpleToggleableOptions implements IWidgetListener {
+public class GuiBlockTrackOptions extends IOptionPage.SimpleToggleableOptions {
     public GuiBlockTrackOptions(BlockTrackUpgradeHandler renderHandler) {
         super(renderHandler);
     }
@@ -24,44 +22,30 @@ public class GuiBlockTrackOptions extends IOptionPage.SimpleToggleableOptions im
 
     @Override
     public void initGui(IGuiScreen gui) {
+        gui.getWidgetList().add(new GuiButtonSpecial(30, settingsYposition() + 12, 150, 20,
+                "Move Stat Screen...", b -> {
+            Minecraft.getInstance().player.closeScreen();
+            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getRenderHandler(), ArmorHUDLayout.LayoutTypes.BLOCK_TRACKER));
+        }));
+
         int nWidgets = BlockTrackEntryList.instance.trackList.size();
-        gui.getButtonList().add(new GuiButton(10, 30, settingsYposition() + 12, 150, 20, "Move Stat Screen..."));
         for (int i = 0; i < nWidgets; i++) {
-            GuiKeybindCheckBox checkBox = new GuiKeybindCheckBox(i, 5, 38 + i * 12, 0xFFFFFFFF, BlockTrackEntryList.instance.trackList.get(i).getEntryName());
-            ((GuiHelmetMainScreen) gui).addWidget(checkBox);
-            checkBox.setListener(this);
+            GuiKeybindCheckBox checkBox = new GuiKeybindCheckBox(5, 38 + i * 12, 0xFFFFFFFF,
+                    BlockTrackEntryList.instance.trackList.get(i).getEntryName(), cb -> {
+                if (cb == GuiKeybindCheckBox.fromKeyBindingName(cb.getMessage())) {
+                    HUDHandler.instance().addFeatureToggleMessage(getRenderHandler(), cb.getMessage(), cb.checked);
+                }
+            });
+            gui.getWidgetList().add(checkBox);
         }
     }
 
-    @Override
-    public void actionPerformed(GuiButton button) {
-        if (button.id == 10) {
-            Minecraft.getMinecraft().player.closeScreen();
-            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(getRenderHandler(), ArmorHUDLayout.LayoutTypes.BLOCK_TRACKER));
-        }
-    }
-
-    @Override
-    public boolean displaySettingsText() {
+    public boolean displaySettingsHeader() {
         return true;
     }
 
     @Override
     public int settingsYposition() {
         return 44 + 12 * BlockTrackEntryList.instance.trackList.size();
-    }
-
-    @Override
-    public void actionPerformed(IGuiWidget widget) {
-        if (widget instanceof GuiKeybindCheckBox) {
-            GuiKeybindCheckBox checkBox = (GuiKeybindCheckBox) widget;
-            if (checkBox == GuiKeybindCheckBox.fromKeyBindingName(checkBox.text)) {
-                HUDHandler.instance().addFeatureToggleMessage(getRenderHandler(), checkBox.text, checkBox.checked);
-            }
-        }
-    }
-
-    @Override
-    public void onKeyTyped(IGuiWidget widget) {
     }
 }

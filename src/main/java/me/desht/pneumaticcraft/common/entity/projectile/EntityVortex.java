@@ -1,51 +1,55 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLeaves;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.IPacket;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.List;
 
-public class EntityVortex extends EntityThrowable {
-
+public class EntityVortex extends ThrowableEntity {
     private int hitCounter = 0;
 
     // clientside: rendering X offset of vortex, depends on which hand the vortex was fired from
     private float renderOffsetX = -Float.MAX_VALUE;
 
+    public EntityVortex(World world, LivingEntity thrower) {
+        super(ModEntityTypes.VORTEX, thrower, world);
+    }
+
     public EntityVortex(World world) {
-        super(world);
-    }
-
-    public EntityVortex(World world, EntityLivingBase thrower) {
-        super(world, thrower);
-    }
-
-    public EntityVortex(World world, double par2, double par4, double par6) {
-        super(world, par2, par4, par6);
+        super(ModEntityTypes.VORTEX, world);
     }
 
     @Override
-    protected void entityInit() {
+    public IPacket<?> createSpawnPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
+    }
+
+    public static EntityVortex create(EntityType<Entity> type, World world) {
+        return new EntityVortex(world);
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
-        motionX *= 0.95D; // equal to the potion effect friction. 0.95F
-        motionY *= 0.95D;
-        motionZ *= 0.95D;
-        if (motionX * motionX + motionY * motionY + motionZ * motionZ < 0.1D) {
-            setDead();
+    public void tick() {
+        super.tick();
+        setMotion(getMotion().scale(0.95));
+        if (getMotion().lengthSquared() < 0.1D) {
+            remove();
         }
     }
 
@@ -63,7 +67,7 @@ public class EntityVortex extends EntityThrowable {
 
     private boolean tryCutPlants(BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
-        if (block instanceof IPlantable || block instanceof BlockLeaves) {
+        if (block instanceof IPlantable || block instanceof LeavesBlock) {
             world.destroyBlock(pos, true);
             return true;
         }
@@ -76,12 +80,10 @@ public class EntityVortex extends EntityThrowable {
     }
 
     @Override
-    protected void onImpact(RayTraceResult objectPosition) {
-        if (objectPosition.entityHit != null) {
-            Entity entity = objectPosition.entityHit;
-            entity.motionX += motionX;
-            entity.motionY += motionY;
-            entity.motionZ += motionZ;
+    protected void onImpact(RayTraceResult rtr) {
+        if (rtr.getType() == RayTraceResult.Type.ENTITY) {
+            Entity entity = ((EntityRayTraceResult) rtr).getEntity();
+            entity.setMotion(entity.getMotion().add(this.getMotion()));
             if (!entity.world.isRemote && entity instanceof IShearable) {
                 IShearable shearable = (IShearable) entity;
                 BlockPos pos = new BlockPos(posX, posY, posZ);
@@ -92,11 +94,11 @@ public class EntityVortex extends EntityThrowable {
                     }
                 }
             }
-        } else {
-            Block block = world.getBlockState(objectPosition.getBlockPos()).getBlock();
-            if (block instanceof IPlantable || block instanceof BlockLeaves) {
+        } else if (rtr.getType() == RayTraceResult.Type.BLOCK) {
+            BlockPos pos = ((BlockRayTraceResult) rtr).getPos();
+            Block block = world.getBlockState(pos).getBlock();
+            if (block instanceof IPlantable || block instanceof LeavesBlock) {
                 if (!world.isRemote) {
-                    BlockPos pos = objectPosition.getBlockPos();
                     BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos);
                     if (tryCutPlants(pos)) {
                         int plantsCut = 1;
@@ -111,16 +113,19 @@ public class EntityVortex extends EntityThrowable {
                         }
                         // slow the vortex down for each plant it broke
                         double mult = Math.pow(0.8D, plantsCut);
-                        motionX *= mult;
-                        motionY *= mult;
-                        motionZ *= mult;
+                        setMotion(getMotion().scale(mult));
                     }
                 }
             } else {
-                setDead();
+                remove();
             }
         }
         hitCounter++;
-        if (hitCounter > 20) setDead();
+        if (hitCounter > 20) remove();
+    }
+
+    @Override
+    protected void registerData() {
+
     }
 }

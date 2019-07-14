@@ -2,35 +2,43 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
+import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationMain;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.item.ItemNetworkComponents;
+import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class TileEntitySecurityStation extends TileEntityTickableBase implements IGUITextFieldSensitive,
-        IRangeLineShower, IRedstoneControl {
+        IRangeLineShower, IRedstoneControl, INamedContainerProvider {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.button.never",
@@ -38,34 +46,38 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             "gui.tab.redstoneBehaviour.securityStation.button.doneRebooting"
     );
 
-    private SecurityStationHandler inventory;
-    private static final int INVENTORY_SIZE = 35;
+    public static final int INV_ROWS = 7;
+    public static final int INV_COLS = 5;
+    private static final int INVENTORY_SIZE = INV_ROWS * INV_COLS;
+
+    private final SecurityStationHandler inventory = new SecurityStationHandler();
+    private LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventory);
 
     public final List<GameProfile> hackedUsers = new ArrayList<>(); // Stores all the users that have hacked this Security Station.
     public final List<GameProfile> sharedUsers = new ArrayList<>(); // Stores all the users that have been allowed by the stationOwner.
     @GuiSynced
     private int rebootTimer; // When the player decides to reset the station, this variable will hold the remaining reboot time.
     @GuiSynced
-    public String textFieldText = "";
+    private String textFieldText = "";
     private int securityRange;
     private int oldSecurityRange; //range used by the range line renderer, to figure out if the range has been changed.
     private RenderRangeLines rangeLineRenderer;
 
     @GuiSynced
     public int redstoneMode;
-    public boolean oldRedstoneStatus;
+    private boolean oldRedstoneStatus;
 
     private boolean validNetwork;
 
     public TileEntitySecurityStation() {
-        super(4);
-        inventory = new SecurityStationHandler();
+        super(ModTileEntityTypes.SECURITY_STATION, 4);
+
         addApplicableUpgrade(EnumUpgrade.ENTITY_TRACKER, EnumUpgrade.SECURITY, EnumUpgrade.RANGE);
     }
     
     @Override
-    public void invalidate(){
-        super.invalidate();
+    public void remove(){
+        super.remove();
         GlobalTileEntityCacheManager.getInstance().securityStations.remove(this);
     }
     
@@ -77,7 +89,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    public void update() {
+    public void tick() {
         if (rebootTimer > 0) {
             rebootTimer--;
             if (!getWorld().isRemote) {
@@ -100,7 +112,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
         securityRange = Math.min(2 + getUpgrades(EnumUpgrade.RANGE), TileEntityConstants.SECURITY_STATION_MAX_RANGE);
 
-        super.update();
+        super.tick();
 
     }
 
@@ -125,31 +137,35 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return inventory;
+    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+        return invCap;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void renderRangeLines() {
         rangeLineRenderer.render();
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
-        if (buttonID == 0) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
             updateNeighbours();
-        } else if (buttonID == 2) {
+        } else if (tag.equals("reboot")) {
             rebootStation();
-        } else if (buttonID == 3) {
+        } else if (tag.equals("test")) {
             if (!hasValidNetwork()) {
-                player.sendStatusMessage(new TextComponentTranslation(TextFormatting.GREEN + "This Security Station is out of order: Its network hasn't been properly configured."), false);
+                player.sendStatusMessage(new TranslationTextComponent(TextFormatting.GREEN + "This Security Station is out of order: Its network hasn't been properly configured."), false);
             } else {
-                player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.HACKING.ordinal(), getWorld(), getPos().getX(), getPos().getY(), getPos().getZ());
+                NetworkHooks.openGui((ServerPlayerEntity) player, new HackingContainerProvider(), getPos());
             }
-        } else if (buttonID > 3 && buttonID - 4 < sharedUsers.size()) {
-            sharedUsers.remove(buttonID - 4);
+        } else if (tag.startsWith("remove:")) {
+            try {
+                int idx = Integer.parseInt(tag.split(":")[1]);
+                sharedUsers.remove(idx);
+            } catch (IllegalArgumentException|ArrayIndexOutOfBoundsException ignored) {
+            }
         }
         sendDescriptionPacket();
     }
@@ -196,15 +212,13 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         if (rangeLineRenderer == null || !rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
-        return getAffectingAABB();
+        return getAffectedBoundingBox();
     }
-    
-    public AxisAlignedBB getAffectingAABB(){
-        int range = getSecurityRange();
-        return new AxisAlignedBB(getPos().getX() - range - 1, getPos().getY() - range - 1, getPos().getZ() - range - 1, getPos().getX() + 1 + range, getPos().getY() + 1 + range, getPos().getZ() + 1 + range);
+
+    public AxisAlignedBB getAffectedBoundingBox(){
+        return new AxisAlignedBB(getPos()).grow(getSecurityRange());
     }
 
     public int getSecurityRange() {
@@ -212,68 +226,62 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    public String getName() {
-        return Blockss.SECURITY_STATION.getTranslationKey();
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        redstoneMode = tag.getInteger("redstoneMode");
-        rebootTimer = tag.getInteger("startupTimer");
-        inventory = new SecurityStationHandler();
-        inventory.deserializeNBT(tag.getCompoundTag("Items"));
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+        redstoneMode = tag.getInt("redstoneMode");
+        rebootTimer = tag.getInt("startupTimer");
+        inventory.deserializeNBT(tag.getCompound("Items"));
         checkForNetworkValidity();
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setInteger("redstoneMode", redstoneMode);
-        tag.setInteger("startupTimer", rebootTimer);
-        tag.setTag("Items", inventory.serializeNBT());
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt("startupTimer", rebootTimer);
+        tag.put("Items", inventory.serializeNBT());
         return tag;
     }
 
     @Override
-    public void writeToPacket(NBTTagCompound tag) {
+    public void writeToPacket(CompoundNBT tag) {
         super.writeToPacket(tag);
-        NBTTagList sharedList = new NBTTagList();
+        ListNBT sharedList = new ListNBT();
         for (GameProfile sharedUser : sharedUsers) {
-            NBTTagCompound tagCompound = new NBTTagCompound();
-            tagCompound.setString("name", sharedUser.getName());
+            CompoundNBT tagCompound = new CompoundNBT();
+            tagCompound.putString("name", sharedUser.getName());
             if (sharedUser.getId() != null)
-                tagCompound.setString("uuid", sharedUser.getId().toString());
-            sharedList.appendTag(tagCompound);
+                tagCompound.putString("uuid", sharedUser.getId().toString());
+            sharedList.add(tagCompound);
         }
-        tag.setTag("SharedUsers", sharedList);
+        tag.put("SharedUsers", sharedList);
 
-        NBTTagList hackedList = new NBTTagList();
+        ListNBT hackedList = new ListNBT();
         for (GameProfile hackedUser : hackedUsers) {
-            NBTTagCompound tagCompound = new NBTTagCompound();
-            tagCompound.setString("name", hackedUser.getName());
+            CompoundNBT tagCompound = new CompoundNBT();
+            tagCompound.putString("name", hackedUser.getName());
             if (hackedUser.getId() != null)
-                tagCompound.setString("uuid", hackedUser.getId().toString());
-            hackedList.appendTag(tagCompound);
+                tagCompound.putString("uuid", hackedUser.getId().toString());
+            hackedList.add(tagCompound);
         }
-        tag.setTag("HackedUsers", hackedList);
+        tag.put("HackedUsers", hackedList);
     }
 
     @Override
-    public void readFromPacket(NBTTagCompound tag) {
+    public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
         sharedUsers.clear();
-        NBTTagList sharedList = tag.getTagList("SharedUsers", 10);
-        for (int i = 0; i < sharedList.tagCount(); ++i) {
-            NBTTagCompound tagCompound = sharedList.getCompoundTagAt(i);
-            sharedUsers.add(new GameProfile(tagCompound.hasKey("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
+        ListNBT sharedList = tag.getList("SharedUsers", 10);
+        for (int i = 0; i < sharedList.size(); ++i) {
+            CompoundNBT tagCompound = sharedList.getCompound(i);
+            sharedUsers.add(new GameProfile(tagCompound.contains("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
         }
 
         hackedUsers.clear();
-        NBTTagList hackedList = tag.getTagList("HackedUsers", 10);
-        for (int i = 0; i < hackedList.tagCount(); ++i) {
-            NBTTagCompound tagCompound = hackedList.getCompoundTagAt(i);
-            hackedUsers.add(new GameProfile(tagCompound.hasKey("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
+        ListNBT hackedList = tag.getList("HackedUsers", 10);
+        for (int i = 0; i < hackedList.size(); ++i) {
+            CompoundNBT tagCompound = hackedList.getCompound(i);
+            hackedUsers.add(new GameProfile(tagCompound.contains("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
         }
     }
 
@@ -288,16 +296,16 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     /**
-     * Returns true if the given player is allowed to interact with the covered area of this Security Station.
+     * Check if the given player is allowed to interact within the covered area of this Security Station.
      *
-     * @param player
-     * @return
+     * @param player the player
+     * @return true if the player is allowed to interact
      */
-    public boolean doesAllowPlayer(EntityPlayer player) {
+    public boolean doesAllowPlayer(PlayerEntity player) {
         return rebootTimer > 0 || isPlayerOnWhiteList(player) || hasPlayerHacked(player);
     }
 
-    public boolean isPlayerOnWhiteList(EntityPlayer player) {
+    public boolean isPlayerOnWhiteList(PlayerEntity player) {
         for (int i = 0; i < sharedUsers.size(); i++) {
             GameProfile user = sharedUsers.get(i);
             if (gameProfileEquals(user, player.getGameProfile())) {
@@ -311,7 +319,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         return false;
     }
 
-    public boolean hasPlayerHacked(EntityPlayer player) {
+    public boolean hasPlayerHacked(PlayerEntity player) {
         for (int i = 0; i < hackedUsers.size(); i++) {
             GameProfile user = hackedUsers.get(i);
             if (gameProfileEquals(user, player.getGameProfile())) {
@@ -326,20 +334,20 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     /**
-     * Returns true if the given slots are connected in the network. For this to be true both slots need to have a network component stored as well.
+     * Check if the given slots are connected in the network. For this to be true both slots need to have a network component stored as well.
      *
-     * @param firstSlot
-     * @param secondSlot
-     * @return
+     * @param firstSlot slot 1
+     * @param secondSlot slot 2
+     * @return true iof the slots are connected
      */
     public boolean connects(int firstSlot, int secondSlot) {
-        if (firstSlot < 0 || secondSlot < 0 || firstSlot >= 35 || secondSlot >= 35 || firstSlot == secondSlot
+        if (firstSlot < 0 || secondSlot < 0 || firstSlot >= INVENTORY_SIZE || secondSlot >= INVENTORY_SIZE || firstSlot == secondSlot
                 || inventory.getStackInSlot(firstSlot).isEmpty() || inventory.getStackInSlot(secondSlot).isEmpty())
             return false;
 
         for (int column = -1; column <= 1; column++) {
             for (int row = -1; row <= 1; row++) {
-                if (firstSlot + row * 5 + column == secondSlot) {
+                if (firstSlot + row * INV_COLS + column == secondSlot) {
                     if (firstSlot % 5 > 0 && firstSlot % 5 < 4 || secondSlot % 5 > 0 && secondSlot % 5 < 4 || secondSlot % 5 == firstSlot % 5)
                         return true;
                 }
@@ -352,8 +360,22 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         return validNetwork;
     }
 
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerSecurityStationMain(i, playerInventory, getPos());
+    }
+
     public enum EnumNetworkValidityProblem {
-        NONE, NO_SUBROUTINE, NO_IO_PORT, NO_REGISTRY, TOO_MANY_SUBROUTINES, TOO_MANY_IO_PORTS, TOO_MANY_REGISTRIES, NO_CONNECTION_SUB_AND_IO_PORT, NO_CONNECTION_IO_PORT_AND_REGISTRY
+        NONE,
+        NO_SUBROUTINE, NO_IO_PORT, NO_REGISTRY,
+        TOO_MANY_SUBROUTINES, TOO_MANY_IO_PORTS, TOO_MANY_REGISTRIES,
+        NO_CONNECTION_SUB_AND_IO_PORT, NO_CONNECTION_IO_PORT_AND_REGISTRY
     }
 
     /**
@@ -368,18 +390,20 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         int subroutineSlot = -1;
         for (int i = 0; i < INVENTORY_SIZE; i++) {
             if (!inventory.getStackInSlot(i).isEmpty()) {
-                switch (inventory.getStackInSlot(i).getItemDamage()) {
-                    case ItemNetworkComponents.DIAGNOSTIC_SUBROUTINE:
+                ItemNetworkComponent.NetworkComponentType type = ItemNetworkComponent.getType(inventory.getStackInSlot(i));
+                assert type != null;
+                switch (type) {
+                    case DIAGNOSTIC_SUBROUTINE:
                         if (subroutineSlot != -1)
                             return EnumNetworkValidityProblem.TOO_MANY_SUBROUTINES; //only one subroutine per network
                         subroutineSlot = i;
                         break;
-                    case ItemNetworkComponents.NETWORK_IO_PORT:
+                    case NETWORK_IO_PORT:
                         if (ioPortSlot != -1)
                             return EnumNetworkValidityProblem.TOO_MANY_IO_PORTS; //only one IO port per network
                         ioPortSlot = i;
                         break;
-                    case ItemNetworkComponents.NETWORK_REGISTRY:
+                    case NETWORK_REGISTRY:
                         if (registrySlot != -1)
                             return EnumNetworkValidityProblem.TOO_MANY_REGISTRIES; //only one registry per network
                         registrySlot = i;
@@ -418,8 +442,13 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    public boolean isGuiUseableByPlayer(EntityPlayer par1EntityPlayer) {
+    public boolean isGuiUseableByPlayer(PlayerEntity par1EntityPlayer) {
         return getWorld().getTileEntity(getPos()) == this;
+    }
+
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return inventory;
     }
 
     @Override
@@ -441,6 +470,19 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
             checkForNetworkValidity();
+        }
+    }
+
+    private class HackingContainerProvider implements INamedContainerProvider {
+        @Override
+        public ITextComponent getDisplayName() {
+            return getDisplayNameInternal().appendText(" Hacking");
+        }
+
+        @Nullable
+        @Override
+        public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+            return new ContainerSecurityStationHacking(i, playerInventory, getPos());
         }
     }
 }

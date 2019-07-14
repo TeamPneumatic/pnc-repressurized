@@ -1,17 +1,24 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketPlayMovingSound extends AbstractPacket<PacketPlayMovingSound> {
+import java.util.function.Supplier;
 
-    enum SourceType { ENTITY, STATIC_POS }
-
+/**
+ * Received on: CLIENT
+ * Sent by server to start a new MovingSound playing
+ */
+public class PacketPlayMovingSound {
+    enum SourceType { ENTITY, STATIC_POS;}
     private MovingSounds.Sound sound;
+
     private int entityId;
     private SourceType sourceType;
     private BlockPos pos;
@@ -35,44 +42,37 @@ public class PacketPlayMovingSound extends AbstractPacket<PacketPlayMovingSound>
         }
     }
 
-    @Override
+    public PacketPlayMovingSound(PacketBuffer buffer) {
+        sound = MovingSounds.Sound.values()[buffer.readByte()];
+        sourceType = SourceType.values()[buffer.readByte()];
+        if (sourceType == SourceType.ENTITY) {
+            entityId = buffer.readInt();
+        } else if (sourceType == SourceType.STATIC_POS) {
+            pos = buffer.readBlockPos();
+        }
+    }
+
     public void toBytes(ByteBuf buffer) {
         buffer.writeByte(sound.ordinal());
         buffer.writeByte(sourceType.ordinal());
         if (sourceType == SourceType.ENTITY) {
             buffer.writeInt(entityId);
         } else if (sourceType == SourceType.STATIC_POS) {
-            buffer.writeInt(pos.getX());
-            buffer.writeInt(pos.getY());
-            buffer.writeInt(pos.getZ());
+            new PacketBuffer(buffer).writeBlockPos(pos);
         }
     }
 
-    @Override
-    public void fromBytes(ByteBuf buffer) {
-        sound = MovingSounds.Sound.values()[buffer.readByte()];
-        sourceType = SourceType.values()[buffer.readByte()];
-        if (sourceType == SourceType.ENTITY) {
-            entityId = buffer.readInt();
-        } else if (sourceType == SourceType.STATIC_POS) {
-            pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
-        }
-    }
-
-    @Override
-    public void handleClientSide(PacketPlayMovingSound message, EntityPlayer player) {
-        if (sourceType == SourceType.ENTITY) {
-            Entity e = player.world.getEntityByID(entityId);
-            if (e != null) {
-                MovingSounds.playMovingSound(sound, e);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            if (sourceType == SourceType.ENTITY) {
+                Entity e = PneumaticCraftRepressurized.proxy.getClientWorld().getEntityByID(entityId);
+                if (e != null) {
+                    MovingSounds.playMovingSound(sound, e);
+                }
+            } else if (sourceType == SourceType.STATIC_POS) {
+                MovingSounds.playMovingSound(sound, pos);
             }
-        } else if (sourceType == SourceType.STATIC_POS) {
-            MovingSounds.playMovingSound(sound, pos);
-        }
-    }
-
-    @Override
-    public void handleServerSide(PacketPlayMovingSound message, EntityPlayer player) {
-
+        });
+        ctx.get().setPacketHandled(true);
     }
 }

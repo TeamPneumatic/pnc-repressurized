@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -15,7 +15,7 @@ public class HeatBehaviourHeatFrame extends HeatBehaviour<TileEntity> {
     private SemiBlockHeatFrame semiBlock;
 
     @Override
-    public void initialize(String id, IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, EnumFacing direction) {
+    public void initialize(String id, IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         super.initialize(id, connectedHeatLogic, world, pos, direction);
         semiBlock = null;
     }

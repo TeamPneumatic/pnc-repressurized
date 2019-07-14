@@ -1,18 +1,18 @@
 package me.desht.pneumaticcraft.common.block;
 
-import net.minecraft.block.BlockAir;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.block.AirBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 
-public class BlockKeroseneLampLight extends BlockAir {
-    BlockKeroseneLampLight() {
+public class BlockKeroseneLampLight extends AirBlock {
+    public BlockKeroseneLampLight() {
+        super(Block.Properties.create(Material.AIR).doesNotBlockMovement());
         setRegistryName("kerosene_lamp_light");
-        setTranslationKey("kerosene_lamp_light");
     }
 
     @Override
-    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public int getLightValue(BlockState p_149750_1_) {
         return 15;
     }
 }

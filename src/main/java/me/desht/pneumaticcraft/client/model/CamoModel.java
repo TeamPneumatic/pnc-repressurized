@@ -3,27 +3,29 @@ package me.desht.pneumaticcraft.client.model;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.init.Blocks;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.client.model.data.IDynamicBakedModel;
+import net.minecraftforge.client.model.data.IModelData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Random;
 
 /**
  * With credit to Vazkii for showing me how this can be made to work with connected textures (trick being
@@ -31,7 +33,7 @@ import java.util.List;
  *
  * https://github.com/Vazkii/Botania/blob/master/src/main/java/vazkii/botania/client/model/PlatformModel.java
  */
-public class CamoModel implements IBakedModel {
+public class CamoModel implements IDynamicBakedModel {
 
     private final IBakedModel originalModel;
 
@@ -40,17 +42,16 @@ public class CamoModel implements IBakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData data) {
         if (state == null || !(state.getBlock() instanceof BlockPneumaticCraftCamo)) {
-            return originalModel.getQuads(state, side, rand);
+            return originalModel.getQuads(state, side, rand, data);
         }
 
-        IExtendedBlockState ext = (IExtendedBlockState) state;
-        IBlockState camoState = ext.getValue(BlockPneumaticCraftCamo.CAMO_STATE);
-        IBlockAccess blockAccess = ext.getValue(BlockPneumaticCraftCamo.BLOCK_ACCESS);
-        BlockPos pos = ext.getValue(BlockPneumaticCraftCamo.BLOCK_POS);
+        BlockState camoState = data.getData(BlockPneumaticCraftCamo.CAMO_STATE);
+        IEnviromentBlockReader blockAccess = data.getData(BlockPneumaticCraftCamo.BLOCK_ACCESS);
+        BlockPos pos = data.getData(BlockPneumaticCraftCamo.BLOCK_POS);
         if (blockAccess == null || pos == null) {
-            return originalModel.getQuads(state, side, rand);
+            return originalModel.getQuads(state, side, rand, data);
         }
 
         BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
@@ -59,16 +60,13 @@ public class CamoModel implements IBakedModel {
         }
         if (camoState == null && layer == BlockRenderLayer.SOLID) {
             // No camo
-            return originalModel.getQuads(state, side, rand);
+            return originalModel.getQuads(state, side, rand, data);
         } else if (camoState != null && camoState.getBlock().canRenderInLayer(camoState, layer)) {
-            IBlockState actual = camoState.getActualState(new FakeBlockAccess(blockAccess), pos);
-
             // Steal camo's model
-            IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(actual);
+            IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModel(camoState);
 
             // Their model can be smart too
-            IBlockState extended = camoState.getBlock().getExtendedState(actual, new FakeBlockAccess(blockAccess), pos);
-            return model.getQuads(extended, side, rand);
+            return model.getQuads(camoState, side, rand, data);
         }
 
         return ImmutableList.of(); // Nothing renders
@@ -105,11 +103,10 @@ public class CamoModel implements IBakedModel {
         return originalModel.getOverrides();
     }
 
-    private static class FakeBlockAccess implements IBlockAccess {
+    private static class FakeBlockAccess implements IBlockReader {
+        private final IBlockReader compose;
 
-        private final IBlockAccess compose;
-
-        private FakeBlockAccess(IBlockAccess compose) {
+        private FakeBlockAccess(IBlockReader compose) {
             this.compose = compose;
         }
 
@@ -119,15 +116,10 @@ public class CamoModel implements IBakedModel {
             return compose.getTileEntity(pos);
         }
 
-        @Override
-        public int getCombinedLight(@Nonnull BlockPos pos, int lightValue) {
-            return 15 << 20 | 15 << 4;
-        }
-
         @Nonnull
         @Override
-        public IBlockState getBlockState(@Nonnull BlockPos pos) {
-            IBlockState state = compose.getBlockState(pos);
+        public BlockState getBlockState(@Nonnull BlockPos pos) {
+            BlockState state = compose.getBlockState(pos);
             if (state.getBlock() instanceof BlockPneumaticCraftCamo) {
                 TileEntity te = compose.getTileEntity(pos);
                 if (te instanceof ICamouflageableTE) {
@@ -137,30 +129,12 @@ public class CamoModel implements IBakedModel {
             return state == null ? Blocks.AIR.getDefaultState() : state;
         }
 
-        @Override
-        public boolean isAirBlock(@Nonnull BlockPos pos) {
-            return compose.isAirBlock(pos);
-        }
-
         @Nonnull
         @Override
-        public Biome getBiome(@Nonnull BlockPos pos) {
-            return compose.getBiome(pos);
+        public IFluidState getFluidState(@Nonnull BlockPos blockPos) {
+            // todo test for 1.13
+            return compose.getFluidState(blockPos);
         }
 
-        @Override
-        public int getStrongPower(@Nonnull BlockPos pos, @Nonnull EnumFacing direction) {
-            return compose.getStrongPower(pos, direction);
-        }
-
-        @Override
-        public WorldType getWorldType() {
-            return compose.getWorldType();
-        }
-
-        @Override
-        public boolean isSideSolid(@Nonnull BlockPos pos, @Nonnull EnumFacing side, boolean _default) {
-            return compose.isSideSolid(pos, side, _default);
-        }
     }
 }

@@ -1,12 +1,13 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.model.block.ModelAssemblyControllerScreen;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderAssemblyController extends AbstractModelRenderer<TileEntityAssemblyController> {
@@ -23,20 +24,20 @@ public class RenderAssemblyController extends AbstractModelRenderer<TileEntityAs
 
     @Override
     void renderModel(TileEntityAssemblyController te, float partialTicks) {
-        RenderUtils.rotateMatrixByMetadata(2);
+        RenderUtils.rotateMatrixByMetadata(Direction.NORTH);
 
         // have the screen face the player
-        GlStateManager.rotate(180 + Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotated(180 + Minecraft.getInstance().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
 
         model.renderModel(0.0625f);
 
         // status text & possible problem icon
         double textSize = 1 / 100D;
-        GlStateManager.translate(-0.25D, 0.53D, 0.04D);
-        GlStateManager.rotate(-34, 1, 0, 0);
-        GlStateManager.scale(textSize, textSize, textSize);
+        GlStateManager.translated(-0.25D, 0.53D, 0.04D);
+        GlStateManager.rotated(-34, 1, 0, 0);
+        GlStateManager.scaled(textSize, textSize, textSize);
         GlStateManager.disableLighting();
-        Minecraft.getMinecraft().fontRenderer.drawString(te.displayedText, 1, 4, 0xFFFFFFFF);
+        Minecraft.getInstance().fontRenderer.drawString(te.displayedText, 1, 4, 0xFFFFFFFF);
         if(te.hasProblem) {
             GuiPneumaticContainerBase.drawTexture(Textures.GUI_PROBLEMS_TEXTURE, 28, 12);
         }

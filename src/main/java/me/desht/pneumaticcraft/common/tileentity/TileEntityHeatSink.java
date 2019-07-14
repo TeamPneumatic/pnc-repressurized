@@ -3,12 +3,11 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TileEntityHeatSink extends TileEntityCompressedIronBlock implements IHeatExchanger {
 
@@ -17,18 +16,20 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock implements
     private double ambientTemp = -1;
 
     public TileEntityHeatSink() {
+        super(ModTileEntityTypes.HEAT_SINK);
+
         airExchanger.addConnectedExchanger(heatExchanger);
         airExchanger.setThermalResistance(TileEntityConstants.HEAT_SINK_THERMAL_RESISTANCE);
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
+    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
         return side == null || side == getRotation() ? super.getHeatExchangerLogic(side) : null;
     }
 
     @Override
-    protected EnumFacing[] getConnectedHeatExchangerSides() {
-        return new EnumFacing[]{getRotation()};
+    protected Direction[] getConnectedHeatExchangerSides() {
+        return new Direction[]{getRotation()};
     }
 
     @Override
@@ -37,25 +38,24 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock implements
     }
 
     @Override
-    public void update() {
+    public void tick() {
         if (ambientTemp < 0) {
             ambientTemp = HeatExchangerLogicAmbient.atPosition(getWorld(), getPos()).getTemperature();
             airExchanger.setTemperature(ambientTemp);
         }
 
-        super.update();
+        super.tick();
 
-        airExchanger.update();
+        airExchanger.tick();
         airExchanger.setTemperature(ambientTemp);
     }
 
     public void onFannedByAirGrate() {
-        heatExchanger.update();
+        heatExchanger.tick();
         airExchanger.setTemperature(ambientTemp);
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         return new AxisAlignedBB(
                 getPos().getX(), getPos().getY(), getPos().getZ(),

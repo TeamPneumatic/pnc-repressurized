@@ -3,19 +3,32 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Direction;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public abstract class PacketUpdateTubeModule<REQ extends PacketUpdateTubeModule<REQ>> extends LocationIntPacket<REQ> {
+import java.util.function.Supplier;
 
-    protected EnumFacing moduleSide;
+/**
+ * Received on: BOTH
+ */
+public abstract class PacketUpdateTubeModule<REQ extends PacketUpdateTubeModule<REQ>> extends LocationIntPacket {
+
+    protected Direction moduleSide;
 
     public PacketUpdateTubeModule() {
     }
 
     public PacketUpdateTubeModule(TubeModule module) {
         super(module.getTube().pos());
-        moduleSide = module.getDirection();
+        this.moduleSide = module.getDirection();
+    }
+
+    public PacketUpdateTubeModule(PacketBuffer buffer) {
+        super(buffer);
+        this.moduleSide = Direction.byIndex(buffer.readByte());
     }
 
     @Override
@@ -24,29 +37,21 @@ public abstract class PacketUpdateTubeModule<REQ extends PacketUpdateTubeModule<
         buffer.writeByte((byte) moduleSide.ordinal());
     }
 
-    @Override
-    public void fromBytes(ByteBuf buffer) {
-        super.fromBytes(buffer);
-        moduleSide = EnumFacing.byIndex(buffer.readByte());
-    }
-
-    @Override
-    public void handleClientSide(REQ message, EntityPlayer player) {
-        handleServerSide(message, player);
-    }
-
-    @Override
-    public void handleServerSide(REQ message, EntityPlayer player) {
-        TileEntityPressureTube te = TileEntityPressureTube.getTube(message.getTileEntity(player.getEntityWorld()));
-        if (te != null) {
-            TubeModule module = te.modules[message.moduleSide.ordinal()];
-            if (module != null) {
-                onModuleUpdate(module, message, player);
-                if (!player.world.isRemote) NetworkHandler.sendToAllAround(message, player.world);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            TileEntityPressureTube te = TileEntityPressureTube.getTube(getTileEntity(ctx));
+            if (te != null) {
+                TubeModule module = te.modules[moduleSide.getIndex()];
+                if (module != null) {
+                    ServerPlayerEntity player = ctx.get().getSender();
+                    onModuleUpdate(module, player);
+                    if (!player.world.isRemote) NetworkHandler.sendToAllAround(this, player.world);
+                }
             }
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
 
-    protected abstract void onModuleUpdate(TubeModule module, REQ message, EntityPlayer player);
+    protected abstract void onModuleUpdate(TubeModule module, PlayerEntity player);
 
 }

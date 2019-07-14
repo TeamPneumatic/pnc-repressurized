@@ -1,7 +1,7 @@
 {
   "textures": {
-    "all": "pneumaticcraft:blocks/heat_sink",
-    "particle": "pneumaticcraft:blocks/heat_sink"
+    "all": "pneumaticcraft:block/heat_sink",
+    "particle": "pneumaticcraft:block/heat_sink"
   },
   "elements": [
     {

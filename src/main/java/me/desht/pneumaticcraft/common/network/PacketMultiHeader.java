@@ -3,68 +3,72 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 
-public class PacketMultiHeader extends AbstractPacket<PacketMultiHeader> {
+/**
+ * Received on: SERVER
+ * First part of a following multi-part message from the client
+ */
+public class PacketMultiHeader {
     private int length;
     private String className;
     private static final Map<UUID, PayloadBuffer> payloadBuffers = new HashMap<>();
 
     public PacketMultiHeader() {
+        // empty
     }
 
-    public PacketMultiHeader(int length, String className) {
+    PacketMultiHeader(int length, String className) {
         this.length = length;
         this.className = className;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        length = buf.readInt();
-        className = ByteBufUtils.readUTF8String(buf);
+    PacketMultiHeader(PacketBuffer buffer) {
+        length = buffer.readInt();
+        className = PacketUtil.readUTF8String(buffer);
     }
 
-    @Override
     public void toBytes(ByteBuf buf) {
         buf.writeInt(length);
-        ByteBufUtils.writeUTF8String(buf, className);
+        PacketUtil.writeUTF8String(buf, className);
     }
 
-    @Override
-    public void handleClientSide(PacketMultiHeader message, EntityPlayer player) {
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            try {
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                if (cl == null) cl = PacketMultiHeader.class.getClassLoader(); // fallback
+                Class<?> clazz = cl.loadClass(className);
+                payloadBuffers.put(ctx.get().getSender().getUniqueID(), new PayloadBuffer(clazz.asSubclass(ILargePayload.class), length));
+            } catch (ClassNotFoundException|ClassCastException e) {
+                e.printStackTrace();
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
 
-    @Override
-    public void handleServerSide(PacketMultiHeader message, EntityPlayer player) {
-        try {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            if (cl == null) cl = PacketMultiHeader.class.getClassLoader(); // fallback
-            Class<? extends AbstractPacket> clazz = (Class<? extends AbstractPacket>) cl.loadClass(className);
-            payloadBuffers.put(player.getUniqueID(), new PayloadBuffer(clazz, length));
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    static void receivePayload(EntityPlayer player, byte[] payload) {
+    static void receivePayload(PlayerEntity player, byte[] payload) {
         PayloadBuffer buffer = payloadBuffers.get(player.getUniqueID());
         if (buffer != null) {
             System.arraycopy(payload, 0, buffer.payload, buffer.offset, payload.length);
-            buffer.offset += NetworkHandler.MAX_PAYLOAD_SIZE;
+            buffer.offset += ILargePayload.MAX_PAYLOAD_SIZE;
             if (buffer.offset > buffer.payload.length) {
                 // we have the complete message
                 try {
-                    AbstractPacket packet = buffer.clazz.newInstance();
-                    ByteBuf buf = Unpooled.wrappedBuffer(buffer.payload);
-                    packet.fromBytes(buf);
-                    packet.handleServerSide(packet, player);
+                    Constructor<? extends ILargePayload> ctor = buffer.clazz.getConstructor(PacketBuffer.class);
+                    ILargePayload packet = ctor.newInstance(new PacketBuffer(Unpooled.wrappedBuffer(buffer.payload)));
+                    packet.handleLargePayload(player);
                     payloadBuffers.remove(player.getUniqueID());
-                } catch (InstantiationException | IllegalAccessException e) {
+                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
             }
@@ -74,11 +78,11 @@ public class PacketMultiHeader extends AbstractPacket<PacketMultiHeader> {
     }
 
     private static class PayloadBuffer {
-        final Class<? extends AbstractPacket> clazz;
+        final Class<? extends ILargePayload> clazz;
         final byte[] payload;
         int offset;
 
-        PayloadBuffer(Class<? extends AbstractPacket> clazz, int length) {
+        PayloadBuffer(Class<? extends ILargePayload> clazz, int length) {
             this.clazz = clazz;
             this.payload = new byte[length];
         }

@@ -5,7 +5,8 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.inventory.ContainerPlasticMixer;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -15,19 +16,22 @@ import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry.PlasticMixerR
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemDye;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -40,7 +44,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
-public class TileEntityPlasticMixer extends TileEntityTickableBase implements IHeatExchanger, IRedstoneControlled, ISerializableTanks, ISmartFluidSync {
+// TODO repurpose this as the Etching Tank
+// Plastic solidfying will be in-world, or using a chilled Heat Frame
+public class TileEntityPlasticMixer extends TileEntityTickableBase implements IHeatExchanger, IRedstoneControlled, ISerializableTanks, ISmartFluidSync, INamedContainerProvider {
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.button.anySignal",
             "gui.tab.redstoneBehaviour.button.highSignal",
@@ -83,7 +89,6 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
         hullHeatLogic.setThermalCapacity(100);
     }
 
-    @SideOnly(Side.CLIENT)
     public IHeatExchangerLogic getLogic(int index) {
         switch (index) {
             case 0:
@@ -99,13 +104,13 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return inventory;
     }
 
     @Override
     public String getName() {
-        return Blockss.PLASTIC_MIXER.getTranslationKey();
+        return ModBlocks.PLASTIC_MIXER.getTranslationKey();
     }
 
     @Override
@@ -117,12 +122,12 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
         if (!getWorld().isRemote) {
             refillDyeBuffers();
-            itemHeatLogic.update();
+            itemHeatLogic.tick();
 
             ItemStack inputStack = inventory.getStackInSlot(INV_INPUT);
             if (getWorld().getTotalWorldTime() % 20 == 0) { // We don't need to run _that_ often.
@@ -195,9 +200,9 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     }
 
     private int useDye(int maxItems) {
-        if (selectedPlastic == EnumDyeColor.WHITE.getDyeDamage()) return maxItems; // Converting to white plastic is free.
+        if (selectedPlastic == DyeColor.WHITE.getDyeDamage()) return maxItems; // Converting to white plastic is free.
 
-        int desiredColor = ItemDye.DYE_COLORS[selectedPlastic];
+        int desiredColor = DyeItem.DYE_COLORS[selectedPlastic];
 
         // see how much we *can* make
         for (int i = 0; i < 3; i++) {
@@ -220,43 +225,43 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        inventory.deserializeNBT(tag.getCompoundTag("Items"));
-        lastTickInventoryStacksize = tag.getInteger("lastTickInventoryStacksize");
-        selectedPlastic = tag.getInteger("selectedPlastic");
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+        inventory.deserializeNBT(tag.getCompound("Items"));
+        lastTickInventoryStacksize = tag.getInt("lastTickInventoryStacksize");
+        selectedPlastic = tag.getInt("selectedPlastic");
         lockSelection = tag.getBoolean("lockSelection");
-        dyeBuffers[0] = tag.getInteger("dyeBuffer0");
-        dyeBuffers[1] = tag.getInteger("dyeBuffer1");
-        dyeBuffers[2] = tag.getInteger("dyeBuffer2");
-        redstoneMode = tag.getInteger("redstoneMode");
+        dyeBuffers[0] = tag.getInt("dyeBuffer0");
+        dyeBuffers[1] = tag.getInt("dyeBuffer1");
+        dyeBuffers[2] = tag.getInt("dyeBuffer2");
+        redstoneMode = tag.getInt("redstoneMode");
 
-        itemHeatLogic.readFromNBT(tag.getCompoundTag("itemLogic"));
+        itemHeatLogic.read(tag.getCompound("itemLogic"));
 
         tank.setFluid(null);
-        tank.readFromNBT(tag.getCompoundTag("fluid"));
+        tank.read(tag.getCompound("fluid"));
         fluidAmountScaled = tank.getScaledFluidAmount();
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setTag("Items", inventory.serializeNBT());
-        tag.setInteger("lastTickInventoryStacksize", lastTickInventoryStacksize);
-        tag.setInteger("selectedPlastic", selectedPlastic);
-        tag.setBoolean("lockSelection", lockSelection);
-        tag.setInteger("dyeBuffer0", dyeBuffers[0]);
-        tag.setInteger("dyeBuffer1", dyeBuffers[1]);
-        tag.setInteger("dyeBuffer2", dyeBuffers[2]);
-        tag.setInteger("redstoneMode", redstoneMode);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.put("Items", inventory.serializeNBT());
+        tag.putInt("lastTickInventoryStacksize", lastTickInventoryStacksize);
+        tag.putInt("selectedPlastic", selectedPlastic);
+        tag.putBoolean("lockSelection", lockSelection);
+        tag.putInt("dyeBuffer0", dyeBuffers[0]);
+        tag.putInt("dyeBuffer1", dyeBuffers[1]);
+        tag.putInt("dyeBuffer2", dyeBuffers[2]);
+        tag.putInt("redstoneMode", redstoneMode);
 
-        NBTTagCompound heatTag = new NBTTagCompound();
-        itemHeatLogic.writeToNBT(heatTag);
-        tag.setTag("itemLogic", heatTag);
+        CompoundNBT heatTag = new CompoundNBT();
+        itemHeatLogic.write(heatTag);
+        tag.put("itemLogic", heatTag);
 
-        NBTTagCompound tankTag = new NBTTagCompound();
-        tank.writeToNBT(tankTag);
-        tag.setTag("fluid", tankTag);
+        CompoundNBT tankTag = new CompoundNBT();
+        tank.write(tankTag);
+        tag.put("fluid", tankTag);
 
         return tag;
     }
@@ -273,36 +278,36 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
+    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
         return hullHeatLogic;
     }
 
     @Override
-    public void handleGUIButtonPress(int guiID, EntityPlayer player) {
-        super.handleGUIButtonPress(guiID, player);
-        if (guiID == 0) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        super.handleGUIButtonPress(tag, player);
+        if (tag == 0) {
             if (++redstoneMode > 3) {
                 redstoneMode = 0;
             }
-        } else if (guiID >= 1 && guiID < 17) {
-            if (selectedPlastic != guiID) {
-                selectedPlastic = guiID - 1;
+        } else if (tag >= 1 && tag < 17) {
+            if (selectedPlastic != tag) {
+                selectedPlastic = tag - 1;
             } else {
                 selectedPlastic = -1;
             }
-        } else if (guiID == 17) {
+        } else if (tag == 17) {
             lockSelection = !lockSelection;
         }
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+    public boolean hasCapability(Capability<?> capability, @Nullable Direction facing) {
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
     @Nullable
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+    public <T> T getCapability(Capability<T> capability, @Nullable Direction facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
         } else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
@@ -338,8 +343,25 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
     }
 
     @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return inventory;
+    }
+
+
+    @Override
     protected List<String> getRedstoneButtonLabels() {
         return REDSTONE_LABELS;
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerPlasticMixer(i, playerInventory, getPos());
     }
 
     private class PlasticFluidTank extends SmartSyncTank {
@@ -364,9 +386,9 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
             switch (slot) {
                 case INV_INPUT: return PlasticMixerRegistry.INSTANCE.isValidInputItem(stack);
                 case INV_OUTPUT: return PlasticMixerRegistry.INSTANCE.isValidOutputItem(stack);
-                case INV_DYE_RED: return DyeUtils.rawDyeDamageFromStack(stack) == EnumDyeColor.RED.getDyeDamage();
-                case INV_DYE_GREEN: return DyeUtils.rawDyeDamageFromStack(stack) == EnumDyeColor.GREEN.getDyeDamage();
-                case INV_DYE_BLUE: return DyeUtils.rawDyeDamageFromStack(stack) == EnumDyeColor.BLUE.getDyeDamage();
+                case INV_DYE_RED: return DyeUtils.rawDyeDamageFromStack(stack) == DyeColor.RED.getDyeDamage();
+                case INV_DYE_GREEN: return DyeUtils.rawDyeDamageFromStack(stack) == DyeColor.GREEN.getDyeDamage();
+                case INV_DYE_BLUE: return DyeUtils.rawDyeDamageFromStack(stack) == DyeColor.BLUE.getDyeDamage();
             }
             return false;
         }

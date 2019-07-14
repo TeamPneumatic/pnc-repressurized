@@ -1,7 +1,13 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
+/**
+ * Implement on a Tile Entity or Semiblock to allow it to receive messages from the client when a GUI button is
+ * clicked.
+ */
 public interface IGUIButtonSensitive {
-    void handleGUIButtonPress(int guiID, EntityPlayer player);
+    String REDSTONE_TAG = "redstone";
+
+    void handleGUIButtonPress(String tag, PlayerEntity player);
 }

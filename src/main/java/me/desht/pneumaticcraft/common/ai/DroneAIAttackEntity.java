@@ -3,19 +3,18 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.CreatureAttribute;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.attributes.AttributeMap;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 
-public class DroneAIAttackEntity extends EntityAIAttackMelee {
+public class DroneAIAttackEntity extends MeleeAttackGoal {
     private final EntityDrone attacker;
     private final boolean isRanged;
     private final double rangedAttackRange;
@@ -31,7 +30,7 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
                 rangeMult = ((ItemGunAmmo) stack.getItem()).getRangeMultiplier(stack);
             }
         }
-        rangedAttackRange = (16 + Math.min(16, attacker.getUpgrades(Itemss.upgrades.get(EnumUpgrade.RANGE)))) * rangeMult;
+        rangedAttackRange = (16 + Math.min(16, attacker.getUpgrades(EnumUpgrade.RANGE))) * rangeMult;
     }
 
     @Override
@@ -41,7 +40,7 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
             return false;
         }
 
-        EntityLivingBase entitylivingbase = attacker.getAttackTarget();
+        LivingEntity entitylivingbase = attacker.getAttackTarget();
         if (entitylivingbase == null) {
             attacker.addDebugEntry("gui.progWidget.entityAttack.debug.noEntityToAttack");
         }
@@ -61,17 +60,17 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
                 ItemStack stack = attacker.getInv().getStackInSlot(i);
                 if (!stack.isEmpty()) {
                     IAttributeInstance damage = new AttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
-                    for (AttributeModifier modifier : stack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND).get(SharedMonsterAttributes.ATTACK_DAMAGE.getName())) {
+                    for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlotType.MAINHAND).get(SharedMonsterAttributes.ATTACK_DAMAGE.getName())) {
                         damage.applyModifier(modifier);
                     }
                     float f1 = 0F;
-                    if (attacker.getAttackTarget() instanceof EntityLivingBase) {
+                    if (attacker.getAttackTarget() instanceof LivingEntity) {
                         f1 = EnchantmentHelper.getModifierForCreature(stack, attacker.getAttackTarget().getCreatureAttribute());
                     } else if (attacker.getAttackTarget() != null) {
-                        f1 = EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED);
+                        f1 = EnchantmentHelper.getModifierForCreature(stack, CreatureAttribute.UNDEFINED);
                     }
-                    if (damage.getAttributeValue() + f1 > bestDmg) {
-                        bestDmg = damage.getAttributeValue() + f1;
+                    if (damage.getValue() + f1 > bestDmg) {
+                        bestDmg = damage.getValue() + f1;
                         bestSlot = i;
                     }
                 }
@@ -87,9 +86,9 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
     @Override
     public boolean shouldContinueExecuting() {
         if (isRanged) {
-            EntityLivingBase entitylivingbase = attacker.getAttackTarget();
+            LivingEntity entitylivingbase = attacker.getAttackTarget();
             if (entitylivingbase == null) return false;
-            double dist = attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
+            double dist = attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getBoundingBox().minY, entitylivingbase.posZ);
             if (attacker.getAmmo().isEmpty()) return false;
             if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(entitylivingbase))
                 return true;
@@ -103,11 +102,11 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
     }
 
     @Override
-    public void updateTask() {
+    public void tick() {
         boolean needingSuper = true;
         if (isRanged) {
-            EntityLivingBase entitylivingbase = attacker.getAttackTarget();
-            double dist = attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
+            LivingEntity entitylivingbase = attacker.getAttackTarget();
+            double dist = attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getBoundingBox().minY, entitylivingbase.posZ);
             if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(entitylivingbase)) {
                 attacker.getFakePlayer().posX = attacker.posX;//Knockback direction
                 attacker.getFakePlayer().posY = attacker.posY;
@@ -119,6 +118,6 @@ public class DroneAIAttackEntity extends EntityAIAttackMelee {
                 }
             }
         }
-        if (needingSuper) super.updateTask();
+        if (needingSuper) super.tick();
     }
 }

@@ -1,102 +1,104 @@
 package me.desht.pneumaticcraft.common.block;
 
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.ITOPInfoProvider;
-import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TOPCallback;
-import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
-import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.tileentity.IComparatorSupport;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Direction.Axis;
+import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public abstract class BlockPneumaticCraft extends Block implements IPneumaticWrenchable, IUpgradeAcceptor, ITOPInfoProvider {
-    public static final PropertyEnum<EnumFacing> ROTATION = PropertyEnum.create("facing", EnumFacing.class);
-    public static final PropertyBool UP = PropertyBool.create("up");
-    public static final PropertyBool DOWN = PropertyBool.create("down");
-    public static final PropertyBool NORTH = PropertyBool.create("north");
-    public static final PropertyBool EAST = PropertyBool.create("east");
-    public static final PropertyBool SOUTH = PropertyBool.create("south");
-    public static final PropertyBool WEST = PropertyBool.create("west");
-    static final PropertyBool[] CONNECTION_PROPERTIES = new PropertyBool[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-    private static final String NBT_UPGRADE_INVENTORY = "UpgradeInventory";
-    private static final String NBT_SIDECONFIG = "SideConfiguration";
-    private static final String NBT_AIR_AMOUNT = "AirAmount";
-
-    private AxisAlignedBB bounds = FULL_BLOCK_AABB;
+public abstract class BlockPneumaticCraft extends Block implements IPneumaticWrenchable, IUpgradeAcceptor {
+    public static final EnumProperty<Direction> ROTATION = EnumProperty.create("facing", Direction.class);
+    public static final BooleanProperty UP = BooleanProperty.create("up");
+    public static final BooleanProperty DOWN = BooleanProperty.create("down");
+    public static final BooleanProperty NORTH = BooleanProperty.create("north");
+    public static final BooleanProperty EAST = BooleanProperty.create("east");
+    public static final BooleanProperty SOUTH = BooleanProperty.create("south");
+    public static final BooleanProperty WEST = BooleanProperty.create("west");
+    public static final BooleanProperty[] CONNECTION_PROPERTIES = new BooleanProperty[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
+    public static final Block.Properties DEFAULT_PROPS = Block.Properties.create(Material.IRON)
+            .hardnessAndResistance(3f, 10f).sound(SoundType.METAL);
 
     protected BlockPneumaticCraft(Material material, String registryName) {
-        super(material);
-        setTranslationKey(registryName);
+        super(DEFAULT_PROPS);
         setRegistryName(registryName);
-        setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
-        setHardness(3.0F);
-        setResistance(10.0F);
+    }
+
+    protected BlockPneumaticCraft(Block.Properties props, String registryName) {
+        super(props);
+        setRegistryName(registryName);
     }
 
     @Override
-    public boolean hasTileEntity(IBlockState state) {
+    public boolean hasTileEntity(BlockState state) {
         return getTileEntityClass() != null;
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(World world, IBlockState state) {
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         try {
             TileEntity te = getTileEntityClass().newInstance();
-            te.setWorld(world);
+            if (world instanceof World) {
+                // should be true in all cases except worldgen (where we don't care anyway)
+                te.setWorld((World) world);
+            }
             if (te instanceof TileEntityBase) {
                 ((TileEntityBase) te).onTileEntityCreated();
             }
@@ -109,28 +111,31 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     protected abstract Class<? extends TileEntity> getTileEntityClass();
 
-    public EnumGuiId getGuiID() {
-        return null;
+    @Override
+    public String getUpgradeAcceptorTranslationKey() {
+        return getTranslationKey();
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         ItemStack heldItem = player.getHeldItem(hand);
+        TileEntity te = world.getTileEntity(pos);
         if (player.isSneaking()
-                || getGuiID() == null
-                || isRotatable() && (heldItem.getItem() == Itemss.MANOMETER || ModdedWrenchUtils.getInstance().isModdedWrench(heldItem))
-                || hand == EnumHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(player.getHeldItemMainhand())) {
+                || !(te instanceof INamedContainerProvider)
+                || isRotatable() && (heldItem.getItem() == ModItems.MANOMETER || ModdedWrenchUtils.getInstance().isModdedWrench(heldItem))
+                || hand == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(player.getHeldItemMainhand())) {
             return false;
         } else {
             if (!world.isRemote) {
-                TileEntity te = world.getTileEntity(pos);
-                if (te != null) {
+                if (te instanceof TileEntityBase) {
                     if (FluidUtils.tryFluidInsertion(te, null, player, hand)) {
                         return true;
                     } else if (FluidUtils.tryFluidExtraction(te, null, player, hand)) {
                         return true;
                     }
-                    player.openGui(PneumaticCraftRepressurized.instance, getGuiID().ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
+                    if (te instanceof INamedContainerProvider) {
+                        NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
+                    }
                 }
             }
 
@@ -138,12 +143,13 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         }
     }
 
+    @Nullable
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-        IBlockState state = super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand);
+    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+        BlockState state = super.getStateForPlacement(ctx);
         if (isRotatable()) {
-            EnumFacing f = PneumaticCraftUtils.getDirectionFacing(placer, canRotateToTopOrBottom());
-            return state.withProperty(ROTATION, reversePlacementRotation() ? f.getOpposite() : f);
+            Direction f = PneumaticCraftUtils.getDirectionFacing(ctx.getPlayer(), canRotateToTopOrBottom());
+            return state.with(ROTATION, reversePlacementRotation() ? f.getOpposite() : f);
         } else {
             return state;
         }
@@ -158,42 +164,28 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof ISerializableTanks && stack.hasTagCompound() && stack.getTagCompound().hasKey(ISerializableTanks.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-            ((ISerializableTanks) te).deserializeTanks(stack.getTagCompound().getCompoundTag(ISerializableTanks.NBT_SAVED_TANKS));
-        }
-        if (te instanceof TileEntityBase && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_UPGRADE_INVENTORY)) {
-            ((TileEntityBase) te).getUpgradesInventory().deserializeNBT(stack.getTagCompound().getCompoundTag(NBT_UPGRADE_INVENTORY));
-        }
-        if (te instanceof ISideConfigurable && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_SIDECONFIG)) {
-            NBTTagCompound tag = stack.getTagCompound().getCompoundTag(NBT_SIDECONFIG);
-            SideConfigurator.readFromNBT(tag, ((ISideConfigurable) te));
-        }
-        if (te instanceof IPneumaticMachine && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_AIR_AMOUNT)) {
-            int air = stack.getTagCompound().getInteger(NBT_AIR_AMOUNT);
-            ((IPneumaticMachine) te).getAirHandler(null).addAir(air);
-        }
         if (te instanceof IHeatExchanger) {
             double ambient = HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature();
             ((IHeatExchanger) te).getHeatExchangerLogic(null).setTemperature(ambient);
         }
     }
 
-    protected void setRotation(World world, BlockPos pos, EnumFacing rotation) {
+    protected void setRotation(World world, BlockPos pos, Direction rotation) {
         setRotation(world, pos, rotation, world.getBlockState(pos));
     }
 
-    protected EnumFacing getRotation(IBlockAccess world, BlockPos pos) {
+    protected Direction getRotation(IBlockReader world, BlockPos pos) {
         return getRotation(world.getBlockState(pos));
     }
 
-    protected EnumFacing getRotation(IBlockState state) {
-        return state.getValue(ROTATION);
+    protected Direction getRotation(BlockState state) {
+        return state.get(ROTATION);
     }
 
-    private void setRotation(World world, BlockPos pos, EnumFacing rotation, IBlockState state) {
-        world.setBlockState(pos, state.withProperty(ROTATION, rotation));
+    private void setRotation(World world, BlockPos pos, Direction rotation, BlockState state) {
+        world.setBlockState(pos, state.with(ROTATION, rotation));
     }
 
     public boolean isRotatable() {
@@ -205,64 +197,46 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         if (isRotatable()) {
-            return new BlockStateContainer(this, ROTATION);
-        } else {
-            return super.createBlockState();
+            builder.add(ROTATION);
         }
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
-        if (isRotatable()) {
-            return state.getValue(ROTATION).ordinal();
-        } else {
-            return super.getMetaFromState(state);
-        }
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        if (isRotatable()) {
-            return super.getStateFromMeta(meta).withProperty(ROTATION, EnumFacing.byIndex(meta));
-        } else {
-            return super.getStateFromMeta(meta);
-        }
-    }
-
-    @Override
-    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
+    public BlockState rotate(BlockState state, Rotation rotation) {
         // we simply disallow any external block rotation here:
-        // - rotation by the pneumatic wrench is handled by our own rotateBlock() below
-        // - rotation by 3rd party wrenches is capture by an event handler, which sends
-        //   a custom packet, also leading to our own rotateBlock()
-        return false;
+        // - rotation by the pneumatic wrench is handled by onBlockWrenched() below
+        // - rotation by 3rd party wrenches is captured by a client-side event handler, which sends
+        //   a PacketModWrenchBlock to the server, also leading to onBlockWrenched()
+        return state;
     }
 
     @Override
-    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side, EnumHand hand) {
+    public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
         if (player != null && player.isSneaking()) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityBase) {
                 ((TileEntityBase) te).setPreserveStateOnBreak(true);
             }
-            if (!player.capabilities.isCreativeMode) dropBlockAsItem(world, pos, world.getBlockState(pos), 0);
-            world.setBlockToAir(pos);
+            if (!player.isCreative()) {
+                spawnDrops(world.getBlockState(pos), world, pos);
+            }
+            world.removeBlock(pos, false);
             return true;
         } else {
             if (isRotatable()) {
-                IBlockState state = world.getBlockState(pos);
+                BlockState state = world.getBlockState(pos);
                 if (!rotateCustom(world, pos, state, side)) {
                     if (rotateForgeWay()) {
-                        if (!canRotateToTopOrBottom()) side = EnumFacing.UP;
+                        if (!canRotateToTopOrBottom()) side = Direction.UP;
                         if (getRotation(world, pos).getAxis() != side.getAxis()) {
                             setRotation(world, pos, getRotation(world, pos).rotateAround(side.getAxis()));
                         }
                     } else {
-                        EnumFacing f = getRotation(world, pos);
+                        Direction f = getRotation(world, pos);
                         do {
-                            f = EnumFacing.byIndex(f.ordinal() + 1);
+                            f = Direction.byIndex(f.ordinal() + 1);
                         } while (!canRotateToTopOrBottom() && f.getAxis() == Axis.Y);
                         setRotation(world, pos, f);
                     }
@@ -289,12 +263,12 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
      * @param side the side clicked
      * @return true when the method is overridden, to disable default rotation behaviour
      */
-    protected boolean rotateCustom(World world, BlockPos pos, IBlockState state, EnumFacing side) {
+    protected boolean rotateCustom(World world, BlockPos pos, BlockState state, Direction side) {
         return false;
     }
 
     @Override
-    public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos tilePos) {
+    public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos tilePos) {
         if (world instanceof World && !((World) world).isRemote) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityBase) {
@@ -304,7 +278,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean b) {
         if (!world.isRemote) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityBase) {
@@ -313,38 +287,47 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    private int getSavedAir(ItemStack stack) {
+        CompoundNBT tag = stack.getChildTag("BlockEntityTag");
+        if (tag != null) {
+            CompoundNBT airTag = tag.getCompound(NBTKeys.NBT_AIR_HANDLER);
+            if (airTag != null && airTag.contains("air")) {
+                return airTag.getInt("air");
+            }
+        }
+        return 0;
+    }
+
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, World world, List<String> curInfo, ITooltipFlag flag) {
-        if (stack.hasTagCompound()) {
-            if (NBTUtil.hasTag(stack, NBT_AIR_AMOUNT)) {
-                TileEntity te = createTileEntity(world, getDefaultState());
-                if (te instanceof IPneumaticMachine) {
-                    curInfo.add(TextFormatting.DARK_GREEN + "Stored Air: " + NBTUtil.getInteger(stack, NBT_AIR_AMOUNT) + "mL");
-                }
+    public void addInformation(ItemStack stack, IBlockReader world, List<ITextComponent> curInfo, ITooltipFlag flag) {
+        if (stack.hasTag()) {
+            int savedAir = getSavedAir(stack);
+            if (savedAir != 0) {
+                curInfo.add(new StringTextComponent("Stored Air: " + savedAir + "mL").applyTextStyle(TextFormatting.GREEN));
             }
             if (stack.getItem() instanceof IUpgradeAcceptor) {
                 UpgradableItemUtils.addUpgradeInformation(stack, world, curInfo, flag);
             }
-            if (stack.getTagCompound().hasKey(ISerializableTanks.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-                NBTTagCompound tag = stack.getTagCompound().getCompoundTag(ISerializableTanks.NBT_SAVED_TANKS);
-                for (String s : tag.getKeySet()) {
-                    NBTTagCompound tankTag = tag.getCompoundTag(s);
-                    FluidTank tank = new FluidTank(tankTag.getInteger("Amount"));
+            if (stack.getTag().contains(NBTKeys.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
+                CompoundNBT tag = stack.getTag().getCompound(NBTKeys.NBT_SAVED_TANKS);
+                for (String s : tag.keySet()) {
+                    CompoundNBT tankTag = tag.getCompound(s);
+                    FluidTank tank = new FluidTank(tankTag.getInt("Amount"));
                     tank.readFromNBT(tankTag);
                     FluidStack fluidStack = tank.getFluid();
                     if (fluidStack != null && fluidStack.amount > 0) {
-                        curInfo.add(fluidStack.getFluid().getLocalizedName(fluidStack) + ": " + fluidStack.amount + "mB");
+                        curInfo.add(new StringTextComponent(fluidStack.getFluid().getLocalizedName(fluidStack) + ": " + fluidStack.amount + "mB"));
                     }
                 }
             }
             addExtraInformation(stack, world, curInfo, flag);
         }
         if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
-            TileEntity te = createTileEntity(world, getDefaultState());
+            TileEntity te = createTileEntity(getDefaultState(), world);
             if (te instanceof TileEntityPneumaticBase) {
                 float pressure = ((TileEntityPneumaticBase) te).dangerPressure;
-                curInfo.add(TextFormatting.YELLOW + I18n.format("gui.tooltip.maxPressure", pressure));
+                curInfo.add(xlate("gui.tooltip.maxPressure", pressure).applyTextStyle(TextFormatting.YELLOW));
             }
         }
 
@@ -352,17 +335,17 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (I18n.hasKey(info)) {
             if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
                 String translatedInfo = TextFormatting.AQUA + I18n.format(info).substring(2);  // strip out the leading text formatting
-                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 50));
+                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 50).stream().map(StringTextComponent::new).collect(Collectors.toList()));
                 if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
-                    curInfo.add(I18n.format("gui.tab.info.assistIGW"));
+                    curInfo.add(xlate("gui.tab.info.assistIGW"));
                 }
             } else {
-                curInfo.add(TextFormatting.AQUA + I18n.format("gui.tooltip.sneakForInfo"));
+                curInfo.add(xlate("gui.tooltip.sneakForInfo").applyTextStyle(TextFormatting.AQUA));
             }
         }
     }
 
-    protected void addExtraInformation(ItemStack stack, World world, List<String> curInfo, ITooltipFlag flag) {
+    protected void addExtraInformation(ItemStack stack, IBlockReader world, List<ITextComponent> curInfo, ITooltipFlag flag) {
         // override in subclasses
     }
 
@@ -371,7 +354,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
      * getComparatorInputOverride instead of the actual redstone signal strength.
      */
     @Override
-    public boolean hasComparatorInputOverride(IBlockState state) {
+    public boolean hasComparatorInputOverride(BlockState state) {
         return IComparatorSupport.class.isAssignableFrom(getTileEntityClass());
     }
 
@@ -380,41 +363,36 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
      * strength when this block inputs to a comparator.
      */
     @Override
-    public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos) {
+    public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
         return ((IComparatorSupport) world.getTileEntity(pos)).getComparatorValue();
     }
 
     @Override
     public Set<Item> getApplicableUpgrades() {
-        TileEntity te = createTileEntity(null, getDefaultState());
+        TileEntity te = createTileEntity(getDefaultState(), null);
         return te instanceof IUpgradeAcceptor ? ((IUpgradeAcceptor) te).getApplicableUpgrades() : Collections.emptySet();
     }
 
     @Override
-    public String getName() {
-        return getTranslationKey() + ".name";
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
+
+//    @Override
+//    public AxisAlignedBB getBoundingBox(BlockState state, IBlockReader source, BlockPos pos) {
+//        return bounds;
+//    }
+
+//    /**
+//     * Compatibility with 1.8 code...
+//     * @param bounds new bounding box
+//     */
+//    protected void setBlockBounds(AxisAlignedBB bounds) {
+//        this.bounds = bounds;
+//    }
 
     @Override
-    public EnumBlockRenderType getRenderType(IBlockState state) {
-        return EnumBlockRenderType.MODEL;
-    }
-
-    @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return bounds;
-    }
-
-    /**
-     * Compatibility with 1.8 code...
-     * @param bounds new bounding box
-     */
-    protected void setBlockBounds(AxisAlignedBB bounds) {
-        this.bounds = bounds;
-    }
-
-    @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
         if (player.isCreative()) {
             if (!world.isRemote) {
                 // Drop any contained items here (but don't drop the block itself as an item; this is creative mode)
@@ -425,91 +403,31 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                     drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos));
                 }
             }
-            return super.removedByPlayer(state, world, pos, player, false);
+            return super.removedByPlayer(state, world, pos, player, false, fluid);
         } else {
             // This delays harvesting until after getDrops() is called, giving getDrops() a chance to serialize any TE
             // data onto the itemstack.  harvestBlock() must also be overridden to remove the block (see below)
-            return willHarvest || super.removedByPlayer(state, world, pos, player, false);
+            return willHarvest || super.removedByPlayer(state, world, pos, player, false, fluid);
         }
     }
 
     @Override
-    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack) {
+    public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, TileEntity te, ItemStack stack) {
         super.harvestBlock(world, player, pos, state, te, stack);
-        world.setBlockToAir(pos);  // see removedByPlayer() above
+        world.removeBlock(pos, false);  // see removedByPlayer() above
     }
 
     @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        TileEntity te = worldIn.getTileEntity(pos);
-        if (te instanceof TileEntityBase) {
-            NonNullList<ItemStack> drops = NonNullList.create();
-            ((TileEntityBase) te).getContentsToDrop(drops);
-            drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, worldIn, pos));
-        }
-        super.breakBlock(worldIn, pos, state);
-    }
-
-    @Override
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        super.getDrops(drops, world, pos, state, fortune);
-        TileEntity te = world.getTileEntity(pos);
-        if (te != null && drops.size() > 0) {
-            ItemStack teStack = drops.get(0);
-            teStack.setTagCompound(new NBTTagCompound());
-            if (te instanceof ISerializableTanks) {
-                ((ISerializableTanks) te).serializeTanks(teStack);
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof TileEntityBase) {
+                NonNullList<ItemStack> drops = NonNullList.create();
+                ((TileEntityBase) te).getContentsToDrop(drops);
+                drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos));
             }
-            if (te instanceof TileEntityBase && ((TileEntityBase) te).shouldPreserveStateOnBreak()) {
-                TileEntityBase.UpgradeHandler upgradeHandler = ((TileEntityBase) te).getUpgradesInventory();
-                for (int i = 0; i < upgradeHandler.getSlots(); i++) {
-                    if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
-                        teStack.getTagCompound().setTag(NBT_UPGRADE_INVENTORY, upgradeHandler.serializeNBT());
-                        break;
-                    }
-                }
-                if (te instanceof IPneumaticMachine) {
-                    IAirHandler airHandler = ((IPneumaticMachine) te).getAirHandler(null);
-                    if (airHandler != null && airHandler.getPressure() != 0f) {
-                        teStack.getTagCompound().setInteger(NBT_AIR_AMOUNT, airHandler.getAir());
-                    }
-                }
-            }
-            if (te instanceof ISideConfigurable) {
-                NBTTagCompound tag = SideConfigurator.writeToNBT((ISideConfigurable) te);
-                if (!tag.isEmpty()) {
-                    teStack.getTagCompound().setTag(NBT_SIDECONFIG, tag);
-                }
-            }
-            if (teStack.hasTagCompound() && teStack.getTagCompound().isEmpty()) {
-                teStack.setTagCompound(null);
-            }
+            super.onReplaced(state, world, pos, newState, isMoving);
         }
     }
 
-    @Override
-    @Optional.Method(modid = "theoneprobe")
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
-        TileEntity te = world.getTileEntity(data.getPos());
-        if(te instanceof IInfoForwarder){
-            te = ((IInfoForwarder)te).getInfoTileEntity();
-        }
-        
-        if (te instanceof IPneumaticMachine) {
-            TOPCallback.handlePneumatic(mode, probeInfo, (IPneumaticMachine)te);
-        }
-        if (te instanceof IHeatExchanger) {
-            TOPCallback.handleHeat(mode, probeInfo, (IHeatExchanger) te);
-        }
-        if (ConfigHandler.client.topShowsFluids && te != null && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, data.getSideHit())) {
-            IFluidHandler handler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, data.getSideHit());
-            TOPCallback.handleFluidTanks(mode, probeInfo, handler);
-        }
-        if (te instanceof TileEntityBase) {
-            TOPCallback.handleRedstoneMode(mode, probeInfo, (TileEntityBase) te);
-        }
-        if (te instanceof TileEntityPressureTube) {
-            TOPCallback.handlePressureTube(mode, probeInfo, (TileEntityPressureTube) te, data.getSideHit(), player);
-        }
-    }
 }

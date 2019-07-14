@@ -6,38 +6,35 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableSetWidget;
 import net.minecraft.client.resources.I18n;
 
-import java.io.IOException;
-
-public class GuiProgWidgetForEach extends GuiProgWidgetAreaShow {
+public class GuiProgWidgetForEach<W extends IProgWidget & IVariableSetWidget> extends GuiProgWidgetAreaShow<W> {
 
     private WidgetComboBox variableField;
 
-    public GuiProgWidgetForEach(IProgWidget widget, GuiProgrammer guiProgrammer) {
-        super(widget, guiProgrammer);
+    public GuiProgWidgetForEach(W progWidget, GuiProgrammer guiProgrammer) {
+        super(progWidget, guiProgrammer);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
-        variableField = new WidgetComboBox(fontRenderer, guiLeft + 10, guiTop + 42, 160, fontRenderer.FONT_HEIGHT + 1);
+        variableField = new WidgetComboBox(font, guiLeft + 10, guiTop + 42, 160, font.FONT_HEIGHT + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
-        addWidget(variableField);
-        variableField.setText(((IVariableSetWidget) widget).getVariable());
-        variableField.setFocused(true);
+        addButton(variableField);
+        variableField.setText(progWidget.getVariable());
+        variableField.setFocused2(true);
     }
 
     @Override
-    public void keyTyped(char chr, int keyCode) throws IOException {
-        if (keyCode == 1) {
-            ((IVariableSetWidget) widget).setVariable(variableField.getText());
-        }
-        super.keyTyped(chr, keyCode);
+    public void onClose() {
+        progWidget.setVariable(variableField.getText());
+
+        super.onClose();
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        fontRenderer.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 30, 0xFF000000);
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        super.render(mouseX, mouseY, partialTicks);
+        font.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 30, 0xFF000000);
     }
 }

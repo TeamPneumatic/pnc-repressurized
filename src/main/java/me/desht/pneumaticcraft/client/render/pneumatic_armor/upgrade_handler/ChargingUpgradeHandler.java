@@ -1,9 +1,8 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 
 public class ChargingUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRenderHandler {
@@ -14,11 +13,11 @@ public class ChargingUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
 
     @Override
     public Item[] getRequiredUpgrades() {
-        return new Item[] {Itemss.upgrades.get(IItemRegistry.EnumUpgrade.CHARGING)};
+        return new Item[] { IItemRegistry.EnumUpgrade.CHARGING.getItem() };
     }
 
     @Override
-    public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.CHEST;
+    public EquipmentSlotType getEquipmentSlot() {
+        return EquipmentSlotType.CHEST;
     }
 }

@@ -11,7 +11,7 @@ public class SlotInventoryLimiting extends SlotItemHandler {
     }
 
     public SlotInventoryLimiting(TileEntityPneumaticBase te, int slotIndex, int posX, int posY) {
-        this(te.getPrimaryInventory(), slotIndex, posX, posY);
+        this(te.getInventoryCap(), slotIndex, posX, posY);
     }
 
 }

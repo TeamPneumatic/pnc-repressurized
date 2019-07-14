@@ -1,16 +1,16 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
-import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.IDocsProvider;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -31,7 +31,7 @@ import vazkii.patchouli.common.book.BookRegistry;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class Patchouli implements IThirdParty, IDocsProvider {
-    private static GuiScreen prevGui;
+    private static Screen prevGui;
 
     @Override
     public void clientPreInit() {
@@ -44,13 +44,13 @@ public class Patchouli implements IThirdParty, IDocsProvider {
 
         setConfigFlags();
 
-        IStateMatcher edge = papi.predicateMatcher(Blockss.PRESSURE_CHAMBER_WALL, this::validEdge);
-        IStateMatcher wall = papi.predicateMatcher(Blockss.PRESSURE_CHAMBER_WALL, this::validFace);
-        IStateMatcher glass = papi.predicateMatcher(Blockss.PRESSURE_CHAMBER_GLASS, this::validFace);
-        IStateMatcher valve = papi.predicateMatcher(Blockss.PRESSURE_CHAMBER_VALVE.getDefaultState().withProperty(BlockPneumaticCraft.ROTATION, EnumFacing.NORTH), this::validFace);
-        IStateMatcher valveUp = papi.predicateMatcher(Blockss.PRESSURE_CHAMBER_VALVE.getDefaultState().withProperty(BlockPneumaticCraft.ROTATION, EnumFacing.UP), this::validFace);
-        IStateMatcher intI = papi.predicateMatcher(Blockss.PRESSURE_CHAMBER_INTERFACE.getDefaultState().withProperty(BlockPneumaticCraft.ROTATION, EnumFacing.EAST), this::validFace);
-        IStateMatcher intO = papi.predicateMatcher(Blockss.PRESSURE_CHAMBER_INTERFACE.getDefaultState().withProperty(BlockPneumaticCraft.ROTATION, EnumFacing.WEST), this::validFace);
+        IStateMatcher edge = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_WALL, this::validEdge);
+        IStateMatcher wall = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_WALL, this::validFace);
+        IStateMatcher glass = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_GLASS, this::validFace);
+        IStateMatcher valve = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_VALVE.getDefaultState().withProperty(BlockPneumaticCraft.ROTATION, Direction.NORTH), this::validFace);
+        IStateMatcher valveUp = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_VALVE.getDefaultState().withProperty(BlockPneumaticCraft.ROTATION, Direction.UP), this::validFace);
+        IStateMatcher intI = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_INTERFACE.getDefaultState().withProperty(BlockPneumaticCraft.ROTATION, Direction.EAST), this::validFace);
+        IStateMatcher intO = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_INTERFACE.getDefaultState().withProperty(BlockPneumaticCraft.ROTATION, Direction.WEST), this::validFace);
 
         IMultiblock pc3 = papi.makeMultiblock(new String[][] {
                         { "WWW", "WWW", "WWW" },
@@ -83,13 +83,13 @@ public class Patchouli implements IThirdParty, IDocsProvider {
         papi.registerMultiblock(RL("pressure_chamber_5"), pc5);
     }
 
-    private boolean validEdge(IBlockState state) {
-        return state.getBlock() == Blockss.PRESSURE_CHAMBER_WALL || state.getBlock() == Blockss.PRESSURE_CHAMBER_GLASS;
+    private boolean validEdge(BlockState state) {
+        return state.getBlock() == ModBlocks.PRESSURE_CHAMBER_WALL || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_GLASS;
     }
 
-    private boolean validFace(IBlockState state) {
-        return state.getBlock() == Blockss.PRESSURE_CHAMBER_WALL || state.getBlock() == Blockss.PRESSURE_CHAMBER_GLASS
-                || state.getBlock() == Blockss.PRESSURE_CHAMBER_INTERFACE || state.getBlock() == Blockss.PRESSURE_CHAMBER_VALVE;
+    private boolean validFace(BlockState state) {
+        return state.getBlock() == ModBlocks.PRESSURE_CHAMBER_WALL || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_GLASS
+                || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_INTERFACE || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_VALVE;
     }
 
     private void setConfigFlags() {
@@ -118,7 +118,7 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     public static void openBookGui(ResourceLocation bookRes, String entryId) {
         // This is bad and I feel bad. It will go if & when a Patchouli API method is added to do it properly.
 
-        GuiScreen prev = Minecraft.getMinecraft().currentScreen;
+        Screen prev = Minecraft.getMinecraft().currentScreen;
 
         Book book = BookRegistry.INSTANCE.books.get(bookRes);
         if (book != null) {

@@ -3,12 +3,8 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemReinforcedAirCanister extends ItemPneumatic implements IPressurizable {
     // we can't just extend ItemPressurizable, because we need to use NBT for the air amount (> 65535)
@@ -17,24 +13,21 @@ public class ItemReinforcedAirCanister extends ItemPneumatic implements IPressur
     private static final int MAX_DAMAGE = 250;  // arbitrary
 
     public ItemReinforcedAirCanister() {
-        super("reinforced_air_canister");
-        setMaxStackSize(1);
-        setMaxDamage(MAX_DAMAGE);
-        setNoRepair();
+        super(DEFAULT_PROPS.maxStackSize(1).maxDamage(MAX_DAMAGE).setNoRepair(), "reinforced_air_canister");
     }
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> par3List) {
-        if (isInCreativeTab(tab)) {
-            ItemStack stack2 = new ItemStack(this);
-            addAir(stack2, PneumaticValues.REINFORCED_AIR_CANISTER_MAX_AIR);
-            ItemStack stack = new ItemStack(this);
-            addAir(stack, 0);
-            par3List.add(stack);
-            par3List.add(stack2);
-        }
-    }
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> par3List) {
+//        if (isInCreativeTab(tab)) {
+//            ItemStack stack2 = new ItemStack(this);
+//            addAir(stack2, PneumaticValues.REINFORCED_AIR_CANISTER_MAX_AIR);
+//            ItemStack stack = new ItemStack(this);
+//            addAir(stack, 0);
+//            par3List.add(stack);
+//            par3List.add(stack2);
+//        }
+//    }
 
     @Override
     public int getDamage(ItemStack stack) {

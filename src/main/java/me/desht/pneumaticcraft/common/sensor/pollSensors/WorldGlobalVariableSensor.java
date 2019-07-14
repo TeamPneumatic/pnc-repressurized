@@ -1,9 +1,8 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.universalSensor.IPollSensorSetting;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.Item;
@@ -11,9 +10,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.Rectangle;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +26,7 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public Set<Item> getRequiredUpgrades() {
-        return ImmutableSet.of(Itemss.upgrades.get(EnumUpgrade.DISPENSER));
+        return ImmutableSet.of(IItemRegistry.EnumUpgrade.DISPENSER.getItem());
     }
 
     @Override
@@ -52,13 +50,8 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
         fontRenderer.drawString("Variable Name", 70, 48, 0x404040);
-    }
-
-    @Override
-    public Rectangle needsSlot() {
-        return null;
     }
 }

@@ -5,35 +5,30 @@ import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public class GuiLiquidCompressor extends GuiPneumaticContainerBase<TileEntityLiquidCompressor> {
-
-    public GuiLiquidCompressor(InventoryPlayer player, TileEntityLiquidCompressor te) {
-        super(new ContainerLiquidCompressor(player, te), te, Textures.GUI_LIQUID_COMPRESSOR);
-    }
-
-    public GuiLiquidCompressor(Container container, TileEntityLiquidCompressor te, String texture) {
-        super(container, te, texture);
+public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiquidCompressor,TileEntityLiquidCompressor> {
+    public GuiLiquidCompressor(ContainerLiquidCompressor container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        addWidget(new WidgetTank(-1, guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
+    public void init() {
+        super.init();
+        addButton(new WidgetTank(guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
         addAnimatedStat("gui.tab.liquidCompressor.fuel", new ItemStack(Items.LAVA_BUCKET), 0xFFFF6600, true).setTextWithoutCuttingString(getAllFuels());
     }
 
@@ -67,7 +62,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<TileEntityLiq
         fuels.add("L/Bucket | Fluid");
         for (Map.Entry<String, Integer> map : sortByValue(PneumaticCraftAPIHandler.getInstance().liquidFuels).entrySet()) {
             String value = map.getValue() / 1000 + "";
-            while (fontRenderer.getStringWidth(value) < 25) {
+            while (font.getStringWidth(value) < 25) {
                 value = value + " ";
             }
             Fluid fluid = FluidRegistry.getFluid(map.getKey());
@@ -91,14 +86,25 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<TileEntityLiq
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
 
-        fontRenderer.drawString("Upgr.", 15, 19, 4210752);
+        font.drawString("Upgr.", 15, 19, 4210752);
+    }
+
+    @Override
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_LIQUID_COMPRESSOR;
     }
 
     @Override
     public void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
-        IFluidHandler fluidHandler = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-        if (!te.isProducing && (fluidHandler == null || fluidHandler.getTankProperties()[0].getContents() == null)) {
+
+        if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
+            te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(fluidHandler -> {
+                if (!te.isProducing && fluidHandler.getTankProperties()[0].getContents() == null) {
+                    curInfo.add("gui.tab.problems.liquidCompressor.noFuel");
+                }
+            });
+        } else {
             curInfo.add("gui.tab.problems.liquidCompressor.noFuel");
         }
     }

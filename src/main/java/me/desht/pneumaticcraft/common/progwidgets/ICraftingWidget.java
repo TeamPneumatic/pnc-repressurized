@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 
 public interface ICraftingWidget {
-    InventoryCrafting getCraftingGrid();
+    CraftingInventory getCraftingGrid();
 }

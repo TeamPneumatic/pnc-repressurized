@@ -4,7 +4,7 @@ import crafttweaker.IAction;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.liquid.ILiquidStack;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
@@ -81,7 +81,7 @@ public class PlasticMixer {
         }
 
         LiquidPlasticAction(Fluid fluid, int ratio) {
-            this(new FluidStack(fluid, ratio), new ItemStack(Itemss.PLASTIC));
+            this(new FluidStack(fluid, ratio), new ItemStack(ModItems.PLASTIC));
         }
 
         @Override

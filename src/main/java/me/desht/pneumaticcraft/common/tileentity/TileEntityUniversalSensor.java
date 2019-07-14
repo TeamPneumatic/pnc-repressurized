@@ -1,58 +1,57 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.api.universalSensor.IEventSensorSetting;
-import me.desht.pneumaticcraft.api.universalSensor.IPollSensorSetting;
-import me.desht.pneumaticcraft.api.universalSensor.ISensorSetting;
+import me.desht.pneumaticcraft.api.universal_sensor.IEventSensorSetting;
+import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
+import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.GuiUniversalSensor;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
-import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
-import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TileEntityUniversalSensor extends TileEntityPneumaticBase
-        implements IRangeLineShower, IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl {
+        implements IRangeLineShower, IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl, INamedContainerProvider {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.universalSensor.button.normal",
             "gui.tab.redstoneBehaviour.universalSensor.button.inverted"
     );
 
-    private static final int INVENTORY_SIZE = 4;
+    private static final int CUSTOM_UPGRADES_SIZE = 4;
 
     @DescSynced
     public final boolean[] sidesConnected = new boolean[6];
@@ -77,23 +76,24 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     private int oldSensorRange; // range used by the range line renderer, to figure out if the range has been changed.
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x330000FF);
 
+    // todo 1.14 computercraft
     // keep track of the computers so we can raise a os.pullevent.
-    private final CopyOnWriteArrayList<IComputerAccess> attachedComputers = new CopyOnWriteArrayList<>();
+//    private final CopyOnWriteArrayList<IComputerAccess> attachedComputers = new CopyOnWriteArrayList<>();
 
     @DescSynced
     public String lastSensorError = "";
+    private final UniversalSensorUpgradeHandler customUpgradeHandler = new UniversalSensorUpgradeHandler();
 
     public TileEntityUniversalSensor() {
-        super(PneumaticValues.DANGER_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.MAX_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 0);
+        super(ModTileEntityTypes.UNIVERSAL_SENSOR, PneumaticValues.DANGER_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.MAX_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 0);
         for (Item upgrade : SensorHandler.getInstance().getUniversalSensorUpgrades()) {
             addApplicableUpgrade(upgrade);
         }
-        addApplicableUpgrade(EnumUpgrade.RANGE);
-        upgradeHandler = new UniversalSensorUpgradeHandler();  // custom upgrade inventory
+        addApplicableUpgrade(IItemRegistry.EnumUpgrade.RANGE);
     }
 
     @Override
-    public void update() {
+    public void tick() {
         oldDishRotation = dishRotation;
         if (isSensorActive) {
             dishSpeed = Math.min(dishSpeed + 0.2F, 10);
@@ -110,7 +110,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
             }
             rangeLineRenderer.update();
         }
-        super.update();
+        super.tick();
 
         if (!getWorld().isRemote) {
             tickTimer++;
@@ -125,9 +125,10 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
                             if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
                             if (newRedstoneStrength != redstoneStrength) {
                                 redstoneStrength = newRedstoneStrength;
-                                if (requestPollPullEvent) {
-                                    notifyComputers(redstoneStrength);
-                                }
+                                // todo 1.14 computercraft
+//                                if (requestPollPullEvent) {
+//                                    notifyComputers(redstoneStrength);
+//                                }
                                 updateNeighbours();
                             }
                             tickTimer = 0;
@@ -162,9 +163,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     private void updateConnections() {
-        List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
+        List<Pair<Direction, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);
-        for (Pair<EnumFacing, IAirHandler> entry : connections) {
+        for (Pair<Direction, IAirHandler> entry : connections) {
             sidesConnected[entry.getKey().ordinal()] = true;
         }
     }
@@ -175,8 +176,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     @Override
-    public boolean isConnectedTo(EnumFacing side) {
-        return side != EnumFacing.UP;
+    public boolean canConnectTo(Direction side) {
+        return side != Direction.UP;
     }
 
     /**
@@ -191,13 +192,11 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         }
     }
 
-    @SideOnly(Side.CLIENT)
     public void renderRangeLines() {
         rangeLineRenderer.render();
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         if (rangeLineRenderer == null || !rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
         int range = getRange();
@@ -210,14 +209,15 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
             int newRedstoneStrength = ((IEventSensorSetting) sensor).emitRedstoneOnEvent(event, this, getRange(), sensorGuiText);
             if (newRedstoneStrength != 0) eventTimer = ((IEventSensorSetting) sensor).getRedstonePulseLength();
             if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
-            if (eventTimer > 0 && ThirdPartyManager.computerCraftLoaded) {
-                if (event instanceof PlayerInteractEvent) {
-                    PlayerInteractEvent e = (PlayerInteractEvent) event;
-                    notifyComputers(newRedstoneStrength, e.getPos().getX(), e.getPos().getY(), e.getPos().getZ());
-                } else {
-                    notifyComputers(newRedstoneStrength);
-                }
-            }
+            // todo 1.14 computercraft
+//            if (eventTimer > 0 && ThirdPartyManager.computerCraftLoaded) {
+//                if (event instanceof PlayerInteractEvent) {
+//                    PlayerInteractEvent e = (PlayerInteractEvent) event;
+//                    notifyComputers(newRedstoneStrength, e.getPos().getX(), e.getPos().getY(), e.getPos().getZ());
+//                } else {
+//                    notifyComputers(newRedstoneStrength);
+//                }
+//            }
             if (newRedstoneStrength != redstoneStrength) {
                 redstoneStrength = newRedstoneStrength;
                 updateNeighbours();
@@ -226,13 +226,13 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     public int getRange() {
-        return getUpgrades(EnumUpgrade.RANGE) + 2;
+        return getUpgrades(IItemRegistry.EnumUpgrade.RANGE) + 2;
     }
 
     private void setSensorSetting(String sensorPath) {
         sensorSetting = sensorPath;
         if (getWorld() != null && getWorld().isRemote) {
-            GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+            Screen guiScreen = Minecraft.getInstance().currentScreen;
             if (guiScreen instanceof GuiUniversalSensor) {
                 ((GuiUniversalSensor) guiScreen).updateButtons();
             }
@@ -258,18 +258,18 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setString("sensorSetting", sensorSetting);
-        tag.setBoolean("invertedRedstone", invertedRedstone);
-        tag.setFloat("dishSpeed", dishSpeed);
-        tag.setString("sensorText", sensorGuiText);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putString("sensorSetting", sensorSetting);
+        tag.putBoolean("invertedRedstone", invertedRedstone);
+        tag.putFloat("dishSpeed", dishSpeed);
+        tag.putString("sensorText", sensorGuiText);
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
         setSensorSetting(tag.getString("sensorSetting"));
         invertedRedstone = tag.getBoolean("invertedRedstone");
         dishSpeed = tag.getFloat("dishSpeed");
@@ -278,17 +278,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
-        if (buttonID >= 10 && buttonID % 10 == 0) {
-            String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(getSensorSetting());
-            if (buttonID / 10 <= directories.length) {// <= because of the redstone button being 0.
-                if (getSensorSetting().equals("")) {
-                    setSensorSetting(directories[buttonID / 10 - 1]);
-                } else {
-                    setSensorSetting(getSensorSetting() + "/" + directories[buttonID / 10 - 1]);
-                }
-            }
-        } else if (buttonID == 1) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals("back")) {
             // the 'back' button
             String[] folders = getSensorSetting().split("/");
             String newPath = getSensorSetting().replace(folders[folders.length - 1], "");
@@ -297,10 +288,23 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
             }
             setSensorSetting(newPath);
             setText(0, "");
-        } else if (buttonID == 0) {
+        } else if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             invertedRedstone = !invertedRedstone;
             redstoneStrength = 15 - redstoneStrength;
             updateNeighbours();
+        } else if (tag.startsWith("tag:")) {
+            try {
+                int t = Integer.parseInt(tag.split(":")[1]);
+                String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(getSensorSetting());
+                if (t / 10 <= directories.length) { // <= because of the redstone button being 0.
+                    if (getSensorSetting().equals("")) {
+                        setSensorSetting(directories[t / 10 - 1]);
+                    } else {
+                        setSensorSetting(getSensorSetting() + "/" + directories[t / 10 - 1]);
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+            }
         }
     }
 
@@ -323,9 +327,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
 
         List<BlockPos> gpsPositions = new ArrayList<>();
         int sensorRange = getRange();
-        for (int i = 0; i < upgradeHandler.getSlots(); i++) {
-            ItemStack gps = upgradeHandler.getStackInSlot(i);
-            if (gps.getItem() == Itemss.GPS_TOOL) {
+        for (int i = 0; i < getUpgradeHandler().getSlots(); i++) {
+            ItemStack gps = getUpgradeHandler().getStackInSlot(i);
+            if (gps.getItem() == ModItems.GPS_TOOL) {
                 BlockPos pos = ItemGPSTool.getGPSLocation(gps);
                 if (pos != null
                         && Math.abs(pos.getX() - getPos().getX()) <= sensorRange
@@ -356,11 +360,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     @Override
-    public String getName() {
-        return Blockss.UNIVERSAL_SENSOR.getTranslationKey();
-    }
-
-    @Override
     public void setText(int textFieldID, String text) {
         sensorGuiText = text;
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
@@ -383,10 +382,10 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     /*
      * COMPUTERCRAFT API
      */
-    @Override
-    public String getType() {
-        return "universalSensor";
-    }
+//    @Override
+//    public String getType() {
+//        return "universalSensor";
+//    }
 
     @Override
     public void addLuaMethods(LuaMethodRegistry registry) {
@@ -474,8 +473,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
             @Override
             public Object[] call(Object[] args) {
                 requireArgs(args, 4, "slot, x, y, z");
-                ItemStack stack = upgradeHandler.getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
-                if (stack.getItem() == Itemss.GPS_TOOL) {
+                ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
+                if (stack.getItem() == ModItems.GPS_TOOL) {
                     ItemGPSTool.setGPSLocation(stack, new BlockPos((Double) args[1], (Double) args[2], (Double) args[3]));
                     return new Object[]{true};
                 } else {
@@ -489,8 +488,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
             @Override
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "upgrade_slot");
-                ItemStack stack = upgradeHandler.getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
-                if (stack.getItem() == Itemss.GPS_TOOL) {
+                ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
+                if (stack.getItem() == ModItems.GPS_TOOL) {
                     BlockPos pos = ItemGPSTool.getGPSLocation(stack);
                     if (pos != null) {
                         return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
@@ -505,28 +504,34 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    public void attach(IComputerAccess computer){
-        attachedComputers.add(computer);
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
     }
 
-    @Override
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    public void detach(IComputerAccess computer){
-        attachedComputers.remove(computer);
-    }
-
-    /**
-     * Called on a event sensor
-     *
-     * @param arguments
-     */
-    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-    private void notifyComputers(Object... arguments) {
-        for (IComputerAccess computer : attachedComputers) {
-            computer.queueEvent(getType(), arguments);
-        }
-    }
+    // todo 1.14 computercraft
+//    @Override
+//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+//    public void attach(IComputerAccess computer){
+//        attachedComputers.add(computer);
+//    }
+//
+//    @Override
+//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+//    public void detach(IComputerAccess computer){
+//        attachedComputers.remove(computer);
+//    }
+//
+//    /**
+//     * Called on a event sensor
+//     *
+//     * @param arguments
+//     */
+//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
+//    private void notifyComputers(Object... arguments) {
+//        for (IComputerAccess computer : attachedComputers) {
+//            computer.queueEvent(getType(), arguments);
+//        }
+//    }
 
     @Override
     public int getRedstoneMode() {
@@ -549,8 +554,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
     
     @Override
-    public void invalidate(){
-        super.invalidate();
+    public void remove(){
+        super.remove();
         GlobalTileEntityCacheManager.getInstance().universalSensors.remove(this);
     }
     
@@ -560,14 +565,30 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         GlobalTileEntityCacheManager.getInstance().universalSensors.add(this);
     }
 
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerUniversalSensor(i, playerInventory, getPos());
+    }
+
+    @Override
+    public UpgradeHandler getUpgradeHandler() {
+        return customUpgradeHandler;
+    }
+
     private class UniversalSensorUpgradeHandler extends UpgradeHandler {
         UniversalSensorUpgradeHandler() {
-            super(INVENTORY_SIZE);
+            super(CUSTOM_UPGRADES_SIZE);
         }
 
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || getApplicableUpgrades().contains(itemStack.getItem()) || itemStack.getItem() == Itemss.GPS_TOOL;
+            return itemStack.isEmpty() || getApplicableUpgrades().contains(itemStack.getItem()) || itemStack.getItem() == ModItems.GPS_TOOL;
         }
 
         @Override

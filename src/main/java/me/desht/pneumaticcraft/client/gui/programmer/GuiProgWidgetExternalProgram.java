@@ -5,8 +5,6 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetExternalProgram;
 import net.minecraft.client.resources.I18n;
 
-import java.io.IOException;
-
 public class GuiProgWidgetExternalProgram extends GuiProgWidgetAreaShow<ProgWidgetExternalProgram> {
 
     private GuiCheckBox shareVariables;
@@ -16,20 +14,20 @@ public class GuiProgWidgetExternalProgram extends GuiProgWidgetAreaShow<ProgWidg
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
-        shareVariables = new GuiCheckBox(-1, guiLeft + 10, guiTop + 22, 0xFF404040, I18n.format("gui.progWidget.externalProgram.shareVariables"));
-        addWidget(shareVariables);
+        shareVariables = new GuiCheckBox(guiLeft + 10, guiTop + 22, 0xFF404040,
+                I18n.format("gui.progWidget.externalProgram.shareVariables"));
+        addButton(shareVariables);
         shareVariables.setTooltip(I18n.format("gui.progWidget.externalProgram.shareVariables.tooltip"));
-        shareVariables.setChecked(widget.shareVariables);
+        shareVariables.setChecked(progWidget.shareVariables);
     }
 
     @Override
-    public void keyTyped(char chr, int keyCode) throws IOException {
-        if (keyCode == 1) {
-            widget.shareVariables = shareVariables.checked;
-        }
-        super.keyTyped(chr, keyCode);
+    public void onClose() {
+        super.onClose();
+
+        progWidget.shareVariables = shareVariables.checked;
     }
 }

@@ -4,29 +4,36 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.oredict.DyeUtils;
-import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
+import java.util.function.Predicate;
 
 class SlotItemSpecific extends SlotItemHandler {
-    private final Item itemAllowed;
-    private final int oreDictEntry;
-    private final boolean dye;
+    private final Predicate<Item> itemAllowed;
 
-    SlotItemSpecific(IItemHandler handler, Item itemAllowed, int index, int x, int y) {
+    SlotItemSpecific(IItemHandler handler, Predicate<Item> itemAllowed, int index, int x, int y) {
         super(handler, index, x, y);
         this.itemAllowed = itemAllowed;
-        this.oreDictEntry = 0;
-        this.dye = false;
     }
 
-    SlotItemSpecific(IItemHandler handler, String oreDictKeyAllowed, int index, int x, int y) {
+    public SlotItemSpecific(IItemHandler handler, Item item, int index, int x, int y) {
         super(handler, index, x, y);
-        this.itemAllowed = null;
-        this.oreDictEntry = OreDictionary.getOreID(oreDictKeyAllowed);
-        this.dye = oreDictKeyAllowed.equals("dye");
+        this.itemAllowed = i -> i == item;
     }
+
+//    SlotItemSpecific(IItemHandler handler, Item itemAllowed, int index, int x, int y) {
+//        super(handler, index, x, y);
+//        this.itemAllowed = itemAllowed;
+//        this.oreDictEntry = 0;
+//        this.dye = false;
+//    }
+
+//    SlotItemSpecific(IItemHandler handler, String oreDictKeyAllowed, int index, int x, int y) {
+//        super(handler, index, x, y);
+//        this.itemAllowed = null;
+//        this.oreDictEntry = OreDictionary.getOreID(oreDictKeyAllowed);
+//        this.dye = oreDictKeyAllowed.equals("dye");
+//    }
 
     /**
      * Check if the stack is a valid item for this slot. Always true beside for
@@ -34,17 +41,7 @@ class SlotItemSpecific extends SlotItemHandler {
      */
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
-        if (itemAllowed != null) {
-            Item item = stack.isEmpty() ? null : stack.getItem();
-            return item == itemAllowed;
-        } else {
-            int[] ids = OreDictionary.getOreIDs(stack);
-            for (int id : ids) {
-                if (id == oreDictEntry) return true;
-                if (dye && DyeUtils.dyeDamageFromStack(stack).isPresent()) return true;
-            }
-            return false;
-        }
+        return stack.isEmpty() || itemAllowed.test(stack.getItem());
     }
 
 }

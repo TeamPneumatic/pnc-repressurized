@@ -1,23 +1,23 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RenderPressureChamber extends TileEntitySpecialRenderer<TileEntityPressureChamberValve> {
+public class RenderPressureChamber extends TileEntityRenderer<TileEntityPressureChamberValve> {
 
     @Override
-    public void render(TileEntityPressureChamberValve te, double x, double y, double z, float partialTicks, int destroyStage, float alpha){
+    public void render(TileEntityPressureChamberValve te, double x, double y, double z, float partialTicks, int destroyStage) {
 
         if (te.multiBlockSize == 0 || !te.hasGlass) return;
 
@@ -32,9 +32,9 @@ public class RenderPressureChamber extends TileEntitySpecialRenderer<TileEntityP
             z += te.multiBlockZ - te.getPos().getZ() + te.multiBlockSize / 2D;
             
             GlStateManager.pushMatrix();
-            GlStateManager.translate(x, y, z);
+            GlStateManager.translated(x, y, z);
             
-            RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+            EntityRendererManager renderManager = Minecraft.getInstance().getRenderManager();
             boolean fancySetting = renderManager.options.fancyGraphics;
             renderManager.options.fancyGraphics = true;
 
@@ -50,11 +50,11 @@ public class RenderPressureChamber extends TileEntitySpecialRenderer<TileEntityP
 
             for(int i = 0; i < stacks.size(); i++){
                 GlStateManager.pushMatrix();
-                GlStateManager.rotate(i * degreesPerStack, 0, 1, 0);
-                GlStateManager.translate(circleRadius, yBob, 0);
+                GlStateManager.rotated(i * degreesPerStack, 0, 1, 0);
+                GlStateManager.translated(circleRadius, yBob, 0);
 
-                GlStateManager.rotate(yRot, 0, 1, 0);
-                Minecraft.getMinecraft().getRenderItem().renderItem(stacks.get(i), ItemCameraTransforms.TransformType.GROUND);
+                GlStateManager.rotated(yRot, 0, 1, 0);
+                Minecraft.getInstance().getItemRenderer().renderItem(stacks.get(i), ItemCameraTransforms.TransformType.GROUND);
 
                 GlStateManager.popMatrix();
             }

@@ -1,49 +1,52 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
 import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.common.tileentity.IAssemblyMachine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
-public class GuiAssemblyController extends GuiPneumaticContainerBase<TileEntityAssemblyController> {
+public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAssemblyController,TileEntityAssemblyController> {
 
     private GuiAnimatedStat statusStat;
 
-    public GuiAssemblyController(InventoryPlayer player, TileEntityAssemblyController te) {
-
-        super(new ContainerAssemblyController(player, te), te, Textures.GUI_ASSEMBLY_CONTROLLER);
+    public GuiAssemblyController(ContainerAssemblyController container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        statusStat = addAnimatedStat("gui.tab.status", new ItemStack(Blockss.ASSEMBLY_CONTROLLER), 0xFFFFAA00, false);
+    public void init() {
+        super.init();
+        statusStat = addAnimatedStat("gui.tab.status", new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER), 0xFFFFAA00, false);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        fontRenderer.drawString("Upgr.", 18, 21, 4210752);
-        fontRenderer.drawString("Prog.", 70, 24, 4210752);
+        font.drawString("Upgr.", 18, 21, 4210752);
+        font.drawString("Prog.", 70, 24, 4210752);
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_ASSEMBLY_CONTROLLER;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
         statusStat.setText(getStatusText());
     }
 

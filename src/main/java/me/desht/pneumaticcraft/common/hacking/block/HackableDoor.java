@@ -1,13 +1,12 @@
 package me.desht.pneumaticcraft.common.hacking.block;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
-import net.minecraft.block.BlockDoor;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.DoorBlock;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -19,13 +18,13 @@ public class HackableDoor implements IHackableBlock {
     }
 
     @Override
-    public boolean canHack(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+    public boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
         return true;
     }
 
     @Override
-    public void addInfo(World world, BlockPos pos, List<String> curInfo, EntityPlayer player) {
-        if (!world.getBlockState(pos).getValue(BlockDoor.OPEN)) {
+    public void addInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
+        if (!world.getBlockState(pos).get(DoorBlock.OPEN)) {
             curInfo.add("pneumaticHelmet.hacking.result.open");
         } else {
             curInfo.add("pneumaticHelmet.hacking.result.close");
@@ -33,8 +32,8 @@ public class HackableDoor implements IHackableBlock {
     }
 
     @Override
-    public void addPostHackInfo(World world, BlockPos pos, List<String> curInfo, EntityPlayer player) {
-        if (!world.getBlockState(pos).getValue(BlockDoor.OPEN)) {
+    public void addPostHackInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
+        if (!world.getBlockState(pos).get(DoorBlock.OPEN)) {
             curInfo.add("pneumaticHelmet.hacking.finished.closed");
         } else {
             curInfo.add("pneumaticHelmet.hacking.finished.opened");
@@ -42,14 +41,14 @@ public class HackableDoor implements IHackableBlock {
     }
 
     @Override
-    public int getHackTime(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+    public int getHackTime(IBlockReader world, BlockPos pos, PlayerEntity player) {
         return 20;
     }
 
     @Override
-    public void onHackFinished(World world, BlockPos pos, EntityPlayer player) {
-        IBlockState state = world.getBlockState(pos);
-        state.getBlock().onBlockActivated(world, pos, state, player, EnumHand.MAIN_HAND, EnumFacing.UP, 0, 0, 0);
+    public void onHackFinished(World world, BlockPos pos, PlayerEntity player) {
+        BlockState state = world.getBlockState(pos);
+        state.onBlockActivated(world, player, Hand.MAIN_HAND, null);
     }
 
     @Override

@@ -13,17 +13,18 @@ public class GuiProgWidgetBlockRightClick extends GuiProgWidgetPlace<ProgWidgetB
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        checkboxSneaking = new GuiCheckBox(15, guiLeft + 100, guiTop + 20, 0xFF404040, I18n.format("gui.progWidget.blockRightClick.sneaking"));
-        checkboxSneaking.setChecked(widget.isSneaking());
+    public void init() {
+        super.init();
+        checkboxSneaking = new GuiCheckBox(guiLeft + 100, guiTop + 20, 0xFF404040,
+                I18n.format("gui.progWidget.blockRightClick.sneaking"));
+        checkboxSneaking.setChecked(progWidget.isSneaking());
         checkboxSneaking.setTooltip(I18n.format("gui.progWidget.blockRightClick.sneaking.tooltip"));
-        addWidget(checkboxSneaking);
+        addButton(checkboxSneaking);
     }
 
     @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
-        widget.setSneaking(checkboxSneaking.checked);
+    public void onClose() {
+        super.onClose();
+        progWidget.setSneaking(checkboxSneaking.checked);
     }
 }

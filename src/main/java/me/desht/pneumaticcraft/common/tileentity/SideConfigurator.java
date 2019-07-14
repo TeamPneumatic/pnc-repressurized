@@ -1,23 +1,24 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.Lists;
-import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagByte;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.ByteNBT;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.LazyOptional;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
@@ -25,13 +26,15 @@ import java.util.*;
 /**
  * A class to manage which sides of a TE's block are mapped to which capability handler objects (item/fluid/energy...)
  */
-public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
+public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
+    private static final String baseButtonTag = "SideConf";
+
     private final List<ConnectionEntry<T>> entries = new ArrayList<>();
     private final String id;
     private final ISideConfigurable sideConfigurable;
-    private final int baseButtonID;
     private final Map<String, Integer> idxMap = new HashMap<>();
     private T nullFaceHandler = null;
+    private final LazyOptional<T> nullFaceCap = LazyOptional.of(() -> nullFaceHandler);
 
     // each value here is an index into the 'entries' list
     private final byte[] faces = new byte[RelativeFace.values().length];
@@ -46,12 +49,10 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
      *
      * @param id a unique string for this configurator's title (I18n: gui.sideConfigurator.title.&lt;titleKey&gt;)
      * @param sideConfigurable the owning object
-     * @param baseButtonID id of the first GUI button; there are six in total, one for each side of the block
      */
-    SideConfigurator(String id, ISideConfigurable sideConfigurable, int baseButtonID) {
+    SideConfigurator(String id, ISideConfigurable sideConfigurable) {
         this.id = id;
         this.sideConfigurable = sideConfigurable;
-        this.baseButtonID = baseButtonID;
         entries.add(null);  // null represents "unconnected"
 
         setupFacingMatrix();
@@ -94,10 +95,6 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
         setNullFaceHandler(id);
     }
 
-    public int getBaseButtonID() {
-        return baseButtonID;
-    }
-
     public byte[] getFaces() {
         return faces;
     }
@@ -106,17 +103,18 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
         System.arraycopy(faces, 0, this.faces, 0, this.faces.length);
     }
 
-    public boolean handleButtonPress(int buttonID) {
-        if (buttonID >= baseButtonID && buttonID < baseButtonID + 6) {
-            RelativeFace relativeFace = RelativeFace.values()[buttonID - baseButtonID];
+    public boolean handleButtonPress(String tag) {
+        try {
+            RelativeFace relativeFace = RelativeFace.valueOf(tag.split("\\.")[1]);
             cycleValue(relativeFace);
             return true;
+        } catch (IllegalArgumentException e) {
+            return false;
         }
-        return false;
     }
 
-    public int getButtonId(RelativeFace relativeFace) {
-        return baseButtonID + relativeFace.ordinal();
+    public String getButtonId(RelativeFace relativeFace) {
+        return baseButtonTag + "." + relativeFace.toString();
     }
 
     private void cycleValue(RelativeFace relativeFace) {
@@ -141,23 +139,23 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
     }
 
 
-    T getHandler(EnumFacing facing) {
-        if (facing == null) return nullFaceHandler;
+    LazyOptional<T> getHandler(Direction facing) {
+        if (facing == null) return nullFaceCap;
         ConnectionEntry<T> c = entries.get(faces[getRelativeFace(facing).ordinal()]);
-        return c == null ? null : c.handler;
+        return c == null ? LazyOptional.empty() : c.lazy;
     }
 
     void setupFacingMatrix() {
-        for (EnumFacing f : EnumFacing.HORIZONTALS) {
+        for (Direction f : PneumaticCraftUtils.HORIZONTALS) {
             facingMatrix[f.getHorizontalIndex()] = new RelativeFace[4];
             for (RelativeFace rf : RelativeFace.HORIZONTALS) {
-                EnumFacing f2 = rot(f, rf);
+                Direction f2 = rot(f, rf);
                 facingMatrix[f.getHorizontalIndex()][f2.getHorizontalIndex()] = rf;
             }
         }
     }
 
-    private EnumFacing rot(EnumFacing in, RelativeFace rf) {
+    private Direction rot(Direction in, RelativeFace rf) {
         switch (rf) {
             case RIGHT: return in.rotateYCCW();
             case LEFT: return in.rotateY();
@@ -166,33 +164,37 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
         }
     }
 
-    private RelativeFace getRelativeFace(EnumFacing facing) {
-        if (facing == EnumFacing.UP) {
+    private RelativeFace getRelativeFace(Direction facing) {
+        if (facing == Direction.UP) {
             return RelativeFace.TOP;
-        } else if (facing == EnumFacing.DOWN) {
+        } else if (facing == Direction.DOWN) {
             return RelativeFace.BOTTOM;
         } else {
             return facingMatrix[sideConfigurable.byIndex().getHorizontalIndex()][facing.getHorizontalIndex()];
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void setupButton(GuiButtonSpecial button) {
-        RelativeFace relativeFace = RelativeFace.values()[button.getID() - baseButtonID];
-        ConnectionEntry c = entries.get(faces[relativeFace.ordinal()]);
-        if (c != null) {
-            if (c.texture instanceof ItemStack) {
-                button.setRenderStacks((ItemStack) c.texture);
-                button.setRenderedIcon(null);
-            } else if (c.texture instanceof ResourceLocation) {
+        try {
+            RelativeFace relativeFace = RelativeFace.valueOf(button.getTag().split("\\.")[1]);
+            ConnectionEntry c = entries.get(faces[relativeFace.ordinal()]);
+            if (c != null) {
+                if (c.texture instanceof ItemStack) {
+                    button.setRenderStacks((ItemStack) c.texture);
+                    button.setRenderedIcon(null);
+                } else if (c.texture instanceof ResourceLocation) {
+                    button.setRenderStacks(ItemStack.EMPTY);
+                    button.setRenderedIcon((ResourceLocation) c.texture);
+                }
+            } else {
                 button.setRenderStacks(ItemStack.EMPTY);
-                button.setRenderedIcon((ResourceLocation) c.texture);
+                button.setRenderedIcon(Textures.GUI_X_BUTTON);
             }
-        } else {
-            button.setRenderStacks(ItemStack.EMPTY);
-            button.setRenderedIcon(Textures.GUI_X_BUTTON);
+            button.setTooltipText(Lists.newArrayList(TextFormatting.YELLOW + relativeFace.toString(), I18n.format(getFaceKey(relativeFace))));
+        } catch (IllegalArgumentException e) {
+            Log.warning("Bad tag '" + button.getTag() + "'");
         }
-        button.setTooltipText(Lists.newArrayList(TextFormatting.YELLOW + relativeFace.toString(), I18n.format(getFaceKey(relativeFace))));
     }
 
     private String getFaceKey(RelativeFace relativeFace) {
@@ -201,55 +203,41 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
     }
 
     @Override
-    public NBTTagCompound serializeNBT() {
-        NBTTagCompound tag = new NBTTagCompound();
-        NBTTagList l = new NBTTagList();
+    public CompoundNBT serializeNBT() {
+        CompoundNBT tag = new CompoundNBT();
+        ListNBT l = new ListNBT();
         for (byte face : faces) {
-            l.appendTag(new NBTTagByte(face));
+            l.add(new ByteNBT(face));
         }
-        tag.setTag("faces", l);
+        tag.put("faces", l);
         return tag;
     }
 
     @Override
-    public void deserializeNBT(NBTTagCompound nbt) {
-        NBTTagList l = nbt.getTagList("faces", Constants.NBT.TAG_BYTE);
-        for (int i = 0; i < l.tagCount() && i < faces.length; i++) {
-            faces[i] = ((NBTTagByte) l.get(i)).getByte();
+    public void deserializeNBT(CompoundNBT nbt) {
+        ListNBT l = nbt.getList("faces", Constants.NBT.TAG_BYTE);
+        for (int i = 0; i < l.size() && i < faces.length; i++) {
+            faces[i] = ((ByteNBT) l.get(i)).getByte();
         }
     }
 
-    public static NBTTagCompound writeToNBT(ISideConfigurable sideConfigurable) {
-        NBTTagCompound tag = new NBTTagCompound();
+    public static CompoundNBT writeToNBT(ISideConfigurable sideConfigurable) {
+        CompoundNBT tag = new CompoundNBT();
         for (SideConfigurator sc : sideConfigurable.getSideConfigurators()) {
             if (sc.shouldSaveNBT()) {
-                NBTTagCompound subtag = sc.serializeNBT();
-                tag.setTag(sc.id, subtag);
+                CompoundNBT subtag = sc.serializeNBT();
+                tag.put(sc.id, subtag);
             }
         }
         return tag;
     }
 
-    public static void readFromNBT(NBTTagCompound tag, ISideConfigurable sideConfigurable) {
+    public static void readFromNBT(CompoundNBT tag, ISideConfigurable sideConfigurable) {
         for (SideConfigurator sc : sideConfigurable.getSideConfigurators()) {
-            if (tag.hasKey(sc.id)) {
-                NBTTagCompound subtag = tag.getCompoundTag(sc.id);
+            if (tag.contains(sc.id)) {
+                CompoundNBT subtag = tag.getCompound(sc.id);
                 sc.deserializeNBT(subtag);
             }
-        }
-    }
-
-    /**
-     * Side configurable blocks must be rotatable.  This helper method catches any horizontally-rotatable blocks from
-     * older worlds which didn't have the ROTATION property and got a potentially invalid rotation by default
-     * (probably DOWN).
-     *
-     * @param te the tile entity whose block needs checking
-     */
-    static void validateBlockRotation(TileEntityBase te) {
-        if (te.getRotation().getAxis() == EnumFacing.Axis.Y) {
-            IBlockState fixState = te.getWorld().getBlockState(te.getPos()).withProperty(BlockPneumaticCraft.ROTATION, EnumFacing.NORTH);
-            te.getWorld().setBlockState(te.getPos(), fixState);
         }
     }
 
@@ -271,12 +259,14 @@ public class SideConfigurator<T> implements INBTSerializable<NBTTagCompound> {
         private final Object texture;
         private final Capability<T> cap;
         private final T handler;
+        private final LazyOptional<T> lazy;
 
         private ConnectionEntry(String id, Object texture, Capability<T> cap, T handler) {
             this.id = id;
             this.texture = texture;
             this.cap = cap;
             this.handler = handler;
+            this.lazy = LazyOptional.of(() -> handler);
         }
     }
 }

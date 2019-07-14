@@ -3,7 +3,7 @@
     "defaults": {
         "textures": {},
         "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:pressure_chamber_interface.obj"
+        "model": "pneumaticcraft:block/pressure_chamber_interface.obj"
     },
 	"variants": {
 		"facing": {
@@ -38,7 +38,7 @@
 			}
 		},
 		"inventory": [{
-			"model": "pneumaticcraft:pressure_chamber_interface_inv.obj",
+			"model": "pneumaticcraft:block/pressure_chamber_interface_inv.obj",
 			"custom": { "flip-v" : true },
 			"transform": {
 				"gui": {

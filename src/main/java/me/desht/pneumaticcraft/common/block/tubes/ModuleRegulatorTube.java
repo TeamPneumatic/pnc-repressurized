@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
@@ -11,12 +12,11 @@ import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
@@ -27,7 +27,7 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     public static boolean inLine;
     public static boolean inverted;
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private void renderPreview() {
         if (!hasTicked) {
             TileEntityPneumaticBase tile = (TileEntityPneumaticBase) getTube();
@@ -45,16 +45,16 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         if (inLine && !inverted) {
-            GlStateManager.color(0, 1, 0, 0.3F);
+            GlStateManager.color4f(0, 1, 0, 0.3F);
         } else {
-            GlStateManager.color(1, 0, 0, 0.3F);
+            GlStateManager.color4f(1, 0, 0, 0.3F);
         }
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0, 1, 0.2 + ClientTickHandler.TICKS % 20 * 0.015);
-        GlStateManager.rotate(90, 1, 0, 0);
+        GlStateManager.translated(0, 1, 0.2 + ClientTickHandler.TICKS % 20 * 0.015);
+        GlStateManager.rotated(90, 1, 0, 0);
 
         RenderUtils.render3DArrow();
-        GlStateManager.color(1, 1, 1, 0.5F);  // 0.5 because we're rendering a preview
+        GlStateManager.color4f(1, 1, 1, 0.5F);  // 0.5 because we're rendering a preview
         GlStateManager.popMatrix();
         GlStateManager.disableBlend();
     }
@@ -67,7 +67,7 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     @Override
     public int getMaxDispersion() {
         IAirHandler connectedHandler = null;
-        for (Pair<EnumFacing, IAirHandler> entry : pressureTube.getAirHandler(null).getConnectedPneumatics()) {
+        for (Pair<Direction, IAirHandler> entry : pressureTube.getAirHandler(null).getConnectedPneumatics()) {
             if (entry.getKey().equals(dir)) {
                 connectedHandler = entry.getValue();
                 break;

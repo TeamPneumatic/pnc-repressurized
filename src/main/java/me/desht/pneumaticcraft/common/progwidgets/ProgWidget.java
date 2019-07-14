@@ -1,23 +1,18 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidget implements IProgWidget {
     private int x, y;
@@ -41,26 +38,26 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public void getTooltip(List<String> curTooltip) {
-        curTooltip.add(TextFormatting.DARK_AQUA + I18n.format("programmingPuzzle." + getWidgetString() + ".name"));
+    public void getTooltip(List<ITextComponent> curTooltip) {
+        curTooltip.add(xlate("programmingPuzzle." + getWidgetString() + ".name").applyTextStyle(TextFormatting.DARK_AQUA));
     }
 
     @Override
     public void renderExtraInfo() {
         if (getExtraStringInfo() != null) {
             GlStateManager.pushMatrix();
-            GlStateManager.scale(0.5, 0.5, 0.5);
-            FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+            GlStateManager.scaled(0.5, 0.5, 0.5);
+            FontRenderer fr = Minecraft.getInstance().fontRenderer;
             String[] splittedInfo = WordUtils.wrap(getExtraStringInfo(), 40).split(System.getProperty("line.separator"));
             for (int i = 0; i < splittedInfo.length; i++) {
                 int stringLength = fr.getStringWidth(splittedInfo[i]);
                 int startX = getWidth() / 2 - stringLength / 4;
                 int startY = getHeight() / 2 - (fr.FONT_HEIGHT + 1) * (splittedInfo.length - 1) / 4 + (fr.FONT_HEIGHT + 1) * i / 2 - fr.FONT_HEIGHT / 4;
-                Gui.drawRect(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
+                AbstractGui.fill(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
                 fr.drawString(splittedInfo[i], startX * 2, startY * 2, 0xFF000000);
             }
             GlStateManager.popMatrix();
-            GlStateManager.color(1, 1, 1, 1);
+            GlStateManager.color4f(1, 1, 1, 1);
         }
     }
 
@@ -69,13 +66,13 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public void addWarnings(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addWarnings(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         if (this instanceof IVariableWidget) {
             Set<String> variables = new HashSet<>();
             ((IVariableWidget) this).addVariables(variables);
             for (String variable : variables) {
                 if (!variable.equals("") && !variable.startsWith("#") && !variable.startsWith("$") && !isVariableSetAnywhere(widgets, variable)) {
-                    curInfo.add(I18n.format("gui.progWidget.general.warning.variableNeverSet", variable));
+                    curInfo.add(xlate("gui.progWidget.general.warning.variableNeverSet", variable));
                 }
             }
         }
@@ -94,9 +91,9 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         if (!hasStepInput() && hasStepOutput() && outputStepConnection == null) {
-            curInfo.add("gui.progWidget.general.error.noPieceConnected");
+            curInfo.add(xlate("gui.progWidget.general.error.noPieceConnected"));
         }
     }
 
@@ -142,7 +139,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public void render() {
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture());
+        Minecraft.getInstance().getTextureManager().bindTexture(getTexture());
         int width = getWidth() + (getParameters() != null && getParameters().length > 0 ? 10 : 0);
         int height = getHeight() + (hasStepOutput() ? 10 : 0);
         Pair<Double, Double> maxUV = getMaxUV();
@@ -186,12 +183,12 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public EntityAIBase getWidgetTargetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget) {
         return null;
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return null;
     }
 
@@ -238,7 +235,7 @@ public abstract class ProgWidget implements IProgWidget {
     public IProgWidget copy() {
         try {
             IProgWidget copy = this.getClass().newInstance();
-            NBTTagCompound tag = new NBTTagCompound();
+            CompoundNBT tag = new CompoundNBT();
             writeToNBT(tag);
             copy.readFromNBT(tag);
             return copy;
@@ -251,22 +248,16 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
-        tag.setString("name", getWidgetString());
-        tag.setInteger("x", x);
-        tag.setInteger("y", y);
+    public void writeToNBT(CompoundNBT tag) {
+        tag.putString("name", getWidgetString());
+        tag.putInt("x", x);
+        tag.putInt("y", y);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        x = tag.getInteger("x");
-        y = tag.getInteger("y");
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return null;
+    public void readFromNBT(CompoundNBT tag) {
+        x = tag.getInt("x");
+        y = tag.getInt("y");
     }
 
     static List getConnectedWidgetList(IProgWidget widget, int parameterIndex) {

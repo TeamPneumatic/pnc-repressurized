@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.config.HelmetWidgetDefaults;
@@ -10,25 +10,26 @@ import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.proxy.ClientProxy;
+import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.client.util.InputMappings;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
-public class GuiKeybindCheckBox extends GuiCheckBox {
+public class GuiKeybindCheckBox extends GuiCheckBox implements ITooltipSupplier {
     public static final String UPGRADE_PREFIX = "pneumaticHelmet.upgrade.";
 
     private boolean isAwaitingKey;
@@ -38,12 +39,13 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
     private static final Map<String, GuiKeybindCheckBox> trackedCheckboxes = new HashMap<>();
     private static GuiKeybindCheckBox coreComponents;
 
-    public GuiKeybindCheckBox(int id, int x, int y, int color, String text) {
-        this(id, x, y, color, text, text);
+    public GuiKeybindCheckBox(int x, int y, int color, String text, Consumer<GuiCheckBox> pressable) {
+        this(x, y, color, text, text, pressable);
     }
 
-    public GuiKeybindCheckBox(int id, int x, int y, int color, String text, String keyBindingName) {
-        super(id, x, y, color, text);
+    public GuiKeybindCheckBox(int x, int y, int color, String text, String keyBindingName, Consumer<GuiCheckBox> pressable) {
+        super(x, y, color, text, pressable);
+
         this.keyBindingName = keyBindingName;
         keyBinding = setOrAddKeybind(keyBindingName, -1, KeyModifier.NONE); //get the saved value.
         if (!trackedCheckboxes.containsKey(keyBindingName)) {
@@ -72,12 +74,28 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
     }
 
     @Override
-    public void onMouseClicked(int mouseX, int mouseY, int button) {
+    public boolean mouseClicked(double x, double y, int button) {
+        if (this.active && this.visible) {
+            if (this.isValidClickButton(button)) {
+                boolean flag = this.clicked(x, y);
+                if (flag) {
+                    this.playDownSound(Minecraft.getInstance().getSoundHandler());
+                    handleClick(x, y, button);
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    private void handleClick(double mouseX, double mouseY, int button) {
         if (button == 0) {
-            super.onMouseClicked(mouseX, mouseY, button);
+            super.onClick(mouseX, mouseY);
             GuiKeybindCheckBox trackedBox = trackedCheckboxes.get(keyBindingName);
             if (trackedBox != this) {
-                trackedBox.onMouseClicked(mouseX, mouseY, button);
+                trackedBox.mouseClicked(mouseX, mouseY, button);
             } else {
                 HelmetWidgetDefaults.INSTANCE.setKey(keyBindingName, checked);
                 try {
@@ -86,7 +104,7 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
                     e.printStackTrace();
                 }
                 CommonArmorHandler hudHandler = CommonArmorHandler.getHandlerForPlayer();
-                for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+                for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                     List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
                     for (int i = 0; i < renderHandlers.size(); i++) {
                         IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
@@ -112,17 +130,17 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
             } else {
                 isAwaitingKey = !isAwaitingKey;
                 if (isAwaitingKey) {
-                    oldCheckboxText = text;
-                    text = "gui.setKeybind";
+                    oldCheckboxText = getMessage();
+                    setMessage(I18n.format("gui.setKeybind"));
                 } else {
-                    text = oldCheckboxText;
+                    setMessage(oldCheckboxText);
                 }
             }
         }
     }
 
     private void clearKeybinding() {
-        KeyBinding[] keyBindings = Minecraft.getMinecraft().gameSettings.keyBindings;
+        KeyBinding[] keyBindings = Minecraft.getInstance().gameSettings.keyBindings;
         Set<Integer> idx = new HashSet<>();
         for (int i = 0; i < keyBindings.length; i++) {
             if (keyBindings[i].getKeyDescription().equals(keyBinding.getKeyDescription())) {
@@ -135,24 +153,25 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
             for (int i = 0; i < keyBindings.length; i++) {
                 if (!idx.contains(i)) l.add(keyBindings[i]);
             }
-            Minecraft.getMinecraft().gameSettings.keyBindings = l.toArray(new KeyBinding[0]);
-            keyBinding = new KeyBinding(keyBindingName, KeyConflictContext.IN_GAME, KeyModifier.NONE, Keyboard.KEY_NONE, Names.PNEUMATIC_KEYBINDING_CATEGORY);
+            Minecraft.getInstance().gameSettings.keyBindings = l.toArray(new KeyBinding[0]);
+            keyBinding = new KeyBinding(keyBindingName, KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, Names.PNEUMATIC_KEYBINDING_CATEGORY);
             ClientRegistry.registerKeyBinding(keyBinding);
             KeyBinding.resetKeyBindingArrayAndHash();
-            ((ClientProxy) PneumaticCraftRepressurized.proxy).keybindToKeyCodes.put(keyBindingName, Pair.of(Keyboard.KEY_NONE, KeyModifier.NONE));
-            Minecraft.getMinecraft().gameSettings.saveOptions();
+            ((ClientProxy) PneumaticCraftRepressurized.proxy).keybindToKeyCodes.put(keyBindingName, Pair.of(GLFW.GLFW_KEY_UNKNOWN, KeyModifier.NONE));
+            Minecraft.getInstance().gameSettings.saveOptions();
         }
     }
 
     @Override
-    public boolean onKey(char key, int keyCode) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (isAwaitingKey) {
-            if (KeyModifier.isKeyCodeModifier(keyCode)) {
+            InputMappings.Input input = InputMappings.Type.KEYSYM.getOrMakeInput(keyCode);
+            if (KeyModifier.isKeyCodeModifier(input)) {
                 return true;
             } else {
                 isAwaitingKey = false;
                 keyBinding = setOrAddKeybind(keyBindingName, keyCode, KeyModifier.getActiveModifier());
-                text = oldCheckboxText;
+                setMessage(oldCheckboxText);
                 if (trackedCheckboxes.containsKey(keyBindingName)) {
                     MinecraftForge.EVENT_BUS.unregister(trackedCheckboxes.get(keyBindingName));
                 }
@@ -165,9 +184,9 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        Minecraft mc = FMLClientHandler.instance().getClient();
-        if (mc.inGameHasFocus && keyBinding != null && keyBinding.isPressed()) {
-            onMouseClicked(0, 0, 0);
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.isGameFocused() && keyBinding != null && keyBinding.isPressed()) {
+            mouseClicked(0, 0, 0);
         }
     }
 
@@ -178,11 +197,11 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
      * @return the key binding
      */
     private static KeyBinding setOrAddKeybind(String keybindName, int keyCode, KeyModifier modifier) {
-        GameSettings gameSettings = FMLClientHandler.instance().getClient().gameSettings;
+        GameSettings gameSettings = Minecraft.getInstance().gameSettings;
         for (KeyBinding keyBinding : gameSettings.keyBindings) {
             if (keyBinding != null && keyBinding.getKeyDescription().equals(keybindName)) {
                 if (keyCode >= 0) {
-                    keyBinding.setKeyModifierAndCode(modifier, keyCode);
+                    keyBinding.setKeyModifierAndCode(modifier, InputMappings.Type.KEYSYM.getOrMakeInput(keyCode));
                     KeyBinding.resetKeyBindingArrayAndHash();
                     gameSettings.saveOptions();
                 }
@@ -200,7 +219,8 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
                 return null;
             }
         }
-        KeyBinding keyBinding = new KeyBinding(keybindName, KeyConflictContext.IN_GAME, modifier, keyCode, Names.PNEUMATIC_KEYBINDING_CATEGORY);
+        KeyBinding keyBinding = new KeyBinding(keybindName, KeyConflictContext.IN_GAME, modifier,
+                InputMappings.Type.KEYSYM, keyCode, Names.PNEUMATIC_KEYBINDING_CATEGORY);
         ClientRegistry.registerKeyBinding(keyBinding);
         KeyBinding.resetKeyBindingArrayAndHash();
         gameSettings.saveOptions();
@@ -211,11 +231,11 @@ public class GuiKeybindCheckBox extends GuiCheckBox {
     public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed) {
         if (keyBinding != null) {
             String s = keyBinding.getKeyModifier() != KeyModifier.NONE ? keyBinding.getKeyModifier() + " + " : "";
-            curTooltip.add(I18n.format("gui.keybindBoundKey", s + Keyboard.getKeyName(keyBinding.getKeyCode())));
+            curTooltip.add(I18n.format("gui.keybindBoundKey", s + I18n.format(keyBinding.getKey().getTranslationKey())));
         }
         if (!isAwaitingKey) {
             curTooltip.add("gui.keybindRightClickToSet");
-            if (keyBinding != null && keyBinding.getKeyCode() != Keyboard.KEY_NONE) {
+            if (keyBinding != null && keyBinding.getKey().getKeyCode() != GLFW.GLFW_KEY_UNKNOWN) {
                 curTooltip.add("gui.keybindShiftRightClickToClear");
             }
         }

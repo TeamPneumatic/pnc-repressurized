@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
@@ -14,9 +14,9 @@ public interface IDescSynced {
 
     List<SyncedField> getDescriptionFields();
 
-    void writeToPacket(NBTTagCompound tag);
+    void writeToPacket(CompoundNBT tag);
 
-    void readFromPacket(NBTTagCompound tag);
+    void readFromPacket(CompoundNBT tag);
 
     BlockPos getPosition();
 

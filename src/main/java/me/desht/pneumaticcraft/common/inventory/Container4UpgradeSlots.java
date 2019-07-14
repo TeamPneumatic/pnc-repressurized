@@ -1,14 +1,16 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
-import net.minecraft.entity.player.InventoryPlayer;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.util.math.BlockPos;
 
-public class Container4UpgradeSlots<Tile extends TileEntityTickableBase> extends ContainerPneumaticBase<Tile> {
+public class Container4UpgradeSlots<T extends TileEntityBase> extends ContainerPneumaticBase<T> {
 
-    public Container4UpgradeSlots(InventoryPlayer inventoryPlayer, Tile te) {
-        super(te);
+    public Container4UpgradeSlots(ContainerType type, int i, PlayerInventory playerInventory, BlockPos tilePos) {
+        super(type, i, playerInventory, tilePos);
 
         addUpgradeSlots(48, 29);
-        addPlayerSlots(inventoryPlayer, 84);
+        addPlayerSlots(playerInventory, 84);
     }
 }

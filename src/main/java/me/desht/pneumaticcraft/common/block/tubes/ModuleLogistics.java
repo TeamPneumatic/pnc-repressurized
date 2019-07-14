@@ -3,10 +3,9 @@ package me.desht.pneumaticcraft.common.block.tubes;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.model.module.ModelLogistics;
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticModule;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
@@ -14,21 +13,22 @@ import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.oredict.DyeUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 public class ModuleLogistics extends TubeModule implements INetworkedModule {
     private SemiBlockLogistics cachedFrame;
@@ -41,12 +41,10 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     private static final double ITEM_TRANSPORT_COST = 2.5;
     private static final double FLUID_TRANSPORT_COST = 0.05;
 
-    @SideOnly(Side.CLIENT)
     public int getTicksSinceAction() {
         return ticksSinceAction;
     }
 
-    @SideOnly(Side.CLIENT)
     public int getTicksSinceNotEnoughAir() {
         return ticksSinceNotEnoughAir;
     }
@@ -64,11 +62,6 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     @Override
     public String getType() {
         return Names.MODULE_LOGISTICS;
-    }
-
-    @Override
-    protected EnumGuiId getGuiId() {
-        return null;
     }
 
     @Override
@@ -98,14 +91,14 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt) {
+    public void writeToNBT(CompoundNBT nbt) {
         super.writeToNBT(nbt);
-        nbt.setBoolean("powered", powered);
-        nbt.setByte("colorChannel", (byte) colorChannel);
+        nbt.putBoolean("powered", powered);
+        nbt.putByte("colorChannel", (byte) colorChannel);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
+    public void readFromNBT(CompoundNBT nbt) {
         super.readFromNBT(nbt);
         powered = nbt.getBoolean("powered");
         colorChannel = nbt.getByte("colorChannel");
@@ -119,20 +112,19 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public boolean onActivated(EntityPlayer player, EnumHand hand) {
+    public boolean onActivated(PlayerEntity player, Hand hand) {
         ItemStack heldStack = player.getHeldItem(hand);
-        if (!heldStack.isEmpty()) {
-            OptionalInt colorIndex = DyeUtils.dyeDamageFromStack(heldStack);
-            if (colorIndex.isPresent()) {
-                if (!player.world.isRemote) {
-                    setColorChannel(colorIndex.getAsInt());
-                    NetworkHandler.sendToAllAround(new PacketUpdateLogisticModule(this, 0), getTube().world());
-                    if (ConfigHandler.general.useUpDyesWhenColoring && !player.capabilities.isCreativeMode) {
-                        heldStack.shrink(1);
-                    }
+        DyeColor color = DyeColor.getColor(player.getHeldItem(hand));
+        if (color != null) {
+            int colorId = color.getId();
+            if (!player.world.isRemote) {
+                setColorChannel(colorId);
+                NetworkHandler.sendToAllAround(new PacketUpdateLogisticModule(this, 0), getTube().world());
+                if (Config.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
+                    heldStack.shrink(1);
                 }
-                return true;
             }
+            return true;
         }
         return super.onActivated(player, hand);
     }
@@ -149,7 +141,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
             if (--ticksUntilNextCycle <= 0) {
                 LogisticsManager manager = new LogisticsManager();
                 Map<SemiBlockLogistics, ModuleLogistics> frameToModuleMap = new HashMap<>();
-                Map<SemiBlockLogistics, EnumFacing> frameToSide = new HashMap<>();
+                Map<SemiBlockLogistics, Direction> frameToSide = new HashMap<>();
                 for (TubeModule module : ModuleNetworkManager.getInstance(getTube().world()).getConnectedModules(this)) {
                     if (module instanceof ModuleLogistics) {
                         ModuleLogistics logistics = (ModuleLogistics) module;
@@ -197,70 +189,74 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     private void handleItems(ModuleLogistics providingModule, ModuleLogistics requestingModule, LogisticsTask task) {
-        IItemHandler requestingHandler = IOHelper.getInventoryForTE(task.requester.getTileEntity(), requestingModule.dir.getOpposite());
-        if (requestingHandler == null) return;
+        IOHelper.getInventoryForTE(task.requester.getTileEntity(), requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
+            ItemStack remainder = ItemHandlerHelper.insertItem(requestingHandler, task.transportingItem, true);
+            if (remainder.getCount() != task.transportingItem.getCount()) {
+                ItemStack toBeExtracted = task.transportingItem.copy();
+                toBeExtracted.shrink(remainder.getCount());
+                IOHelper.getInventoryForTE(task.provider.getTileEntity(), providingModule.dir.getOpposite())
+                        .ifPresent(providingHandler -> tryItemTransfer(providingModule, requestingModule, providingHandler, requestingHandler, toBeExtracted));
+            }
+        });
+    }
 
-        ItemStack remainder = ItemHandlerHelper.insertItem(requestingHandler, task.transportingItem, true);
-        if (remainder.getCount() != task.transportingItem.getCount()) {
-            ItemStack toBeExtracted = task.transportingItem.copy();
-            toBeExtracted.shrink(remainder.getCount());
-            IItemHandler providingHandler = IOHelper.getInventoryForTE(task.provider.getTileEntity(), providingModule.dir.getOpposite());
-            ItemStack extractedStack = IOHelper.extract(providingHandler, toBeExtracted, IOHelper.ExtractCount.UP_TO, true, false);
-            if (!extractedStack.isEmpty()) {
-                int airUsed = (int) (ITEM_TRANSPORT_COST * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().pos(), requestingModule.getTube().pos()));
-                IAirHandler receiverAirHandler = requestingModule.getTube().getAirHandler(null);
-                if (airUsed > receiverAirHandler.getAir()) {
-                    // not enough air to move all the items - scale back the number to be moved
-                    double scale = receiverAirHandler.getAir() / (double)airUsed;
-                    extractedStack.setCount((int)(extractedStack.getCount() * scale));
-                    airUsed *= scale;
-                }
-                if (extractedStack.isEmpty()) {
-                    sendModuleUpdate(providingModule, false);
-                    sendModuleUpdate(requestingModule, false);
-                } else {
-                    sendModuleUpdate(providingModule, true);
-                    sendModuleUpdate(requestingModule, true);
-                    receiverAirHandler.addAir(-airUsed);
-                    IOHelper.extract(providingHandler, extractedStack, IOHelper.ExtractCount.EXACT, false, false);
-                    ItemHandlerHelper.insertItem(requestingHandler, extractedStack, false);
-                    ticksUntilNextCycle = 20;
-                }
+    private void tryItemTransfer(ModuleLogistics providingModule, ModuleLogistics requestingModule, IItemHandler providingHandler, IItemHandler requestingHandler, ItemStack toTransfer) {
+        ItemStack extractedStack = IOHelper.extract(providingHandler, toTransfer, IOHelper.ExtractCount.UP_TO, true, false);
+        if (!extractedStack.isEmpty()) {
+            int airUsed = (int) (ITEM_TRANSPORT_COST * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().pos(), requestingModule.getTube().pos()));
+            IAirHandler receiverAirHandler = requestingModule.getTube().getAirHandler(null);
+            if (airUsed > receiverAirHandler.getAir()) {
+                // not enough air to move all the items - scale back the number to be moved
+                double scale = receiverAirHandler.getAir() / (double) airUsed;
+                extractedStack.setCount((int) (extractedStack.getCount() * scale));
+                airUsed *= scale;
+            }
+            if (extractedStack.isEmpty()) {
+                sendModuleUpdate(providingModule, false);
+                sendModuleUpdate(requestingModule, false);
+            } else {
+                sendModuleUpdate(providingModule, true);
+                sendModuleUpdate(requestingModule, true);
+                receiverAirHandler.addAir(-airUsed);
+                IOHelper.extract(providingHandler, extractedStack, IOHelper.ExtractCount.EXACT, false, false);
+                ItemHandlerHelper.insertItem(requestingHandler, extractedStack, false);
+                ticksUntilNextCycle = 20;
             }
         }
     }
 
     private void handleFluids(ModuleLogistics providingModule, ModuleLogistics requestingModule, LogisticsTask task) {
-        IFluidHandler requestingHandler = task.requester.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requestingModule.dir.getOpposite());
-        if (requestingHandler == null) return;
+        task.requester.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
+            int amountFilled = requestingHandler.fill(task.transportingFluid.stack, false);
+            if (amountFilled > 0) {
+                FluidStack drainingFluid = task.transportingFluid.stack.copy();
+                drainingFluid.amount = amountFilled;
+                task.provider.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, providingModule.dir.getOpposite())
+                        .ifPresent(providingHandler -> tryFluidTransfer(providingModule, providingHandler, requestingModule, requestingHandler, drainingFluid));
+            }
+        });
+    }
 
-        int amountFilled = requestingHandler.fill(task.transportingFluid.stack, false);
-        if (amountFilled > 0) {
-            FluidStack drainingFluid = task.transportingFluid.stack.copy();
-            drainingFluid.amount = amountFilled;
-            IFluidHandler providingHandler = task.provider.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, providingModule.dir.getOpposite());
-            if (providingHandler != null) {
-                FluidStack extractedFluid = providingHandler.drain(drainingFluid, false);
-                if (extractedFluid != null) {
-                    IAirHandler receiverAirHandler = requestingModule.getTube().getAirHandler(null);
-                    double airUsed = (FLUID_TRANSPORT_COST * extractedFluid.amount * PneumaticCraftUtils.distBetween(providingModule.getTube().pos(), requestingModule.getTube().pos()));
-                    if (airUsed > receiverAirHandler.getAir()) {
-                        // not enough air to move it all - scale back the amount of fluid to be moved
-                        double scale = receiverAirHandler.getAir() / airUsed;
-                        drainingFluid.amount = (int)(extractedFluid.amount * scale);
-                        airUsed *= scale;
-                    }
-                    if (drainingFluid.amount == 0) {
-                        sendModuleUpdate(providingModule, false);
-                        sendModuleUpdate(requestingModule, false);
-                    } else {
-                        sendModuleUpdate(providingModule, true);
-                        sendModuleUpdate(requestingModule, true);
-                        requestingModule.getTube().getAirHandler(null).addAir((int) -airUsed);
-                        requestingHandler.fill(providingHandler.drain(drainingFluid, true), true);
-                        ticksUntilNextCycle = 20;
-                    }
-                }
+    private void tryFluidTransfer(ModuleLogistics providingModule, IFluidHandler providingHandler, ModuleLogistics requestingModule, IFluidHandler requestingHandler, FluidStack toTransfer) {
+        FluidStack extractedFluid = providingHandler.drain(toTransfer, false);
+        if (extractedFluid != null) {
+            IAirHandler receiverAirHandler = requestingModule.getTube().getAirHandler(null);
+            double airUsed = (FLUID_TRANSPORT_COST * extractedFluid.amount * PneumaticCraftUtils.distBetween(providingModule.getTube().pos(), requestingModule.getTube().pos()));
+            if (airUsed > receiverAirHandler.getAir()) {
+                // not enough air to move it all - scale back the amount of fluid to be moved
+                double scale = receiverAirHandler.getAir() / airUsed;
+                toTransfer.amount = (int) (extractedFluid.amount * scale);
+                airUsed *= scale;
+            }
+            if (toTransfer.amount == 0) {
+                sendModuleUpdate(providingModule, false);
+                sendModuleUpdate(requestingModule, false);
+            } else {
+                sendModuleUpdate(providingModule, true);
+                sendModuleUpdate(requestingModule, true);
+                requestingModule.getTube().getAirHandler(null).addAir((int) -airUsed);
+                requestingHandler.fill(providingHandler.drain(toTransfer, true), true);
+                ticksUntilNextCycle = 20;
             }
         }
     }

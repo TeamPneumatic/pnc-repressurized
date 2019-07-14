@@ -1,15 +1,19 @@
 package me.desht.pneumaticcraft.proxy;
 
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
-import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 public interface IProxy {
+    World getWorldFor(NetworkEvent.Context ctx);
+
     World getClientWorld();
 
-    EntityPlayer getClientPlayer();
+    PlayerEntity getClientPlayer();
 
     void preInit();
 
@@ -23,11 +27,7 @@ public interface IProxy {
 
     boolean isSneakingInGui();
 
-    void addScheduledTask(Runnable runnable, boolean serverSide);
-
     void initConfig();
-
-    void playCustomParticle(EnumCustomParticleType enumCustomParticleType, World w, double x, double y, double z, double dx, double dy, double dz);
 
     String xlate(String key);
 
@@ -36,4 +36,10 @@ public interface IProxy {
     int particleLevel();
 
     Pair<Integer,Integer> getScaledScreenSize();
+
+    Iterable<? extends Entity> getAllEntities(World world);
+
+    boolean isScreenHiRes();
+
+    void openGui(Screen gui);
 }

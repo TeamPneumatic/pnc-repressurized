@@ -6,26 +6,26 @@ import me.desht.pneumaticcraft.client.gui.areatool.GuiGPSAreaTool;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.SPacketHeldItemChange;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.network.play.server.SHeldItemChangePacket;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
@@ -34,33 +34,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider {
     public ItemGPSAreaTool() {
         super("gps_area_tool");
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (hand != EnumHand.MAIN_HAND) return EnumActionResult.PASS;
-        setGPSPosAndNotify(player, pos, 0);
-        return EnumActionResult.SUCCESS; // we don't want to use the item.
+    public ActionResultType onItemUse(ItemUseContext ctx) {
+        setGPSPosAndNotify(ctx.getPlayer(), ctx.getPos(), ctx.getHand(), 0);
+        return ActionResultType.SUCCESS; // we don't want to use the item.
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        if (handIn != EnumHand.MAIN_HAND) return ActionResult.newResult(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if (handIn != Hand.MAIN_HAND) return ActionResult.newResult(ActionResultType.PASS, playerIn.getHeldItem(handIn));
         ItemStack stack = playerIn.getHeldItemMainhand();
         if (worldIn.isRemote) {
             showGUI(stack, 0);
         }
-        return ActionResult.newResult(EnumActionResult.SUCCESS, stack);
+        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
     
     @SubscribeEvent
     public void onBlockLeftClick(PlayerInteractEvent.LeftClickBlock event){
         if(event.getItemStack().getItem() == this){
             if(!event.getPos().equals(getGPSLocation(event.getItemStack(), 1))){
-                setGPSPosAndNotify(event.getEntityPlayer(), event.getPos(), 1);
+                setGPSPosAndNotify(event.getEntityPlayer(), event.getPos(), event.getHand(), 1);
             }
             event.setCanceled(true);
         }
@@ -73,36 +74,36 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
         }
     }
 
-    public static void setGPSPosAndNotify(EntityPlayer player, BlockPos pos, int index){
-        setGPSLocation(player.getHeldItemMainhand(), pos, index);
+    public static void setGPSPosAndNotify(PlayerEntity player, BlockPos pos, Hand hand, int index){
+        setGPSLocation(player.getHeldItem(hand), pos, index);
         if (!player.world.isRemote) {
-            player.sendStatusMessage(new TextComponentString(TextFormatting.GREEN + String.format("[GPS Area Tool] Set P%d to %d, %d, %d.", index + 1, pos.getX(), pos.getY(), pos.getZ())), false);
-            if (player instanceof EntityPlayerMP)
-                ((EntityPlayerMP) player).connection.sendPacket(new SPacketHeldItemChange(player.inventory.currentItem));
+            player.sendStatusMessage(new StringTextComponent(TextFormatting.GREEN + String.format("[GPS Area Tool] Set P%d to %d, %d, %d.", index + 1, pos.getX(), pos.getY(), pos.getZ())), false);
+            if (player instanceof ServerPlayerEntity)
+                ((ServerPlayerEntity) player).connection.sendPacket(new SHeldItemChangePacket(player.inventory.currentItem));
         }
     }
-    
+
     private void showGUI(ItemStack stack, int index){
-        FMLCommonHandler.instance().showGuiScreen(new GuiGPSAreaTool(stack, index));
+        Minecraft.getInstance().displayGuiScreen(new GuiGPSAreaTool(stack, index));
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
+    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
         super.addInformation(stack, worldIn, infoList, par4);
         for(int index = 0; index < 2; index++){
             BlockPos pos = getGPSLocation(stack, index);
-            infoList.add(String.format("\u00a72P%d: %d, %d, %d", index + 1, pos.getX(), pos.getY(), pos.getZ()));
+            infoList.add(new StringTextComponent(String.format("\u00a72P%d: %d, %d, %d", index + 1, pos.getX(), pos.getY(), pos.getZ())));
             String varName = getVariable(stack, index);
             if (!varName.isEmpty()) {
-                infoList.add(I18n.format("gui.tooltip.gpsTool.variable", varName));
+                infoList.add(xlate("gui.tooltip.gpsTool.variable", varName));
             }
         }
         getArea(stack).addAreaTypeTooltip(infoList);
     }
 
     @Override
-    public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean heldItem) {
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean heldItem) {
         if (!world.isRemote) {
             for (int index = 0; index < 2; index++) {
                 String var = getVariable(stack, index);
@@ -118,8 +119,8 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
     public static ProgWidgetArea getArea(ItemStack stack) {
         Validate.isTrue(stack.getItem() instanceof ItemGPSAreaTool);
         ProgWidgetArea area = new ProgWidgetArea();
-        if (stack.hasTagCompound()) {
-            area.readFromNBT(stack.getTagCompound());
+        if (stack.hasTag()) {
+            area.readFromNBT(stack.getTag());
         }
         return area;
     }
@@ -150,7 +151,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
             area.setP2(pos);
         }
         NBTUtil.initNBTTagCompound(gpsTool);
-        area.writeToNBT(gpsTool.getTagCompound());
+        area.writeToNBT(gpsTool.getTag());
     }
 
     public static void setVariable(ItemStack gpsTool, String variable, int index) {
@@ -161,7 +162,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
             area.setCoord2Variable(variable);
         }
         NBTUtil.initNBTTagCompound(gpsTool);
-        area.writeToNBT(gpsTool.getTagCompound());
+        area.writeToNBT(gpsTool.getTag());
     }
 
     public static String getVariable(ItemStack gpsTool, int index) {

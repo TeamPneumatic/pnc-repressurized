@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -7,9 +9,10 @@ import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessi
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.awt.*;
@@ -17,22 +20,29 @@ import java.util.Collections;
 import java.util.List;
 
 public class GuiThermopneumaticProcessingPlant extends
-        GuiPneumaticContainerBase<TileEntityThermopneumaticProcessingPlant> {
+        GuiPneumaticContainerBase<ContainerThermopneumaticProcessingPlant,TileEntityThermopneumaticProcessingPlant> {
 
     private WidgetTemperature tempWidget;
     private int nExposedFaces;
 
-    public GuiThermopneumaticProcessingPlant(InventoryPlayer player, TileEntityThermopneumaticProcessingPlant te) {
-        super(new ContainerThermopneumaticProcessingPlant(player, te), te, Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT);
+    public GuiThermopneumaticProcessingPlant(ContainerThermopneumaticProcessingPlant container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
         ySize = 197;
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        addWidget(new WidgetTank(-1, guiLeft + 13, guiTop + 15, te.getInputTank()));
-        addWidget(new WidgetTank(-1, guiLeft + 79, guiTop + 15, te.getOutputTank()));
-        tempWidget = new WidgetTemperature(-1, guiLeft + 98, guiTop + 15, 273, 673, te.getHeatExchangerLogic(null), (int) te.requiredTemperature) {
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        addButton(new WidgetTank(guiLeft + 13, guiTop + 15, te.getInputTank()));
+        addButton(new WidgetTank(guiLeft + 79, guiTop + 15, te.getOutputTank()));
+
+        tempWidget = new WidgetTemperature(guiLeft + 98, guiTop + 15, 273, 673, te.getHeatExchangerLogic(null), (int) te.requiredTemperature) {
             @Override
             public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
@@ -42,21 +52,20 @@ public class GuiThermopneumaticProcessingPlant extends
                 }
             }
         };
+        addButton(tempWidget);
 
-        addWidget(tempWidget);
-
-        GuiButtonSpecial dumpButton = new GuiButtonSpecial(1, guiLeft + 12, guiTop + 81, 18, 20, "");
+        GuiButtonSpecial dumpButton = new GuiButtonSpecial(guiLeft + 12, guiTop + 81, 18, 20, "").withTag("dump");
         dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
         dumpButton.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.thermopneumatic.dumpInput")));
-        addWidget(dumpButton);
+        addButton(dumpButton);
 
         nExposedFaces = HeatUtil.countExposedFaces(Collections.singletonList(te));
     }
 
     @Override
-    public void updateScreen() {
+    public void tick() {
         tempWidget.setScales((int) te.requiredTemperature);
-        super.updateScreen();
+        super.tick();
     }
 
     @Override
@@ -65,16 +74,16 @@ public class GuiThermopneumaticProcessingPlant extends
         double progress = te.getCraftingPercentage();
         int progressWidth = (int) (progress * 48);
         bindGuiTexture();
-        drawTexturedModalRect(guiLeft + 30, guiTop + 31, xSize, 0, progressWidth, 22);
+        blit(guiLeft + 30, guiTop + 31, xSize, 0, progressWidth, 22);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-        fontRenderer.drawString(I18n.format("gui.tab.upgrades"), 91, 83, 4210752);
-        String containerName = I18n.format(te.getName() + ".name");
+        font.drawString(I18n.format("gui.tab.upgrades"), 91, 83, 4210752);
+        String containerName = title.getFormattedText();
         GlStateManager.pushMatrix();
-        GlStateManager.scale(0.95, 0.97, 1);
-        fontRenderer.drawString(containerName, xSize / 2 - fontRenderer.getStringWidth(containerName) / 2 + 1, 5, 4210752);
+        GlStateManager.scaled(0.95, 0.97, 1);
+        font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f + 1, 5, 4210752);
         GlStateManager.popMatrix();
         super.drawGuiContainerForegroundLayer(x, y);
 

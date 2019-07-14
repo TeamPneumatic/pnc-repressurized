@@ -4,13 +4,13 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderEntityItem;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderChargingStation extends AbstractModelRenderer<TileEntityChargingStation> {
-    private RenderEntityItem customRenderItem = null;
+    private ItemRenderer customRenderItem = null;
 
     public RenderChargingStation() {
     }
@@ -23,17 +23,17 @@ public class RenderChargingStation extends AbstractModelRenderer<TileEntityCharg
     @Override
     void renderModel(TileEntityChargingStation te, float partialTicks) {
         if (te != null && !te.chargingStackSynced.isEmpty()) {
-            EntityItem ghostEntityItem = new EntityItem(te.getWorld());
+            ItemEntity ghostEntityItem = new ItemEntity(te.getWorld());
             ghostEntityItem.hoverStart = 0.0F;
             ghostEntityItem.setItem(te.chargingStackSynced);
             if (customRenderItem == null) {
                 customRenderItem = new NoBobItemRenderer();
             }
-            GlStateManager.translate(0, 1.25f, 0);
-            GlStateManager.scale(1.0F, -1F, -1F);
-            GlStateManager.rotate(90, 0F, 1F, 0F);
+            GlStateManager.translated(0, 1.25f, 0);
+            GlStateManager.scaled(1.0F, -1F, -1F);
+            GlStateManager.rotated(90, 0F, 1F, 0F);
 
-            RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+            EntityRendererManager renderManager = Minecraft.getInstance().getRenderManager();
             boolean fancySetting = renderManager.options.fancyGraphics;
             renderManager.options.fancyGraphics = true;
             customRenderItem.doRender(ghostEntityItem, 0, 0, 0, 0, 0);

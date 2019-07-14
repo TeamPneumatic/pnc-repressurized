@@ -1,52 +1,57 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
-import me.desht.pneumaticcraft.common.item.IChargingStationGUIHolderItem;
+import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
-public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChargingStation> {
+public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerChargingStation,TileEntityChargingStation> {
     private GuiButtonSpecial guiSelectButton;
     private float renderAirProgress;
 
-    public GuiChargingStation(InventoryPlayer player, TileEntityChargingStation te) {
-        super(new ContainerChargingStation(player, te), te, Textures.GUI_CHARGING_STATION_LOCATION);
+    public GuiChargingStation(ContainerChargingStation container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
 
         ySize = 176;
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        guiSelectButton = new GuiButtonSpecial(1, xStart + 89, yStart + 15, 21, 20, "");
+        guiSelectButton = new GuiButtonSpecial(xStart + 89, yStart + 15, 21, 20, "").withTag("open_upgrades");
         guiSelectButton.setRenderedIcon(Textures.GUI_UPGRADES_LOCATION);
-        buttonList.add(guiSelectButton);
+        addButton(guiSelectButton);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        fontRenderer.drawString("Upgr.", 46, 19, 4210752);
+        font.drawString("Upgr.", 46, 19, 4210752);
+    }
+
+    @Override
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_CHARGING_STATION_LOCATION;
     }
 
     @Override
@@ -57,16 +62,15 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
     @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         renderAir();
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
         ItemStack stack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
-        guiSelectButton.visible = stack.getItem() instanceof IChargingStationGUIHolderItem;
+        guiSelectButton.visible = stack.getItem() instanceof IChargeableContainerProvider;
         if (guiSelectButton.visible) {
             guiSelectButton.setTooltipText("Manage upgrades for the " + stack.getDisplayName());
         }
@@ -116,7 +120,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
             curInfo.add("\u00a7fNo items to (dis)charge");
             curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Put a pneumatic item in the charge slot.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
         } else if (chargeStack.getItem() instanceof IPressurizable) {
-            String name = chargeStack.getDisplayName();
+            String name = chargeStack.getDisplayName().getFormattedText();
             IPressurizable chargeItem = (IPressurizable) chargeStack.getItem();
             if (chargeItem.getPressure(chargeStack) > te.getPressure() + 0.01F && chargeItem.getPressure(chargeStack) <= 0) {
                 curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be discharged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
@@ -132,15 +136,15 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
     }
 
     private void renderAir() {
-        GlStateManager.disableTexture2D();
-        GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.glLineWidth(2.0F);
+        GlStateManager.disableTexture();
+        GlStateManager.color4f(1, 1, 1, 1);
+        GlStateManager.lineWidth(2.0F);
         int particles = 10;
         for (int i = 0; i < particles; i++) {
             renderAirParticle(renderAirProgress % (1F / particles) + (float) i / particles);
         }
 
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
     }
 
     private void renderAirParticle(float particleProgress) {
@@ -161,7 +165,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<TileEntityChar
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         GL11.glPointSize(5);
         wr.begin(GL11.GL_POINTS, DefaultVertexFormats.POSITION);
-        wr.pos(x, y, zLevel).endVertex();
+        wr.pos(x, y, 0.0).endVertex();
         Tessellator.getInstance().draw();
     }
 }

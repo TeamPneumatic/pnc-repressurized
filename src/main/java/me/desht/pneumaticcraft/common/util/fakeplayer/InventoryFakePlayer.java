@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.util.fakeplayer;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -11,11 +11,11 @@ import javax.annotation.Nonnull;
 
 /**
  * Drone's fake player needs a custom inventory.
- * This is so {@link EntityPlayer#getDigSpeed(IBlockState, BlockPos)} gets the right tool speed (i.e. the tool in the drone's inv. slot 0)
+ * This is so {@link PlayerEntity#getDigSpeed(BlockState, BlockPos)} gets the right tool speed (i.e. the tool in the drone's inv. slot 0)
  * Overriding DroneFakePlayer#getItemStackFromSlot() is also necessary, but not sufficient on its own
  */
-public abstract class InventoryFakePlayer extends InventoryPlayer {
-    protected InventoryFakePlayer(EntityPlayer fakePlayer) {
+public abstract class InventoryFakePlayer extends PlayerInventory {
+    protected InventoryFakePlayer(PlayerEntity fakePlayer) {
         super(fakePlayer);
     }
 
@@ -34,7 +34,7 @@ public abstract class InventoryFakePlayer extends InventoryPlayer {
     }
 
     @Override
-    public float getDestroySpeed(IBlockState state) {
+    public float getDestroySpeed(BlockState state) {
         float f = 1.0f;
 
         if (!getUnderlyingItemHandler().getStackInSlot(0).isEmpty()) {

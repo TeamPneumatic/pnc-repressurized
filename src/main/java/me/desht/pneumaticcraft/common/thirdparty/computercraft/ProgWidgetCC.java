@@ -4,16 +4,15 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -69,12 +68,12 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return new DroneAICC((EntityDrone) drone, (ProgWidgetCC) widget, false);
     }
 
     @Override
-    public EntityAIBase getWidgetTargetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget) {
         return new DroneAICC((EntityDrone) drone, (ProgWidgetCC) widget, true);
     }
 
@@ -150,7 +149,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public synchronized boolean isItemValidForFilters(ItemStack item, IBlockState blockMetadata) {
+    public synchronized boolean isItemValidForFilters(ItemStack item, BlockState blockMetadata) {
         return ProgWidgetItemFilter.isItemValidForFilters(item, itemWhitelist, itemBlacklist, blockMetadata);
     }
 
@@ -182,9 +181,9 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
         ProgWidgetItemFilter itemFilter = new ProgWidgetItemFilter();
         itemFilter.setFilter(new ItemStack(item, 1, damage));
         itemFilter.specificMeta = damage;
-        itemFilter.useMetadata = useMetadata;
+        itemFilter.useItemDamage = useMetadata;
         itemFilter.useNBT = useNBT;
-        itemFilter.useOreDict = useOreDict;
+        itemFilter.useItemTags = useOreDict;
         itemFilter.useModSimilarity = useModSimilarity;
         return itemFilter;
     }
@@ -285,7 +284,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
 
     @Override
     @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
+    public Screen getOptionWindow(GuiProgrammer guiProgrammer) {
         return null;
     }
 
@@ -426,10 +425,10 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
     }
 
     @Override
-    public InventoryCrafting getCraftingGrid() {
-        InventoryCrafting invCrafting = new InventoryCrafting(new Container() {
+    public CraftingInventory getCraftingGrid() {
+        CraftingInventory invCrafting = new CraftingInventory(new Container() {
             @Override
-            public boolean canInteractWith(EntityPlayer p_75145_1_) {
+            public boolean canInteractWith(PlayerEntity p_75145_1_) {
                 return false;
             }
         }, 3, 3);

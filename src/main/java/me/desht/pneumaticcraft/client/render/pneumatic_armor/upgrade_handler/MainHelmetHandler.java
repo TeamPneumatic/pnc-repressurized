@@ -1,23 +1,23 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainOptions;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,21 +28,19 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     public GuiAnimatedStat testMessageStat;
 
     @Override
-    @SideOnly(Side.CLIENT)
     public String getUpgradeName() {
         return "coreComponents";
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void update(EntityPlayer player, int rangeUpgrades) {
+    public void update(PlayerEntity player, int rangeUpgrades) {
         List<String> l = Arrays.stream(UpgradeRenderHandlerList.ARMOR_SLOTS)
                 .map(slot -> getPressureStr(player, slot))
                 .collect(Collectors.toList());
         powerStat.setText(l);
     }
 
-    private String getPressureStr(EntityPlayer player, EntityEquipmentSlot slot) {
+    private String getPressureStr(PlayerEntity player, EquipmentSlotType slot) {
         if (!ItemPneumaticArmor.isPneumaticArmorPiece(player, slot))
             return "-";
         float pressure = CommonArmorHandler.getHandlerForPlayer(player).armorPressure[slot.getIndex()];
@@ -60,28 +58,28 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void render3D(float partialTicks) {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void render2D(float partialTicks, boolean helmetEnabled) {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public IGuiAnimatedStat getAnimatedStat() {
         if (powerStat == null) {
             powerStat = new GuiAnimatedStat(null, "", GuiAnimatedStat.StatIcon.NONE,0x3000AA00, null, ArmorHUDLayout.INSTANCE.powerStat);
             powerStat.setLineSpacing(15);
             powerStat.setWidgetOffsets(-18, 0);  // ensure armor icons are rendered in the right place
-            for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                GuiButtonSpecial pressureButton = new GuiButtonSpecial(-1, 0, 5 + (3 - slot.getIndex()) * 15, 18, 18, "") ;
+            for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+                GuiButtonSpecial pressureButton = new GuiButtonSpecial(0, 5 + (3 - slot.getIndex()) * 15, 18, 18, "") ;
                 ItemStack stack = GuiHelmetMainScreen.ARMOR_STACKS[slot.getIndex()];
                 pressureButton.setVisible(false);
                 pressureButton.setRenderStacks(stack);
-                powerStat.addWidget(pressureButton);
+                powerStat.addSubWidget(pressureButton);
             }
             powerStat.setMinDimensionsAndReset(0, 0);
             powerStat.openWindow();
@@ -95,18 +93,18 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public float getEnergyUsage(int rangeUpgrades, EntityPlayer player) {
+    public float getEnergyUsage(int rangeUpgrades, PlayerEntity player) {
         return 0;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void reset() {
         powerStat = null;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public IOptionPage getGuiOptionsPage() {
         return new GuiHelmetMainOptions(this);
     }
@@ -118,8 +116,8 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.HEAD;
+    public EquipmentSlotType getEquipmentSlot() {
+        return EquipmentSlotType.HEAD;
     }
 
     @Override

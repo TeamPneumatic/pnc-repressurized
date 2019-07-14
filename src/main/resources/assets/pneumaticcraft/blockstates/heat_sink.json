@@ -2,7 +2,7 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {},
-        "model": "pneumaticcraft:heat_sink"
+        "model": "pneumaticcraft:block/heat_sink"
     },
 	"variants": {
 		"facing": {

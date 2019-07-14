@@ -4,11 +4,10 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetBlockRightClick;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockInteract;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -33,13 +32,13 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return setupMaxActions(new DroneAIBlockInteract(drone, (ProgWidgetAreaItemBase) widget), (IMaxActions) widget);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
+    public Screen getOptionWindow(GuiProgrammer guiProgrammer) {
         return new GuiProgWidgetBlockRightClick(this, guiProgrammer);
     }
 
@@ -53,13 +52,13 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setBoolean("sneaking", sneaking);
+        tag.putBoolean("sneaking", sneaking);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         sneaking = tag.getBoolean("sneaking");
     }

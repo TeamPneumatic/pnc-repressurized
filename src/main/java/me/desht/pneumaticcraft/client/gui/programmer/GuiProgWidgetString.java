@@ -2,42 +2,46 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetString;
-import org.lwjgl.input.Keyboard;
 
-import java.io.IOException;
-
-public class GuiProgWidgetString extends GuiProgWidgetOptionBase {
+public class GuiProgWidgetString extends GuiProgWidgetOptionBase<ProgWidgetString> {
     private WidgetTextField textfield;
 
-    public GuiProgWidgetString(IProgWidget widget, GuiProgrammer guiProgrammer) {
+    public GuiProgWidgetString(ProgWidgetString widget, GuiProgrammer guiProgrammer) {
         super(widget, guiProgrammer);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        textfield = new WidgetTextField(fontRenderer, guiLeft + 10, guiTop + 20, 160, 10);
+    public void init() {
+        super.init();
+
+        textfield = new WidgetTextField(font, guiLeft + 10, guiTop + 20, 160, 10) {
+            @Override
+            public boolean charTyped(char c, int keyCode) {
+                if (c == '\n') {
+                    onClose();
+                    minecraft.player.closeScreen();
+                    return true;
+                } else {
+                    return super.charTyped(c, keyCode);
+                }
+            }
+        };
         textfield.setMaxStringLength(1000);
-        textfield.setText(((ProgWidgetString) widget).string);
-        textfield.setFocused(true);
-        addWidget(textfield);
+        textfield.setText(progWidget.string);
+        textfield.setFocused2(true);
+        addButton(textfield);
     }
 
     @Override
-    public void keyTyped(char key, int keyCode) throws IOException {
-        if (keyCode == Keyboard.KEY_RETURN && textfield.isFocused()) {
-            // pressing return also closes this gui
-            super.keyTyped('\u001B', Keyboard.KEY_ESCAPE);
-        } else {
-            super.keyTyped(key, keyCode);
-        }
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
-        ((ProgWidgetString) widget).string = textfield.getText();
+    public void onClose() {
+        super.onClose();
+
+        progWidget.string = textfield.getText();
     }
 }

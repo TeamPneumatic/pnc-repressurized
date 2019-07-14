@@ -2,17 +2,17 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
-public class DroneEntityAIInventoryExport extends DroneAIImExBase {
+public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInventoryBase> {
 
-    public DroneEntityAIInventoryExport(IDroneBase drone, ProgWidgetAreaItemBase widget) {
+    public DroneEntityAIInventoryExport(IDroneBase drone, ProgWidgetInventoryBase widget) {
         super(drone, widget);
     }
 
@@ -32,15 +32,15 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase {
             for (int i = 0; i < drone.getInv().getSlots(); i++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(i);
                 if (!droneStack.isEmpty()) {
-                    if (widget.isItemValidForFilters(droneStack)) {
+                    if (progWidget.isItemValidForFilters(droneStack)) {
                         for (int side = 0; side < 6; side++) {
-                            if (((ISidedWidget) widget).getSides()[side]) {
+                            if (((ISidedWidget) progWidget).getSides()[side]) {
                                 droneStack = droneStack.copy();
                                 int oldCount = droneStack.getCount();
-                                if (((ICountWidget) widget).useCount()) {
+                                if (((ICountWidget) progWidget).useCount()) {
                                     droneStack.setCount(Math.min(droneStack.getCount(), getRemainingCount()));
                                 }
-                                ItemStack remainder = IOHelper.insert(te, droneStack.copy(), EnumFacing.byIndex(side), simulate);
+                                ItemStack remainder = IOHelper.insert(te, droneStack.copy(), Direction.byIndex(side), simulate);
                                 int stackSize = drone.getInv().getStackInSlot(i).getCount() - (remainder.isEmpty() ? droneStack.getCount() : droneStack.getCount() - remainder.getCount());
                                 droneStack.setCount(stackSize);
                                 int exportedItems = oldCount - stackSize;

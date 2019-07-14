@@ -1,12 +1,11 @@
 package me.desht.pneumaticcraft.common.hacking.block;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -18,29 +17,29 @@ public class HackableNoteblock implements IHackableBlock {
     }
 
     @Override
-    public boolean canHack(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+    public boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
         return true;
     }
 
     @Override
-    public void addInfo(World world, BlockPos pos, List<String> curInfo, EntityPlayer player) {
+    public void addInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.result.makeSound");
     }
 
     @Override
-    public void addPostHackInfo(World world, BlockPos pos, List<String> curInfo, EntityPlayer player) {
+    public void addPostHackInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.finished.makingSound");
     }
 
     @Override
-    public int getHackTime(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+    public int getHackTime(IBlockReader world, BlockPos pos, PlayerEntity player) {
         return 20;
     }
 
     @Override
-    public void onHackFinished(World world, BlockPos pos, EntityPlayer player) {
-        IBlockState state = world.getBlockState(pos);
-        state.getBlock().onBlockActivated(world, pos, state, player, EnumHand.MAIN_HAND, EnumFacing.UP, 0, 0, 0);
+    public void onHackFinished(World world, BlockPos pos, PlayerEntity player) {
+        BlockState state = world.getBlockState(pos);
+        state.onBlockActivated(world, player, Hand.MAIN_HAND, null);
     }
 
     @Override

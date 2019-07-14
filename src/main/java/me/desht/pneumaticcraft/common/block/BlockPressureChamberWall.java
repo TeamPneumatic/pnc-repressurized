@@ -2,12 +2,12 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 
 public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
 
@@ -22,7 +22,7 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
 
     private static final PropertyEnum<EnumWallState> WALL_STATE = PropertyEnum.create("wall_state", EnumWallState.class);
 
-    BlockPressureChamberWall() {
+    public BlockPressureChamberWall() {
         super("pressure_chamber_wall");
         setResistance(2000.0F);
     }
@@ -32,17 +32,7 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
         return new BlockStateContainer(this, WALL_STATE);
     }
 
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(WALL_STATE).ordinal();
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return super.getStateFromMeta(meta).withProperty(WALL_STATE, EnumWallState.values()[meta]);
-    }
-
-    public IBlockState updateState(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public BlockState updateState(BlockState state, IBlockReader world, BlockPos pos) {
         state = super.getExtendedState(state, world, pos);
         TileEntityPressureChamberWall wall = (TileEntityPressureChamberWall) world.getTileEntity(pos);
         EnumWallState wallState;
@@ -89,7 +79,7 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
         } else {
             wallState = EnumWallState.NONE;
         }
-        state = state.withProperty(WALL_STATE, wallState);
+        state = state.with(WALL_STATE, wallState);
         return state;
     }
 }

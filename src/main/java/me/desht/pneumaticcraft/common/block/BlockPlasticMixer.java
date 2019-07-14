@@ -4,9 +4,9 @@ import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.BBConstants;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -29,7 +29,7 @@ public class BlockPlasticMixer extends BlockPneumaticCraftModeled {
             BBConstants.PLASTIC_MIXER_MAX_POS, 1, BBConstants.PLASTIC_MIXER_MAX_POS
     );
 
-    BlockPlasticMixer() {
+    public BlockPlasticMixer() {
         super(Material.IRON, "plastic_mixer");
     }
 
@@ -45,12 +45,12 @@ public class BlockPlasticMixer extends BlockPneumaticCraftModeled {
 
     @Nullable
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+    public AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return COLLISION_BOUNDS;
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public AxisAlignedBB getBoundingBox(BlockState state, IBlockAccess source, BlockPos pos) {
         return BLOCK_BOUNDS;
     }
 
@@ -60,7 +60,7 @@ public class BlockPlasticMixer extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, BlockState state, int fortune) {
         super.getDrops(drops, world, pos, state, fortune);
 
         if (drops.isEmpty()) return;
@@ -76,7 +76,7 @@ public class BlockPlasticMixer extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.onBlockPlacedBy(world, pos, state, entity, stack);
 
         TileEntity te = world.getTileEntity(pos);

@@ -1,26 +1,31 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.common.GuiHandler;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.client.gui.GuiMicromissile;
+import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.config.MicromissileDefaults;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemMicromissiles extends ItemPneumatic {
     public static final String NBT_TOP_SPEED = "topSpeed";
@@ -44,47 +49,49 @@ public class ItemMicromissiles extends ItemPneumatic {
     }
 
     public ItemMicromissiles() {
-        super("micromissiles");
-        setMaxDamage(ConfigHandler.microMissile.missilePodSize - 1);  // -1 because of counting from 0
-        setMaxStackSize(1);
+        super(DEFAULT_PROPS.maxStackSize(1).maxDamage(Config.Common.Micromissiles.missilePodSize), "micromissiles");
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        ItemStack iStack = playerIn.getHeldItem(handIn);
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack stack = playerIn.getHeldItem(handIn);
 
         if (playerIn.isSneaking()) {
-            playerIn.openGui(PneumaticCraftRepressurized.instance, GuiHandler.EnumGuiId.MICROMISSILE.ordinal(),
-                    worldIn, (int)playerIn.posX, (int)playerIn.posY, (int)playerIn.posZ);
-            return ActionResult.newResult(EnumActionResult.SUCCESS, iStack);
+            PneumaticCraftRepressurized.proxy.openGui(new GuiMicromissile(stack.getDisplayName()));
+//            playerIn.openGui(PneumaticCraftRepressurized.instance, GuiHandler.EnumGuiId.MICROMISSILE.ordinal(),
+//                    worldIn, (int)playerIn.posX, (int)playerIn.posY, (int)playerIn.posZ);
+            return ActionResult.newResult(ActionResultType.SUCCESS, stack);
         }
 
-        EntityMicromissile missile = new EntityMicromissile(worldIn, playerIn, iStack);
+        EntityMicromissile missile = new EntityMicromissile(worldIn, playerIn, stack);
         Vec3d directionVec = playerIn.getLookVec().normalize();
         missile.posX += directionVec.x;
         missile.posY += directionVec.y + 0.1;
         missile.posZ += directionVec.z;
-        missile.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, getInitialVelocity(iStack), 0.0F);
+        missile.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, getInitialVelocity(stack), 0.0F);
 
-        playerIn.getCooldownTracker().setCooldown(this, ConfigHandler.microMissile.launchCooldown);
+        playerIn.getCooldownTracker().setCooldown(this, Config.Common.Micromissiles.launchCooldown);
 
         if (!worldIn.isRemote) {
             RayTraceResult res = PneumaticCraftUtils.getMouseOverServer(playerIn, 100);
-            if (res.typeOfHit == RayTraceResult.Type.ENTITY && missile.isValidTarget(res.entityHit)) {
-                missile.setTarget(res.entityHit);
+            if (res instanceof EntityRayTraceResult) {
+                EntityRayTraceResult ertr = (EntityRayTraceResult) res;
+                if (missile.isValidTarget(ertr.getEntity())) {
+                    missile.setTarget(ertr.getEntity());
+                }
             }
-            worldIn.spawnEntity(missile);
+            worldIn.addEntity(missile);
         }
 
-        if (!playerIn.capabilities.isCreativeMode) {
-            iStack.damageItem(1, playerIn);
+        if (!playerIn.isCreative()) {
+            stack.damageItem(1, playerIn, playerEntity -> { });
         }
-        return ActionResult.newResult(EnumActionResult.SUCCESS, iStack);
+        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
 
     private float getInitialVelocity(ItemStack stack) {
-        if (stack.hasTagCompound()) {
-            NBTTagCompound tag = stack.getTagCompound();
+        if (stack.hasTag()) {
+            CompoundNBT tag = stack.getTag();
             FireMode fireMode = FireMode.fromString(tag.getString(NBT_FIRE_MODE));
             if (fireMode == FireMode.SMART) {
                 return Math.max(0.2f, tag.getFloat(NBT_TOP_SPEED) / 2f);
@@ -97,47 +104,49 @@ public class ItemMicromissiles extends ItemPneumatic {
     }
 
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<String> curInfo, ITooltipFlag extraInfo) {
+    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
         super.addInformation(stack, worldIn, curInfo, extraInfo);
 
-        curInfo.add(I18n.format("gui.micromissile.remaining") + ": " + TextFormatting.AQUA + (stack.getMaxDamage() - stack.getItemDamage() + 1));
-        if (stack.hasTagCompound()) {
-            NBTTagCompound tag = stack.getTagCompound();
+        curInfo.add(xlate("gui.micromissile.remaining", stack.getMaxDamage() - stack.getDamage() + 1));
+        if (stack.hasTag()) {
+            CompoundNBT tag = stack.getTag();
             // padding for ClientEventHandler#renderTooltipEvent() to draw in
-            curInfo.add(" ");
-            curInfo.add(" ");
-            curInfo.add(" ");
+            curInfo.add(new StringTextComponent(" "));
+            curInfo.add(new StringTextComponent(" "));
+            curInfo.add(new StringTextComponent(" "));
             String filter = tag.getString(NBT_FILTER);
             if (!filter.isEmpty()) {
-                curInfo.add(I18n.format("gui.sentryTurret.targetFilter") + ": " + TextFormatting.AQUA + filter);
+                curInfo.add(xlate("gui.sentryTurret.targetFilter", filter));
             }
-            curInfo.add(I18n.format("gui.micromissile.firingMode") + ": "+ TextFormatting.AQUA + I18n.format("gui.micromissile.mode." + tag.getString(NBT_FIRE_MODE)));
-            if (ConfigHandler.microMissile.damageTerrain) {
-                curInfo.add(I18n.format("gui.tooltip.terrainWarning"));
+            curInfo.add(xlate("gui.micromissile.firingMode")
+                    .appendText(": " + TextFormatting.AQUA)
+                    .appendSibling(xlate("gui.micromissile.mode." + tag.getString(NBT_FIRE_MODE))));
+            if (Config.Common.Micromissiles.damageTerrain) {
+                curInfo.add(xlate("gui.tooltip.terrainWarning"));
             } else {
-                curInfo.add(I18n.format("gui.tooltip.terrainSafe"));
+                curInfo.add(xlate("gui.tooltip.terrainSafe"));
             }
         }
     }
 
     @Override
-    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (!stack.hasTagCompound() && entityIn instanceof EntityPlayer) {
-            MicromissileDefaults.Entry def = MicromissileDefaults.INSTANCE.getDefaults((EntityPlayer) entityIn);
+    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        if (!stack.hasTag() && entityIn instanceof PlayerEntity) {
+            MicromissileDefaults.Entry def = MicromissileDefaults.INSTANCE.getDefaults((PlayerEntity) entityIn);
             if (def != null) {
-                stack.setTagCompound(def.toNBT());
+                stack.setTag(def.toNBT());
             }
         }
-        super.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
+        super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
     }
 
-    public static ItemStack getHeldMicroMissile(EntityPlayer player) {
+    public static ItemStack getHeldMicroMissile(PlayerEntity player) {
         ItemStack stack = player.getHeldItemMainhand();
-        if (stack.getItem() == Itemss.MICROMISSILES) {
+        if (stack.getItem() == ModItems.MICROMISSILES) {
             return stack;
         } else {
             stack = player.getHeldItemOffhand();
-            if (stack.getItem() == Itemss.MICROMISSILES) {
+            if (stack.getItem() == ModItems.MICROMISSILES) {
                 return stack;
             }
         }

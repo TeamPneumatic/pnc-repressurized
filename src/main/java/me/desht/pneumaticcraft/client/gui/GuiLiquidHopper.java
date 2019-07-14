@@ -1,50 +1,53 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
-import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiLiquidHopper extends GuiPneumaticContainerBase<TileEntityLiquidHopper> {
+public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHopper,TileEntityLiquidHopper> {
     private GuiAnimatedStat statusStat;
     private final GuiButtonSpecial[] modeButtons = new GuiButtonSpecial[2];
 
-    public GuiLiquidHopper(InventoryPlayer player, TileEntityLiquidHopper te) {
-        super(new ContainerLiquidHopper(player, te), te, Textures.GUI_LIQUID_HOPPER);
+    public GuiLiquidHopper(ContainerLiquidHopper container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        addWidget(new WidgetTank(0, guiLeft + 116, guiTop + 15, te.getTank()));
-        statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(Blockss.LIQUID_HOPPER), 0xFFFFAA00, false);
+    public void init() {
+        super.init();
+        addButton(new WidgetTank(guiLeft + 116, guiTop + 15, te.getTank()));
+        statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(ModBlocks.LIQUID_HOPPER), 0xFFFFAA00, false);
 
         GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.addPadding(4, 14);
 
-        GuiButtonSpecial button = new GuiButtonSpecial(1, 5, 20, 20, 20, "");
+        GuiButtonSpecial button = new GuiButtonSpecial(5, 20, 20, 20, "").withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(I18n.format("gui.tab.liquidHopper.mode.empty"));
-        optionStat.addWidget(button);
+        optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new GuiButtonSpecial(2, 30, 20, 20, 20, "");
+        button = new GuiButtonSpecial(30, 20, 20, 20, "").withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(I18n.format("gui.tab.liquidHopper.mode.leaveLiquid"));
-        optionStat.addWidget(button);
+        optionStat.addSubWidget(button);
         modeButtons[1] = button;
     }
 
@@ -54,17 +57,22 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<TileEntityLiquidH
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
         statusStat.setText(getStatus());
-        modeButtons[0].enabled = te.doesLeaveMaterial();
-        modeButtons[1].enabled = !te.doesLeaveMaterial();
+        modeButtons[0].active = te.doesLeaveMaterial();
+        modeButtons[1].active = !te.doesLeaveMaterial();
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        fontRenderer.drawString("Upgr.", 53, 19, 4210752);
+        font.drawString("Upgr.", 53, 19, 4210752);
+    }
+
+    @Override
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_LIQUID_HOPPER;
     }
 
     private List<String> getStatus() {
@@ -81,7 +89,7 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<TileEntityLiquidH
 
     @Override
     protected void addExtraUpgradeText(List<String> text) {
-        if (ConfigHandler.machineProperties.liquidHopperDispenser) {
+        if (Config.Common.Machines.liquidHopperDispenser) {
             text.add("gui.tab.upgrades.tile.liquid_hopper.dispenser");
         }
     }

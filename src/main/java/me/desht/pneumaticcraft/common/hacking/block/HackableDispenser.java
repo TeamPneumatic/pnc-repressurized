@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.hacking.block;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -17,29 +17,29 @@ public class HackableDispenser implements IHackableBlock {
     }
 
     @Override
-    public boolean canHack(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+    public boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
         return true;
     }
 
     @Override
-    public void addInfo(World world, BlockPos pos, List<String> curInfo, EntityPlayer player) {
+    public void addInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.result.dispense");
     }
 
     @Override
-    public void addPostHackInfo(World world, BlockPos pos, List<String> curInfo, EntityPlayer player) {
+    public void addPostHackInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.finished.dispensed");
     }
 
     @Override
-    public int getHackTime(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+    public int getHackTime(IBlockReader world, BlockPos pos, PlayerEntity player) {
         return 40;
     }
 
     @Override
-    public void onHackFinished(World world, BlockPos pos, EntityPlayer player) {
-        IBlockState state = world.getBlockState(pos);
-        state.getBlock().updateTick(world, pos, state, player.getRNG());
+    public void onHackFinished(World world, BlockPos pos, PlayerEntity player) {
+        BlockState state = world.getBlockState(pos);
+        state.tick(world, pos, player.getRNG());
     }
 
     @Override

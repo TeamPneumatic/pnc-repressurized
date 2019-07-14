@@ -1,10 +1,11 @@
 package me.desht.pneumaticcraft.common.recipes.programs;
 
-import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,12 +63,12 @@ public class ProgramDrillLaser extends AssemblyProgram {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
 
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
 
     }
 
@@ -77,8 +78,7 @@ public class ProgramDrillLaser extends AssemblyProgram {
     }
 
     @Override
-    protected int getItemMeta() {
-        return ItemAssemblyProgram.DRILL_LASER_DAMAGE;
+    protected Item getItem() {
+        return ModItems.ASSEMBLY_PROGRAM_LASER_DRILL;
     }
-
 }

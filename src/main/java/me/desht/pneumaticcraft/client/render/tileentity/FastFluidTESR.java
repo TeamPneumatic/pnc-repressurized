@@ -4,21 +4,21 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.client.model.animation.FastTESR;
+import net.minecraftforge.client.model.animation.TileEntityRendererFast;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.IFluidTank;
 
 import java.util.BitSet;
 import java.util.List;
 
-public abstract class FastFluidTESR<T extends TileEntityBase> extends FastTESR<T> {
+public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntityRendererFast<T> {
     private static final float FLUID_ALPHA = 0.9f;
 
     @Override
-    public void renderTileEntityFast(T te, double x, double y, double z, float partialTicks, int destroyStage, float partial, BufferBuilder buffer) {
-        if (!te.getWorld().getChunkProvider().provideChunk(te.getPos().getX() >> 4, te.getPos().getZ() >> 4).isEmpty()) {
+    public void renderTileEntityFast(T te, double x, double y, double z, float partialTicks, int destroyStage, BufferBuilder buffer) {
+        if (!te.getWorld().getChunkProvider().getChunk(te.getPos().getX() >> 4, te.getPos().getZ() >> 4, true).isEmpty()) {
             for (TankRenderInfo tankRenderInfo : getTanksToRender(te)) {
                 doRender(te, x, y, z, buffer, tankRenderInfo);
             }
@@ -30,14 +30,14 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends FastTESR<T
         if (tank.getFluidAmount() == 0) return;
 
         Fluid f = tank.getFluid().getFluid();
-        TextureAtlasSprite still = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(f.getStill().toString());
+        TextureAtlasSprite still = Minecraft.getInstance().getTextureMap().getAtlasSprite(f.getStill().toString());
         float u1 = still.getMinU(), v1 = still.getMinV(), u2 = still.getMaxU(), v2 = still.getMaxV();
 
         buffer.setTranslation(x,y,z);
 
         AxisAlignedBB bounds = getRenderBounds(tank, tankRenderInfo.bounds);
 
-        if (tankRenderInfo.shouldRender(EnumFacing.DOWN)) {
+        if (tankRenderInfo.shouldRender(Direction.DOWN)) {
             int downCombined = getWorld().getCombinedLight(te.getPos().down(), 0);
             int downLMa = downCombined >> 16 & 65535;
             int downLMb = downCombined & 65535;
@@ -47,7 +47,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends FastTESR<T
             buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v2).lightmap(downLMa, downLMb).endVertex();
         }
 
-        if (tankRenderInfo.shouldRender(EnumFacing.UP)) {
+        if (tankRenderInfo.shouldRender(Direction.UP)) {
             int upCombined = getWorld().getCombinedLight(te.getPos().up(), 0);
             int upLMa = upCombined >> 16 & 65535;
             int upLMb = upCombined & 65535;
@@ -57,7 +57,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends FastTESR<T
             buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v1).lightmap(upLMa, upLMb).endVertex();
         }
 
-        if (tankRenderInfo.shouldRender(EnumFacing.NORTH)) {
+        if (tankRenderInfo.shouldRender(Direction.NORTH)) {
             int northCombined = getWorld().getCombinedLight(te.getPos().north(), 0);
             int northLMa = northCombined >> 16 & 65535;
             int northLMb = northCombined & 65535;
@@ -67,7 +67,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends FastTESR<T
             buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v1).lightmap(northLMa, northLMb).endVertex();
         }
 
-        if (tankRenderInfo.shouldRender(EnumFacing.SOUTH)) {
+        if (tankRenderInfo.shouldRender(Direction.SOUTH)) {
             int southCombined = getWorld().getCombinedLight(te.getPos().south(), 0);
             int southLMa = southCombined >> 16 & 65535;
             int southLMb = southCombined & 65535;
@@ -77,7 +77,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends FastTESR<T
             buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v1).lightmap(southLMa, southLMb).endVertex();
         }
 
-        if (tankRenderInfo.shouldRender(EnumFacing.WEST)) {
+        if (tankRenderInfo.shouldRender(Direction.WEST)) {
             int westCombined = getWorld().getCombinedLight(te.getPos().west(), 0);
             int westLMa = westCombined >> 16 & 65535;
             int westLMb = westCombined & 65535;
@@ -87,7 +87,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends FastTESR<T
             buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v1).lightmap(westLMa, westLMb).endVertex();
         }
 
-        if (tankRenderInfo.shouldRender(EnumFacing.EAST)) {
+        if (tankRenderInfo.shouldRender(Direction.EAST)) {
             int eastCombined = getWorld().getCombinedLight(te.getPos().east(), 0);
             int eastLMa = eastCombined >> 16 & 65535;
             int eastLMb = eastCombined & 65535;
@@ -127,24 +127,24 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends FastTESR<T
         final AxisAlignedBB bounds;
         final BitSet faces = new BitSet(6);
 
-        TankRenderInfo(IFluidTank tank, AxisAlignedBB bounds, EnumFacing... renderFaces) {
+        TankRenderInfo(IFluidTank tank, AxisAlignedBB bounds, Direction... renderFaces) {
             this.tank = tank;
             this.bounds = bounds;
             if (renderFaces.length == 0) {
                 faces.set(0, 6, true);
             } else {
-                for (EnumFacing face : renderFaces) {
+                for (Direction face : renderFaces) {
                     faces.set(face.getIndex(), true);
                 }
             }
         }
 
-        TankRenderInfo without(EnumFacing face) {
+        TankRenderInfo without(Direction face) {
             faces.clear(face.getIndex());
             return this;
         }
 
-        boolean shouldRender(EnumFacing face) {
+        boolean shouldRender(Direction face) {
             return faces.get(face.getIndex());
         }
     }

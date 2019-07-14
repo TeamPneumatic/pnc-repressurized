@@ -7,68 +7,92 @@ import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.network.NetworkHooks;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemLogisticsFrame extends ItemSemiBlockBase {
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.BULLET;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public abstract class ItemLogisticsFrame extends ItemSemiBlockBase {
 
     public ItemLogisticsFrame(String registryName) {
-        super(registryName);
-        setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
+        super(ItemPneumatic.DEFAULT_PROPS, registryName);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn) {
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getHeldItem(handIn);
         if (!world.isRemote) {
-            player.openGui(PneumaticCraftRepressurized.instance, getSemiBlock(world, null, stack).getGuiID().ordinal(), world, 0, 0, 0);
+            NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
+                @Override
+                public ITextComponent getDisplayName() {
+                    return stack.getDisplayName();
+                }
+
+                @Nullable
+                @Override
+                public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                    return new ContainerLogistics(getContainerType(), i, playerInventory, BlockPos.ZERO);
+                }
+            });
         }
-        return ActionResult.newResult(EnumActionResult.SUCCESS, stack);
+        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
 
+    protected abstract ContainerType<?> getContainerType();
+
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<String> curInfo, ITooltipFlag extraInfo) {
+    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
         super.addInformation(stack, worldIn, curInfo, extraInfo);
         addTooltip(stack, worldIn, curInfo, PneumaticCraftRepressurized.proxy.isSneakingInGui());
     }
 
-    public static void addTooltip(ItemStack stack, World world, List<String> curInfo, boolean sneaking) {
-        if (stack.getTagCompound() != null && stack.getItem() instanceof ItemSemiBlockBase) {
+    public static void addTooltip(ItemStack stack, World world, List<ITextComponent> curInfo, boolean sneaking) {
+        if (stack.getTag() != null && stack.getItem() instanceof ItemSemiBlockBase) {
             SemiBlockLogistics logistics = ContainerLogistics.getLogistics(world, stack);
             if (logistics == null) return;
             if (logistics.isInvisible()) {
-                curInfo.add("- " + PneumaticCraftUtils.xlate("gui.logistic_frame.invisible"));
+                curInfo.add(BULLET.appendSibling(xlate("gui.logistic_frame.invisible")));
             }
             String key = SemiBlockManager.getKeyForSemiBlock(SemiBlockManager.getSemiBlockForItem((ItemSemiBlockBase) stack.getItem()));
             if (sneaking) {
-                if (logistics.isFuzzyMeta()) curInfo.add("\u2022 " + PneumaticCraftUtils.xlate("gui.logistic_frame.fuzzyMeta"));
-                if (logistics.isFuzzyNBT()) curInfo.add("\u2022 " + PneumaticCraftUtils.xlate("gui.logistic_frame.fuzzyNBT"));
+                if (logistics.isFuzzyDamage()) curInfo.add(BULLET.appendSibling(xlate("gui.logistic_frame.fuzzyDamage")));
+                if (logistics.isFuzzyNBT()) curInfo.add(BULLET.appendSibling(xlate("gui.logistic_frame.fuzzyNBT")));
                 ItemStack[] stacks = new ItemStack[logistics.getFilters().getSlots()];
                 for (int i = 0; i < logistics.getFilters().getSlots(); i++) {
                     stacks[i] = logistics.getFilters().getStackInSlot(i);
                 }
-                curInfo.add(TextFormatting.WHITE + PneumaticCraftUtils.xlate("gui.logistic_frame." + (logistics.isWhitelist() ? "whitelist" : "blacklist")) + ":");
+                curInfo.add(xlate("gui.logistic_frame." + (logistics.isWhitelist() ? "whitelist" : "blacklist")).appendText(":").applyTextStyle(TextFormatting.WHITE));
                 int l = curInfo.size();
                 PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks);
-                if (curInfo.size() == l) curInfo.add(PneumaticCraftUtils.xlate("gui.misc.no_items"));
+                if (curInfo.size() == l) curInfo.add(xlate("gui.misc.no_items"));
                 l = curInfo.size();
                 for (int i = 0; i < 9; i++) {
                     FluidStack fluid = logistics.getTankFilter(i).getFluid();
                     if (fluid != null) {
-                        curInfo.add("\u2022 " + fluid.amount + "mB " + fluid.getLocalizedName());
+                        curInfo.add(BULLET.appendText(fluid.amount + "mB " + fluid.getLocalizedName()));
                     }
                 }
-                if (curInfo.size() == l) curInfo.add(PneumaticCraftUtils.xlate("gui.misc.no_fluids"));
+                if (curInfo.size() == l) curInfo.add(xlate("gui.misc.no_fluids"));
             } else {
-                curInfo.add(PneumaticCraftUtils.xlate(String.format("gui.%s.hasFilters", key)));
+                curInfo.add(xlate(String.format("gui.%s.hasFilters", key)));
             }
         }
     }

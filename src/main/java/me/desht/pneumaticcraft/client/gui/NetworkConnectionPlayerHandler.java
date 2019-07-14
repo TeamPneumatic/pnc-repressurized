@@ -1,21 +1,20 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
-import me.desht.pneumaticcraft.common.item.ItemNetworkComponents;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSecurityStationAddHacker;
 import me.desht.pneumaticcraft.common.network.PacketUseItem;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Slot;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -23,19 +22,19 @@ import java.util.List;
 
 public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
     private final List<GuiStatBalloon> balloons = new ArrayList<>();
-    public boolean hackedSuccessfully;
+    boolean hackedSuccessfully;
 
-    public NetworkConnectionPlayerHandler(GuiSecurityStationBase gui, TileEntitySecurityStation station, int baseX,
-                                          int baseY, int nodeSpacing, int color) {
+    NetworkConnectionPlayerHandler(GuiSecurityStationBase gui, TileEntitySecurityStation station, int baseX,
+                                   int baseY, int nodeSpacing, int color) {
         super(gui, station, baseX, baseY, nodeSpacing, color, TileEntityConstants.NETWORK_NORMAL_BRIDGE_SPEED);
         for (int i = 0; i < station.getPrimaryInventory().getSlots(); i++) {
-            if (station.getPrimaryInventory().getStackInSlot(i).getItemDamage() == ItemNetworkComponents.NETWORK_IO_PORT) {
+            if (station.getPrimaryInventory().getStackInSlot(i).getItem() == ModItems.NETWORK_IO_PORT) {
                 slotHacked[i] = true;
             }
         }
     }
 
-    public NetworkConnectionPlayerHandler(NetworkConnectionPlayerHandler copy, int baseX, int baseY) {
+    NetworkConnectionPlayerHandler(NetworkConnectionPlayerHandler copy, int baseX, int baseY) {
         super(copy, baseX, baseY);
     }
 
@@ -45,7 +44,7 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
         GlStateManager.enableBlend();
         // GlStateManager.disableTexture2D();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.color(1, 1, 1, 0.5F);
+        GlStateManager.color4f(1, 1, 1, 0.5F);
         for (GuiStatBalloon balloon : balloons) {
             balloon.render();
         }
@@ -90,9 +89,9 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
             if (mouseButton == 2 && !slotHacked[slot.slotNumber] && ((GuiSecurityStationHacking) gui).hasNukeViruses()) {
                 int linesBefore = lineList.size();
                 if (tryToHackSlot(slot.slotNumber)) {
-                    EntityPlayer player = FMLClientHandler.instance().getClient().player;
-                    NetworkHandler.sendToServer(new PacketUseItem(Itemss.NUKE_VIRUS, 1));
-                    PneumaticCraftUtils.consumeInventoryItem(player.inventory, Itemss.NUKE_VIRUS);
+                    PlayerEntity player = Minecraft.getInstance().player;
+                    NetworkHandler.sendToServer(new PacketUseItem(new ItemStack(ModItems.NUKE_VIRUS)));
+                    PneumaticCraftUtils.consumeInventoryItem(player.inventory, ModItems.NUKE_VIRUS);
                     for (int i = linesBefore; i < lineList.size(); i++) {
                         RenderProgressingLine line = lineList.get(i);
                         line.setProgress(1);
@@ -116,14 +115,15 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
             ((GuiSecurityStationHacking) gui).onSlotHack(slot);
         }
         ItemStack stack = station.getPrimaryInventory().getStackInSlot(slot);
-        if (stack.getItemDamage() == ItemNetworkComponents.NETWORK_REGISTRY || stack.getItemDamage() == ItemNetworkComponents.DIAGNOSTIC_SUBROUTINE) {
+        if (stack.getItem() == ModItems.NETWORK_REGISTRY || stack.getItem() == ModItems.DIAGNOSTIC_SUBROUTINE) {
             hackedSuccessfully = true;
-            EntityPlayer player = FMLClientHandler.instance().getClient().player;
-            NetworkHandler.sendToServer(new PacketSecurityStationAddHacker(station, player.getName()));
-            FMLClientHandler.instance().getClient().player.closeScreen();
-            player.sendStatusMessage(new TextComponentString(TextFormatting.GREEN + "Hacking successful! This Security Station now doesn't protect the area any longer!"), false);
-            if (gui instanceof GuiSecurityStationHacking)
+            PlayerEntity player = Minecraft.getInstance().player;
+            NetworkHandler.sendToServer(new PacketSecurityStationAddHacker(station, player.getUniqueID()));
+            player.closeScreen();
+            player.sendStatusMessage(new StringTextComponent(TextFormatting.GREEN + "Hacking successful! This Security Station has been disabled!"), false);
+            if (gui instanceof GuiSecurityStationHacking) {
                 ((GuiSecurityStationHacking) gui).removeUpdatesOnConnectionHandlers();
+            }
         }
     }
 

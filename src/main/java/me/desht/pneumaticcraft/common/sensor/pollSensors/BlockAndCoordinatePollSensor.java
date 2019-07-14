@@ -1,11 +1,12 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
-import me.desht.pneumaticcraft.api.universalSensor.IPollSensorSetting;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -21,15 +22,15 @@ public abstract class BlockAndCoordinatePollSensor implements IPollSensorSetting
         if (te instanceof TileEntityUniversalSensor) {
             TileEntityUniversalSensor teUs = (TileEntityUniversalSensor) te;
 
-            for (int i = 0; i < teUs.getUpgradesInventory().getSlots(); i++) {
-                ItemStack stack = teUs.getUpgradesInventory().getStackInSlot(i);
-                if (stack.getItem() == Itemss.GPS_TOOL && stack.hasTagCompound()) {
-                    NBTTagCompound gpsTag = stack.getTagCompound();
-                    int toolX = gpsTag.getInteger("x");
-                    int toolY = gpsTag.getInteger("y");
-                    int toolZ = gpsTag.getInteger("z");
-                    if (Math.abs(toolX - pos.getX()) <= sensorRange && Math.abs(toolY - pos.getY()) <= sensorRange && Math.abs(toolZ - pos.getZ()) <= sensorRange) {
-                        return getRedstoneValue(world, pos, sensorRange, textBoxText, new BlockPos(toolX, toolY, toolZ));
+            for (int i = 0; i < teUs.getUpgradeHandler().getSlots(); i++) {
+                ItemStack stack = teUs.getUpgradeHandler().getStackInSlot(i);
+                if (stack.getItem() == ModItems.GPS_TOOL && stack.hasTag()) {
+                    BlockPos gpsPos = ItemGPSTool.getGPSLocation(stack);
+                    if (gpsPos != null) {
+                        AxisAlignedBB aabb = new AxisAlignedBB(gpsPos).grow(sensorRange);
+                        if (aabb.contains(pos.getX(), pos.getY(), pos.getZ())) {
+                            return getRedstoneValue(world, pos, sensorRange, textBoxText, gpsPos);
+                        }
                     }
                 }
             }

@@ -3,7 +3,7 @@
     "defaults": {
         "textures": {},
         "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:plastic_mixer.obj"
+        "model": "pneumaticcraft:block/plastic_mixer.obj"
     },
 	"variants": {
 		"normal": [{}],

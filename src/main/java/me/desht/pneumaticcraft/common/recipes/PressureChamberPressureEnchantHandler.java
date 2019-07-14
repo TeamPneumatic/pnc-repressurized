@@ -6,9 +6,9 @@ import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.init.Enchantments;
-import net.minecraft.init.Items;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -17,8 +17,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PressureChamberPressureEnchantHandler implements IPressureChamberRecipe {
-
-    private static final NonNullList<ItemStack> EMPTYLIST = NonNullList.create();
 
     @Override
     public float getCraftingPressure() {
@@ -39,7 +37,7 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
         if (enchantedBooks.isEmpty()) return null;
 
         for (ItemStack inputStack : new ItemStackHandlerIterable(inputStacks)) {
-            if ((inputStack.isItemEnchantable() || inputStack.isItemEnchanted()) && inputStack.getItem() != Items.ENCHANTED_BOOK) {
+            if ((inputStack.isEnchantable() || inputStack.isEnchanted()) && inputStack.getItem() != Items.ENCHANTED_BOOK) {
                 for (ItemStack enchantedBook : enchantedBooks) {
                     Map<Enchantment, Integer> bookMap = EnchantmentHelper.getEnchantments(enchantedBook);
                     for (Map.Entry<Enchantment, Integer> entry : bookMap.entrySet()) {
@@ -70,7 +68,7 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
     public List<ItemIngredient> getInput() {
         ItemIngredient pick = new ItemIngredient(Items.DIAMOND_PICKAXE, 1, 0).setTooltip("gui.nei.tooltip.pressureEnchantItem");
 
-        ItemStack enchBook = new ItemStack(Items.ENCHANTED_BOOK, 1, 0);
+        ItemStack enchBook = new ItemStack(Items.ENCHANTED_BOOK);
         enchBook.addEnchantment(Enchantments.FORTUNE, 1);
         ItemIngredient book = new ItemIngredient(enchBook).setTooltip("gui.nei.tooltip.pressureEnchantBook");
 
@@ -79,7 +77,7 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
 
     @Override
     public NonNullList<ItemStack> getResult() {
-        ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE, 1, 0);
+        ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         pick.addEnchantment(Enchantments.FORTUNE, 1);
         IPressureChamberRecipe.setTooltipKey(pick, "gui.nei.tooltip.pressureEnchantItemOut");
         ItemStack book = new ItemStack(Items.BOOK);

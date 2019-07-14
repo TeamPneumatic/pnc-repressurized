@@ -9,44 +9,45 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.util.text.TranslationTextComponent;
+import org.lwjgl.glfw.GLFW;
 
-import java.io.IOException;
-
-public class GuiProgWidgetOptionBase<Widget extends IProgWidget> extends GuiPneumaticScreenBase {
-    protected final Widget widget;
+public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends GuiPneumaticScreenBase {
+    protected final P progWidget;
     protected final GuiProgrammer guiProgrammer;
 
-    public GuiProgWidgetOptionBase(Widget widget, GuiProgrammer guiProgrammer) {
-        this.widget = widget;
+    GuiProgWidgetOptionBase(P progWidget, GuiProgrammer guiProgrammer) {
+        super(new TranslationTextComponent(progWidget.getTranslationKey()));
+
+        this.progWidget = progWidget;
         this.guiProgrammer = guiProgrammer;
         xSize = 183;
         ySize = 202;
     }
 
     @Override
-    public void keyTyped(char key, int keyCode) throws IOException {
-        super.keyTyped(key, keyCode);
-        if (keyCode == Keyboard.KEY_ESCAPE) {
-            onGuiClosed();
+    public void init() {
+        super.init();
+        String title = TextFormatting.UNDERLINE + I18n.format("programmingPuzzle." + progWidget.getWidgetString() + ".name");
+        addLabel(title, width / 2 - font.getStringWidth(title) / 2, guiTop + 5);
+    }
+
+    @Override
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        renderBackground();
+        super.render(mouseX, mouseY, partialTicks);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            onClose();
             if (guiProgrammer != null) {
                 NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
-                mc.displayGuiScreen(guiProgrammer);
+                minecraft.displayGuiScreen(guiProgrammer);
             }
         }
-    }
-
-    @Override
-    public void initGui() {
-        super.initGui();
-        String title = TextFormatting.UNDERLINE + I18n.format("programmingPuzzle." + widget.getWidgetString() + ".name");
-        addLabel(title, width / 2 - fontRenderer.getStringWidth(title) / 2, guiTop + 5);
-    }
-
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        drawDefaultBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -55,7 +56,7 @@ public class GuiProgWidgetOptionBase<Widget extends IProgWidget> extends GuiPneu
     }
 
     @Override
-    public boolean doesGuiPauseGame() {
+    public boolean isPauseScreen() {
         return false;
     }
 }

@@ -49,7 +49,7 @@ public class DramaSplash {
         if (grabberThread == null && splashSite != null) {
             grabberThread = new Thread(new SplashGrabber());
             grabberThread.start();
-            PneumaticCraftRepressurized.logger.info("Started splash fetcher: thread " + grabberThread.getName());
+            PneumaticCraftRepressurized.LOGGER.info("Started splash fetcher: thread " + grabberThread.getName());
         }
     }
 
@@ -72,7 +72,7 @@ public class DramaSplash {
                 e.printStackTrace();
             }
             grabberThread = null;
-            PneumaticCraftRepressurized.logger.info("Finished fetching splash: " + dramaFifo.size() + " texts in queue");
+            PneumaticCraftRepressurized.LOGGER.info("Finished fetching splash: " + dramaFifo.size() + " texts in queue");
         }
     }
 }

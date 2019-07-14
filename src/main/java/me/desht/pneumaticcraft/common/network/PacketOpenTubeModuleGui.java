@@ -2,45 +2,49 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.gui.tubemodule.GuiTubeModule;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketOpenTubeModuleGui extends LocationIntPacket<PacketOpenTubeModuleGui> {
-    private int guiID;
+import java.util.function.Supplier;
+
+/**
+ * Received on: CLIENT
+ * Sent by server when it needs the client to open a (containerless) module GUI
+ */
+public class PacketOpenTubeModuleGui extends LocationIntPacket {
+    private String moduleType;
 
     public PacketOpenTubeModuleGui() {
+        // empty
     }
 
-    public PacketOpenTubeModuleGui(int guiID, BlockPos pos) {
+    public PacketOpenTubeModuleGui(String type, BlockPos pos) {
         super(pos);
-        this.guiID = guiID;
-
+        this.moduleType = type;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        super.fromBytes(buf);
-        guiID = buf.readInt();
+    PacketOpenTubeModuleGui(PacketBuffer buffer) {
+        super(buffer);
+        moduleType = PacketUtil.readUTF8String(buffer);
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         super.toBytes(buf);
-        buf.writeInt(guiID);
+        PacketUtil.writeUTF8String(buf, moduleType);
     }
 
-    @Override
-    public void handleClientSide(PacketOpenTubeModuleGui message, EntityPlayer player) {
-        if (BlockPressureTube.getLookedModule(player.world, message.pos, player) != null) {
-            Object o = PneumaticCraftRepressurized.guiHandler.getClientGuiElement(message.guiID, player, player.world, message.pos.getX(), message.pos.getY(), message.pos.getZ());
-            FMLCommonHandler.instance().showGuiScreen(o);
-        }
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+            if (BlockPressureTube.getFocusedModule(player.world, pos, player) != null) {
+                GuiTubeModule.openGuiForType(moduleType, pos);
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
-    @Override
-    public void handleServerSide(PacketOpenTubeModuleGui message, EntityPlayer player) {
-    }
-
 }

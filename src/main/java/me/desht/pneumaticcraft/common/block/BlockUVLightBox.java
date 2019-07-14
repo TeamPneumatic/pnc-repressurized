@@ -4,13 +4,13 @@ import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -28,7 +28,7 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
             1 - BBConstants.UV_LIGHT_BOX_WIDTH_MIN, BBConstants.UV_LIGHT_BOX_TOP_MAX, 1 - BBConstants.UV_LIGHT_BOX_LENGTH_MIN
     );
 
-    BlockUVLightBox() {
+    public BlockUVLightBox() {
         super(Material.IRON, "uv_light_box");
     }
 
@@ -38,7 +38,7 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+    public BlockState getActualState(BlockState state, IBlockAccess worldIn, BlockPos pos) {
         state = super.getActualState(state, worldIn, pos);
         TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
         if (te instanceof TileEntityUVLightBox) {
@@ -48,19 +48,19 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public AxisAlignedBB getBoundingBox(BlockState state, IBlockAccess source, BlockPos pos) {
         if (!source.getBlockState(pos).getPropertyKeys().contains(ROTATION)) {
             // getBoundingBox() can be called during placement (from World#mayPlace), before the
             // block is actually placed; handle this, or we'll crash with an IllegalArgumentException
             return BLOCK_BOUNDS_EW;
         }
-        EnumFacing facing = getRotation(source, pos);
-        return facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH ? BLOCK_BOUNDS_NS : BLOCK_BOUNDS_EW;
+        Direction facing = getRotation(source, pos);
+        return facing == Direction.NORTH || facing == Direction.SOUTH ? BLOCK_BOUNDS_NS : BLOCK_BOUNDS_EW;
     }
 
     @Nullable
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+    public AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return getBoundingBox(blockState, worldIn, pos);
     }
 
@@ -75,7 +75,7 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public int getLightValue(BlockState state, IBlockAccess world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         return te instanceof TileEntityUVLightBox ? ((TileEntityUVLightBox) te).getLightLevel() : 0;
     }
@@ -91,12 +91,12 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public boolean canProvidePower(IBlockState state) {
+    public boolean canProvidePower(BlockState state) {
         return true;
     }
 
     @Override
-    public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+    public int getWeakPower(BlockState blockState, IBlockAccess blockAccess, BlockPos pos, Direction side) {
         TileEntity te = blockAccess.getTileEntity(pos);
         if (te instanceof TileEntityUVLightBox) {
             return ((TileEntityUVLightBox) te).shouldEmitRedstone() ? 15 : 0;

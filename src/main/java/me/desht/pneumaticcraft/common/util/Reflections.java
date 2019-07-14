@@ -2,12 +2,12 @@ package me.desht.pneumaticcraft.common.util;
 
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.monster.EntityBlaze;
-import net.minecraft.entity.monster.EntityGhast;
-import net.minecraft.entity.monster.EntityGuardian;
-import net.minecraft.entity.monster.EntityShulker;
-import net.minecraft.tileentity.MobSpawnerBaseLogic;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraft.entity.monster.BlazeEntity;
+import net.minecraft.entity.monster.GhastEntity;
+import net.minecraft.entity.monster.GuardianEntity;
+import net.minecraft.entity.monster.ShulkerEntity;
+import net.minecraft.world.spawner.AbstractSpawner;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,19 +20,20 @@ import java.lang.reflect.Method;
 public class Reflections {
     private static Method msbl_isActivated;
 
-    public static Class blaze_aiFireballAttack;
-    public static Class ghast_aiFireballAttack;
-    public static Class shulker_aiAttack;
-    public static Class guardian_aiGuardianAttack;
+    public static Class<?> blaze_aiFireballAttack;
+    public static Class<?> ghast_aiFireballAttack;
+    public static Class<?> shulker_aiAttack;
+    public static Class<?> guardian_aiGuardianAttack;
 
     public static void init() {
-        msbl_isActivated = ReflectionHelper.findMethod(MobSpawnerBaseLogic.class, "isActivated", "func_98279_f");
+        msbl_isActivated = ObfuscationReflectionHelper.findMethod(AbstractSpawner.class, "isActivated");
 
         // access to non-public entity AI's for hacking purposes
-        blaze_aiFireballAttack = findEnclosedClass(EntityBlaze.class, "AIFireballAttack", "a");
-        ghast_aiFireballAttack = findEnclosedClass(EntityGhast.class, "AIFireballAttack", "c");
-        shulker_aiAttack = findEnclosedClass(EntityShulker.class, "AIAttack", "a");
-        guardian_aiGuardianAttack = findEnclosedClass(EntityGuardian.class, "AIGuardianAttack", "a");
+        // TODO 1.14 verify notch names
+        blaze_aiFireballAttack = findEnclosedClass(BlazeEntity.class, "FireballAttackGoal", "a");
+        ghast_aiFireballAttack = findEnclosedClass(GhastEntity.class, "FireballAttackGoal", "c");
+        shulker_aiAttack = findEnclosedClass(ShulkerEntity.class, "AttackGoal", "a");
+        guardian_aiGuardianAttack = findEnclosedClass(GuardianEntity.class, "AttackGoal", "a");
     }
 
     private static Class<?> findEnclosedClass(Class<?> cls, String... enclosedClassNames) {
@@ -47,7 +48,7 @@ public class Reflections {
         return null;
     }
 
-    public static boolean isActivated(MobSpawnerBaseLogic msbl) {
+    public static boolean isActivated(AbstractSpawner msbl) {
         try {
             return (boolean) msbl_isActivated.invoke(msbl);
         } catch (IllegalAccessException | InvocationTargetException e) {

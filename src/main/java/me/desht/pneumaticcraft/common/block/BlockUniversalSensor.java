@@ -4,11 +4,11 @@ import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BBConstants;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -26,7 +26,7 @@ public class BlockUniversalSensor extends BlockPneumaticCraftModeled {
             BBConstants.UNIVERSAL_SENSOR_MAX_POS, BBConstants.UNIVERSAL_SENSOR_MAX_POS_TOP, BBConstants.UNIVERSAL_SENSOR_MAX_POS
     );
 
-    BlockUniversalSensor() {
+    public BlockUniversalSensor() {
         super(Material.IRON, "universal_sensor");
         setBlockBounds(BLOCK_BOUNDS);
     }
@@ -38,12 +38,12 @@ public class BlockUniversalSensor extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
+    public int getMetaFromState(BlockState state) {
         return 0;
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+    public BlockState getActualState(BlockState state, IBlockAccess worldIn, BlockPos pos) {
         TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
         if (te instanceof TileEntityUniversalSensor) {
             for (int i = 0; i < 6; i++) {
@@ -56,7 +56,7 @@ public class BlockUniversalSensor extends BlockPneumaticCraftModeled {
 
     @Nullable
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+    public AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return COLLISION_BOUNDS;
     }
 
@@ -71,18 +71,18 @@ public class BlockUniversalSensor extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public int getStrongPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+    public int getStrongPower(BlockState blockState, IBlockAccess blockAccess, BlockPos pos, Direction side) {
         return 0;
     }
 
     @Override
-    public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+    public int getWeakPower(BlockState blockState, IBlockAccess blockAccess, BlockPos pos, Direction side) {
         TileEntity te = blockAccess.getTileEntity(pos);
         return te instanceof TileEntityUniversalSensor ? ((TileEntityUniversalSensor) te).redstoneStrength : 0;
     }
 
     @Override
-    public boolean canProvidePower(IBlockState state) {
+    public boolean canProvidePower(BlockState state) {
         return true;
     }
 }

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -32,7 +32,7 @@ public class AlwaysInvalidShapelessRecipeFactory implements IRecipeFactory{
         }
         
         @Override
-        public boolean matches(InventoryCrafting inv, World world){
+        public boolean matches(CraftingInventory inv, World world){
             return false;
         }
     }

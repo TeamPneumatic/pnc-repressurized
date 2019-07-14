@@ -3,26 +3,34 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.Sounds;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
-        implements IRedstoneControl, IMinWorkingPressure, ICamouflageableTE {
+        implements IRedstoneControl, IMinWorkingPressure, ICamouflageableTE, INamedContainerProvider {
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearby",
             "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearbyAndLooking",
@@ -44,22 +52,22 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     public boolean wasPowered;
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;
-    private IBlockState camoState;
+    private BlockState camoState;
     @GuiSynced
     public int redstoneMode;
 
     public TileEntityPneumaticDoorBase() {
-        super(PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
+        super(ModTileEntityTypes.PNEUMATIC_DOOR_BASE, PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
         addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.RANGE);
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
         oldProgress = progress;
         if (!getWorld().isRemote) {
             if (getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
-                if ((getWorld().getTotalWorldTime() & 0x3f) == 0) {
+                if ((getWorld().getGameTime() & 0x3f) == 0) {
                     TileEntity te = getWorld().getTileEntity(getPos().offset(getRotation(), 3));
                     if (te instanceof TileEntityPneumaticDoorBase) {
                         doubleDoor = (TileEntityPneumaticDoorBase) te;
@@ -107,15 +115,15 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
             case 1:
                 int range = TileEntityConstants.RANGE_PNEUMATIC_DOOR_BASE + this.getUpgrades(EnumUpgrade.RANGE);
                 AxisAlignedBB aabb = new AxisAlignedBB(getPos().getX() - range, getPos().getY() - range, getPos().getZ() - range, getPos().getX() + range + 1, getPos().getY() + range + 1, getPos().getZ() + range + 1);
-                List<EntityPlayer> players = getWorld().getEntitiesWithinAABB(EntityPlayer.class, aabb);
-                for (EntityPlayer player : players) {
+                List<PlayerEntity> players = getWorld().getEntitiesWithinAABB(PlayerEntity.class, aabb);
+                for (PlayerEntity player : players) {
                     if (PneumaticCraftUtils.getProtectingSecurityStations(getWorld(), getPos(), player, false, false) == 0) {
                         if (redstoneMode == 0) {
                             return true;
                         } else {
-                            ((BlockPneumaticDoor) Blockss.PNEUMATIC_DOOR).isTrackingPlayerEye = true;
+                            ((BlockPneumaticDoor) ModBlocks.PNEUMATIC_DOOR).isTrackingPlayerEye = true;
                             BlockPos lookedPosition = PneumaticCraftUtils.getEntityLookedBlock(player, range * 1.41F); //max range = range * sqrt(2).
-                            ((BlockPneumaticDoor) Blockss.PNEUMATIC_DOOR).isTrackingPlayerEye = false;
+                            ((BlockPneumaticDoor) ModBlocks.PNEUMATIC_DOOR).isTrackingPlayerEye = false;
                             if (lookedPosition != null) {
                                 if (lookedPosition.equals(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ()))) {
                                     return true;
@@ -162,8 +170,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public boolean isConnectedTo(EnumFacing side) {
-        return side != EnumFacing.UP;
+    public boolean canConnectTo(Direction side) {
+        return side != Direction.UP;
     }
 
     private TileEntityPneumaticDoor getDoor() {
@@ -180,38 +188,38 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
         progress = tag.getFloat("extension");
         opening = tag.getBoolean("opening");
-        redstoneMode = tag.getInteger("redstoneMode");
+        redstoneMode = tag.getInt("redstoneMode");
         rightGoing = tag.getBoolean("rightGoing");
         camoStack  = ICamouflageableTE.readCamoStackFromNBT(tag);
         camoState = ICamouflageableTE.getStateForStack(camoStack);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setFloat("extension", progress);
-        tag.setBoolean("opening", opening);
-        tag.setInteger("redstoneMode", redstoneMode);
-        tag.setBoolean("rightGoing", rightGoing);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putFloat("extension", progress);
+        tag.putBoolean("opening", opening);
+        tag.putInt("redstoneMode", redstoneMode);
+        tag.putBoolean("rightGoing", rightGoing);
         ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         return tag;
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
-        if (buttonID == 0) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
         }
     }
 
     @Override
-    public String getName() {
-        return Blockss.PNEUMATIC_DOOR_BASE.getTranslationKey();
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
     }
 
     @Override
@@ -225,12 +233,12 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public IBlockState getCamouflage() {
+    public BlockState getCamouflage() {
         return camoState;
     }
 
     @Override
-    public void setCamouflage(IBlockState state) {
+    public void setCamouflage(BlockState state) {
         camoState = state;
         camoStack = ICamouflageableTE.getStackForState(state);
         sendDescriptionPacket();
@@ -253,5 +261,16 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     @Override
     protected List<String> getRedstoneButtonLabels() {
         return REDSTONE_LABELS;
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerPneumaticDoorBase(i, playerInventory, getPos());
     }
 }

@@ -1,19 +1,18 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetItemAssign;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 import java.util.Set;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidget {
     private String variable = "";
@@ -45,8 +44,8 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.GREY;
+    public DyeColor getColor() {
+        return DyeColor.GRAY;
     }
 
     @Override
@@ -55,10 +54,10 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (variable.equals("")) {
-            curInfo.add("gui.progWidget.general.error.emptyVariable");
+            curInfo.add(xlate("gui.progWidget.general.error.emptyVariable"));
         }
     }
 
@@ -82,13 +81,13 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setString("variable", variable);
+        tag.putString("variable", variable);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         variable = tag.getString("variable");
     }
@@ -104,20 +103,14 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     }
 
     @Override
-    public void getTooltip(List<String> curTooltip) {
+    public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add("Setting variable: \"" + variable + "\"");
+        curTooltip.add(new StringTextComponent("Setting variable: \"" + variable + "\""));
     }
 
     @Override
     public String getExtraStringInfo() {
         return "\"" + variable + "\"";
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetItemAssign(this, guiProgrammer);
     }
 
     @Override

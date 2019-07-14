@@ -1,25 +1,17 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetCondition;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.DroneAIDig;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ProgWidgetBlockCondition extends ProgWidgetCondition {
-    private boolean checkingForAir;
-    private boolean checkingForLiquids;
+    public boolean checkingForAir;
+    public boolean checkingForLiquids;
 
     @Override
     public String getWidgetString() {
@@ -41,50 +33,11 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
                 if (checkingForLiquids && PneumaticCraftUtils.isBlockLiquid(drone.world().getBlockState(pos).getBlock()))
                     return true;
                 if (!checkingForAir && !checkingForLiquids || getConnectedParameters()[1] != null) {
-                    return DroneAIDig.isBlockValidForFilter(drone.world(), drone, pos, widget);
+                    return DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget);
                 } else {
                     return false;
                 }
             }
-        };
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetCondition(this, guiProgrammer) {
-            @Override
-            public void initGui() {
-                super.initGui();
-                addWidget(new GuiCheckBox(500, guiLeft + 5, guiTop + 60, 0xFF404040, I18n.format("gui.progWidget.conditionBlock.checkForAir")).setChecked(checkingForAir).setTooltip(I18n.format("gui.progWidget.conditionBlock.checkForAir.tooltip")));
-                addWidget(new GuiCheckBox(501, guiLeft + 5, guiTop + 72, 0xFF404040, I18n.format("gui.progWidget.conditionBlock.checkForLiquids")).setChecked(checkingForLiquids).setTooltip(I18n.format("gui.progWidget.conditionBlock.checkForLiquids.tooltip")));
-            }
-
-            @Override
-            protected boolean requiresNumber() {
-                return false;
-            }
-
-            @Override
-            protected boolean isSidedWidget() {
-                return false;
-            }
-
-            @Override
-            public void actionPerformed(IGuiWidget widget) {
-                switch (widget.getID()) {
-                    case 500:
-                        checkingForAir = !checkingForAir;
-                        break;
-                    case 501:
-                        checkingForLiquids = !checkingForLiquids;
-                        break;
-                    default:
-                        super.actionPerformed(widget);
-                        break;
-                }
-            }
-
         };
     }
 
@@ -94,14 +47,14 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setBoolean("checkingForAir", checkingForAir);
-        tag.setBoolean("checkingForLiquids", checkingForLiquids);
+        tag.putBoolean("checkingForAir", checkingForAir);
+        tag.putBoolean("checkingForLiquids", checkingForLiquids);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         checkingForAir = tag.getBoolean("checkingForAir");
         checkingForLiquids = tag.getBoolean("checkingForLiquids");

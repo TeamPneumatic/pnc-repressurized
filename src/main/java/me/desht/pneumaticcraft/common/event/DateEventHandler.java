@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.common.event;
 
-import net.minecraft.entity.item.EntityFireworkRocket;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemDye;
+import net.minecraft.entity.item.FireworkRocketEntity;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -49,35 +49,35 @@ public class DateEventHandler {
     }
 
     public static void spawnFirework(World world, double x, double y, double z) {
-        ItemStack rocket = new ItemStack(Items.FIREWORKS);
+        ItemStack rocket = new ItemStack(Items.FIREWORK_ROCKET);
 
         ItemStack itemstack1 = getFireworkCharge();
 
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
-        NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-        NBTTagList nbttaglist = new NBTTagList();
+        CompoundNBT nbttagcompound = new CompoundNBT();
+        CompoundNBT nbttagcompound1 = new CompoundNBT();
+        ListNBT nbttaglist = new ListNBT();
 
-        if (itemstack1 != null && itemstack1.getItem() == Items.FIREWORK_CHARGE && itemstack1.hasTagCompound() && itemstack1.getTagCompound().hasKey("Explosion")) {
-            nbttaglist.appendTag(itemstack1.getTagCompound().getCompoundTag("Explosion"));
+        if (itemstack1 != null && itemstack1.getItem() == Items.FIRE_CHARGE && itemstack1.hasTag() && itemstack1.getTag().contains("Explosion")) {
+            nbttaglist.add(nbttaglist.size(), itemstack1.getTag().getCompound("Explosion"));
         }
 
-        nbttagcompound1.setTag("Explosions", nbttaglist);
-        nbttagcompound1.setByte("Flight", (byte) 2);
-        nbttagcompound.setTag("Fireworks", nbttagcompound1);
+        nbttagcompound1.put("Explosions", nbttaglist);
+        nbttagcompound1.putByte("Flight", (byte) 2);
+        nbttagcompound.put("Fireworks", nbttagcompound1);
 
-        rocket.setTagCompound(nbttagcompound);
+        rocket.setTag(nbttagcompound);
 
-        EntityFireworkRocket entity = new EntityFireworkRocket(world, x, y, z, rocket);
-        world.spawnEntity(entity);
+        FireworkRocketEntity entity = new FireworkRocketEntity(world, x, y, z, rocket);
+        world.addEntity(entity);
     }
 
     private static ItemStack getFireworkCharge() {
-        ItemStack charge = new ItemStack(Items.FIREWORK_CHARGE);
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
-        NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+        ItemStack charge = new ItemStack(Items.FIRE_CHARGE);
+        CompoundNBT nbttagcompound = new CompoundNBT();
+        CompoundNBT nbttagcompound1 = new CompoundNBT();
         ArrayList<Integer> arraylist = new ArrayList<>();
 
-        arraylist.add(ItemDye.DYE_COLORS[rand.nextInt(16)]);
+        arraylist.add(DyeItem.DYE_COLORS[rand.nextInt(16)]);
 
         if (rand.nextBoolean()) nbttagcompound1.setBoolean("Flicker", true);
 

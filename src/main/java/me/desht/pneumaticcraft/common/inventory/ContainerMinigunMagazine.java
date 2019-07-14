@@ -1,46 +1,53 @@
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.ClickType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.ClickType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.SoundEvents;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ContainerMinigunMagazine extends ContainerPneumaticBase {
-
+public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityBase> {
     private final ItemMinigun.MagazineHandler gunInv;
 
-    public ContainerMinigunMagazine(EntityPlayer player) {
-        super(null);
+    public ContainerMinigunMagazine(int i, PlayerInventory playerInventory, @SuppressWarnings("unused") PacketBuffer buffer) {
+        this(i, playerInventory);
+    }
 
-        gunInv = ItemMinigun.getMagazine(player.getHeldItemMainhand());
+    public ContainerMinigunMagazine(int windowId, PlayerInventory playerInventory) {
+        super(ModContainerTypes.MINIGUN_MAGAZINE, windowId, playerInventory);
+
+        gunInv = ItemMinigun.getMagazine(playerInventory.player.getHeldItemMainhand());
 
         for (int i = 0; i < gunInv.getSlots(); i++) {
-            addSlotToContainer(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
+            addSlot(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
         }
 
-        addPlayerSlots(player.inventory, 84);
+        addPlayerSlots(playerInventory, 84);
     }
 
     @Override
-    public void onContainerClosed(EntityPlayer playerIn) {
+    public void onContainerClosed(PlayerEntity playerIn) {
         super.onContainerClosed(playerIn);
 
         gunInv.save();
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer player) {
+    public boolean canInteractWith(PlayerEntity player) {
         return true;
     }
 
     @Nonnull
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickType, EntityPlayer player) {
+    public ItemStack slotClick(int slotId, int dragType, ClickType clickType, PlayerEntity player) {
         if (clickType == ClickType.CLONE && dragType == 2) {
             // middle-click to lock a slot
             ItemStack gunStack = player.getHeldItemMainhand();

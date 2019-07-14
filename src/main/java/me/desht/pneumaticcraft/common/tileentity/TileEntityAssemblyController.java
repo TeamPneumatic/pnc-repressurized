@@ -1,46 +1,53 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
-import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class TileEntityAssemblyController extends TileEntityPneumaticBase implements IAssemblyMachine, IMinWorkingPressure {
-    private static final int PROGRAM_INVENTORY_INDEX = 0;
+public class TileEntityAssemblyController extends TileEntityPneumaticBase implements IAssemblyMachine, IMinWorkingPressure, INamedContainerProvider {
+    private static final int PROGRAM_SLOT = 0;
     private static final int INVENTORY_SIZE = 1;
 
-    private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
+    private final ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || itemStack.getItem() == Itemss.ASSEMBLY_PROGRAM;
+            return itemStack.isEmpty() || itemStack.getItem() instanceof ItemAssemblyProgram;
         }
     };
-    @DescSynced
-    public final boolean[] sidesConnected = new boolean[6];
+    private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> itemHandler);
+
     private AssemblyProgram curProgram;
     @GuiSynced
     private boolean isMachineMissing;
@@ -57,24 +64,29 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     public boolean hasProblem;
     private AssemblySystem assemblySystem = null;
 
-    @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return inventory;
-    }
-
     public TileEntityAssemblyController() {
-        super(PneumaticValues.DANGER_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.MAX_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.VOLUME_ASSEMBLY_CONTROLLER, 4);
+        super(ModTileEntityTypes.ASSEMBLY_CONTROLLER,  PneumaticValues.DANGER_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.MAX_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.VOLUME_ASSEMBLY_CONTROLLER, 4);
         addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
     @Override
-    public void update() {
-        ItemStack programStack = inventory.getStackInSlot(PROGRAM_INVENTORY_INDEX);
+    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+        return inventoryCap;
+    }
+
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return itemHandler;
+    }
+
+    @Override
+    public void tick() {
+        ItemStack programStack = itemHandler.getStackInSlot(PROGRAM_SLOT);
 
         // curProgram must be available on the client, or we can't show program-problems in the GUI
-        if (curProgram == null && !goingToHomePosition && programStack.getItem() == Itemss.ASSEMBLY_PROGRAM) {
-            curProgram = ItemAssemblyProgram.getProgramFromItem(programStack.getMetadata());
-        } else if (curProgram != null && (programStack.isEmpty() || curProgram.getClass() != ItemAssemblyProgram.getProgramFromItem(programStack.getMetadata()).getClass())) {
+        if (curProgram == null && !goingToHomePosition && programStack.getItem() instanceof ItemAssemblyProgram) {
+            curProgram = ((ItemAssemblyProgram) programStack.getItem()).getProgram();
+        } else if (curProgram != null && (programStack.isEmpty() || curProgram != ItemAssemblyProgram.getProgram(programStack))) {
             curProgram = null;
             if (!getWorld().isRemote) goingToHomePosition = true;
         }
@@ -112,7 +124,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
                     || curProgram == null
                     || curProgram.curProblem != AssemblyProgram.EnumTubeProblem.NO_PROBLEM;
         }
-        super.update();
+        super.tick();
     }
 
     /**
@@ -149,7 +161,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
         displayedText = text;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void addProblems(List<String> problemList) {
         if (curProgram == null) {
             problemList.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.tab.problems.assembly_controller.no_program")));
@@ -173,7 +185,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     }
 
     private void findMachines(List<IAssemblyMachine> machineList, BlockPos pos, int max) {
-        for (EnumFacing dir : EnumFacing.HORIZONTALS) {
+        for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
             TileEntity te = getWorld().getTileEntity(pos.offset(dir));
             if (te instanceof IAssemblyMachine && !machineList.contains(te) && machineList.size() < max) {
                 machineList.add((IAssemblyMachine) te);
@@ -190,54 +202,41 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     }
 
     private void updateConnections() {
-        List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
-        Arrays.fill(sidesConnected, false);
-        for (Pair<EnumFacing, IAirHandler> entry : connections) {
-            sidesConnected[entry.getKey().ordinal()] = true;
-        }
+        BlockState newState = AirHandler.getBlockConnectionState(getBlockState(), getAirHandler(null));
+        newState = newState.with(BlockPneumaticCraft.UP, false);  // never connects from above
+        world.setBlockState(pos, newState);
     }
 
     @Override
-    public boolean isConnectedTo(EnumFacing side) {
-        return side != EnumFacing.UP;
+    public boolean canConnectTo(Direction side) {
+        return side != Direction.UP;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
     }
 
     @Override
-    public String getName() {
-        return Blockss.ASSEMBLY_CONTROLLER.getTranslationKey();
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
         goingToHomePosition = tag.getBoolean("goingToHomePosition");
         displayedText = tag.getString("displayedText");
-        for (int i = 0; i < 6; i++) {
-            sidesConnected[i] = tag.getBoolean("sideConnected" + i);
-        }
-        inventory.deserializeNBT(tag.getCompoundTag("Items"));
-        if (!inventory.getStackInSlot(PROGRAM_INVENTORY_INDEX).isEmpty()) {
-            curProgram = ItemAssemblyProgram.getProgramFromItem(inventory.getStackInSlot(PROGRAM_INVENTORY_INDEX).getMetadata());
+        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        if (!itemHandler.getStackInSlot(PROGRAM_SLOT).isEmpty()) {
+            curProgram = ItemAssemblyProgram.getProgram(itemHandler.getStackInSlot(PROGRAM_SLOT));
             if (curProgram != null) curProgram.readFromNBT(tag);
         }
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setBoolean("goingToHomePosition", goingToHomePosition);
-        tag.setString("displayedText", displayedText);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putBoolean("goingToHomePosition", goingToHomePosition);
+        tag.putString("displayedText", displayedText);
         if (curProgram != null) curProgram.writeToNBT(tag);
-        for (int i = 0; i < 6; i++) {
-            tag.setBoolean("sideConnected" + i, sidesConnected[i]);
-        }
-        tag.setTag("Items", inventory.serializeNBT());
+        tag.put("Items", itemHandler.serializeNBT());
         return tag;
     }
 
@@ -263,6 +262,17 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     @Override
     public void setControllerPos(BlockPos controllerPos) {
         // nop - we *are the controller!
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerAssemblyController(i, playerInventory, getPos());
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
     }
 
     public class AssemblySystem {

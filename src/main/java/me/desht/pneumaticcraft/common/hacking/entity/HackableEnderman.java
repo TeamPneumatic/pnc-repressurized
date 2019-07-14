@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 
 import java.util.List;
 
@@ -15,27 +16,27 @@ public class HackableEnderman implements IHackableEntity {
     }
 
     @Override
-    public boolean canHack(Entity entity, EntityPlayer player) {
+    public boolean canHack(Entity entity, PlayerEntity player) {
         return onEndermanTeleport(entity);
     }
 
     @Override
-    public void addInfo(Entity entity, List<String> curInfo, EntityPlayer player) {
+    public void addInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.result.stopTeleport");
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<String> curInfo, EntityPlayer player) {
+    public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.finished.stopTeleporting");
     }
 
     @Override
-    public int getHackTime(Entity entity, EntityPlayer player) {
+    public int getHackTime(Entity entity, PlayerEntity player) {
         return 60;
     }
 
     @Override
-    public void onHackFinished(Entity entity, EntityPlayer player) {
+    public void onHackFinished(Entity entity, PlayerEntity player) {
         // enderman teleport suppression is handled in EventHandlerPneumaticCraft#onEnderTeleport
     }
 
@@ -45,7 +46,8 @@ public class HackableEnderman implements IHackableEntity {
     }
 
     /**
-     * @param entity
+     * See {@link me.desht.pneumaticcraft.common.event.EventHandlerPneumaticCraft#onEnderTeleport(EnderTeleportEvent)}
+     * @param entity the enderman
      * @return false if enderman should be disallowed from teleporting
      */
     public static boolean onEndermanTeleport(Entity entity) {

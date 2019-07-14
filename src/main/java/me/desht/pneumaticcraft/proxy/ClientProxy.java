@@ -1,56 +1,37 @@
 package me.desht.pneumaticcraft.proxy;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.AreaShowManager;
 import me.desht.pneumaticcraft.client.ClientEventHandler;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.model.TintedOBJLoader;
-import me.desht.pneumaticcraft.client.model.item.ModelProgrammingPuzzle.LoaderProgrammingPuzzle;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassModelLoader;
-import me.desht.pneumaticcraft.client.particle.CustomParticleFactory;
-import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
-import me.desht.pneumaticcraft.client.render.entity.*;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
-import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
-import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
-import me.desht.pneumaticcraft.common.entity.EntityRing;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
-import me.desht.pneumaticcraft.common.fluid.Fluids;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.DramaSplash;
-import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.renderer.FirstPersonRenderer;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.BufferedReader;
@@ -68,10 +49,7 @@ public class ClientProxy implements IProxy {
     public void preInit() {
         TintedOBJLoader.INSTANCE.addDomain(Names.MOD_ID);
         ModelLoaderRegistry.registerLoader(TintedOBJLoader.INSTANCE);
-        ModelLoaderRegistry.registerLoader(LoaderProgrammingPuzzle.INSTANCE);
         ModelLoaderRegistry.registerLoader(PressureGlassModelLoader.INSTANCE);
-
-        initTESRs();
 
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
         MinecraftForge.EVENT_BUS.register(HUDHandler.instance());
@@ -87,83 +65,37 @@ public class ClientProxy implements IProxy {
         EntityTrackHandler.registerDefaultEntries();
 
         getAllKeybindsFromOptionsFile();
-
-        RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, RenderEntityVortex.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityDrone.class, RenderDrone.REGULAR_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityLogisticsDrone.class, RenderDrone.LOGISTICS_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityHarvestingDrone.class, RenderDrone.HARVESTING_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, RenderDrone.REGULAR_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, RenderEntityRing.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityMicromissile.class, RenderMicromissile.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityTumblingBlock.class, RenderTumblingBlock.FACTORY);
-    }
-
-    private void initTESRs() {
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new RenderPressureTubeModule());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAphorismTile.class, new RenderAphorismTile());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAirCannon.class, new RenderAirCannon());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPneumaticDoor.class, new RenderPneumaticDoor());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPneumaticDoorBase.class, new RenderPneumaticDoorBase());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyController.class, new RenderAssemblyController());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyIOUnit.class, new RenderAssemblyIOUnit());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyPlatform.class, new RenderAssemblyPlatform());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyLaser.class, new RenderAssemblyLaser());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyDrill.class, new RenderAssemblyDrill());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityChargingStation.class, new RenderChargingStation());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorBase.class, new RenderElevatorBase());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorCaller.class, new RenderElevatorCaller());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityUniversalSensor.class, new RenderUniversalSensor());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVacuumPump.class, new RenderVacuumPump());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefinery.class, new RenderRefinery());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiquidHopper.class, new RenderLiquidHopper());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityKeroseneLamp.class, new RenderKeroseneLamp());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPlasticMixer.class, new RenderPlasticMixer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityThermopneumaticProcessingPlant.class, new RenderThermopneumaticProcessingPlant());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySentryTurret.class, new RenderSentryTurret());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySecurityStation.class, new RenderSecurityStation());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureChamberValve.class, new RenderPressureChamber());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureChamberInterface.class, new RenderPressureChamberInterface());
     }
 
     @Override
     public void init() {
-        for (Fluid fluid : Fluids.FLUIDS) {
-            ModelLoader.setBucketModelDefinition(Fluids.getBucket(fluid));
-        }
+        // todo 1.14 fluids
+//        for (Fluid fluid : Fluids.FLUIDS) {
+//            ModelLoader.setBucketModelDefinition(Fluids.getBucket(fluid));
+//        }
 
         ThirdPartyManager.instance().clientInit();
-
-        Itemss.MINIGUN.setTileEntityItemStackRenderer(new RenderItemMinigun());
     }
 
     @Override
     public void postInit() {
         EntityTrackHandler.init();
-        GuiHelmetMainScreen.init();
+        GuiHelmetMainScreen.initHelmetMainScreen();
         DramaSplash.getInstance();
     }
 
     @Override
     public boolean isSneakingInGui() {
-        return GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindSneak);
+        return Screen.hasShiftDown();
     }
 
     @Override
     public void initConfig() {
-        for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
             for (IUpgradeRenderHandler renderHandler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
                 renderHandler.initConfig();
             }
         }
-    }
-
-    @Override
-    public void playCustomParticle(EnumCustomParticleType particleType, World w, double x, double y, double z, double dx, double dy, double dz) {
-        Minecraft mc = Minecraft.getMinecraft();
-        int part = mc.gameSettings.particleSetting;
-        if (part == 2 && mc.world.rand.nextInt(10) > 0) return;
-        if (part == 1 && mc.world.rand.nextInt(3) > 0) return;
-        Minecraft.getMinecraft().effectRenderer.addEffect(CustomParticleFactory.createParticle(particleType, w, x, y, z, dx, dy, dz));
     }
 
     @Override
@@ -173,19 +105,24 @@ public class ClientProxy implements IProxy {
 
     @Override
     public void suppressItemEquipAnimation() {
-        ItemRenderer renderer = Minecraft.getMinecraft().entityRenderer.itemRenderer;
+        FirstPersonRenderer renderer = Minecraft.getInstance().getFirstPersonRenderer();
         renderer.equippedProgressMainHand = 1;
         renderer.prevEquippedProgressMainHand = 1;
     }
 
     @Override
-    public World getClientWorld() {
-        return FMLClientHandler.instance().getClient().world;
+    public World getWorldFor(NetworkEvent.Context ctx) {
+        return Minecraft.getInstance().world;
     }
 
     @Override
-    public EntityPlayer getClientPlayer() {
-        return FMLClientHandler.instance().getClient().player;
+    public World getClientWorld() {
+        return Minecraft.getInstance().world;
+    }
+
+    @Override
+    public PlayerEntity getClientPlayer() {
+        return Minecraft.getInstance().player;
     }
 
     @Override
@@ -198,17 +135,8 @@ public class ClientProxy implements IProxy {
         return clientHackTickHandler;
     }
 
-    @Override
-    public void addScheduledTask(Runnable runnable, boolean serverSide) {
-        if (serverSide) {
-            FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(runnable);
-        } else {
-            Minecraft.getMinecraft().addScheduledTask(runnable);
-        }
-    }
-
     private void getAllKeybindsFromOptionsFile() {
-        File optionsFile = new File(FMLClientHandler.instance().getClient().gameDir, "options.txt");
+        File optionsFile = new File(Minecraft.getInstance().gameDir, "options.txt");
         if (optionsFile.exists()) {
             try (BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile))) {
                 String s = "";
@@ -228,11 +156,27 @@ public class ClientProxy implements IProxy {
 
     @Override
     public int particleLevel() {
-        return Minecraft.getMinecraft().gameSettings.particleSetting;
+        return Minecraft.getInstance().gameSettings.particles.func_216832_b(); // id : 0..2
     }
 
     @Override
     public Pair<Integer, Integer> getScaledScreenSize() {
         return ClientEventHandler.getScaledScreenSize();
+    }
+
+    @Override
+    public Iterable<? extends Entity> getAllEntities(World world) {
+        return ((ClientWorld) world).getAllEntities();
+    }
+
+    @Override
+    public boolean isScreenHiRes() {
+        MainWindow mw = Minecraft.getInstance().mainWindow;
+        return mw.getScaledWidth() > 700 && mw.getScaledHeight() > 512;
+    }
+
+    @Override
+    public void openGui(Screen gui) {
+        Minecraft.getInstance().displayGuiScreen(gui);
     }
 }

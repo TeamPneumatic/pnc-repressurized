@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.client.model.module.ModelGauge;
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
@@ -19,7 +18,7 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
         super.update();
 
         if (!pressureTube.world().isRemote) {
-            if (pressureTube.world().getTotalWorldTime() % 20 == 0)
+            if (pressureTube.world().getGameTime() % 20 == 0)
                 NetworkHandler.sendToAllAround(new PacketUpdatePressureBlock((TileEntityPneumaticBase) getTube()), getTube().world());
             setRedstone(getRedstone(pressureTube.getAirHandler(null).getPressure()));
         }
@@ -45,8 +44,8 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     }
 
     @Override
-    protected EnumGuiId getGuiId() {
-        return EnumGuiId.PRESSURE_MODULE;
+    public boolean hasGui() {
+        return true;
     }
 
     @Override

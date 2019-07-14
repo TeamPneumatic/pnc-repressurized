@@ -1,49 +1,51 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.entity.player.EntityPlayer;
+import me.desht.pneumaticcraft.common.item.ItemRemote;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketUpdateRemoteLayout extends AbstractPacket<PacketUpdateRemoteLayout> {
+import java.util.function.Supplier;
 
-    private NBTTagCompound layout;
+/**
+ * Received on: SERVER
+ * Sent by client to update the layout of a Remote item
+ */
+public class PacketUpdateRemoteLayout {
+
+    private CompoundNBT layout;
 
     public PacketUpdateRemoteLayout() {
     }
 
-    public PacketUpdateRemoteLayout(NBTTagCompound layout) {
+    public PacketUpdateRemoteLayout(CompoundNBT layout) {
         this.layout = layout;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        layout = ByteBufUtils.readTag(buf);
+    public PacketUpdateRemoteLayout(PacketBuffer buffer) {
+        this.layout = buffer.readCompoundTag();
     }
 
-    @Override
     public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeTag(buf, layout);
+        new PacketBuffer(buf).writeCompoundTag(layout);
     }
 
-    @Override
-    public void handleClientSide(PacketUpdateRemoteLayout message, EntityPlayer player) {
-
-    }
-
-    @Override
-    public void handleServerSide(PacketUpdateRemoteLayout message, EntityPlayer player) {
-        ItemStack remote = player.getHeldItemMainhand();
-        if (remote.getItem() == Itemss.REMOTE) {
-            NBTTagCompound tag = remote.getTagCompound();
-            if (tag == null) {
-                tag = new NBTTagCompound();
-                remote.setTagCompound(tag);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ItemStack remote = ctx.get().getSender().getHeldItemMainhand();
+            if (remote.getItem() instanceof ItemRemote) {
+                CompoundNBT tag = remote.getTag();
+                if (tag == null) {
+                    tag = new CompoundNBT();
+                    remote.setTag(tag);
+                }
+                tag.put("actionWidgets", layout.getList("actionWidgets", Constants.NBT.TAG_COMPOUND));
             }
-            tag.setTag("actionWidgets", message.layout.getTagList("actionWidgets", 10));
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
 
 }

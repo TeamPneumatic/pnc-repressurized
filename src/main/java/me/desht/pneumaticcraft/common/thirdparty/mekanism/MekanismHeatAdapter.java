@@ -1,12 +1,10 @@
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import mekanism.api.IHeatTransfer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 public class MekanismHeatAdapter implements IHeatTransfer {
 
@@ -14,7 +12,7 @@ public class MekanismHeatAdapter implements IHeatTransfer {
     private IHeatExchangerLogic logic;
     private double heat;
 
-    public IHeatTransfer setup(TileEntityBase te, EnumFacing side) {
+    public IHeatTransfer setup(TileEntityBase te, Direction side) {
         this.te = te;
         this.logic = ((IHeatExchanger) te).getHeatExchangerLogic(side);
         return logic == null ? null : this;
@@ -31,7 +29,7 @@ public class MekanismHeatAdapter implements IHeatTransfer {
     }
 
     @Override
-    public double getInsulationCoefficient(EnumFacing enumFacing) {
+    public double getInsulationCoefficient(Direction enumFacing) {
         return 1000;
     }
 
@@ -53,12 +51,12 @@ public class MekanismHeatAdapter implements IHeatTransfer {
     }
 
     @Override
-    public boolean canConnectHeat(EnumFacing enumFacing) {
+    public boolean canConnectHeat(Direction enumFacing) {
         return ((IHeatExchanger) te).getHeatExchangerLogic(enumFacing) != null;
     }
 
     @Override
-    public IHeatTransfer getAdjacent(EnumFacing enumFacing) {
+    public IHeatTransfer getAdjacent(Direction enumFacing) {
         TileEntity neighbour = te.getWorld().getTileEntity(te.getPos().offset(enumFacing));
         if (neighbour != null && neighbour.hasCapability(Mekanism.CAPABILITY_HEAT_TRANSFER, enumFacing.getOpposite())) {
             return neighbour.getCapability(Mekanism.CAPABILITY_HEAT_TRANSFER, enumFacing.getOpposite());

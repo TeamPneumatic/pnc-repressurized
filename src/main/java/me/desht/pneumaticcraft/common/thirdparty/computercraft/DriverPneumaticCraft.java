@@ -10,7 +10,7 @@ import li.cil.oc.api.network.Visibility;
 import li.cil.oc.api.prefab.AbstractManagedEnvironment;
 import li.cil.oc.api.prefab.DriverSidedTileEntity;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class DriverPneumaticCraft extends DriverSidedTileEntity {
 
     @Override
-    public ManagedEnvironment createEnvironment(World world, BlockPos blockPos, EnumFacing enumFacing) {
+    public ManagedEnvironment createEnvironment(World world, BlockPos blockPos, Direction enumFacing) {
         return new InternalManagedEnvironment((TileEntityBase) world.getTileEntity(blockPos));
     }
 

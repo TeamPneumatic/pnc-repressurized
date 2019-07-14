@@ -2,35 +2,36 @@ package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.AirConUpgradeHandler;
-import me.desht.pneumaticcraft.common.network.AbstractPacket;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketPlayerTemperatureDelta extends AbstractPacket<PacketPlayerTemperatureDelta> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: CLIENT
+ * Sent by server when air conditioning level changes so client can update the HUD gauge
+ */
+public class PacketPlayerTemperatureDelta {
     private int deltaTemp;
 
     public PacketPlayerTemperatureDelta() {
+        // empty
     }
 
     PacketPlayerTemperatureDelta(int deltaTemp) {
         this.deltaTemp = deltaTemp;
     }
 
-    @Override
-    public void handleClientSide(PacketPlayerTemperatureDelta message, EntityPlayer player) {
-        AirConUpgradeHandler.deltaTemp = message.deltaTemp;
+    PacketPlayerTemperatureDelta(PacketBuffer buffer) {
+        deltaTemp = buffer.readByte();
     }
 
-    @Override
-    public void handleServerSide(PacketPlayerTemperatureDelta message, EntityPlayer player) {
-    }
-
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        deltaTemp = buf.readByte();
-    }
-
-    @Override
     public void toBytes(ByteBuf buf) {
         buf.writeByte(deltaTemp);
+    }
+
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> AirConUpgradeHandler.deltaTemp = deltaTemp);
+        ctx.get().setPacketHandled(true);
     }
 }

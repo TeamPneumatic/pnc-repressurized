@@ -4,22 +4,29 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -27,7 +34,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, ISerializableTanks {
+public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, ISerializableTanks, INamedContainerProvider {
     public static final int INVENTORY_SIZE = 2;
 
     private static final int INPUT_SLOT = 0;
@@ -35,12 +42,15 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
 
     @GuiSynced
     private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
-    private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
+    private final ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack) != null;
         }
     };
+    private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> itemHandler);
+    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
+
     @GuiSynced
     public int redstoneMode;
     private double internalFuelBuffer;
@@ -53,17 +63,12 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     public TileEntityLiquidCompressor(float dangerPressure, float criticalPressure, int volume) {
-        super(dangerPressure, criticalPressure, volume, 4);
+        super(ModTileEntityTypes.LIQUID_COMPRESSOR, dangerPressure, criticalPressure, volume, 4);
         addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
     public FluidTank getTank() {
         return tank;
-    }
-
-    @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return inventory;
     }
 
     private int getFuelValue(FluidStack fluid) {
@@ -76,8 +81,8 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
         if (!getWorld().isRemote) {
             processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
@@ -102,7 +107,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
             }
         } else {
             if (isProducing && world.rand.nextInt(5) == 0) {
-                ClientUtils.emitParticles(getWorld(), getPos(), EnumParticleTypes.SMOKE_NORMAL);
+                ClientUtils.emitParticles(getWorld(), getPos(), ParticleTypes.SMOKE);
             }
         }
     }
@@ -119,46 +124,42 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     @Override
-    public boolean isConnectedTo(EnumFacing dir) {
-        EnumFacing orientation = getRotation();
-        return orientation == dir || orientation == dir.getOpposite() || dir == EnumFacing.UP;
+    public boolean canConnectTo(Direction dir) {
+        Direction orientation = getRotation();
+        return orientation == dir || orientation == dir.getOpposite() || dir == Direction.UP;
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setTag("Items", inventory.serializeNBT());
-        tag.setByte("redstoneMode", (byte) redstoneMode);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
 
-        NBTTagCompound tankTag = new NBTTagCompound();
-        tank.writeToNBT(tankTag);
-        tag.setTag("tank", tankTag);
+        tag.put("Items", itemHandler.serializeNBT());
+        tag.putByte("redstoneMode", (byte) redstoneMode);
+        tag.putDouble("internalFuelBuffer", internalFuelBuffer);
 
-        tag.setDouble("internalFuelBuffer", internalFuelBuffer);
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        inventory.deserializeNBT(tag.getCompoundTag("Items"));
-        redstoneMode = tag.getByte("redstoneMode");
-        tank.readFromNBT(tag.getCompoundTag("tank"));
+    public void read(CompoundNBT tag) {
+        super.read(tag);
 
+        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        redstoneMode = tag.getByte("redstoneMode");
         internalFuelBuffer = tag.getDouble("internalFuelBuffer");
     }
 
     @Override
-    public String getName() {
-        return Blockss.LIQUID_COMPRESSOR.getTranslationKey();
-    }
-
-    @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
-        if (buttonID == 0) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
         }
+    }
+
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return itemHandler;
     }
 
     @Override
@@ -166,25 +167,36 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
         return redstoneMode;
     }
 
-
+    @Nonnull
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction facing) {
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            return fluidCap.cast();
+        } else {
+            return super.getCapability(cap, facing);
+        }
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
-        } else {
-            return super.getCapability(capability, facing);
-        }
+    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+        return inventoryCap;
     }
 
     @Nonnull
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
         return ImmutableMap.of("Tank", tank);
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerLiquidCompressor(i, playerInventory, getPos());
     }
 }

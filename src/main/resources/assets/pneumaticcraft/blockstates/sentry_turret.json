@@ -3,12 +3,12 @@
   "defaults": {
     "textures": {},
     "custom": { "flip-v" : true},
-    "model": "pneumaticcraft:sentry_turret.obj"
+    "model": "pneumaticcraft:block/sentry_turret.obj"
   },
   "variants": {
     "normal": [{}],
     "inventory": [{
-      "model": "pneumaticcraft:sentry_turret_item"
+      "model": "pneumaticcraft:block/sentry_turret_item"
     }]
   }
 }

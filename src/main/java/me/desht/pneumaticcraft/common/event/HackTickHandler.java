@@ -1,15 +1,16 @@
 package me.desht.pneumaticcraft.common.event;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
-import me.desht.pneumaticcraft.api.hacking.CapabilityHacking;
-import me.desht.pneumaticcraft.api.hacking.IHacking;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
-import me.desht.pneumaticcraft.common.util.WorldAndCoord;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.HashMap;
@@ -17,22 +18,23 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class HackTickHandler {
-    private final Map<WorldAndCoord, IHackableBlock> hackedBlocks = new HashMap<>();
+    private final Map<GlobalPos, IHackableBlock> hackedBlocks = new HashMap<>();
 
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            Iterator<Map.Entry<WorldAndCoord, IHackableBlock>> blockIterator = hackedBlocks.entrySet().iterator();
+            Iterator<Map.Entry<GlobalPos, IHackableBlock>> blockIterator = hackedBlocks.entrySet().iterator();
             while (blockIterator.hasNext()) {
-                Map.Entry<WorldAndCoord, IHackableBlock> entry = blockIterator.next();
+                Map.Entry<GlobalPos, IHackableBlock> entry = blockIterator.next();
                 IHackableBlock hackableBlock = entry.getValue();
-                WorldAndCoord hackedBlock = entry.getKey();
+                GlobalPos gPos = entry.getKey();
+                World world = PneumaticCraftUtils.getWorldForGlobalPos(gPos);
 
                 boolean found = false;
                 for (Map.Entry<Block, Class<? extends IHackableBlock>> registeredEntry : PneumaticHelmetRegistry.getInstance().hackableBlocks.entrySet()) {
                     if (hackableBlock.getClass() == registeredEntry.getValue()) {
-                        if (hackedBlock.getBlock() == registeredEntry.getKey()) {
-                            if (!hackableBlock.afterHackTick((World) hackedBlock.world, hackedBlock.pos)) {
+                        if (world.getBlockState(gPos.getPos()).getBlock() == registeredEntry.getKey()) {
+                            if (!hackableBlock.afterHackTick(world, gPos.getPos())) {
                                 blockIterator.remove();
                             }
                             found = true;
@@ -49,13 +51,10 @@ public class HackTickHandler {
     public void worldTick(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             try {
-                for (Entity entity : event.world.loadedEntityList) {
-                    if (entity.hasCapability(CapabilityHacking.HACKING_CAPABILITY, null)) {
-                        IHacking hack = entity.getCapability(CapabilityHacking.HACKING_CAPABILITY, null);
-                        if (!hack.getCurrentHacks().isEmpty()) {
-                            hack.update(entity);
-                        }
-                    }
+                for (Entity entity : PneumaticCraftRepressurized.proxy.getAllEntities(event.world)) {
+                    entity.getCapability(PneumaticRegistry.HACKING_CAPABILITY, null).ifPresent(h -> {
+                        if (!h.getCurrentHacks().isEmpty()) h.update(entity);
+                    });
                 }
             } catch (Throwable e) {
                 // Catching a CME which I have no clue on what might cause it.
@@ -63,14 +62,13 @@ public class HackTickHandler {
         }
     }
 
-    public void trackBlock(WorldAndCoord coord, IHackableBlock iHackable) {
+    public void trackBlock(GlobalPos coord, IHackableBlock iHackable) {
         hackedBlocks.put(coord, iHackable);
     }
 
     public void trackEntity(Entity entity, IHackableEntity iHackable) {
-        if (iHackable.getId() != null && entity.hasCapability(CapabilityHacking.HACKING_CAPABILITY, null)) {
-            IHacking hack = entity.getCapability(CapabilityHacking.HACKING_CAPABILITY, null);
-            hack.addHackable(iHackable);
+        if (iHackable.getId() != null) {
+            entity.getCapability(PneumaticRegistry.HACKING_CAPABILITY, null).ifPresent(h -> h.addHackable(iHackable));
         }
     }
 }

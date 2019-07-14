@@ -1,26 +1,23 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import java.util.List;
-
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetDig;
 import me.desht.pneumaticcraft.common.ai.DroneAIDig;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.ITextComponent;
+
+import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetDig extends ProgWidgetDigAndPlace implements IToolUser {
 
     private boolean requireDiggingTool;
     
-    public ProgWidgetDig() {
+    ProgWidgetDig() {
         super(ProgWidgetDigAndPlace.EnumOrder.CLOSEST);
     }
 
@@ -35,19 +32,13 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace implements IToolUser {
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return setupMaxActions(new DroneAIDig(drone, (ProgWidgetAreaItemBase) widget), (IMaxActions) widget);
-    }
-    
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetDig(this, guiProgrammer);
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.BROWN;
+    public DyeColor getColor() {
+        return DyeColor.BROWN;
     }
 
     @Override
@@ -61,21 +52,22 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace implements IToolUser {
     }
     
     @Override
-    @SideOnly(Side.CLIENT)
-    public void getTooltip(List<String> curTooltip) {
+    public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         
-        if(requiresTool()) curTooltip.add(I18n.format("gui.progWidget.dig.requiresDiggingTool"));
+        if (requiresTool()) {
+            curTooltip.add(xlate("gui.progWidget.dig.requiresDiggingTool"));
+        }
     }
     
     @Override
-    public void writeToNBT(NBTTagCompound tag){
+    public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);
-        tag.setBoolean("requireDiggingTool", requireDiggingTool);
+        tag.putBoolean("requireDiggingTool", requireDiggingTool);
     }
     
     @Override
-    public void readFromNBT(NBTTagCompound tag){
+    public void readFromNBT(CompoundNBT tag){
         super.readFromNBT(tag);
         requireDiggingTool = tag.getBoolean("requireDiggingTool");
     }

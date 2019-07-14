@@ -1,35 +1,31 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSecurityStationFailedHack;
 import me.desht.pneumaticcraft.common.network.PacketUseItem;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Mouse;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
-public class GuiSecurityStationHacking extends GuiSecurityStationBase {
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerSecurityStationHacking> {
     private GuiAnimatedStat statusStat;
 
     private NetworkConnectionBackground playerBackgroundBridges;
@@ -40,27 +36,32 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
     private int stopWorms = 0;
     private int nukeViruses = 0;
 
-    private final ItemStack stopWorm = new ItemStack(Itemss.STOP_WORM);
-    private final ItemStack nukeVirus = new ItemStack(Itemss.NUKE_VIRUS);
+    private final ItemStack stopWorm = new ItemStack(ModItems.STOP_WORM);
+    private final ItemStack nukeVirus = new ItemStack(ModItems.NUKE_VIRUS);
 
-    public GuiSecurityStationHacking(InventoryPlayer player, TileEntitySecurityStation te) {
+    public GuiSecurityStationHacking(ContainerSecurityStationHacking container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
 
-        super(new ContainerSecurityStationHacking(player, te), te, Textures.GUI_HACKING);
         ySize = 238;
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_HACKING;
+    }
+
+    @Override
+    public void init() {
+        super.init();
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        statusStat = addAnimatedStat("Security Status", new ItemStack(Blockss.SECURITY_STATION), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("Security Status", new ItemStack(ModBlocks.SECURITY_STATION), 0xFFFFAA00, false);
         addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.tile.security_station.hacking");
         addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText("gui.tab.upgrades.tile.security_station.hacking");
-        addAnimatedStat(Itemss.NUKE_VIRUS.getTranslationKey() + ".name", new ItemStack(Itemss.NUKE_VIRUS), 0xFF18c9e8, false).setText("gui.tab.info.tile.security_station.nukeVirus");
-        addAnimatedStat(Itemss.STOP_WORM.getTranslationKey() + ".name", new ItemStack(Itemss.STOP_WORM), 0xFFc13232, false).setText("gui.tab.info.tile.security_station.stopWorm");
+        addAnimatedStat(ModItems.NUKE_VIRUS.getTranslationKey() + ".name", new ItemStack(ModItems.NUKE_VIRUS), 0xFF18c9e8, false).setText("gui.tab.info.tile.security_station.nukeVirus");
+        addAnimatedStat(ModItems.STOP_WORM.getTranslationKey() + ".name", new ItemStack(ModItems.STOP_WORM), 0xFFc13232, false).setText("gui.tab.info.tile.security_station.stopWorm");
 
         if (playerBackgroundBridges == null) {
             playerBackgroundBridges = new NetworkConnectionBackground(this, te, xStart + 21, yStart + 26, 31, 0xAA4444FF);
@@ -103,35 +104,35 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        fontRenderer.drawString((aiBridges.isTracing() ? TextFormatting.RED : TextFormatting.GREEN) + "Tracing: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(aiBridges.getRemainingTraceTime(), true), 15, 7, 4210752);
-        renderConsumables(x, y);
+        font.drawString((aiBridges.isTracing() ? TextFormatting.RED : TextFormatting.GREEN) + "Tracing: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(aiBridges.getRemainingTraceTime(), true), 15, 7, 4210752);
+        renderConsumables();
     }
 
-    private void renderConsumables(int x, int y) {
+    private void renderConsumables() {
         stopWorms = 0;
         nukeViruses = 0;
-        EntityPlayer player = FMLClientHandler.instance().getClient().player;
-        for (ItemStack stack : player.inventory.mainInventory) {
-            if (stack.getItem() == Itemss.STOP_WORM) stopWorms += stack.getCount();
-            if (stack.getItem() == Itemss.NUKE_VIRUS) nukeViruses += stack.getCount();
+        for (ItemStack stack : playerInventory.mainInventory) {
+            if (stack.getItem() == ModItems.STOP_WORM) stopWorms += stack.getCount();
+            if (stack.getItem() == ModItems.NUKE_VIRUS) nukeViruses += stack.getCount();
         }
         GuiUtils.drawItemStack(nukeVirus, 155, 30);
         GuiUtils.drawItemStack(stopWorm, 155, 55);
-        fontRenderer.drawString(PneumaticCraftUtils.convertAmountToString(nukeViruses), 155, 45, 0xFFFFFFFF);
-        fontRenderer.drawString(PneumaticCraftUtils.convertAmountToString(stopWorms), 155, 70, 0xFFFFFFFF);
+        font.drawString(PneumaticCraftUtils.convertAmountToString(nukeViruses), 155, 45, 0xFFFFFFFF);
+        font.drawString(PneumaticCraftUtils.convertAmountToString(stopWorms), 155, 70, 0xFFFFFFFF);
 
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
+
         statusStat.setText(getStatusText());
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         playerBackgroundBridges.render();
         aiBackgroundBridges.render();
@@ -146,7 +147,7 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
             } else {
                 text.add(TextFormatting.RED + "You don't have any Nuke Viruses.");
             }
-            drawHoveringString(text, x, y, fontRenderer);
+            drawHoveringString(text, x, y, font);
         }
         if (x >= guiLeft + 155 && x <= guiLeft + 171 && y >= guiTop + 55 && y <= guiTop + 75) {
             List<String> text = new ArrayList<>();
@@ -160,7 +161,7 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
             } else {
                 text.add(TextFormatting.RED + "You don't have any STOP! Worms.");
             }
-            drawHoveringString(text, x, y, fontRenderer);
+            drawHoveringString(text, x, y, font);
         }
     }
 
@@ -183,46 +184,47 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        if (mouseButton != 2) super.mouseClicked(mouseX, mouseY, mouseButton);
-        hackerBridges.mouseClicked(mouseX, mouseY, mouseButton, getSlotAtPosition(mouseX, mouseY));
-        if (aiBridges.isTracing() && mouseX >= guiLeft + 155 && mouseX <= guiLeft + 171 && mouseY >= guiTop + 55 && mouseY <= guiTop + 75) {
-            EntityPlayer player = FMLClientHandler.instance().getClient().player;
-            NetworkHandler.sendToServer(new PacketUseItem(Itemss.STOP_WORM, 1));
-            PneumaticCraftUtils.consumeInventoryItem(player.inventory, Itemss.STOP_WORM);
-            aiBridges.applyStopWorm();
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+        if (mouseButton == 2) {
+            int mx = (int)mouseX, my = (int)mouseY;
+            hackerBridges.mouseClicked(mx, my, mouseButton, getSlotAtPosition(mx, my));
+            if (aiBridges.isTracing() && mouseX >= guiLeft + 155 && mouseX <= guiLeft + 171 && mouseY >= guiTop + 55 && mouseY <= guiTop + 75) {
+                NetworkHandler.sendToServer(new PacketUseItem(new ItemStack(ModItems.STOP_WORM)));
+                PneumaticCraftUtils.consumeInventoryItem(playerInventory, ModItems.STOP_WORM);
+                aiBridges.applyStopWorm();
+            }
         }
+        return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    public void addExtraHackInfo(List<String> currenttip) {
-        int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
-        int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
+    public void addExtraHackInfo(List<ITextComponent> currenttip) {
+        int mouseX = (int)minecraft.mouseHelper.getMouseX() * this.width / this.minecraft.mainWindow.getWidth();
+        int mouseY = this.height - (int)minecraft.mouseHelper.getMouseY() * this.height / this.minecraft.mainWindow.getHeight() - 1;
         Slot slot = getSlotAtPosition(mouseX, mouseY);
         if (slot != null) {
             if (hackerBridges.slotHacked[slot.slotNumber]) {
                 if (!hackerBridges.slotFortified[slot.slotNumber]) {
-                    currenttip.add(TextFormatting.RED + "DETECTION: " + te.getDetectionChance() + "%");
-                    currenttip.add(TextFormatting.YELLOW + "Right-click to fortify");
+                    currenttip.add(xlate("gui.tooltip.hacking.detectionChance", te.getDetectionChance()).applyTextStyle(TextFormatting.RED));
+                    currenttip.add(xlate("gui.tooltip.hacking.rightClickFortify").applyTextStyle(TextFormatting.YELLOW));
                 }
             } else if (hackerBridges.canHackSlot(slot.slotNumber)) {
-                currenttip.add(TextFormatting.RED + "DETECTION: " + te.getDetectionChance() + "%");
-                currenttip.add(TextFormatting.GREEN + "Left-click to hack");
-
+                currenttip.add(xlate("gui.tooltip.hacking.detectionChance", te.getDetectionChance()).applyTextStyle(TextFormatting.RED));
+                currenttip.add(xlate("gui.tooltip.hacking.leftClickHack").applyTextStyle(TextFormatting.GREEN));
             }
         }
     }
 
-    public boolean hasNukeViruses() {
+    boolean hasNukeViruses() {
         return nukeViruses > 0;
     }
 
-    public void onSlotHack(int slot) {
+    void onSlotHack(int slot) {
         if (Math.random() < te.getDetectionChance() / 100D) {
             aiBridges.setTracing(true);
         }
     }
 
-    public void onSlotFortification(int slot) {
+    void onSlotFortification(int slot) {
         aiBridges.slotFortified[slot] = true;
         if (Math.random() < te.getDetectionChance() / 100D) {
             aiBridges.setTracing(true);
@@ -230,14 +232,14 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase {
     }
 
     @Override
-    public void onGuiClosed() {
+    public void onClose() {
         if (aiBridges.isTracing() && !hackerBridges.hackedSuccessfully)
             NetworkHandler.sendToServer(new PacketSecurityStationFailedHack(te.getPos()));
         removeUpdatesOnConnectionHandlers();
-        super.onGuiClosed();
+        super.onClose();
     }
 
-    public void removeUpdatesOnConnectionHandlers() {
+    void removeUpdatesOnConnectionHandlers() {
         ClientTickHandler.instance().removeUpdatedObject(hackerBridges);
         ClientTickHandler.instance().removeUpdatedObject(aiBridges);
     }

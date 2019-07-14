@@ -1,171 +1,183 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketNotifyVariablesRemote;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
-import net.minecraft.client.resources.I18n;
+import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.commons.lang3.text.WordUtils;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.network.NetworkHooks;
 
-import java.util.Collections;
+import javax.annotation.Nullable;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class ItemRemote extends ItemPneumatic {
+
+    private static final String NBT_SECURITY_POS = "securityPos";
+
     public ItemRemote() {
-        super("remote");
-        setMaxStackSize(1);
+        super(DEFAULT_PROPS.maxStackSize(1), "remote");
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn) {
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getHeldItem(handIn);
-        if (handIn != EnumHand.MAIN_HAND) return ActionResult.newResult(EnumActionResult.PASS, stack);
         if (!world.isRemote) {
-            openGui(player, stack);
+            openGui(player, stack, handIn);
         }
-        return ActionResult.newResult(EnumActionResult.SUCCESS, stack);
+        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
 
     @Override
-    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
-        ItemStack remote = player.getHeldItem(hand);
-        if (hand != EnumHand.MAIN_HAND) return EnumActionResult.PASS;
+    public ActionResultType onItemUseFirst(ItemStack remote, ItemUseContext ctx) {
+        PlayerEntity player = ctx.getPlayer();
+        World world = ctx.getWorld();
+        BlockPos pos = ctx.getPos();
         if (!world.isRemote && !player.isSneaking() && isAllowedToEdit(player, remote)) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntitySecurityStation) {
                 if (((TileEntitySecurityStation) te).doesAllowPlayer(player)) {
-                    NBTTagCompound tag = remote.getTagCompound();
-                    if (tag == null) {
-                        tag = new NBTTagCompound();
-                        remote.setTagCompound(tag);
-                    }
-                    tag.setInteger("securityX", pos.getX());
-                    tag.setInteger("securityY", pos.getY());
-                    tag.setInteger("securityZ", pos.getZ());
-                    tag.setInteger("securityDimension", world.provider.getDimension());
-                    player.sendStatusMessage(new TextComponentTranslation("gui.remote.boundSecurityStation", pos.getX(), pos.getY(), pos.getZ()), false);
-                    return EnumActionResult.SUCCESS;
+                    GlobalPos gPos = GlobalPos.of(world.getDimension().getType(), pos);
+                    setSecurityStationPos(remote, gPos);
+                    player.sendStatusMessage(xlate("gui.remote.boundSecurityStation", gPos.toString()), true);
+                    return ActionResultType.SUCCESS;
                 } else {
-                    player.sendStatusMessage(new TextComponentTranslation("gui.remote.cantBindSecurityStation"), false);
+                    player.sendStatusMessage(xlate("gui.remote.cantBindSecurityStation"), true);
                 }
             }
         }
-        return EnumActionResult.PASS;
+        return ActionResultType.PASS;
     }
 
     /**
      * allows items to add custom lines of information to the mouseover description
      */
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack remote, World world, List<String> curInfo, ITooltipFlag moreInfo) {
+    @OnlyIn(Dist.CLIENT)
+    public void addInformation(ItemStack remote, World world, List<ITextComponent> curInfo, ITooltipFlag moreInfo) {
         super.addInformation(remote, world, curInfo, moreInfo);
-        curInfo.add(I18n.format("gui.remote.tooltip.sneakRightClickToEdit"));
-        NBTTagCompound tag = remote.getTagCompound();
-        if (tag != null && tag.hasKey("securityX")) {
-            int x = tag.getInteger("securityX");
-            int y = tag.getInteger("securityY");
-            int z = tag.getInteger("securityZ");
-            int dimensionId = tag.getInteger("securityDimension");
-            Collections.addAll(curInfo, WordUtils.wrap(I18n.format("gui.remote.tooltip.boundToSecurityStation", dimensionId, x, y, z), 40).split(System.getProperty("line.separator")));
+        curInfo.add(xlate("gui.remote.tooltip.sneakRightClickToEdit"));
+        GlobalPos gPos = getSecurityStationPos(remote);
+        if (gPos != null) {
+            curInfo.add(xlate("gui.remote.tooltip.boundToSecurityStation", gPos.toString()));
         } else {
-            Collections.addAll(curInfo, WordUtils.wrap(I18n.format("gui.remote.tooltip.rightClickToBind"), 40).split(System.getProperty("line.separator")));
+            curInfo.add(xlate("gui.remote.tooltip.rightClickToBind"));
         }
     }
 
-    private void openGui(EntityPlayer player, ItemStack remote) {
+    private void openGui(PlayerEntity player, ItemStack remote, Hand hand) {
         if (player.isSneaking()) {
             if (isAllowedToEdit(player, remote)) {
-                player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.REMOTE_EDITOR.ordinal(), player.world, (int) player.posX, (int) player.posY, (int) player.posZ);
-                NetworkHandler.sendTo(new PacketNotifyVariablesRemote(GlobalVariableManager.getInstance().getAllActiveVariableNames()), (EntityPlayerMP) player);
+                NetworkHooks.openGui((ServerPlayerEntity) player, new RemoteEditorContainerProvider(remote, hand), buf -> buf.writeBoolean(hand == Hand.MAIN_HAND));
+                NetworkHandler.sendToPlayer(new PacketNotifyVariablesRemote(GlobalVariableManager.getInstance().getAllActiveVariableNames()), (ServerPlayerEntity) player);
             }
         } else {
-            player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.REMOTE.ordinal(), player.world, (int) player.posX, (int) player.posY, (int) player.posZ);
+            NetworkHooks.openGui((ServerPlayerEntity) player, new RemoteContainerProvider(remote, hand));
         }
     }
 
     public static boolean hasSameSecuritySettings(ItemStack remote1, ItemStack remote2) {
-        NBTTagCompound tag1 = remote1.getTagCompound();
-        NBTTagCompound tag2 = remote2.getTagCompound();
-        if (tag1 == null && tag2 == null) return true;
-        if (tag1 == null || tag2 == null) return false;
-        int x1 = tag1.getInteger("securityX");
-        int y1 = tag1.getInteger("securityY");
-        int z1 = tag1.getInteger("securityZ");
-        int dimension1 = tag1.getInteger("securityDimension");
-        int x2 = tag2.getInteger("securityX");
-        int y2 = tag2.getInteger("securityY");
-        int z2 = tag2.getInteger("securityZ");
-        int dimension2 = tag2.getInteger("securityDimension");
-        return x1 == x2 && y1 == y2 && z1 == z2 && dimension1 == dimension2;
+        GlobalPos g1 = getSecurityStationPos(remote1);
+        GlobalPos g2 = getSecurityStationPos(remote2);
+        return g1 == null && g2 == null || g1 != null && g1.equals(g2);
     }
 
-    private boolean isAllowedToEdit(EntityPlayer player, ItemStack remote) {
-        NBTTagCompound tag = remote.getTagCompound();
-        if (tag != null) {
-            if (tag.hasKey("securityX")) {
-                int x = tag.getInteger("securityX");
-                int y = tag.getInteger("securityY");
-                int z = tag.getInteger("securityZ");
-                int dimensionId = tag.getInteger("securityDimension");
-                WorldServer world = DimensionManager.getWorld(dimensionId);
-                if (world != null) {
-                    TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
-                    if (te instanceof TileEntitySecurityStation) {
-                        boolean canAccess = ((TileEntitySecurityStation) te).doesAllowPlayer(player);
-                        if (!canAccess) {
-                            player.sendStatusMessage(new TextComponentTranslation("gui.remote.noEditRights", x, y, z), false);
-                        }
-                        return canAccess;
-                    }
+    private boolean isAllowedToEdit(PlayerEntity player, ItemStack remote) {
+        GlobalPos gPos = getSecurityStationPos(remote);
+        if (gPos != null) {
+            TileEntity te = PneumaticCraftUtils.getTileEntity(gPos);
+            if (te instanceof TileEntitySecurityStation) {
+                boolean canAccess = ((TileEntitySecurityStation) te).doesAllowPlayer(player);
+                if (!canAccess) {
+                    player.sendStatusMessage(new TranslationTextComponent("gui.remote.noEditRights", gPos).applyTextStyle(TextFormatting.RED), false);
                 }
+                return canAccess;
             }
         }
         return true;
     }
 
+    private static GlobalPos getSecurityStationPos(ItemStack stack) {
+        return stack.hasTag() && stack.getTag().contains(NBT_SECURITY_POS) ?
+                PneumaticCraftUtils.deserializeGlobalPos(stack.getTag().getCompound(NBT_SECURITY_POS)) : null;
+    }
+
+    private static void setSecurityStationPos(ItemStack stack, GlobalPos gPos) {
+        NBTUtil.setCompoundTag(stack, NBT_SECURITY_POS, PneumaticCraftUtils.serializeGlobalPos(gPos));
+    }
+
     @Override
-    public void onUpdate(ItemStack remote, World worl, Entity entity, int slot, boolean holdingItem) {
-        if (!worl.isRemote) {
-            NBTTagCompound tag = remote.getTagCompound();
-            if (tag != null) {
-                if (tag.hasKey("securityX")) {
-                    int x = tag.getInteger("securityX");
-                    int y = tag.getInteger("securityY");
-                    int z = tag.getInteger("securityZ");
-                    int dimensionId = tag.getInteger("securityDimension");
-                    WorldServer world = DimensionManager.getWorld(dimensionId);
-                    if (world != null) {
-                        TileEntity te = world.getTileEntity(new BlockPos(x, y, z));
-                        if (!(te instanceof TileEntitySecurityStation)) {
-                            tag.removeTag("securityX");
-                            tag.removeTag("securityY");
-                            tag.removeTag("securityZ");
-                            tag.removeTag("securityDimension");
-                        }
-                    }
+    public void inventoryTick(ItemStack remote, World world, Entity entity, int slot, boolean holdingItem) {
+        if (!world.isRemote) {
+            GlobalPos gPos = getSecurityStationPos(remote);
+            if (gPos != null) {
+                TileEntity te = PneumaticCraftUtils.getTileEntity(gPos);
+                if (!(te instanceof TileEntitySecurityStation) && remote.hasTag()) {
+                    remote.getTag().remove(NBT_SECURITY_POS);
                 }
             }
+        }
+    }
+
+    static class RemoteContainerProvider implements INamedContainerProvider {
+        private final ItemStack stack;
+        private final Hand hand;
+
+        RemoteContainerProvider(ItemStack stack, Hand hand) {
+            this.stack = stack;
+            this.hand = hand;
+        }
+
+        @Override
+        public ITextComponent getDisplayName() {
+            return stack.getDisplayName();
+        }
+
+        @Nullable
+        @Override
+        public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+            return new ContainerRemote(getType(), windowId, playerInventory, hand);
+        }
+
+        protected ContainerType<? extends ContainerRemote> getType() {
+            return ModContainerTypes.REMOTE;
+        }
+    }
+
+    static class RemoteEditorContainerProvider extends RemoteContainerProvider {
+        RemoteEditorContainerProvider(ItemStack stack, Hand hand) {
+            super(stack, hand);
+        }
+
+        @Override
+        protected ContainerType<? extends ContainerRemote> getType() {
+            return ModContainerTypes.REMOTE_EDITOR;
         }
     }
 }

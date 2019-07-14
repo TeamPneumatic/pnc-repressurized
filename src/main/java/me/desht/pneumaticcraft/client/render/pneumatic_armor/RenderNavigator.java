@@ -1,17 +1,17 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
 
 public class RenderNavigator {
@@ -26,8 +26,8 @@ public class RenderNavigator {
     }
 
     public void updatePath() {
-        EntityPlayer player = FMLClientHandler.instance().getClient().player;
-        path = PneumaticCraftUtils.getPathFinder().findPath(player.world, PneumaticCraftUtils.createDummyEntity(player), targetPos, CoordTrackUpgradeHandler.SEARCH_RANGE);
+        PlayerEntity player = Minecraft.getInstance().player;
+        path = PneumaticCraftUtils.getPathFinder().findPath(player.world, PneumaticCraftUtils.createDummyEntity(player), targetPos.getX() + 0.5, targetPos.getY() + 0.5, targetPos.getZ() + 0.5, CoordTrackUpgradeHandler.SEARCH_RANGE);
         // TODO: this just doesn't work anymore
         if (!tracedToDestination()) {
             path = CoordTrackUpgradeHandler.getDronePath(player, targetPos);
@@ -38,20 +38,20 @@ public class RenderNavigator {
         if (path == null) return;
 
         GlStateManager.depthMask(false);
-        if (xRayEnabled) GlStateManager.disableDepth();
+        if (xRayEnabled) GlStateManager.disableDepthTest();
         GlStateManager.disableCull();
         GlStateManager.enableBlend();
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.IS_RUNNING_ON_MAC);
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.disableTexture2D();
-        GlStateManager.glLineWidth(5.0F);
+        GlStateManager.disableTexture();
+        GlStateManager.lineWidth(5.0F);
 
         boolean hasDestinationPath = tracedToDestination();
 
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0, 0.01D, 0);
+        GlStateManager.translated(0, 0.01D, 0);
 
         // Draws just wires
         if (wirePath) {
@@ -64,7 +64,7 @@ public class RenderNavigator {
                 if (path.getCurrentPathLength() - i < 200) {
                     red = (path.getCurrentPathLength() - i) * 0.005F;
                 }
-                GlStateManager.color(red, 1 - red, 0, 0.5F);
+                GlStateManager.color4f(red, 1 - red, 0, 0.5F);
                 PathPoint lastPoint = path.getPathPointFromIndex(i - 1);
                 PathPoint pathPoint = path.getPathPointFromIndex(i);
                 wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
@@ -90,7 +90,7 @@ public class RenderNavigator {
                 if (path.getCurrentPathLength() - i < 200) {
                     red = (path.getCurrentPathLength() - i) * 0.005F;
                 }
-                GlStateManager.color(red, 1 - red, 0, alphaValue);
+                GlStateManager.color4f(red, 1 - red, 0, alphaValue);
                 PathPoint pathPoint = path.getPathPointFromIndex(i);
                 wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
                 wr.pos(pathPoint.x, pathPoint.y, pathPoint.z).endVertex();
@@ -103,11 +103,11 @@ public class RenderNavigator {
 
         GlStateManager.popMatrix();
         GlStateManager.enableCull();
-        GlStateManager.enableDepth();
+        GlStateManager.enableDepthTest();
         GlStateManager.disableBlend();
         GL11.glDisable(GL11.GL_LINE_STIPPLE);
         GlStateManager.depthMask(true);
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
     }
 
     public boolean tracedToDestination() {

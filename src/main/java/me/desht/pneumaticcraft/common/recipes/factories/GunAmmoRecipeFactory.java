@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmoStandard;
-import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.ItemPotion;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.PotionItem;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -28,7 +28,7 @@ public class GunAmmoRecipeFactory implements IRecipeFactory {
         }
 
         @Override
-        public boolean matches(InventoryCrafting invCrafting, World world) {
+        public boolean matches(CraftingInventory invCrafting, World world) {
             int itemCount = 0;
             boolean foundPotion = false;
             boolean foundAmmo = false;
@@ -36,21 +36,21 @@ public class GunAmmoRecipeFactory implements IRecipeFactory {
                 ItemStack stack = invCrafting.getStackInSlot(i);
                 if (!stack.isEmpty()) {
                     itemCount++;
-                    if (stack.getItem() instanceof ItemPotion) foundPotion = true;
-                    if (stack.getItem() == Itemss.GUN_AMMO) foundAmmo = true;
+                    if (stack.getItem() instanceof PotionItem) foundPotion = true;
+                    if (stack.getItem() == ModItems.GUN_AMMO) foundAmmo = true;
                 }
             }
             return foundPotion && foundAmmo && itemCount == 2;
         }
 
         @Override
-        public ItemStack getCraftingResult(InventoryCrafting invCrafting) {
+        public ItemStack getCraftingResult(CraftingInventory invCrafting) {
             ItemStack potion = ItemStack.EMPTY;
             ItemStack ammo = ItemStack.EMPTY;
             for (int i = 0; i < invCrafting.getSizeInventory(); i++) {
                 ItemStack stack = invCrafting.getStackInSlot(i);
                 if (!stack.isEmpty()) {
-                    if (stack.getItem() instanceof ItemPotion) {
+                    if (stack.getItem() instanceof PotionItem) {
                         potion = stack;
                     } else {
                         ammo = stack;

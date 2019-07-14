@@ -1,18 +1,19 @@
 package me.desht.pneumaticcraft.client.model;
 
-import net.minecraft.client.resources.IResource;
-import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.renderer.model.IUnbakedModel;
+import net.minecraft.resources.IResource;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ICustomModelLoader;
-import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.fml.common.FMLLog;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static me.desht.pneumaticcraft.PneumaticCraftRepressurized.LOGGER;
 
 public enum TintedOBJLoader implements ICustomModelLoader {
     INSTANCE;
@@ -25,7 +26,7 @@ public enum TintedOBJLoader implements ICustomModelLoader {
     public void addDomain(String domain)
     {
         enabledDomains.add(domain.toLowerCase());
-        FMLLog.log.info("OBJLoader: Domain {} has been added.", domain.toLowerCase());
+        LOGGER.info("OBJLoader: Domain {} has been added.", domain.toLowerCase());
     }
 
     @Override
@@ -43,7 +44,7 @@ public enum TintedOBJLoader implements ICustomModelLoader {
     }
 
     @Override
-    public IModel loadModel(ResourceLocation modelLocation) throws Exception
+    public IUnbakedModel loadModel(ResourceLocation modelLocation) throws Exception
     {
         ResourceLocation file = new ResourceLocation(modelLocation.getNamespace(), modelLocation.getPath());
         if (!cache.containsKey(file))

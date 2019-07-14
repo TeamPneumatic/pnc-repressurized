@@ -1,18 +1,17 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
-import me.desht.pneumaticcraft.lib.Sounds;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.entity.player.EntityPlayer;
+import me.desht.pneumaticcraft.common.core.Sounds;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ArmorMessage {
     private final GuiAnimatedStat stat;
     int lifeSpan;
@@ -22,7 +21,7 @@ public class ArmorMessage {
         stat = new GuiAnimatedStat(null, title, GuiAnimatedStat.StatIcon.NONE, backColor, null, ArmorHUDLayout.INSTANCE.messageStat);
         stat.setMinDimensionsAndReset(0, 0);
         stat.setText(message);
-        EntityPlayer player = FMLClientHandler.instance().getClient().player;
+        PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
         player.world.playSound(player.posX, player.posY, player.posZ, Sounds.SCIFI, SoundCategory.PLAYERS, 0.1F, 1.0F, true);
     }
 
@@ -35,7 +34,7 @@ public class ArmorMessage {
         return stat;
     }
 
-    void renderMessage(FontRenderer fontRenderer, float partialTicks) {
+    void renderMessage(float partialTicks) {
         if (lifeSpan > 10) {
             stat.openWindow();
         } else {

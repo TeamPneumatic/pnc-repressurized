@@ -1,14 +1,12 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -34,11 +32,11 @@ public interface IProgWidget {
 
     int getTextureSize();
 
-    void getTooltip(List<String> curTooltip);
+    void getTooltip(List<ITextComponent> curTooltip);
 
-    void addWarnings(List<String> curInfo, List<IProgWidget> widgets);
+    void addWarnings(List<ITextComponent> curInfo, List<IProgWidget> widgets);
 
-    void addErrors(List<String> curInfo, List<IProgWidget> widgets);
+    void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets);
 
     void renderExtraInfo();
 
@@ -51,9 +49,9 @@ public interface IProgWidget {
      * @param widget Will be 'this' most of the times, but not when controlled by ComputerCraft.
      * @return
      */
-    EntityAIBase getWidgetTargetAI(IDroneBase drone, IProgWidget widget);
+    Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget);
 
-    EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget);
+    Goal getWidgetAI(IDroneBase drone, IProgWidget widget);
 
     void setOutputWidget(IProgWidget widget);
 
@@ -89,23 +87,25 @@ public interface IProgWidget {
      */
     String getWidgetString();
 
-    int getCraftingColorIndex();
+    default String getTranslationKey() {
+        return "programmingPuzzle." + getWidgetString() + ".name";
+    }
+
+//    int getCraftingColorIndex();
+    DyeColor getColor();
 
     /**
-     * At least do a tag.setString("id", getWidgetString());
+     * At least do a tag.putString("id", getWidgetString());
      *
      * @param tag
      */
-    void writeToNBT(NBTTagCompound tag);
+    void writeToNBT(CompoundNBT tag);
 
-    void readFromNBT(NBTTagCompound tag);
+    void readFromNBT(CompoundNBT tag);
 
     IProgWidget copy();
 
     boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget);
-
-    @SideOnly(Side.CLIENT)
-    GuiScreen getOptionWindow(GuiProgrammer guiProgrammer);
 
     WidgetDifficulty getDifficulty();
 
@@ -118,7 +118,7 @@ public interface IProgWidget {
             this.name = name;
         }
 
-        public String getLocalizedName() {
+        public String getTranslationKey() {
             return I18n.format("gui.progWidget.difficulty." + name);
         }
     }

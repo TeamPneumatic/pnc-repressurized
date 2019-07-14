@@ -1,14 +1,14 @@
 package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.IRecipeFactory;
@@ -31,11 +31,11 @@ public class OneProbeRecipeFactory implements IRecipeFactory {
             super(group, result, recipe);
         }
         @Override
-        public boolean matches(InventoryCrafting inv, World worldIn) {
+        public boolean matches(CraftingInventory inv, World worldIn) {
             boolean probeFound = false, helmetFound = false;
             for (int i = 0; i < inv.getSizeInventory(); i++) {
                 Item item = inv.getStackInSlot(i).getItem();
-                if (item == Itemss.PNEUMATIC_HELMET) {
+                if (item == ModItems.PNEUMATIC_HELMET) {
                     if (helmetFound) return false;
                     helmetFound = true;
                 } else if (item == CraftingRegistrator.ONE_PROBE) {
@@ -49,19 +49,19 @@ public class OneProbeRecipeFactory implements IRecipeFactory {
         }
 
         @Override
-        public ItemStack getCraftingResult(InventoryCrafting inv) {
+        public ItemStack getCraftingResult(CraftingInventory inv) {
             ItemStack output = getRecipeOutput();
             ItemStack helmet = findHelmet(inv);
-            NBTTagCompound tag = helmet.isEmpty() ? new NBTTagCompound() : helmet.hasTagCompound() ? helmet.getTagCompound().copy() : new NBTTagCompound();
+            CompoundNBT tag = helmet.isEmpty() ? new CompoundNBT() : helmet.hasTagCompound() ? helmet.getTagCompound().copy() : new CompoundNBT();
             tag.setInteger(ONE_PROBE_TAG, 1);
             output.setTagCompound(tag);
             output.setItemDamage(helmet.getItemDamage());
             return output;
         }
 
-        private ItemStack findHelmet(InventoryCrafting inv) {
+        private ItemStack findHelmet(CraftingInventory inv) {
             for (int i = 0; i < inv.getSizeInventory(); i++) {
-                if (inv.getStackInSlot(i).getItem() == Itemss.PNEUMATIC_HELMET) {
+                if (inv.getStackInSlot(i).getItem() == ModItems.PNEUMATIC_HELMET) {
                     return inv.getStackInSlot(i).copy();
                 }
             }

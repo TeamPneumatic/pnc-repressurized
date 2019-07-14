@@ -3,7 +3,7 @@
 	"defaults": {
 		"textures": {},
 		"custom": { "flip-v" : true},
-		"model": "pneumaticcraft:charging_station.obj"
+		"model": "pneumaticcraft:block/charging_station.obj"
 	},
 	"variants": {
 		"facing": {
@@ -35,7 +35,7 @@
 		"charge_pad": {
 			"true": {
 				"submodel": {
-					"charge_pad": { "model" : "pneumaticcraft:charge_pad" }
+					"charge_pad": { "model": "pneumaticcraft:block/charge_pad" }
 				}
 			},
 			"false": {}

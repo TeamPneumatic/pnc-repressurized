@@ -5,11 +5,12 @@ import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.Comparator;
 import java.util.List;
@@ -17,13 +18,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GuiMinigun extends GuiPneumaticInventoryItem {
-    public GuiMinigun(ContainerChargingStationItemInventory container, TileEntityChargingStation te) {
-        super(container, te);
+    public GuiMinigun(ContainerChargingStationItemInventory container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
         addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tooltip.item.minigun");
 
@@ -41,7 +42,7 @@ public class GuiMinigun extends GuiPneumaticInventoryItem {
     private void addUpgradeStat(EnumUpgrade upgrade, boolean leftSided) {
         ItemStack stack = CraftingRegistrator.getUpgrade(upgrade);
         String key ="gui.tab.info.item.minigun." + upgrade.getName() + "Upgrade";
-        addAnimatedStat(stack.getDisplayName(), stack, 0xFF4040FF, leftSided).setText(key);
+        addAnimatedStat(stack.getDisplayName().getFormattedText(), stack, 0xFF4040FF, leftSided).setText(key);
     }
 
     @Override

@@ -1,20 +1,19 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinate;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraft.util.text.StringTextComponent;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,91 +28,87 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
         if (invSearchGui != null) {
             BlockPos pos = !invSearchGui.getSearchStack().isEmpty() ? ItemGPSTool.getGPSLocation(invSearchGui.getSearchStack()) : null;
-            widget.setCoordinate(pos);
+            progWidget.setCoordinate(pos);
         }
 
         List<GuiRadioButton> radioButtons = new ArrayList<>();
-        GuiRadioButton radioButton = new GuiRadioButton(0, guiLeft + 7, guiTop + 51, 0xFF404040, I18n.format("gui.progWidget.coordinate.constant"));
-        if (!widget.isUsingVariable()) radioButton.checked = true;
-        radioButtons.add(radioButton);
-        radioButton.otherChoices = radioButtons;
-        addWidget(radioButton);
-        radioButton = new GuiRadioButton(1, guiLeft + 7, guiTop + 100, 0xFF404040, I18n.format("gui.progWidget.coordinate.variable"));
-        if (widget.isUsingVariable()) radioButton.checked = true;
-        radioButtons.add(radioButton);
-        radioButton.otherChoices = radioButtons;
-        addWidget(radioButton);
 
-        gpsButton = new GuiButtonSpecial(0, guiLeft + 100, guiTop + 20, 20, 20, "");
-        gpsButton.setRenderStacks(new ItemStack(Itemss.GPS_TOOL));
+        GuiRadioButton radioButton = new GuiRadioButton(guiLeft + 7, guiTop + 51, 0xFF404040,
+                I18n.format("gui.progWidget.coordinate.constant"), b -> setUsingVariable(false));
+        if (!progWidget.isUsingVariable()) radioButton.checked = true;
+        radioButtons.add(radioButton);
+        radioButton.otherChoices = radioButtons;
+        addButton(radioButton);
+
+        radioButton = new GuiRadioButton(guiLeft + 7, guiTop + 100, 0xFF404040,
+                I18n.format("gui.progWidget.coordinate.variable"), b -> setUsingVariable(true));
+        if (progWidget.isUsingVariable()) radioButton.checked = true;
+        radioButtons.add(radioButton);
+        radioButton.otherChoices = radioButtons;
+        addButton(radioButton);
+
+        gpsButton = new GuiButtonSpecial(guiLeft + 100, guiTop + 20, 20, 20, "", b -> openGPSSearcher());
+        gpsButton.setRenderStacks(new ItemStack(ModItems.GPS_TOOL));
         gpsButton.setTooltipText(I18n.format("gui.progWidget.coordinate.selectFromGPS"));
-        gpsButton.enabled = !widget.isUsingVariable();
-        buttonList.add(gpsButton);
+        gpsButton.active = !progWidget.isUsingVariable();
+        addButton(gpsButton);
         coordFields = new WidgetTextFieldNumber[3];
         for (int i = 0; i < 3; i++) {
-            coordFields[i] = new WidgetTextFieldNumber(fontRenderer, guiLeft + 100, guiTop + 50 + 13 * i, 40, fontRenderer.FONT_HEIGHT + 1);
-            addWidget(coordFields[i]);
-            coordFields[i].setEnabled(gpsButton.enabled);
+            coordFields[i] = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 50 + 13 * i, 40, font.FONT_HEIGHT + 1);
+            addButton(coordFields[i]);
+            coordFields[i].setEnabled(gpsButton.active);
         }
-        coordFields[0].setValue(widget.getRawCoordinate().getX());
-        coordFields[1].setValue(widget.getRawCoordinate().getY());
-        coordFields[2].setValue(widget.getRawCoordinate().getZ());
+        coordFields[0].setValue(progWidget.getRawCoordinate().getX());
+        coordFields[1].setValue(progWidget.getRawCoordinate().getY());
+        coordFields[2].setValue(progWidget.getRawCoordinate().getZ());
 
-        variableField = new WidgetComboBox(fontRenderer, guiLeft + 90, guiTop + 112, 80, fontRenderer.FONT_HEIGHT + 1);
+        variableField = new WidgetComboBox(font, guiLeft + 90, guiTop + 112, 80, font.FONT_HEIGHT + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
-        addWidget(variableField);
-        variableField.setText(widget.getVariable());
-        variableField.setEnabled(widget.isUsingVariable());
+        addButton(variableField);
+        variableField.setText(progWidget.getVariable());
+        variableField.setEnabled(progWidget.isUsingVariable());
     }
 
-    @Override
-    public void actionPerformed(IGuiWidget guiWidget) {
-        if (guiWidget.getID() == 0 || guiWidget.getID() == 1) {
-            widget.setUsingVariable(guiWidget.getID() == 1);
-            gpsButton.enabled = guiWidget.getID() == 0;
-            for (WidgetTextField textField : coordFields) {
-                textField.setEnabled(gpsButton.enabled);
-            }
-
-            variableField.setEnabled(!gpsButton.enabled);
+    private void setUsingVariable(boolean usingVariable) {
+        progWidget.setUsingVariable(usingVariable);
+        gpsButton.active = !usingVariable;
+        for (WidgetTextField textField : coordFields) {
+            textField.setEnabled(!usingVariable);
         }
-        // super.actionPerformed(guiWidget);
+        variableField.setEnabled(usingVariable);
     }
 
-    @Override
-    public void actionPerformed(GuiButton button) throws IOException {
-        if (button.id == 0) {
-            invSearchGui = new GuiInventorySearcher(FMLClientHandler.instance().getClient().player);
+    private void openGPSSearcher() {
+        ClientUtils.openContainerGui(ModContainerTypes.INVENTORY_SEARCHER, new StringTextComponent("Inventory Searcher (GPS)"));
+        if (minecraft.currentScreen instanceof GuiInventorySearcher) {
+            invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
-            BlockPos area = widget.getRawCoordinate();
-            ItemStack gps = new ItemStack(Itemss.GPS_TOOL);
-            ItemGPSTool.setGPSLocation(gps, area);
-            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gps) != null ? gps : ItemStack.EMPTY);
-            FMLClientHandler.instance().showGuiScreen(invSearchGui);
+            BlockPos area = progWidget.getRawCoordinate();
+            ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL);
+            ItemGPSTool.setGPSLocation(gpsStack, area);
+            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack) != null ? gpsStack : ItemStack.EMPTY);
         }
-        super.actionPerformed(button);
     }
 
     @Override
-    public void keyTyped(char chr, int keyCode) throws IOException {
-        if (keyCode == 1) {
-            widget.setCoordinate(new BlockPos(coordFields[0].getValue(), coordFields[1].getValue(), coordFields[2].getValue()));
-            widget.setVariable(variableField.getText());
-        }
-        super.keyTyped(chr, keyCode);
+    public void onClose() {
+        super.onClose();
+
+        progWidget.setCoordinate(new BlockPos(coordFields[0].getValue(), coordFields[1].getValue(), coordFields[2].getValue()));
+        progWidget.setVariable(variableField.getText());
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        fontRenderer.drawString("x:", guiLeft + 90, guiTop + 51, 0xFF404040);
-        fontRenderer.drawString("y:", guiLeft + 90, guiTop + 64, 0xFF404040);
-        fontRenderer.drawString("z:", guiLeft + 90, guiTop + 77, 0xFF404040);
-        fontRenderer.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060);
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        super.render(mouseX, mouseY, partialTicks);
+        font.drawString("x:", guiLeft + 90, guiTop + 51, 0xFF404040);
+        font.drawString("y:", guiLeft + 90, guiTop + 64, 0xFF404040);
+        font.drawString("z:", guiLeft + 90, guiTop + 77, 0xFF404040);
+        font.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060);
     }
 }

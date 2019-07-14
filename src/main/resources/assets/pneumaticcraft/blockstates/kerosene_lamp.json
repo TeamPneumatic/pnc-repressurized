@@ -2,7 +2,7 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {},
-    "model": "pneumaticcraft:kerosene_lamp"
+    "model": "pneumaticcraft:block/kerosene_lamp"
   },
   "variants": {
     "facing": {
@@ -29,47 +29,47 @@
       "up": {
         "submodel": {
           "vert": {
-            "model": "pneumaticcraft:kerosene_lamp_support_v"
+            "model": "pneumaticcraft:block/kerosene_lamp_support_v"
           }
         }
       },
       "north": {
         "submodel": {
           "vert": {
-            "model": "pneumaticcraft:kerosene_lamp_support_v"
+            "model": "pneumaticcraft:block/kerosene_lamp_support_v"
           },
           "horiz": {
-            "model": "pneumaticcraft:kerosene_lamp_support_h"
+            "model": "pneumaticcraft:block/kerosene_lamp_support_h"
           }
         }
       },
       "south": {
         "submodel": {
           "vert": {
-            "model": "pneumaticcraft:kerosene_lamp_support_v"
+            "model": "pneumaticcraft:block/kerosene_lamp_support_v"
           },
           "horiz": {
-            "model": "pneumaticcraft:kerosene_lamp_support_h"
+            "model": "pneumaticcraft:block/kerosene_lamp_support_h"
           }
         }
       },
       "east": {
         "submodel": {
           "vert": {
-            "model": "pneumaticcraft:kerosene_lamp_support_v"
+            "model": "pneumaticcraft:block/kerosene_lamp_support_v"
           },
           "horiz": {
-            "model": "pneumaticcraft:kerosene_lamp_support_h"
+            "model": "pneumaticcraft:block/kerosene_lamp_support_h"
           }
         }
       },
       "west": {
         "submodel": {
           "vert": {
-            "model": "pneumaticcraft:kerosene_lamp_support_v"
+            "model": "pneumaticcraft:block/kerosene_lamp_support_v"
           },
           "horiz": {
-            "model": "pneumaticcraft:kerosene_lamp_support_h"
+            "model": "pneumaticcraft:block/kerosene_lamp_support_h"
           }
         }
       }

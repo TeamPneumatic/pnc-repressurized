@@ -4,9 +4,9 @@ import me.desht.pneumaticcraft.client.gui.GuiSecurityStationBase;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.inventory.Slot;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.inventory.container.Slot;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 public class RenderProgressingLine {
@@ -83,7 +83,7 @@ public class RenderProgressingLine {
         return false;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void render() {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
@@ -92,7 +92,7 @@ public class RenderProgressingLine {
         Tessellator.getInstance().draw();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void renderInterpolated(RenderProgressingLine lastTickLine, float partialTick) {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);

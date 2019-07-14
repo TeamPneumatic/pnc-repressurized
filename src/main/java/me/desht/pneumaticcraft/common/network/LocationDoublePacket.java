@@ -2,8 +2,10 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 /**
  * MineChess
@@ -13,7 +15,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
  * @license Lesser GNU Public License v3 (http://www.gnu.org/licenses/lgpl.html)
  */
 
-public abstract class LocationDoublePacket<REQ extends AbstractPacket<REQ>> extends AbstractPacket<REQ> {
+public abstract class LocationDoublePacket {
 
     protected double x, y, z;
 
@@ -26,21 +28,25 @@ public abstract class LocationDoublePacket<REQ extends AbstractPacket<REQ>> exte
         this.z = z;
     }
 
-    @Override
+    LocationDoublePacket(Vec3d v) {
+        this.x = v.x;
+        this.y = v.y;
+        this.z = v.z;
+    }
+
+    LocationDoublePacket(PacketBuffer buffer) {
+        x = buffer.readDouble();
+        y = buffer.readDouble();
+        z = buffer.readDouble();
+    }
+
     public void toBytes(ByteBuf buf) {
         buf.writeDouble(x);
         buf.writeDouble(y);
         buf.writeDouble(z);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        x = buf.readDouble();
-        y = buf.readDouble();
-        z = buf.readDouble();
-    }
-
-    NetworkRegistry.TargetPoint getTargetPoint(World world) {
-        return new NetworkRegistry.TargetPoint(world.provider.getDimension(), x, y, z, TileEntityConstants.PACKET_UPDATE_DISTANCE);
+    PacketDistributor.TargetPoint getTargetPoint(World world) {
+        return new PacketDistributor.TargetPoint(x, y, z, TileEntityConstants.PACKET_UPDATE_DISTANCE, world.getDimension().getType());
     }
 }

@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.client.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 
@@ -62,7 +62,7 @@ public class RenderRangeLines {
         if (rangeLinesTimer > 0) {
             rangeLinesTimer--;
             for (RenderProgressingLine line : rangeLines) {
-                if (line.getProgress() > 0.005F || Minecraft.getMinecraft().world.rand.nextInt(15) == 0) {
+                if (line.getProgress() > 0.005F || Minecraft.getInstance().world.rand.nextInt(15) == 0) {
                     line.incProgress(0.025F);
                 }
             }
@@ -73,7 +73,7 @@ public class RenderRangeLines {
                 if (line.getProgress() > 0.005F) {
                     line.incProgress(0.025F);
                 }
-                if (Minecraft.getMinecraft().world.rand.nextInt(8) == 0) {
+                if (Minecraft.getInstance().world.rand.nextInt(8) == 0) {
                     iterator.remove();
                 }
             }
@@ -84,21 +84,21 @@ public class RenderRangeLines {
         if (rangeLines.isEmpty()) return;
 
         GlStateManager.pushMatrix();
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         RenderUtils.glColorHex(color);
-        EntityPlayer player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+        PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
         if (pos != null) {
-            GlStateManager.translate(pos.getX() - player.posX + 0.5, pos.getY() - player.posY + 0.5, pos.getZ() - player.posZ + 0.5);
+            GlStateManager.translated(pos.getX() - player.posX + 0.5, pos.getY() - player.posY + 0.5, pos.getZ() - player.posZ + 0.5);
         }
-        GlStateManager.glLineWidth(2.0F);
+        GlStateManager.lineWidth(2.0F);
         for (RenderProgressingLine line : rangeLines) {
             line.render();
         }
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color4f(1, 1, 1, 1);
         GlStateManager.disableBlend();
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
         GlStateManager.popMatrix();
     }
 }

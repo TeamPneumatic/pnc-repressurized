@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -9,81 +9,72 @@ import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityPotion;
-import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemLingeringPotion;
-import net.minecraft.item.ItemSplashPotion;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.PotionEntity;
+import net.minecraft.item.*;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemGunAmmoStandard extends ItemGunAmmo {
 
     private static final String NBT_POTION = "potion";
 
     public ItemGunAmmoStandard() {
-        super("gun_ammo");
-    }
-
-    @Override
-    protected int getCartridgeSize() {
-        return ConfigHandler.minigun.standardAmmoCartridgeSize;
+        super(DEFAULT_PROPS.maxDamage(Config.Common.Minigun.standardAmmoCartridgeSize), "gun_ammo");
     }
 
     @Nonnull
     private static ItemStack getPotion(ItemStack ammo) {
-        if (ammo.getTagCompound() != null && ammo.getTagCompound().hasKey(NBT_POTION)) {
-            return new ItemStack(ammo.getTagCompound().getCompoundTag(NBT_POTION));
+        if (ammo.getTag() != null && ammo.getTag().contains(NBT_POTION)) {
+            return ItemStack.read(ammo.getTag().getCompound(NBT_POTION));
         } else {
             return ItemStack.EMPTY;
         }
     }
 
     public static void setPotion(ItemStack ammo, ItemStack potion) {
-        NBTTagCompound tag = new NBTTagCompound();
-        potion.writeToNBT(tag);
+        CompoundNBT tag = new CompoundNBT();
+        potion.write(tag);
         NBTUtil.setCompoundTag(ammo, "potion", tag);
     }
 
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
-        if (this.isInCreativeTab(tab)) {
-            super.getSubItems(tab, list);
-            NonNullList<ItemStack> potions = NonNullList.create();
-            Items.POTIONITEM.getSubItems(tab, potions);
-            for (ItemStack potion : potions) {
-                ItemStack ammo = new ItemStack(this);
-                setPotion(ammo, potion);
-                list.add(ammo);
-            }
-        }
-    }
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> list) {
+//        if (this.isInCreativeTab(tab)) {
+//            super.getSubItems(tab, list);
+//            NonNullList<ItemStack> potions = NonNullList.create();
+//            Items.POTIONITEM.getSubItems(tab, potions);
+//            for (ItemStack potion : potions) {
+//                ItemStack ammo = new ItemStack(this);
+//                setPotion(ammo, potion);
+//                list.add(ammo);
+//            }
+//        }
+//    }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public boolean hasEffect(ItemStack stack) {
-        return stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_POTION);
+        return stack.hasTag() && stack.getTag().contains(NBT_POTION);
     }
 
     @Override
@@ -93,10 +84,10 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public int getAmmoColor(ItemStack ammo) {
         ItemStack potion = getPotion(ammo);
-        return potion.isEmpty() ? 0x00FFFF00 : Minecraft.getMinecraft().getItemColors().colorMultiplier(potion, 0);
+        return potion.isEmpty() ? 0x00FFFF00 : Minecraft.getInstance().getItemColors().getColor(potion, 0);
     }
 
     @Override
@@ -109,41 +100,43 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     }
 
     @Override
-    public void addInformation(ItemStack stack, World world, List<String> infoList, ITooltipFlag extraInfo) {
+    public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
         super.addInformation(stack, world, infoList, extraInfo);
         ItemStack potion = getPotion(stack);
         if (!potion.isEmpty()) {
-            List<String> potionInfo = new ArrayList<>();
+            List<ITextComponent> potionInfo = new ArrayList<>();
             potion.getItem().addInformation(potion, world, potionInfo, extraInfo);
             String extra = "";
-            if (potion.getItem() instanceof ItemSplashPotion) {
+            if (potion.getItem() instanceof SplashPotionItem) {
                 extra = " " + I18n.format("gui.tooltip.gunAmmo.splash");
-            } else if (potion.getItem() instanceof ItemLingeringPotion) {
+            } else if (potion.getItem() instanceof LingeringPotionItem) {
                 extra = " " + I18n.format("gui.tooltip.gunAmmo.lingering");
             }
-            infoList.add(I18n.format("gui.tooltip.gunAmmo") + " " + potionInfo.get(0) + extra);
+            infoList.add(xlate("gui.tooltip.gunAmmo").appendText(" " + potionInfo.get(0) + extra));
         } else {
-            infoList.add(I18n.format("gui.tooltip.gunAmmo.combineWithPotion"));
+            infoList.add(xlate("gui.tooltip.gunAmmo.combineWithPotion"));
         }
     }
 
     @Override
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         ItemStack potion = getPotion(ammo);
-        if (!potion.isEmpty() && target instanceof EntityLivingBase) {
-            EntityPlayer shooter = minigun.getPlayer();
-            if (minigun.dispenserWeightedPercentage(ConfigHandler.minigun.potionProcChance, 0.25f)) {
-                if (potion.getItem() == Items.POTIONITEM) {
-                    List<PotionEffect> effects = PotionUtils.getEffectsFromStack(potion);
-                    for (PotionEffect effect : effects) {
-                        ((EntityLivingBase) target).addPotionEffect(new PotionEffect(effect));
+        if (!potion.isEmpty() && target instanceof LivingEntity) {
+            LivingEntity entity = (LivingEntity) target;
+            PlayerEntity shooter = minigun.getPlayer();
+            if (minigun.dispenserWeightedPercentage(Config.Common.Minigun.potionProcChance, 0.25f)) {
+                if (potion.getItem() == Items.POTION) {
+                    List<EffectInstance> effects = PotionUtils.getEffectsFromStack(potion);
+                    for (EffectInstance effect : effects) {
+                        entity.addPotionEffect(new EffectInstance(effect));
                     }
                     NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_SPLASH_POTION_BREAK, SoundCategory.PLAYERS,
-                            target.posX, target.posY, target.posZ, 1.0f, 1.0f, true), target.world);
+                            entity.posX, entity.posY, entity.posZ, 1.0f, 1.0f, true), entity.world);
                 } else if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
-                    EntityPotion entityPotion = new EntityPotion(shooter.world, shooter, potion);
-                    entityPotion.setPosition(target.posX, target.posY, target.posZ);
-                    shooter.world.spawnEntity(entityPotion);
+                    PotionEntity entityPotion = new PotionEntity(shooter.world, shooter);
+                    entityPotion.setItem(potion);
+                    entityPotion.setPosition(entity.posX, entity.posY, entity.posZ);
+                    shooter.world.addEntity(entityPotion);
                 }
             }
             return getPotionAmmoCost(potion.getItem());
@@ -153,20 +146,21 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     }
 
     @Override
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face, Vec3d hitVec) {
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
         ItemStack potion = getPotion(ammo);
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
-            EntityPlayer shooter = minigun.getPlayer();
-            int chance = ConfigHandler.minigun.potionProcChance + minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) * 2;
+            PlayerEntity shooter = minigun.getPlayer();
+            int chance = Config.Common.Minigun.potionProcChance + minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) * 2;
             if (shooter.world.rand.nextInt(100) < chance) {
-                EntityPotion entityPotion = new EntityPotion(shooter.world, shooter, potion);
-                BlockPos pos2 = pos.offset(face);
+                PotionEntity entityPotion = new PotionEntity(shooter.world, shooter);
+                entityPotion.setItem(potion);
+                BlockPos pos2 = brtr.getPos().offset(brtr.getFace());
                 entityPotion.setPosition(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5);
-                shooter.world.spawnEntity(entityPotion);
+                shooter.world.addEntity(entityPotion);
             }
             return getPotionAmmoCost(potion.getItem());
         } else {
-            return super.onBlockHit(minigun, ammo, pos, face, hitVec);
+            return super.onBlockHit(minigun, ammo, brtr);
         }
     }
 
@@ -175,7 +169,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
             return 6;
         } else if (item == Items.SPLASH_POTION) {
             return 3;
-        } else if (item == Items.POTIONITEM) {
+        } else if (item == Items.POTION) {
             return 1;
         } else {
             throw new IllegalArgumentException("Item " + item + " is not a potion!");

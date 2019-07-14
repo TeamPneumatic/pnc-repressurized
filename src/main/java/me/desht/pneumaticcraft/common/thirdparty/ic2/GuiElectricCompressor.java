@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.List;
 public class GuiElectricCompressor extends GuiPneumaticContainerBase<TileEntityElectricCompressor> {
     private GuiAnimatedStat inputStat;
 
-    public GuiElectricCompressor(InventoryPlayer inventory, TileEntityElectricCompressor te) {
+    public GuiElectricCompressor(PlayerInventory inventory, TileEntityElectricCompressor te) {
         super(new ContainerElectricCompressor(inventory, te), te, Textures.GUI_4UPGRADE_SLOTS);
     }
 

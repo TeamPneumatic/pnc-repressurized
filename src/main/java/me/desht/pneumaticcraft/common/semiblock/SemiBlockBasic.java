@@ -2,20 +2,19 @@ package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 import java.util.List;
-
-import static me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 
 public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements ISemiBlock, IDescSynced, IGUIButtonSensitive {
     private final Class<TTileEntity> tileClass;
@@ -52,17 +51,17 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
 
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
 
     }
 
     @Override
-    public void update() {
+    public void tick() {
         if (!world.isRemote && !canStay()) drop();
         if (!world.isRemote && !isInvalid()) {
             if (descriptionFields == null) descriptionPacketScheduled = true;
@@ -101,18 +100,18 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
         return world.isAirBlock(pos);
     }
 
-    public IBlockState getBlockState() {
+    public BlockState getBlockState() {
         return world.getBlockState(pos);
     }
     
     public boolean isAir(){
-        IBlockState state = getBlockState();
+        BlockState state = getBlockState();
         return state.getBlock().isAir(state, world, pos);
     }
 
     @SuppressWarnings("unchecked")
     public TTileEntity getTileEntity() {
-        if (cachedTE == null || cachedTE.isInvalid()) {
+        if (cachedTE == null || cachedTE.isRemoved()) {
             TileEntity te = world.getTileEntity(pos);
             if(te != null && tileClass.isAssignableFrom(te.getClass())){
                 cachedTE = (TTileEntity)te;
@@ -150,31 +149,36 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
     }
 
     @Override
-    public boolean canPlace(EnumFacing facing) {
+    public boolean canPlace(Direction facing) {
         return true;
     }
     
     @Override
-    public void prePlacement(EntityPlayer player, ItemStack stack, EnumFacing facing){
+    public void prePlacement(PlayerEntity player, ItemStack stack, Direction facing){
         
     }
 
+    /**
+     * Check if the player can place this semiblock here.
+     * @param player the player
+     * @param stack the semiblock item to be placed
+     * @param facing the facing direction
+     */
     @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing) {
-
+    public void onPlaced(PlayerEntity player, ItemStack stack, Direction facing) {
     }
 
+    /**
+     * Check if this semiblock can remain here
+     * @return true if the semiblock can stay, false if it should be dropped
+     */
     public boolean canStay() {
         return canPlace(null);
     }
 
     @Override
-    public boolean onRightClickWithConfigurator(EntityPlayer player, EnumFacing side) {
+    public boolean onRightClickWithConfigurator(PlayerEntity player, Direction side) {
         return false;
-    }
-
-    public EnumGuiId getGuiID() {
-        return null;
     }
 
     /**
@@ -186,10 +190,10 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
      * @param tag NBT data from the semiblock in question containing extra info
      * @param extended show extended data?
      */
-    public void addTooltip(List<String> curInfo, NBTTagCompound tag, boolean extended) {
+    public void addTooltip(List<ITextComponent> curInfo, CompoundNBT tag, boolean extended) {
     }
 
-    public void addWailaInfoToTag(NBTTagCompound tag) {
+    public void addWailaInfoToTag(CompoundNBT tag) {
 
     }
 
@@ -212,12 +216,12 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
     
 
     @Override
-    public void writeToPacket(NBTTagCompound tag) {
-        tag.setByte("index", (byte)getIndex()); //Used in packet decoding to figure out which semiblock updated.
+    public void writeToPacket(CompoundNBT tag) {
+        tag.putByte("index", (byte)getIndex()); //Used in packet decoding to figure out which semiblock updated.
     }
 
     @Override
-    public void readFromPacket(NBTTagCompound tag) {
+    public void readFromPacket(CompoundNBT tag) {
 
     }
 
@@ -226,8 +230,7 @@ public abstract class SemiBlockBasic<TTileEntity extends TileEntity> implements 
     }
 
     @Override
-    public void handleGUIButtonPress(int guiID, EntityPlayer player) {
-
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
     }
     
     @Override

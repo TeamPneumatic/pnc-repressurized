@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.BlockTrackEvent;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.BlockTrackEvent;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiBlockTrackOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
@@ -12,25 +13,20 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.client.event.MouseEvent;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.*;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
 import org.lwjgl.opengl.GL11;
@@ -50,7 +46,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     private final Map<String,Integer> blockTypeCountPartial = new HashMap<>();
     private int xOff = 0, yOff = 0, zOff = 0;
     private RenderBlockTarget focusedTarget = null;
-    private EnumFacing focusedFace = null;
+    private Direction focusedFace = null;
 
     @Override
     public String getUpgradeName() {
@@ -58,7 +54,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public void update(EntityPlayer player, int rangeUpgrades) {
+    public void update(PlayerEntity player, int rangeUpgrades) {
         SearchUpgradeHandler searchHandler = HUDHandler.instance().getSpecificRenderer(SearchUpgradeHandler.class);
 
         int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(rangeUpgrades, 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
@@ -68,18 +64,18 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int i = 0; i < HARD_MAX_BLOCKS_PER_TICK; i++) {
             // 1% of a tick = 500,000ns
-            if ((i & 0xff) == 0 && System.nanoTime() - now > ConfigHandler.client.blockTrackerMaxTimePerTick * 500000) {
+            if ((i & 0xff) == 0 && System.nanoTime() - now > Config.Client.blockTrackerMaxTimePerTick * 500000) {
                 break;
             }
 
             nextScanPos(pos, player, blockTrackRange);
 
-            if (!player.world.isBlockLoaded(pos)) break;
+            if (!player.world.isAreaLoaded(pos, 0)) break;
 
             TileEntity te = player.world.getTileEntity(pos);
 
             if (!MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(player.world, pos, te))) {
-                if (searchHandler != null && te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
+                if (searchHandler != null && te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
                     searchHandler.checkInventoryForItems(te, null, GuiKeybindCheckBox.isHandlerEnabled(searchHandler));
                 }
                 List<IBlockTrackEntry> entries = BlockTrackEntryList.instance.getEntriesForCoordinate(player.world, pos, te);
@@ -96,18 +92,10 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
                         // we already have a tracker active for this pos
                         blockTarget.ticksExisted = Math.abs(blockTarget.ticksExisted); // cancel possible "lost target" status
                         blockTarget.setTileEntity(te);
-//                        break;
                     } else {
                         // no tracker currently active - add one
                         RenderBlockTarget target = addBlockTarget(new RenderBlockTarget(player.world, player, pos.toImmutable(), te, this));
-
                         target.maybeRefreshFromServer(entries);
-
-//                        for (IBlockTrackEntry entry : entries) {
-//                            if (countBlockTrackersOfType(entry) == entry.spamThreshold() + 1) {
-//                                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("blockTracker.message.stopSpam", I18n.format(entry.getEntryName())), new ArrayList<>(), 60, 0x7700AA00));
-//                            }
-//                        }
                     }
                 }
             }
@@ -120,44 +108,40 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
         updateTrackerText();
     }
 
-    private void checkBlockFocus(EntityPlayer player, int blockTrackRange) {
+    private void checkBlockFocus(PlayerEntity player, int blockTrackRange) {
         focusedTarget = null;
         focusedFace = null;
-        Vec3d eyes = player.getPositionEyes(1.0f);
+        Vec3d eyes = player.getEyePosition(1.0f);
         Vec3d v = eyes;
         Vec3d lookVec = player.getLookVec();
         for (int i = 0; i < blockTrackRange * 4; i++) {
             v = v.add(lookVec.scale(0.25));  // scale down to minimise clipping across a corner and missing the block
             BlockPos checkPos = new BlockPos(v.x, v.y, v.z);
             if (blockTargets.containsKey(checkPos)) {
-                IBlockState state = player.world.getBlockState(checkPos);
-                RayTraceResult rtr = state.getBoundingBox(player.world, checkPos).offset(checkPos).calculateIntercept(eyes, v);
-                if (rtr != null && rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
+                BlockState state = player.world.getBlockState(checkPos);
+                BlockRayTraceResult brtr = state.getShape(player.world, checkPos).rayTrace(eyes, v, checkPos);
+                if (brtr != null && brtr.getType() == RayTraceResult.Type.BLOCK) {
                     focusedTarget = blockTargets.get(checkPos);
-                    focusedFace = rtr.sideHit;
+                    focusedFace = brtr.getFace();
                     break;
                 }
             }
         }
     }
 
-    public RenderBlockTarget getFocusedTarget() {
-        return focusedTarget;
-    }
-
     public BlockPos getFocusedPos() {
         return focusedTarget == null ? null : focusedTarget.getPos();
     }
 
-    public EnumFacing getFocusedFace() {
+    public Direction getFocusedFace() {
         return focusedFace;
     }
 
     /**
      * Advance the scan position but be clever about it; we never need to scan blocks behind the player
      */
-    private void nextScanPos(BlockPos.MutableBlockPos pos, EntityPlayer player, int range) {
-        EnumFacing dir = PneumaticCraftUtils.getDirectionFacing(player, true);
+    private void nextScanPos(BlockPos.MutableBlockPos pos, PlayerEntity player, int range) {
+        Direction dir = PneumaticCraftUtils.getDirectionFacing(player, true);
         switch (dir) {
             case UP:
                 if (++xOff > range) {
@@ -246,11 +230,11 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
      * @param player the player
      * @param blockTrackRange the track range
      */
-    private void processTrackerEntries(EntityPlayer player, int blockTrackRange) {
+    private void processTrackerEntries(PlayerEntity player, int blockTrackRange) {
         List<RenderBlockTarget> toRemove = new ArrayList<>();
         for (RenderBlockTarget blockTarget : blockTargets.values()) {
             boolean wasNegative = blockTarget.ticksExisted < 0;
-            blockTarget.ticksExisted += CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EntityEquipmentSlot.HEAD);
+            blockTarget.ticksExisted += CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EquipmentSlotType.HEAD);
             if (blockTarget.ticksExisted >= 0 && wasNegative) {
                 blockTarget.ticksExisted = -1;
             }
@@ -304,7 +288,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     public void render3D(float partialTicks) {
         GlStateManager.depthMask(false);
-        GlStateManager.disableDepth();
+        GlStateManager.disableDepthTest();
         GlStateManager.disableCull();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -312,7 +296,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
         blockTargets.values().forEach(t -> t.render(partialTicks));
 
         GlStateManager.enableCull();
-        GlStateManager.enableDepth();
+        GlStateManager.enableDepthTest();
         GlStateManager.disableBlend();
         GlStateManager.depthMask(true);
     }
@@ -323,7 +307,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     public Item[] getRequiredUpgrades() {
-        return new Item[]{Itemss.upgrades.get(EnumUpgrade.BLOCK_TRACKER)};
+        return new Item[]{ EnumUpgrade.BLOCK_TRACKER.getItem() };
     }
 
     @Override
@@ -334,10 +318,10 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public float getEnergyUsage(int rangeUpgrades, EntityPlayer player) {
+    public float getEnergyUsage(int rangeUpgrades, PlayerEntity player) {
         return PneumaticValues.USAGE_BLOCK_TRACKER
                 * (1 + (float) Math.min(5, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / BLOCK_TRACKING_RANGE)
-                * CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EntityEquipmentSlot.HEAD);
+                * CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EquipmentSlotType.HEAD);
     }
 
     @Override
@@ -346,8 +330,8 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.HEAD;
+    public EquipmentSlotType getEquipmentSlot() {
+        return EquipmentSlotType.HEAD;
     }
 
     @Override
@@ -372,10 +356,10 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
         return blockTargets.get(pos);
     }
 
-    public boolean scroll(MouseEvent event) {
+    public boolean scroll(GuiScreenEvent.MouseScrollEvent.Post event) {
         for (RenderBlockTarget target : blockTargets.values()) {
             if (target.scroll(event)) {
-                getAnimatedStat().handleMouseWheel(event.getDwheel());
+                getAnimatedStat().mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
                 return true;
             }
         }

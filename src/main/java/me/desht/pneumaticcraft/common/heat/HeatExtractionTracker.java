@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.heat;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
 
@@ -20,18 +20,8 @@ public class HeatExtractionTracker extends WorldSavedData {
         super(DATA_NAME);
     }
 
-    public HeatExtractionTracker(String name) {
-        super(name);
-    }
-
     public static HeatExtractionTracker getInstance(World world) {
-        MapStorage storage = world.getPerWorldStorage();
-        HeatExtractionTracker tracker = (HeatExtractionTracker) storage.getOrLoadData(HeatExtractionTracker.class, DATA_NAME);
-        if (tracker == null) {
-            tracker = new HeatExtractionTracker();
-            storage.setData(DATA_NAME, tracker);
-        }
-        return tracker;
+        return ((ServerWorld) world).getSavedData().getOrCreate(HeatExtractionTracker::new, DATA_NAME);
     }
 
     public double getHeatExtracted(BlockPos pos) {
@@ -49,29 +39,29 @@ public class HeatExtractionTracker extends WorldSavedData {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
+    public void read(CompoundNBT nbt) {
         extracted.clear();
 
-        NBTTagList list = nbt.getTagList("extracted", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < list.tagCount(); i++) {
-            NBTTagCompound sub = list.getCompoundTagAt(i);
-            BlockPos pos = new BlockPos(sub.getInteger("x"), sub.getInteger("y"), sub.getInteger("z"));
+        ListNBT list = nbt.getList("extracted", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < list.size(); i++) {
+            CompoundNBT sub = list.getCompound(i);
+            BlockPos pos = new BlockPos(sub.getInt("x"), sub.getInt("y"), sub.getInt("z"));
             extracted.put(pos, sub.getDouble("heat"));
         }
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        NBTTagList list = new NBTTagList();
+    public CompoundNBT write(CompoundNBT compound) {
+        ListNBT list = new ListNBT();
         for (Map.Entry<BlockPos, Double> entry : extracted.entrySet()) {
-            NBTTagCompound sub = new NBTTagCompound();
-            sub.setInteger("x", entry.getKey().getX());
-            sub.setInteger("y", entry.getKey().getY());
-            sub.setInteger("z", entry.getKey().getZ());
-            sub.setDouble("heat", entry.getValue());
-            list.appendTag(sub);
+            CompoundNBT sub = new CompoundNBT();
+            sub.putInt("x", entry.getKey().getX());
+            sub.putInt("y", entry.getKey().getY());
+            sub.putInt("z", entry.getKey().getZ());
+            sub.putDouble("heat", entry.getValue());
+            list.add(sub);
         }
-        compound.setTag("extracted", list);
+        compound.put("extracted", list);
         return compound;
     }
 }

@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 /**
  * Implement this interface in tile entities which should store a camouflaged state.  The corresponding block should
@@ -17,7 +17,7 @@ public interface ICamouflageableTE {
      *
      * @return the camouflage state, or null if the block should not be camouflaged
      */
-    IBlockState getCamouflage();
+    BlockState getCamouflage();
 
     /**
      * Set the camouflage for the tile entity.  The tile entity should sync this state to the client, and force
@@ -26,7 +26,7 @@ public interface ICamouflageableTE {
      *
      * @param state the camo block state
      */
-    void setCamouflage(IBlockState state);
+    void setCamouflage(BlockState state);
 
     /**
      * Convenience method: get the itemstack for the given block state.
@@ -34,27 +34,25 @@ public interface ICamouflageableTE {
      * @param state
      * @return
      */
-    static ItemStack getStackForState(IBlockState state) {
-        return state == null ? ItemStack.EMPTY : new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
+    static ItemStack getStackForState(BlockState state) {
+        return state == null ? ItemStack.EMPTY : new ItemStack(state.getBlock().asItem());
     }
 
-    static IBlockState getStateForStack(ItemStack stack) {
-        if (stack.getItem() instanceof ItemBlock) {
-            Block b = ((ItemBlock) stack.getItem()).getBlock();
-            return b.getStateFromMeta(stack.getMetadata());
+    static BlockState getStateForStack(ItemStack stack) {
+        if (stack.getItem() instanceof BlockItem) {
+            Block b = ((BlockItem) stack.getItem()).getBlock();
+            return b.getDefaultState();
         }
         return null;
     }
 
-    static ItemStack readCamoStackFromNBT(NBTTagCompound tag) {
-        return tag.hasKey("camoStack") ? new ItemStack(tag.getCompoundTag("camoStack")) : ItemStack.EMPTY;
+    static ItemStack readCamoStackFromNBT(CompoundNBT tag) {
+        return tag.contains("camoStack") ? ItemStack.read(tag.getCompound("camoStack")) : ItemStack.EMPTY;
     }
 
-    static void writeCamoStackToNBT(ItemStack camoStack, NBTTagCompound tag) {
+    static void writeCamoStackToNBT(ItemStack camoStack, CompoundNBT tag) {
         if (camoStack != ItemStack.EMPTY) {
-            NBTTagCompound camoTag = new NBTTagCompound();
-            camoStack.writeToNBT(camoTag);
-            tag.setTag("camoStack", camoTag);
+            tag.put("camoStack", camoStack.write(new CompoundNBT()));
         }
     }
 }

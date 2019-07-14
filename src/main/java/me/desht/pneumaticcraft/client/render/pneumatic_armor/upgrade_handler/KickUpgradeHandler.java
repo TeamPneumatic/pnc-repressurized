@@ -1,11 +1,10 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiKickOptions;
-import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 
 public class KickUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRenderHandler {
@@ -16,7 +15,7 @@ public class KickUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRe
 
     @Override
     public Item[] getRequiredUpgrades() {
-        return new Item[] { Itemss.upgrades.get(IItemRegistry.EnumUpgrade.DISPENSER) };
+        return new Item[] { EnumUpgrade.DISPENSER.getItem() };
     }
 
     @Override
@@ -25,7 +24,7 @@ public class KickUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRe
     }
 
     @Override
-    public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.FEET;
+    public EquipmentSlotType getEquipmentSlot() {
+        return EquipmentSlotType.FEET;
     }
 }

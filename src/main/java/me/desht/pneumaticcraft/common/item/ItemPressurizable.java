@@ -1,50 +1,50 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IPressurizable;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
     private final int volume;
     private final float maxPressure;
 
     public ItemPressurizable(String registryName, int maxAir, int volume) {
-        super(registryName);
-        setMaxStackSize(1);
-        setMaxDamage(maxAir);
-        this.volume = volume;
-        maxPressure = (float)maxAir / volume;
-        setNoRepair();
+        this(DEFAULT_PROPS, registryName, maxAir, volume);
     }
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> par3List) {
-        if (isInCreativeTab(tab)) {
-            ItemStack stack = new ItemStack(this, 1, 0);
-            ItemStack stack2 = new ItemStack(this, 1, stack.getMaxDamage());
-            par3List.add(stack);
-            par3List.add(stack2);
-        }
+    public ItemPressurizable(Item.Properties props, String registryName, int maxAir, int volume) {
+        super(props.setNoRepair().defaultMaxDamage(maxAir).maxStackSize(1), registryName);
+        this.volume = volume;
+        maxPressure = (float)maxAir / volume;
     }
+
+//    @Override
+//    @SideOnly(Side.CLIENT)
+//    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> par3List) {
+//        if (isInCreativeTab(tab)) {
+//            ItemStack stack = new ItemStack(this, 1, 0);
+//            ItemStack stack2 = new ItemStack(this, 1, stack.getMaxDamage());
+//            par3List.add(stack);
+//            par3List.add(stack2);
+//        }
+//    }
 
     @Override
     public float getPressure(ItemStack iStack) {
-        return (float) (iStack.getMaxDamage() - iStack.getItemDamage()) / (float) volume;
+        return (float) (iStack.getMaxDamage() - iStack.getDamage()) / (float) volume;
     }
 
     @Override
     public void addAir(ItemStack iStack, int amount) {
-        iStack.setItemDamage(iStack.getItemDamage() - amount);
+        iStack.setDamage(iStack.getDamage() - amount);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
         return getDurabilityColor(stack);
     }
 
-    static void addPressureTooltip(ItemStack stack, List<String> textList) {
+    static void addPressureTooltip(ItemStack stack, List<ITextComponent> textList) {
         IPressurizable p = IPressurizable.of(stack);
         if (p != null) {
             float f = p.getPressure(stack) / p.maxPressure(stack);
@@ -80,7 +80,7 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
             } else {
                 color = TextFormatting.DARK_GREEN;
             }
-            textList.add(color + I18n.format("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(p.getPressure(stack), 1)));
+            textList.add(xlate("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(p.getPressure(stack), 1)).applyTextStyle(color));
         }
     }
 
@@ -95,7 +95,7 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
     }
 
     public static boolean shouldShowPressureDurability(ItemStack stack) {
-        if (ConfigHandler.client.alwaysShowPressureDurabilityBar) return true;
+        if (Config.Client.alwaysShowPressureDurabilityBar) return true;
         IPressurizable p = IPressurizable.of(stack);
         return p != null && p.getPressure(stack) < p.maxPressure(stack);
     }

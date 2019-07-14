@@ -1,14 +1,19 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAmadronOffer;
 import me.desht.pneumaticcraft.common.config.AmadronOfferSettings;
 import me.desht.pneumaticcraft.common.config.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.io.IOException;
+import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade<PacketAmadronTradeAddCustom> {
 
@@ -20,30 +25,40 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade<Pack
         super(offer);
     }
 
-    @Override
-    public void handleClientSide(PacketAmadronTradeAddCustom message, EntityPlayer player) {
-        if (AmadronOfferSettings.notifyOfTradeAddition)
-            player.sendStatusMessage(new TextComponentTranslation("message.amadron.playerAddedTrade",
-                    message.getOffer().getVendor(),
-                    WidgetAmadronOffer.getStringForObject(message.getOffer().getOutput()),
-                    WidgetAmadronOffer.getStringForObject(message.getOffer().getInput())), false);
+    public PacketAmadronTradeAddCustom(PacketBuffer buffer) {
+        super(buffer);
     }
 
-    @Override
-    public void handleServerSide(PacketAmadronTradeAddCustom message, EntityPlayer player) {
-        AmadronOfferCustom offer = message.getOffer();
-        offer.updatePlayerId();
-        if (AmadronOfferManager.getInstance().hasOffer(offer.copy().invert())) {
-            player.sendStatusMessage(new TextComponentTranslation("message.amadron.duplicateReversedOffer"), false);
-        } else if (AmadronOfferManager.getInstance().addStaticOffer(offer)) {
-            if (AmadronOfferSettings.notifyOfTradeAddition) NetworkHandler.sendToAll(message);
-            try {
-                AmadronOfferStaticConfig.INSTANCE.writeToFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            if (player == null) {
+                // client
+                if (AmadronOfferSettings.notifyOfTradeAddition)
+                    PneumaticCraftRepressurized.proxy.getClientPlayer().sendStatusMessage(xlate("message.amadron.playerAddedTrade",
+                            getOffer().getVendor(),
+                            WidgetAmadronOffer.getStringForObject(getOffer().getOutput()),
+                            WidgetAmadronOffer.getStringForObject(getOffer().getInput())), false);
+            } else {
+                // server
+                AmadronOfferCustom offer = getOffer();
+                offer.updatePlayerId();
+                if (AmadronOfferManager.getInstance().hasOffer(offer.copy().invert())) {
+                    player.sendStatusMessage(xlate("message.amadron.duplicateReversedOffer"), false);
+                } else if (AmadronOfferManager.getInstance().addStaticOffer(offer)) {
+                    if (AmadronOfferSettings.notifyOfTradeAddition) {
+                        NetworkHandler.sendToAll(this);
+                    }
+                    try {
+                        AmadronOfferStaticConfig.INSTANCE.writeToFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    player.sendStatusMessage(xlate("message.amadron.duplicateOffer"), false);
+                }
             }
-        } else {
-            player.sendStatusMessage(new TextComponentTranslation("message.amadron.duplicateOffer"), false);
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
 }

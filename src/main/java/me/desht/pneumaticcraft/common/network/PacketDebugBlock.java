@@ -7,34 +7,35 @@
  */
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.util.Debugger;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 /**
  * @author MineMaarten
+ *
+ * Received on: CLIENT
  */
-
-public class PacketDebugBlock extends LocationIntPacket<PacketDebugBlock> {
-
+public class PacketDebugBlock extends LocationIntPacket {
     public PacketDebugBlock() {
-
     }
 
     public PacketDebugBlock(BlockPos pos) {
-
         super(pos);
     }
 
-    @Override
-    public void handleClientSide(PacketDebugBlock message, EntityPlayer player) {
-
-        Debugger.indicateBlock(player.world, message.pos);
+    PacketDebugBlock(PacketBuffer buffer) {
+        super(buffer);
     }
 
-    @Override
-    public void handleServerSide(PacketDebugBlock message, EntityPlayer player) {
-
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            Debugger.indicateBlock(PneumaticCraftRepressurized.proxy.getClientWorld(), pos);
+        });
+        ctx.get().setPacketHandled(true);
     }
-
 }

@@ -1,13 +1,15 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IEntityTrackEntry;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiDroneDebuggerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -15,22 +17,16 @@ import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
 import me.desht.pneumaticcraft.common.network.PacketUpdateDebuggingDrone;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.NBTKeys;
-import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityHanging;
+import net.minecraft.entity.item.HangingEntity;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.MouseEvent;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -43,7 +39,6 @@ public class RenderEntityTarget {
     private final RenderTargetCircle circle2;
     public int ticksExisted = 0;
     private float oldSize;
-    @SideOnly(Side.CLIENT)
     private final GuiAnimatedStat stat;
     private boolean didMakeLockSound;
     public boolean isLookingAtTarget;
@@ -72,16 +67,16 @@ public class RenderEntityTarget {
     }
 
     public void update() {
-        stat.update();
+        stat.tick();
         stat.setTitle(entity.getDisplayName().getFormattedText());
-        EntityPlayer player = FMLClientHandler.instance().getClient().player;
+        PlayerEntity player = Minecraft.getInstance().player;
 
         if (ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;
             player.world.playSound(player.posX, player.posY, player.posZ, Sounds.HUD_ENTITY_LOCK, SoundCategory.PLAYERS, 0.1F, 1.0F, true);
         }
 
-        boolean tagged = NBTUtil.getInteger(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId();
+        boolean tagged = NBTUtil.getInteger(player.getItemStackFromSlot(EquipmentSlotType.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId();
         circle1.setRenderingAsTagged(tagged);
         circle2.setRenderingAsTagged(tagged);
         circle1.update();
@@ -111,20 +106,20 @@ public class RenderEntityTarget {
             tracker.render(entity, partialTicks);
         }
         double x = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
-        double y = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks + entity.height / 2D;
+        double y = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks + entity.getHeight() / 2D;
         double z = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
 
         GlStateManager.depthMask(false);
-        GlStateManager.disableDepth();
+        GlStateManager.disableDepthTest();
         GlStateManager.disableCull();
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
 
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         GlStateManager.pushMatrix();
 
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.IS_RUNNING_ON_MAC);
 
         float red;
         float green;
@@ -138,7 +133,7 @@ public class RenderEntityTarget {
             red = 1;
             green = 0;
             blue = 0;
-        } else if (entity instanceof EntityHanging) {
+        } else if (entity instanceof HangingEntity) {
             red = 0;
             green = 1;
             blue = 1;
@@ -148,18 +143,18 @@ public class RenderEntityTarget {
             blue = 0;
         }
 
-        float size = entity.height * 0.5F;
+        float size = entity.getHeight() * 0.5F;
 
         if (ticksExisted < 60) {
             size += 5 - Math.abs(ticksExisted) * 0.083F;
             alpha = Math.abs(ticksExisted) * 0.005F;
         }
 
-        GlStateManager.translate(x, y, z);
+        GlStateManager.translated(x, y, z);
 
-        GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(180.0F - Minecraft.getMinecraft().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
-        GlStateManager.color(red, green, blue, alpha);
+        GlStateManager.rotated(180.0F - Minecraft.getInstance().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotated(180.0F - Minecraft.getInstance().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        GlStateManager.color4f(red, green, blue, alpha);
         float renderSize = oldSize + (size - oldSize) * partialTicks;
         circle1.render(renderSize, partialTicks);
         circle2.render(renderSize + 0.2D, partialTicks);
@@ -168,11 +163,11 @@ public class RenderEntityTarget {
             RenderProgressBar.render(0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress,  0xD0FFFF00, 0xD000FF00);
         }
 
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
 
-        FontRenderer fontRenderer = Minecraft.getMinecraft().getRenderManager().getFontRenderer();
-        GlStateManager.scale(0.02D, 0.02D, 0.02D);
-        GlStateManager.color(red, green, blue, alpha);
+        FontRenderer fontRenderer = Minecraft.getInstance().getRenderManager().getFontRenderer();
+        GlStateManager.scaled(0.02D, 0.02D, 0.02D);
+        GlStateManager.color4f(red, green, blue, alpha);
         if (ticksExisted > 120) {
             if (justRenderWhenHovering && !isLookingAtTarget) {
                 stat.closeWindow();
@@ -196,7 +191,7 @@ public class RenderEntityTarget {
 
         GlStateManager.popMatrix();
         GlStateManager.enableCull();
-        GlStateManager.enableDepth();
+        GlStateManager.enableDepthTest();
         GlStateManager.disableBlend();
         GlStateManager.depthMask(true);
 
@@ -209,10 +204,9 @@ public class RenderEntityTarget {
 
     private boolean isPlayerLookingAtTarget() {
         // code used from the Enderman player looking code.
-        EntityPlayer player = FMLClientHandler.instance().getClient().player;
-        World world = FMLClientHandler.instance().getClient().world;
+        PlayerEntity player = Minecraft.getInstance().player;
         Vec3d vec3 = player.getLook(1.0F).normalize();
-        Vec3d vec31 = new Vec3d(entity.posX - player.posX, entity.getEntityBoundingBox().minY + entity.height / 2.0F - (player.posY + player.getEyeHeight()), entity.posZ - player.posZ);
+        Vec3d vec31 = new Vec3d(entity.posX - player.posX, entity.getBoundingBox().minY + entity.getHeight() / 2.0F - (player.posY + player.getEyeHeight()), entity.posZ - player.posZ);
         double d0 = vec31.length();
         vec31 = vec31.normalize();
         double d1 = vec3.dotProduct(vec31);
@@ -231,7 +225,7 @@ public class RenderEntityTarget {
         if (isInitialized() && isPlayerLookingAtTarget() && entity instanceof EntityDrone) {
             GuiDroneDebuggerOptions.clearAreaShowWidgetId();
             NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getEntityId()));
-            Minecraft.getMinecraft().player.playSound(Sounds.HUD_ENTITY_LOCK, 1.0f, 2.0f);
+            Minecraft.getInstance().player.playSound(Sounds.HUD_ENTITY_LOCK, 1.0f, 2.0f);
         }
     }
 
@@ -243,9 +237,9 @@ public class RenderEntityTarget {
         return hackTime;
     }
 
-    public boolean scroll(MouseEvent event) {
+    public boolean scroll(GuiScreenEvent.MouseScrollEvent.Post event) {
         if (isInitialized() && isPlayerLookingAtTarget()) {
-            return stat.handleMouseWheel(event.getDwheel());
+            return stat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
         }
         return false;
     }

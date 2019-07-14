@@ -1,31 +1,31 @@
 package me.desht.pneumaticcraft.client.model.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModulePressureGauge;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class ModelGauge extends ModelModuleBase {
-    private final ModelRenderer shape1;
-    private final ModelRenderer shape2;
+    private final RendererModel shape1;
+    private final RendererModel shape2;
     private final ModulePressureGauge gaugeModule;
 
     public ModelGauge(ModulePressureGauge gaugeModule) {
         textureWidth = 64;
         textureHeight = 32;
 
-        shape1 = new ModelRenderer(this, 0, 0);
+        shape1 = new RendererModel(this, 0, 0);
         shape1.addBox(0F, 0F, 0F, 3, 3, 3);
         shape1.setRotationPoint(-1.5F, 14.5F, 2F);
         shape1.setTextureSize(64, 32);
         shape1.mirror = true;
         setRotation(shape1, 0F, 0F, 0F);
-        shape2 = new ModelRenderer(this, 0, 6);
+        shape2 = new RendererModel(this, 0, 6);
         shape2.addBox(0F, 0F, 0F, 8, 8, 1);
         shape2.setRotationPoint(-4F, 12F, 5F);
         shape2.setTextureSize(64, 32);
@@ -49,12 +49,12 @@ public class ModelGauge extends ModelModuleBase {
             critPressure = base.criticalPressure;
             dangerPressure = base.dangerPressure;
         }
-        GlStateManager.translate(0, 1, 0.378);
+        GlStateManager.translated(0, 1, 0.378);
         double widgetScale = 0.007D;
-        GlStateManager.scale(widgetScale, widgetScale, widgetScale);
-        GlStateManager.rotate(180, 0, 1, 0);
+        GlStateManager.scaled(widgetScale, widgetScale, widgetScale);
+        GlStateManager.rotated(180, 0, 1, 0);
         GlStateManager.disableLighting();
-        GuiUtils.drawPressureGauge(FMLClientHandler.instance().getClient().fontRenderer, -1, critPressure, dangerPressure, -1.001F, pressure, 0, 0, 0);
+        GuiUtils.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, critPressure, dangerPressure, -1.001F, pressure, 0, 0, 0);
         GlStateManager.enableLighting();
 
     }

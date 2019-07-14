@@ -1,53 +1,53 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketCommandGetGlobalVariableOutput extends AbstractPacket<PacketCommandGetGlobalVariableOutput> {
+import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+/**
+ * Received on: CLIENT
+ */
+public class PacketCommandGetGlobalVariableOutput extends LocationIntPacket {
     private String varName;
-    private BlockPos pos;
     private ItemStack stack;
 
     public PacketCommandGetGlobalVariableOutput() {
     }
 
     public PacketCommandGetGlobalVariableOutput(String varName, BlockPos pos, ItemStack stack) {
+        super(pos);
         this.varName = varName;
-        this.pos = pos;
         this.stack = stack;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        varName = ByteBufUtils.readUTF8String(buf);
-        pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
-        stack = ByteBufUtils.readItemStack(buf);
+    PacketCommandGetGlobalVariableOutput(PacketBuffer buffer) {
+        super(buffer);
+        varName = PacketUtil.readUTF8String(buffer);
+        stack = buffer.readItemStack();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeUTF8String(buf, varName);
-        buf.writeInt(pos.getX());
-        buf.writeInt(pos.getY());
-        buf.writeInt(pos.getZ());
-        ByteBufUtils.writeItemStack(buf, stack);
+        super.toBytes(buf);
+        PacketUtil.writeUTF8String(buf, varName);
+        new PacketBuffer(buf).writeItemStack(stack);
     }
 
-    @Override
-    public void handleClientSide(PacketCommandGetGlobalVariableOutput message, EntityPlayer player) {
-        player.sendStatusMessage(new TextComponentTranslation("command.getGlobalVariable.output",
-                        message.varName,
-                        message.pos.getX(), message.pos.getY(), message.pos.getZ(),
-                        message.stack.isEmpty() ? "-" : message.stack.getDisplayName()),
-                false);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            PneumaticCraftRepressurized.proxy.getClientPlayer().sendStatusMessage(xlate("command.getGlobalVariable.output",
+                            varName,
+                            pos.getX(), pos.getY(), pos.getZ(),
+                            stack.isEmpty() ? "-" : stack.getDisplayName().getFormattedText()),
+                    false);
+        });
+        ctx.get().setPacketHandled(true);
     }
-
-    @Override
-    public void handleServerSide(PacketCommandGetGlobalVariableOutput message, EntityPlayer player) {
-    }
-
 }

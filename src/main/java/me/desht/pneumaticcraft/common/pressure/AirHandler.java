@@ -5,7 +5,9 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.client.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -14,19 +16,19 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
-import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.Sounds;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -36,6 +38,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nonnull;
 import java.util.*;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class AirHandler implements IAirHandler {
     private float maxPressure;
     @GuiSynced
@@ -44,7 +48,7 @@ public class AirHandler implements IAirHandler {
     private final float dangerPressure;
     private final float criticalPressure;
     @GuiSynced
-    private int air; //Pressure = air / volume
+    private int air; // Pressure = air / volume
     private int soundCounter;
     private final Set<IAirHandler> specialConnectedHandlers = new HashSet<>();
     private TileEntityCache[] tileCache;
@@ -55,13 +59,17 @@ public class AirHandler implements IAirHandler {
     private World world;
     private BlockPos pos;
 
+    public AirHandler() {
+        this(PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, 3000);
+    }
+
     AirHandler(float dangerPressure, float criticalPressure, int volume) {
         Validate.isTrue(volume > 0, "Volume can't be lower than or equal to 0!");
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
-        maxPressure = dangerPressure + (criticalPressure - dangerPressure) * (float) Math.random();
+        this.maxPressure = dangerPressure + (criticalPressure - dangerPressure) * (float) Math.random();
         this.volume = volume;
-        defaultVolume = volume;
+        this.defaultVolume = volume;
     }
 
     public TileEntityCache[] getTileCache() {
@@ -84,12 +92,11 @@ public class AirHandler implements IAirHandler {
     }
 
     @Override
-    public void printManometerMessage(EntityPlayer player, List<String> curInfo) {
-        curInfo.add(TextFormatting.GREEN + "Current pressure: " + PneumaticCraftUtils.roundNumberTo(getPressure(), 1) + " bar.");
+    public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
+        curInfo.add(xlate("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(getPressure(), 1)).applyTextStyle(TextFormatting.GREEN));
     }
 
-    @Override
-    public void update() {
+    public void tick() {
         if (!getWorld().isRemote) {
             updateVolume();
 
@@ -98,8 +105,8 @@ public class AirHandler implements IAirHandler {
             }
 
             if (getPressure() > maxPressure) {
-                getWorld().createExplosion(null, getPos().getX() + 0.5D, getPos().getY() + 0.5D, getPos().getZ() + 0.5D, 1.0F, true);
-                getWorld().setBlockToAir(getPos());
+                getWorld().createExplosion(null, getPos().getX() + 0.5D, getPos().getY() + 0.5D, getPos().getZ() + 0.5D, 1.0F, Explosion.Mode.BREAK);
+                getWorld().removeBlock(getPos(), false);
             } else {
                 disperseAir();
             }
@@ -114,7 +121,7 @@ public class AirHandler implements IAirHandler {
 
     private void doSecurityAirChecks() {
         if (getPressure() >= dangerPressure - 0.1) {
-            airLeak(EnumFacing.UP);
+            airLeak(Direction.UP);
         }
 
         // Remove any remaining air
@@ -141,11 +148,11 @@ public class AirHandler implements IAirHandler {
         volume = newVolume;
     }
 
-    private void onAirDispersion(EnumFacing dir, int airAdded) {
+    private void onAirDispersion(Direction dir, int airAdded) {
         if (airListener != null) airListener.onAirDispersion(this, dir, airAdded);
     }
 
-    private int getMaxDispersion(EnumFacing dir) {
+    private int getMaxDispersion(Direction dir) {
         return airListener != null ? airListener.getMaxDispersion(this, dir) : Integer.MAX_VALUE;
     }
 
@@ -166,7 +173,7 @@ public class AirHandler implements IAirHandler {
         disperseAir(getConnectedPneumatics());
     }
 
-    private void disperseAir(List<Pair<EnumFacing, IAirHandler>> teList) {
+    private void disperseAir(List<Pair<Direction, IAirHandler>> teList) {
 
         boolean shouldRepeat;
         List<Pair<Integer, Integer>> dispersion = new ArrayList<>();
@@ -175,15 +182,15 @@ public class AirHandler implements IAirHandler {
             //Add up every volume and air.
             int totalVolume = getVolume();
             int totalAir = air;
-            for (Pair<EnumFacing, IAirHandler> entry : teList) {
+            for (Pair<Direction, IAirHandler> entry : teList) {
                 IAirHandler airHandler = entry.getValue();
                 totalVolume += airHandler.getVolume();
                 totalAir += airHandler.getAir();
             }
             //Only go push based, ignore any machines that have a higher pressure than this block.
-            Iterator<Pair<EnumFacing, IAirHandler>> iterator = teList.iterator();
+            Iterator<Pair<Direction, IAirHandler>> iterator = teList.iterator();
             while (iterator.hasNext()) {
-                Pair<EnumFacing, IAirHandler> entry = iterator.next();
+                Pair<Direction, IAirHandler> entry = iterator.next();
                 IAirHandler airHandler = entry.getValue();
                 int totalMachineAir = (int) ((long) totalAir * airHandler.getVolume() / totalVolume);//Calculate the total air the machine is going to get.
                 int airDispersed = totalMachineAir - airHandler.getAir();
@@ -256,11 +263,10 @@ public class AirHandler implements IAirHandler {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        NBTTagCompound pneumaticTag = tag.getCompoundTag("pneumatic");
-        air = pneumaticTag.getInteger("air");
-        maxPressure = pneumaticTag.getFloat("maxPressure");
-        volume = pneumaticTag.getInteger("volume");
+    public void deserializeNBT(CompoundNBT tag) {
+        air = tag.getInt("air");
+        maxPressure = tag.getFloat("maxPressure");
+        volume = tag.getInt("volume");
         if (volume == 0 && PneumaticCraftRepressurized.proxy.getClientWorld() == null) {
             // only warn about a zero volume on the server side
             Log.error("Volume was 0! Assigning default");
@@ -269,12 +275,12 @@ public class AirHandler implements IAirHandler {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
-        NBTTagCompound pneumaticTag = new NBTTagCompound();
-        pneumaticTag.setInteger("air", air);
-        pneumaticTag.setInteger("volume", volume);
-        pneumaticTag.setFloat("maxPressure", maxPressure);
-        tag.setTag("pneumatic", pneumaticTag);
+    public CompoundNBT serializeNBT() {
+        CompoundNBT pneumaticTag = new CompoundNBT();
+        pneumaticTag.putInt("air", air);
+        pneumaticTag.putInt("volume", volume);
+        pneumaticTag.putFloat("maxPressure", maxPressure);
+        return pneumaticTag;
     }
 
     @Override
@@ -297,7 +303,7 @@ public class AirHandler implements IAirHandler {
     }
 
     @Override
-    public void airLeak(EnumFacing side) {
+    public void airLeak(Direction side) {
         if (getWorld().isRemote || Math.abs(getPressure()) < 0.01F) return;
         double motionX = side.getXOffset();
         double motionY = side.getYOffset();
@@ -310,14 +316,14 @@ public class AirHandler implements IAirHandler {
 
         if (getPressure() < 0) {
             double speed = getPressure() * 0.1F - 0.1F;
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, getPos().getX() + 0.5D + motionX / 2D, getPos().getY() + 0.5D + motionY / 2D, getPos().getZ() + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), getWorld());
+            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, getPos().getX() + 0.5D + motionX / 2D, getPos().getY() + 0.5D + motionY / 2D, getPos().getZ() + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), getWorld());
             int dispersedAmount = -(int) (getPressure() * PneumaticValues.AIR_LEAK_FACTOR) + 20;
             if (getAir() > dispersedAmount) dispersedAmount = -getAir();
             onAirDispersion(side, dispersedAmount);
             addAir(dispersedAmount);
         } else {
             double speed = getPressure() * 0.1F + 0.1F;
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, getPos().getX() + 0.5D + motionX / 2D, getPos().getY() + 0.5D + motionY / 2D, getPos().getZ() + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), getWorld());
+            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, getPos().getX() + 0.5D + motionX / 2D, getPos().getY() + 0.5D + motionY / 2D, getPos().getZ() + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), getWorld());
             int dispersedAmount = (int) (getPressure() * PneumaticValues.AIR_LEAK_FACTOR) + 20;
             if (dispersedAmount > getAir()) dispersedAmount = getAir();
             onAirDispersion(side, -dispersedAmount);
@@ -331,12 +337,12 @@ public class AirHandler implements IAirHandler {
      * @return a list of face->air-handler pairs
      */
     @Override
-    public List<Pair<EnumFacing, IAirHandler>> getConnectedPneumatics() {
-        List<Pair<EnumFacing, IAirHandler>> teList = new ArrayList<>();
+    public List<Pair<Direction, IAirHandler>> getConnectedPneumatics() {
+        List<Pair<Direction, IAirHandler>> teList = new ArrayList<>();
         for (IAirHandler specialConnection : specialConnectedHandlers) {
             teList.add(new ImmutablePair<>(null, specialConnection));
         }
-        for (EnumFacing direction : EnumFacing.VALUES) {
+        for (Direction direction : Direction.VALUES) {
             TileEntity te = getTileCache()[direction.ordinal()].getTileEntity();
             IPneumaticMachine machine = IPneumaticMachine.getMachine(te);
             if (machine != null && parentPneumatic.getAirHandler(direction) == this && machine.getAirHandler(direction.getOpposite()) != null) {
@@ -398,16 +404,6 @@ public class AirHandler implements IAirHandler {
     }
 
     @Override
-    public void setUpgradeSlots(int... upgradeSlots) {
-        // does nothing - deprecated method
-    }
-
-    @Override
-    public int[] getUpgradeSlots() {
-        return new int[0];
-    }
-
-    @Override
     public World getWorld() {
         return world;
     }
@@ -427,16 +423,14 @@ public class AirHandler implements IAirHandler {
         this.pos = pos;
     }
 
-    @Override
-    public Set<Item> getApplicableUpgrades() {
-        Set<Item> upgrades = new HashSet<>(2);
-        upgrades.add(Itemss.upgrades.get(EnumUpgrade.VOLUME));
-        upgrades.add(Itemss.upgrades.get(EnumUpgrade.SECURITY));
-        return upgrades;
-    }
-
-    @Override
-    public String getName() {
-        throw new UnsupportedOperationException();
+    public static BlockState getBlockConnectionState(BlockState state, IAirHandler handler) {
+        boolean[] conn = new boolean[6];
+        for (Pair<Direction, IAirHandler> entry : handler.getConnectedPneumatics()) {
+            conn[entry.getKey().ordinal()] = true;
+        }
+        for (int i = 0; i < 6; i++) {
+            state = state.with(BlockPneumaticCraft.CONNECTION_PROPERTIES[i], conn[i]);
+        }
+        return state;
     }
 }

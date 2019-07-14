@@ -3,11 +3,10 @@ package me.desht.pneumaticcraft.common.sensor.eventSensors;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +39,7 @@ public class PlayerItemPickupSensor extends PlayerEventSensor {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
-    }
-
-    @Override
-    public Rectangle needsSlot() {
-        return null;
     }
 }

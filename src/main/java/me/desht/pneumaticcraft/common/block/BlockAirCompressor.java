@@ -1,41 +1,27 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 
-public class BlockAirCompressor extends BlockPneumaticCraftModeled {
+public class BlockAirCompressor extends BlockPneumaticCraft {
 
-    public static final PropertyBool ON = PropertyBool.create("on");
+    public static final BooleanProperty ON = BooleanProperty.create("on");
 
-    BlockAirCompressor() {
+    public BlockAirCompressor() {
         super(Material.IRON, "air_compressor");
     }
 
     BlockAirCompressor(String name) { super(Material.IRON, name); }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, ROTATION, ON);
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return super.getMetaFromState(state) + (state.getValue(ON) ? 6 : 0);
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return super.getStateFromMeta(meta).withProperty(ON, meta >= 6);
-    }
-
-    @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.AIR_COMPRESSOR;
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        builder.add(ON);
     }
 
     @Override

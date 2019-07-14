@@ -1,13 +1,15 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
 
@@ -17,11 +19,15 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     private int laserStep; //used to progressively draw a circle.
     private static final float ITEM_SIZE = 10F;
 
+    public TileEntityAssemblyLaser() {
+        super(ModTileEntityTypes.ASSEMBLY_LASER);
+    }
+
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
         if (laserStep > 0) {
-            EnumFacing[] platformDirection = getPlatformDirection();
+            Direction[] platformDirection = getPlatformDirection();
             if (platformDirection == null) {
                 laserStep = 105;
             }
@@ -79,7 +85,7 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public boolean gotoNeighbour(EnumFacing primaryDir, EnumFacing secondaryDir) {
+    public boolean gotoNeighbour(Direction primaryDir, Direction secondaryDir) {
         boolean diagonal = super.gotoNeighbour(primaryDir, secondaryDir);
         targetAngles[EnumAngles.TURN.ordinal()] -= ITEM_SIZE * 0.45D;
         return diagonal;
@@ -100,18 +106,23 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setBoolean("laser", isLaserOn);
-        tag.setInteger("laserStep", laserStep);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putBoolean("laser", isLaserOn);
+        tag.putInt("laserStep", laserStep);
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
         isLaserOn = tag.getBoolean("laser");
-        laserStep = tag.getInteger("laserStep");
+        laserStep = tag.getInt("laserStep");
+    }
+
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
     }
 
     @Override

@@ -1,8 +1,9 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fluids.FluidTank;
 
 import javax.annotation.Nonnull;
@@ -13,7 +14,6 @@ import java.util.Map;
  * is broken, and deserialized back to the tile entity when the block is placed down again.
  */
 public interface ISerializableTanks {
-    String NBT_SAVED_TANKS = "SavedTanks";
 
     /**
      * Get a mapping of all tanks; this maps a tag name, which is used as the serialization key, to a fluid tank.
@@ -23,9 +23,9 @@ public interface ISerializableTanks {
     @Nonnull
     Map<String,FluidTank> getSerializableTanks();
 
-    default void deserializeTanks(NBTTagCompound tag) {
+    default void deserializeTanks(CompoundNBT tag) {
         for (Map.Entry<String,FluidTank> entry : getSerializableTanks().entrySet()) {
-            entry.getValue().readFromNBT(tag.getCompoundTag(entry.getKey()));
+            entry.getValue().readFromNBT(tag.getCompound(entry.getKey()));
         }
     }
 
@@ -33,6 +33,14 @@ public interface ISerializableTanks {
         for (Map.Entry<String,FluidTank> entry : getSerializableTanks().entrySet()) {
             serializeTank(entry.getValue(), customDrop, entry.getKey());
         }
+    }
+
+    default CompoundNBT serializeTanks() {
+        CompoundNBT tag = new CompoundNBT();
+        for (Map.Entry<String,FluidTank> entry : getSerializableTanks().entrySet()) {
+            tag.put(entry.getKey(), entry.getValue().writeToNBT(new CompoundNBT()));
+        }
+        return tag;
     }
 
     /**
@@ -45,16 +53,16 @@ public interface ISerializableTanks {
      * @param tagName name of the subtag in the itemstack's NBT to store the tank data
      */
      static void serializeTank(FluidTank tank, ItemStack stack, String tagName) {
-         NBTTagCompound subTag = NBTUtil.getCompoundTag(stack, NBT_SAVED_TANKS);
+         CompoundNBT subTag = NBTUtil.getCompoundTag(stack, NBTKeys.NBT_SAVED_TANKS);
          if (tank.getFluid() != null && tank.getFluid().amount > 0) {
-             subTag.setTag(tagName, tank.writeToNBT(new NBTTagCompound()));
+             subTag.put(tagName, tank.writeToNBT(new CompoundNBT()));
          } else {
-             subTag.removeTag(tagName);
+             subTag.remove(tagName);
          }
          if (!subTag.isEmpty()) {
-             NBTUtil.setCompoundTag(stack, NBT_SAVED_TANKS, subTag);
+             NBTUtil.setCompoundTag(stack, NBTKeys.NBT_SAVED_TANKS, subTag);
          } else {
-             NBTUtil.removeTag(stack, NBT_SAVED_TANKS);
+             NBTUtil.removeTag(stack, NBTKeys.NBT_SAVED_TANKS);
          }
     }
 
@@ -68,10 +76,10 @@ public interface ISerializableTanks {
      * @return the deserialized tank, or null
      */
     static FluidTank deserializeTank(ItemStack stack, String tagName, int capacity) {
-        if (NBTUtil.hasTag(stack, NBT_SAVED_TANKS)) {
+        if (NBTUtil.hasTag(stack, NBTKeys.NBT_SAVED_TANKS)) {
             FluidTank tank = new FluidTank(capacity);
-            NBTTagCompound subTag = NBTUtil.getCompoundTag(stack, NBT_SAVED_TANKS);
-            return tank.readFromNBT(subTag.getCompoundTag(tagName));
+            CompoundNBT subTag = NBTUtil.getCompoundTag(stack, NBTKeys.NBT_SAVED_TANKS);
+            return tank.readFromNBT(subTag.getCompound(tagName));
         }
         return null;
     }

@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
@@ -17,11 +17,11 @@ public class RenderTargetCircle {
     private final Random rand;
     private boolean renderAsTagged;
 
-    public RenderTargetCircle() {
+    RenderTargetCircle() {
         rand = new Random();
     }
 
-    public void setRenderingAsTagged(boolean tagged) {
+    void setRenderingAsTagged(boolean tagged) {
         renderAsTagged = tagged;
     }
 
@@ -45,7 +45,7 @@ public class RenderTargetCircle {
         // GlStateManager.lineWidth((float)size * 20F);
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
 
-        GlStateManager.rotate((float) renderRotationAngle, 0, 0, 1);
+        GlStateManager.rotated((float) renderRotationAngle, 0, 0, 1);
         for (int j = 0; j < 2; j++) {
             wr.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION);
             for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS / 4; i++) {
@@ -55,7 +55,7 @@ public class RenderTargetCircle {
             Tessellator.getInstance().draw();
 
             if (renderAsTagged) {
-                GlStateManager.color(1, 0, 0, 1);
+                GlStateManager.color4f(1, 0, 0, 1);
                 wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
                 for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS / 4; i++) {
                     wr.pos(PneumaticCraftUtils.cos[i] * size, PneumaticCraftUtils.sin[i] * size, 0).endVertex();
@@ -64,10 +64,10 @@ public class RenderTargetCircle {
                     wr.pos(PneumaticCraftUtils.cos[i] * (size + 0.1D), PneumaticCraftUtils.sin[i] * (size + 0.1D), 0).endVertex();
                 }
                 Tessellator.getInstance().draw();
-                GlStateManager.color(1, 1, 0, 0.5F);
+                GlStateManager.color4f(1, 1, 0, 0.5F);
             }
 
-            GlStateManager.rotate(180, 0, 0, 1);
+            GlStateManager.rotated(180, 0, 0, 1);
         }
 
         GL11.glDisable(GL11.GL_LINE_SMOOTH);

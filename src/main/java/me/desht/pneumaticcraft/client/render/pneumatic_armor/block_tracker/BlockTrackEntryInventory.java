@@ -1,31 +1,35 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.InventoryTrackEvent;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.properties.ChestType;
+import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BlockTrackEntryInventory implements IBlockTrackEntry {
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te) {
-        if (te instanceof TileEntityChest) {
-            TileEntityChest chest = (TileEntityChest) te;
-            if (chest.adjacentChestXNeg != null || chest.adjacentChestZNeg != null) return false;
+    public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
+        if (te instanceof ChestTileEntity && state.get(ChestBlock.TYPE) == ChestType.RIGHT) {
+            // we'll only track the left side of double chest directly
+            return false;
         }
 
         return te != null
@@ -35,15 +39,15 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     }
 
     @Override
-    public boolean shouldBeUpdatedFromServer(TileEntity te) {
-        if (te instanceof TileEntityChest) {
-            TileEntityChest chest = (TileEntityChest) te;
-            if (chest.adjacentChestXPos != null)
-                NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(chest.adjacentChestXPos.getPos()));
-            if (chest.adjacentChestZPos != null)
-                NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(chest.adjacentChestZPos.getPos()));
+    public List<BlockPos> getServerUpdatePositions(TileEntity te) {
+        List<BlockPos> res = new ArrayList<>();
+        if (te instanceof ChestTileEntity && te.getBlockState().get(ChestBlock.TYPE) == ChestType.LEFT) {
+            Direction dir = ChestBlock.getDirectionToAttached(te.getBlockState());
+            res.add(te.getPos().offset(dir));
+            NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(te.getPos().offset(dir)));
         }
-        return true;
+        res.add(te.getPos());
+        return res;
     }
 
     @Override
@@ -52,10 +56,9 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList) {
         try {
-            IItemHandler inventory = IOHelper.getInventoryForTE(te, face);
-            if (inventory != null) {
+            IOHelper.getInventoryForTE(te, face).ifPresent(inventory -> {
                 boolean empty = true;
                 ItemStack[] inventoryStacks = new ItemStack[inventory.getSlots()];
                 for (int i = 0; i < inventory.getSlots(); i++) {
@@ -69,9 +72,11 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
                     infoList.add("Contents: Empty");
                 } else {
                     infoList.add("Contents:");
-                    PneumaticCraftUtils.sortCombineItemStacksAndToString(infoList, inventoryStacks);
+                    List<ITextComponent> l = new ArrayList<>();
+                    PneumaticCraftUtils.sortCombineItemStacksAndToString(l, inventoryStacks);
+                    infoList.addAll(l.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()));
                 }
-            }
+            });
         } catch (Throwable e) {
             TrackerBlacklistManager.addInventoryTEToBlacklist(te, e);
         }

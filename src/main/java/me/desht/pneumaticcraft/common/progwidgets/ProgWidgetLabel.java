@@ -1,17 +1,20 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetLabel extends ProgWidget implements ILabel {
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (getConnectedParameters()[0] == null) curInfo.add("gui.progWidget.label.error.noLabel");
+        if (getConnectedParameters()[0] == null) curInfo.add(xlate("gui.progWidget.label.error.noLabel"));
     }
 
     @Override
@@ -61,7 +64,7 @@ public class ProgWidgetLabel extends ProgWidget implements ILabel {
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.WHITE;
+    public DyeColor getColor() {
+        return DyeColor.WHITE;
     }
 }

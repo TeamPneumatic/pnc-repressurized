@@ -3,11 +3,16 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.inventory.ContainerAdvancedLiquidCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.util.Direction;
+
+import javax.annotation.Nullable;
 
 public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompressor implements IHeatExchanger {
 
@@ -20,7 +25,7 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
+    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
         return heatExchanger;
     }
 
@@ -39,8 +44,9 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
         return HeatUtil.getEfficiency(heatExchanger.getTemperatureAsInt());
     }
 
+    @Nullable
     @Override
-    public String getName() {
-        return Blockss.ADVANCED_LIQUID_COMPRESSOR.getTranslationKey();
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerAdvancedLiquidCompressor(i, playerInventory, getPos());
     }
 }

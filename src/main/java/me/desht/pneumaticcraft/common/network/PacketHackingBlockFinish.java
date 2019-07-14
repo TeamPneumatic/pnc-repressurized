@@ -1,15 +1,19 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.util.WorldAndCoord;
-import me.desht.pneumaticcraft.lib.Sounds;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketHackingBlockFinish extends LocationIntPacket<PacketHackingBlockFinish> {
+import java.util.function.Supplier;
+
+public class PacketHackingBlockFinish extends LocationIntPacket {
 
     public PacketHackingBlockFinish() {
     }
@@ -18,23 +22,25 @@ public class PacketHackingBlockFinish extends LocationIntPacket<PacketHackingBlo
         super(pos);
     }
 
-    public PacketHackingBlockFinish(WorldAndCoord coord) {
-        super(coord.pos);
+    public PacketHackingBlockFinish(GlobalPos gPos) {
+        super(gPos.getPos());
     }
 
-    @Override
-    public void handleClientSide(PacketHackingBlockFinish message, EntityPlayer player) {
-        IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(player.world, message.pos, player);
-        if (hackableBlock != null) {
-            hackableBlock.onHackFinished(player.world, message.pos, player);
-            PneumaticCraftRepressurized.proxy.getHackTickHandler().trackBlock(new WorldAndCoord(player.world, message.pos), hackableBlock);
-            CommonArmorHandler.getHandlerForPlayer(player).setHackedBlock(null);
-            player.playSound(Sounds.HELMET_HACK_FINISH, 1.0F, 1.0F);
-        }
+    public PacketHackingBlockFinish(PacketBuffer buffer) {
+        super(buffer);
     }
 
-    @Override
-    public void handleServerSide(PacketHackingBlockFinish message, EntityPlayer player) {
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+            IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(player.world, pos, player);
+            if (hackableBlock != null) {
+                hackableBlock.onHackFinished(player.world, pos, player);
+                PneumaticCraftRepressurized.proxy.getHackTickHandler().trackBlock(GlobalPos.of(player.world.getDimension().getType(), pos), hackableBlock);
+                CommonArmorHandler.getHandlerForPlayer(player).setHackedBlockPos(null);
+                player.playSound(Sounds.HELMET_HACK_FINISH, 1.0F, 1.0F);
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
 }

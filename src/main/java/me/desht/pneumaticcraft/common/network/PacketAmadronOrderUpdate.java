@@ -2,9 +2,17 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketAmadronOrderUpdate extends AbstractPacket<PacketAmadronOrderUpdate> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: SERVER
+ * Sent from client when an offer widget is clicked in the Amadron GUI to update the server-side container
+ */
+public class PacketAmadronOrderUpdate {
 
     private int orderId, mouseButton;
     private boolean sneaking;
@@ -18,29 +26,25 @@ public class PacketAmadronOrderUpdate extends AbstractPacket<PacketAmadronOrderU
     public PacketAmadronOrderUpdate() {
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        orderId = buf.readInt();
-        mouseButton = buf.readByte();
-        sneaking = buf.readBoolean();
+    public PacketAmadronOrderUpdate(PacketBuffer buffer) {
+        orderId = buffer.readInt();
+        mouseButton = buffer.readByte();
+        sneaking = buffer.readBoolean();
     }
 
-    @Override
     public void toBytes(ByteBuf buf) {
         buf.writeInt(orderId);
         buf.writeByte(mouseButton);
         buf.writeBoolean(sneaking);
     }
 
-    @Override
-    public void handleClientSide(PacketAmadronOrderUpdate message, EntityPlayer player) {
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            if (player.openContainer instanceof ContainerAmadron) {
+                ((ContainerAmadron) player.openContainer).clickOffer(orderId, mouseButton, sneaking, player);
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
-    @Override
-    public void handleServerSide(PacketAmadronOrderUpdate message, EntityPlayer player) {
-        if (player.openContainer instanceof ContainerAmadron) {
-            ((ContainerAmadron) player.openContainer).clickOffer(message.orderId, message.mouseButton, message.sneaking, player);
-        }
-    }
-
 }

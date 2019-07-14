@@ -9,9 +9,10 @@ import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import mekanism.api.IHeatTransfer;
 import mekanism.api.transmitters.IGridTransmitter;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.util.LazyOptional;
 
 public class Mekanism implements IThirdParty, IHeatDisperser {
     @CapabilityInject(IHeatTransfer.class)
@@ -35,7 +36,7 @@ public class Mekanism implements IThirdParty, IHeatDisperser {
     public void disperseHeat(TileEntity te, TileEntityCache[] tileCache) {
         IHeatTransfer source = te.getCapability(CAPABILITY_HEAT_TRANSFER, null);
         if (source != null) {
-            for (EnumFacing side : EnumFacing.VALUES) {
+            for (Direction side : Direction.VALUES) {
                 // don't push heat to PneumaticCraft TE's even though they provide the Mek IHeatTransfer capability
                 // - heat dispersal to native TE's is handled via IHeatExchangerLogic
                 if (tileCache[side.getIndex()].getTileEntity() instanceof TileEntityBase) continue;
@@ -59,7 +60,7 @@ public class Mekanism implements IThirdParty, IHeatDisperser {
      * @param side side on which the capability is requested
      * @return a Mekanism IHeatTransfer object
      */
-    public static IHeatTransfer getHeatAdapter(TileEntityBase te, EnumFacing side) {
+    public static LazyOptional<IHeatTransfer> getHeatAdapter(TileEntityBase te, Direction side) {
         if (adapter == null) {
             adapter = new MekanismHeatAdapter();
         }

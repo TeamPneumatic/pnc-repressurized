@@ -1,25 +1,25 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
+import me.desht.pneumaticcraft.common.config.Config;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCache;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.Region;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.*;
 import java.util.function.Predicate;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+/**
+ * Base class for widgets which use Area widgets
+ */
 public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IAreaProvider, IEntityProvider,
         IItemFiltering, IVariableWidget {
     private List<BlockPos> areaListCache;
@@ -45,22 +45,22 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[0] == null) {
-            curInfo.add("gui.progWidget.area.error.noArea");
+            curInfo.add(xlate("gui.progWidget.area.error.noArea"));
         }
         Set<BlockPos> areaSet = getCachedAreaSet();
-        if (areaSet.size() > ConfigHandler.general.maxProgrammingArea) {
-            curInfo.add(I18n.format("gui.progWidget.area.error.areaTooBig", ConfigHandler.general.maxProgrammingArea));
+        if (areaSet.size() > Config.Common.General.maxProgrammingArea) {
+            curInfo.add(xlate("gui.progWidget.area.error.areaTooBig", Config.Common.General.maxProgrammingArea));
         }
         EntityFilterPair.addErrors(this, curInfo);
     }
 
-    public static IBlockAccess getCache(Collection<BlockPos> area, World world) {
+    public static IWorldReader getCache(Collection<BlockPos> area, World world) {
         if (area.isEmpty()) return world;
         AxisAlignedBB aabb = getExtents(area);
-        return new ChunkCache(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ), 0);
+        return new Region(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ));
     }
 
     public static AxisAlignedBB getExtents(Collection<BlockPos> areaSet) {
@@ -169,7 +169,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return isItemValidForFilters(item, null);
     }
 
-    public boolean isItemValidForFilters(ItemStack item, IBlockState blockState) {
+    public boolean isItemValidForFilters(ItemStack item, BlockState blockState) {
         return ProgWidgetItemFilter.isItemValidForFilters(item,
                 ProgWidget.getConnectedWidgetList(this, 1),
                 ProgWidget.getConnectedWidgetList(this, getParameters().length + 1),
@@ -223,12 +223,6 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
             entities.removeIf(blacklistPredicate);
         }
         return new ArrayList<>(entities);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetAreaShow(this, guiProgrammer);
     }
 
     @Override

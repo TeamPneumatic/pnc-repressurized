@@ -1,37 +1,31 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.TemporaryBlockManager;
-import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockSnow;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.SnowBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.DimensionType;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.*;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.util.Random;
 
 public class ItemGunAmmoFreezing extends ItemGunAmmo {
     public ItemGunAmmoFreezing() {
-        super("gun_ammo_freezing");
-    }
-
-    @Override
-    protected int getCartridgeSize() {
-        return ConfigHandler.minigun.freezingAmmoCartridgeSize;
+        super(DEFAULT_PROPS.maxDamage(Config.Common.Minigun.freezingAmmoCartridgeSize), "gun_ammo_freezing");
     }
 
     @Override
@@ -41,28 +35,28 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
 
     @Override
     protected float getDamageMultiplier(Entity target, ItemStack ammoStack) {
-        float mul = super.getDamageMultiplier(target, ammoStack);
+        double mul = super.getDamageMultiplier(target, ammoStack);
         if (target != null && target.isImmuneToFire()) {
             mul *= 1.5;
         }
-        return mul;
+        return (float) mul;
     }
 
     @Override
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         double knockback = -1;
-        if (target instanceof EntityLivingBase) {
-            EntityLivingBase living = (EntityLivingBase) target;
-            living.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, living.getRNG().nextInt(40) + 40, 3));
-            if (minigun.dispenserWeightedPercentage(ConfigHandler.minigun.freezingAmmoEntityIceChance)) {
+        if (target instanceof LivingEntity) {
+            LivingEntity living = (LivingEntity) target;
+            living.addPotionEffect(new EffectInstance(Effects.SLOWNESS, living.getRNG().nextInt(40) + 40, 3));
+            if (minigun.dispenserWeightedPercentage(Config.Common.Minigun.freezingAmmoEntityIceChance)) {
                 // temporarily stop the target getting knocked back, since it might be knocked out of the freeze zone
-                knockback = living.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).getBaseValue();
-                living.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0);
+                knockback = living.getAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).getBaseValue();
+                living.getAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0);
                 encaseInFakeIce(minigun, target);
             }
         }
         if (knockback != -1) {
-            ((EntityLivingBase) target).getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(knockback);
+            ((LivingEntity) target).getAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(knockback);
         }
         return super.onTargetHit(minigun, ammo, target);
     }
@@ -71,13 +65,13 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
         World world = target.world;
         Random rnd = world.rand;
         TemporaryBlockManager mgr = TemporaryBlockManager.getManager(world);
-        AxisAlignedBB aabb = target.getEntityBoundingBox();
+        AxisAlignedBB aabb = target.getBoundingBox();
         for (int y = (int) aabb.minY; y <= aabb.maxY; y++) {
             for (int x = (int) Math.floor(aabb.minX); x <= aabb.maxX; x++) {
                 for (int z = (int) Math.floor(aabb.minZ); z <= aabb.maxZ; z++) {
                     BlockPos pos = new BlockPos(x, y, z);
-                    if (world.getBlockState(pos).getBlock().isReplaceable(world, pos)) {
-                        mgr.trySetBlock(minigun.getPlayer(), EnumFacing.UP, pos, Blockss.FAKE_ICE.getDefaultState(), 60 + rnd.nextInt(40));
+                    if (world.getBlockState(pos).isAir(world, pos) || world.getFluidState(pos).isTagged(FluidTags.WATER)) {
+                        mgr.trySetBlock(minigun.getPlayer(), Direction.UP, pos, ModBlocks.FAKE_ICE.getDefaultState(), 60 + rnd.nextInt(40));
                     }
                 }
             }
@@ -85,42 +79,45 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
     }
 
     @Override
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face, Vec3d hitVec) {
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
         World world = minigun.getWorld();
-        if (world.provider.getDimensionType() != DimensionType.NETHER && minigun.dispenserWeightedPercentage(ConfigHandler.minigun.freezingAmmoBlockIceChance)) {
+        BlockPos pos = brtr.getPos();
+        // field_223228_b_ = NETHER
+        if (world.getDimension().getType() != DimensionType.field_223228_b_ && minigun.dispenserWeightedPercentage(Config.Common.Minigun.freezingAmmoBlockIceChance)) {
             BlockPos pos1;
-            if (world.getBlockState(pos).isFullCube() || face != EnumFacing.UP) {
-                pos1 = pos.offset(face);
+            if (world.getBlockState(pos).getShape(world, pos) == VoxelShapes.fullCube() || brtr.getFace() != Direction.UP) {
+                pos1 = pos.offset(brtr.getFace());
             } else {
                 pos1 = pos;
             }
-            IBlockState newState = null;
+            BlockState newState = null;
             if (world.isAirBlock(pos1) && !world.isAirBlock(pos1.down())) {
                 // form snow layers on solid blocks
-                newState = Blocks.SNOW_LAYER.getDefaultState().withProperty(BlockSnow.LAYERS, 1);
-            } else if (world.getBlockState(pos1).getBlock() == Blocks.SNOW_LAYER) {
+                newState = Blocks.SNOW.getDefaultState().with(SnowBlock.LAYERS, 1);
+            } else if (world.getBlockState(pos1).getBlock() == Blocks.SNOW) {
                 // grow existing snow layers
-                IBlockState state = world.getBlockState(pos1);
-                int level = state.getValue(BlockSnow.LAYERS);
+                BlockState state = world.getBlockState(pos1);
+                int level = state.get(SnowBlock.LAYERS);
                 if (level < 8) {
-                    newState = Blocks.SNOW_LAYER.getDefaultState().withProperty(BlockSnow.LAYERS, level + 1);
+                    newState = Blocks.SNOW.getDefaultState().with(SnowBlock.LAYERS, level + 1);
                 } else {
-                    newState = Blocks.SNOW.getDefaultState();
+                    newState = Blocks.SNOW_BLOCK.getDefaultState();
                 }
             } else if (world.getBlockState(pos1).getBlock() == Blocks.WATER) {
                 // freeze surface water
-                Vec3d eye = minigun.getPlayer().getPositionEyes(0f);
-                RayTraceResult res = world.rayTraceBlocks(eye, hitVec, true, false, false);
-                if (res!= null && res.typeOfHit == RayTraceResult.Type.BLOCK) {
-                    pos1 = res.getBlockPos();
+                Vec3d eye = minigun.getPlayer().getEyePosition(0f);
+                RayTraceContext ctx = new RayTraceContext(eye, brtr.getHitVec(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, minigun.getPlayer());
+                BlockRayTraceResult res = world.rayTraceBlocks(ctx);
+                if (res.getType() == RayTraceResult.Type.BLOCK) {
+                    pos1 = res.getPos();
                     newState = Blocks.ICE.getDefaultState();
                 }
             }
             if (newState != null) {
-                PneumaticCraftUtils.tryPlaceBlock(world, pos1, minigun.getPlayer(), face, newState);
+                PneumaticCraftUtils.tryPlaceBlock(world, pos1, minigun.getPlayer(), brtr.getFace(), newState);
             }
         }
-        return super.onBlockHit(minigun, ammo, pos, face, hitVec);
+        return super.onBlockHit(minigun, ammo, brtr);
     }
 
 }

@@ -11,13 +11,13 @@ public class SlotUpgrade extends SlotItemHandler {
     private final TileEntityBase te;
 
     SlotUpgrade(TileEntityBase inventoryIn, int index, int xPosition, int yPosition) {
-        super(inventoryIn.getUpgradesInventory(), index, xPosition, yPosition);
+        super(inventoryIn.getUpgradeHandler(), index, xPosition, yPosition);
         te = inventoryIn;
     }
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
-        return te.getUpgradesInventory().isItemValid(getSlotIndex(), stack);
+        return te.getUpgradeHandler().isItemValid(getSlotIndex(), stack);
     }
 
     @Override

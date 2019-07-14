@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.entity;
 
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import net.minecraft.item.ItemStack;
@@ -16,7 +17,7 @@ public class EntityProgrammableController extends EntityDroneBase {
 //    }
 
     public EntityProgrammableController(World world, TileEntityProgrammableController controller) {
-        super(world);
+        super(ModEntityTypes.DRONE, world);
         preventEntitySpawning = false;
         this.controller = controller;
     }
@@ -38,8 +39,8 @@ public class EntityProgrammableController extends EntityDroneBase {
     }
 
     @Override
-    public void onUpdate() {
-        if (controller.isInvalid()) setDead();
+    public void tick() {
+        if (controller.isRemoved()) remove();
         if (digLaser != null) digLaser.update();
         oldPropRotation = propRotation;
         propRotation += 1;

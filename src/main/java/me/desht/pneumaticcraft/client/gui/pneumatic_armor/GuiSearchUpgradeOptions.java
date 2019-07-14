@@ -1,28 +1,29 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
-import me.desht.pneumaticcraft.client.gui.GuiSearcher;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.SearchUpgradeHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketUpdateSearchStack;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.network.PacketUpdateSearchItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraft.util.text.StringTextComponent;
 
 public class GuiSearchUpgradeOptions implements IOptionPage {
 
     private final SearchUpgradeHandler renderHandler;
-    private static GuiSearcher searchGui;
-    private final EntityPlayer player = FMLClientHandler.instance().getClient().player;
+    private static GuiItemSearcher searchGui;
+    private final PlayerEntity player = Minecraft.getInstance().player;
 
     public GuiSearchUpgradeOptions(SearchUpgradeHandler searchUpgradeHandler) {
         renderHandler = searchUpgradeHandler;
@@ -35,51 +36,53 @@ public class GuiSearchUpgradeOptions implements IOptionPage {
 
     @Override
     public void initGui(IGuiScreen gui) {
-        gui.getButtonList().add(new GuiButton(10, 30, 40, 150, 20, "Search for item..."));
-        gui.getButtonList().add(new GuiButton(11, 30, 128, 150, 20, "Move Stat Screen..."));
-        if (searchGui != null && !player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).isEmpty()) {
+        gui.getWidgetList().add(new GuiButtonSpecial(30, 40, 150, 20,
+                "Search for item...", b -> openSearchGui()));
+
+        gui.getWidgetList().add(new Button(30, 128, 150, 20, "Move Stat Screen...",
+                b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.ITEM_SEARCH))));
+
+        if (searchGui != null && !player.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()) {
             ItemStack searchStack = searchGui.getSearchStack();
-            ItemStack helmetStack = ItemPneumaticArmor.getSearchedStack(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD));
-            if (searchStack.isEmpty() && !helmetStack.isEmpty() || !searchStack.isEmpty() && helmetStack.isEmpty() || !searchStack.isEmpty() && !helmetStack.isEmpty() && !searchStack.isItemEqual(helmetStack)) {
-                NetworkHandler.sendToServer(new PacketUpdateSearchStack(searchStack));
-                NBTTagCompound tag = NBTUtil.getCompoundTag(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD), ItemPneumaticArmor.NBT_SEARCH_STACK);
-                tag.setInteger("itemID", searchStack.isEmpty() ? -1 : Item.getIdFromItem(searchStack.getItem()));
-                tag.setInteger("itemDamage", searchStack.isEmpty() ? -1 : searchStack.getItemDamage());
+            Item searchedItem = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
+            ItemStack helmetStack = new ItemStack(searchedItem);
+            if (searchStack.isEmpty() && !helmetStack.isEmpty() || !searchStack.isEmpty() && helmetStack.isEmpty()
+                    || !searchStack.isEmpty() && !helmetStack.isEmpty() && !searchStack.isItemEqual(helmetStack)) {
+                NetworkHandler.sendToServer(new PacketUpdateSearchItem(searchedItem));
             }
         }
     }
 
-    @Override
-    public void actionPerformed(GuiButton button) {
-        if (button.id == 10) {
-            searchGui = new GuiSearcher(player);
-            if (!player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).isEmpty()) {
-                searchGui.setSearchStack(ItemPneumaticArmor.getSearchedStack(player.getItemStackFromSlot(EntityEquipmentSlot.HEAD)));
+    private void openSearchGui() {
+        ClientUtils.openContainerGui(ModContainerTypes.SEARCHER, new StringTextComponent("Search"));
+        if (Minecraft.getInstance().currentScreen instanceof GuiItemSearcher) {
+            searchGui = (GuiItemSearcher) Minecraft.getInstance().currentScreen;
+            if (!player.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()) {
+                Item searchItem = ItemPneumaticArmor.getSearchedItem(player.getItemStackFromSlot(EquipmentSlotType.HEAD));
+                if (searchItem != null) searchGui.setSearchStack(new ItemStack(searchItem));
             }
-            Minecraft.getMinecraft().displayGuiScreen(searchGui);
-        } else {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.ITEM_SEARCH));
         }
     }
 
-    @Override
-    public void drawPreButtons(int x, int y, float partialTicks) {
+    public void renderPre(int x, int y, float partialTicks) {
+    }
+
+    public void renderPost(int x, int y, float partialTicks) {
     }
 
     @Override
-    public void drawScreen(int x, int y, float partialTicks) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return false;
     }
 
     @Override
-    public void keyTyped(char ch, int key) {
+    public boolean mouseClicked(double x, double y, int button) {
+        return false;
     }
 
     @Override
-    public void mouseClicked(int x, int y, int button) {
-    }
-
-    @Override
-    public void handleMouseInput() {
+    public boolean mouseScrolled(double x, double y, double dir) {
+        return false;
     }
 
     @Override
@@ -87,8 +90,7 @@ public class GuiSearchUpgradeOptions implements IOptionPage {
         return true;
     }
 
-    @Override
-    public boolean displaySettingsText() {
+    public boolean displaySettingsHeader() {
         return true;
     }
 }

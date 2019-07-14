@@ -1,15 +1,18 @@
 package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
-import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
-import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.Validate;
@@ -17,36 +20,47 @@ import org.apache.commons.lang3.Validate;
 import java.util.Arrays;
 
 public class ProgrammedDroneUtils {
-    private static EntityDrone getChargedDispenserUpgradeDrone(World world, BlockPos pos) {
-        EntityDrone drone = new EntityDrone(world, null);
+    /**
+     * Create a delivery drone: 10 speed upgrades, 64 inventory upgrades, 100000mL of air
+     *
+     * @param world the world
+     * @param pos drone's position
+     * @return the delivery drone
+     */
+    private static EntityDrone makeDeliveryDrone(World world, BlockPos pos) {
+        EntityDrone drone = new EntityDrone(ModEntityTypes.DRONE, world, null);
 
-        NBTTagCompound tag = new NBTTagCompound();
-        drone.writeEntityToNBT(tag);
+        CompoundNBT tag = new CompoundNBT();
+        drone.writeAdditional(tag);
         ItemStackHandler upgrades = new ItemStackHandler(9);
-        upgrades.setStackInSlot(0, new ItemStack(ItemRegistry.getInstance().getUpgrade(EnumUpgrade.DISPENSER), 64));
-        upgrades.setStackInSlot(1, new ItemStack(ItemRegistry.getInstance().getUpgrade(EnumUpgrade.SPEED), 10));
-        tag.setTag(ChargeableItemHandler.NBT_UPGRADE_TAG, upgrades.serializeNBT());
-        tag.setTag("Inventory", new NBTTagCompound());
-        tag.setFloat("currentAir", 100000);
-        drone.readEntityFromNBT(tag);
+        upgrades.setStackInSlot(0, new ItemStack(EnumUpgrade.INVENTORY.getItem(), 64));
+        upgrades.setStackInSlot(1, new ItemStack(EnumUpgrade.SPEED.getItem(), 10));
+        tag.put(ChargeableItemHandler.NBT_UPGRADE_TAG, upgrades.serializeNBT());
+        tag.put("Inventory", new CompoundNBT());
+        tag.putFloat("currentAir", 100000);
+        drone.readAdditional(tag);
 
-        // FIXME: we really need to get a clientside localization here (on the server side)
-        drone.setCustomNameTag(net.minecraft.util.text.translation.I18n.translateToLocal("drone.amadronDeliveryDrone"));
+        drone.setCustomName(new TranslationTextComponent("drone.amadronDeliveryDrone"));
 
         drone.naturallySpawned = true; // Don't let the drone be dropped when wrenching it.
 
-        int startY = world.getHeight(pos.add(30, 0, 0)).getY() + 27 + world.rand.nextInt(6);
+        int startY = world.getHeight(Heightmap.Type.WORLD_SURFACE, pos.add(30, 0, 0)).getY() + 27 + world.rand.nextInt(6);
         drone.setPosition(pos.getX() + 27 + world.rand.nextInt(6), startY, pos.getZ() + world.rand.nextInt(6) - 3);
 
         return drone;
     }
 
-    public static EntityCreature deliverItemsAmazonStyle(World world, BlockPos pos, ItemStack... deliveredStacks) {
-        if (world.isRemote) return null;
-        Validate.isTrue(deliveredStacks.length > 0 && deliveredStacks.length <= 65, "You can only deliver between 0 & 65 stacks at once!");
-        Arrays.stream(deliveredStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(), "You can't supply an empty stack to be delivered!"));
+    public static CreatureEntity deliverItemsAmazonStyle(GlobalPos gPos, ItemStack... deliveredStacks) {
+        World world = PneumaticCraftUtils.getWorldForGlobalPos(gPos);
+        BlockPos pos = gPos.getPos();
 
-        EntityDrone drone = getChargedDispenserUpgradeDrone(world, pos);
+        if (world == null || world.isRemote) return null;
+        Validate.isTrue(deliveredStacks.length > 0 && deliveredStacks.length <= 65,
+                "You can only deliver between 0 & 65 stacks at once!");
+        Arrays.stream(deliveredStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(),
+                "You can't supply an empty stack to be delivered!"));
+
+        EntityDrone drone = makeDeliveryDrone(world, pos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
@@ -58,7 +72,7 @@ public class ProgrammedDroneUtils {
                 area.y1 = pos.getY() + i;
             }
         } else {
-            area.y1 = world.getHeight(pos).getY() + 10;
+            area.y1 = world.getHeight(Heightmap.Type.WORLD_SURFACE, pos).getY() + 10;
             if (!drone.isBlockValidPathfindBlock(new BlockPos(area.x1, area.y1, area.z1)))
                 area.y1 = 260; // Worst case scenario; there are definitely no blocks here.
         }
@@ -70,16 +84,19 @@ public class ProgrammedDroneUtils {
         for (int i = 0; i < deliveredStacks.length; i++) {
             drone.getInv().setStackInSlot(i, deliveredStacks[i].copy());
         }
-        world.spawnEntity(drone);
+        world.addEntity(drone);
         return drone;
     }
 
-    public static EntityCreature deliverFluidAmazonStyle(World world, BlockPos pos, FluidStack deliveredFluid) {
-        if (world.isRemote) return null;
+    public static CreatureEntity deliverFluidAmazonStyle(GlobalPos gPos, FluidStack deliveredFluid) {
+        World world = PneumaticCraftUtils.getWorldForGlobalPos(gPos);
+        BlockPos pos = gPos.getPos();
+
+        if (world == null || world.isRemote) return null;
         Validate.notNull(deliveredFluid, "Can't deliver a null FluidStack");
         Validate.isTrue(deliveredFluid.amount > 0, "Can't deliver a FluidStack with an amount of <= 0");
 
-        EntityDrone drone = getChargedDispenserUpgradeDrone(world, pos);
+        EntityDrone drone = makeDeliveryDrone(world, pos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
@@ -90,16 +107,19 @@ public class ProgrammedDroneUtils {
         drone.progWidgets.addAll(builder.build());
 
         drone.getTank().fill(deliveredFluid, true);
-        world.spawnEntity(drone);
+        world.addEntity(drone);
         return drone;
     }
 
-    public static EntityCreature retrieveItemsAmazonStyle(World world, BlockPos pos, ItemStack... queriedStacks) {
-        if (world.isRemote) return null;
+    public static CreatureEntity retrieveItemsAmazonStyle(GlobalPos gPos, ItemStack... queriedStacks) {
+        World world = PneumaticCraftUtils.getWorldForGlobalPos(gPos);
+        BlockPos pos = gPos.getPos();
+
+        if (world == null || world.isRemote) return null;
         Validate.isTrue(queriedStacks.length > 0 && queriedStacks.length <= 65, "Must retrieve between 1 & 65 itemstacks!");
         Arrays.stream(queriedStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(), "Cannot retrieve an empty stack!"));
 
-        EntityDrone drone = getChargedDispenserUpgradeDrone(world, pos);
+        EntityDrone drone = makeDeliveryDrone(world, pos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
@@ -109,7 +129,7 @@ public class ProgrammedDroneUtils {
             widgetImport.setUseCount(true);
             widgetImport.setCount(stack.getCount());
             ProgWidgetItemFilter filter = ProgWidgetItemFilter.withFilter(stack);
-            filter.useMetadata = true;
+            filter.useItemDamage = true;
             filter.useNBT = true;
             builder.add(widgetImport, ProgWidgetArea.fromPosition(pos), filter);
         }
@@ -117,16 +137,19 @@ public class ProgrammedDroneUtils {
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets.addAll(builder.build());
 
-        world.spawnEntity(drone);
+        world.addEntity(drone);
         return drone;
     }
 
-    public static EntityCreature retrieveFluidAmazonStyle(World world, BlockPos pos, FluidStack queriedFluid) {
-        if (world.isRemote) return null;
+    public static CreatureEntity retrieveFluidAmazonStyle(GlobalPos gPos, FluidStack queriedFluid) {
+        World world = PneumaticCraftUtils.getWorldForGlobalPos(gPos);
+        BlockPos pos = gPos.getPos();
+
+        if (world == null || world.isRemote) return null;
         Validate.notNull(queriedFluid, "Can't retrieve a null FluidStack");
         Validate.isTrue(queriedFluid.amount > 0, "Can't retrieve a FluidStack with an amount of <= 0");
 
-        EntityDrone drone = getChargedDispenserUpgradeDrone(world, pos);
+        EntityDrone drone = makeDeliveryDrone(world, pos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
@@ -139,7 +162,7 @@ public class ProgrammedDroneUtils {
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets.addAll(builder.build());
 
-        world.spawnEntity(drone);
+        world.addEntity(drone);
         return drone;
     }
 }

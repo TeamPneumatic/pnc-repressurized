@@ -1,12 +1,17 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedLiquidCompressor;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
 
 public class ContainerAdvancedLiquidCompressor extends ContainerLiquidCompressor {
 
-    public ContainerAdvancedLiquidCompressor(InventoryPlayer inventoryPlayer, TileEntityAdvancedLiquidCompressor te) {
-        super(inventoryPlayer, te);
+    public ContainerAdvancedLiquidCompressor(int i, PlayerInventory playerInventory, BlockPos pos) {
+        super(i, playerInventory, pos);
+    }
+
+    public ContainerAdvancedLiquidCompressor(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+        this(i, playerInventory, getTilePos(buffer));
     }
 
     @Override

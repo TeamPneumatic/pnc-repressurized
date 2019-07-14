@@ -2,90 +2,92 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumRarity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.item.Rarity;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemMachineUpgrade extends ItemPneumatic {
     public static final String NBT_DIRECTION = "Facing";
     private final int index;
 
     public ItemMachineUpgrade(String registryName, int index) {
-        super(registryName);
+        super(DEFAULT_PROPS, registryName);
         this.index = index;
     }
 
-    public IItemRegistry.EnumUpgrade getUpgradeType() {
-        return IItemRegistry.EnumUpgrade.values()[index];
+    public EnumUpgrade getUpgradeType() {
+        return EnumUpgrade.values()[index];
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World world, List<String> infoList, ITooltipFlag par4) {
+    @OnlyIn(Dist.CLIENT)
+    public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag par4) {
         if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
-            infoList.add(I18n.format("gui.tooltip.item.upgrade.usedIn"));
+            infoList.add(xlate("gui.tooltip.item.upgrade.usedIn"));
             PneumaticRegistry.getInstance().getItemRegistry().addTooltip(this, infoList);
         } else {
-            infoList.add(I18n.format("gui.tooltip.item.upgrade.shiftMessage"));
+            infoList.add(xlate("gui.tooltip.item.upgrade.shiftMessage"));
         }
-        if (getUpgradeType() == IItemRegistry.EnumUpgrade.DISPENSER) {
-            EnumFacing dir = stack.hasTagCompound() ? EnumFacing.byName(NBTUtil.getString(stack, NBT_DIRECTION)) : null;
-            infoList.add(I18n.format("message.dispenser.direction", dir == null ? "*" : dir.getName()));
-            infoList.add(I18n.format("message.dispenser.clickToSet"));
+        if (getUpgradeType() == EnumUpgrade.DISPENSER) {
+            Direction dir = stack.hasTag() ? Direction.byName(NBTUtil.getString(stack, NBT_DIRECTION)) : null;
+            infoList.add(xlate("message.dispenser.direction", dir == null ? "*" : dir.getName()));
+            infoList.add(xlate("message.dispenser.clickToSet"));
         }
         super.addInformation(stack, world, infoList, par4);
     }
 
     @Override
-    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
-        if (getUpgradeType() == IItemRegistry.EnumUpgrade.DISPENSER) {
-            if (!world.isRemote) {
-                setDirection(player, hand, side);
+    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
+        if (getUpgradeType() == EnumUpgrade.DISPENSER) {
+            if (!context.getWorld().isRemote) {
+                setDirection(context.getPlayer(), context.getHand(), context.getFace());
             }
-            return EnumActionResult.SUCCESS;
+            return ActionResultType.SUCCESS;
         }
-        return super.onItemUseFirst(player, world, pos, side, hitX, hitY, hitZ, hand);
+        return super.onItemUseFirst(stack, context);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        if (getUpgradeType() == IItemRegistry.EnumUpgrade.DISPENSER) {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if (getUpgradeType() == EnumUpgrade.DISPENSER) {
             if (!worldIn.isRemote) {
                 setDirection(playerIn, handIn, null);
             }
-            return ActionResult.newResult(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+            return ActionResult.newResult(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }
 
-    private void setDirection(EntityPlayer player, EnumHand hand, EnumFacing facing) {
+    private void setDirection(PlayerEntity player, Hand hand, Direction facing) {
         ItemStack stack = player.getHeldItem(hand);
         if (facing == null) {
-            stack.setTagCompound(null);
-            player.sendStatusMessage(new TextComponentTranslation("message.dispenser.direction", "*"), true);
+            stack.setTag(null);
+            player.sendStatusMessage(new TranslationTextComponent("message.dispenser.direction", "*"), true);
         } else {
             NBTUtil.setString(stack, NBT_DIRECTION, facing.getName());
-            player.sendStatusMessage(new TextComponentTranslation("message.dispenser.direction", facing.getName()), true);
+            player.sendStatusMessage(new TranslationTextComponent("message.dispenser.direction", facing.getName()), true);
         }
     }
 
     @Override
-    public EnumRarity getRarity(ItemStack stack) {
-        return getUpgradeType() == IItemRegistry.EnumUpgrade.CREATIVE ? EnumRarity.EPIC : EnumRarity.COMMON;
+    public Rarity getRarity(ItemStack stack) {
+        return getUpgradeType() == EnumUpgrade.CREATIVE ? Rarity.EPIC : Rarity.COMMON;
     }
 }

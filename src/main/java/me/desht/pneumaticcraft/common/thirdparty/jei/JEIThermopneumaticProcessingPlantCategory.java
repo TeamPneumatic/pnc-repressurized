@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.recipes.BasicThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -21,7 +21,7 @@ public class JEIThermopneumaticProcessingPlantCategory extends PneumaticCraftCat
 
     @Override
     public String getTitle() {
-        return I18n.format(Blockss.THERMOPNEUMATIC_PROCESSING_PLANT.getTranslationKey() + ".name");
+        return I18n.format(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.getTranslationKey() + ".name");
     }
 
     @Override

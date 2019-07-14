@@ -1,31 +1,30 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetGoto;
 import me.desht.pneumaticcraft.common.ai.DroneEntityAIGoToLocation;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 import java.util.Set;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, IAreaProvider {
 
     public boolean doneWhenDeparting;
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[0] == null) {
-            curInfo.add("gui.progWidget.area.error.noArea");
+            curInfo.add(xlate("gui.progWidget.area.error.noArea"));
         }
     }
 
@@ -40,9 +39,9 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public void getTooltip(List<String> curTooltip) {
+    public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add("Done when " + (doneWhenDeparting ? "departing" : "arrived"));
+        curTooltip.add(new StringTextComponent("Done when " + (doneWhenDeparting ? "departing" : "arrived")));
     }
 
     @Override
@@ -56,7 +55,7 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return new DroneEntityAIGoToLocation(drone, (ProgWidget) widget);
     }
 
@@ -81,21 +80,15 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setBoolean("doneWhenDeparting", doneWhenDeparting);
+        tag.putBoolean("doneWhenDeparting", doneWhenDeparting);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         doneWhenDeparting = tag.getBoolean("doneWhenDeparting");
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetGoto(this, guiProgrammer);
     }
 
     @Override
@@ -104,7 +97,7 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.LIGHT_BLUE;
+    public DyeColor getColor() {
+        return DyeColor.LIGHT_BLUE;
     }
 }

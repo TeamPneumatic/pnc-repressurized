@@ -1,31 +1,29 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import me.desht.pneumaticcraft.common.ai.DroneAIEntityImport;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.Set;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, IAreaProvider, IEntityProvider {
     private EntityFilterPair entityFilters;
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[0] == null) {
-            curInfo.add("gui.progWidget.area.error.noArea");
+            curInfo.add(xlate("gui.progWidget.area.error.noArea"));
         }
         EntityFilterPair.addErrors(this, curInfo);
     }
@@ -41,13 +39,7 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetAreaShow(this, guiProgrammer);
-    }
-
-    @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return new DroneAIEntityImport(drone, widget);
     }
 
@@ -77,8 +69,8 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.BLUE;
+    public DyeColor getColor() {
+        return DyeColor.BLUE;
     }
 
     @Override
@@ -87,7 +79,6 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
             entityFilters = new EntityFilterPair(this);
         }
         return entityFilters.getValidEntities(world);
-//        return ProgWidgetAreaItemBase.getValidEntities(world, this);
     }
 
     @Override
@@ -96,6 +87,5 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
             entityFilters = new EntityFilterPair(this);
         }
         return entityFilters.isEntityValid(entity);
-//        return ProgWidgetAreaItemBase.isEntityValid(entity, this);
     }
 }

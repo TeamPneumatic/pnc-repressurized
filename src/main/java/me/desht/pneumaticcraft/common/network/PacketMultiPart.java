@@ -1,37 +1,37 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketMultiPart extends AbstractPacket<PacketMultiPart> {
-    byte[] payload;
+import java.util.function.Supplier;
+
+/**
+ * Received on: SERVER
+ * Part of a multipart mesage from client (whole message too big to send at once)
+ */
+public class PacketMultiPart {
+    private byte[] payload;
 
     public PacketMultiPart() {
     }
 
-    public PacketMultiPart(byte[] payload) {
+    PacketMultiPart(byte[] payload) {
         this.payload = payload;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
+    PacketMultiPart(PacketBuffer buf) {
         payload = new byte[buf.readInt()];
         buf.readBytes(payload);
     }
 
-    @Override
     public void toBytes(ByteBuf buf) {
         buf.writeInt(payload.length);
         buf.writeBytes(payload);
     }
 
-    @Override
-    public void handleClientSide(PacketMultiPart message, EntityPlayer player) {
-
-    }
-
-    @Override
-    public void handleServerSide(PacketMultiPart message, EntityPlayer player) {
-        PacketMultiHeader.receivePayload(player, message.payload);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> PacketMultiHeader.receivePayload(ctx.get().getSender(), payload));
+        ctx.get().setPacketHandled(true);
     }
 }

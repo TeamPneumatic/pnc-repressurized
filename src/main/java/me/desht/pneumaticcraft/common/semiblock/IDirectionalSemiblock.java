@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 /**
  * Represents a semiblock which sits on the side of an actual block, rather than occupying the same space.
@@ -9,5 +9,5 @@ import net.minecraft.util.EnumFacing;
  * drones which side of the inventory to access.
  */
 public interface IDirectionalSemiblock {
-    EnumFacing getFacing();
+    Direction getFacing();
 }

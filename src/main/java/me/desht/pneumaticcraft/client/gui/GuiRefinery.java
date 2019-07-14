@@ -1,15 +1,17 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
@@ -17,20 +19,20 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
+public class GuiRefinery extends GuiPneumaticContainerBase<ContainerRefinery,TileEntityRefinery> {
     private List<TileEntityRefinery> refineries;
     private WidgetTemperature widgetTemperature;
     private int nExposedFaces;
 
-    public GuiRefinery(InventoryPlayer player, TileEntityRefinery te) {
-        super(new ContainerRefinery(player, te), te, Textures.GUI_REFINERY);
+    public GuiRefinery(ContainerRefinery container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
-        widgetTemperature = new WidgetTemperature(-1, guiLeft + 32, guiTop + 20, 273, 673, te.getHeatExchangerLogic(null)) {
+        widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 20, 273, 673, te.getHeatExchangerLogic(null)) {
             @Override
             public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
@@ -40,23 +42,23 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
                 }
             }
         };
-        addWidget(widgetTemperature);
+        addButton(widgetTemperature);
 
-        addWidget(new WidgetTank(-1, guiLeft + 8, guiTop + 13, te.getInputTank()));
+        addButton(new WidgetTank(guiLeft + 8, guiTop + 13, te.getInputTank()));
 
         int x = guiLeft + 95;
         int y = guiTop + 17;
-        addWidget(new WidgetTank(-1, x, y, te.getOutputTank()));
+        addButton(new WidgetTank(x, y, te.getOutputTank()));
 
         // "te" always refers to the master refinery; the bottom block of the stack
         refineries = new ArrayList<>();
         refineries.add(te);
         TileEntityRefinery refinery = te;
-        while (refinery.getTileCache()[EnumFacing.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
-            refinery = (TileEntityRefinery) refinery.getTileCache()[EnumFacing.UP.ordinal()].getTileEntity();
+        while (refinery.getTileCache()[Direction.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
+            refinery = (TileEntityRefinery) refinery.getTileCache()[Direction.UP.ordinal()].getTileEntity();
             x += 20;
             y -= 4;
-            if (refineries.size() < 4) addWidget(new WidgetTank(-1, x, y, refinery.getOutputTank()));
+            if (refineries.size() < 4) addButton(new WidgetTank(x, y, refinery.getOutputTank()));
             refineries.add(refinery);
         }
 
@@ -68,8 +70,8 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
 
         if (te.minTemp > 0) {
             widgetTemperature.setScales(te.minTemp);
@@ -84,16 +86,21 @@ public class GuiRefinery extends GuiPneumaticContainerBase<TileEntityRefinery> {
         if (refineries.size() < 4) {
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            drawRect(guiLeft + 155, guiTop + 5, guiLeft + 171, guiTop + 69, 0x40FF0000);
+            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            fill(guiLeft + 155, guiTop + 5, guiLeft + 171, guiTop + 69, 0x40FF0000);
             if (refineries.size() < 3) {
-                drawRect(guiLeft + 135, guiTop + 9, guiLeft + 151, guiTop + 73, 0x40FF0000);
+                fill(guiLeft + 135, guiTop + 9, guiLeft + 151, guiTop + 73, 0x40FF0000);
             }
             if (refineries.size() < 2) {
-                drawRect(guiLeft + 115, guiTop + 13, guiLeft + 131, guiTop + 77, 0x40FF0000);
+                fill(guiLeft + 115, guiTop + 13, guiLeft + 131, guiTop + 77, 0x40FF0000);
             }
             GlStateManager.disableBlend();
         }
+    }
+
+    @Override
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_REFINERY;
     }
 
     @Override

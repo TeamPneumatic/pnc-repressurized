@@ -1,21 +1,20 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.common.ai.DroneAIManager;
+import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+
 import java.util.List;
 import java.util.Set;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetCoordinate;
-import me.desht.pneumaticcraft.common.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
-import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget {
 
@@ -40,18 +39,18 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void addWarnings(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addWarnings(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addWarnings(curInfo, widgets);
         if (!useVariable && x == 0 && y == 0 && z == 0) {
-            curInfo.add("gui.progWidget.coordinate.warning.noCoordinate");
+            curInfo.add(xlate("gui.progWidget.coordinate.warning.noCoordinate"));
         }
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (useVariable && variable.equals("")) {
-            curInfo.add("gui.progWidget.general.error.emptyVariable");
+            curInfo.add(xlate("gui.progWidget.general.error.emptyVariable"));
         }
     }
 
@@ -61,8 +60,8 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.GREEN;
+    public DyeColor getColor() {
+        return DyeColor.GREEN;
     }
 
     @Override
@@ -76,21 +75,21 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setInteger("posX", x);
-        tag.setInteger("posY", y);
-        tag.setInteger("posZ", z);
-        tag.setString("variable", variable);
-        tag.setBoolean("useVariable", useVariable);
+        tag.putInt("posX", x);
+        tag.putInt("posY", y);
+        tag.putInt("posZ", z);
+        tag.putString("variable", variable);
+        tag.putBoolean("useVariable", useVariable);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        x = tag.getInteger("posX");
-        y = tag.getInteger("posY");
-        z = tag.getInteger("posZ");
+        x = tag.getInt("posX");
+        y = tag.getInt("posY");
+        z = tag.getInt("posZ");
         variable = tag.getString("variable");
         useVariable = tag.getBoolean("useVariable");
     }
@@ -150,17 +149,14 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetCoordinate(this, guiProgrammer);
-    }
-
-    @Override
-    public void getTooltip(List<String> curTooltip) {
+    public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
 
-        if (useVariable) curTooltip.add("XYZ: \"" + variable + "\"");
-        else if (x != 0 || y != 0 || z != 0) curTooltip.add("X: " + x + ", Y: " + y + ", Z: " + z);
+        if (useVariable) {
+            curTooltip.add(new StringTextComponent("XYZ: '" + variable + "'"));
+        } else if (x != 0 || y != 0 || z != 0) {
+            curTooltip.add(new StringTextComponent("X: " + x + ", Y: " + y + ", Z: " + z));
+        }
     }
 
     @Override

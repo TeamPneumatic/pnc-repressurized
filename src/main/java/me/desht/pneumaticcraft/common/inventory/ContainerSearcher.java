@@ -1,11 +1,14 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.client.gui.GuiSearcher;
-import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -15,23 +18,29 @@ public class ContainerSearcher extends Container {
 
     // list of ALL items in this container, updated by GuiSearcher#updateCreativeSearch
     public final NonNullList<ItemStack> itemList = NonNullList.create();
-    private GuiSearcher gui;
+    private GuiItemSearcher gui;
 
-    public void init(GuiSearcher gui) {
+    @SuppressWarnings("unused")
+    public ContainerSearcher(int windowId, PlayerInventory inv, PacketBuffer data) {
+        super(ModContainerTypes.SEARCHER, windowId);
+    }
+
+    public void init(GuiItemSearcher gui) {
         this.gui = gui;
+
         for (int i = 0; i < SEARCH_ROWS; ++i) {
             for (int j = 0; j < SEARCH_COLS; ++j) {
-                addSlotToContainer(new SlotItemHandler(gui.getInventory(), i * SEARCH_COLS + j, SEARCH_COLS + j * 18, 52 + i * 18));
+                addSlot(new SlotItemHandler(gui.getInventory(), i * SEARCH_COLS + j, SEARCH_COLS + j * 18, 52 + i * 18));
             }
         }
 
-        addSlotToContainer(new SlotItemHandler(gui.getInventory(), 48, 124, 25));
+        addSlot(new SlotItemHandler(gui.getInventory(), 48, 124, 25));
         scrollTo(0.0F);
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer player) {
-        return player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getItem() == Itemss.PNEUMATIC_HELMET;
+    public boolean canInteractWith(PlayerEntity player) {
+        return player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET;
     }
 
     /**
@@ -59,7 +68,7 @@ public class ContainerSearcher extends Container {
      * Called when a player shift-clicks on a slot. You must override this or you will crash when someone does that.
      */
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2) {
+    public ItemStack transferStackInSlot(PlayerEntity par1EntityPlayer, int par2) {
         return ItemStack.EMPTY;
     }
 

@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeHooks;
@@ -28,7 +28,7 @@ public class ShapedFluidRecipeFactory implements IRecipeFactory {
         ShapedPrimer primer = new ShapedPrimer();
         primer.width = recipe.getRecipeWidth();
 		primer.height = recipe.getRecipeHeight();
-		primer.mirrored = JsonUtils.getBoolean(json, "mirrored", true);
+		primer.mirrored = JSONUtils.getBoolean(json, "mirrored", true);
 		primer.input = recipe.getIngredients();
 
         return new ShapedFluidRecipe(RL("shaped_fluid"), recipe.getRecipeOutput(), primer);
@@ -40,7 +40,7 @@ public class ShapedFluidRecipeFactory implements IRecipeFactory {
         }
 
         @Override
-        public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
+        public NonNullList<ItemStack> getRemainingItems(CraftingInventory inv) {
 
             NonNullList<ItemStack> ret = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
 

@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
@@ -31,13 +31,13 @@ public class ProgWidgetPressureCondition extends ProgWidgetCondition {
                 TileEntity te = drone.world().getTileEntity(pos);
                 if (te instanceof IPneumaticMachine) {
                     float pressure = Float.MIN_VALUE;
-                    for (EnumFacing d : EnumFacing.VALUES) {
+                    for (Direction d : Direction.VALUES) {
                         if (getSides()[d.ordinal()]) {
                             IAirHandler airHandler = ((IPneumaticMachine) te).getAirHandler(d);
                             if (airHandler != null) pressure = Math.max(airHandler.getPressure(), pressure);
                         }
                     }
-                    return ((ICondition) widget).getOperator().evaluate(pressure, ((ICondition) widget).getRequiredCount());
+                    return ((ICondition) progWidget).getOperator().evaluate(pressure, ((ICondition) progWidget).getRequiredCount());
                 }
                 return false;
             }

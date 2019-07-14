@@ -8,7 +8,6 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.SimpleComponent;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
@@ -18,16 +17,16 @@ import me.desht.pneumaticcraft.common.network.PacketSpawnRing;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.item.ItemDye;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeItem;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.common.Loader;
@@ -47,7 +46,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
         @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = ModIds.OPEN_COMPUTERS)
 })
 public class TileEntityDroneInterface extends TileEntity
-        implements ITickable, IPeripheral, ManagedPeripheral, SimpleComponent {
+        implements ITickableTileEntity, IPeripheral, ManagedPeripheral, SimpleComponent {
 
     private LuaMethodRegistry luaMethodRegistry;
 
@@ -66,7 +65,7 @@ public class TileEntityDroneInterface extends TileEntity
 
     @Override
     public void update() {
-        if (drone != null && drone.isDead) {
+        if (drone != null && !drone.isAlive()) {
             setDrone(null);
         }
         if (drone != null) {
@@ -81,7 +80,7 @@ public class TileEntityDroneInterface extends TileEntity
                 if (ringSendCooldown > 0) ringSendCooldown--;
                 if (!ringSendQueue.isEmpty() && ringSendCooldown <= 0) {
                     ringSendCooldown = ringSendQueue.size() > 10 ? 1 : 5;
-                    NetworkHandler.sendToDimension(new PacketSpawnRing(getPos().getX() + 0.5, getPos().getY() + 0.8, getPos().getZ() + 0.5, drone, ringSendQueue.poll()), getWorld().provider.getDimension());
+                    NetworkHandler.sendToDimension(new PacketSpawnRing(getPos().getX() + 0.5, getPos().getY() + 0.8, getPos().getZ() + 0.5, drone, ringSendQueue.poll()), getWorld().getDimension().getType());
                 }
             }
         }
@@ -94,32 +93,32 @@ public class TileEntityDroneInterface extends TileEntity
                 drone = null;
             }
             if (prevDrone != drone) {
-                world.markBlockRangeForRenderUpdate(pos, pos);
+                world.markForRerender(pos);
             }
         }
     }
 
     @Nullable
     @Override
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        return new SPacketUpdateTileEntity(getPos(), getBlockMetadata(), getUpdateTag());
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(getPos(), getBlockMetadata(), getUpdateTag());
     }
 
     @Override
-    public NBTTagCompound getUpdateTag() {
-        NBTTagCompound tag = super.getUpdateTag();
+    public CompoundNBT getUpdateTag() {
+        CompoundNBT tag = super.getUpdateTag();
         tag.setInteger("drone", drone != null ? drone.getEntityId() : -1);
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(NBTTagCompound tag) {
+    public void handleUpdateTag(CompoundNBT tag) {
         super.handleUpdateTag(tag);
         droneId = tag.getInteger("drone");
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
         handleUpdateTag(pkt.getNbtCompound());
     }
 
@@ -355,7 +354,7 @@ public class TileEntityDroneInterface extends TileEntity
             @Override
             public Object[] call(Object[] args) {
                 requireArgs(args, 2, "down/up/north/south/west/east, <boolean> valid");
-                EnumFacing dir = getDirForString((String) args[0]);
+                Direction dir = getDirForString((String) args[0]);
                 boolean[] sides = getWidget().getSides();
                 sides[dir.ordinal()] = (Boolean) args[1]; // We don't need to set them afterwards, got a reference.
                 messageToDrone(0xFFFFFFFF);
@@ -547,13 +546,13 @@ public class TileEntityDroneInterface extends TileEntity
                 String widgetName = (String) args[0];
                 for (IProgWidget widget : WidgetRegistrator.registeredWidgets) {
                     if (widget.getWidgetString().equalsIgnoreCase(widgetName)) {
-                        EntityAIBase ai = widget.getWidgetAI(drone, getWidget());
+                        Goal ai = widget.getWidgetAI(drone, getWidget());
                         if (ai == null || !widget.canBeRunByComputers(drone, getWidget())) {
                             throw new IllegalArgumentException("Parsed action '" + widgetName + "' is not a runnable action!");
                         }
                         getAI().setAction(widget, ai);
                         getTargetAI().setAction(widget, widget.getWidgetTargetAI(drone, getWidget()));
-                        messageToDrone(ItemDye.DYE_COLORS[widget.getCraftingColorIndex()]);
+                        messageToDrone(DyeItem.DYE_COLORS[widget.getCraftingColorIndex()]);
                         curAction = widget;
                         return null;
                     }
@@ -780,7 +779,7 @@ public class TileEntityDroneInterface extends TileEntity
     public void setDrone(EntityDrone drone) {
         this.drone = drone;
         sendEvent(drone != null ? "droneConnected" : "droneDisconnected");
-        IBlockState state = getWorld().getBlockState(getPos());
+        BlockState state = getWorld().getBlockState(getPos());
         getWorld().notifyBlockUpdate(getPos(), state, state, 3);
     }
 
@@ -795,8 +794,8 @@ public class TileEntityDroneInterface extends TileEntity
     private DroneAICC getAI() {
         if (drone != null) {
             for (EntityAITaskEntry task : drone.getRunningTasks()) {
-                if (task.action instanceof DroneAICC) {
-                    return (DroneAICC) task.action;
+                if (task.goal instanceof DroneAICC) {
+                    return (DroneAICC) task.goal;
                 }
             }
         }
@@ -816,7 +815,7 @@ public class TileEntityDroneInterface extends TileEntity
     }
 
     private void messageToDrone(Class<? extends IProgWidget> widget) {
-        messageToDrone(ItemDye.DYE_COLORS[ItemProgrammingPuzzle.getWidgetForClass(widget).getCraftingColorIndex()]);
+        messageToDrone(DyeItem.DYE_COLORS[ItemProgrammingPuzzle.getWidgetForClass(widget).getCraftingColorIndex()]);
     }
 
     private void messageToDrone(int color) {

@@ -2,17 +2,15 @@ package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity> implements IDirectionalSemiblock {
     private static final int TRANSFER_INTERVAL = 40;
@@ -26,7 +24,7 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity> implemen
     @DescSynced
     private EnumInputOutput io;
     @DescSynced
-    private EnumFacing facing;
+    private Direction facing;
     private SemiBlockTransferGadget connectedGadget;
     
     private int counter;
@@ -47,14 +45,14 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity> implemen
     }
     
     @Override
-    public void prePlacement(EntityPlayer player, ItemStack stack, EnumFacing facing){
+    public void prePlacement(PlayerEntity player, ItemStack stack, Direction facing){
         super.prePlacement(player, stack, facing);
         io = EnumInputOutput.INPUT;
         this.facing = facing;
     }
     
     @Override
-    public void onPlaced(EntityPlayer player, ItemStack stack, EnumFacing facing){
+    public void onPlaced(PlayerEntity player, ItemStack stack, Direction facing){
         super.onPlaced(player, stack, facing);
 
         connectedGadget = new SemiBlockTransferGadget();
@@ -64,7 +62,7 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity> implemen
     }
     
     @Override
-    public boolean onRightClickWithConfigurator(EntityPlayer player, EnumFacing side) {
+    public boolean onRightClickWithConfigurator(PlayerEntity player, Direction side) {
         if (getFacing() == side) {
             toggleIO();
             getConnectedGadget().toggleIO();
@@ -93,8 +91,8 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity> implemen
     }
     
     @Override
-    public void update(){
-        super.update();
+    public void tick(){
+        super.tick();
         
         if(!world.isRemote && !isInvalid() && io == EnumInputOutput.INPUT && ++counter >= TRANSFER_INTERVAL){
             counter = 0;
@@ -111,21 +109,19 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity> implemen
     }
 
     private void tryTransferItem(TileEntity inputTE, TileEntity outputTE){
-        IItemHandler input = inputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
-        IItemHandler output = outputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite());
-        IOHelper.transferOneItem(input, output);
+        inputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing)
+                .ifPresent(input -> outputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing.getOpposite())
+                        .ifPresent(output -> IOHelper.transferOneItem(input, output)));
     }
     
     private void tryTransferFluid(TileEntity inputTE, TileEntity outputTE){
-        IFluidHandler input = inputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
-        IFluidHandler output = outputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite());
-        if(input != null && output != null){
-            FluidUtil.tryFluidTransfer(output, input, 100, true);
-        }
+        inputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)
+                .ifPresent(input -> outputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite())
+                        .ifPresent(output -> FluidUtil.tryFluidTransfer(output, input, 100, true)));
     }
 
     @Override
-    public EnumFacing getFacing(){
+    public Direction getFacing(){
         return facing;
     }
     
@@ -134,18 +130,18 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity> implemen
     }
     
     @Override
-    public void writeToNBT(NBTTagCompound tag){
+    public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);
-        tag.setInteger("counter", counter);
-        tag.setByte("facing", (byte)facing.ordinal());
-        tag.setBoolean("input", io == EnumInputOutput.INPUT);
+        tag.putInt("counter", counter);
+        tag.putByte("facing", (byte)facing.getIndex());
+        tag.putBoolean("input", io == EnumInputOutput.INPUT);
     }
     
     @Override
-    public void readFromNBT(NBTTagCompound tag){
+    public void readFromNBT(CompoundNBT tag){
         super.readFromNBT(tag);
-        counter = tag.getInteger("counter");
-        facing = EnumFacing.VALUES[tag.getByte("facing")];
+        counter = tag.getInt("counter");
+        facing = Direction.byIndex(tag.getByte("facing"));
         io = tag.getBoolean("input") ? EnumInputOutput.INPUT : EnumInputOutput.OUTPUT;
     }
 }

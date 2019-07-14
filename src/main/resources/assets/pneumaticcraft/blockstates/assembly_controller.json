@@ -7,12 +7,12 @@
       "leg": "pneumaticcraft:blocks/compressed_iron_block",
       "particle": "pneumaticcraft:blocks/assembly_base"
     },
-    "model": "pneumaticcraft:assembly_controller"
+    "model": "pneumaticcraft:block/assembly_controller"
   },
   "variants": {
     "normal": [{}],
     "inventory": [{
-      "model": "pneumaticcraft:assembly_controller_inv.obj",
+      "model": "pneumaticcraft:block/assembly_controller_inv.obj",
       "custom": { "flip-v" : true},
       "transform": "forge:default-block"
     }],
@@ -24,7 +24,7 @@
       "false": {},
       "true": {
         "submodel": {
-          "north": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ 0, 0, -0.375 ], "rotation": { "y": 180 } } }
+          "north": { "model": "pneumaticcraft:block/assembly_connector",  "transform": { "translation": [ 0, 0, -0.375 ], "rotation": { "y": 180 } } }
         }
       }
     },
@@ -32,7 +32,7 @@
       "false": {},
       "true": {
         "submodel": {
-          "south": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ 0, 0, 0.375 ]} }
+          "south": { "model": "pneumaticcraft:block/assembly_connector",  "transform": { "translation": [ 0, 0, 0.375 ]} }
         }
       }
     },
@@ -40,7 +40,7 @@
       "false": {},
       "true": {
         "submodel": {
-          "west": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ -0.375, 0, 0 ], "rotation": { "y": 270 } } }
+          "west": { "model": "pneumaticcraft:block/assembly_connector",  "transform": { "translation": [ -0.375, 0, 0 ], "rotation": { "y": 270 } } }
         }
       }
     },
@@ -48,7 +48,7 @@
       "false": {},
       "true": {
         "submodel": {
-          "east": { "model": "pneumaticcraft:assembly_connector",  "transform": { "translation": [ 0.375, 0, -0 ], "rotation": { "y": 90 } } }
+          "east": { "model": "pneumaticcraft:block/assembly_connector",  "transform": { "translation": [ 0.375, 0, -0 ], "rotation": { "y": 90 } } }
         }
       }
     }

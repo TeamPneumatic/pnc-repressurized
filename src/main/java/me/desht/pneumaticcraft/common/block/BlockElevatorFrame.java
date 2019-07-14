@@ -1,40 +1,42 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.List;
+import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class BlockElevatorFrame extends BlockPneumaticCraftModeled {
-    private static final PropertyBool NE = PropertyBool.create("ne");
-    private static final PropertyBool SE = PropertyBool.create("se");
-    private static final PropertyBool SW = PropertyBool.create("sw");
-    private static final PropertyBool NW = PropertyBool.create("nw");
+public class BlockElevatorFrame extends BlockPneumaticCraft {
+    private static final BooleanProperty NE = BooleanProperty.create("ne");
+    private static final BooleanProperty SE = BooleanProperty.create("se");
+    private static final BooleanProperty SW = BooleanProperty.create("sw");
+    private static final BooleanProperty NW = BooleanProperty.create("nw");
 
     public BlockElevatorFrame() {
         super(Material.IRON, "elevator_frame");
     }
 
     @Override
-    public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
-        super.onBlockAdded(world, pos, state);
+    public void onBlockAdded(BlockState newState, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onBlockAdded(newState, world, pos, oldState, isMoving);
         TileEntityElevatorBase elevatorBase = getElevatorTE(world, pos);
         if (elevatorBase != null) {
             elevatorBase.updateMaxElevatorHeight();
@@ -42,27 +44,22 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, NE, SW, SE, NW);
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        builder.add(NE, SW, SE, NW);
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
-        return 0;
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return super.getStateFromMeta(meta);
-    }
-
-    @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-        boolean[] connected = getConnections(worldIn, pos);
-        for (Corner corner : Corner.values()) {
-            state = state.withProperty(corner.prop, connected[corner.ordinal()]);
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (stateIn.get(WATERLOGGED)) {
+            worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
         }
-        return state;
+
+        boolean[] connected = getConnections(worldIn, currentPos);
+        for (Corner corner : Corner.values()) {
+            stateIn = stateIn.with(corner.prop, connected[corner.ordinal()]);
+        }
+        return stateIn;
     }
 
     @Override
@@ -71,42 +68,36 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return super.getBoundingBox(state, source, pos);
-    }
-
-    @Override
-    public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
-        if (world.isRemote) {
-            ItemStack playerStack = PneumaticCraftRepressurized.proxy.getClientPlayer().getHeldItemMainhand();
-            if (playerStack.getItem() == Item.getItemFromBlock(this)) {
-                // ensure a full bounding box for ease of placement of frames against frames
-                return super.collisionRayTrace(state, world, pos, origin, direction);
-            }
+    public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+        if (selectionContext.hasItem(this.asItem())) {
+            // return a full bounding box if holding frames, for ease of placement of frames against frames
+            return VoxelShapes.fullCube();
         }
 
-        boolean isColliding = false;
+        // TODO can cache these; only 16 possible values here
+        VoxelShape shape = VoxelShapes.empty();
         boolean[] connected = getConnections(world, pos);
         for (Corner corner : Corner.values()) {
             if (!connected[corner.ordinal()]) {
-                setBlockBounds(corner.aabb);
-                if (super.collisionRayTrace(state, world, pos, origin, direction) != null) {
-                    isColliding = true;
-                }
+                shape = VoxelShapes.or(shape, VoxelShapes.create(corner.aabb));
             }
         }
 
-        setBlockBounds(FULL_BLOCK_AABB);
-        return isColliding ? super.collisionRayTrace(state, world, pos, origin, direction) : null;
+        float blockHeight = getElevatorBlockHeight(world, pos);
+        if (blockHeight > 0) {
+            shape = VoxelShapes.or(shape, VoxelShapes.create(new AxisAlignedBB(0, 0, 0, 1, blockHeight, 1)));
+        }
+
+        return shape;
     }
 
-    private boolean[] getConnections(IBlockAccess world, BlockPos pos) {
+    private boolean[] getConnections(IBlockReader world, BlockPos pos) {
         boolean[] res = new boolean[4];
 
-        boolean frameXPos = world.getBlockState(pos.east()).getBlock() == Blockss.ELEVATOR_FRAME;
-        boolean frameXNeg = world.getBlockState(pos.west()).getBlock() == Blockss.ELEVATOR_FRAME;
-        boolean frameZPos = world.getBlockState(pos.south()).getBlock() == Blockss.ELEVATOR_FRAME;
-        boolean frameZNeg = world.getBlockState(pos.north()).getBlock() == Blockss.ELEVATOR_FRAME;
+        boolean frameXPos = world.getBlockState(pos.east()).getBlock() == ModBlocks.ELEVATOR_FRAME;
+        boolean frameXNeg = world.getBlockState(pos.west()).getBlock() == ModBlocks.ELEVATOR_FRAME;
+        boolean frameZPos = world.getBlockState(pos.south()).getBlock() == ModBlocks.ELEVATOR_FRAME;
+        boolean frameZNeg = world.getBlockState(pos.north()).getBlock() == ModBlocks.ELEVATOR_FRAME;
 
         res[Corner.SE.ordinal()]  = frameXPos || frameZPos;
         res[Corner.NE.ordinal()]  = frameXPos || frameZNeg;
@@ -116,30 +107,12 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled {
         return res;
     }
 
-
     @Override
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
-        boolean[] connected = getConnections(worldIn, pos);
-
-        for (Corner corner : Corner.values()) {
-            if (!connected[corner.ordinal()]) {
-                addCollisionBoxToList(pos, entityBox, collidingBoxes, corner.aabb);
-            }
-        }
-
-        float blockHeight = getElevatorBlockHeight(worldIn, pos);
-        if (blockHeight > 0) {
-            AxisAlignedBB aabb = new AxisAlignedBB(0, 0, 0, 1, blockHeight, 1);
-            addCollisionBoxToList(pos, entityBox, collidingBoxes, aabb);
-        }
-    }
-
-    @Override
-    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         TileEntityElevatorBase te = getElevatorTE(world, pos);
         if (te != null && te.oldExtension != te.extension) {
             if (Math.abs(entity.posY - (te.getPos().getY() + te.extension)) < 2.5) {
-                AxisAlignedBB box = entity.getEntityBoundingBox();
+                AxisAlignedBB box = entity.getBoundingBox();
                 int x = te.getPos().getX();
                 int z = te.getPos().getZ();
                 // nudge the entity onto the platform if they're hanging over by too much
@@ -158,33 +131,27 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled {
         }
     }
 
-    static TileEntityElevatorBase getElevatorTE(IBlockAccess world, BlockPos pos) {
+    static TileEntityElevatorBase getElevatorTE(IBlockReader world, BlockPos pos) {
         while (true) {
-            pos = pos.offset(EnumFacing.DOWN);
-            if (world.getBlockState(pos).getBlock() == Blockss.ELEVATOR_BASE) break;
-            if (world.getBlockState(pos).getBlock() != Blockss.ELEVATOR_FRAME || pos.getY() <= 0) return null;
+            pos = pos.offset(Direction.DOWN);
+            if (world.getBlockState(pos).getBlock() == ModBlocks.ELEVATOR_BASE) break;
+            if (world.getBlockState(pos).getBlock() != ModBlocks.ELEVATOR_FRAME || pos.getY() <= 0) return null;
         }
         return (TileEntityElevatorBase) world.getTileEntity(pos);
     }
 
-    private float getElevatorBlockHeight(IBlockAccess world, BlockPos pos) {
+    private float getElevatorBlockHeight(IBlockReader world, BlockPos pos) {
         TileEntityElevatorBase te = getElevatorTE(world, pos);
-        if (te == null) return 0F;
-        float blockHeight = te.extension - (pos.getY() - te.getPos().getY()) + 1;
-        // System.out.println("blockHeight (" + x + ", " + y + ", " + z + "): " + blockHeight);
-        // + blockHeight);
-        if (blockHeight < 0F) return 0F;
-        if (blockHeight > 1F) return 1F;
-        return blockHeight;
+        return te == null ? 0F : MathHelper.clamp(te.extension - (pos.getY() - te.getPos().getY()) + 1, 0F, 1F);
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         TileEntityElevatorBase elevatorBase = getElevatorTE(world, pos);
         if (elevatorBase != null) {
             elevatorBase.updateMaxElevatorHeight();
         }
-        super.breakBlock(world, pos, state);
+        super.onReplaced(state, world, pos, newState, isMoving);
     }
 
     private enum Corner {
@@ -195,10 +162,10 @@ public class BlockElevatorFrame extends BlockPneumaticCraftModeled {
 
         final int x;
         final int z;
-        final PropertyBool prop;
+        final BooleanProperty prop;
         final AxisAlignedBB aabb;
 
-        Corner(int x, int z, PropertyBool prop, AxisAlignedBB aabb) {
+        Corner(int x, int z, BooleanProperty prop, AxisAlignedBB aabb) {
             this.x = x; this.z = z;
             this.prop = prop;
             this.aabb = aabb;

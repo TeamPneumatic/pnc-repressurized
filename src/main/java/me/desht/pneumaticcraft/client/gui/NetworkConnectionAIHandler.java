@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.common.item.ItemNetworkComponents;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class NetworkConnectionAIHandler extends NetworkConnectionHandler {
     private boolean tracing;
@@ -14,42 +14,43 @@ public class NetworkConnectionAIHandler extends NetworkConnectionHandler {
     private boolean simulating;
     private int stopWormTime = 0;
 
-    public NetworkConnectionAIHandler(GuiSecurityStationBase gui, TileEntitySecurityStation station, int baseX,
-                                      int baseY, int nodeSpacing, int color) {
+    NetworkConnectionAIHandler(GuiSecurityStationBase gui, TileEntitySecurityStation station, int baseX,
+                               int baseY, int nodeSpacing, int color) {
         super(gui, station, baseX, baseY, nodeSpacing, color, TileEntityConstants.NETWORK_AI_BRIDGE_SPEED);
+
         for (int i = 0; i < station.getPrimaryInventory().getSlots(); i++) {
             ItemStack stack = station.getPrimaryInventory().getStackInSlot(i);
-            if (stack.getItemDamage() == ItemNetworkComponents.DIAGNOSTIC_SUBROUTINE) {
+            if (stack.getItem() == ModItems.DIAGNOSTIC_SUBROUTINE) {
                 slotHacked[i] = true;
             }
         }
     }
 
-    public NetworkConnectionAIHandler(NetworkConnectionAIHandler copy) {
+    private NetworkConnectionAIHandler(NetworkConnectionAIHandler copy) {
         super(copy);
     }
 
-    public NetworkConnectionAIHandler(NetworkConnectionAIHandler copy, int baseX, int baseY) {
+    NetworkConnectionAIHandler(NetworkConnectionAIHandler copy, int baseX, int baseY) {
         super(copy, baseX, baseY);
     }
 
-    public void setTracing(boolean tracing) {
+    void setTracing(boolean tracing) {
         this.tracing = tracing;
     }
 
-    public boolean isTracing() {
+    boolean isTracing() {
         return tracing;
     }
 
-    public void setSimulating() {
+    private void setSimulating() {
         simulating = true;
     }
 
-    public int getRemainingTraceTime() {
+    int getRemainingTraceTime() {
         return ticksTillTrace;
     }
 
-    public void applyStopWorm() {
+    void applyStopWorm() {
         stopWormTime += 100;
     }
 
@@ -75,7 +76,7 @@ public class NetworkConnectionAIHandler extends NetworkConnectionHandler {
         ticksTillTrace = 0;
         int ioPortSlot = -1;
         for (int i = 0; i < station.getPrimaryInventory().getSlots(); i++) {
-            if (station.getPrimaryInventory().getStackInSlot(i).getItemDamage() == ItemNetworkComponents.NETWORK_IO_PORT) {
+            if (station.getPrimaryInventory().getStackInSlot(i).getItem() == ModItems.NETWORK_IO_PORT) {
                 ioPortSlot = i;
                 break;
             }
@@ -89,9 +90,9 @@ public class NetworkConnectionAIHandler extends NetworkConnectionHandler {
     @Override
     public void onSlotHack(int slot, boolean nuked) {
         ItemStack stack = station.getPrimaryInventory().getStackInSlot(slot);
-        if (!simulating && !stack.isEmpty() && stack.getItemDamage() == ItemNetworkComponents.NETWORK_IO_PORT) {
-            FMLClientHandler.instance().getClient().player.closeScreen();
-            FMLClientHandler.instance().getClient().player.sendStatusMessage(new TextComponentString(TextFormatting.RED + "Hacking unsuccessful! The Diagnostic Subroutine traced to your location!"), false);
+        if (!simulating && stack.getItem() == ModItems.NETWORK_IO_PORT) {
+            Minecraft.getInstance().player.closeScreen();
+            Minecraft.getInstance().player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Hacking unsuccessful! The Diagnostic Subroutine traced to your location!"), false);
             if (gui instanceof GuiSecurityStationHacking)
                 ((GuiSecurityStationHacking) gui).removeUpdatesOnConnectionHandlers();
         }

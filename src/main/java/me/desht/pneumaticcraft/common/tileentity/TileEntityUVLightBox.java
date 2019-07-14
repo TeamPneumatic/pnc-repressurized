@@ -2,21 +2,23 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.EnumSkyBlock;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
@@ -26,8 +28,8 @@ import java.util.List;
 //import elucent.albedo.lighting.ILightProvider;
 //import elucent.albedo.lighting.Light;
 
-@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
-public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl /*,ILightProvider */ {
+//@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
+public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl, INamedContainerProvider /*,ILightProvider */ {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.button.never",
@@ -40,7 +42,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     public static final int INVENTORY_SIZE = 1;
     public static final int PCB_SLOT = 0;
 
-    private Object light = null;
+//    private Object light = null;
 
     @DescSynced
     public boolean areLightsOn;
@@ -51,44 +53,45 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     public final LightBoxItemHandlerInternal inventory = new LightBoxItemHandlerInternal();
     private final LightBoxItemHandlerExternal inventoryExt = new LightBoxItemHandlerExternal(inventory);
+    private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventoryExt);
     public int ticksExisted;
     private boolean oldRedstoneStatus;
 
     public TileEntityUVLightBox() {
-        super(PneumaticValues.DANGER_PRESSURE_UV_LIGHTBOX, PneumaticValues.MAX_PRESSURE_UV_LIGHTBOX, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
+        super(ModTileEntityTypes.UV_LIGHT_BOX, PneumaticValues.DANGER_PRESSURE_UV_LIGHTBOX, PneumaticValues.MAX_PRESSURE_UV_LIGHTBOX, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
         addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-        redstoneMode = nbt.getInteger("redstoneMode");
-        inventory.deserializeNBT(nbt.getCompoundTag("Items"));
+    public void read(CompoundNBT nbt) {
+        super.read(nbt);
+        redstoneMode = nbt.getInt("redstoneMode");
+        inventory.deserializeNBT(nbt.getCompound("Items"));
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
-        nbt.setInteger("redstoneMode", redstoneMode);
-        nbt.setTag("Items", inventory.serializeNBT());
+    public CompoundNBT write(CompoundNBT nbt) {
+        super.write(nbt);
+        nbt.putInt("redstoneMode", redstoneMode);
+        nbt.put("Items", inventory.serializeNBT());
         return nbt;
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
         if (!getWorld().isRemote) {
             ticksExisted++;
             ItemStack stack = getLoadedPCB();
-            if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && stack.getItem() instanceof ItemEmptyPCB && stack.getItemDamage() > 0) {
+            if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && stack.getItem() instanceof ItemEmptyPCB && stack.getDamage() > 0) {
                 addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
-                if (ticksExisted % ticksPerProgress(stack.getItemDamage()) == 0) {
+                if (ticksExisted % ticksPerProgress(stack.getDamage()) == 0) {
                     if (!areLightsOn) {
                         setLightsOn(true);
                         updateNeighbours();
                     }
-                    stack.setItemDamage(Math.max(0, stack.getItemDamage() - 1));
+                    stack.setDamage(Math.max(0, stack.getDamage() - 1));
                 }
             } else if (areLightsOn) {
                 setLightsOn(false);
@@ -133,7 +136,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         boolean check = areLightsOn != lightsOn;
         areLightsOn = lightsOn;
         if (check) {
-            getWorld().checkLightFor(EnumSkyBlock.BLOCK, getPos());
+            getWorld().getChunkProvider().getLightManager().checkBlock(getPos());
             sendDescriptionPacket();
         }
     }
@@ -142,8 +145,8 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     public void onDescUpdate() {
         super.onDescUpdate();
 
-        getWorld().checkLightFor(EnumSkyBlock.BLOCK, getPos());
-        getWorld().markBlockRangeForRenderUpdate(getPos(), getPos());
+        getWorld().getChunkProvider().getLightManager().checkBlock(getPos());
+        getWorld().markForRerender(getPos());
     }
 
     public int getLightLevel() {
@@ -151,17 +154,12 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     @Override
-    public boolean isConnectedTo(EnumFacing side) {
+    public boolean canConnectTo(Direction side) {
         return side == getRotation().rotateYCCW();
     }
 
     @Override
-    public String getName() {
-        return Blockss.UV_LIGHT_BOX.getTranslationKey();
-    }
-
-    @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
+    public void handleGUIButtonPress(int buttonID, PlayerEntity player) {
         if (buttonID == 0) {
             redstoneMode++;
             if (redstoneMode > 4) redstoneMode = 0;
@@ -169,35 +167,30 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         }
     }
 
-    public boolean shouldEmitRedstone() {
-        ItemStack stack = getLoadedPCB();
-        if (redstoneMode == 0 || stack.getItem() != Itemss.EMPTY_PCB) return false;
-        switch (redstoneMode) {
-            case 1:
-                return stack.getItemDamage() < 30;
-            case 2:
-                return stack.getItemDamage() < 20;
-            case 3:
-                return stack.getItemDamage() < 10;
-            case 4:
-                return stack.getItemDamage() == 0;
-        }
-        return false;
-    }
-
     @Override
     public IItemHandlerModifiable getPrimaryInventory() {
         return inventory;
     }
 
-    @Nullable
-    @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        // return the wrapped item handler when accessed via capability
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventoryExt);
+    public boolean shouldEmitRedstone() {
+        ItemStack stack = getLoadedPCB();
+        if (redstoneMode == 0 || stack.getItem() != ModItems.EMPTY_PCB) return false;
+        switch (redstoneMode) {
+            case 1:
+                return stack.getDamage() < 30;
+            case 2:
+                return stack.getDamage() < 20;
+            case 3:
+                return stack.getDamage() < 10;
+            case 4:
+                return stack.getDamage() == 0;
         }
-        return super.getCapability(capability, facing);
+        return false;
+    }
+
+    @Override
+    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+        return invCap;
     }
 
     @Override
@@ -217,6 +210,17 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     private ItemStack getLoadedPCB() {
         return inventory.getStackInSlot(PCB_SLOT);
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerUVLightBox(i, playerInventory, getPos());
     }
 
     /*
@@ -293,6 +297,11 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         @Override
         public int getSlotLimit(int slot) {
             return wrapped.getSlotLimit(slot);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+            return wrapped.isItemValid(slot, stack);
         }
 
         @Override

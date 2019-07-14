@@ -1,45 +1,39 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.MultiPartEntityPart;
-import net.minecraft.entity.item.EntityEnderCrystal;
-import net.minecraft.entity.projectile.EntityFireball;
-import net.minecraft.entity.projectile.EntityShulkerBullet;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.EnderCrystalEntity;
+import net.minecraft.entity.projectile.DamagingProjectileEntity;
+import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.BlockParticleData;
+import net.minecraft.particles.IParticleData;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public abstract class ItemGunAmmo extends ItemPneumatic {
 
-    public ItemGunAmmo(String name) {
-        super(name);
-        setMaxStackSize(1);
-        setMaxDamage(getCartridgeSize());
+    public ItemGunAmmo(Item.Properties props, String name) {
+        super(props.maxStackSize(1), name);
     }
-
-    /**
-     * Get the cartridge size.
-     *
-     * @return the max number of shots for this ammo cartridge
-     */
-    protected abstract int getCartridgeSize();
 
     /**
      * Get this ammo's range modifier.
@@ -82,7 +76,7 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
      * @param ammo the ammo cartridge
      * @return a rendering color (ARGB format)
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public abstract int getAmmoColor(ItemStack ammo);
 
     /**
@@ -100,9 +94,9 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World world, List<String> infoList, ITooltipFlag extraInfo) {
-        infoList.add(I18n.format("gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getItemDamage(), stack.getMaxDamage()));
+    @OnlyIn(Dist.CLIENT)
+    public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
+        infoList.add(xlate("gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getDamage(), stack.getMaxDamage()));
         super.addInformation(stack, world, infoList, extraInfo);
     }
 
@@ -112,7 +106,7 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
      *
      * @param minigun the minigun being used
      * @param ammo the ammo cartridge stack used
-     * @param target the entity which has been hit
+     * @param target the targeted entity
      * @return the number of rounds fired
      */
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
@@ -122,14 +116,15 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
             if (minigun.getWorld().rand.nextInt(100) < 20) times++;
         }
 
-        float dmgMult = getDamageMultiplier(target, ammo);
+        double dmgMult = getDamageMultiplier(target, ammo);
         if (dmgMult > 0) {
-            if (target instanceof MultiPartEntityPart) {
+            /*if (target instanceof MultiPartEntityPart) {
                 ((MultiPartEntityPart) target).parent.attackEntityFromPart((MultiPartEntityPart) target, getDamageSource(minigun), ConfigHandler.minigun.baseDamage * dmgMult * times);
-            } else if (target instanceof EntityLivingBase || target instanceof EntityEnderCrystal) {
-                target.attackEntityFrom(getDamageSource(minigun), ConfigHandler.minigun.baseDamage * dmgMult * times);
-            } else if (target instanceof EntityShulkerBullet || target instanceof EntityFireball) {
-                target.setDead();
+            } else*/
+            if (target instanceof LivingEntity || target instanceof EnderCrystalEntity) {
+                target.attackEntityFrom(getDamageSource(minigun), (float)(Config.Common.Minigun.baseDamage * dmgMult * times));
+            } else if (target instanceof ShulkerBulletEntity || target instanceof DamagingProjectileEntity) {
+                target.remove();
             }
         }
         return times;
@@ -140,16 +135,17 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
      *
      * @param minigun the minigun being used
      * @param ammo the ammo cartridge stack used
-     * @param pos the block that was hit
-     * @param face the side of the block that was hit
-     * @param hitVec the precise position at which the ammo struck
+     * @param brtr the block raytrace result
      * @return the number of rounds fired
      */
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockPos pos, EnumFacing face, Vec3d hitVec) {
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
         World w = minigun.getPlayer().world;
-        IBlockState state = w.getBlockState(pos);
-        ((WorldServer) w).spawnParticle(EnumParticleTypes.BLOCK_DUST, hitVec.x, hitVec.y, hitVec.z, 10,
-                face.getXOffset() * 0.2, face.getYOffset() * 0.2, face.getZOffset() * 0.2, 0.05, Block.getStateId(state));
+        BlockState state = w.getBlockState(brtr.getPos());
+        Direction face = brtr.getFace();
+        Vec3d hitVec = brtr.getHitVec();
+        IParticleData data = new BlockParticleData(ParticleTypes.BLOCK, state);
+        ((ServerWorld) w).spawnParticle(data, hitVec.x, hitVec.y, hitVec.z, 10,
+                face.getXOffset() * 0.2, face.getYOffset() * 0.2, face.getZOffset() * 0.2, 0.05);
 
         // not taking speed upgrades into account here; being kind to players who miss a lot...
         return 1;

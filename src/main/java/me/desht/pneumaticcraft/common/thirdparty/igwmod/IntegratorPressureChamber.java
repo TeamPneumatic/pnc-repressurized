@@ -3,15 +3,14 @@ package me.desht.pneumaticcraft.common.thirdparty.igwmod;
 import igwmod.TextureSupplier;
 import igwmod.api.IRecipeIntegrator;
 import igwmod.gui.*;
-import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.init.Items;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 import java.util.*;
 
@@ -78,10 +77,10 @@ public class IntegratorPressureChamber implements IRecipeIntegrator {
     }
 
     private void handleVillagers(int x, int y, List<IWidget> locatedTextures) {
-        locatedTextures.add(new LocatedEntity(EntityVillager.class, x + 70, y + 95, 2F));
+        locatedTextures.add(new LocatedEntity(VillagerEntity.class, x + 70, y + 95, 2F));
 
-        LocatedEntity locatedEntity = new LocatedEntity(EntityVillager.class, x + 215, y + 125, 2F);
-        EntityVillager villager = (EntityVillager) locatedEntity.entity;
+        LocatedEntity locatedEntity = new LocatedEntity(VillagerEntity.class, x + 215, y + 125, 2F);
+        VillagerEntity villager = (VillagerEntity) locatedEntity.entity;
 //        villager.setProfession(ConfigHandler.general.villagerMechanicID);
         locatedTextures.add(locatedEntity);
     }

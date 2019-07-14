@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.hacking.block;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IHackableBlock;
-import net.minecraft.entity.player.EntityPlayer;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -16,27 +16,27 @@ public class HackableTripwire implements IHackableBlock {
     }
 
     @Override
-    public boolean canHack(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+    public boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
         return true;
     }
 
     @Override
-    public void addInfo(World world, BlockPos pos, List<String> curInfo, EntityPlayer player) {
+    public void addInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.result.neutralize");
     }
 
     @Override
-    public void addPostHackInfo(World world, BlockPos pos, List<String> curInfo, EntityPlayer player) {
+    public void addPostHackInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.finished.neutralized");
     }
 
     @Override
-    public int getHackTime(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+    public int getHackTime(IBlockReader world, BlockPos pos, PlayerEntity player) {
         return 40;
     }
 
     @Override
-    public void onHackFinished(World world, BlockPos pos, EntityPlayer player) {
+    public void onHackFinished(World world, BlockPos pos, PlayerEntity player) {
         world.destroyBlock(pos, true);//break block
     }
 

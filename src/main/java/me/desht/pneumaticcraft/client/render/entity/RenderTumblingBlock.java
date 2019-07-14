@@ -1,33 +1,32 @@
 package me.desht.pneumaticcraft.client.render.entity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 
-public class RenderTumblingBlock extends Render<EntityTumblingBlock> {
+public class RenderTumblingBlock extends EntityRenderer<EntityTumblingBlock> {
     public static final IRenderFactory<EntityTumblingBlock> FACTORY = RenderTumblingBlock::new;
 
-    private RenderTumblingBlock(RenderManager renderManager) {
+    private RenderTumblingBlock(EntityRendererManager renderManager) {
         super(renderManager);
     }
 
@@ -35,14 +34,14 @@ public class RenderTumblingBlock extends Render<EntityTumblingBlock> {
     public void doRender(EntityTumblingBlock entity, double x, double y, double z, float entityYaw, float partialTicks) {
         // mostly lifted from RenderFallingBlock
         ItemStack stack = entity.getStack();
-        if (stack.isEmpty() || !(stack.getItem() instanceof ItemBlock)) {
+        if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
             return;
         }
-        Block block = ((ItemBlock) stack.getItem()).getBlock();
-        IBlockState state = block.getStateFromMeta(stack.getMetadata());
-        if (state.getRenderType() == EnumBlockRenderType.MODEL) {
+        Block block = ((BlockItem) stack.getItem()).getBlock();
+        BlockState state = block.getDefaultState();
+        if (state.getRenderType() == BlockRenderType.MODEL) {
             World world = entity.getEntityWorld();
-            this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            this.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
             GlStateManager.pushMatrix();
             GlStateManager.disableLighting();
             Tessellator tessellator = Tessellator.getInstance();
@@ -50,22 +49,22 @@ public class RenderTumblingBlock extends Render<EntityTumblingBlock> {
 
             if (this.renderOutlines) {
                 GlStateManager.enableColorMaterial();
-                GlStateManager.enableOutlineMode(this.getTeamColor(entity));
+                GlStateManager.setupSolidRenderingTextureCombine(this.getTeamColor(entity));
             }
 
             bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-            BlockPos blockpos = new BlockPos(entity.posX, entity.getEntityBoundingBox().maxY, entity.posZ);
+            BlockPos blockpos = new BlockPos(entity.posX, entity.getBoundingBox().maxY, entity.posZ);
             // make the block tumble as it flies through the air
-            GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
+            GlStateManager.translated(x + 0.5, y + 0.5, z + 0.5);
             float angle = ((entity.ticksExisted + partialTicks) * 36) % 360;  // * 36 : will rotate through 360 degrees twice / second
-            GlStateManager.rotate(angle, 1f, 0f, 1f);
-            GlStateManager.translate(-blockpos.getX() - 1, -blockpos.getY() - 0.5, -blockpos.getZ() - 1);
-            BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-            blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, blockpos, bufferbuilder, false, MathHelper.getPositionRandom(entity.getOrigin()));
+            GlStateManager.rotated(angle, 1f, 0f, 1f);
+            GlStateManager.translated(-blockpos.getX() - 1, -blockpos.getY() - 0.5, -blockpos.getZ() - 1);
+            BlockRendererDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
+            blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, blockpos, bufferbuilder, false, world.rand, state.getPositionRandom(entity.getOrigin()), null);
             tessellator.draw();
 
             if (this.renderOutlines) {
-                GlStateManager.disableOutlineMode();
+                GlStateManager.tearDownSolidRenderingTextureCombine();
                 GlStateManager.disableColorMaterial();
             }
 
@@ -78,6 +77,6 @@ public class RenderTumblingBlock extends Render<EntityTumblingBlock> {
     @Nullable
     @Override
     protected ResourceLocation getEntityTexture(EntityTumblingBlock entity) {
-        return TextureMap.LOCATION_BLOCKS_TEXTURE;
+        return AtlasTexture.LOCATION_BLOCKS_TEXTURE;
     }
 }

@@ -2,11 +2,18 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketSecurityStationFailedHack extends LocationIntPacket<PacketSecurityStationFailedHack> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: SERVER
+ * Sent by client when a hack attempt fails
+ */
+public class PacketSecurityStationFailedHack extends LocationIntPacket {
 
     public PacketSecurityStationFailedHack() {
     }
@@ -15,18 +22,20 @@ public class PacketSecurityStationFailedHack extends LocationIntPacket<PacketSec
         super(pos);
     }
 
-    @Override
-    public void handleClientSide(PacketSecurityStationFailedHack message, EntityPlayer player) {
+    public PacketSecurityStationFailedHack(PacketBuffer buffer) {
+        super(buffer);
     }
 
-    @Override
-    public void handleServerSide(PacketSecurityStationFailedHack message, EntityPlayer player) {
-        TileEntity te = message.getTileEntity(player.world);
-        if (te instanceof TileEntitySecurityStation) {
-            TileEntitySecurityStation station = (TileEntitySecurityStation) te;
-            if (!station.isPlayerOnWhiteList(player)) {
-                player.attackEntityFrom(DamageSourcePneumaticCraft.SECURITY_STATION, 19);
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            TileEntity te = getTileEntity(ctx);
+            if (te instanceof TileEntitySecurityStation) {
+                TileEntitySecurityStation station = (TileEntitySecurityStation) te;
+                if (!station.isPlayerOnWhiteList(ctx.get().getSender())) {
+                    ctx.get().getSender().attackEntityFrom(DamageSourcePneumaticCraft.SECURITY_STATION, 19);
+                }
             }
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
 }

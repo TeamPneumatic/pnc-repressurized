@@ -1,16 +1,15 @@
 package me.desht.pneumaticcraft.common.thirdparty.ic2;
 
 import ic2.api.item.IC2Items;
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -62,8 +61,8 @@ public class IC2 implements IThirdParty, IGuiHandler {
 
     @SubscribeEvent
     public void onBlockRegister(RegistryEvent.Register<Block> event) {
-        Blockss.registerBlock(event.getRegistry(), new BlockElectricCompressor());
-        Blockss.registerBlock(event.getRegistry(), new BlockPneumaticGenerator());
+        ModBlocks.registerBlock(event.getRegistry(), new BlockElectricCompressor());
+        ModBlocks.registerBlock(event.getRegistry(), new BlockPneumaticGenerator());
     }
 
     @SubscribeEvent
@@ -80,7 +79,7 @@ public class IC2 implements IThirdParty, IGuiHandler {
 
     @SideOnly(Side.CLIENT)
     private void registerModel(Block block) {
-        Item item = ItemBlock.getItemFromBlock(block);
+        Item item = BlockItem.getItemFromBlock(block);
         if (item.getRegistryName() != null) {
             ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
         }
@@ -88,7 +87,7 @@ public class IC2 implements IThirdParty, IGuiHandler {
 
     @Nullable
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getServerGuiElement(int ID, PlayerEntity player, World world, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
         TileEntity te = world.isBlockLoaded(pos) ? world.getTileEntity(pos) : null;
         switch (EnumGuiId.values()[ID]) {
@@ -102,7 +101,7 @@ public class IC2 implements IThirdParty, IGuiHandler {
 
     @Nullable
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getClientGuiElement(int ID, PlayerEntity player, World world, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
         TileEntity te = world.isBlockLoaded(pos) ? world.getTileEntity(pos) : null;
         switch (EnumGuiId.values()[ID]) {

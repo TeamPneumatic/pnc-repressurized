@@ -1,26 +1,25 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Direction.Axis;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
 
-    BlockElevatorCaller() {
+    public BlockElevatorCaller() {
         super(Material.IRON, "elevator_caller");
     }
 
@@ -30,28 +29,28 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityElevatorCaller) {
             TileEntityElevatorCaller teEC = (TileEntityElevatorCaller) te;
             if (!world.isRemote) {
-                int floor = getFloorForHit(teEC, side, hitX, hitY, hitZ);
+                int floor = getFloorForHit(teEC, brtr.getFace(), brtr.getHitVec().x, brtr.getHitVec().y, brtr.getHitVec().z);
                 if (floor >= 0) setSurroundingElevators(world, pos, floor);
             }
         }
-        return getRotation(state).getOpposite() == side;
+        return getRotation(state).getOpposite() == brtr.getFace();
     }
 
-    private int getFloorForHit(TileEntityElevatorCaller teEC, EnumFacing side, float hitX, float hitY, float hitZ) {
-        float x;
+    private int getFloorForHit(TileEntityElevatorCaller teEC, Direction side, double hitX, double hitY, double hitZ) {
+        double x;
         switch (side) {
-            case NORTH: x = 1.0f - hitX; break;
+            case NORTH: x = 1.0 - hitX; break;
             case SOUTH: x = hitX; break;
-            case EAST: x = 1.0f - hitZ; break;
+            case EAST: x = 1.0 - hitZ; break;
             case WEST: x = hitZ; break;
             default: return -1;
         }
-        float y = 1.0f - hitY;
+        double y = 1.0 - hitY;
 
         for (TileEntityElevatorCaller.ElevatorButton button : teEC.getFloors()) {
             if (x >= button.posX && x <= button.posX + button.width && y >= button.posY && y <= button.posY + button.height) {
@@ -61,73 +60,63 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
         return -1;
     }
 
-    @Override
-    public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return true;
-    }
-
-    @Override
-    public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
-        setBlockBounds(FULL_BLOCK_AABB);
-        RayTraceResult rayTrace = super.collisionRayTrace(state, world, pos, origin, direction);
-        EnumFacing orientation = getRotation(world, pos).getOpposite();
-        if (rayTrace != null && rayTrace.sideHit == orientation) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityElevatorCaller) {
-                TileEntityElevatorCaller caller = (TileEntityElevatorCaller) te;
-                for (TileEntityElevatorCaller.ElevatorButton button : caller.getFloors()) {
-                    float startX = 0, startZ = 0, endX = 0, endZ = 0;
-                    switch (orientation) {
-                        case NORTH:
-                            startZ = 0F;
-                            endZ = 0.01F;
-                            endX = 1 - (float) button.posX;
-                            startX = 1 - ((float) button.posX + (float) button.width);
-                            break;
-                        case SOUTH:
-                            startZ = 0.99F;
-                            endZ = 1F;
-                            startX = (float) button.posX;
-                            endX = (float) button.posX + (float) button.width;
-                            break;
-                        case WEST:
-                            startX = 0F;
-                            endX = 0.01F;
-                            startZ = (float) button.posX;
-                            endZ = (float) button.posX + (float) button.width;
-                            break;
-                        case EAST:
-                            startX = 0.99F;
-                            endX = 1F;
-                            endZ = 1 - (float) button.posX;
-                            startZ = 1 - ((float) button.posX + (float) button.width);
-                            break;
-                    }
-
-                    setBlockBounds(new AxisAlignedBB(startX, 1 - (float) (button.posY + button.height), startZ, endX, 1 - (float) button.posY, endZ));
-                    RayTraceResult buttonTrace = super.collisionRayTrace(state, world, pos, origin, direction);
-                    if (buttonTrace != null) {
-                        if (startX > 0.01F && startX < 0.98F) startX += 0.01F;
-                        if (startZ > 0.01F && startZ < 0.98F) startZ += 0.01F;
-                        if (endX > 0.02F && endX < 0.99F) endX -= 0.01F;
-                        if (endZ > 0.02F && endZ < 0.99F) endZ -= 0.01F;
-                        setBlockBounds(new AxisAlignedBB(startX, 1.01F - (float) (button.posY + button.height), startZ, endX, 0.99F - (float) button.posY, endZ));
-                        buttonTrace.subHit = button.floorNumber;
-                        return buttonTrace;
-                    }
-                }
-            }
-        }
-
-        setBlockBounds(FULL_BLOCK_AABB);
-        return rayTrace;
-    }
-
-    @Override
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
-        IBlockState camoState = getCamoState(worldIn, pos);
-        return camoState != null ? camoState.getBlockFaceShape(worldIn, pos, face) : BlockFaceShape.SOLID;
-    }
+    // todo 1.14 figure out raytracing
+//    @Override
+//    public RayTraceResult collisionRayTrace(BlockState state, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
+//        setBlockBounds(FULL_BLOCK_AABB);
+//        RayTraceResult rayTrace = super.collisionRayTrace(state, world, pos, origin, direction);
+//        Direction orientation = getRotation(world, pos).getOpposite();
+//        if (rayTrace != null && rayTrace.sideHit == orientation) {
+//            TileEntity te = world.getTileEntity(pos);
+//            if (te instanceof TileEntityElevatorCaller) {
+//                TileEntityElevatorCaller caller = (TileEntityElevatorCaller) te;
+//                for (TileEntityElevatorCaller.ElevatorButton button : caller.getFloors()) {
+//                    float startX = 0, startZ = 0, endX = 0, endZ = 0;
+//                    switch (orientation) {
+//                        case NORTH:
+//                            startZ = 0F;
+//                            endZ = 0.01F;
+//                            endX = 1 - (float) button.posX;
+//                            startX = 1 - ((float) button.posX + (float) button.width);
+//                            break;
+//                        case SOUTH:
+//                            startZ = 0.99F;
+//                            endZ = 1F;
+//                            startX = (float) button.posX;
+//                            endX = (float) button.posX + (float) button.width;
+//                            break;
+//                        case WEST:
+//                            startX = 0F;
+//                            endX = 0.01F;
+//                            startZ = (float) button.posX;
+//                            endZ = (float) button.posX + (float) button.width;
+//                            break;
+//                        case EAST:
+//                            startX = 0.99F;
+//                            endX = 1F;
+//                            endZ = 1 - (float) button.posX;
+//                            startZ = 1 - ((float) button.posX + (float) button.width);
+//                            break;
+//                    }
+//
+//                    setBlockBounds(new AxisAlignedBB(startX, 1 - (float) (button.posY + button.height), startZ, endX, 1 - (float) button.posY, endZ));
+//                    RayTraceResult buttonTrace = super.collisionRayTrace(state, world, pos, origin, direction);
+//                    if (buttonTrace != null) {
+//                        if (startX > 0.01F && startX < 0.98F) startX += 0.01F;
+//                        if (startZ > 0.01F && startZ < 0.98F) startZ += 0.01F;
+//                        if (endX > 0.02F && endX < 0.99F) endX -= 0.01F;
+//                        if (endZ > 0.02F && endZ < 0.99F) endZ -= 0.01F;
+//                        setBlockBounds(new AxisAlignedBB(startX, 1.01F - (float) (button.posY + button.height), startZ, endX, 0.99F - (float) button.posY, endZ));
+//                        buttonTrace.subHit = button.floorNumber;
+//                        return buttonTrace;
+//                    }
+//                }
+//            }
+//        }
+//
+//        setBlockBounds(FULL_BLOCK_AABB);
+//        return rayTrace;
+//    }
 
     @Override
     protected boolean doesCamoOverrideBounds() {
@@ -135,8 +124,8 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     }
 
     public static void setSurroundingElevators(World world, BlockPos pos, int floor) {
-        for (EnumFacing dir : EnumFacing.HORIZONTALS) {
-            TileEntityElevatorBase elevator = getElevatorBase(world, pos.offset(dir).offset(EnumFacing.DOWN, 2));
+        for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
+            TileEntityElevatorBase elevator = getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2));
             if (elevator != null) {
                 elevator.goToFloor(floor);
             }
@@ -144,21 +133,21 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
-        super.onBlockAdded(worldIn, pos, state);
-        updateElevatorButtons(worldIn, pos);
+    public void onBlockAdded(BlockState newState, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onBlockAdded(newState, world, pos, oldState, isMoving);
+        updateElevatorButtons(world, pos);
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         updateElevatorButtons(world, pos);
-        super.breakBlock(world, pos, state);
+        super.onReplaced(state, world, pos, newState, isMoving);
     }
 
     private void updateElevatorButtons(World world, BlockPos pos) {
-        for (EnumFacing dir : EnumFacing.VALUES) {
+        for (Direction dir : Direction.VALUES) {
             if (dir.getAxis() != Axis.Y) {
-                TileEntityElevatorBase elevator = getElevatorBase(world, pos.offset(dir).offset(EnumFacing.DOWN, 2));
+                TileEntityElevatorBase elevator = getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2));
                 if (elevator != null) {
                     elevator.updateFloors();
                 }
@@ -169,10 +158,10 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     private static TileEntityElevatorBase getElevatorBase(World world, BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
         TileEntityElevatorBase elevator = null;
-        if (block == Blockss.ELEVATOR_FRAME) {
+        if (block == ModBlocks.ELEVATOR_FRAME) {
             elevator = BlockElevatorFrame.getElevatorTE(world, pos);
         }
-        if (block == Blockss.ELEVATOR_BASE) {
+        if (block == ModBlocks.ELEVATOR_BASE) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityElevatorBase && ((TileEntityElevatorBase) te).isCoreElevator()) {
                 elevator = (TileEntityElevatorBase) te;
@@ -186,18 +175,18 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
         return true;
     }
 
-    @Override
-    public boolean isOpaqueCube(IBlockState state) {
-        return false ;//this should return false, because otherwise I can't give color to the rendered elevator buttons for some reason...
-    }
+//    @Override
+//    public boolean isOpaqueCube(BlockState state) {
+//        return false ;//this should return false, because otherwise I can't give color to the rendered elevator buttons for some reason...
+//    }
 
     @Override
-    public boolean canProvidePower(IBlockState state) {
+    public boolean canProvidePower(BlockState state) {
         return true;
     }
 
     @Override
-    public int getWeakPower(IBlockState state, IBlockAccess par1IBlockAccess, BlockPos pos, EnumFacing side) {
+    public int getWeakPower(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {
         TileEntity te = par1IBlockAccess.getTileEntity(pos);
         if (te instanceof TileEntityElevatorCaller) {
             TileEntityElevatorCaller teEc = (TileEntityElevatorCaller) te;

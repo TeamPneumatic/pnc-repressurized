@@ -2,28 +2,28 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetPlace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiProgWidgetPlace<Widget extends ProgWidgetPlace> extends GuiProgWidgetDigAndPlace<Widget> {
+public class GuiProgWidgetPlace<P extends ProgWidgetPlace> extends GuiProgWidgetDigAndPlace<P> {
 
-    public GuiProgWidgetPlace(Widget widget, GuiProgrammer guiProgrammer) {
-        super(widget, guiProgrammer);
+    public GuiProgWidgetPlace(P progWidget, GuiProgrammer guiProgrammer) {
+        super(progWidget, guiProgrammer);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
         List<GuiRadioButton> radioButtons = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            GuiRadioButton radioButton = new GuiRadioButton(i + 10, guiLeft + 4, guiTop + 80 + i * 12, 0xFF404040, PneumaticCraftUtils.getOrientationName(EnumFacing.byIndex(i)));
-            radioButton.checked = widget.placeDir.ordinal() == i;
-            addWidget(radioButton);
+        for (Direction dir : Direction.VALUES) {
+            GuiRadioButton radioButton = new GuiRadioButton(guiLeft + 4, guiTop + 80 + dir.getIndex() * 12, 0xFF404040,
+                    PneumaticCraftUtils.getOrientationName(dir), b -> progWidget.placeDir = dir);
+            radioButton.checked = progWidget.placeDir == dir;
+            addButton(radioButton);
             radioButtons.add(radioButton);
             radioButton.otherChoices = radioButtons;
         }
@@ -33,12 +33,4 @@ public class GuiProgWidgetPlace<Widget extends ProgWidgetPlace> extends GuiProgW
     protected boolean moveActionsToSide() {
         return true;
     }
-
-    @Override
-    public void actionPerformed(IGuiWidget guiWidget) {
-        if (guiWidget.getID() >= 10 && guiWidget.getID() < 16)
-            widget.placeDir = EnumFacing.byIndex(guiWidget.getID() - 10);
-        super.actionPerformed(guiWidget);
-    }
-
 }

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
-import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import net.minecraft.item.ItemStack;
 import vazkii.patchouli.api.IComponentProcessor;

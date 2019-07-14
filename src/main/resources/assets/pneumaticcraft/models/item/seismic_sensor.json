@@ -1,7 +1,7 @@
 {
   "parent" : "item/generated",
   "textures" : {
-     "layer0" : "pneumaticcraft:items/seismic_sensor"
+     "layer0" : "pneumaticcraft:item/seismic_sensor"
   },
   "display": {
     "thirdperson_lefthand": {

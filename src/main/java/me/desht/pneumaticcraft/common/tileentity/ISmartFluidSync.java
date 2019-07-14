@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidTank;
 
@@ -37,7 +37,7 @@ public interface ISmartFluidSync {
             super(capacity);
             this.holder = holder;
             this.tankIndex = tankIndex;
-            this.scaleValue = getCapacity() * ConfigHandler.advanced.liquidTankUpdateThreshold;
+            this.scaleValue = getCapacity() * Config.Common.Advanced.liquidTankUpdateThreshold;
         }
 
         /**

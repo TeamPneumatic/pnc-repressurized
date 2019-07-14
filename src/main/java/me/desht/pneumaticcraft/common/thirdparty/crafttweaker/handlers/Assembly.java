@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.handlers;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.util.Helper;
@@ -27,12 +27,12 @@ public class Assembly {
 
     @ZenMethod
     public static void addDrillRecipe(IItemStack input, IItemStack output) {
-        addRecipe(nameDrill, input, output, AssemblyRecipe.drillRecipes, new ItemStack(Itemss.ASSEMBLY_PROGRAM, 1, ItemAssemblyProgram.DRILL_DAMAGE));
+        addRecipe(nameDrill, input, output, AssemblyRecipe.drillRecipes, new ItemStack(ModItems.ASSEMBLY_PROGRAM, 1, ItemAssemblyProgram.DRILL_DAMAGE));
     }
 
     @ZenMethod
     public static void addLaserRecipe(IItemStack input, IItemStack output) {
-        addRecipe(nameLaser, input, output, AssemblyRecipe.laserRecipes, new ItemStack(Itemss.ASSEMBLY_PROGRAM, 1, ItemAssemblyProgram.LASER_DAMAGE));
+        addRecipe(nameLaser, input, output, AssemblyRecipe.laserRecipes, new ItemStack(ModItems.ASSEMBLY_PROGRAM, 1, ItemAssemblyProgram.LASER_DAMAGE));
     }
 
     @ZenMethod

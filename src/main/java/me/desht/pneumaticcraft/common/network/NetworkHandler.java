@@ -18,124 +18,192 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.common.network.ILargePayload.MAX_PAYLOAD_SIZE;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class NetworkHandler {
+    private static final String PROTOCOL_VERSION = "1";
+    private static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder
+            .named(RL("main_channel"))
+            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
+            .networkProtocolVersion(() -> PROTOCOL_VERSION)
+            .simpleChannel();
+    private static int det = 0;
 
-    private static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel("PneumaticCraft");
-    static final int MAX_PAYLOAD_SIZE = 32000;
-
-    private static int discriminant;
+    private static int nextId() {
+        return det++;
+    }
 
     /*
      * The integer is the ID of the message, the Side is the side this message will be handled (received) on!
      */
     public static void init() {
-        INSTANCE.registerMessage(PacketAddChatMessage.class, PacketAddChatMessage.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketAphorismTileUpdate.class, PacketAphorismTileUpdate.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketChangeGPSToolCoordinate.class, PacketChangeGPSToolCoordinate.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketUpdateGPSAreaTool.class, PacketUpdateGPSAreaTool.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketCoordTrackUpdate.class, PacketCoordTrackUpdate.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketDescription.class, PacketDescription.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketDescriptionPacketRequest.class, PacketDescriptionPacketRequest.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketGuiButton.class, PacketGuiButton.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketPlaySound.class, PacketPlaySound.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketProgrammerUpdate.class, PacketProgrammerUpdate.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketRenderRangeLines.class, PacketRenderRangeLines.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSecurityStationAddHacker.class, PacketSecurityStationAddHacker.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketSecurityStationAddUser.class, PacketSecurityStationAddUser.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketSecurityStationFailedHack.class, PacketSecurityStationFailedHack.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketSendNBTPacket.class, PacketSendNBTPacket.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketShowWireframe.class, PacketShowWireframe.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSpawnParticle.class, PacketSpawnParticle.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketUpdateSearchStack.class, PacketUpdateSearchStack.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketUpdateTextfield.class, PacketUpdateTextfield.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketUseItem.class, PacketUseItem.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketUpdatePressureModule.class, PacketUpdatePressureModule.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketUpdatePressureModule.class, PacketUpdatePressureModule.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketUpdateAirGrateModule.class, PacketUpdateAirGrateModule.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketUpdateAirGrateModule.class, PacketUpdateAirGrateModule.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketUpdateGui.class, PacketUpdateGui.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketUpdateRemoteLayout.class, PacketUpdateRemoteLayout.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketSetGlobalVariable.class, PacketSetGlobalVariable.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketSetGlobalVariable.class, PacketSetGlobalVariable.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketAddSemiBlock.class, PacketAddSemiBlock.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketRemoveSemiBlock.class, PacketRemoveSemiBlock.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSetLogisticsFilterStack.class, PacketSetLogisticsFilterStack.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketSetLogisticsFluidFilterStack.class, PacketSetLogisticsFluidFilterStack.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketSetLogisticsMinAmounts.class, PacketSetLogisticsMinAmounts.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketServerTickTime.class, PacketServerTickTime.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketUpdatePressureBlock.class, PacketUpdatePressureBlock.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSyncAmadronOffers.class, PacketSyncAmadronOffers.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketAmadronOrderUpdate.class, PacketAmadronOrderUpdate.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketAmadronTradeAddCustom.class, PacketAmadronTradeAddCustom.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketAmadronTradeAddCustom.class, PacketAmadronTradeAddCustom.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketAmadronTradeAddPeriodic.class, PacketAmadronTradeAddPeriodic.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketAmadronTradeAddStatic.class, PacketAmadronTradeAddStatic.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketAmadronTradeNotifyDeal.class, PacketAmadronTradeNotifyDeal.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketAmadronTradeRemoved.class, PacketAmadronTradeRemoved.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketUpdateLogisticModule.class, PacketUpdateLogisticModule.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSyncRedstoneModuleToClient.class, PacketSyncRedstoneModuleToClient.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSyncRedstoneModuleToServer.class, PacketSyncRedstoneModuleToServer.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketCommandGetGlobalVariableOutput.class, PacketCommandGetGlobalVariableOutput.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketNotifyVariablesRemote.class, PacketNotifyVariablesRemote.class, discriminant++, Side.CLIENT);
-
-        INSTANCE.registerMessage(PacketHackingBlockStart.class, PacketHackingBlockStart.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketHackingBlockStart.class, PacketHackingBlockStart.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketHackingBlockFinish.class, PacketHackingBlockFinish.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketHackingEntityStart.class, PacketHackingEntityStart.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketHackingEntityStart.class, PacketHackingEntityStart.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketHackingEntityFinish.class, PacketHackingEntityFinish.class, discriminant++, Side.CLIENT);
-
-        INSTANCE.registerMessage(PacketToggleArmorFeature.class, PacketToggleArmorFeature.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketUpdateDebuggingDrone.class, PacketUpdateDebuggingDrone.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketSendDroneDebugEntry.class, PacketSendDroneDebugEntry.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSyncDroneEntityProgWidgets.class, PacketSyncDroneEntityProgWidgets.class, discriminant++, Side.CLIENT);
-
-        INSTANCE.registerMessage(PacketOpenTubeModuleGui.class, PacketOpenTubeModuleGui.class, discriminant++, Side.CLIENT);
-
-        INSTANCE.registerMessage(PacketSpawnRing.class, PacketSpawnRing.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketShowArea.class, PacketShowArea.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketSetEntityMotion.class, PacketSetEntityMotion.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketDebugBlock.class, PacketDebugBlock.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketAmadronInvSync.class, PacketAmadronInvSync.class, discriminant++, Side.SERVER);
-
-        INSTANCE.registerMessage(PacketMultiHeader.class, PacketMultiHeader.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketMultiPart.class, PacketMultiPart.class, discriminant++, Side.SERVER);
-
-        INSTANCE.registerMessage(PacketPneumaticKick.class, PacketPneumaticKick.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketJetBootsActivate.class, PacketJetBootsActivate.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketPlayMovingSound.class, PacketPlayMovingSound.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketJetBootsStateSync.class, PacketJetBootsStateSync.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketRotateBlock.class, PacketRotateBlock.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketUpdateArmorExtraData.class, PacketUpdateArmorExtraData.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketUpdateMicromissileSettings.class, PacketUpdateMicromissileSettings.class, discriminant++, Side.SERVER);
-        INSTANCE.registerMessage(PacketSendArmorHUDMessage.class, PacketSendArmorHUDMessage.class, discriminant++, Side.CLIENT);
-        INSTANCE.registerMessage(PacketChestplateLauncher.class, PacketChestplateLauncher.class, discriminant++, Side.SERVER);
+		registerMessage(PacketAphorismTileUpdate.class,
+				PacketAphorismTileUpdate::toBytes, PacketAphorismTileUpdate::new, PacketAphorismTileUpdate::handle);
+		registerMessage(PacketChangeGPSToolCoordinate.class,
+				PacketChangeGPSToolCoordinate::toBytes, PacketChangeGPSToolCoordinate::new, PacketChangeGPSToolCoordinate::handle);
+		registerMessage(PacketUpdateGPSAreaTool.class,
+				PacketUpdateGPSAreaTool::toBytes, PacketUpdateGPSAreaTool::new, PacketUpdateGPSAreaTool::handle);
+		registerMessage(PacketCoordTrackUpdate.class,
+				PacketCoordTrackUpdate::toBytes, PacketCoordTrackUpdate::new, PacketCoordTrackUpdate::handle);
+		registerMessage(PacketDescription.class,
+				PacketDescription::toBytes, PacketDescription::new, PacketDescription::process);
+		registerMessage(PacketDescriptionPacketRequest.class,
+				PacketDescriptionPacketRequest::toBytes, PacketDescriptionPacketRequest::new, PacketDescriptionPacketRequest::handle);
+		registerMessage(PacketGuiButton.class,
+				PacketGuiButton::toBytes, PacketGuiButton::new, PacketGuiButton::handle);
+		registerMessage(PacketPlaySound.class,
+				PacketPlaySound::toBytes, PacketPlaySound::new, PacketPlaySound::handle);
+		registerMessage(PacketProgrammerUpdate.class,
+				PacketProgrammerUpdate::toBytes, PacketProgrammerUpdate::new, PacketProgrammerUpdate::handle);
+		registerMessage(PacketRenderRangeLines.class,
+				PacketRenderRangeLines::toBytes, PacketRenderRangeLines::new, PacketRenderRangeLines::handle);
+		registerMessage(PacketSecurityStationAddHacker.class,
+				PacketSecurityStationAddHacker::toBytes, PacketSecurityStationAddHacker::new, PacketSecurityStationAddHacker::handle);
+		registerMessage(PacketSecurityStationAddUser.class,
+				PacketSecurityStationAddUser::toBytes, PacketSecurityStationAddUser::new, PacketSecurityStationAddUser::handle);
+		registerMessage(PacketSecurityStationFailedHack.class,
+				PacketSecurityStationFailedHack::toBytes, PacketSecurityStationFailedHack::new, PacketSecurityStationFailedHack::handle);
+		registerMessage(PacketSendNBTPacket.class,
+				PacketSendNBTPacket::toBytes, PacketSendNBTPacket::new, PacketSendNBTPacket::handle);
+		registerMessage(PacketShowWireframe.class,
+				PacketShowWireframe::toBytes, PacketShowWireframe::new, PacketShowWireframe::handle);
+		registerMessage(PacketSpawnParticle.class,
+				PacketSpawnParticle::toBytes, PacketSpawnParticle::new, PacketSpawnParticle::handle);
+		registerMessage(PacketUpdateSearchItem.class,
+				PacketUpdateSearchItem::toBytes, PacketUpdateSearchItem::new, PacketUpdateSearchItem::handle);
+		registerMessage(PacketUpdateTextfield.class,
+				PacketUpdateTextfield::toBytes, PacketUpdateTextfield::new, PacketUpdateTextfield::handle);
+		registerMessage(PacketUseItem.class,
+				PacketUseItem::toBytes, PacketUseItem::new, PacketUseItem::handle);
+		registerMessage(PacketUpdatePressureModule.class,
+				PacketUpdatePressureModule::toBytes, PacketUpdatePressureModule::new, PacketUpdatePressureModule::handle);
+		registerMessage(PacketUpdateAirGrateModule.class,
+				PacketUpdateAirGrateModule::toBytes, PacketUpdateAirGrateModule::new, PacketUpdateAirGrateModule::handle);
+		registerMessage(PacketUpdateGui.class,
+				PacketUpdateGui::toBytes, PacketUpdateGui::new, PacketUpdateGui::handle);
+		registerMessage(PacketUpdateRemoteLayout.class,
+				PacketUpdateRemoteLayout::toBytes, PacketUpdateRemoteLayout::new, PacketUpdateRemoteLayout::handle);
+		registerMessage(PacketSetGlobalVariable.class,
+				PacketSetGlobalVariable::toBytes, PacketSetGlobalVariable::new, PacketSetGlobalVariable::handle);
+		registerMessage(PacketAddSemiBlock.class,
+				PacketAddSemiBlock::toBytes, PacketAddSemiBlock::new, PacketAddSemiBlock::handle);
+		registerMessage(PacketRemoveSemiBlock.class,
+				PacketRemoveSemiBlock::toBytes, PacketRemoveSemiBlock::new, PacketRemoveSemiBlock::handle);
+		registerMessage(PacketSetLogisticsFilterStack.class,
+				PacketSetLogisticsFilterStack::toBytes, PacketSetLogisticsFilterStack::new, PacketSetLogisticsFilterStack::handle);
+		registerMessage(PacketSetLogisticsFluidFilterStack.class,
+				PacketSetLogisticsFluidFilterStack::toBytes, PacketSetLogisticsFluidFilterStack::new, PacketSetLogisticsFluidFilterStack::handle);
+		registerMessage(PacketSetLogisticsMinAmounts.class,
+				PacketSetLogisticsMinAmounts::toBytes, PacketSetLogisticsMinAmounts::new, PacketSetLogisticsMinAmounts::handle);
+		registerMessage(PacketServerTickTime.class,
+				PacketServerTickTime::toBytes, PacketServerTickTime::new, PacketServerTickTime::handle);
+		registerMessage(PacketUpdatePressureBlock.class,
+				PacketUpdatePressureBlock::toBytes, PacketUpdatePressureBlock::new, PacketUpdatePressureBlock::handle);
+		registerMessage(PacketSyncAmadronOffers.class,
+				PacketSyncAmadronOffers::toBytes, PacketSyncAmadronOffers::new, PacketSyncAmadronOffers::handle);
+		registerMessage(PacketAmadronOrderUpdate.class,
+				PacketAmadronOrderUpdate::toBytes, PacketAmadronOrderUpdate::new, PacketAmadronOrderUpdate::handle);
+		registerMessage(PacketAmadronTradeAddCustom.class,
+				PacketAmadronTradeAddCustom::toBytes, PacketAmadronTradeAddCustom::new, PacketAmadronTradeAddCustom::handle);
+		registerMessage(PacketAmadronTradeAddPeriodic.class,
+				PacketAmadronTradeAddPeriodic::toBytes, PacketAmadronTradeAddPeriodic::new, PacketAmadronTradeAddPeriodic::handle);
+		registerMessage(PacketAmadronTradeAddStatic.class,
+				PacketAmadronTradeAddStatic::toBytes, PacketAmadronTradeAddStatic::new, PacketAmadronTradeAddStatic::handle);
+		registerMessage(PacketAmadronTradeNotifyDeal.class,
+				PacketAmadronTradeNotifyDeal::toBytes, PacketAmadronTradeNotifyDeal::new, PacketAmadronTradeNotifyDeal::handle);
+		registerMessage(PacketAmadronTradeRemoved.class,
+				PacketAmadronTradeRemoved::toBytes, PacketAmadronTradeRemoved::new, PacketAmadronTradeRemoved::handle);
+		registerMessage(PacketUpdateLogisticModule.class,
+				PacketUpdateLogisticModule::toBytes, PacketUpdateLogisticModule::new, PacketUpdateLogisticModule::handle);
+		registerMessage(PacketSyncRedstoneModuleToClient.class,
+				PacketSyncRedstoneModuleToClient::toBytes, PacketSyncRedstoneModuleToClient::new, PacketSyncRedstoneModuleToClient::handle);
+		registerMessage(PacketSyncRedstoneModuleToServer.class,
+				PacketSyncRedstoneModuleToServer::toBytes, PacketSyncRedstoneModuleToServer::new, PacketSyncRedstoneModuleToServer::handle);
+		registerMessage(PacketCommandGetGlobalVariableOutput.class,
+				PacketCommandGetGlobalVariableOutput::toBytes, PacketCommandGetGlobalVariableOutput::new, PacketCommandGetGlobalVariableOutput::handle);
+		registerMessage(PacketNotifyVariablesRemote.class,
+				PacketNotifyVariablesRemote::toBytes, PacketNotifyVariablesRemote::new, PacketNotifyVariablesRemote::handle);
+		registerMessage(PacketHackingBlockStart.class,
+				PacketHackingBlockStart::toBytes, PacketHackingBlockStart::new, PacketHackingBlockStart::handle);
+		registerMessage(PacketHackingBlockFinish.class,
+				PacketHackingBlockFinish::toBytes, PacketHackingBlockFinish::new, PacketHackingBlockFinish::handle);
+		registerMessage(PacketHackingEntityStart.class,
+				PacketHackingEntityStart::toBytes, PacketHackingEntityStart::new, PacketHackingEntityStart::handle);
+		registerMessage(PacketHackingEntityFinish.class,
+				PacketHackingEntityFinish::toBytes, PacketHackingEntityFinish::new, PacketHackingEntityFinish::handle);
+		registerMessage(PacketToggleArmorFeature.class,
+				PacketToggleArmorFeature::toBytes, PacketToggleArmorFeature::new, PacketToggleArmorFeature::handle);
+		registerMessage(PacketUpdateDebuggingDrone.class,
+				PacketUpdateDebuggingDrone::toBytes, PacketUpdateDebuggingDrone::new, PacketUpdateDebuggingDrone::handle);
+		registerMessage(PacketSendDroneDebugEntry.class,
+				PacketSendDroneDebugEntry::toBytes, PacketSendDroneDebugEntry::new, PacketSendDroneDebugEntry::handle);
+		registerMessage(PacketSyncDroneEntityProgWidgets.class,
+				PacketSyncDroneEntityProgWidgets::toBytes, PacketSyncDroneEntityProgWidgets::new, PacketSyncDroneEntityProgWidgets::handle);
+		registerMessage(PacketOpenTubeModuleGui.class,
+				PacketOpenTubeModuleGui::toBytes, PacketOpenTubeModuleGui::new, PacketOpenTubeModuleGui::handle);
+		registerMessage(PacketSpawnRing.class,
+				PacketSpawnRing::toBytes, PacketSpawnRing::new, PacketSpawnRing::handle);
+		registerMessage(PacketShowArea.class,
+				PacketShowArea::toBytes, PacketShowArea::new, PacketShowArea::handle);
+		registerMessage(PacketSetEntityMotion.class,
+				PacketSetEntityMotion::toBytes, PacketSetEntityMotion::new, PacketSetEntityMotion::handle);
+		registerMessage(PacketDebugBlock.class,
+				PacketDebugBlock::toBytes, PacketDebugBlock::new, PacketDebugBlock::handle);
+		registerMessage(PacketAmadronInvSync.class,
+				PacketAmadronInvSync::toBytes, PacketAmadronInvSync::new, PacketAmadronInvSync::handle);
+		registerMessage(PacketMultiHeader.class,
+				PacketMultiHeader::toBytes, PacketMultiHeader::new, PacketMultiHeader::handle);
+		registerMessage(PacketMultiPart.class,
+				PacketMultiPart::toBytes, PacketMultiPart::new, PacketMultiPart::handle);
+		registerMessage(PacketPneumaticKick.class,
+				PacketPneumaticKick::toBytes, PacketPneumaticKick::new, PacketPneumaticKick::handle);
+		registerMessage(PacketJetBootsActivate.class,
+				PacketJetBootsActivate::toBytes, PacketJetBootsActivate::new, PacketJetBootsActivate::handle);
+		registerMessage(PacketPlayMovingSound.class,
+				PacketPlayMovingSound::toBytes, PacketPlayMovingSound::new, PacketPlayMovingSound::handle);
+		registerMessage(PacketJetBootsStateSync.class,
+				PacketJetBootsStateSync::toBytes, PacketJetBootsStateSync::new, PacketJetBootsStateSync::handle);
+		registerMessage(PacketModWrenchBlock.class,
+				PacketModWrenchBlock::toBytes, PacketModWrenchBlock::new, PacketModWrenchBlock::handle);
+		registerMessage(PacketUpdateArmorExtraData.class,
+				PacketUpdateArmorExtraData::toBytes, PacketUpdateArmorExtraData::new, PacketUpdateArmorExtraData::handle);
+		registerMessage(PacketUpdateMicromissileSettings.class,
+				PacketUpdateMicromissileSettings::toBytes, PacketUpdateMicromissileSettings::new, PacketUpdateMicromissileSettings::handle);
+		registerMessage(PacketSendArmorHUDMessage.class,
+				PacketSendArmorHUDMessage::toBytes, PacketSendArmorHUDMessage::new, PacketSendArmorHUDMessage::handle);
+		registerMessage(PacketChestplateLauncher.class,
+				PacketChestplateLauncher::toBytes, PacketChestplateLauncher::new, PacketChestplateLauncher::handle);
     }
 
-    public static <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> messageHandler, Class<REQ> requestMessageType, Side side) {
-        INSTANCE.registerMessage(messageHandler, requestMessageType, discriminant++, side);
+	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
+		NETWORK.registerMessage(nextId(), messageType, encoder, decoder, messageConsumer);
+	}
+
+    public static void sendToAll(Object message) {
+        NETWORK.send(PacketDistributor.ALL.noArg(), message);
     }
 
-    public static void sendToAll(IMessage message) {
-        INSTANCE.sendToAll(message);
-    }
-
-    public static void sendTo(IMessage message, EntityPlayerMP player) {
-        INSTANCE.sendTo(message, player);
+    public static void sendToPlayer(Object message, ServerPlayerEntity player) {
+        NETWORK.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 
     public static void sendToAllAround(LocationIntPacket message, World world, double distance) {
@@ -150,30 +218,29 @@ public class NetworkHandler {
         sendToAllAround(message, message.getTargetPoint(world));
     }
 
-    public static void sendToAllAround(IMessage message, NetworkRegistry.TargetPoint point) {
-        INSTANCE.sendToAllAround(message, point);
+    public static void sendToAllAround(Object message, PacketDistributor.TargetPoint point) {
+        NETWORK.send(PacketDistributor.NEAR.with(() -> point), message);
     }
 
-    public static void sendToDimension(IMessage message, int dimensionId) {
-        INSTANCE.sendToDimension(message, dimensionId);
+    public static void sendToDimension(Object message, DimensionType type) {
+        NETWORK.send(PacketDistributor.DIMENSION.with(() -> type), message);
     }
 
-    public static void sendToServer(IMessage message) {
+    public static void sendToServer(Object message) {
         if (message instanceof ILargePayload) {
-            getSplitMessages(message).forEach(INSTANCE::sendToServer);
+            getSplitMessages((ILargePayload) message).forEach(NETWORK::sendToServer);
         } else {
-            INSTANCE.sendToServer(message);
+            NETWORK.sendToServer(message);
         }
     }
 
-    private static List<IMessage> getSplitMessages(IMessage message) {
-        ByteBuf buf = Unpooled.buffer();
-        message.toBytes(buf);
+    private static List<Object> getSplitMessages(ILargePayload message) {
+        ByteBuf buf = message.dumpToBuffer();
         byte[] bytes = buf.array();
         if (bytes.length < MAX_PAYLOAD_SIZE) {
             return Collections.singletonList(message);
         } else {
-            List<IMessage> messages = new ArrayList<>();
+            List<Object> messages = new ArrayList<>();
             messages.add(new PacketMultiHeader(buf.writerIndex(), message.getClass().getName()));
             int offset = 0;
             while (offset < buf.writerIndex()) {

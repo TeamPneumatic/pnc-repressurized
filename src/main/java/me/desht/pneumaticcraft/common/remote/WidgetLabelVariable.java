@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.remote;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 
 import java.awt.*;
 
@@ -15,14 +16,15 @@ public class WidgetLabelVariable extends WidgetLabel {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
-        String oldText = text;
-        text = parser.parse();
+        String oldText = getMessage();
+        setMessage(parser.parse());
         super.render(mouseX, mouseY, partialTick);
-        text = oldText;
+        setMessage(oldText);
     }
 
     @Override
     public Rectangle getBounds() {
-        return new Rectangle(x, y, Minecraft.getMinecraft().fontRenderer.getStringWidth(parser.parse()), Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT);
+        FontRenderer fr = Minecraft.getInstance().fontRenderer;
+        return new Rectangle(x, y, fr.getStringWidth(parser.parse()), fr.FONT_HEIGHT);
     }
 }

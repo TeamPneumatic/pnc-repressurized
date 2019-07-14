@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nullable;
@@ -40,5 +40,5 @@ public interface ISideConfigurable {
      *
      * @return the TE facing direction
      */
-    EnumFacing byIndex();
+    Direction byIndex();
 }

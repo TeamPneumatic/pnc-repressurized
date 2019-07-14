@@ -1,13 +1,12 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
+import net.minecraft.client.resources.I18n;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.BlockPos;
+
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
 
 public abstract class AreaType{
     private final String unlocalizedName;
@@ -34,25 +33,14 @@ public abstract class AreaType{
         return true;
     }
     
-    public void writeToNBT(NBTTagCompound tag){
+    public void writeToNBT(CompoundNBT tag){
         
     }
     
-    public void readFromNBT(NBTTagCompound tag){
+    public void readFromNBT(CompoundNBT tag){
         
     }
-    
-    /**
-     * Allow the area type to convert from the old EnumAreaType+typeInfo format to the current format.
-     * Remove in 1.13
-     * @param oldAreaType
-     * @param typeInfo
-     */
-    @Deprecated
-    public void convertFromLegacy(EnumAreaType oldAreaType, int typeInfo){
-        
-    }
-    
+
     public void addUIWidgets(List<AreaTypeWidget> widgets){
         
     }

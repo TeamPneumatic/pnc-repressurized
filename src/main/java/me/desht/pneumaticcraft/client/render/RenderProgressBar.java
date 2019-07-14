@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
@@ -20,8 +20,8 @@ public class RenderProgressBar {
         GlStateManager.enableRescaleNormal();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.glLineWidth(2.0F);
-        GlStateManager.disableTexture2D();
+        GlStateManager.lineWidth(2.0F);
+        GlStateManager.disableTexture();
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
 
         // draw the bar
@@ -48,7 +48,7 @@ public class RenderProgressBar {
         GlStateManager.shadeModel(GL11.GL_FLAT);
 
         // draw the casing
-        GlStateManager.color(0, 0, 0, 1);
+        GlStateManager.color4f(0, 0, 0, 1);
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
         wr.pos(minX, minY, zLevel).endVertex();
         wr.pos(minX, maxY, zLevel).endVertex();

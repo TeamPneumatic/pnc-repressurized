@@ -1,13 +1,12 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 
-public class BlockLiquidCompressor extends BlockPneumaticCraftModeled {
+public class BlockLiquidCompressor extends BlockPneumaticCraft {
 
-    BlockLiquidCompressor() {
+    public BlockLiquidCompressor() {
         super(Material.IRON, "liquid_compressor");
     }
 
@@ -21,8 +20,4 @@ public class BlockLiquidCompressor extends BlockPneumaticCraftModeled {
         return true;
     }
 
-    @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.LIQUID_COMPRESSOR;
-    }
 }

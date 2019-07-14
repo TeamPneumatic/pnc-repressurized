@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.recipes.factories;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.JSONUtils;
 import net.minecraftforge.common.crafting.IIngredientFactory;
 import net.minecraftforge.common.crafting.JsonContext;
 import net.minecraftforge.fluids.Fluid;
@@ -20,7 +20,7 @@ public class FluidIngredientFactory implements IIngredientFactory {
     @Nonnull
     @Override
     public Ingredient parse(JsonContext context, JsonObject json) {
-        String fluidName = JsonUtils.getString(json, "fluid");
+        String fluidName = JSONUtils.getString(json, "fluid");
 
         return new FluidIngredient(fluidName);
     }

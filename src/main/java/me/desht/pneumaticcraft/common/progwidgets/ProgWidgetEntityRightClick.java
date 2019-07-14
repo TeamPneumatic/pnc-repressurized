@@ -1,37 +1,35 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetAreaShow;
 import me.desht.pneumaticcraft.common.ai.DroneEntityBase;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvider, IEntityProvider {
 
     private EntityFilterPair entityFilters;
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[0] == null) {
-            curInfo.add("gui.progWidget.area.error.noArea");
+            curInfo.add(xlate("gui.progWidget.area.error.noArea"));
         }
         EntityFilterPair.addErrors(this, curInfo);
     }
@@ -57,8 +55,8 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.YELLOW;
+    public DyeColor getColor() {
+        return DyeColor.YELLOW;
     }
 
     @Override
@@ -72,13 +70,13 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneEntityBase<IProgWidget, EntityLivingBase>(drone, widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget progWidget) {
+        return new DroneEntityBase<IEntityProvider, LivingEntity>(drone, (IEntityProvider) progWidget) {
             private final List<Entity> visitedEntities = new ArrayList<>();
 
             @Override
             protected boolean isEntityValid(Entity entity) {
-                return entity instanceof EntityLivingBase && !visitedEntities.contains(entity);
+                return entity instanceof LivingEntity && !visitedEntities.contains(entity);
             }
 
             @Override
@@ -86,10 +84,10 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
                 visitedEntities.add(targetedEntity);
                 boolean activated = false;
                 ItemStack stack = drone.getInv().getStackInSlot(0);
-                if (stack.getItem().itemInteractionForEntity(stack, drone.getFakePlayer(), targetedEntity, EnumHand.MAIN_HAND)) {
+                if (stack.getItem().itemInteractionForEntity(stack, drone.getFakePlayer(), targetedEntity, Hand.MAIN_HAND)) {
                     activated = true;
                 }
-                if (!activated && targetedEntity instanceof EntityAgeable && ((EntityAgeable) targetedEntity).processInteract(drone.getFakePlayer(), EnumHand.MAIN_HAND)) {
+                if (!activated && targetedEntity instanceof AgeableEntity && ((AgeableEntity) targetedEntity).processInteract(drone.getFakePlayer(), Hand.MAIN_HAND)) {
                     activated = true;
                 }
                 return false;//return activated; <-- will right click as long as it's sucessfully activated.
@@ -112,12 +110,6 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
             entityFilters = new EntityFilterPair(this);
         }
         return entityFilters.isEntityValid(entity);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetAreaShow(this, guiProgrammer);
     }
 
     @Override

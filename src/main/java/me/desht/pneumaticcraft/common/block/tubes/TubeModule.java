@@ -1,24 +1,23 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -28,18 +27,19 @@ import java.util.Objects;
 import static me.desht.pneumaticcraft.lib.BBConstants.PRESSURE_PIPE_MAX_POS;
 import static me.desht.pneumaticcraft.lib.BBConstants.PRESSURE_PIPE_MIN_POS;
 
-public abstract class TubeModule implements ISidedPart {
+public abstract class TubeModule {
     public static final float MAX_VALUE = 30;
 
     protected IPneumaticPosProvider pressureTube;
-    protected EnumFacing dir = EnumFacing.UP;
+    protected Direction dir = Direction.UP;
     public final AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
     protected boolean upgraded;
     public float lowerBound = 7.5F, higherBound = 0;
     private boolean fake;
     public boolean advancedConfig;
     public boolean shouldDrop;
-    @SideOnly(Side.CLIENT)
+    // FIXME - move to external renderer
+    @OnlyIn(Dist.CLIENT)
     private ModelModuleBase model;
 
     public TubeModule() {
@@ -94,34 +94,33 @@ public abstract class TubeModule implements ISidedPart {
         NonNullList<ItemStack> drops = NonNullList.create();
         if (shouldDrop) {
             drops.add(new ItemStack(ModuleRegistrator.getModuleItem(getType())));
-            if (upgraded) drops.add(new ItemStack(Itemss.ADVANCED_PCB));
+            if (upgraded) drops.add(new ItemStack(ModItems.ADVANCED_PCB));
         }
         return drops;
     }
 
-    @Override
-    public void setDirection(EnumFacing dir) {
+    public void setDirection(Direction dir) {
         this.dir = dir;
     }
 
-    public EnumFacing getDirection() {
+    public Direction getDirection() {
         return dir;
     }
 
-    public void readFromNBT(NBTTagCompound nbt) {
-        dir = EnumFacing.byIndex(nbt.getInteger("dir"));
+    public void readFromNBT(CompoundNBT nbt) {
+        dir = Direction.byIndex(nbt.getInt("dir"));
         upgraded = nbt.getBoolean("upgraded");
         lowerBound = nbt.getFloat("lowerBound");
         higherBound = nbt.getFloat("higherBound");
-        advancedConfig = !nbt.hasKey("advancedConfig") || nbt.getBoolean("advancedConfig");
+        advancedConfig = !nbt.contains("advancedConfig") || nbt.getBoolean("advancedConfig");
     }
 
-    public void writeToNBT(NBTTagCompound nbt) {
-        nbt.setInteger("dir", dir.ordinal());
-        nbt.setBoolean("upgraded", upgraded);
-        nbt.setFloat("lowerBound", lowerBound);
-        nbt.setFloat("higherBound", higherBound);
-        nbt.setBoolean("advancedConfig", advancedConfig);
+    public void writeToNBT(CompoundNBT nbt) {
+        nbt.putInt("dir", dir.ordinal());
+        nbt.putBoolean("upgraded", upgraded);
+        nbt.putFloat("lowerBound", lowerBound);
+        nbt.putFloat("higherBound", higherBound);
+        nbt.putBoolean("advancedConfig", advancedConfig);
     }
 
     public void update() {
@@ -145,7 +144,7 @@ public abstract class TubeModule implements ISidedPart {
     }
 
     void updateNeighbors() {
-        pressureTube.world().notifyNeighborsOfStateChange(pressureTube.pos(), pressureTube.world().getBlockState(pressureTube.pos()).getBlock(), true);
+        pressureTube.world().notifyNeighborsOfStateChange(pressureTube.pos(), pressureTube.world().getBlockState(pressureTube.pos()).getBlock());
     }
 
     public boolean isInline() {
@@ -158,14 +157,14 @@ public abstract class TubeModule implements ISidedPart {
 
     public void addInfo(List<String> curInfo) {
         if (upgraded) {
-            ItemStack stack = new ItemStack(Itemss.ADVANCED_PCB);
-            curInfo.add(TextFormatting.GREEN + stack.getDisplayName() + " installed");
+            ItemStack stack = new ItemStack(ModItems.ADVANCED_PCB);
+            curInfo.add(TextFormatting.GREEN + stack.getDisplayName().getFormattedText() + " installed");
         }
         if (this instanceof INetworkedModule) {
             int colorChannel = ((INetworkedModule) this).getColorChannel();
             curInfo.add(PneumaticCraftUtils.xlate("waila.logisticsModule.channel") + " "
                     + TextFormatting.YELLOW
-                    + PneumaticCraftUtils.xlate("item.fireworksCharge." + EnumDyeColor.byDyeDamage(colorChannel).getTranslationKey()));
+                    + PneumaticCraftUtils.xlate("color.minecraft." + DyeColor.byId(colorChannel).getTranslationKey()));
         }
     }
 
@@ -181,20 +180,23 @@ public abstract class TubeModule implements ISidedPart {
         return upgraded;
     }
 
-    public boolean onActivated(EntityPlayer player, EnumHand hand) {
-        if (!player.world.isRemote && upgraded && getGuiId() != null) {
-            NetworkHandler.sendTo(new PacketOpenTubeModuleGui(getGuiId().ordinal(), pressureTube.pos()), (EntityPlayerMP) player);
+    public boolean onActivated(PlayerEntity player, Hand hand) {
+        if (!player.world.isRemote && upgraded && hasGui()) {
+            NetworkHandler.sendToPlayer(new PacketOpenTubeModuleGui(getType(), pressureTube.pos()), (ServerPlayerEntity) player);
             return true;
         }
         return false;
     }
 
-    protected abstract EnumGuiId getGuiId();
+    public boolean hasGui() {
+        return false;
+    }
 
-    @SideOnly(Side.CLIENT)
+    // FIXME move this out of here to external tube->model registry
+    @OnlyIn(Dist.CLIENT)
     public abstract Class<? extends ModelModuleBase> getModelClass();
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public final ModelModuleBase getModel() {
         if (model == null) {
             try {
@@ -208,7 +210,7 @@ public abstract class TubeModule implements ISidedPart {
         return model;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void doExtraRendering() {
     }
 

@@ -1,45 +1,50 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
-import java.util.List;
-
-import me.desht.pneumaticcraft.common.item.Itemss;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetHarvest;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryImport;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetString;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetWait;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
+import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.FMLPlayMessages;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-public class EntityHarvestingDrone extends EntityBasicDrone {
+import java.util.List;
 
-    public EntityHarvestingDrone(World world) {
-        super(world);
+public class EntityHarvestingDrone extends EntityBasicDrone {
+    public static EntityHarvestingDrone create(EntityType<Entity> entityEntityType, World world) {
+        return new EntityHarvestingDrone(world);
     }
 
-    public EntityHarvestingDrone(World world, EntityPlayer player) {
-        super(world, player);
+    public static Entity createClient(FMLPlayMessages.SpawnEntity spawnEntity, World world) {
+        return new EntityHarvestingDrone(world);
+    }
+
+    private EntityHarvestingDrone(World world) {
+        super(ModEntityTypes.HARVESTING_DRONE, world);
+    }
+
+    public EntityHarvestingDrone(World world, PlayerEntity player) {
+        super(ModEntityTypes.LOGISTIC_DRONE, world, player);
     }
 
     @Override
     protected Item getDroneItem(){
-        return Itemss.HARVESTING_DRONE;
+        return ModItems.HARVESTING_DRONE;
     }
 
     @Override
-    public void addProgram(BlockPos clickPos, EnumFacing facing, BlockPos pos, List<IProgWidget> widgets) {
+    public void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, List<IProgWidget> widgets) {
         TileEntity te = world.getTileEntity(clickPos);
         ProgWidgetHarvest harvestPiece = new ProgWidgetHarvest();
-        harvestPiece.setRequiresTool(te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
+        harvestPiece.setRequiresTool(te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent());
         harvestPiece.setOrder(EnumOrder.HIGH_TO_LOW);
         
         DroneProgramBuilder builder = new DroneProgramBuilder();

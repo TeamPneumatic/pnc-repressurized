@@ -1,17 +1,12 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetExternalProgram;
 import me.desht.pneumaticcraft.common.ai.DroneAIExternalProgram;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     public boolean shareVariables;
@@ -22,8 +17,8 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.PURPLE;
+    public DyeColor getColor() {
+        return DyeColor.PURPLE;
     }
 
     @Override
@@ -32,7 +27,7 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     }
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return new DroneAIExternalProgram(drone, aiManager, (ProgWidgetExternalProgram) widget);
     }
 
@@ -42,13 +37,13 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setBoolean("shareVariables", shareVariables);
+        tag.putBoolean("shareVariables", shareVariables);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         shareVariables = tag.getBoolean("shareVariables");
     }
@@ -56,11 +51,5 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     @Override
     public boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget) {
         return false;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetExternalProgram(this, guiProgrammer);
     }
 }

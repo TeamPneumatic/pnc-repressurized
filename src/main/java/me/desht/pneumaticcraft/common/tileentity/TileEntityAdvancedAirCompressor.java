@@ -3,11 +3,16 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.inventory.ContainerAdvancedAirCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.util.Direction;
+
+import javax.annotation.Nullable;
 
 public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor implements IHeatExchanger {
     @GuiSynced
@@ -19,7 +24,7 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
+    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
         return heatExchanger;
     }
 
@@ -38,13 +43,9 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
         return HeatUtil.getEfficiency(heatExchanger.getTemperatureAsInt());
     }
 
-//    @Override
-//    protected float getSpeedUsageMultiplierFromUpgrades(int[] upgradeSlots) {
-//        return getSpeedMultiplierFromUpgrades(upgradeSlots);//return the same as the speed multiplier, so adding speed upgrades doesn't affect the efficiency.
-//    }
-
+    @Nullable
     @Override
-    public String getName() {
-        return Blockss.ADVANCED_AIR_COMPRESSOR.getTranslationKey();
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerAdvancedAirCompressor(i, playerInventory, getPos());
     }
 }

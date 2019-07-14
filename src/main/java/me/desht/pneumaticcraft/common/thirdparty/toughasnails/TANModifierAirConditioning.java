@@ -1,18 +1,19 @@
 package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import toughasnails.api.temperature.*;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class TANModifierAirConditioning implements ITemperatureModifier {
     private static Map<UUID, Integer> lastDelta = new HashMap<>();
@@ -23,15 +24,15 @@ public class TANModifierAirConditioning implements ITemperatureModifier {
     }
 
     @Override
-    public Temperature applyPlayerModifiers(@Nonnull EntityPlayer player, @Nonnull Temperature initialTemperature, @Nonnull IModifierMonitor monitor) {
+    public Temperature applyPlayerModifiers(@Nonnull PlayerEntity player, @Nonnull Temperature initialTemperature, @Nonnull IModifierMonitor monitor) {
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
 
         if (!handler.isAirConEnabled()
-                || !handler.isArmorReady(EntityEquipmentSlot.CHEST)
-                || handler.getArmorPressure(EntityEquipmentSlot.CHEST) < 0.1) {
+                || !handler.isArmorReady(EquipmentSlotType.CHEST)
+                || handler.getArmorPressure(EquipmentSlotType.CHEST) < 0.1) {
             return initialTemperature;
         }
-        int upgrades = handler.getUpgradeCount(EntityEquipmentSlot.CHEST, IItemRegistry.EnumUpgrade.AIR_CONDITIONING, 4);
+        int upgrades = handler.getUpgradeCount(EquipmentSlotType.CHEST, IItemRegistry.EnumUpgrade.AIR_CONDITIONING, 4);
         if (upgrades == 0) {
             return initialTemperature;
         }
@@ -47,12 +48,12 @@ public class TANModifierAirConditioning implements ITemperatureModifier {
         deltaTemp *= upgrades;
         targetTemp += deltaTemp;
         if (deltaTemp != lastDelta.getOrDefault(player.getUniqueID(), 0)) {
-            NetworkHandler.sendTo(new PacketPlayerTemperatureDelta(deltaTemp), (EntityPlayerMP) player);
+            NetworkHandler.sendToPlayer(new PacketPlayerTemperatureDelta(deltaTemp), (ServerPlayerEntity) player);
             lastDelta.put(player.getUniqueID(), deltaTemp);
         }
 
         int airUsage = (int) (deltaTemp * ConfigHandler.integration.tanAirConAirUsageMultiplier);
-        handler.addAir(EntityEquipmentSlot.CHEST, -Math.abs(airUsage));
+        handler.addAir(EquipmentSlotType.CHEST, -Math.abs(airUsage));
 
         Temperature res = new Temperature(targetTemp);
         monitor.addEntry(new IModifierMonitor.Context(this.getId(), "Pneumatic Armor A/C", initialTemperature, res));

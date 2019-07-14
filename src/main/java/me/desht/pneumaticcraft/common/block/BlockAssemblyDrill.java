@@ -1,35 +1,31 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyDrill;
-import me.desht.pneumaticcraft.lib.BBConstants;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
 
-import javax.annotation.Nullable;
+public class BlockAssemblyDrill extends BlockPneumaticCraft {
+    private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(2, 0, 2, 14, 14, 14);
+    private static final VoxelShape COLLISION_SHAPE = Block.makeCuboidShape(2, 2, 2, 14, 14, 14);
 
-public class BlockAssemblyDrill extends BlockPneumaticCraftModeled {
-    private static final AxisAlignedBB BLOCK_BOUNDS = new AxisAlignedBB(
-            BBConstants.ASSEMBLY_ROBOT_MIN_POS, 0F, BBConstants.ASSEMBLY_ROBOT_MIN_POS,
-            BBConstants.ASSEMBLY_ROBOT_MAX_POS, BBConstants.ASSEMBLY_ROBOT_MAX_POS_TOP, BBConstants.ASSEMBLY_ROBOT_MAX_POS
-    );
-    private static final AxisAlignedBB COLLISION_BOUNDS = new AxisAlignedBB(
-            BBConstants.ASSEMBLY_ROBOT_MIN_POS, BBConstants.ASSEMBLY_ROBOT_MIN_POS, BBConstants.ASSEMBLY_ROBOT_MIN_POS,
-            BBConstants.ASSEMBLY_ROBOT_MAX_POS, BBConstants.ASSEMBLY_ROBOT_MAX_POS_TOP, BBConstants.ASSEMBLY_ROBOT_MAX_POS
-    );
-
-    BlockAssemblyDrill() {
+    public BlockAssemblyDrill() {
         super(Material.IRON, "assembly_drill");
-        setBlockBounds(BLOCK_BOUNDS);
     }
 
-    @Nullable
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-        return COLLISION_BOUNDS;
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+        return BASE_SHAPE;
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+        return COLLISION_SHAPE;
     }
 
     @Override

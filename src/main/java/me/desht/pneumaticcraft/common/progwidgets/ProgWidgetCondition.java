@@ -1,20 +1,18 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetCondition;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implements ICondition, IJump {
 
@@ -23,16 +21,16 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     private ICondition.Operator operator = ICondition.Operator.HIGHER_THAN_EQUALS;
 
     @Override
-    public EntityAIBase getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         evaluator = getEvaluator(drone, widget);
         return evaluator;
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[getParameters().length - 1] == null && getConnectedParameters()[getParameters().length * 2 - 1] == null) {
-            curInfo.add("gui.progWidget.condition.error.noFlowControl");
+            curInfo.add(xlate("gui.progWidget.condition.error.noFlowControl"));
         }
     }
 
@@ -110,23 +108,17 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setBoolean("isAndFunction", isAndFunction);
-        tag.setByte("operator", (byte) operator.ordinal());
+        tag.putBoolean("isAndFunction", isAndFunction);
+        tag.putByte("operator", (byte) operator.ordinal());
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         isAndFunction = tag.getBoolean("isAndFunction");
         operator = ICondition.Operator.values()[tag.getByte("operator")];
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetCondition(this, guiProgrammer);
     }
 
     @Override
@@ -141,7 +133,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.CYAN;
+    public DyeColor getColor() {
+        return DyeColor.CYAN;
     }
 }

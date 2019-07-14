@@ -1,6 +1,6 @@
 {
   "textures" : {
-    "layer0" : "pneumaticcraft:items/sentry_turret_item"
+    "layer0" : "pneumaticcraft:item/sentry_turret_item"
   },
   "parent" : "item/generated"
 }

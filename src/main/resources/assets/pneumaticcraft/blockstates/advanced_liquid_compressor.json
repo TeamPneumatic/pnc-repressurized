@@ -3,7 +3,7 @@
     "defaults": {
         "textures": {},
 		"custom": { "flip-v": true },
-        "model": "pneumaticcraft:advanced_liquid_compressor.obj"
+        "model": "pneumaticcraft:block/advanced_liquid_compressor.obj"
     },
 	"variants": {
 		"facing": {

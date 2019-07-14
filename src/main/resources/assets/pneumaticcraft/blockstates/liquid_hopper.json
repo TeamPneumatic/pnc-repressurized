@@ -8,23 +8,23 @@
   },
   "variants": {
     "facing":{
-      "down":  { "submodel": { "down": { "model": "pneumaticcraft:omnidirectional_hopper_output", "x": 180 }}},
-      "up": {  "submodel": { "up": {"model": "pneumaticcraft:omnidirectional_hopper_output"}}},
-      "north":{ "submodel":   { "north": {"model": "pneumaticcraft:omnidirectional_hopper_output", "x": 90 }}},
-      "south":{ "submodel":   {"south": { "model": "pneumaticcraft:omnidirectional_hopper_output", "x": 90, "y": 180 }}},
-      "west": { "submodel":  { "west": {"model": "pneumaticcraft:omnidirectional_hopper_output", "x": 90, "y": 270 }}},
-      "east":{  "submodel":  { "east": {"model": "pneumaticcraft:omnidirectional_hopper_output", "x": 90, "y": 90 }}}
+      "down":  { "submodel": { "down": { "model": "pneumaticcraft:block/omnidirectional_hopper_output", "x": 180 }}},
+      "up": {  "submodel": { "up": {"model": "pneumaticcraft:block/omnidirectional_hopper_output"}}},
+      "north":{ "submodel":   { "north": {"model": "pneumaticcraft:block/omnidirectional_hopper_output", "x": 90 }}},
+      "south":{ "submodel":   {"south": { "model": "pneumaticcraft:block/omnidirectional_hopper_output", "x": 90, "y": 180 }}},
+      "west": { "submodel":  { "west": {"model": "pneumaticcraft:block/omnidirectional_hopper_output", "x": 90, "y": 270 }}},
+      "east":{  "submodel":  { "east": {"model": "pneumaticcraft:block/omnidirectional_hopper_output", "x": 90, "y": 90 }}}
     },
     "input":{
-      "down":{ "submodel": {  "down": { "model": "pneumaticcraft:liquid_hopper_base", "x": 180 }}},
-      "up": { "submodel": {"up": { "model": "pneumaticcraft:liquid_hopper_base"}}},
-      "north":{ "submodel": {  "north": {"model": "pneumaticcraft:liquid_hopper_base", "x": 90 }}},
-      "south":{ "submodel": {"south": { "model": "pneumaticcraft:liquid_hopper_base", "x": 90, "y": 180 }}},
-      "west":{ "submodel": { "west": {"model": "pneumaticcraft:liquid_hopper_base", "x": 90, "y": 270 }}},
-      "east":{ "submodel": { "east": {"model": "pneumaticcraft:liquid_hopper_base", "x": 90, "y": 90 }}}
+      "down":{ "submodel": {  "down": { "model": "pneumaticcraft:block/liquid_hopper_base", "x": 180 }}},
+      "up": { "submodel": {"up": { "model": "pneumaticcraft:block/liquid_hopper_base"}}},
+      "north":{ "submodel": {  "north": {"model": "pneumaticcraft:block/liquid_hopper_base", "x": 90 }}},
+      "south":{ "submodel": {"south": { "model": "pneumaticcraft:block/liquid_hopper_base", "x": 90, "y": 180 }}},
+      "west":{ "submodel": { "west": {"model": "pneumaticcraft:block/liquid_hopper_base", "x": 90, "y": 270 }}},
+      "east":{ "submodel": { "east": {"model": "pneumaticcraft:block/liquid_hopper_base", "x": 90, "y": 90 }}}
     },
     "inventory":[{
-      "model": "pneumaticcraft:liquid_hopper_base",
+      "model": "pneumaticcraft:block/liquid_hopper_base",
       "transform": "forge:default-block"
     }]
   }

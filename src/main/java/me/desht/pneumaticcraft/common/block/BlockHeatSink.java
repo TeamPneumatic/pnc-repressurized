@@ -3,25 +3,36 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
-import me.desht.pneumaticcraft.lib.BBConstants;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.MobEffects;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-public class BlockHeatSink extends BlockPneumaticCraftModeled {
+import javax.annotation.Nullable;
 
-    BlockHeatSink() {
+public class BlockHeatSink extends BlockPneumaticCraft {
+
+    private static final VoxelShape[] SHAPES = new VoxelShape[] {
+        Block.makeCuboidShape(0, 0, 0, 16,  8, 16),
+        Block.makeCuboidShape(0, 8, 0, 16, 16, 16),
+        Block.makeCuboidShape(0, 0, 0, 16, 16,  8),
+        Block.makeCuboidShape(0, 0, 8, 16, 16, 16),
+        Block.makeCuboidShape(0, 0, 0,  8, 16, 16),
+        Block.makeCuboidShape(8, 0, 0, 16, 16, 16),
+    };
+
+    public BlockHeatSink() {
         super(Material.IRON, "heat_sink");
     }
 
@@ -31,32 +42,15 @@ public class BlockHeatSink extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        if (!source.getBlockState(pos).getPropertyKeys().contains(ROTATION)) {
-            // getBoundingBox() can be called during placement (from World#mayPlace), before the
-            // block is actually placed; handle this, or we'll crash with an IllegalArgumentException
-            return FULL_BLOCK_AABB;
-        }
-
-        EnumFacing dir = getRotation(source, pos);
-        return new AxisAlignedBB(
-                dir.getXOffset() <= 0 ? 0 : 1F - BBConstants.HEAT_SINK_THICKNESS,
-                dir.getYOffset() <= 0 ? 0 : 1F - BBConstants.HEAT_SINK_THICKNESS,
-                dir.getZOffset() <= 0 ? 0 : 1F - BBConstants.HEAT_SINK_THICKNESS,
-                dir.getXOffset() >= 0 ? 1 : BBConstants.HEAT_SINK_THICKNESS,
-                dir.getYOffset() >= 0 ? 1 : BBConstants.HEAT_SINK_THICKNESS,
-                dir.getZOffset() >= 0 ? 1 : BBConstants.HEAT_SINK_THICKNESS
-        );
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+        return SHAPES[state.get(ROTATION).getIndex()];
     }
 
+    @Nullable
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-        return super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand).withProperty(ROTATION, facing.getOpposite());
+    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+        return super.getStateForPlacement(ctx).with(ROTATION, ctx.getFace().getOpposite());
     }
-
-//    @Override
-//    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
-//    }
 
     @Override
     public boolean isRotatable() {
@@ -69,9 +63,9 @@ public class BlockHeatSink extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos,Entity entity) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityHeatSink && entity instanceof EntityLivingBase) {
+        if (te instanceof TileEntityHeatSink && entity instanceof LivingEntity) {
             IHeatExchangerLogic heat = ((TileEntityHeatSink) te).getHeatExchangerLogic(null);
             int temp = (int) ((TileEntityHeatSink) te).getHeatExchangerLogic(null).getTemperature();
             if (temp > 323) { // +50C
@@ -82,7 +76,7 @@ public class BlockHeatSink extends BlockPneumaticCraftModeled {
             } else if (temp < 243) { // -30C
                 int durationTicks = (243 - (int)heat.getTemperature()) * 2;
                 int amplifier = (243 - (int) heat.getTemperature()) / 20;
-                ((EntityLivingBase) entity).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, durationTicks, amplifier));
+                ((LivingEntity) entity).addPotionEffect(new EffectInstance(Effects.SLOWNESS, durationTicks, amplifier));
                 if (temp < 213) { // -60C
                     entity.attackEntityFrom(DamageSourcePneumaticCraft.FREEZING, 2);
                 }

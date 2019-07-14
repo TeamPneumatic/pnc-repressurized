@@ -2,8 +2,9 @@ package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.Collection;
@@ -63,19 +64,23 @@ public class HeatUtil {
         return MathHelper.clamp(((625 - temperature) / 3), 0, 100);
     }
 
-    public static String formatHeatString(int tempK) {
-        return PneumaticCraftUtils.xlate("waila.temperature") + " " + TextFormatting.WHITE + (tempK - 273) + "°C";
+    public static ITextComponent formatHeatString(int tempK) {
+        return PneumaticCraftUtils.xlate("waila.temperature")
+                .appendText(TextFormatting.WHITE.toString() + (tempK - 273) + "°C")
+                .applyTextStyles(TextFormatting.GRAY);
     }
 
-    public static String formatHeatString(EnumFacing face, int tempK) {
-        return PneumaticCraftUtils.xlate("waila.temperature." + face.toString().toLowerCase()) + " " + TextFormatting.WHITE + (tempK - 273) + "°C";
+    public static ITextComponent formatHeatString(Direction face, int tempK) {
+        return PneumaticCraftUtils.xlate("waila.temperature." + face.toString().toLowerCase())
+                .appendText(TextFormatting.WHITE.toString() + (tempK - 273) + "°C")
+                .applyTextStyle(TextFormatting.GRAY);
     }
 
     public static int countExposedFaces(Collection<? extends TileEntity> teList) {
         int exposed = 0;
 
         for (TileEntity te : teList) {
-            for (EnumFacing face : EnumFacing.VALUES) {
+            for (Direction face : Direction.values()) {
                 if (te.getWorld().isAirBlock(te.getPos().offset(face))) {
                     exposed++;
                 }

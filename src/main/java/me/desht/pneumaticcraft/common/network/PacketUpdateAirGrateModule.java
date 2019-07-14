@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
 
 public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule<PacketUpdateAirGrateModule> {
     private String entityFilter;
@@ -17,22 +17,21 @@ public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule<PacketUpd
         this.entityFilter = entityFilter;
     }
 
+    public PacketUpdateAirGrateModule(PacketBuffer buffer) {
+        super(buffer);
+        entityFilter = PacketUtil.readUTF8String(buffer);
+    }
+
     @Override
     public void toBytes(ByteBuf buffer) {
         super.toBytes(buffer);
-        ByteBufUtils.writeUTF8String(buffer, entityFilter);
+        PacketUtil.writeUTF8String(buffer, entityFilter);
     }
 
     @Override
-    public void fromBytes(ByteBuf buffer) {
-        super.fromBytes(buffer);
-        entityFilter = ByteBufUtils.readUTF8String(buffer);
-    }
-
-    @Override
-    protected void onModuleUpdate(TubeModule module, PacketUpdateAirGrateModule message, EntityPlayer player) {
+    protected void onModuleUpdate(TubeModule module, PlayerEntity player) {
         if (module instanceof ModuleAirGrate) {
-            ((ModuleAirGrate) module).setEntityFilter(message.entityFilter);
+            ((ModuleAirGrate) module).setEntityFilter(entityFilter);
         }
     }
 }

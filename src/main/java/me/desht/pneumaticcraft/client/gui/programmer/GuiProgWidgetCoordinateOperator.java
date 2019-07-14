@@ -2,13 +2,11 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 import net.minecraft.client.resources.I18n;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,46 +19,38 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
         List<GuiRadioButton> radioButtons = new ArrayList<>();
-        for (int i = 0; i < EnumOperator.values().length; i++) {
-            String key = EnumOperator.values()[i].getTranslationKey();
-            GuiRadioButton radioButton = new GuiRadioButton(i, guiLeft + 7, guiTop + 42 + 12 * i, 0xFF404040, I18n.format(key));
+        for (EnumOperator op : EnumOperator.values()) {
+            String key = op.getTranslationKey();
+            GuiRadioButton radioButton = new GuiRadioButton(guiLeft + 7, guiTop + 42 + 12 * op.ordinal(), 0xFF404040,
+                    I18n.format(op.getTranslationKey()), b -> progWidget.setOperator(op));
             radioButtons.add(radioButton);
-            radioButton.checked = widget.getOperator().ordinal() == i;
+            radioButton.checked = progWidget.getOperator() == op;
             radioButton.otherChoices = radioButtons;
             radioButton.setTooltip(I18n.format(key + ".hint"));
-            addWidget(radioButton);
+            addButton(radioButton);
         }
 
-        variableField = new WidgetComboBox(fontRenderer, guiLeft + 7, guiTop + 100, 80, fontRenderer.FONT_HEIGHT + 1);
+        variableField = new WidgetComboBox(font, guiLeft + 7, guiTop + 100, 80, font.FONT_HEIGHT + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
-        addWidget(variableField);
-        variableField.setText(widget.getVariable());
+        addButton(variableField);
+        variableField.setText(progWidget.getVariable());
     }
 
     @Override
-    public void actionPerformed(IGuiWidget guiWidget) {
-        if (guiWidget.getID() >= 0 && guiWidget.getID() < EnumOperator.values().length) {
-            widget.setOperator(EnumOperator.values()[guiWidget.getID()]);
-        }
-        super.actionPerformed(guiWidget);
+    public void onClose() {
+        super.onClose();
+
+        progWidget.setVariable(variableField.getText());
     }
 
     @Override
-    public void keyTyped(char chr, int keyCode) throws IOException {
-        if (keyCode == 1) {
-            widget.setVariable(variableField.getText());
-        }
-        super.keyTyped(chr, keyCode);
-    }
-
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        fontRenderer.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 7, guiTop + 88, 0xFF404060);
-        fontRenderer.drawString(I18n.format("gui.progWidget.coordinateOperator.operator"), guiLeft + 7, guiTop + 30, 0xFF404060);
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        super.render(mouseX, mouseY, partialTicks);
+        font.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 7, guiTop + 88, 0xFF404060);
+        font.drawString(I18n.format("gui.progWidget.coordinateOperator.operator"), guiLeft + 7, guiTop + 30, 0xFF404060);
     }
 }

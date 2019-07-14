@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class AssemblyRecipe {
      * then add a laser/drill recipe to make C from A. Takes into account the number of inputs & outputs from each step.
      */
     public static void calculateAssemblyChain() {
-        ItemStack drillLaserProgram = ItemAssemblyProgram.getStackForProgramType(ItemAssemblyProgram.DRILL_LASER_DAMAGE, 1);
+        ItemStack drillLaserProgram = new ItemStack(ModItems.ASSEMBLY_PROGRAM_LASER_DRILL);
 
         for (AssemblyRecipe firstRecipe : drillRecipes) {
             for (AssemblyRecipe secondRecipe : laserRecipes) {

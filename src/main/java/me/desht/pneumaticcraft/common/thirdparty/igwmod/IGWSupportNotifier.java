@@ -9,7 +9,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
@@ -115,7 +115,7 @@ public class IGWSupportNotifier {
 
             try {
                 if (Minecraft.getMinecraft().player != null)
-                    Minecraft.getMinecraft().player.sendStatusMessage(new TextComponentString("Downloading IGW-Mod..."), false);
+                    Minecraft.getMinecraft().player.sendStatusMessage(new StringTextComponent("Downloading IGW-Mod..."), false);
 
                 URL url = new URL(Loader.MC_VERSION.equals("1.7.10") ? DL_URL_1_7_10 : LATEST_DL_URL);
                 URLConnection connection = url.openConnection();
@@ -142,18 +142,18 @@ public class IGWSupportNotifier {
                 File renamedFile = new File(String.format("." + File.separator + "mods" + File.separator + "IGW-Mod-%s-%s-universal.jar", mcVersion, version));
                 FileUtils.copyFile(tempFile, renamedFile);
                 if (Minecraft.getMinecraft().player != null)
-                    Minecraft.getMinecraft().player.sendStatusMessage(new TextComponentString(TextFormatting.GREEN + "Successfully downloaded. Restart Minecraft to apply."), false);
+                    Minecraft.getMinecraft().player.sendStatusMessage(new StringTextComponent(TextFormatting.GREEN + "Successfully downloaded. Restart Minecraft to apply."), false);
                 Desktop.getDesktop().open(dir);
                 if (!Loader.MC_VERSION.equals(mcVersion)) {
                     if (Minecraft.getMinecraft().player != null)
-                        Minecraft.getMinecraft().player.sendStatusMessage(new TextComponentString(TextFormatting.RED + "The version of Minecraft you are running doesn't seem to match the version of IGW-Mod that has been downloaded. The mod may not work."), false);
+                        Minecraft.getMinecraft().player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "The version of Minecraft you are running doesn't seem to match the version of IGW-Mod that has been downloaded. The mod may not work."), false);
                 }
 
                 finalize();
             } catch (Throwable e) {
                 e.printStackTrace();
                 if (Minecraft.getMinecraft().player != null)
-                    Minecraft.getMinecraft().player.sendStatusMessage(new TextComponentString(TextFormatting.RED + "Failed to download"), false);
+                    Minecraft.getMinecraft().player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Failed to download"), false);
                 try {
                     finalize();
                 } catch (Throwable e1) {

@@ -3,12 +3,10 @@ package me.desht.pneumaticcraft.common.remote;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 public class ActionWidgetCheckBox extends ActionWidgetVariable<GuiCheckBox> implements IActionWidgetLabeled {
-
     public ActionWidgetCheckBox() {
-        super();
     }
 
     public ActionWidgetCheckBox(GuiCheckBox widget) {
@@ -16,19 +14,19 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<GuiCheckBox> impl
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag, int guiLeft, int guiTop) {
+    public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
-        widget = new GuiCheckBox(-1, tag.getInteger("x") + guiLeft, tag.getInteger("y") + guiTop, 0xFF404040, tag.getString("text"));
+        widget = new GuiCheckBox(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, 0xFF404040, tag.getString("text"), b -> onActionPerformed());
         setTooltip(tag.getString("tooltip"));
     }
 
     @Override
-    public NBTTagCompound toNBT(int guiLeft, int guiTop) {
-        NBTTagCompound tag = super.toNBT(guiLeft, guiTop);
-        tag.setInteger("x", widget.x - guiLeft);
-        tag.setInteger("y", widget.y - guiTop);
-        tag.setString("text", widget.text);
-        tag.setString("tooltip", widget.getTooltip());
+    public CompoundNBT toNBT(int guiLeft, int guiTop) {
+        CompoundNBT tag = super.toNBT(guiLeft, guiTop);
+        tag.putInt("x", widget.x - guiLeft);
+        tag.putInt("y", widget.y - guiTop);
+        tag.putString("text", widget.getMessage());
+        tag.putString("tooltip", widget.getTooltip());
         return tag;
     }
 
@@ -39,12 +37,12 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<GuiCheckBox> impl
 
     @Override
     public void setText(String text) {
-        widget.text = text;
+        widget.setMessage(text);
     }
 
     @Override
     public String getText() {
-        return widget.text;
+        return widget.getMessage();
     }
 
     @Override

@@ -1,20 +1,19 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetCoordinateOperator;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 import java.util.Set;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariableSetWidget {
     public enum EnumOperator {
@@ -58,8 +57,8 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.GREY;
+    public DyeColor getColor() {
+        return DyeColor.GRAY;
     }
 
     @Override
@@ -68,21 +67,21 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (variable.equals("")) {
-            curInfo.add("gui.progWidget.general.error.emptyVariable");
+            curInfo.add(xlate("gui.progWidget.general.error.emptyVariable"));
         }
         if (operator == EnumOperator.MAX_MIN) {
             if (getConnectedParameters()[0] == null && getConnectedParameters()[getParameters().length] == null) {
-                curInfo.add("gui.progWidget.coordinateOperator.noParameter");
+                curInfo.add(xlate("gui.progWidget.coordinateOperator.noParameter"));
             }
         } else if (operator == EnumOperator.MULIPLY_DIVIDE) {
             IProgWidget w = getConnectedParameters()[1];
             while (w instanceof ProgWidgetCoordinate) {
                 BlockPos pos = ((ProgWidgetCoordinate) w).getCoordinate();
                 if (pos.getX() == 0 || pos.getY() == 0 || pos.getZ() == 0) {
-                    curInfo.add("gui.progWidget.coordinateOperator.divideByZero");
+                    curInfo.add(xlate("gui.progWidget.coordinateOperator.divideByZero"));
                     break;
                 }
                 w = w.getConnectedParameters()[0];
@@ -119,7 +118,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
                 }
                 break;
             case PLUS_MINUS:
-                curPos = BlockPos.ORIGIN;
+                curPos = BlockPos.ZERO;
                 coordinateWidget = (ProgWidgetCoordinate) widget.getConnectedParameters()[argIndex];
                 while (coordinateWidget != null) {
                     BlockPos pos = coordinateWidget.getCoordinate();
@@ -160,17 +159,17 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setString("variable", variable);
-        tag.setByte("operator", (byte) operator.ordinal());
+        tag.putString("variable", variable);
+        tag.putByte("operator", (byte) operator.ordinal());
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         variable = tag.getString("variable");
-        byte operatorValue = tag.hasKey("multiplyDivide") ? tag.getByte("multiplyDivide") : tag.getByte("operator");
+        byte operatorValue = tag.contains("multiplyDivide") ? tag.getByte("multiplyDivide") : tag.getByte("operator");
         operator = EnumOperator.values()[operatorValue];
     }
 
@@ -198,15 +197,9 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetCoordinateOperator(this, guiProgrammer);
-    }
-
-    @Override
-    public void getTooltip(List<String> curTooltip) {
+    public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add("Setting variable: \"" + variable + "\"");
+        curTooltip.add(new StringTextComponent("Setting variable: \"" + variable + "\""));
     }
 
     @Override

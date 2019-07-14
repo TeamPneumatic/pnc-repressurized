@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.sensor;
 
-import me.desht.pneumaticcraft.api.universalSensor.*;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.api.universal_sensor.*;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.BlockInteractSensor;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerAttackSensor;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerItemPickupSensor;
@@ -15,10 +15,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.Rectangle;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.eventbus.api.Event;
 
 import java.util.*;
 
@@ -43,7 +42,6 @@ public class SensorHandler implements ISensorRegistry {
         registerSensor(new WorldGlobalVariableSensor());
         registerSensor(new WorldGlobalVariableAnalogSensor());
         registerSensor(new BlockPresenceSensor());
-        registerSensor(new BlockMetadataSensor());
         registerSensor(new BlockComparatorSensor());
         registerSensor(new BlockRedstoneSensor());
         registerSensor(new BlockLightLevelSensor());
@@ -215,20 +213,15 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public void drawAdditionalInfo(FontRenderer fontRenderer) {
             coordinateSensor.drawAdditionalInfo(fontRenderer);
         }
 
         @Override
-        public Rectangle needsSlot() {
-            return coordinateSensor.needsSlot();
-        }
-
-        @Override
         public Set<Item> getRequiredUpgrades() {
             Set<Item> upgrades = new HashSet<>(coordinateSensor.getRequiredUpgrades());
-            upgrades.add(Itemss.GPS_TOOL);
+            upgrades.add(ModItems.GPS_TOOL);
             return upgrades;
         }
     }
@@ -275,20 +268,15 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        @SideOnly(Side.CLIENT)
+        @OnlyIn(Dist.CLIENT)
         public void drawAdditionalInfo(FontRenderer fontRenderer) {
             coordinateSensor.drawAdditionalInfo(fontRenderer);
         }
 
         @Override
-        public Rectangle needsSlot() {
-            return coordinateSensor.needsSlot();
-        }
-
-        @Override
         public Set<Item> getRequiredUpgrades() {
             Set<Item> upgrades = new HashSet<>(coordinateSensor.getRequiredUpgrades());
-            upgrades.add(Itemss.GPS_TOOL);
+            upgrades.add(ModItems.GPS_TOOL);
             return upgrades;
         }
     }

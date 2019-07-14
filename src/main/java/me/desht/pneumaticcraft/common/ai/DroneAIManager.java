@@ -2,20 +2,21 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
-import me.desht.pneumaticcraft.common.item.ItemRegistry;
+import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.profiler.Profiler;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTUtil;
+import net.minecraft.profiler.IProfiler;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -39,15 +40,15 @@ public class DroneAIManager implements IVariableProvider {
     /**
      * Instance of Profiler.
      */
-    private final Profiler theProfiler;
+    private final IProfiler theProfiler;
     private int tickCount;
     static final int TICK_RATE = 3;
 
     private final IDroneBase drone;
     private List<IProgWidget> progWidgets;
     private IProgWidget curActiveWidget;
-    private EntityAIBase curWidgetAI;
-    private EntityAIBase curWidgetTargetAI;
+    private Goal curWidgetAI;
+    private Goal curWidgetTargetAI;
     private boolean stopWhenEndReached;
     private boolean wasAIOveridden;
     private String currentLabel = "Main";//Holds the name of the last label that was jumped to.
@@ -59,7 +60,7 @@ public class DroneAIManager implements IVariableProvider {
     private static final int MAX_JUMP_STACK_SIZE = 100;
 
     public DroneAIManager(IDroneBase drone) {
-        theProfiler = drone.world().profiler;
+        theProfiler = drone.world().getProfiler();
         this.drone = drone;
         if (!drone.world().isRemote) {
             // we normally don't called clientside, but The One Probe can do it
@@ -69,7 +70,7 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     public DroneAIManager(IDroneBase drone, List<IProgWidget> progWidgets) {
-        theProfiler = drone.world().profiler;
+        theProfiler = drone.world().getProfiler();
         this.drone = drone;
         stopWhenEndReached = true;
         setWidgets(progWidgets);
@@ -93,7 +94,7 @@ public class DroneAIManager implements IVariableProvider {
         }
     }
 
-    public void connectVariables(DroneAIManager subAI) {
+    void connectVariables(DroneAIManager subAI) {
         subAI.coordinateVariables = coordinateVariables;
         subAI.itemVariables = itemVariables;
     }
@@ -102,7 +103,7 @@ public class DroneAIManager implements IVariableProvider {
         return curWidgetAI == null;
     }
 
-    public EntityAIBase getCurrentAI() {
+    Goal getCurrentAI() {
         return curWidgetAI;
     }
 
@@ -110,27 +111,25 @@ public class DroneAIManager implements IVariableProvider {
         return drone;
     }
 
-    public void writeToNBT(NBTTagCompound tag) {
-        NBTTagList tagList = new NBTTagList();
+    public void writeToNBT(CompoundNBT tag) {
+        ListNBT tagList = new ListNBT();
         for (Map.Entry<String, BlockPos> entry : coordinateVariables.entrySet()) {
-            NBTTagCompound t = new NBTTagCompound();
-            t.setString("key", entry.getKey());
-            t.setInteger("x", entry.getValue().getX());
-            t.setInteger("y", entry.getValue().getY());
-            t.setInteger("z", entry.getValue().getZ());
-            tagList.appendTag(t);
+            CompoundNBT t = new CompoundNBT();
+            t.putString("key", entry.getKey());
+            t.put("pos", NBTUtil.writeBlockPos(entry.getValue()));
+            tagList.add(t);
         }
-        tag.setTag("coords", tagList);
+        tag.put("coords", tagList);
 
-        GlobalVariableManager.getInstance().writeItemVars(tag, itemVariables);
+        GlobalVariableManager.getInstance().writeItemVars(tag);
     }
 
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         coordinateVariables.clear();
-        NBTTagList tagList = tag.getTagList("coords", 10);
-        for (int i = 0; i < tagList.tagCount(); i++) {
-            NBTTagCompound t = tagList.getCompoundTagAt(i);
-            coordinateVariables.put(t.getString("key"), new BlockPos(t.getInteger("x"), t.getInteger("y"), t.getInteger("z")));
+        ListNBT tagList = tag.getList("coords", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < tagList.size(); i++) {
+            CompoundNBT t = tagList.getCompound(i);
+            coordinateVariables.put(t.getString("key"), NBTUtil.readBlockPos(t.getCompound("pos")));
         }
 
         GlobalVariableManager.readItemVars(tag, itemVariables);
@@ -148,7 +147,7 @@ public class DroneAIManager implements IVariableProvider {
         } else {
             pos = coordinateVariables.get(varName);
         }
-        return pos != null ? pos : BlockPos.ORIGIN;
+        return pos != null ? pos : BlockPos.ZERO;
     }
 
     public void setCoordinate(String varName, BlockPos coord) {
@@ -181,7 +180,7 @@ public class DroneAIManager implements IVariableProvider {
     private void updateWidgetFlow() {
         boolean isExecuting = false;
         for (EntityAITaskEntry entry : executingTaskEntries) {
-            if (curWidgetAI == entry.action) {
+            if (curWidgetAI == entry.goal) {
                 isExecuting = true;
                 break;
             }
@@ -221,8 +220,8 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     private void setActiveWidget(IProgWidget widget) {
-        EntityAIBase targetAI = null;
-        EntityAIBase ai = null;
+        Goal targetAI = null;
+        Goal ai = null;
         if (widget != null) {
             boolean first = widget instanceof ProgWidgetStart;
             targetAI = widget.getWidgetTargetAI(drone, widget);
@@ -256,9 +255,9 @@ public class DroneAIManager implements IVariableProvider {
 
         curActiveWidget = widget;
         if (curWidgetAI != null) removeTask(curWidgetAI);
-        if (curWidgetTargetAI != null) drone.getTargetAI().removeTask(curWidgetTargetAI);
+        if (curWidgetTargetAI != null) drone.getTargetAI().removeGoal(curWidgetTargetAI);
         if (ai != null) addTask(2, ai);
-        if (targetAI != null) drone.getTargetAI().addTask(2, targetAI);
+        if (targetAI != null) drone.getTargetAI().addGoal(2, targetAI);
         curWidgetAI = ai;
         curWidgetTargetAI = targetAI;
     }
@@ -281,7 +280,7 @@ public class DroneAIManager implements IVariableProvider {
         return taskEntries;
     }
 
-    public EntityAIBase getTargetAI() {
+    public Goal getTargetAI() {
         return curWidgetTargetAI;
     }
 
@@ -289,21 +288,21 @@ public class DroneAIManager implements IVariableProvider {
      * START EntityAITasks code
      */
 
-    public void addTask(int par1, EntityAIBase par2EntityAIBase) {
-        taskEntries.add(new EntityAITaskEntry(par1, par2EntityAIBase));
+    private void addTask(int priority, Goal goal) {
+        taskEntries.add(new EntityAITaskEntry(priority, goal));
     }
 
     /**
      * removes the indicated task from the entity's AI tasks.
      */
-    public void removeTask(EntityAIBase par1EntityAIBase) {
+    private void removeTask(Goal goal) {
         Iterator iterator = taskEntries.iterator();
 
         while (iterator.hasNext()) {
             EntityAITaskEntry entityaitaskentry = (EntityAITaskEntry) iterator.next();
-            EntityAIBase entityaibase1 = entityaitaskentry.action;
+            Goal entityaibase1 = entityaitaskentry.goal;
 
-            if (entityaibase1 == par1EntityAIBase) {
+            if (entityaibase1 == goal) {
                 if (executingTaskEntries.contains(entityaitaskentry)) {
                     entityaibase1.resetTask();
                     executingTaskEntries.remove(entityaitaskentry);
@@ -315,18 +314,18 @@ public class DroneAIManager implements IVariableProvider {
     }
     
     private void pickupItemsIfMagnet() {
-        int magnetUpgrades = drone.getUpgrades(ItemRegistry.getInstance().getUpgrade(EnumUpgrade.MAGNET));
+        int magnetUpgrades = drone.getUpgrades(EnumUpgrade.MAGNET);
         if (magnetUpgrades > 0) {
             int range = Math.min(6, 1 + magnetUpgrades);
             Vec3d v = drone.getDronePos();
             AxisAlignedBB aabb = new AxisAlignedBB(v.x, v.y, v.z, v.x, v.y, v.z).grow(range);
-            List<EntityItem> items = drone.world().getEntitiesWithinAABB(EntityItem.class, aabb,
+            List<ItemEntity> items = drone.world().getEntitiesWithinAABB(ItemEntity.class, aabb,
                     item -> item != null
-                            && item.isEntityAlive()
+                            && item.isAlive()
                             && !item.cannotPickup()
                             && drone.getDronePos().squareDistanceTo(item.getPositionVector()) <= range * range);
 
-            for (EntityItem item : items) {
+            for (ItemEntity item : items) {
                 DroneEntityAIPickupItems.tryPickupItem(drone, item);
             }
         }
@@ -335,9 +334,10 @@ public class DroneAIManager implements IVariableProvider {
     public void onUpdateTasks() {
         pickupItemsIfMagnet();
         
-        if (ConfigHandler.advanced.stopDroneAI) return;
+        if (Config.Common.Advanced.stopDroneAI) return;
+
         if (!drone.isAIOverriden()) {
-            if (wasAIOveridden && curWidgetTargetAI != null) drone.getTargetAI().addTask(2, curWidgetTargetAI);
+            if (wasAIOveridden && curWidgetTargetAI != null) drone.getTargetAI().addGoal(2, curWidgetTargetAI);
             wasAIOveridden = false;
             ArrayList<EntityAITaskEntry> arraylist = new ArrayList<>();
             Iterator<EntityAITaskEntry> iterator;
@@ -355,11 +355,11 @@ public class DroneAIManager implements IVariableProvider {
                             continue;
                         }
 
-                        entityaitaskentry.action.resetTask();
+                        entityaitaskentry.goal.resetTask();
                         executingTaskEntries.remove(entityaitaskentry);
                     }
 
-                    if (canUse(entityaitaskentry) && entityaitaskentry.action.shouldExecute()) {
+                    if (canUse(entityaitaskentry) && entityaitaskentry.goal.shouldExecute()) {
                         arraylist.add(entityaitaskentry);
                         executingTaskEntries.add(entityaitaskentry);
                     }
@@ -371,8 +371,8 @@ public class DroneAIManager implements IVariableProvider {
                 while (iterator.hasNext()) {
                     entityaitaskentry = iterator.next();
 
-                    if (!entityaitaskentry.action.shouldContinueExecuting()) {
-                        entityaitaskentry.action.resetTask();
+                    if (!entityaitaskentry.goal.shouldContinueExecuting()) {
+                        entityaitaskentry.goal.resetTask();
                         iterator.remove();
                     }
                 }
@@ -383,8 +383,8 @@ public class DroneAIManager implements IVariableProvider {
 
             while (iterator.hasNext()) {
                 entityaitaskentry = iterator.next();
-                theProfiler.startSection(entityaitaskentry.action.getClass().getSimpleName());
-                entityaitaskentry.action.startExecuting();
+                theProfiler.startSection(entityaitaskentry.goal.getClass().getSimpleName());
+                entityaitaskentry.goal.startExecuting();
                 theProfiler.endSection();
             }
 
@@ -394,17 +394,17 @@ public class DroneAIManager implements IVariableProvider {
 
             while (iterator.hasNext()) {
                 entityaitaskentry = iterator.next();
-                entityaitaskentry.action.updateTask();
+                entityaitaskentry.goal.tick();
             }
 
             theProfiler.endSection();
         } else {//drone charging ai is running
             if (!wasAIOveridden && curWidgetTargetAI != null) {
-                drone.getTargetAI().removeTask(curWidgetTargetAI);
+                drone.getTargetAI().removeGoal(curWidgetTargetAI);
             }
             wasAIOveridden = true;
             for (EntityAITaskEntry ai : executingTaskEntries) {
-                ai.action.resetTask();
+                ai.goal.resetTask();
             }
             executingTaskEntries.clear();
             drone.setDugBlock(null);
@@ -416,7 +416,7 @@ public class DroneAIManager implements IVariableProvider {
      */
     private boolean canContinue(EntityAITaskEntry par1EntityAITaskEntry) {
         theProfiler.startSection("canContinue");
-        boolean flag = par1EntityAITaskEntry.action.shouldContinueExecuting();
+        boolean flag = par1EntityAITaskEntry.goal.shouldContinueExecuting();
         theProfiler.endSection();
         return flag;
     }
@@ -435,7 +435,7 @@ public class DroneAIManager implements IVariableProvider {
                         theProfiler.endSection();
                         return false;
                     }
-                } else if (executingTaskEntries.contains(entry) && !entry.action.isInterruptible()) {
+                } else if (executingTaskEntries.contains(entry) && !entry.goal.isPreemptible()) {
                     theProfiler.endSection();
                     return false;
                 }
@@ -449,8 +449,9 @@ public class DroneAIManager implements IVariableProvider {
     /**
      * Returns whether two EntityAITaskEntries can be executed concurrently
      */
-    private boolean areTasksCompatible(EntityAITaskEntry par1EntityAITaskEntry, EntityAITaskEntry par2EntityAITaskEntry) {
-        return (par1EntityAITaskEntry.action.getMutexBits() & par2EntityAITaskEntry.action.getMutexBits()) == 0;
+    private boolean areTasksCompatible(EntityAITaskEntry e1, EntityAITaskEntry e2) {
+        EnumSet flags2 = e2.goal.getMutexFlags();
+        return e1.goal.getMutexFlags().stream().noneMatch(flags2::contains);
     }
 
     public void setLabel(String label) {
@@ -470,15 +471,15 @@ public class DroneAIManager implements IVariableProvider {
         /**
          * The EntityAIBase object.
          */
-        public final EntityAIBase action;
+        public final Goal goal;
         /**
          * Priority of the EntityAIBase
          */
         public final int priority;
 
-        public EntityAITaskEntry(int par2, EntityAIBase par3EntityAIBase) {
-            priority = par2;
-            action = par3EntityAIBase;
+        EntityAITaskEntry(int priority, Goal goal) {
+            this.priority = priority;
+            this.goal = goal;
         }
     }
 

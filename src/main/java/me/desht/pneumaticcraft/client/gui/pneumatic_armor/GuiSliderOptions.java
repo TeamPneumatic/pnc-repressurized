@@ -1,23 +1,22 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiPageButtonList;
-import net.minecraft.client.gui.GuiSlider;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.fml.client.config.GuiSlider;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.awt.*;
 
-public abstract class GuiSliderOptions extends IOptionPage.SimpleToggleableOptions implements GuiPageButtonList.GuiResponder {
+public abstract class GuiSliderOptions extends IOptionPage.SimpleToggleableOptions implements GuiSlider.ISlider {
     private GuiSlider slider;
     private Integer pendingVal = null;
 
@@ -35,47 +34,39 @@ public abstract class GuiSliderOptions extends IOptionPage.SimpleToggleableOptio
 
     protected abstract String getTagName();
 
-    protected abstract EntityEquipmentSlot getSlot();
+    protected abstract EquipmentSlotType getSlot();
 
-    protected abstract GuiSlider.FormatHelper getFormatHelper();
+    protected abstract String getPrefix();
+
+    protected abstract String getSuffix();
 
     public void initGui(IGuiScreen gui) {
         Pair<Integer,Integer> range = getRange();
         int initVal = range.getRight();
-        if (Minecraft.getMinecraft().player != null) {
-            ItemStack leggings = Minecraft.getMinecraft().player.getItemStackFromSlot(getSlot());
+        if (Minecraft.getInstance().player != null) {
+            ItemStack leggings = Minecraft.getInstance().player.getItemStackFromSlot(getSlot());
             initVal = ItemPneumaticArmor.getIntData(leggings, getTagName(), range.getRight());
         }
         Point pos = getSliderPos();
-        slider = new GuiSlider(this, 1000, pos.x, pos.y,
-                "slider", range.getLeft(), range.getRight(), initVal, getFormatHelper());
-        gui.getButtonList().add(slider);
+        slider = new GuiSlider(pos.x, pos.y, 150, 20,  getPrefix(), getSuffix(),
+                range.getLeft(), range.getRight(), initVal, false, true, b -> { }, this);
+        gui.getWidgetList().add(slider);
     }
 
     @Override
-    public void updateScreen() {
-        if (pendingVal != null && !slider.isMouseDown) {
+    public void onChangeSliderValue(GuiSlider slider) {
+        pendingVal = slider.getValueInt();
+    }
+
+    public void tick() {
+        if (pendingVal != null && !slider.dragging) {
             // avoid sending a stream of update packets if player is dragging slider
-            NBTTagCompound tag = new NBTTagCompound();
-            tag.setInteger(getTagName(), pendingVal);
+            CompoundNBT tag = new CompoundNBT();
+            tag.putInt(getTagName(), pendingVal);
             NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(getSlot(), tag));
             // also update the clientside handler
-            CommonArmorHandler.getHandlerForPlayer().onDataFieldUpdated(getSlot(), getTagName(), tag.getTag(getTagName()));
+            CommonArmorHandler.getHandlerForPlayer().onDataFieldUpdated(getSlot(), getTagName(), tag.get(getTagName()));
             pendingVal = null;
         }
-    }
-
-    @Override
-    public void setEntryValue(int id, boolean value) {
-    }
-
-    @Override
-    public void setEntryValue(int id, float value) {
-        pendingVal = (int) value;
-    }
-
-    @Override
-    public void setEntryValue(int id, String value) {
-
     }
 }

@@ -1,14 +1,18 @@
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -18,11 +22,12 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
 
     private final boolean hiRes;
 
-    public ContainerProgrammer(InventoryPlayer inventoryPlayer, TileEntityProgrammer te, boolean hiRes) {
-        super(te);
-        this.hiRes = hiRes;
+    public ContainerProgrammer(int i, PlayerInventory playerInventory, BlockPos pos) {
+        super(ModContainerTypes.PROGRAMMER, i, playerInventory, pos);
 
-        addSlotToContainer(new SlotItemHandler(te.getPrimaryInventory(), 0, hiRes ? 676 : 326, 15) {
+        this.hiRes = PneumaticCraftRepressurized.proxy.isScreenHiRes();
+
+        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, hiRes ? 676 : 326, 15) {
             @Override
             public boolean isItemValid(@Nonnull ItemStack stack) {
                 return isProgrammableItem(stack);
@@ -35,14 +40,18 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
         // Add the player's inventory slots to the container
         for (int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
             for (int inventoryColumnIndex = 0; inventoryColumnIndex < 9; ++inventoryColumnIndex) {
-                addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, xBase + inventoryColumnIndex * 18, yBase + inventoryRowIndex * 18));
+                addSlot(new Slot(playerInventory, inventoryColumnIndex + inventoryRowIndex * 9 + 9, xBase + inventoryColumnIndex * 18, yBase + inventoryRowIndex * 18));
             }
         }
 
         // Add the player's action bar slots to the container
         for (int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
-            addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, xBase + actionBarSlotIndex * 18, yBase + 58));
+            addSlot(new Slot(playerInventory, actionBarSlotIndex, xBase + actionBarSlotIndex * 18, yBase + 58));
         }
+    }
+
+    public ContainerProgrammer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+        this(i, playerInventory, getTilePos(buffer));
     }
 
     public boolean isHiRes() {
@@ -56,10 +65,13 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-        if (te.getWorld().getTotalWorldTime() % 20 == 0) {
-            for (EnumFacing d : EnumFacing.VALUES) {
-                TileEntity neighbor = te.getWorld().getTileEntity(te.getPos().offset(d));
-                if (neighbor != null && neighbor.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite())) {
+
+        // update the client about contents of adjacent inventories so the programmer GUI knows what
+        // puzzle pieces are available
+        if (te.getWorld().getGameTime() % 20 == 0) {
+            for (Direction d : Direction.VALUES) {
+                TileEntity neighbor = te.getTileCache()[d.getIndex()].getTileEntity();
+                if (neighbor != null && neighbor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).isPresent()) {
                     sendToContainerListeners(new PacketSendNBTPacket(neighbor));
                 }
             }
@@ -68,7 +80,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
 
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int slotIndex) {
+    public ItemStack transferStackInSlot(PlayerEntity par1EntityPlayer, int slotIndex) {
         ItemStack stack = ItemStack.EMPTY;
         Slot srcSlot = inventorySlots.get(slotIndex);
 

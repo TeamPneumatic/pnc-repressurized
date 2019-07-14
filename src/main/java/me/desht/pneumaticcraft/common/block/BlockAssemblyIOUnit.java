@@ -1,69 +1,62 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyIOUnit;
-import me.desht.pneumaticcraft.lib.BBConstants;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
+public class BlockAssemblyIOUnit extends BlockPneumaticCraft {
+    public static final BooleanProperty IMPORT_UNIT = BooleanProperty.create("import");
 
-public class BlockAssemblyIOUnit extends BlockPneumaticCraftModeled {
-    private static final AxisAlignedBB BASE_BOUNDS = new AxisAlignedBB(
-            BBConstants.ASSEMBLY_ROBOT_MIN_POS, 0F, BBConstants.ASSEMBLY_ROBOT_MIN_POS,
-            BBConstants.ASSEMBLY_ROBOT_MAX_POS, BBConstants.ASSEMBLY_ROBOT_MAX_POS_TOP, BBConstants.ASSEMBLY_ROBOT_MAX_POS);
-    private static final AxisAlignedBB COLLISION_BOUNDS = new AxisAlignedBB(
-            BBConstants.ASSEMBLY_ROBOT_MIN_POS, BBConstants.ASSEMBLY_ROBOT_MIN_POS, BBConstants.ASSEMBLY_ROBOT_MIN_POS,
-            BBConstants.ASSEMBLY_ROBOT_MAX_POS, BBConstants.ASSEMBLY_ROBOT_MAX_POS_TOP, BBConstants.ASSEMBLY_ROBOT_MAX_POS);
+    private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(2, 0, 2, 14, 14, 14);
+    private static final VoxelShape COLLISION_SHAPE = Block.makeCuboidShape(2, 2, 2, 14, 14, 14);
 
-    BlockAssemblyIOUnit() {
+    public BlockAssemblyIOUnit() {
         super(Material.IRON, "assembly_io_unit");
-        setBlockBounds(BASE_BOUNDS);
     }
 
     @Override
-    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing side, EnumHand hand) {
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        builder.add(IMPORT_UNIT);
+    }
+
+    @Override
+    public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
         if (player != null && player.isSneaking()) {
-            return super.rotateBlock(world, player, pos, side, hand);
+            return super.onWrenched(world, player, pos, side, hand);
         } else {
-            return ((TileEntityAssemblyIOUnit) world.getTileEntity(pos)).switchMode();
-        }
-    }
-
-    @Nullable
-    @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-        return COLLISION_BOUNDS;
-    }
-
-    @Override
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityAssemblyIOUnit) {
-            drops.add(new ItemStack(Blockss.ASSEMBLY_IO_UNIT, 1, ((TileEntityAssemblyIOUnit) te).isImportUnit() ? 1 : 0));
-        }
-    }
-
-    @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityAssemblyIOUnit) {
-            TileEntityAssemblyIOUnit teIO = (TileEntityAssemblyIOUnit) te;
-            if (stack.getMetadata() == 0 && teIO.isImportUnit() || stack.getMetadata() == 1 && !teIO.isImportUnit()) {
-                teIO.switchMode();
+            // flip between import and export
+            BlockState state = world.getBlockState(pos);
+            boolean isImport = state.get(IMPORT_UNIT);
+            world.setBlockState(pos, state.with(IMPORT_UNIT, !isImport));
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof TileEntityAssemblyIOUnit) {
+                ((TileEntityAssemblyIOUnit) te).switchMode();
             }
+            return true;
         }
-        super.onBlockPlacedBy(world, pos, state, entity, stack);
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+        return BASE_SHAPE;
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+        return COLLISION_SHAPE;
     }
 
     @Override

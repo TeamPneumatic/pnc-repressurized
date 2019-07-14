@@ -1,14 +1,12 @@
 package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -41,7 +39,7 @@ public class TANModifierPNCBlock implements ITemperatureModifier {
     }
 
     @Override
-    public Temperature applyPlayerModifiers(@Nonnull EntityPlayer player, @Nonnull Temperature initialTemperature, @Nonnull IModifierMonitor monitor) {
+    public Temperature applyPlayerModifiers(@Nonnull PlayerEntity player, @Nonnull Temperature initialTemperature, @Nonnull IModifierMonitor monitor) {
         return initialTemperature;
     }
 
@@ -68,7 +66,7 @@ public class TANModifierPNCBlock implements ITemperatureModifier {
                     pos2.setPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
                     TileEntity te = world.getTileEntity(pos2);
                     if (te instanceof IHeatExchanger) {
-                        EnumFacing side;
+                        Direction side;
                         float div3 = 1f;
                         if (te instanceof TileEntityHeatSink) {
                             side = null;  // heat sinks radiate heat off in all directions

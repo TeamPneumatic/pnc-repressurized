@@ -1,12 +1,11 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.client.gui.*;
-import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.recipes.BasicThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
@@ -19,8 +18,8 @@ import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextFormatting;
@@ -63,26 +62,26 @@ public class JEI implements IModPlugin {
         registry.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 31, 48, 20, ModCategoryUid.THERMO_PNEUMATIC);
         registry.addRecipeClickArea(GuiPlasticMixer.class, 97, 44, 28, 12, ModCategoryUid.PLASTIC_MIXER);
 
-        registry.addRecipeCatalyst(new ItemStack(Itemss.AMADRON_TABLET), ModCategoryUid.AMADRON_TRADE);
-        registry.addRecipeCatalyst(new ItemStack(Blockss.ASSEMBLY_CONTROLLER), ModCategoryUid.ASSEMBLY_CONTROLLER);
+        registry.addRecipeCatalyst(new ItemStack(ModItems.AMADRON_TABLET), ModCategoryUid.AMADRON_TRADE);
+        registry.addRecipeCatalyst(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER), ModCategoryUid.ASSEMBLY_CONTROLLER);
         registry.addRecipeCatalyst(FluidUtil.getFilledBucket(new FluidStack(Fluids.ETCHING_ACID, 1000)), ModCategoryUid.ETCHING_ACID);
-        registry.addRecipeCatalyst(new ItemStack(Blockss.PLASTIC_MIXER), ModCategoryUid.PLASTIC_MIXER);
-        registry.addRecipeCatalyst(new ItemStack(Blockss.PRESSURE_CHAMBER_WALL), ModCategoryUid.PRESSURE_CHAMBER);
-        registry.addRecipeCatalyst(new ItemStack(Blockss.REFINERY), ModCategoryUid.REFINERY);
-        registry.addRecipeCatalyst(new ItemStack(Blockss.THERMOPNEUMATIC_PROCESSING_PLANT), ModCategoryUid.THERMO_PNEUMATIC);
-        registry.addRecipeCatalyst(new ItemStack(Blockss.UV_LIGHT_BOX), ModCategoryUid.UV_LIGHT_BOX);
-        registry.addRecipeCatalyst(new ItemStack(Itemss.HEAT_FRAME), ModCategoryUid.HEAT_FRAME_COOLING);
+        registry.addRecipeCatalyst(new ItemStack(ModBlocks.PLASTIC_MIXER), ModCategoryUid.PLASTIC_MIXER);
+        registry.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL), ModCategoryUid.PRESSURE_CHAMBER);
+        registry.addRecipeCatalyst(new ItemStack(ModBlocks.REFINERY), ModCategoryUid.REFINERY);
+        registry.addRecipeCatalyst(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT), ModCategoryUid.THERMO_PNEUMATIC);
+        registry.addRecipeCatalyst(new ItemStack(ModBlocks.UV_LIGHT_BOX), ModCategoryUid.UV_LIGHT_BOX);
+        registry.addRecipeCatalyst(new ItemStack(ModItems.HEAT_FRAME), ModCategoryUid.HEAT_FRAME_COOLING);
 
         registry.addAdvancedGuiHandlers(new GuiTabHandler());
 
         addIngredientInfoTabs(registry);
 
         IIngredientBlacklist blacklist = registry.getJeiHelpers().getIngredientBlacklist();
-        blacklist.addIngredientToBlacklist(new ItemStack(Blockss.FAKE_ICE));
+        blacklist.addIngredientToBlacklist(new ItemStack(ModBlocks.FAKE_ICE));
     }
 
     private void addIngredientInfoTabs(IModRegistry registry) {
-        for (Item item : Itemss.items) {
+        for (Item item : ModItems.items) {
             NonNullList<ItemStack> stacks = NonNullList.create();
             if (item.getHasSubtypes()) {
                 item.getSubItems(PneumaticCraftRepressurized.tabPneumaticCraft, stacks);
@@ -92,7 +91,7 @@ public class JEI implements IModPlugin {
             stacks.forEach(s -> addStackInfo(registry, s));
         }
 
-        for (Block block : Blockss.blocks) {
+        for (Block block : ModBlocks.blocks) {
             ItemStack stack = new ItemStack(block, 1, 0);
             addStackInfo(registry, stack);
         }
@@ -107,7 +106,7 @@ public class JEI implements IModPlugin {
     }
 
     private void addStackInfo(IModRegistry registry, ItemStack stack) {
-        String k = (stack.getItem() instanceof ItemBlock ? "gui.tab.info." : "gui.tooltip.") + stack.getTranslationKey();
+        String k = (stack.getItem() instanceof BlockItem ? "gui.tab.info." : "gui.tooltip.") + stack.getTranslationKey();
         if (I18n.hasKey(k)) {
             String raw = TextFormatting.getTextWithoutFormattingCodes(I18n.format(k));
             registry.addIngredientInfo(stack, VanillaTypes.ITEM, raw.split(" \\\\n"));

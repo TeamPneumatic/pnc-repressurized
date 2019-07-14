@@ -3,11 +3,18 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class PacketRemoveSemiBlock extends LocationIntPacket<PacketRemoveSemiBlock> {
+/**
+ * Received on: CLIENT
+ * Sent by server to remove a semiblock client-side
+ */
+public class PacketRemoveSemiBlock extends LocationIntPacket {
 
     private int index;
 
@@ -19,30 +26,26 @@ public class PacketRemoveSemiBlock extends LocationIntPacket<PacketRemoveSemiBlo
         this.index = index;
     }
 
+    public PacketRemoveSemiBlock(PacketBuffer buffer) {
+        super(buffer);
+        this.index = buffer.readByte();
+    }
+
     @Override
     public void toBytes(ByteBuf buf) {
         super.toBytes(buf);
         buf.writeByte(index);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        super.fromBytes(buf);
-        index = buf.readByte();
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            SemiBlockManager manager = SemiBlockManager.getInstance(player.world);
+            manager.getSemiBlocks(player.world, pos)
+                    .filter(s -> s.getIndex() == index)
+                    .collect(Collectors.toList()) //To list is necessary, because the indices will get updated through the removal iterations.
+                    .forEach(manager::removeSemiBlock);
+        });
+        ctx.get().setPacketHandled(true);
     }
-
-    @Override
-    public void handleClientSide(PacketRemoveSemiBlock message, EntityPlayer player) {
-        SemiBlockManager manager = SemiBlockManager.getInstance(player.world);
-        manager.getSemiBlocks(player.world, message.pos)
-              .filter(s -> s.getIndex() == message.index)
-              .collect(Collectors.toList()) //To list is necessary, because the indeces will get updated through the removal iterations.
-              .forEach(manager::removeSemiBlock);
-    }
-
-    @Override
-    public void handleServerSide(PacketRemoveSemiBlock message, EntityPlayer player) {
-
-    }
-
 }

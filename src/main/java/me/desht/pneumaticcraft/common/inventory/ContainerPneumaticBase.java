@@ -4,31 +4,56 @@ import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.*;
-import net.minecraft.item.ItemArmor;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.inventory.container.*;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Container implements IGUIButtonSensitive {
+public class ContainerPneumaticBase<T extends TileEntityBase> extends Container implements IGUIButtonSensitive {
+    private static final String[] ARMOR_SLOT_TEXTURES = new String[]{"item/empty_armor_slot_boots", "item/empty_armor_slot_leggings", "item/empty_armor_slot_chestplate", "item/empty_armor_slot_helmet"};
 
-    public final Tile te;
+    public final T te;
     private final List<SyncedField> syncedFields = new ArrayList<>();
     private boolean firstTick = true;
     int playerSlotsStart;
 
-    public ContainerPneumaticBase(Tile te) {
-        this.te = te;
-        if (te != null) addSyncedFields(te);
+    public ContainerPneumaticBase(ContainerType type, int windowId, PlayerInventory invPlayer, PacketBuffer extraData) {
+        this(type, windowId, invPlayer, getTilePos(extraData));
+    }
+
+    public ContainerPneumaticBase(ContainerType type, int windowId, PlayerInventory invPlayer) {
+        this(type, windowId, invPlayer, (BlockPos) null);
+    }
+
+    public ContainerPneumaticBase(ContainerType type, int windowId, PlayerInventory invPlayer, BlockPos tilePos) {
+        super(type, windowId);
+        if (tilePos != null) {
+            TileEntity te0 = invPlayer.player.world.getTileEntity(tilePos);
+            if (te0 instanceof TileEntityBase) {
+                //noinspection unchecked
+                te = (T) te0;  // should be safe: T extends TileEntityBase, and we're doing an instanceof
+                addSyncedFields(te);
+            } else {
+                te = null;
+            }
+        } else {
+            te = null;
+        }
+    }
+
+    static BlockPos getTilePos(PacketBuffer extraData) {
+        return extraData.readBlockPos();
     }
 
     void addSyncedField(SyncedField field) {
@@ -49,7 +74,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer player) {
+    public boolean canInteractWith(PlayerEntity player) {
         return te.isGuiUseableByPlayer(player);
     }
 
@@ -64,37 +89,37 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
         firstTick = false;
     }
 
-    void sendToContainerListeners(IMessage message) {
+    void sendToContainerListeners(Object message) {
         for (IContainerListener listener : listeners) {
-            if (listener instanceof EntityPlayerMP) {
-                NetworkHandler.sendTo(message, (EntityPlayerMP) listener);
+            if (listener instanceof ServerPlayerEntity) {
+                NetworkHandler.sendToPlayer(message, (ServerPlayerEntity) listener);
             }
         }
     }
 
-    protected void addPlayerSlots(InventoryPlayer inventoryPlayer, int yOffset) {
+    protected void addPlayerSlots(PlayerInventory inventoryPlayer, int yOffset) {
         playerSlotsStart = inventorySlots.size();
 
         // Add the player's inventory slots to the container
         for (int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
             for (int inventoryColumnIndex = 0; inventoryColumnIndex < 9; ++inventoryColumnIndex) {
-                addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 8 + inventoryColumnIndex * 18, yOffset + inventoryRowIndex * 18));
+                addSlot(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 8 + inventoryColumnIndex * 18, yOffset + inventoryRowIndex * 18));
             }
         }
 
         // Add the player's action bar slots to the container
         for (int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
-            addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, yOffset + 58));
+            addSlot(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, yOffset + 58));
         }
     }
 
     protected void addUpgradeSlots(int xBase, int yBase) {
-        for (int i = 0; i < te.getUpgradesInventory().getSlots(); i++) {
-            addSlotToContainer(new SlotUpgrade(te, i, xBase + (i % 2) * 18, yBase + (i / 2) * 18));
+        for (int i = 0; i < te.getUpgradeHandler().getSlots(); i++) {
+            addSlot(new SlotUpgrade(te, i, xBase + (i % 2) * 18, yBase + (i / 2) * 18));
         }
     }
 
-    private static final EntityEquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EntityEquipmentSlot[] {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
+    private static final EquipmentSlotType[] VALID_EQUIPMENT_SLOTS = new EquipmentSlotType[] {EquipmentSlotType.HEAD, EquipmentSlotType.CHEST, EquipmentSlotType.LEGS, EquipmentSlotType.FEET};
 
     /*
      * This is pretty much lifted from the ContainerPlayer constructor
@@ -103,28 +128,27 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
      * that packet to be sent continually, causing a horrible item-equip sound loop to be played (and using unnecessary
      * network bandwith).
      */
-    void addArmorSlots(InventoryPlayer inventoryPlayer, int xBase, int yBase) {
+    void addArmorSlots(PlayerInventory inventoryPlayer, int xBase, int yBase) {
         for (int i = 0; i < 4; ++i) {
-            final EntityEquipmentSlot entityequipmentslot = VALID_EQUIPMENT_SLOTS[i];
-            this.addSlotToContainer(new Slot(inventoryPlayer, 36 + (3 - i), xBase, yBase + i * 18) {
+            final EquipmentSlotType entityequipmentslot = VALID_EQUIPMENT_SLOTS[i];
+            this.addSlot(new Slot(inventoryPlayer, 36 + (3 - i), xBase, yBase + i * 18) {
 
                 public int getSlotStackLimit() {
                     return 1;
                 }
 
                 public boolean isItemValid(ItemStack stack) {
-                    return stack.getItem().isValidArmor(stack, entityequipmentslot, inventoryPlayer.player);
+                    return stack.canEquip(entityequipmentslot, inventoryPlayer.player);
                 }
 
-                public boolean canTakeStack(EntityPlayer playerIn) {
+                public boolean canTakeStack(PlayerEntity playerIn) {
                     ItemStack itemstack = this.getStack();
                     return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.hasBindingCurse(itemstack)) && super.canTakeStack(playerIn);
                 }
 
-                @Nullable
-                @SideOnly(Side.CLIENT)
+                @OnlyIn(Dist.CLIENT)
                 public String getSlotTexture() {
-                    return ItemArmor.EMPTY_SLOT_NAMES[entityequipmentslot.getIndex()];
+                    return ARMOR_SLOT_TEXTURES[entityequipmentslot.getIndex()];
                 }
             });
         }
@@ -132,7 +156,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
 
     @Override
     @Nonnull
-    public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
+    public ItemStack transferStackInSlot(PlayerEntity player, int slot) {
         Slot srcSlot = inventorySlots.get(slot);
         if (srcSlot == null || !srcSlot.getHasStack()) {
             return ItemStack.EMPTY;
@@ -157,7 +181,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
 
     @Nonnull
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickType, EntityPlayer player) {
+    public ItemStack slotClick(int slotId, int dragType, ClickType clickType, PlayerEntity player) {
         Slot slot = slotId < 0 ? null : inventorySlots.get(slotId);
         if (slot instanceof IPhantomSlot) {
             return slotClickPhantom(slot, dragType, clickType, player);
@@ -167,7 +191,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
     }
 
     @Nonnull
-    private ItemStack slotClickPhantom(Slot slot, int dragType, ClickType clickType, EntityPlayer player) {
+    private ItemStack slotClickPhantom(Slot slot, int dragType, ClickType clickType, PlayerEntity player) {
         ItemStack stack = ItemStack.EMPTY;
 
         if (clickType == ClickType.CLONE && dragType == 2) {
@@ -177,7 +201,7 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
             }
         } else if ((clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE) && (dragType == 0 || dragType == 1)) {
             // left or right-click...
-            InventoryPlayer playerInv = player.inventory;
+            PlayerInventory playerInv = player.inventory;
             slot.onSlotChanged();
             ItemStack stackSlot = slot.getStack();
             ItemStack stackHeld = playerInv.getItemStack();
@@ -241,9 +265,9 @@ public class ContainerPneumaticBase<Tile extends TileEntityBase> extends Contain
     }
 
     @Override
-    public void handleGUIButtonPress(int guiID, EntityPlayer player) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
         if (te != null) {
-            te.handleGUIButtonPress(guiID, player);
+            te.handleGUIButtonPress(tag, player);
         }
     }
 }

@@ -5,22 +5,18 @@ import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergyAcceptor;
 import ic2.api.energy.tile.IEnergySource;
 import ic2.api.tile.IWrenchable;
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControlled;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -95,12 +91,12 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public boolean isConnectedTo(EnumFacing side) {
+    public boolean canConnectTo(Direction side) {
         return getRotation() == side.getOpposite();
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
+    public void handleGUIButtonPress(int buttonID, PlayerEntity player) {
         if (buttonID == 0) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
@@ -113,7 +109,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbtTagCompound) {
+    public void readFromNBT(CompoundNBT nbtTagCompound) {
         super.readFromNBT(nbtTagCompound);
 
         redstoneMode = nbtTagCompound.getInteger("redstoneMode");
@@ -122,7 +118,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
+    public CompoundNBT writeToNBT(CompoundNBT nbtTagCompound) {
         super.writeToNBT(nbtTagCompound);
 
         nbtTagCompound.setInteger("redstoneMode", redstoneMode);
@@ -133,7 +129,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public boolean emitsEnergyTo(IEnergyAcceptor iEnergyAcceptor, EnumFacing enumFacing) {
+    public boolean emitsEnergyTo(IEnergyAcceptor iEnergyAcceptor, Direction enumFacing) {
         return enumFacing == getRotation();
     }
 
@@ -165,22 +161,22 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public EnumFacing getFacing(World world, BlockPos blockPos) {
+    public Direction getFacing(World world, BlockPos blockPos) {
         return getRotation();
     }
 
     @Override
-    public boolean setFacing(World world, BlockPos blockPos, EnumFacing enumFacing, EntityPlayer entityPlayer) {
+    public boolean setFacing(World world, BlockPos blockPos, Direction enumFacing, PlayerEntity entityPlayer) {
         return false; // FIXME
     }
 
     @Override
-    public boolean wrenchCanRemove(World world, BlockPos blockPos, EntityPlayer entityPlayer) {
+    public boolean wrenchCanRemove(World world, BlockPos blockPos, PlayerEntity entityPlayer) {
         return true;
     }
 
     @Override
-    public List<ItemStack> getWrenchDrops(World world, BlockPos blockPos, IBlockState iBlockState, TileEntity tileEntity, EntityPlayer entityPlayer, int i) {
+    public List<ItemStack> getWrenchDrops(World world, BlockPos blockPos, BlockState iBlockState, TileEntity tileEntity, PlayerEntity entityPlayer, int i) {
         return Collections.singletonList(new ItemStack(IC2.PNEUMATIC_GENERATOR));
     }
 
@@ -190,7 +186,7 @@ public class TileEntityPneumaticGenerator extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
+    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
         return heatExchanger;
     }
 }

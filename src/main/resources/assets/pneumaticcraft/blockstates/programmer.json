@@ -3,7 +3,7 @@
     "defaults": {
         "textures": {},
         "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:programmer.obj"
+        "model": "pneumaticcraft:block/programmer.obj"
     },
 	"variants": {
 		"facing": {

@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.common.thirdparty.igwmod;
 import igwmod.TextureSupplier;
 import igwmod.api.IRecipeIntegrator;
 import igwmod.gui.*;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.ItemStack;
@@ -65,7 +65,7 @@ public class IntegratorAssembly implements IRecipeIntegrator {
 
         locatedStacks.add(new LocatedStack(foundRecipe.getInput(), (int) (GuiWiki.TEXT_SCALE * x) + 1, (int) (GuiWiki.TEXT_SCALE * y) + 46));
         locatedStacks.add(new LocatedStack(foundRecipe.getOutput(), (int) (GuiWiki.TEXT_SCALE * x) + 68, (int) (GuiWiki.TEXT_SCALE * y) + 46));
-        locatedStacks.add(new LocatedStack(new ItemStack(Itemss.ASSEMBLY_PROGRAM, 1, program), (int) (GuiWiki.TEXT_SCALE * x) + 78, (int) (GuiWiki.TEXT_SCALE * y) + 15));
+        locatedStacks.add(new LocatedStack(new ItemStack(ModItems.ASSEMBLY_PROGRAM, 1, program), (int) (GuiWiki.TEXT_SCALE * x) + 78, (int) (GuiWiki.TEXT_SCALE * y) + 15));
 
         locatedStrings.add(new LocatedString("Program:", x + 150, y + 5, 0xFF000000, false));
         locatedStrings.add(new LocatedString("Assembly Line", x + 40, y + 30, 0xFF000000, false));

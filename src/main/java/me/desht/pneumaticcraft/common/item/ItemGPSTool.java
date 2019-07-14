@@ -5,71 +5,75 @@ import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiGPSTool;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
     public ItemGPSTool() {
-        super("gps_tool");
+        super(DEFAULT_PROPS, "gps_tool");
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (hand != EnumHand.MAIN_HAND) return EnumActionResult.PASS;
-        setGPSLocation(player.getHeldItemMainhand(), pos);
-        if (!worldIn.isRemote)
-            player.sendStatusMessage(new TextComponentString(TextFormatting.GREEN + "[GPS Tool] Set Coordinates to " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "."), false);
-        return EnumActionResult.SUCCESS; // we don't want to use the item.
+    public ActionResultType onItemUse(ItemUseContext ctx) {
+        if (ctx.getHand() != Hand.MAIN_HAND) return ActionResultType.PASS;
+        BlockPos pos = ctx.getPos();
+        setGPSLocation(ctx.getPlayer().getHeldItemMainhand(), pos);
+        if (!ctx.getWorld().isRemote)
+            ctx.getPlayer().sendStatusMessage(new TranslationTextComponent("message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).applyTextStyle(TextFormatting.GREEN), false);
+        return ActionResultType.SUCCESS; // we don't want to use the item.
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        if (handIn != EnumHand.MAIN_HAND) return ActionResult.newResult(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if (handIn != Hand.MAIN_HAND) return ActionResult.newResult(ActionResultType.PASS, playerIn.getHeldItem(handIn));
         ItemStack stack = playerIn.getHeldItemMainhand();
         if (worldIn.isRemote) {
             BlockPos pos = getGPSLocation(stack);
-            FMLCommonHandler.instance().showGuiScreen(new GuiGPSTool(pos != null ? pos : BlockPos.ORIGIN, getVariable(stack)));
+            Minecraft.getInstance().displayGuiScreen(new GuiGPSTool(handIn, pos != null ? pos : BlockPos.ZERO, getVariable(stack)));
         }
-        return ActionResult.newResult(EnumActionResult.SUCCESS, stack);
+        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
 
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<String> infoList, ITooltipFlag par4) {
+    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
         super.addInformation(stack, worldIn, infoList, par4);
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundNBT compound = stack.getTag();
         if (compound != null) {
-            int x = compound.getInteger("x");
-            int y = compound.getInteger("y");
-            int z = compound.getInteger("z");
+            int x = compound.getInt("x");
+            int y = compound.getInt("y");
+            int z = compound.getInt("z");
             if (x != 0 || y != 0 || z != 0) {
-                infoList.add("\u00a72Set to " + x + ", " + y + ", " + z);
+                infoList.add(new StringTextComponent("Set to " + x + ", " + y + ", " + z).applyTextStyle(TextFormatting.GREEN));
             }
             String varName = getVariable(stack);
             if (!varName.equals("")) {
-                infoList.add(I18n.format("gui.tooltip.gpsTool.variable", varName));
+                infoList.add(xlate("gui.tooltip.gpsTool.variable", varName));
             }
         }
     }
 
     @Override
-    public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean heldItem) {
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean heldItem) {
         String var = getVariable(stack);
         if (!var.equals("") && !world.isRemote) {
             BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
@@ -78,16 +82,16 @@ public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
     }
 
     public static BlockPos getGPSLocation(ItemStack gpsTool) {
-        NBTTagCompound compound = gpsTool.getTagCompound();
+        CompoundNBT compound = gpsTool.getTag();
         if (compound != null) {
             String var = getVariable(gpsTool);
             if (!var.equals("") && PneumaticCraftRepressurized.proxy.getClientWorld() == null) {
                 BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
                 setGPSLocation(gpsTool, pos);
             }
-            int x = compound.getInteger("x");
-            int y = compound.getInteger("y");
-            int z = compound.getInteger("z");
+            int x = compound.getInt("x");
+            int y = compound.getInt("y");
+            int z = compound.getInt("z");
             if (x != 0 || y != 0 || z != 0) {
                 return new BlockPos(x, y, z);
             } else {
@@ -109,7 +113,7 @@ public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
     }
 
     public static String getVariable(ItemStack gpsTool) {
-        return gpsTool.hasTagCompound() ? gpsTool.getTagCompound().getString("variable") : "";
+        return gpsTool.hasTag() ? gpsTool.getTag().getString("variable") : "";
     }
 
     @Override

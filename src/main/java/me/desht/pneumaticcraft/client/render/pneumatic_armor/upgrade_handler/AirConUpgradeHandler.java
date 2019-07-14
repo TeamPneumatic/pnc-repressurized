@@ -2,20 +2,19 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.google.common.base.Strings;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiAirConditionerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRenderHandler {
     private static final int MAX_AC = 20;
@@ -23,7 +22,7 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
     public static int deltaTemp;  // set by packet from server
     private static int currentAC = 0; // cosmetic
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     private GuiAnimatedStat acStat;
 
     @Override
@@ -33,12 +32,12 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
 
     @Override
     public Item[] getRequiredUpgrades() {
-        return new Item[] { Itemss.upgrades.get(EnumUpgrade.AIR_CONDITIONING) };
+        return new Item[] { EnumUpgrade.AIR_CONDITIONING.getItem() };
     }
 
     @Override
-    public EntityEquipmentSlot getEquipmentSlot() {
-        return EntityEquipmentSlot.CHEST;
+    public EquipmentSlotType getEquipmentSlot() {
+        return EquipmentSlotType.CHEST;
     }
 
     @Override
@@ -47,10 +46,10 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
     }
 
     @Override
-    public void update(EntityPlayer player, int rangeUpgrades) {
+    public void update(PlayerEntity player, int rangeUpgrades) {
         super.update(player, rangeUpgrades);
 
-        if ((player.world.getTotalWorldTime() & 0x3) == 0) {
+        if ((player.world.getGameTime() & 0x3) == 0) {
             if (currentAC < deltaTemp)
                 currentAC++;
             else if (currentAC > deltaTemp)

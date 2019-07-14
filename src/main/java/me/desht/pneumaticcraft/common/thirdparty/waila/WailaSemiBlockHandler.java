@@ -5,10 +5,10 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockBasic;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +34,7 @@ public class WailaSemiBlockHandler implements IWailaDataProvider {
     public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
         
         List<SemiBlockBasic> semiBlocks = SemiBlockManager.getInstance(accessor.getWorld()).getSemiBlocksAsList(SemiBlockBasic.class, accessor.getWorld(), accessor.getPosition());
-        NBTTagList tagList = accessor.getNBTData().getTagList("semiBlocks", Constants.NBT.TAG_COMPOUND);
+        ListNBT tagList = accessor.getNBTData().getTagList("semiBlocks", Constants.NBT.TAG_COMPOUND);
         for(int i = 0; i < semiBlocks.size(); i++){
             NonNullList<ItemStack> l = NonNullList.create();
             semiBlocks.get(i).addDrops(l);
@@ -52,13 +52,13 @@ public class WailaSemiBlockHandler implements IWailaDataProvider {
     }
 
     @Override
-    public NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, BlockPos pos) {
+    public CompoundNBT getNBTData(ServerPlayerEntity player, TileEntity te, CompoundNBT tag, World world, BlockPos pos) {
         @SuppressWarnings("rawtypes")
         List<SemiBlockBasic> semiBlocks = SemiBlockManager.getInstance(world).getSemiBlocksAsList(SemiBlockBasic.class, world, pos);
-        NBTTagList tagList = new NBTTagList();
+        ListNBT tagList = new ListNBT();
         tag.setTag("semiBlocks", tagList);
         for(SemiBlockBasic<?> semiBlock : semiBlocks){
-            NBTTagCompound subTag = new NBTTagCompound();
+            CompoundNBT subTag = new CompoundNBT();
             semiBlock.addWailaInfoToTag(subTag);
             tagList.appendTag(subTag);
         }

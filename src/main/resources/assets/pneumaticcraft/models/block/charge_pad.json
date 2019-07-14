@@ -1,6 +1,6 @@
 {
   "textures": {
-    "all": "pneumaticcraft:blocks/tube_closed"
+    "all": "pneumaticcraft:block/tube_closed"
   },
   "elements": [
     {

@@ -4,10 +4,12 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
@@ -27,7 +29,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     private int coldHeatLevel = 10, hotHeatLevel = 10;
 
     public TileEntityVortexTube() {
-        super(20, 25, 2000, 0);
+        super(ModTileEntityTypes.VORTEX_TUBE, 20, 25, 2000, 0);
         coldHeatExchanger.setThermalResistance(0.01);
         hotHeatExchanger.setThermalResistance(0.01);
         connectingExchanger.setThermalResistance(100);
@@ -36,7 +38,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
+    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
         if (side == null || side == getRotation().getOpposite()) {
             return hotHeatExchanger;
         } else if (side == getRotation()) {
@@ -47,8 +49,13 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    protected EnumFacing[] getConnectedHeatExchangerSides() {
-        return new EnumFacing[]{getRotation().getOpposite()};
+    protected Direction[] getConnectedHeatExchangerSides() {
+        return new Direction[]{getRotation().getOpposite()};
+    }
+
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
     }
 
     @Override
@@ -58,26 +65,26 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public boolean isConnectedTo(EnumFacing side) {
+    public boolean canConnectTo(Direction side) {
         return side != getRotation() && side != getRotation().getOpposite();
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        NBTTagCompound coldHeatTag = new NBTTagCompound();
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        CompoundNBT coldHeatTag = new CompoundNBT();
         coldHeatExchanger.writeToNBT(coldHeatTag);
-        tag.setTag("coldHeat", coldHeatTag);
+        tag.put("coldHeat", coldHeatTag);
         for (int i = 0; i < 6; i++) {
-            tag.setBoolean("sideConnected" + i, sidesConnected[i]);
+            tag.putBoolean("sideConnected" + i, sidesConnected[i]);
         }
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        coldHeatExchanger.readFromNBT(tag.getCompoundTag("coldHeat"));
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+        coldHeatExchanger.readFromNBT(tag.getCompound("coldHeat"));
         for (int i = 0; i < 6; i++) {
             sidesConnected[i] = tag.getBoolean("sideConnected" + i);
         }
@@ -92,12 +99,12 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
         if (!getWorld().isRemote) {
             // Only update the cold and connecting side, the hot side is handled in TileEntityBase.
-            connectingExchanger.update();
-            coldHeatExchanger.update();
+            connectingExchanger.tick();
+            coldHeatExchanger.tick();
             int usedAir = (int) (getPressure() * 10);
             if (usedAir > 0) {
                 addAir(-usedAir);
@@ -124,9 +131,9 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     private void updateConnections() {
-        List<Pair<EnumFacing, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
+        List<Pair<Direction, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);
-        for (Pair<EnumFacing, IAirHandler> entry : connections) {
+        for (Pair<Direction, IAirHandler> entry : connections) {
             sidesConnected[entry.getKey().ordinal()] = true;
         }
     }

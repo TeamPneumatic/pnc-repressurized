@@ -1,49 +1,57 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.common.DroneRegistry;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.config.AmadronOfferSettings;
 import me.desht.pneumaticcraft.common.config.AmadronOfferStaticConfig;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeRemoved;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.AmadronOffer.TradeType;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
-import me.desht.pneumaticcraft.lib.Sounds;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
+import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.server.permission.PermissionAPI;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 
-public class ContainerAmadron extends ContainerPneumaticBase {
+public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     public static final int ROWS = 4;
     public static final int OFFERS_PER_PAGE = ROWS * 2;
 
-    // Set client-side when a PacketSyncAmadronOffers is received.  Only controls button visibility, actual control
+    // Set client-side when a PacketSyncAmadronOffers is received.  Only controls button visibility; actual control
     // is done server-side via permissions API.  So make button available unless server tells us no.  Worst that
     // can happen is button does nothing.
     public static boolean mayAddPeriodicOffers = true;
@@ -59,6 +67,7 @@ public class ContainerAmadron extends ContainerPneumaticBase {
     private final int[] shoppingAmounts = new int[OFFERS_PER_PAGE];
     @GuiSynced
     public final boolean[] buyableOffers = new boolean[offers.size()];
+    private final Hand hand;
     @GuiSynced
     public EnumProblemState problemState = EnumProblemState.NO_PROBLEMS;
     @GuiSynced
@@ -84,26 +93,29 @@ public class ContainerAmadron extends ContainerPneumaticBase {
             this.locKey = locKey;
         }
 
-        public String getLocalizationKey() {
+        public String getTranslationKey() {
             return "gui.tab.problems.amadron." + locKey;
         }
-    }
 
-    public ContainerAmadron(EntityPlayer player) {
-        super(null);
+    }
+    public ContainerAmadron(int windowId, PlayerInventory invPlayer, Hand hand) {
+        super(ModContainerTypes.AMADRON, windowId, invPlayer);
+
+        this.hand = hand;
 
         for (int y = 0; y < ROWS; y++) {
             for (int x = 0; x < 2; x++) {
-                addSlotToContainer(new SlotUntouchable(inv, y * 4 + x * 2, x * 73 + 12, y * 35 + 70));
-                addSlotToContainer(new SlotUntouchable(inv, y * 4 + x * 2 + 1, x * 73 + 57, y * 35 + 70));
+                addSlot(new SlotUntouchable(inv, y * 4 + x * 2, x * 73 + 12, y * 35 + 70));
+                addSlot(new SlotUntouchable(inv, y * 4 + x * 2 + 1, x * 73 + 57, y * 35 + 70));
             }
         }
         addSyncedFields(this);
         Arrays.fill(shoppingItems, -1);
 
+        PlayerEntity player = invPlayer.player;
         if (!player.world.isRemote) {
-            IItemHandler itemHandler = ItemAmadronTablet.getItemProvider(player.getHeldItemMainhand());
-            IFluidHandler fluidHandler = ItemAmadronTablet.getLiquidProvider(player.getHeldItemMainhand());
+            IItemHandler itemHandler = ItemAmadronTablet.getItemProvider(player.getHeldItemMainhand()).map(h -> h).orElse(null);
+            IFluidHandler fluidHandler = ItemAmadronTablet.getFluidProvider(player.getHeldItemMainhand()).map(h -> h).orElse(null);
             for (int i = 0; i < offers.size(); i++) {
                 int amount = capShoppingAmount(offers.get(i), 1, itemHandler, fluidHandler, this);
                 buyableOffers[i] = amount > 0;
@@ -127,8 +139,16 @@ public class ContainerAmadron extends ContainerPneumaticBase {
         }
     }
 
+    public ContainerAmadron(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
+        this(windowId, playerInventory, buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND);
+    }
+
     public boolean isBasketEmpty() {
         return basketEmpty;
+    }
+
+    public Hand getHand() {
+        return hand;
     }
 
     @Override
@@ -136,14 +156,14 @@ public class ContainerAmadron extends ContainerPneumaticBase {
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer player) {
-        if (player.getHeldItemMainhand().getItem() == Itemss.AMADRON_TABLET) {
-            IPressurizable pressurizable = (IPressurizable) Itemss.AMADRON_TABLET;
+    public boolean canInteractWith(PlayerEntity player) {
+        if (player.getHeldItemMainhand().getItem() == ModItems.AMADRON_TABLET) {
+            IPressurizable pressurizable = (IPressurizable) ModItems.AMADRON_TABLET;
             pressurizable.addAir(player.getHeldItemMainhand(), -1);
             if (pressurizable.getPressure(player.getHeldItemMainhand()) > 0) {
                 return true;
             } else {
-                player.sendStatusMessage(new TextComponentTranslation("gui.tab.problems.notEnoughPressure"), false);
+                player.sendStatusMessage(new TranslationTextComponent("gui.tab.problems.notEnoughPressure"), false);
             }
         }
         return false;
@@ -161,11 +181,11 @@ public class ContainerAmadron extends ContainerPneumaticBase {
 
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer p_82846_1_, int p_82846_2_) {
+    public ItemStack transferStackInSlot(PlayerEntity p_82846_1_, int p_82846_2_) {
         return ItemStack.EMPTY;
     }
 
-    public void clickOffer(int offerId, int mouseButton, boolean sneaking, EntityPlayer player) {
+    public void clickOffer(int offerId, int mouseButton, boolean sneaking, PlayerEntity player) {
         problemState = EnumProblemState.NO_PROBLEMS;
         int cartSlot = getCartSlot(offerId);
         if (cartSlot >= 0) {
@@ -198,7 +218,7 @@ public class ContainerAmadron extends ContainerPneumaticBase {
         basketEmpty = Arrays.stream(shoppingAmounts).noneMatch(shoppingAmount -> shoppingAmount > 0);
     }
 
-    private void removeCustomOffer(EntityPlayer player, AmadronOfferCustom offer) {
+    private void removeCustomOffer(PlayerEntity player, AmadronOfferCustom offer) {
         if (offer.getPlayerId().equals(player.getGameProfile().getId().toString())) {
             if (AmadronOfferManager.getInstance().removeStaticOffer(offer)) {
                 if (AmadronOfferSettings.notifyOfTradeRemoval) NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(offer));
@@ -214,51 +234,63 @@ public class ContainerAmadron extends ContainerPneumaticBase {
     }
 
     @Override
-    public void handleGUIButtonPress(int guiID, EntityPlayer player) {
-        super.handleGUIButtonPress(guiID, player);
-        if (guiID == 1) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        super.handleGUIButtonPress(tag, player);
+        if (tag.equals("order")) {
             boolean placed = false;
             for (int i = 0; i < shoppingItems.length; i++) {
                 if (shoppingItems[i] >= 0) {
                     AmadronOffer offer = offers.get(shoppingItems[i]);
-                    BlockPos itemPos = ItemAmadronTablet.getItemProvidingLocation(player.getHeldItemMainhand());
-                    World itemWorld;
-                    if (itemPos == null) {
-                        itemPos = new BlockPos((int) player.posX, (int) player.posY, (int) player.posZ);
-                        itemWorld = player.world;
-                    } else {
-                        itemWorld = DimensionManager.getWorld(ItemAmadronTablet.getItemProvidingDimension(player.getHeldItemMainhand()));
-                    }
-                    BlockPos liquidPos = ItemAmadronTablet.getLiquidProvidingLocation(player.getHeldItemMainhand());
-                    World liquidWorld = null;
-                    if (liquidPos != null) {
-                        liquidWorld = DimensionManager.getWorld(ItemAmadronTablet.getLiquidProvidingDimension(player.getHeldItemMainhand()));
-                    }
-                    EntityDrone drone = retrieveOrderItems(offer, shoppingAmounts[i], itemWorld, itemPos, liquidWorld, liquidPos);
+                    GlobalPos itemGPos = ItemAmadronTablet.getItemProvidingLocation(player.getHeldItemMainhand());
+                    GlobalPos fluidGPos = ItemAmadronTablet.getFluidProvidingLocation(player.getHeldItemMainhand());
+                    EntityDrone drone = retrieveOrderItems(offer, shoppingAmounts[i], itemGPos, fluidGPos);
                     if (drone != null) {
-                        drone.setHandlingOffer(offer, shoppingAmounts[i], player.getHeldItemMainhand(), player.getName());
+                        drone.setHandlingOffer(offer, shoppingAmounts[i], player.getHeldItemMainhand(), player.getName().getFormattedText());
                         placed = true;
                     }
                 }
-                if (placed && player instanceof EntityPlayerMP) {
-                    NetworkHandler.sendTo(new PacketPlaySound(Sounds.CHIRP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.2f, 1.0f, false), (EntityPlayerMP) player);
+                if (placed && player instanceof ServerPlayerEntity) {
+                    NetworkHandler.sendToPlayer(new PacketPlaySound(Sounds.CHIRP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.2f, 1.0f, false), (ServerPlayerEntity) player);
                 }
             }
             Arrays.fill(shoppingAmounts, 0);
             Arrays.fill(shoppingItems, -1);
             basketEmpty = true;
-        } else if (guiID == 2) {
-            player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON_ADD_PLAYER_TRADE.ordinal(), player.world, 0, 0, 0);
-        } else if (guiID == 3 && PermissionAPI.hasPermission(player, Names.AMADRON_ADD_PERIODIC_TRADE)) {
-            player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON_ADD_PERIODIC_TRADE.ordinal(), player.world, 0, 0, 0);
-        } else if (guiID == 4 && PermissionAPI.hasPermission(player, Names.AMADRON_ADD_STATIC_TRADE)) {
-            player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.AMADRON_ADD_STATIC_TRADE.ordinal(), player.world, 0, 0, 0);
+        } else if (tag.equals("addPlayerTrade")) {
+            openTradeGui(player, TradeType.PLAYER);
+        } else if (tag.equals("addPeriodicTrade") && PermissionAPI.hasPermission(player, Names.AMADRON_ADD_PERIODIC_TRADE)) {
+            openTradeGui(player, TradeType.PERIODIC);
+        } else if (tag.equals("addStaticTrade") && PermissionAPI.hasPermission(player, Names.AMADRON_ADD_STATIC_TRADE)) {
+            openTradeGui(player, TradeType.STATIC);
         }
     }
 
-    public static EntityDrone retrieveOrderItems(AmadronOffer offer, int times, World itemWorld, BlockPos itemPos, World liquidWorld, BlockPos liquidPos) {
+    private void openTradeGui(PlayerEntity player, TradeType type) {
+        NetworkHooks.openGui((ServerPlayerEntity) player, new AmadronAddTradeContainerProvider(type), buf -> buf.writeByte(type.ordinal()));
+    }
+
+    private static class AmadronAddTradeContainerProvider implements INamedContainerProvider {
+        private final TradeType tradeType;
+
+        private AmadronAddTradeContainerProvider(TradeType tradeType) {
+            this.tradeType = tradeType;
+        }
+
+        @Override
+        public ITextComponent getDisplayName() {
+            return new StringTextComponent("Add Trade");
+        }
+
+        @Nullable
+        @Override
+        public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+            return new ContainerAmadronAddTrade(windowId, playerInventory, tradeType);
+        }
+    }
+
+    public static EntityDrone retrieveOrderItems(AmadronOffer offer, int times, GlobalPos itemGPos, GlobalPos liquidGPos) {
         if (offer.getInput() instanceof ItemStack) {
-            if (itemWorld == null || itemPos == null) return null;
+            if (itemGPos == null) return null;
             ItemStack queryingItems = (ItemStack) offer.getInput();
             int amount = queryingItems.getCount() * times;
             NonNullList<ItemStack> stacks = NonNullList.create();
@@ -268,19 +300,20 @@ public class ContainerAmadron extends ContainerPneumaticBase {
                 stacks.add(stack);
                 amount -= stack.getCount();
             }
-            return (EntityDrone) DroneRegistry.getInstance().retrieveItemsAmazonStyle(itemWorld, itemPos, stacks.toArray(new ItemStack[0]));
+            return (EntityDrone) DroneRegistry.getInstance().retrieveItemsAmazonStyle(itemGPos, stacks.toArray(new ItemStack[0]));
         } else {
-            if (liquidWorld == null || liquidPos == null) return null;
+            if (liquidGPos == null) return null;
             FluidStack queryingFluid = ((FluidStack) offer.getInput()).copy();
             queryingFluid.amount *= times;
-            return (EntityDrone) DroneRegistry.getInstance().retrieveFluidAmazonStyle(liquidWorld, liquidPos, queryingFluid);
+            return (EntityDrone) DroneRegistry.getInstance().retrieveFluidAmazonStyle(liquidGPos, queryingFluid);
         }
     }
 
-    private int capShoppingAmount(int offerId, int wantedAmount, EntityPlayer player) {
-        IItemHandler inv = ItemAmadronTablet.getItemProvider(player.getHeldItemMainhand());
-        IFluidHandler fluidHandler = ItemAmadronTablet.getLiquidProvider(player.getHeldItemMainhand());
-        return capShoppingAmount(offers.get(offerId), wantedAmount, inv, fluidHandler, this);
+    private int capShoppingAmount(int offerId, int wantedAmount, PlayerEntity player) {
+        return ItemAmadronTablet.getItemProvider(player.getHeldItemMainhand()).map(itemHandler ->
+                ItemAmadronTablet.getFluidProvider(player.getHeldItemMainhand()).map(fluidHandler ->
+                        capShoppingAmount(offers.get(offerId), wantedAmount, itemHandler, fluidHandler, this)
+                ).orElse(0)).orElse(0);
     }
 
     private static int capShoppingAmount(AmadronOffer offer, int wantedAmount, IItemHandler inv, IFluidHandler fluidHandler, ContainerAmadron container) {
@@ -384,9 +417,9 @@ public class ContainerAmadron extends ContainerPneumaticBase {
     }
 
     @Override
-    public void onContainerClosed(EntityPlayer player) {
+    public void onContainerClosed(PlayerEntity player) {
         super.onContainerClosed(player);
-        if (!player.world.isRemote && player.getHeldItemMainhand().getItem() == Itemss.AMADRON_TABLET) {
+        if (!player.world.isRemote && player.getHeldItemMainhand().getItem() == ModItems.AMADRON_TABLET) {
             Map<AmadronOffer, Integer> shoppingCart = new HashMap<>();
             for (int i = 0; i < shoppingItems.length; i++) {
                 if (shoppingItems[i] >= 0) {

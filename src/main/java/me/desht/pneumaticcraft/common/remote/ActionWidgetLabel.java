@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.remote;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteOptionBase;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.nbt.CompoundNBT;
 
 public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> implements IActionWidgetLabeled {
 
@@ -15,20 +15,20 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     }
 
     @Override
-    public NBTTagCompound toNBT(int guiLeft, int guiTop) {
-        NBTTagCompound tag = super.toNBT(guiLeft, guiTop);
-        tag.setString("text", widget.text);
-        tag.setInteger("x", widget.getBounds().x - guiLeft);
-        tag.setInteger("y", widget.getBounds().y - guiTop);
-        tag.setString("tooltip", widget.getTooltip());
+    public CompoundNBT toNBT(int guiLeft, int guiTop) {
+        CompoundNBT tag = super.toNBT(guiLeft, guiTop);
+        tag.putString("text", widget.getMessage());
+        tag.putInt("x", widget.getBounds().x - guiLeft);
+        tag.putInt("y", widget.getBounds().y - guiTop);
+//        tag.putString("tooltip", widget.getTooltip());
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag, int guiLeft, int guiTop) {
+    public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
-        widget = new WidgetLabelVariable(tag.getInteger("x") + guiLeft, tag.getInteger("y") + guiTop, tag.getString("text"));
-        widget.setTooltipText(tag.getString("tooltip"));
+        widget = new WidgetLabelVariable(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, tag.getString("text"));
+//        widget.setTooltipText(tag.getString("tooltip"));
     }
 
     @Override
@@ -38,16 +38,16 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
 
     @Override
     public void setText(String text) {
-        widget.text = text;
+        widget.setMessage(text);
     }
 
     @Override
     public String getText() {
-        return widget.text;
+        return widget.getMessage();
     }
 
     @Override
-    public GuiScreen getGui(GuiRemoteEditor guiRemote) {
+    public Screen getGui(GuiRemoteEditor guiRemote) {
         return new GuiRemoteOptionBase(this, guiRemote);
     }
 
@@ -59,11 +59,11 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
 
     @Override
     public void setTooltip(String text) {
-        widget.setTooltipText(text);
+//        widget.setTooltipText(text);
     }
 
     @Override
     public String getTooltip() {
-        return widget.getTooltip();
+        return "";//widget.getTooltip();
     }
 }

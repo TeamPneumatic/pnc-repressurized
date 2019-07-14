@@ -1,12 +1,19 @@
 package me.desht.pneumaticcraft.common.network;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityLockableLoot;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketDescriptionPacketRequest extends LocationIntPacket<PacketDescriptionPacketRequest> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: SERVER
+ * Sent by client to ask the server for more info about a block, for Pneumatic Helmet purposes
+ * TODO: replace with a more formal data request protocol
+ */
+public class PacketDescriptionPacketRequest extends LocationIntPacket {
 
     public PacketDescriptionPacketRequest() {
     }
@@ -15,27 +22,29 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket<PacketDesc
         super(pos);
     }
 
-    @Override
-    public void handleClientSide(PacketDescriptionPacketRequest message, EntityPlayer player) {
+    public PacketDescriptionPacketRequest(PacketBuffer buffer) {
+        super(buffer);
     }
 
-    @Override
-    public void handleServerSide(PacketDescriptionPacketRequest message, EntityPlayer player) {
-        TileEntity te = message.getTileEntity(player.world);
-        if (te != null) {
-            forceLootGeneration(te);
-            NetworkHandler.sendTo(new PacketSendNBTPacket(te), (EntityPlayerMP) player);
-        }
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            TileEntity te = getTileEntity(ctx);
+            if (te != null) {
+                forceLootGeneration(te);
+                NetworkHandler.sendToPlayer(new PacketSendNBTPacket(te), ctx.get().getSender());
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
     
     /**
      * Force loot generation, as this is required on the client side to peek inside inventories.
      * The client is not able to generate the loot.
-     * @param te
+     * @param te the tile entity
      */
     private void forceLootGeneration(TileEntity te){
-        if(te instanceof TileEntityLockableLoot){
-            TileEntityLockableLoot teLoot = (TileEntityLockableLoot)te;
+        if(te instanceof LockableLootTileEntity){
+            LockableLootTileEntity teLoot = (LockableLootTileEntity)te;
             teLoot.fillWithLoot(null);
         }
     }

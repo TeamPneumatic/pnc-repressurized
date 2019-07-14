@@ -1,53 +1,57 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift.PumpMode;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiGasLift extends GuiPneumaticContainerBase<TileEntityGasLift> {
+public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileEntityGasLift> {
     private GuiAnimatedStat statusStat;
-    private final GuiButtonSpecial[] modeButtons = new GuiButtonSpecial[3];
+    private final GuiButtonSpecial[] modeButtons = new GuiButtonSpecial[PumpMode.values().length];
 
-    public GuiGasLift(InventoryPlayer player, TileEntityGasLift te) {
-        super(new ContainerGasLift(player, te), te, Textures.GUI_GAS_LIFT);
+    public GuiGasLift(ContainerGasLift container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        addWidget(new WidgetTank(-1, guiLeft + 80, guiTop + 15, te.getTank()));
-        statusStat = addAnimatedStat("gui.tab.status", new ItemStack(Blockss.GAS_LIFT), 0xFFFFAA00, false);
+    public void init() {
+        super.init();
+        addButton(new WidgetTank(guiLeft + 80, guiTop + 15, te.getTank()));
+        statusStat = addAnimatedStat("gui.tab.status", new ItemStack(ModBlocks.GAS_LIFT), 0xFFFFAA00, false);
 
-        GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(Blockss.PRESSURE_TUBE), 0xFFFFCC00, false);
+        GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(ModBlocks.PRESSURE_TUBE), 0xFFFFCC00, false);
         optionStat.addPadding(4, 17);
 
-        GuiButtonSpecial button = new GuiButtonSpecial(1, 5, 20, 20, 20, "");
+        GuiButtonSpecial button = new GuiButtonSpecial(5, 20, 20, 20, "").withTag(PumpMode.PUMP_EMPTY.toString());
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(I18n.format("gui.tab.gasLift.mode.pumpEmpty"));
-        optionStat.addWidget(button);
+        optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new GuiButtonSpecial(2, 30, 20, 20, 20, "");
+        button = new GuiButtonSpecial(30, 20, 20, 20, "").withTag(PumpMode.PUMP_LEAVE_FLUID.toString());
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(I18n.format("gui.tab.gasLift.mode.pumpLeave"));
-        optionStat.addWidget(button);
+        optionStat.addSubWidget(button);
         modeButtons[1] = button;
 
-        button = new GuiButtonSpecial(3, 55, 20, 20, 20, "");
-        button.setRenderStacks(new ItemStack(Blockss.PRESSURE_TUBE));
+        button = new GuiButtonSpecial(55, 20, 20, 20, "").withTag(PumpMode.RETRACT.toString());
+        button.setRenderStacks(new ItemStack(ModBlocks.PRESSURE_TUBE));
         button.setTooltipText(I18n.format("gui.tab.gasLift.mode.drawIn"));
-        optionStat.addWidget(button);
+        optionStat.addSubWidget(button);
         modeButtons[2] = button;
     }
 
@@ -55,7 +59,12 @@ public class GuiGasLift extends GuiPneumaticContainerBase<TileEntityGasLift> {
     protected void drawGuiContainerForegroundLayer(int x, int y) {
 
         super.drawGuiContainerForegroundLayer(x, y);
-        fontRenderer.drawString("Upgr.", 17, 19, 4210752);
+        font.drawString("Upgr.", 17, 19, 4210752);
+    }
+
+    @Override
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_GAS_LIFT;
     }
 
     @Override
@@ -64,11 +73,11 @@ public class GuiGasLift extends GuiPneumaticContainerBase<TileEntityGasLift> {
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    public void tick() {
+        super.tick();
         statusStat.setText(getStatus());
         for (int i = 0; i < modeButtons.length; i++) {
-            modeButtons[i].enabled = te.mode != i;
+            modeButtons[i].active = te.pumpMode != PumpMode.values()[i];
         }
     }
 
@@ -84,7 +93,7 @@ public class GuiGasLift extends GuiPneumaticContainerBase<TileEntityGasLift> {
     @Override
     public void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
-        if (te.mode == 0 || te.mode == 1) {
+        if (te.pumpMode == PumpMode.PUMP_EMPTY || te.pumpMode == PumpMode.PUMP_LEAVE_FLUID) {
             if (te.getTank().getCapacity() - te.getTank().getFluidAmount() < 1000) {
                 curInfo.add(I18n.format("gui.tab.problems.gasLift.noLiquidSpace"));
             }

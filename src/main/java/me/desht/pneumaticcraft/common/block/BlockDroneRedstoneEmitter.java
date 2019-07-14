@@ -1,40 +1,39 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityDroneRedstoneEmitter;
-import net.minecraft.block.BlockAir;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.AirBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class BlockDroneRedstoneEmitter extends BlockAir {
-    BlockDroneRedstoneEmitter() {
-        super();
+public class BlockDroneRedstoneEmitter extends AirBlock {
+    public BlockDroneRedstoneEmitter() {
+        super(Block.Properties.from(Blocks.AIR));
         setRegistryName("drone_redstone_emitter");
-        setTranslationKey("drone_redstone_emitter");
-        setCreativeTab(PneumaticCraftRepressurized.tabPneumaticCraft);
     }
 
     @Override
-    public boolean canProvidePower(IBlockState state) {
+    public boolean canProvidePower(BlockState state) {
         return true;
     }
 
     @Override
-    public int getStrongPower(IBlockState state, IBlockAccess par1IBlockAccess, BlockPos pos, EnumFacing side) {
+    public int getStrongPower(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {
         return 0;
     }
 
     @Override
-    public int getWeakPower(IBlockState state, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+    public int getWeakPower(BlockState state, IBlockReader blockAccess, BlockPos pos, Direction side) {
         if (blockAccess instanceof World) {
             World world = (World) blockAccess;
             List<EntityDrone> drones = world.getEntitiesWithinAABB(EntityDrone.class, new AxisAlignedBB(pos, pos.add(1, 1, 1)));
@@ -49,19 +48,13 @@ public class BlockDroneRedstoneEmitter extends BlockAir {
     }
 
     @Override
-    public boolean hasTileEntity(IBlockState state) {
+    public boolean hasTileEntity(BlockState state) {
         return true;
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(World world, IBlockState state) {
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new TileEntityDroneRedstoneEmitter();
-    }
-
-    @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
-        super.breakBlock(world, pos, state);
-        world.removeTileEntity(pos);
     }
 }

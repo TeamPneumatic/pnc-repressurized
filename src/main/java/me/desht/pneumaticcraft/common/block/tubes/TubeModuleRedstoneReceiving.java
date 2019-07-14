@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
@@ -10,15 +9,15 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
     private int redstoneLevel;
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        redstoneLevel = tag.getInteger("redstone");
+        redstoneLevel = tag.getInt("redstone");
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setInteger("redstone", redstoneLevel);
+        tag.putInt("redstone", redstoneLevel);
     }
 
     @Override
@@ -41,8 +40,8 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
     }
 
     @Override
-    protected EnumGuiId getGuiId() {
-        return EnumGuiId.PRESSURE_MODULE;
+    public boolean hasGui() {
+        return true;
     }
 
     @Override

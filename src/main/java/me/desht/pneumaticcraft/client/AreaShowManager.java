@@ -1,26 +1,26 @@
 package me.desht.pneumaticcraft.client;
 
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+import com.mojang.blaze3d.platform.GlStateManager;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
 
@@ -44,16 +44,13 @@ public class AreaShowManager {
 
     @SubscribeEvent
     public void renderWorldLastEvent(RenderWorldLastEvent event) {
-        Minecraft mc = FMLClientHandler.instance().getClient();
-        EntityPlayer player = mc.player;
-        double playerX = player.prevPosX + (player.posX - player.prevPosX) * event.getPartialTicks();
-        double playerY = player.prevPosY + (player.posY - player.prevPosY) * event.getPartialTicks();
-        double playerZ = player.prevPosZ + (player.posZ - player.prevPosZ) * event.getPartialTicks();
+        Minecraft mc = Minecraft.getInstance();
+        PlayerEntity player = mc.player;
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(-playerX, -playerY, -playerZ);
+        GlStateManager.translated(-TileEntityRendererDispatcher.staticPlayerX, -TileEntityRendererDispatcher.staticPlayerY, -TileEntityRendererDispatcher.staticPlayerZ);
 
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -64,8 +61,8 @@ public class AreaShowManager {
         maybeRenderPositionProvider(player);
         maybeRenderCamo(player);
 
-        ItemStack helmet = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-        if (helmet.getItem() == Itemss.PNEUMATIC_HELMET) {
+        ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+        if (helmet.getItem() == ModItems.PNEUMATIC_HELMET) {
             if (droneDebugger == null)
                 droneDebugger = HUDHandler.instance().getSpecificRenderer(DroneDebugUpgradeHandler.class);
             Set<BlockPos> set = droneDebugger.getShowingPositions();
@@ -74,19 +71,19 @@ public class AreaShowManager {
             new AreaShowHandler(areaSet, 0x4040FFA0, true).render();
         }
 
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
         GlStateManager.disableBlend();
         GlStateManager.popMatrix();
     }
 
-    private void maybeRenderPositionProvider(EntityPlayer player) {
+    private void maybeRenderPositionProvider(PlayerEntity player) {
         ItemStack curItem = player.getHeldItemMainhand();
         if (curItem.getItem() instanceof IPositionProvider) {
             IPositionProvider positionProvider = (IPositionProvider) curItem.getItem();
             List<BlockPos> posList = positionProvider.getStoredPositions(curItem);
             if (posList != null) {
                 if (!posList.equals(cachedPositionProviderData)) { //Cache miss
-                    TIntObjectMap<Set<BlockPos>> colorsToPositions = new TIntObjectHashMap<>();
+                    Int2ObjectMap<Set<BlockPos>> colorsToPositions = new Int2ObjectOpenHashMap<>();
                     for (int i = 0; i < posList.size(); i++) {
                         int renderColor = positionProvider.getRenderColor(i);
                         if (posList.get(i) != null && renderColor != 0) {
@@ -100,10 +97,7 @@ public class AreaShowManager {
                     }
                     cachedPositionProviderData = posList;
                     cachedPositionProviderShowers = new ArrayList<>(colorsToPositions.size());
-                    colorsToPositions.forEachEntry((color, positions) -> {
-                        cachedPositionProviderShowers.add(new AreaShowHandler(positions, color, positionProvider.disableDepthTest()));
-                        return true;
-                    });
+                    colorsToPositions.int2ObjectEntrySet().forEach((entry) -> cachedPositionProviderShowers.add(new AreaShowHandler(entry.getValue(), entry.getIntKey(), positionProvider.disableDepthTest())));
                 }
 
                 cachedPositionProviderShowers.forEach(AreaShowHandler::render);
@@ -111,14 +105,14 @@ public class AreaShowManager {
         }
     }
 
-    private void maybeRenderCamo(EntityPlayer player) {
+    private void maybeRenderCamo(PlayerEntity player) {
         if (!(player.getHeldItemMainhand().getItem() instanceof ItemCamoApplicator)) {
             return;
         }
-        if (lastPlayerPos == null || camoPositionShower == null || player.getDistanceSq(lastPlayerPos) > 9) {
+        if (lastPlayerPos == null || camoPositionShower == null || player.getDistanceSq(lastPlayerPos.getX(), lastPlayerPos.getY(), lastPlayerPos.getZ()) > 9) {
             lastPlayerPos = player.getPosition();
-            Set<BlockPos> s = Minecraft.getMinecraft().world.loadedTileEntityList.stream()
-                    .filter(te -> te instanceof ICamouflageableTE && te.getPos().distanceSq(player.posX, player.posY, player.posZ) < 144)
+            Set<BlockPos> s = Minecraft.getInstance().world.loadedTileEntityList.stream()
+                    .filter(te -> te instanceof ICamouflageableTE && te.getPos().distanceSq(lastPlayerPos) < 144)
                     .map(TileEntity::getPos)
                     .collect(Collectors.toSet());
             camoPositionShower = new AreaShowHandler(s, 0x2080FFFF, 0.75, true);
@@ -150,7 +144,7 @@ public class AreaShowManager {
 
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event) {
-        EntityPlayer player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+        PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
         if (player != null) {
             if (player.world != world) {
                 world = player.world;

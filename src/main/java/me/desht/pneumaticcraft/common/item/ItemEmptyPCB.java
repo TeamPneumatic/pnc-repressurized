@@ -1,96 +1,81 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.fluid.Fluids;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.NonNullList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class ItemEmptyPCB extends ItemNonDespawning {
     public ItemEmptyPCB() {
-        super("empty_pcb");
-        setMaxDamage(100);
-        setNoRepair();
-        setHasSubtypes(true);
+        super(DEFAULT_PROPS.maxDamage(100).setNoRepair(), "empty_pcb");
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-        if (isInCreativeTab(tab)) {
-            ItemStack stack = new ItemStack(this, 1, 0);
-            items.add(stack);
-            items.add(new ItemStack(this, 1, getMaxDamage(stack)));
-        }
-    }
-
-    @Override
-    public void addInformation(ItemStack stack, World player, List<String> infoList, ITooltipFlag par4) {
+    public void addInformation(ItemStack stack, World player, List<ITextComponent> infoList, ITooltipFlag par4) {
         super.addInformation(stack, player, infoList, par4);
-        if (stack.getItemDamage() < 100) {
-            infoList.add(I18n.format("gui.tooltip.item.uvLightBox.successChance", 100 - stack.getItemDamage()));
+        if (stack.getDamage() < 100) {
+            infoList.add(xlate("gui.tooltip.item.uvLightBox.successChance", 100 - stack.getDamage()));
         } else {
-            infoList.add(I18n.format("gui.tooltip.item.uvLightBox.putInLightBox"));
+            infoList.add(xlate("gui.tooltip.item.uvLightBox.putInLightBox"));
         }
-        if (stack.hasTagCompound()) {
-            infoList.add(I18n.format("gui.tooltip.item.uvLightBox.etchProgress",stack.getTagCompound().getInteger("etchProgress")));
-        } else if (stack.getItemDamage() < 100) {
-            infoList.add(I18n.format("gui.tooltip.item.uvLightBox.putInAcid"));
+        if (stack.hasTag()) {
+            infoList.add(xlate("gui.tooltip.item.uvLightBox.etchProgress",stack.getTag().getInt("etchProgress")));
+        } else if (stack.getDamage() < 100) {
+            infoList.add(xlate("gui.tooltip.item.uvLightBox.putInAcid"));
         }
     }
 
     @Override
-    public boolean onEntityItemUpdate(EntityItem entityItem) {
-        super.onEntityItemUpdate(entityItem);
-        ItemStack stack = entityItem.getItem();
-        if (Fluids.areFluidsEqual(FluidRegistry.lookupFluidForBlock(entityItem.world.getBlockState(new BlockPos(entityItem)).getBlock()), Fluids.ETCHING_ACID)) {
-            if (!stack.hasTagCompound()) {
-                stack.setTagCompound(new NBTTagCompound());
+    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entityItem) {
+        super.onEntityItemUpdate(stack, entityItem);
+
+        // todo 1.14 fluids : replace WATER with ETCHING_ACID
+        if (entityItem.world.getFluidState(new BlockPos(entityItem)).isTagged(FluidTags.WATER)) {
+            if (!stack.hasTag()) {
+                stack.setTag(new CompoundNBT());
             }
-            int etchProgress = stack.getTagCompound().getInteger("etchProgress");
+            int etchProgress = stack.getTag().getInt("etchProgress");
             if (etchProgress < 100) {
                 if (entityItem.ticksExisted % (TileEntityConstants.PCB_ETCH_TIME / 5) == 0) {
-                    stack.getTagCompound().setInteger("etchProgress", etchProgress + 1);
+                    stack.getTag().putInt("etchProgress", etchProgress + 1);
                 }
                 World world = entityItem.getEntityWorld();
                 if (world.rand.nextInt(15) == 0) {
                     double x = entityItem.posX + world.rand.nextDouble() * 0.3 - 0.15;
                     double y = entityItem.posY - 0.15;
                     double z = entityItem.posZ + world.rand.nextDouble() * 0.3 - 0.15;
-                    world.spawnParticle(EnumParticleTypes.WATER_WAKE,
-                            x, y, z, 0.0, 0.05, 0.0);
+                    world.addParticle(ParticleTypes.BUBBLE, x, y, z, 0.0, 0.05, 0.0);
                 }
             } else if (!entityItem.world.isRemote) {
                 int successCount = 0;
                 int failedCount = 0;
                 for (int i = 0; i < stack.getCount(); i++) {
-                    if (entityItem.world.rand.nextInt(100) >= stack.getItemDamage()) {
+                    if (entityItem.world.rand.nextInt(100) >= stack.getDamage()) {
                         successCount++;
                     } else {
                         failedCount++;
                     }
                 }
 
-                ItemStack successStack = new ItemStack(successCount == 0 ? Itemss.FAILED_PCB : Itemss.UNASSEMBLED_PCB,
+                ItemStack successStack = new ItemStack(successCount == 0 ? ModItems.FAILED_PCB : ModItems.UNASSEMBLED_PCB,
                         successCount == 0 ? failedCount : successCount);
                 entityItem.setItem(successStack);
 
                 // Only when we have failed items and the existing item entity wasn't reused already for the failed items.
                 if (successCount > 0 && failedCount > 0) {
-                    ItemStack failedStack = new ItemStack(Itemss.FAILED_PCB, failedCount);
-                    entityItem.world.spawnEntity(new EntityItem(entityItem.world, entityItem.posX, entityItem.posY, entityItem.posZ, failedStack));
+                    ItemStack failedStack = new ItemStack(ModItems.FAILED_PCB, failedCount);
+                    entityItem.world.addEntity(new ItemEntity(entityItem.world, entityItem.posX, entityItem.posY, entityItem.posZ, failedStack));
                 }
             }
         }

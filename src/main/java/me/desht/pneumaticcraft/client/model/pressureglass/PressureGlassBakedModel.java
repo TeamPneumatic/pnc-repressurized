@@ -1,36 +1,32 @@
 package me.desht.pneumaticcraft.client.model.pressureglass;
 
-import me.desht.pneumaticcraft.common.block.BlockPressureChamberGlass;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberGlass;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.client.model.data.IDynamicBakedModel;
+import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
-import net.minecraftforge.common.model.IModelState;
-import net.minecraftforge.common.property.IExtendedBlockState;
-import net.minecraftforge.common.property.IUnlistedProperty;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
+import java.util.Random;
 
-public class PressureGlassBakedModel implements IBakedModel {
+public class PressureGlassBakedModel implements IDynamicBakedModel {
     public static final int TEXTURE_COUNT = 47;
     public static final TextureAtlasSprite[] SPRITES = new TextureAtlasSprite[TEXTURE_COUNT];
     public static final ModelResourceLocation BAKED_MODEL = new ModelResourceLocation(Names.MOD_ID + ":pressure_chamber_glass");
     private final VertexFormat format;
 
-    public PressureGlassBakedModel(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+    PressureGlassBakedModel(VertexFormat format) {
         this.format = format;
     }
 
@@ -60,7 +56,7 @@ public class PressureGlassBakedModel implements IBakedModel {
         }
     }
 
-    private BakedQuad createQuad(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, TextureAtlasSprite sprite, EnumFacing face) {
+    private BakedQuad createQuad(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, TextureAtlasSprite sprite, Direction face) {
         Vec3d normal = new Vec3d(face.getDirectionVec());//v3.subtract(v2).crossProduct(v1.subtract(v2)).normalize();
 
         UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);
@@ -74,58 +70,51 @@ public class PressureGlassBakedModel implements IBakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
-        if (!(state instanceof IExtendedBlockState) || side == null) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData data) {
+        if (side == null) {
             return Collections.emptyList();
         }
-
-        IExtendedBlockState extendedBlockState = (IExtendedBlockState) state;
 
         List<BakedQuad> quads = new ArrayList<>();
         switch (side) {
             case DOWN:
-                int down = getSprite(extendedBlockState, BlockPressureChamberGlass.DOWN);
+                int down = data.getData(TileEntityPressureChamberGlass.DOWN);
                 quads.add(createQuad(
                         new Vec3d(1, 0, 0), new Vec3d(1, 0, 1),
                         new Vec3d(0, 0, 1), new Vec3d(0, 0, 0), SPRITES[down], side));
                 break;
             case UP:
-                int up = getSprite(extendedBlockState, BlockPressureChamberGlass.UP);
+                int up = data.getData(TileEntityPressureChamberGlass.UP);
                 quads.add(createQuad(
                         new Vec3d(0, 1, 0), new Vec3d(0, 1, 1),
                         new Vec3d(1, 1, 1), new Vec3d(1, 1, 0), SPRITES[up], side));
                 break;
             case NORTH:
-                int north = getSprite(extendedBlockState, BlockPressureChamberGlass.NORTH);
+                int north = data.getData(TileEntityPressureChamberGlass.NORTH);
                 quads.add(createQuad(
                         new Vec3d(1, 1, 0), new Vec3d(1, 0, 0),
                         new Vec3d(0, 0, 0), new Vec3d(0, 1, 0), SPRITES[north], side));
                 break;
             case SOUTH:
-                int south = getSprite(extendedBlockState, BlockPressureChamberGlass.SOUTH);
+                int south = data.getData(TileEntityPressureChamberGlass.SOUTH);
                 quads.add(createQuad(
                         new Vec3d(0, 1, 1), new Vec3d(0, 0, 1),
                         new Vec3d(1, 0, 1), new Vec3d(1, 1, 1), SPRITES[south], side));
                 break;
             case WEST:
-                int west = getSprite(extendedBlockState, BlockPressureChamberGlass.WEST);
+                int west = data.getData(TileEntityPressureChamberGlass.WEST);
                 quads.add(createQuad(
                         new Vec3d(0, 1, 0), new Vec3d(0, 0, 0),
                         new Vec3d(0, 0, 1), new Vec3d(0, 1, 1), SPRITES[west], side));
                 break;
             case EAST:
-                int east = getSprite(extendedBlockState, BlockPressureChamberGlass.EAST);
+                int east = data.getData(TileEntityPressureChamberGlass.EAST);
                 quads.add(createQuad(
                         new Vec3d(1, 1, 1), new Vec3d(1, 0, 1),
                         new Vec3d(1, 0, 0), new Vec3d(1, 1, 0), SPRITES[east], side));
                 break;
         }
         return quads;
-    }
-
-    private int getSprite(IExtendedBlockState state, IUnlistedProperty<Integer> prop) {
-        Optional<?> op = state.getUnlistedProperties().get(prop);
-        return op != null && op.isPresent() ? prop.getType().cast(op.get()) : 0;
     }
 
     @Override
@@ -150,6 +139,6 @@ public class PressureGlassBakedModel implements IBakedModel {
 
     @Override
     public ItemOverrideList getOverrides() {
-        return ItemOverrideList.NONE;
+        return ItemOverrideList.EMPTY;
     }
 }

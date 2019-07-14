@@ -1,31 +1,25 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockAerialInterface extends BlockPneumaticCraft {
-    BlockAerialInterface() {
+    public BlockAerialInterface() {
         super(Material.IRON, "aerial_interface");
     }
 
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return TileEntityAerialInterface.class;
-    }
-
-    @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.AERIAL_INTERFACE;
     }
 
     @Override
@@ -39,21 +33,21 @@ public class BlockAerialInterface extends BlockPneumaticCraft {
     }
 
     @Override
-    public void onBlockPlacedBy(World par1World, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack par6ItemStack) {
+    public void onBlockPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity entity, ItemStack par6ItemStack) {
         TileEntity te = par1World.getTileEntity(pos);
-        if (te instanceof TileEntityAerialInterface && entity instanceof EntityPlayer) {
-            ((TileEntityAerialInterface) te).setPlayer(((EntityPlayer) entity));
+        if (te instanceof TileEntityAerialInterface && entity instanceof PlayerEntity) {
+            ((TileEntityAerialInterface) te).setPlayer(((PlayerEntity) entity));
         }
         super.onBlockPlacedBy(par1World, pos, state, entity, par6ItemStack);
     }
 
     @Override
-    public boolean canProvidePower(IBlockState state) {
+    public boolean canProvidePower(BlockState state) {
         return true;
     }
 
     @Override
-    public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         TileEntity te = blockAccess.getTileEntity(pos);
         if (te instanceof TileEntityAerialInterface) {
             return ((TileEntityAerialInterface)te ).shouldEmitRedstone() ? 15 : 0;

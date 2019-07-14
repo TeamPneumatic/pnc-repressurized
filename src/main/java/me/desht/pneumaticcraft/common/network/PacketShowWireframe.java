@@ -1,16 +1,16 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketShowWireframe extends LocationIntPacket<PacketShowWireframe> {
+import java.util.function.Supplier;
+
+public class PacketShowWireframe extends LocationIntPacket {
 
     private int entityId;
 
@@ -22,35 +22,24 @@ public class PacketShowWireframe extends LocationIntPacket<PacketShowWireframe> 
         entityId = entity.getEntityId();
     }
 
+    public PacketShowWireframe(PacketBuffer buffer) {
+        super(buffer);
+        entityId = buffer.readInt();
+    }
+
     @Override
     public void toBytes(ByteBuf buffer) {
         super.toBytes(buffer);
         buffer.writeInt(entityId);
     }
 
-    @Override
-    public void fromBytes(ByteBuf buffer) {
-        super.fromBytes(buffer);
-        entityId = buffer.readInt();
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            Entity ent = ctx.get().getSender().world.getEntityByID(entityId);
+            if (ent instanceof EntityDrone) {
+                ClientUtils.addDroneToHudHandler((EntityDrone) ent, pos);
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
-    @Override
-    public void handleClientSide(PacketShowWireframe message, EntityPlayer player) {
-        Entity ent = player.world.getEntityByID(message.entityId);
-        if (ent instanceof EntityDrone) {
-            addToHudHandler((EntityDrone) ent, message.pos);
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void addToHudHandler(EntityDrone drone, BlockPos pos) {
-        HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
-                .filter(target -> target.entity == drone)
-                .forEach(target -> target.getDroneAIRenderer().addBlackListEntry(drone.world, pos));
-    }
-
-    @Override
-    public void handleServerSide(PacketShowWireframe message, EntityPlayer player) {
-    }
-
 }

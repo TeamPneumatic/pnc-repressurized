@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "pneumaticcraft:compressed_iron_block"
+    "model": "pneumaticcraft:block/compressed_iron_block"
   },
   "variants":{
     "normal": [{}],

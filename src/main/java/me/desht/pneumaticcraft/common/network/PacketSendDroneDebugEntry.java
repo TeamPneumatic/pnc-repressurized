@@ -1,12 +1,20 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.entity.living.DebugEntry;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketSendDroneDebugEntry extends AbstractPacket<PacketSendDroneDebugEntry> {
+import java.util.function.Supplier;
+
+/**
+ * Received on: CLIENT
+ * Sent by server to add a debug message to a debugged drone.
+ */
+public class PacketSendDroneDebugEntry {
     private DebugEntry entry;
     private int entityId;
 
@@ -18,30 +26,24 @@ public class PacketSendDroneDebugEntry extends AbstractPacket<PacketSendDroneDeb
         entityId = drone.getEntityId();
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        entry = new DebugEntry(buf);
-        entityId = buf.readInt();
+    public PacketSendDroneDebugEntry(PacketBuffer buffer) {
+        entry = new DebugEntry(buffer);
+        entityId = buffer.readInt();
     }
 
-    @Override
     public void toBytes(ByteBuf buf) {
         entry.toBytes(buf);
         buf.writeInt(entityId);
     }
 
-    @Override
-    public void handleClientSide(PacketSendDroneDebugEntry message, EntityPlayer player) {
-        Entity entity = player.world.getEntityByID(message.entityId);
-        if (entity instanceof EntityDrone) {
-            EntityDrone drone = (EntityDrone) entity;
-            drone.addDebugEntry(message.entry);
-        }
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            Entity entity = PneumaticCraftRepressurized.proxy.getClientWorld().getEntityByID(entityId);
+            if (entity instanceof EntityDrone) {
+                EntityDrone drone = (EntityDrone) entity;
+                drone.addDebugEntry(entry);
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
-    @Override
-    public void handleServerSide(PacketSendDroneDebugEntry message, EntityPlayer player) {
-
-    }
-
 }

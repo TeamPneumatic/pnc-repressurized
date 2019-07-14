@@ -1,9 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
 import mcp.mobius.waila.api.IWailaRegistrar;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;

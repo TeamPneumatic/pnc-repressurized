@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.List;
@@ -29,8 +29,8 @@ public class RenderThermopneumaticProcessingPlant extends FastFluidTESR<TileEnti
     @Override
     List<TankRenderInfo> getTanksToRender(TileEntityThermopneumaticProcessingPlant te) {
         return ImmutableList.of(
-                new TankRenderInfo(te.getInputTank(), BOUNDS_IN[te.getRotation().getHorizontalIndex()]).without(EnumFacing.DOWN),
-                new TankRenderInfo(te.getOutputTank(), BOUNDS_OUT[te.getRotation().getHorizontalIndex()]).without(EnumFacing.DOWN)
+                new TankRenderInfo(te.getInputTank(), BOUNDS_IN[te.getRotation().getHorizontalIndex()]).without(Direction.DOWN),
+                new TankRenderInfo(te.getOutputTank(), BOUNDS_OUT[te.getRotation().getHorizontalIndex()]).without(Direction.DOWN)
         );
     }
 }

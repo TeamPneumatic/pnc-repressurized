@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.client;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.ItemMeshDefinition;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
+import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 
@@ -22,7 +22,7 @@ public class FluidStateMapper extends StateMapperBase implements ItemMeshDefinit
     }
 
     @Override
-    protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
+    protected ModelResourceLocation getModelResourceLocation(BlockState state) {
         return location;
     }
 }

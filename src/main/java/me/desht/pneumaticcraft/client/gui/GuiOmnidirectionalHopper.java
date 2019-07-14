@@ -1,66 +1,70 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.common.block.Blockss;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.item.Items;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
-public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<TileEntityOmnidirectionalHopper> {
+public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<ContainerOmnidirectionalHopper,TileEntityOmnidirectionalHopper> {
     private GuiAnimatedStat statusStat;
     private final GuiButtonSpecial[] modeButtons = new GuiButtonSpecial[2];
 
-    public GuiOmnidirectionalHopper(InventoryPlayer player, TileEntityOmnidirectionalHopper te) {
-
-        super(new ContainerOmnidirectionalHopper(player, te), te, Textures.GUI_OMNIDIRECTIONAL_HOPPER);
+    public GuiOmnidirectionalHopper(ContainerOmnidirectionalHopper container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(Blockss.OMNIDIRECTIONAL_HOPPER), 0xFFFFAA00, false);
+    public void init() {
+        super.init();
+        statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER), 0xFFFFAA00, false);
 
         GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.addPadding(4, 14);
 
-        GuiButtonSpecial button = new GuiButtonSpecial(1, 5, 20, 20, 20, "");
+        GuiButtonSpecial button = new GuiButtonSpecial(5, 20, 20, 20, "").withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(I18n.format("gui.tab.omnidirectionalHopper.mode.empty"));
-        optionStat.addWidget(button);
+        optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new GuiButtonSpecial(2, 30, 20, 20, 20, "");
+        button = new GuiButtonSpecial(30, 20, 20, 20, "").withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(I18n.format("gui.tab.omnidirectionalHopper.mode.leaveItem"));
-        optionStat.addWidget(button);
+        optionStat.addSubWidget(button);
         modeButtons[1] = button;
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        fontRenderer.drawString("Upgr.", 28, 19, 4210752);
+        font.drawString("Upgr.", 28, 19, 4210752);
     }
 
     @Override
-    public void updateScreen() {
-        super.updateScreen();
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_OMNIDIRECTIONAL_HOPPER;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
         statusStat.setText(getStatus());
-        modeButtons[0].enabled = te.doesLeaveMaterial();
-        modeButtons[1].enabled = !te.doesLeaveMaterial();
+        modeButtons[0].active = te.doesLeaveMaterial();
+        modeButtons[1].active = !te.doesLeaveMaterial();
     }
 
     private List<String> getStatus() {
@@ -77,7 +81,7 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<TileEnti
 
     @Override
     protected void addExtraUpgradeText(List<String> text) {
-        if (ConfigHandler.machineProperties.omniHopperDispenser) {
+        if (Config.Common.Machines.omniHopperDispenser) {
             text.add("gui.tab.upgrades.tile.omnidirectional_hopper.dispenser");
         }
         text.add("gui.tab.upgrades.creative");

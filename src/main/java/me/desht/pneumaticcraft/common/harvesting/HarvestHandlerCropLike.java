@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.harvesting;
 
-import net.minecraft.block.properties.PropertyInteger;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.IntegerProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -10,11 +10,11 @@ import java.util.function.Predicate;
 
 public class HarvestHandlerCropLike extends HarvestHandlerAbstractCrop{
 
-    private final PropertyInteger ageProperty;
+    private final IntegerProperty ageProperty;
     private final int minAge, maxAge;
     private final Predicate<ItemStack> isSeed;
     
-    public HarvestHandlerCropLike(Predicate<IBlockState> blockChecker, PropertyInteger ageProperty, Predicate<ItemStack> isSeed){
+    public HarvestHandlerCropLike(Predicate<BlockState> blockChecker, IntegerProperty ageProperty, Predicate<ItemStack> isSeed){
         super(blockChecker);
         this.ageProperty = ageProperty;
         this.isSeed = isSeed;
@@ -23,17 +23,17 @@ public class HarvestHandlerCropLike extends HarvestHandlerAbstractCrop{
     }
     
     @Override
-    protected boolean isSeed(World world, BlockPos pos, IBlockState state, ItemStack stack){
+    protected boolean isSeed(World world, BlockPos pos, BlockState state, ItemStack stack){
         return isSeed.test(stack);
     }
     
     @Override
-    protected boolean isMaxAge(IBlockState state){
-        return state.getValue(ageProperty) == maxAge;
+    protected boolean isMaxAge(BlockState state){
+        return state.get(ageProperty) == maxAge;
     }
     
     @Override
-    protected IBlockState withMinAge(IBlockState state){
-        return state.withProperty(ageProperty, minAge);
+    protected BlockState withMinAge(BlockState state){
+        return state.with(ageProperty, minAge);
     }
 }

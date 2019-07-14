@@ -1,27 +1,22 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.model.module.ModelAirGrate;
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
+import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.*;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -38,8 +33,8 @@ public class ModuleAirGrate extends TubeModule {
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x5500FF00);
     private boolean resetRendering = true;
     private EntityFilter entityFilter = null;
-    private TileEntity adjacentInv = null;
-    private EnumFacing adjacentInvSide;
+    private TileEntity adjacentInsertionTE = null;
+    private Direction adjacentInsertionSide;
 
     public ModuleAirGrate() {
     }
@@ -90,33 +85,30 @@ public class ModuleAirGrate extends TubeModule {
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, entityFilter);
         double d0 = grateRange + 0.5D;
         for (Entity entity : entities) {
-            if (!entity.world.isRemote && entity instanceof EntityItem && !entity.isDead
+            if (!entity.world.isRemote && entity instanceof ItemEntity && entity.isAlive()
                     && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 1D) {
-                tryItemInsertion((EntityItem) entity);
-            } else if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.isCreativeMode) {
+                tryItemInsertion((ItemEntity) entity);
+            } else if (!(entity instanceof PlayerEntity) || !((PlayerEntity) entity).isCreative()) {
                 Vec3d entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
-                RayTraceResult trace = world.rayTraceBlocks(entityVec, tileVec, false, true, false);
-                if (trace != null && trace.getBlockPos().equals(pos)) {
-                    double d1 = (entity.posX - pos.getX() - 0.5D) / d0;
-                    double d2 = (entity.posY + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
-                    d2 -= 0.08;  // kludge: avoid entities getting stuck on edges, e.g. farmland->full block
-                    double d3 = (entity.posZ - pos.getZ() - 0.5D) / d0;
-                    double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
+                RayTraceContext ctx = new RayTraceContext(entityVec, tileVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
+                BlockRayTraceResult trace = world.rayTraceBlocks(ctx);
+                if (trace != null && trace.getPos().equals(pos)) {
+                    double x = (entity.posX - pos.getX() - 0.5D) / d0;
+                    double y = (entity.posY + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
+                    y -= 0.08;  // kludge: avoid entities getting stuck on edges, e.g. farmland->full block
+                    double z = (entity.posZ - pos.getZ() - 0.5D) / d0;
+                    double d4 = Math.sqrt(x * x + y * y + z * z);
                     double d5 = 1.0D - d4;
 
                     if (d5 > 0.0D) {
                         d5 *= d5;
                         if (!vacuum) d5 *= -1;
-                        entity.motionX -= d1 / d4 * d5 * 0.1D;
-                        entity.motionY -= d2 / d4 * d5 * 0.1D;
-                        entity.motionZ -= d3 / d4 * d5 * 0.1D;
+                        entity.setMotion(x / d4 * d5 * 0.1, y / d4 * d5 * 0.1, z / d4 * d5 * 0.1);
                         if (world.isRemote && world.rand.nextDouble() * 0.85 > d4) {
                             if (vacuum) {
-                                PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, world,
-                                        entity.posX, entity.posY, entity.posZ, -d1, -d2, -d3);
+                                world.addParticle(AirParticleData.DENSE, entity.posX, entity.posY, entity.posZ, -x, -y, -z);
                             } else {
-                                PneumaticCraftRepressurized.proxy.playCustomParticle(EnumCustomParticleType.AIR_PARTICLE_DENSE, world,
-                                        pos.getX() + 0.5 + d1, pos.getY() + 0.5 + d2, pos.getZ() + 0.5 + d3, d1, d2, d3);
+                                world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5 + x, pos.getY() + 0.5 + y, pos.getZ() + 0.5 + z, x, y, z);
                             }
                         }
                     }
@@ -125,12 +117,12 @@ public class ModuleAirGrate extends TubeModule {
         }
     }
 
-    private void tryItemInsertion(EntityItem entity) {
+    private void tryItemInsertion(ItemEntity entity) {
         if (getAdjacentInventory() != null) {
             ItemStack stack = entity.getItem();
-            ItemStack excess = IOHelper.insert(getAdjacentInventory(), stack, adjacentInvSide, false);
+            ItemStack excess = IOHelper.insert(getAdjacentInventory(), stack, adjacentInsertionSide, false);
             if (excess.isEmpty()) {
-                entity.setDead();
+                entity.remove();
             } else {
                 entity.setItem(excess);
             }
@@ -138,25 +130,25 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     private TileEntity getAdjacentInventory() {
-        if (adjacentInv != null && !adjacentInv.isInvalid()) {
-            return adjacentInv;
+        if (adjacentInsertionTE != null && !adjacentInsertionTE.isRemoved()) {
+            return adjacentInsertionTE;
         }
 
-        adjacentInv = null;
-        for (EnumFacing dir : EnumFacing.VALUES) {
+        adjacentInsertionTE = null;
+        for (Direction dir : Direction.VALUES) {
             TileEntity inv = pressureTube.world().getTileEntity(pressureTube.pos().offset(dir));
-            if (inv != null && inv.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite())) {
-                adjacentInv = inv;
-                adjacentInvSide = dir.getOpposite();
+            if (inv != null && inv.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).isPresent()) {
+                adjacentInsertionTE = inv;
+                adjacentInsertionSide = dir.getOpposite();
                 break;
             }
         }
-        return adjacentInv;
+        return adjacentInsertionTE;
     }
 
     private void coolHeatSinks() {
         if (grateRange > 2) {
-            int curTeIndex = (int) (pressureTube.world().getTotalWorldTime() % 27);
+            int curTeIndex = (int) (pressureTube.world().getGameTime() % 27);
             BlockPos curPos = pressureTube.pos().offset(dir, 2).add(-1 + curTeIndex % 3, -1 + curTeIndex / 3 % 3, -1 + curTeIndex / 9 % 3);
             TileEntity te = pressureTube.world().getTileEntity(curPos);
             if (te instanceof TileEntityHeatSink) heatSinks.add((TileEntityHeatSink) te);
@@ -164,7 +156,7 @@ public class ModuleAirGrate extends TubeModule {
             Iterator<TileEntityHeatSink> iterator = heatSinks.iterator();
             while (iterator.hasNext()) {
                 TileEntityHeatSink heatSink = iterator.next();
-                if (heatSink.isInvalid()) {
+                if (heatSink.isRemoved()) {
                     iterator.remove();
                 } else {
                     for (int i = 0; i < 4; i++)
@@ -175,20 +167,20 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         vacuum = tag.getBoolean("vacuum");
-        grateRange = tag.getInteger("grateRange");
+        grateRange = tag.getInt("grateRange");
         String f = tag.getString("entityFilter");
         entityFilter = f.isEmpty() ? null : EntityFilter.fromString(f);
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.setBoolean("vacuum", vacuum);
-        tag.setInteger("grateRange", grateRange);
-        tag.setString("entityFilter", entityFilter == null ? "" : entityFilter.toString());
+        tag.putBoolean("vacuum", vacuum);
+        tag.putInt("grateRange", grateRange);
+        tag.putString("entityFilter", entityFilter == null ? "" : entityFilter.toString());
     }
 
     @Override
@@ -206,8 +198,8 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     @Override
-    protected EnumGuiId getGuiId() {
-        return EnumGuiId.AIR_GRATE_MODULE;
+    public boolean hasGui() {
+        return true;
     }
 
     @Override

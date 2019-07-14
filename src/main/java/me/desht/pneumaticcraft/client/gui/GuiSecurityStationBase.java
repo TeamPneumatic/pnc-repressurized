@@ -1,23 +1,25 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.util.text.ITextComponent;
 
-public class GuiSecurityStationBase extends GuiPneumaticContainerBase<TileEntitySecurityStation> {
+public abstract class GuiSecurityStationBase<C extends ContainerPneumaticBase<TileEntitySecurityStation>> extends GuiPneumaticContainerBase<C,TileEntitySecurityStation> {
 
-    public GuiSecurityStationBase(Container par1Container, TileEntitySecurityStation te, String guiTexture) {
-        super(par1Container, te, guiTexture);
+    GuiSecurityStationBase(C container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
     }
 
     /**
      * Returns the slot at the given coordinates or null if there is none.
      */
-    public Slot getSlotAtPosition(int par1, int par2) {
-        for (int k = 0; k < inventorySlots.inventorySlots.size(); ++k) {
-            Slot slot = inventorySlots.inventorySlots.get(k);
+    public Slot getSlotAtPosition(int x, int y) {
+        for (int k = 0; k < container.inventorySlots.size(); ++k) {
+            Slot slot = container.inventorySlots.get(k);
 
-            if (isMouseOverSlot(slot, par1, par2)) {
+            if (isMouseOverSlot(slot, x, y)) {
                 return slot;
             }
         }
@@ -25,10 +27,7 @@ public class GuiSecurityStationBase extends GuiPneumaticContainerBase<TileEntity
         return null;
     }
 
-    /**
-     * Returns if the passed mouse position is over the specified slot.
-     */
-    protected boolean isMouseOverSlot(Slot par1Slot, int par2, int par3) {
-        return isPointInRegion(par1Slot.xPos, par1Slot.yPos, 16, 16, par2, par3);
+    private boolean isMouseOverSlot(Slot slot, int x, int y) {
+        return isPointInRegion(slot.xPos, slot.yPos, 16, 16, x, y);
     }
 }

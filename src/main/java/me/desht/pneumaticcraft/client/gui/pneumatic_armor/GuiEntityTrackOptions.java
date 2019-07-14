@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IGuiScreen;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IOptionPage;
-import me.desht.pneumaticcraft.client.gui.GuiButtonSpecial;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -15,18 +15,17 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 public class GuiEntityTrackOptions implements IOptionPage {
 
     private final EntityTrackUpgradeHandler renderHandler;
-    private GuiTextField textField;
+    private TextFieldWidget textField;
     private GuiButtonSpecial warningButton;
     private int sendTimer = 0;
 
@@ -41,61 +40,64 @@ public class GuiEntityTrackOptions implements IOptionPage {
 
     @Override
     public void initGui(IGuiScreen gui) {
-        gui.getButtonList().add(new GuiButton(10, 30, 128, 150, 20, "Move Stat Screen..."));
+        gui.getWidgetList().add(new GuiButtonSpecial(30, 128, 150, 20, "Move Stat Screen...", b -> {
+            Minecraft.getInstance().player.closeScreen();
+            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.ENTITY_TRACKER));
+        }));
 
-        textField = new GuiTextField(-1, gui.getFontRenderer(), 35, 60, 140, 10);
-        textField.setFocused(true);
-        if (PneumaticCraftRepressurized.proxy.getClientPlayer() != null) {
-            textField.setText(ItemPneumaticArmor.getEntityFilter(PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EntityEquipmentSlot.HEAD)));
+        textField = new TextFieldWidget(gui.getFontRenderer(), 35, 60, 140, 10, "");
+        textField.setFocused2(true);
+        if (Minecraft.getInstance().player != null) {
+            textField.setText(ItemPneumaticArmor.getEntityFilter(Minecraft.getInstance().player.getItemStackFromSlot(EquipmentSlotType.HEAD)));
         }
+        textField.func_212954_a(s -> {
+            if (validateEntityFilter(textField.getText())) {
+                sendTimer = 5;
+            }
+        });
 
-        warningButton = new GuiButtonSpecial(1, 175, 57, 20, 20, "");
+        warningButton = new GuiButtonSpecial(175, 57, 20, 20, "");
         warningButton.setVisible(false);
         warningButton.visible = false;
         warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
-        gui.getButtonList().add(warningButton);
+        gui.getWidgetList().add(warningButton);
 
         validateEntityFilter(textField.getText());
     }
 
-    @Override
-    public void actionPerformed(GuiButton button) {
-        if (button.id == 10) {
-            Minecraft.getMinecraft().player.closeScreen();
-            Minecraft.getMinecraft().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.ENTITY_TRACKER));
-        }
+    public void renderPre(int x, int y, float partialTicks) {
     }
 
-    @Override
-    public void drawPreButtons(int x, int y, float partialTicks) {
-    }
-
-    @Override
-    public void drawScreen(int x, int y, float partialTicks) {
-        textField.drawTextBox();
-        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+    public void renderPost(int x, int y, float partialTicks) {
+        textField.render(x, y, partialTicks);
+        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         fontRenderer.drawString(I18n.format("gui.entityFilter"), 35, 50, 0xFFFFFFFF);
-        if (Keyboard.isKeyDown(Keyboard.KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(Minecraft.getMinecraft().currentScreen, fontRenderer,
+        if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
+            GuiUtils.showPopupHelpScreen(Minecraft.getInstance().currentScreen, fontRenderer,
                     PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
         }
     }
 
     @Override
-    public void keyTyped(char ch, int key) {
-        if (textField != null && textField.isFocused() && key != 1) {
-            textField.textboxKeyTyped(ch, key);
-            if (validateEntityFilter(textField.getText())) {
-                sendTimer = 5;
-            }
-        }
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseClicked(double x, double y, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double x, double y, double dir) {
+        return false;
     }
 
     private boolean validateEntityFilter(String filter) {
         try {
             warningButton.visible = false;
             warningButton.setTooltipText("");
-            EntityFilter f = new EntityFilter(filter);  // syntax check
+            new EntityFilter(filter);  // syntax check
             return true;
         } catch (Exception e) {
             warningButton.visible = true;
@@ -104,21 +106,12 @@ public class GuiEntityTrackOptions implements IOptionPage {
         }
     }
 
-    @Override
-    public void updateScreen() {
+    public void tick() {
         if (sendTimer > 0 && --sendTimer == 0) {
-            NBTTagCompound tag = new NBTTagCompound();
-            tag.setString(ItemPneumaticArmor.NBT_ENTITY_FILTER, textField.getText());
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EntityEquipmentSlot.HEAD, tag));
+            CompoundNBT tag = new CompoundNBT();
+            tag.putString(ItemPneumaticArmor.NBT_ENTITY_FILTER, textField.getText());
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.HEAD, tag));
         }
-    }
-
-    @Override
-    public void mouseClicked(int x, int y, int button) {
-    }
-
-    @Override
-    public void handleMouseInput() {
     }
 
     @Override
@@ -126,8 +119,7 @@ public class GuiEntityTrackOptions implements IOptionPage {
         return true;
     }
 
-    @Override
-    public boolean displaySettingsText() {
+    public boolean displaySettingsHeader() {
         return true;
     }
 }

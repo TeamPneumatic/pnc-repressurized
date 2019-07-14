@@ -1,39 +1,39 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetItemFilter;
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Set;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget {
     private ItemStack filter = ItemStack.EMPTY;
-    public boolean useMetadata = true, useNBT, useOreDict, useModSimilarity, matchBlock;
-    public int specificMeta;
+    public boolean useItemDamage = true, useNBT, useItemTags, useModSimilarity, matchBlock;
     private DroneAIManager aiManager;
     private String variable = "";
 
-    @SideOnly(Side.CLIENT)
-    private static RenderItem itemRender;
+    @OnlyIn(Dist.CLIENT)
+    private static ItemRenderer itemRender;
     
     public static ProgWidgetItemFilter withFilter(ItemStack filter){
         ProgWidgetItemFilter widget = new ProgWidgetItemFilter();
@@ -42,13 +42,13 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (variable.equals("") && filter == null) {
-            curInfo.add("gui.progWidget.itemFilter.error.noFilter");
+            curInfo.add(xlate("gui.progWidget.itemFilter.error.noFilter"));
         }
-        if (matchBlock && !(filter.getItem() instanceof ItemBlock)) {
-            curInfo.add("gui.progWidget.itemFilter.error.notBlock");
+        if (matchBlock && !(filter.getItem() instanceof BlockItem)) {
+            curInfo.add(xlate("gui.progWidget.itemFilter.error.notBlock"));
         }
     }
 
@@ -80,9 +80,9 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     public static void drawItemStack(@Nonnull ItemStack stack, int x, int y, String text) {
         RenderHelper.enableGUIStandardItemLighting();
         GlStateManager.pushMatrix();
-        Minecraft mc = Minecraft.getMinecraft();
-        GlStateManager.translate(0.0F, 0.0F, 32.0F);
-        if (itemRender == null) itemRender = Minecraft.getMinecraft().getRenderItem();
+        Minecraft mc = Minecraft.getInstance();
+        GlStateManager.translated(0.0F, 0.0F, 32.0F);
+        if (itemRender == null) itemRender = Minecraft.getInstance().getItemRenderer();
         itemRender.zLevel = 200.0F;
         FontRenderer font = null;
         if (!stack.isEmpty()) font = stack.getItem().getFontRenderer(stack);
@@ -95,20 +95,20 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void getTooltip(List<String> curTooltip) {
+    public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         if (!filter.isEmpty()) {
-            curTooltip.add(TextFormatting.AQUA + "Filter: " + TextFormatting.RESET + filter.getDisplayName());
-            if (useOreDict) {
-                curTooltip.add(TextFormatting.DARK_AQUA + "- Using Ore Dictionary");
+            curTooltip.add(new StringTextComponent("Filter: ").applyTextStyle(TextFormatting.AQUA).appendSibling(filter.getDisplayName()));
+            if (useItemTags) {
+                curTooltip.add(new StringTextComponent("- Using Item Tag Similarity").applyTextStyle(TextFormatting.DARK_AQUA));
             } else if (useModSimilarity) {
-                curTooltip.add(TextFormatting.DARK_AQUA + "- Using Mod similarity");
+                curTooltip.add(new StringTextComponent("- Using Mod Similarity").applyTextStyle(TextFormatting.DARK_AQUA));
             } else {
-                curTooltip.add(TextFormatting.DARK_AQUA + "- " + (useMetadata ? "Using" : "Ignoring") + " meta");
+                curTooltip.add(new StringTextComponent((useItemDamage ? "Using" : "Ignoring") + " item damage").applyTextStyle(TextFormatting.DARK_AQUA));
                 if (matchBlock) {
-                    curTooltip.add(TextFormatting.DARK_AQUA + "- Matching by block");
+                    curTooltip.add(new StringTextComponent("- Matching by block").applyTextStyle(TextFormatting.DARK_AQUA));
                 } else {
-                    curTooltip.add(TextFormatting.DARK_AQUA + "- " + (useNBT ? "Using" : "Ignoring") + " NBT");
+                    curTooltip.add(new StringTextComponent(useNBT ? "Using NBT" : "Ignoring NBT").applyTextStyle(TextFormatting.DARK_AQUA));
                 }
             }
         }
@@ -140,40 +140,32 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         if (filter != null) {
-            filter.writeToNBT(tag);
+            filter.write(tag);
         }
-        tag.setBoolean("useMetadata", useMetadata);
-        tag.setBoolean("useNBT", useNBT);
-        tag.setBoolean("useOreDict", useOreDict);
-        tag.setBoolean("useModSimilarity", useModSimilarity);
-        tag.setBoolean("matchBlock", matchBlock);
-        tag.setInteger("specificMeta", specificMeta);
-        tag.setString("variable", variable);
+        tag.putBoolean("useMetadata", useItemDamage);
+        tag.putBoolean("useNBT", useNBT);
+        tag.putBoolean("useOreDict", useItemTags);
+        tag.putBoolean("useModSimilarity", useModSimilarity);
+        tag.putBoolean("matchBlock", matchBlock);
+        tag.putString("variable", variable);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        filter = new ItemStack(tag);
-        useMetadata = tag.getBoolean("useMetadata");
+        filter = ItemStack.read(tag);
+        useItemDamage = tag.getBoolean("useMetadata");
         useNBT = tag.getBoolean("useNBT");
-        useOreDict = tag.getBoolean("useOreDict");
+        useItemTags = tag.getBoolean("useOreDict");
         useModSimilarity = tag.getBoolean("useModSimilarity");
         matchBlock = tag.getBoolean("matchBlock");
-        specificMeta = tag.getInteger("specificMeta");
         variable = tag.getString("variable");
     }
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public GuiScreen getOptionWindow(GuiProgrammer guiProgrammer) {
-        return new GuiProgWidgetItemFilter(this, guiProgrammer);
-    }
-
-    public static boolean isItemValidForFilters(ItemStack item, List<ProgWidgetItemFilter> whitelist, List<ProgWidgetItemFilter> blacklist, IBlockState blockState) {
+    public static boolean isItemValidForFilters(ItemStack item, List<ProgWidgetItemFilter> whitelist, List<ProgWidgetItemFilter> blacklist, BlockState blockState) {
         if (blacklist != null) {
             for (ProgWidgetItemFilter black : blacklist) {
                 if (matchFilter(item, blockState, black)) return false;
@@ -189,15 +181,14 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         }
     }
 
-    private static boolean matchFilter(ItemStack stack, IBlockState blockState, ProgWidgetItemFilter filter) {
-        if (filter.matchBlock && stack.isEmpty() && blockState != null && filter.getFilter().getItem() instanceof ItemBlock) {
+    private static boolean matchFilter(ItemStack stack, BlockState blockState, ProgWidgetItemFilter filter) {
+        if (filter.matchBlock && stack.isEmpty() && blockState != null && filter.getFilter().getItem() instanceof BlockItem) {
             // match by block
-            return blockState.getBlock() == ((ItemBlock) filter.getFilter().getItem()).getBlock()
-                    && (!filter.useMetadata || filter.specificMeta == blockState.getBlock().getMetaFromState(blockState));
+            return blockState.getBlock() == ((BlockItem) filter.getFilter().getItem()).getBlock();
         } else {
             // match by item
-            if (PneumaticCraftUtils.areStacksEqual(filter.getFilter(), stack, filter.useMetadata && blockState == null, filter.useNBT, filter.useOreDict, filter.useModSimilarity)) {
-                return blockState == null || !filter.useMetadata || filter.specificMeta == blockState.getBlock().getMetaFromState(blockState);
+            if (PneumaticCraftUtils.areStacksEqual(filter.getFilter(), stack, filter.useItemDamage && blockState == null, filter.useNBT, filter.useItemTags, filter.useModSimilarity)) {
+                return blockState == null || !filter.useItemDamage;
             }
         }
         return false;
@@ -209,8 +200,8 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return ItemPlastic.GREY;
+    public DyeColor getColor() {
+        return DyeColor.GRAY;
     }
 
     @Override

@@ -3,7 +3,7 @@
     "defaults": {
         "textures": {},
         "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:thermopneumatic_processing_plant.obj"
+        "model": "pneumaticcraft:block/thermopneumatic_processing_plant.obj"
     },
 	"variants": {
 		"facing": {

@@ -3,8 +3,9 @@ package me.desht.pneumaticcraft.common.util;
 import com.google.common.collect.Lists;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -50,14 +51,11 @@ public class IOHelper {
         UP_TO
     }
 
-    public static IItemHandler getInventoryForTE(TileEntity te, EnumFacing facing) {
-        if (te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing)) {
-            return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
-        } else {
-            return null;
-        }
+    public static LazyOptional<IItemHandler> getInventoryForTE(TileEntity te, Direction facing) {
+        return te == null ? LazyOptional.empty() : te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
     }
-    public static IItemHandler getInventoryForTE(TileEntity te) {
+
+    public static LazyOptional<IItemHandler> getInventoryForTE(TileEntity te) {
         return getInventoryForTE(te, null);
     }
 
@@ -118,29 +116,25 @@ public class IOHelper {
 
     @Nonnull
     public static ItemStack insert(TileEntity tile, ItemStack itemStack, boolean simulate) {
-        ItemStack insertingStack = itemStack.copy();
-        for (EnumFacing side : EnumFacing.VALUES) {
-            IItemHandler inv = getInventoryForTE(tile, side);
-            insertingStack = ItemHandlerHelper.insertItem(inv, insertingStack, simulate);
-            if (insertingStack.isEmpty()) return ItemStack.EMPTY;
+        for (Direction side : Direction.values()) {
+            ItemStack inserted = getInventoryForTE(tile, side)
+                    .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack.copy(), simulate))
+                    .orElse(ItemStack.EMPTY);
+            if (inserted.getCount() < itemStack.getCount()) return inserted;
         }
-        return insertingStack;
-    }
-
-    @Nonnull
-    public static ItemStack insert(TileEntity tile, ItemStack itemStack, EnumFacing side, boolean simulate) {
-        IItemHandler inv = getInventoryForTE(tile, side);
-        if (inv != null) return ItemHandlerHelper.insertItem(inv, itemStack, simulate);
         return itemStack;
     }
 
     @Nonnull
-    public static ItemStack insert(ICapabilityProvider provider, ItemStack itemStack, EnumFacing side, boolean simulate) {
-        if (provider.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)) {
-            IItemHandler handler = provider.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side);
-            return ItemHandlerHelper.insertItem(handler, itemStack, simulate);
-        }
-        return ItemStack.EMPTY;
+    public static ItemStack insert(TileEntity tile, ItemStack itemStack, Direction side, boolean simulate) {
+        return getInventoryForTE(tile, side).map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate)).orElse(itemStack);
+    }
+
+    @Nonnull
+    public static ItemStack insert(ICapabilityProvider provider, ItemStack itemStack, Direction side, boolean simulate) {
+        return provider.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)
+                .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate))
+                .orElse(itemStack);
     }
     
     /**

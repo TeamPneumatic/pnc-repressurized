@@ -1,12 +1,13 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -18,22 +19,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class WidgetAmadronOffer extends WidgetBase {
+public class WidgetAmadronOffer extends Widget implements ITooltipSupplier {
     private final AmadronOffer offer;
-    private final List<IGuiWidget> widgets = new ArrayList<>();
+    private final List<Widget> subWidgets = new ArrayList<>();
     private int shoppingAmount;
     private boolean canBuy;
     private final Rectangle[] tooltipRectangles = new Rectangle[2];
     private boolean renderBackground = true;
 
-    public WidgetAmadronOffer(int id, int x, int y, AmadronOffer offer) {
-        super(id, x, y, 73, 35);
+    public WidgetAmadronOffer(int x, int y, AmadronOffer offer) {
+        super(x, y, 73, 35, "");
         this.offer = offer;
         if (offer.getInput() instanceof FluidStack) {
-            widgets.add(new WidgetFluidStack(0, x + 6, y + 15, (FluidStack) offer.getInput()));
+            subWidgets.add(new WidgetFluidStack(x + 6, y + 15, (FluidStack) offer.getInput(), null));
         }
         if (offer.getOutput() instanceof FluidStack) {
-            widgets.add(new WidgetFluidStack(0, x + 51, y + 15, (FluidStack) offer.getOutput()));
+            subWidgets.add(new WidgetFluidStack(x + 51, y + 15, (FluidStack) offer.getOutput(), null));
         }
         tooltipRectangles[0] = new Rectangle(x + 6, y + 15, 16, 16);
         tooltipRectangles[1] = new Rectangle(x + 51, y + 15, 16, 16);
@@ -41,22 +42,23 @@ public class WidgetAmadronOffer extends WidgetBase {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
+        FontRenderer fr = Minecraft.getInstance().fontRenderer;
         if (renderBackground) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
-            GlStateManager.color(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, canBuy ? 0.75f : 1f);
-            Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, getBounds().width, getBounds().height, 256, 256);
+            Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
+            GlStateManager.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, canBuy ? 0.75f : 1f);
+            AbstractGui.blit(x, y, 0, 0, width, height, 256, 256);
         }
-        for (IGuiWidget widget : widgets) {
+        for (Widget widget : subWidgets) {
             widget.render(mouseX, mouseY, partialTick);
         }
-        Minecraft.getMinecraft().fontRenderer.drawString(offer.getVendor(), x + 2, y + 2, 0xFF000000);
+        fr.drawString(offer.getVendor(), x + 2, y + 2, 0xFF000000);
         boolean customOffer = offer instanceof AmadronOfferCustom;
         if (shoppingAmount > 0) {
-            Minecraft.getMinecraft().fontRenderer.drawString(TextFormatting.BLACK.toString() + shoppingAmount, x + 36 - Minecraft.getMinecraft().fontRenderer.getStringWidth("" + shoppingAmount) / 2, y + (customOffer ? 15 : 20), 0xFF000000);
+            fr.drawString(TextFormatting.BLACK.toString() + shoppingAmount, x + 36 - fr.getStringWidth("" + shoppingAmount) / 2f, y + (customOffer ? 15 : 20), 0xFF000000);
         }
         if (customOffer) {
             AmadronOfferCustom custom = (AmadronOfferCustom) offer;
-            Minecraft.getMinecraft().fontRenderer.drawString(TextFormatting.DARK_BLUE.toString() + custom.getStock(), x + 36 - Minecraft.getMinecraft().fontRenderer.getStringWidth("" + custom.getStock()) / 2, y + 25, 0xFF000000);
+            fr.drawString(TextFormatting.DARK_BLUE.toString() + custom.getStock(), x + 36 - fr.getStringWidth("" + custom.getStock()) / 2f, y + 25, 0xFF000000);
         }
     }
 
@@ -71,10 +73,9 @@ public class WidgetAmadronOffer extends WidgetBase {
 
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shiftPressed) {
-        super.addTooltip(mouseX, mouseY, curTip, shiftPressed);
-        for (IGuiWidget widget : widgets) {
-            if (widget.getBounds().contains(mouseX, mouseY)) {
-                widget.addTooltip(mouseX, mouseY, curTip, shiftPressed);
+        for (Widget widget : subWidgets) {
+            if (widget.isHovered() && widget instanceof ITooltipSupplier) {
+                ((ITooltipSupplier) widget).addTooltip(mouseX, mouseY, curTip, shiftPressed);
             }
         }
         boolean isInBounds = false;
@@ -89,7 +90,8 @@ public class WidgetAmadronOffer extends WidgetBase {
             curTip.add(I18n.format("gui.amadron.amadronWidget.buying", getStringForObject(offer.getInput())));
             curTip.add(I18n.format("gui.amadron.amadronWidget.inBasket", getStringForObject(offer.getOutput(), shoppingAmount)));
             if (offer.getStock() >= 0) curTip.add(I18n.format("gui.amadron.amadronWidget.stock", offer.getStock()));
-            if (offer.getVendor().equals(PneumaticCraftRepressurized.proxy.getClientPlayer().getName())) {
+            // todo we should be using UUID here
+            if (offer.getVendor().equals(Minecraft.getInstance().player.getGameProfile().getName())) {
                 curTip.addAll(Arrays.asList(WordUtils.wrap(I18n.format("gui.amadron.amadronWidget.sneakRightClickToRemove"), 40).split(System.getProperty("line.separator"))));
             }
         }

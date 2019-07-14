@@ -1,16 +1,16 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.common.item.ItemPneumatic;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressor;
 import net.minecraft.block.material.Material;
-import net.minecraft.item.EnumRarity;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Rarity;
 import net.minecraft.tileentity.TileEntity;
 
-public class BlockCreativeCompressor extends BlockPneumaticCraftModeled implements ICustomItemBlock {
+public class BlockCreativeCompressor extends BlockPneumaticCraft implements ICustomItemBlock {
 
-    BlockCreativeCompressor() {
+    public BlockCreativeCompressor() {
         super(Material.IRON, "creative_compressor");
     }
 
@@ -20,28 +20,18 @@ public class BlockCreativeCompressor extends BlockPneumaticCraftModeled implemen
     }
 
     @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.CREATIVE_COMPRESSOR;
-    }
-
-    @Override
-    public boolean getTickRandomly() {
-        return super.getTickRandomly();
-    }
-
-    @Override
-    public ItemBlock getCustomItemBlock() {
+    public BlockItem getCustomItemBlock() {
         return new ItemBlockCreativeCompressor(this);
     }
 
-    public static class ItemBlockCreativeCompressor extends ItemBlock {
+    public static class ItemBlockCreativeCompressor extends BlockItem {
         ItemBlockCreativeCompressor(BlockCreativeCompressor blockCreativeCompressor) {
-            super(blockCreativeCompressor);
+            super(blockCreativeCompressor, ItemPneumatic.DEFAULT_PROPS);
         }
 
         @Override
-        public EnumRarity getRarity(ItemStack stack) {
-            return EnumRarity.EPIC;
+        public Rarity getRarity(ItemStack stack) {
+            return Rarity.EPIC;
         }
     }
 }

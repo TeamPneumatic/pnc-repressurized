@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-public class ProgWidgetDroneConditionItem extends ProgWidgetDroneEvaluation implements IItemFiltering {
+public class ProgWidgetDroneConditionItem extends ProgWidgetDroneCondition implements IItemFiltering {
 
     @Override
     public Class<? extends IProgWidget>[] getParameters() {
@@ -36,7 +36,10 @@ public class ProgWidgetDroneConditionItem extends ProgWidgetDroneEvaluation impl
 
     @Override
     public boolean isItemValidForFilters(ItemStack item) {
-        return ProgWidgetItemFilter.isItemValidForFilters(item, ProgWidget.getConnectedWidgetList(this, 0), ProgWidget.getConnectedWidgetList(this, getParameters().length), null);
+        return ProgWidgetItemFilter.isItemValidForFilters(item,
+                ProgWidget.getConnectedWidgetList(this, 0),
+                ProgWidget.getConnectedWidgetList(this, getParameters().length),
+                null);
     }
 
 }

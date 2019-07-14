@@ -1,11 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 
 public abstract class BlockPneumaticCraftModeled extends BlockPneumaticCraft {
 
@@ -13,18 +8,18 @@ public abstract class BlockPneumaticCraftModeled extends BlockPneumaticCraft {
         super(par2Material, registryName);
     }
 
-    @Override
-    public boolean isOpaqueCube(IBlockState state) {
-        return false;
-    }
-
-    @Override
-    public boolean isFullCube(IBlockState state) {
-        return false;
-    }
-
-    @Override
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
-        return BlockFaceShape.UNDEFINED;
-    }
+//    @Override
+//    public boolean isOpaqueCube(BlockState state) {
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean isFullCube(BlockState state) {
+//        return false;
+//    }
+//
+//    @Override
+//    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, BlockState state, BlockPos pos, Direction face) {
+//        return BlockFaceShape.UNDEFINED;
+//    }
 }

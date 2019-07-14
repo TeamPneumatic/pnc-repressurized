@@ -1,24 +1,25 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -38,7 +39,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     public boolean isTrackingPlayerEye;
     private int thickness = 13;  // 13/16 for bounding box, 15/16 for collision box
 
-    BlockPneumaticDoor() {
+    public BlockPneumaticDoor() {
         super(Material.IRON, "pneumatic_door");
     }
 
@@ -48,24 +49,24 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
+    public BlockState getStateFromMeta(int meta) {
         return super.getStateFromMeta(meta).withProperty(TOP_DOOR, (meta & 0x08) != 0);
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
+    public int getMetaFromState(BlockState state) {
         return super.getMetaFromState(state) + (state.getValue(TOP_DOOR) ? 8 : 0);
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+    public BlockState getActualState(BlockState state, IBlockAccess worldIn, BlockPos pos) {
         TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
         if (te instanceof TileEntityPneumaticDoor) {
             TileEntityPneumaticDoor teDoor = (TileEntityPneumaticDoor) te;
             if (teDoor.rotationAngle == 90) {
-                EnumFacing originalRotation = state.getValue(ROTATION);
-                if(originalRotation != EnumFacing.UP && originalRotation != EnumFacing.DOWN){
-                    EnumFacing facing = teDoor.rightGoing ? originalRotation.rotateY() : originalRotation.rotateYCCW();
+                Direction originalRotation = state.getValue(ROTATION);
+                if(originalRotation != Direction.UP && originalRotation != Direction.DOWN){
+                    Direction facing = teDoor.rightGoing ? originalRotation.rotateY() : originalRotation.rotateYCCW();
                     state = state.withProperty(ROTATION, facing);
                 }
                 state = state.withProperty(DOOR_STATE, DoorState.OPEN);
@@ -79,12 +80,12 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
         return state;
     }
 
-    public static boolean isTopDoor(IBlockState state) {
+    public static boolean isTopDoor(BlockState state) {
         return state.getValue(TOP_DOOR);
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess blockAccess, BlockPos pos) {
+    public AxisAlignedBB getBoundingBox(BlockState state, IBlockAccess blockAccess, BlockPos pos) {
         if (isTrackingPlayerEye) {
             return FULL_BLOCK_AABB;
         } else {
@@ -93,7 +94,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
             float xMax = 1;
             float zMax = 1;
             TileEntity te = blockAccess.getTileEntity(pos);
-            EnumFacing rotation = state.getValue(ROTATION);
+            Direction rotation = state.getValue(ROTATION);
             if (te instanceof TileEntityPneumaticDoor) {
                 TileEntityPneumaticDoor door = (TileEntityPneumaticDoor) te;
                 float cosinus = thickness / 16F - MathHelper.sin((float)Math.toRadians(door.rotationAngle)) * thickness / 16F;
@@ -137,7 +138,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
 
     @Nullable
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+    public AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         thickness = 15;
         AxisAlignedBB aabb = getBoundingBox(blockState, worldIn, pos);
         thickness = 13;
@@ -145,7 +146,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
+    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
         return !state.getValue(TOP_DOOR) && super.canRenderInLayer(state, layer);
     }
 
@@ -156,21 +157,21 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
 
     @Override
     public boolean canPlaceBlockAt(World par1World, BlockPos pos) {
-        return super.canPlaceBlockAt(par1World, pos) && par1World.isAirBlock(pos.offset(EnumFacing.UP));
+        return super.canPlaceBlockAt(par1World, pos) && par1World.isAirBlock(pos.offset(Direction.UP));
     }
 
     @Override
-    public void onBlockPlacedBy(World par1World, BlockPos pos, IBlockState state, EntityLivingBase par5EntityLiving, ItemStack par6ItemStack) {
+    public void onBlockPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack par6ItemStack) {
         super.onBlockPlacedBy(par1World, pos, state, par5EntityLiving, par6ItemStack);
-        par1World.setBlockState(pos.offset(EnumFacing.UP), par1World.getBlockState(pos).withProperty(TOP_DOOR, true), 3);
+        par1World.setBlockState(pos.offset(Direction.UP), par1World.getBlockState(pos).withProperty(TOP_DOOR, true), 3);
     }
 
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+    public Item getItemDropped(BlockState state, Random rand, int fortune) {
         return isTopDoor(state) ? Items.AIR : super.getItemDropped(state, rand, fortune);
     }
 
     @Override
-    public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
+    public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockPos posDown = pos.down();
         BlockPos posUp = pos.up();
         if (player.capabilities.isCreativeMode && isTopDoor(state) && worldIn.getBlockState(posDown).getBlock() == this) {
@@ -190,19 +191,19 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public boolean rotateBlock(World world, EntityPlayer player, BlockPos pos, EnumFacing face, EnumHand hand) {
-        IBlockState state = world.getBlockState(pos);
+    public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction face, Hand hand) {
+        BlockState state = world.getBlockState(pos);
         if (isTopDoor(state)) {
-            return rotateBlock(world, player, pos.offset(EnumFacing.DOWN), face, hand);
+            return onWrenched(world, player, pos.offset(Direction.DOWN), face, hand);
         } else {
-            super.rotateBlock(world, player, pos, face, hand);
-            IBlockState newState = world.getBlockState(pos);
-            world.setBlockState(pos.offset(EnumFacing.UP), newState.withProperty(TOP_DOOR, true), 3);
+            super.onWrenched(world, player, pos, face, hand);
+            BlockState newState = world.getBlockState(pos);
+            world.setBlockState(pos.offset(Direction.UP), newState.withProperty(TOP_DOOR, true), 3);
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityPneumaticDoor) {
                 ((TileEntityPneumaticDoor) te).rightGoing = true;
                 ((TileEntityPneumaticDoor) te).setRotationAngle(0);
-                TileEntity topDoor = world.getTileEntity(pos.offset(EnumFacing.UP));
+                TileEntity topDoor = world.getTileEntity(pos.offset(Direction.UP));
                 if (topDoor instanceof TileEntityPneumaticDoor) {
                     ((TileEntityPneumaticDoor) topDoor).sendDescriptionPacket();
                 }
@@ -212,9 +213,9 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float par7, float par8, float par9) {
+    public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, Direction side, float par7, float par8, float par9) {
         TileEntityPneumaticDoorBase doorBase = getDoorBase(world, pos);
-        if (!world.isRemote && doorBase != null && doorBase.redstoneMode == 2 && doorBase.getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR && hand == EnumHand.MAIN_HAND) {
+        if (!world.isRemote && doorBase != null && doorBase.redstoneMode == 2 && doorBase.getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR && hand == Hand.MAIN_HAND) {
             doorBase.setOpening(!doorBase.isOpening());
             doorBase.setNeighborOpening(doorBase.isOpening());
             return true;
@@ -223,28 +224,28 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
+    public void breakBlock(World world, BlockPos pos, BlockState state) {
         if (isTopDoor(state)) {
-            BlockPos lowerPos = pos.offset(EnumFacing.DOWN);
-            if (world.getBlockState(lowerPos).getBlock() == Blockss.PNEUMATIC_DOOR)
+            BlockPos lowerPos = pos.offset(Direction.DOWN);
+            if (world.getBlockState(lowerPos).getBlock() == ModBlocks.PNEUMATIC_DOOR)
                 dropBlockAsItem(world, lowerPos, world.getBlockState(lowerPos), 0);
             world.setBlockToAir(lowerPos);
         } else {
-            world.setBlockToAir(pos.offset(EnumFacing.UP));
+            world.setBlockToAir(pos.offset(Direction.UP));
         }
         super.breakBlock(world, pos, state);
     }
 
     @Override
-    public int quantityDropped(IBlockState state, int fortune, Random random) {
+    public int quantityDropped(BlockState state, int fortune, Random random) {
         return isTopDoor(state) ? 0 : 1;
     }
 
     @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
         boolean powered = world.getRedstonePowerFromNeighbors(pos) > 0;
         if (!powered) {
-            powered = world.getRedstonePowerFromNeighbors(pos.offset(isTopDoor(state) ? EnumFacing.DOWN : EnumFacing.UP)) > 0;
+            powered = world.getRedstonePowerFromNeighbors(pos.offset(isTopDoor(state) ? Direction.DOWN : Direction.UP)) > 0;
         }
         TileEntityPneumaticDoorBase doorBase = getDoorBase(world, pos);
         if (!world.isRemote && doorBase != null && doorBase.getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
@@ -258,10 +259,10 @@ public class BlockPneumaticDoor extends BlockPneumaticCraftModeled {
     private TileEntityPneumaticDoorBase getDoorBase(World world, BlockPos pos) {
         if (world.getBlockState(pos).getBlock() != this) return null;
         if (!isTopDoor(world.getBlockState(pos))) {
-            return getDoorBase(world, pos.offset(EnumFacing.UP));
+            return getDoorBase(world, pos.offset(Direction.UP));
         } else {
-            EnumFacing dir = getRotation(world, pos);
-            if (dir.getAxis() == EnumFacing.Axis.Y) {
+            Direction dir = getRotation(world, pos);
+            if (dir.getAxis() == Direction.Axis.Y) {
                 // should never happen, but see https://github.com/TeamPneumatic/pnc-repressurized/issues/284
                 return null;
             }

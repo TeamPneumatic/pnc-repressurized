@@ -1,31 +1,33 @@
 package me.desht.pneumaticcraft.common.minigun;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -55,9 +57,9 @@ public abstract class Minigun {
     private int airUsage;
     protected ItemStack minigunStack = ItemStack.EMPTY;
     private ItemStack ammoStack = ItemStack.EMPTY;
-    protected EntityPlayer player;
+    protected PlayerEntity player;
     protected World world;
-    private EntityLivingBase attackTarget;
+    private LivingEntity attackTarget;
 
     public Minigun(boolean requiresTarget) {
         this.requiresTarget = requiresTarget;
@@ -84,12 +86,12 @@ public abstract class Minigun {
         return ammoStack;
     }
 
-    public Minigun setPlayer(EntityPlayer player) {
+    public Minigun setPlayer(PlayerEntity player) {
         this.player = player;
         return this;
     }
 
-    public EntityPlayer getPlayer() {
+    public PlayerEntity getPlayer() {
         return player;
     }
 
@@ -102,7 +104,7 @@ public abstract class Minigun {
         return world;
     }
 
-    public Minigun setAttackTarget(EntityLivingBase entity) {
+    public Minigun setAttackTarget(LivingEntity entity) {
         attackTarget = entity;
         return this;
     }
@@ -118,7 +120,7 @@ public abstract class Minigun {
     public abstract void playSound(SoundEvent soundName, float volume, float pitch);
 
     protected int getAmmoColor(@Nonnull ItemStack stack) {
-        return stack.isEmpty() ? 0xFF313131 : Minecraft.getMinecraft().getItemColors().colorMultiplier(stack, 1);
+        return stack.isEmpty() ? 0xFF313131 : Minecraft.getInstance().getItemColors().getColor(stack, 1);
     }
 
     /**
@@ -171,7 +173,7 @@ public abstract class Minigun {
         this.oldMinigunRotation = oldMinigunRotation;
     }
 
-    public EntityLivingBase getAttackTarget() {
+    public LivingEntity getAttackTarget() {
         return attackTarget;
     }
 
@@ -192,7 +194,7 @@ public abstract class Minigun {
                 ItemGunAmmo ammoItem = (ItemGunAmmo) ammoStack.getItem();
                 if (!requiresTarget) {
                     rtr = PneumaticCraftUtils.getMouseOverServer(player, getRange());
-                    target = rtr.entityHit;
+                    target = rtr instanceof EntityRayTraceResult ? ((EntityRayTraceResult) rtr).getEntity() : null;
                 }
                 if (pressurizable != null) {
                     int usage = (int) Math.ceil(airUsage * ammoItem.getAirUsageMultiplier(this, ammoStack));
@@ -207,23 +209,24 @@ public abstract class Minigun {
                     if (getUpgrades(EnumUpgrade.SECURITY) == 0 || !securityProtectedTarget(target)) {
                         roundsUsed = ammoItem.onTargetHit(this, ammoStack, target);
                     }
-                } else if (rtr != null && rtr.typeOfHit == RayTraceResult.Type.BLOCK) {
-                    roundsUsed = ammoItem.onBlockHit(this, ammoStack, rtr.getBlockPos(), rtr.sideHit, rtr.hitVec);
+                } else if (rtr != null && rtr.getType() == RayTraceResult.Type.BLOCK) {
+                    BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
+                    roundsUsed = ammoItem.onBlockHit(this, ammoStack, brtr);
                 }
                 int ammoCost = roundsUsed * ammoItem.getAmmoCost(ammoStack);
-                lastShotOfAmmo = ammoStack.attemptDamageItem(ammoCost, rand, player instanceof EntityPlayerMP ? (EntityPlayerMP) player : null);
+                lastShotOfAmmo = ammoStack.attemptDamageItem(ammoCost, rand, player instanceof ServerPlayerEntity ? (ServerPlayerEntity) player : null);
             }
         }
         return lastShotOfAmmo;
     }
 
     private boolean securityProtectedTarget(Entity target) {
-        if (target instanceof EntityTameable) {
-            return ((EntityTameable) target).getOwner() != null;
+        if (target instanceof TameableEntity) {
+            return ((TameableEntity) target).getOwner() != null;
         } else if (target instanceof EntityDrone) {
             return ((EntityDrone) target).getOwner().getUniqueID().equals(getPlayer().getUniqueID());
         } else {
-            return target instanceof EntityPlayer;
+            return target instanceof PlayerEntity;
         }
     }
 
@@ -231,7 +234,7 @@ public abstract class Minigun {
         setOldMinigunRotation(getMinigunRotation());
         oldMinigunYaw = minigunYaw;
         oldMinigunPitch = minigunPitch;
-        if (attackTarget != null && attackTarget.isDead) attackTarget = null;
+        if (attackTarget != null && !attackTarget.isAlive()) attackTarget = null;
         if (!world.isRemote) {
             setMinigunActivated(getMinigunTriggerTimeOut() > 0);
 
@@ -253,7 +256,7 @@ public abstract class Minigun {
             double lastSpeed = getMinigunSpeed();
             setMinigunSpeed(Math.min(getMinigunSpeed() + 0.01D + speedBonus, MAX_GUN_SPEED));
             if (getMinigunSpeed() > lastSpeed && getMinigunSpeed() >= MAX_GUN_SPEED && !world.isRemote) {
-                NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), world.provider.getDimension());
+                NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), world.getDimension().getType());
             }
         } else {
             setMinigunSpeed(Math.max(0, getMinigunSpeed() - 0.003D));
@@ -281,7 +284,7 @@ public abstract class Minigun {
             } else if (minigunYaw - targetYaw > 180) {
                 targetYaw += 360;
             }
-            targetPitch = Math.toDegrees(Math.atan((posY - attackTarget.posY - attackTarget.height / 2) / PneumaticCraftUtils.distBetween(posX, posZ, attackTarget.posX, attackTarget.posZ)));
+            targetPitch = Math.toDegrees(Math.atan((posY - attackTarget.posY - attackTarget.getHeight() / 2) / PneumaticCraftUtils.distBetween(posX, posZ, attackTarget.posX, attackTarget.posZ)));
 
             minigunPitch = moveToward(minigunPitch, targetPitch, MAX_GUN_PITCH_CHANGE);
             minigunYaw = minigunPitch < -80 || minigunPitch > 80 ? targetYaw : moveToward(minigunYaw, targetYaw, MAX_GUN_YAW_CHANGE);
@@ -312,13 +315,13 @@ public abstract class Minigun {
         return val;
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void render(double x, double y, double z, double gunRadius) {
         if (isMinigunActivated() && getMinigunSpeed() == MAX_GUN_SPEED && gunAimedAtTarget && attackTarget != null) {
             GlStateManager.pushMatrix();
-            GlStateManager.scale(1, 1, 1);
-            GlStateManager.translate(-x, -y, -z);
-            GlStateManager.disableTexture2D();
+            GlStateManager.scaled(1, 1, 1);
+            GlStateManager.translated(-x, -y, -z);
+            GlStateManager.disableTexture();
             GL11.glEnable(GL11.GL_LINE_STIPPLE);
             RenderUtils.glColorHex(0xFF000000 | getAmmoColor());
             for (int i = 0; i < 5; i++) {
@@ -329,13 +332,13 @@ public abstract class Minigun {
                 minigunFire.startY = y + vec.y * gunRadius;
                 minigunFire.startZ = z + vec.z * gunRadius;
                 minigunFire.endX = attackTarget.posX + rand.nextDouble() - 0.5;
-                minigunFire.endY = attackTarget.posY + attackTarget.height / 2 + rand.nextDouble() - 0.5;
+                minigunFire.endY = attackTarget.posY + attackTarget.getHeight() / 2 + rand.nextDouble() - 0.5;
                 minigunFire.endZ = attackTarget.posZ + rand.nextDouble() - 0.5;
                 minigunFire.render();
             }
-            GlStateManager.color(1, 1, 1, 1);
+            GlStateManager.color4f(1, 1, 1, 1);
             GL11.glDisable(GL11.GL_LINE_STIPPLE);
-            GlStateManager.enableTexture2D();
+            GlStateManager.enableTexture();
             GlStateManager.popMatrix();
         }
     }
@@ -346,7 +349,7 @@ public abstract class Minigun {
 
     public double getRange() {
         double mul = getAmmoStack().getItem() instanceof ItemGunAmmo ? ((ItemGunAmmo) ammoStack.getItem()).getRangeMultiplier(ammoStack) : 1;
-        return (ConfigHandler.minigun.baseRange + 5 * getUpgrades(EnumUpgrade.RANGE)) * mul;
+        return (Config.Common.Minigun.baseRange + 5 * getUpgrades(EnumUpgrade.RANGE)) * mul;
     }
 
     public boolean dispenserWeightedPercentage(int basePct) {

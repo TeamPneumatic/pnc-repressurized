@@ -1,32 +1,51 @@
 package me.desht.pneumaticcraft.common.util.fakeplayer;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
-public class DroneItemHandler extends ItemStackHandler {
+import javax.annotation.Nonnull;
+
+public class DroneItemHandler extends PlayerMainInvWrapper {
     private final IDrone holder;
     protected boolean heldItemChanged = false;
 
-    public DroneItemHandler(int size, IDrone holder) {
-        super(size);
+    public DroneItemHandler(IDrone holder) {
+        super(holder.getFakePlayer().inventory);
         this.holder = holder;
     }
 
     private ItemStack oldStack = ItemStack.EMPTY;
 
     @Override
-    protected void onContentsChanged(int slot) {
-        super.onContentsChanged(slot);
+    public int getSlots() {
+        return holder.getUpgrades(EnumUpgrade.INVENTORY) + 1;
+    }
 
-        if (slot == 0) {
-            // We can't call getFakePlayer() here since we might be still in entity initialization,
-            // i.e. the chunk is still being loaded.  Initializing a player at this stage
-            // can cause an endless loop (player constructor tries to find a random spawn point,
-            // which can lead to more chunk creation)
-            heldItemChanged = true;
-        }
+    @Nonnull
+    @Override
+    public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        ItemStack res = super.insertItem(slot, stack, simulate);
+        if (res.getCount() != stack.getCount() && !simulate && slot == 0) heldItemChanged = true;
+        return res;
+    }
+
+    @Nonnull
+    @Override
+    public ItemStack extractItem(int slot, int amount, boolean simulate) {
+        ItemStack res = super.extractItem(slot, amount, simulate);
+        if (!res.isEmpty() && !simulate && slot == 0) heldItemChanged = true;
+        return res;
+    }
+
+    @Override
+    public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+        if (slot == 0) heldItemChanged = true;
+        super.setStackInSlot(slot, stack);
     }
 
     /**
@@ -37,14 +56,31 @@ public class DroneItemHandler extends ItemStackHandler {
         if (heldItemChanged) {
             ItemStack newStack = getStackInSlot(0);
             if (!oldStack.isEmpty()) {
-                holder.getFakePlayer().getAttributeMap().removeAttributeModifiers(oldStack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND));
+                holder.getFakePlayer().getAttributes().removeAttributeModifiers(oldStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
             }
             if (!newStack.isEmpty()) {
-                holder.getFakePlayer().getAttributeMap().applyAttributeModifiers(newStack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND));
+                holder.getFakePlayer().getAttributes().applyAttributeModifiers(newStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
             }
             oldStack = newStack.copy();
 
             heldItemChanged = false;
         }
+    }
+
+    public CompoundNBT serializeNBT() {
+        // basically the same as ItemStackHandler serialization
+        ListNBT nbtTagList = new ListNBT();
+        for (int i = 0; i < getSlots(); i++) {
+            if (!getStackInSlot(i).isEmpty()) {
+                CompoundNBT itemTag = new CompoundNBT();
+                itemTag.putInt("Slot", i);
+                getStackInSlot(i).write(itemTag);
+                nbtTagList.add(itemTag);
+            }
+        }
+        CompoundNBT nbt = new CompoundNBT();
+        nbt.put("Items", nbtTagList);
+        nbt.putInt("Size", getSlots());
+        return nbt;
     }
 }

@@ -1,10 +1,14 @@
 package me.desht.pneumaticcraft.common.entity;
 
 import me.desht.pneumaticcraft.client.render.RenderRing;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.EntityType;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.IPacket;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class EntityRing extends Entity {
 
@@ -17,7 +21,7 @@ public class EntityRing extends Entity {
     }
 
     public EntityRing(World par1World, double startX, double startY, double startZ, Entity targetEntity, int color) {
-        super(par1World);
+        super(ModEntityTypes.RING, par1World);
         posX = lastTickPosX = startX;
         posY = lastTickPosY = startY;
         posZ = lastTickPosZ = startZ;
@@ -30,15 +34,18 @@ public class EntityRing extends Entity {
         float f = MathHelper.sqrt(dx * dx + dz * dz);
         prevRotationYaw = rotationYaw = (float) (Math.atan2(dx, dz) * 180.0D / Math.PI);
         prevRotationPitch = rotationPitch = (float) (Math.atan2(dy, f) * 180.0D / Math.PI);
-//        renderDistanceWeight = 10.0D;
         ignoreFrustumCheck = true;
         if (par1World.isRemote) {
             setRenderDistanceWeight(10.0D);
         }
     }
 
+    public static Entity create(EntityType<Entity> entityEntityType, World world) {
+        return new EntityRing(world);
+    }
+
     @Override
-    public void onUpdate() {
+    public void tick() {
         if (targetEntity == null) return;
 
         double endX = targetEntity.posX;
@@ -70,21 +77,29 @@ public class EntityRing extends Entity {
 
             oldRing.setProgress(ring.getProgress());
             if (ring.incProgress(0.05F)) {
-                setDead();
+                remove();
             }
         }
     }
 
     @Override
-    protected void entityInit() {
+    protected void registerData() {
+
     }
 
     @Override
-    protected void readEntityFromNBT(NBTTagCompound var1) {
+    protected void readAdditional(CompoundNBT compound) {
+
     }
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound var1) {
+    protected void writeAdditional(CompoundNBT compound) {
+
+    }
+
+    @Override
+    public IPacket<?> createSpawnPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
 }

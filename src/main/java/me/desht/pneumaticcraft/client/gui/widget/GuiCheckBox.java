@@ -1,87 +1,85 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
-@SideOnly(Side.CLIENT)
-public class GuiCheckBox extends Gui implements IGuiWidget {
+public class GuiCheckBox extends Widget implements ITaggedWidget {
     public boolean checked, enabled = true, visible = true;
-    public int x, y, color;
-    private final int id;
-    public String text;
+    public int color;
     private List<String> tooltip = new ArrayList<>();
-    private IWidgetListener listener;
+    private final Consumer<GuiCheckBox> pressable;
 
     private static final int CHECKBOX_WIDTH = 10;
     private static final int CHECKBOX_HEIGHT = 10;
+    private String tag = null;
 
-    public GuiCheckBox(int id, int x, int y, int color, String text) {
-        this.id = id;
+    public GuiCheckBox(int x, int y, int color, String text, Consumer<GuiCheckBox> pressable) {
+        super(x, y, text);
         this.x = x;
         this.y = y;
         this.color = color;
-        this.text = text;
+        this.pressable = pressable;
     }
 
-    @Override
-    public int getID() {
-        return id;
+    public GuiCheckBox(int x, int y, int color, String text) {
+        this(x, y, color, text, null);
+    }
+
+    public GuiCheckBox withTag(String tag) {
+        this.tag = tag;
+        return this;
     }
 
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
         if (visible) {
-            drawRect(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, enabled ? 0xFFA0A0A0 : 0xFF999999);
-            drawRect(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, enabled ? 0xFF202020 : 0xFFAAAAAA);
+            fill(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, enabled ? 0xFFA0A0A0 : 0xFF999999);
+            fill(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, enabled ? 0xFF202020 : 0xFFAAAAAA);
             if (checked) {
-                GlStateManager.disableTexture2D();
+                GlStateManager.disableTexture();
                 if (enabled) {
-                    GlStateManager.color(0.5f, 1, 0.5f, 1);
+                    GlStateManager.color4f(0.5f, 1, 0.5f, 1);
                 } else {
-                    GlStateManager.color(0.8f, 0.8f, 0.8f, 1);
+                    GlStateManager.color4f(0.8f, 0.8f, 0.8f, 1);
                 }
                 BufferBuilder wr = Tessellator.getInstance().getBuffer();
-                GlStateManager.glLineWidth(2);
+                GlStateManager.lineWidth(2);
                 wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-                wr.pos(x + 2, y + 5, zLevel).endVertex();
-                wr.pos(x + 5, y + 7, zLevel).endVertex();
-                wr.pos(x + 8, y + 3, zLevel).endVertex();
+                wr.pos(x + 2, y + 5, 0.0).endVertex();
+                wr.pos(x + 5, y + 7, 0.0).endVertex();
+                wr.pos(x + 8, y + 3, 0.0).endVertex();
                 Tessellator.getInstance().draw();
-                GlStateManager.enableTexture2D();
-                GlStateManager.color(0.25f, 0.25f, 0.25f, 1);
+                GlStateManager.enableTexture();
+                GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1);
             }
-            Minecraft.getMinecraft().fontRenderer.drawString(I18n.format(text), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2 - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2, enabled ? color : 0xFF888888);
+            Minecraft.getInstance().fontRenderer.drawString(I18n.format(getMessage()), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2f - Minecraft.getInstance().fontRenderer.FONT_HEIGHT / 2f, enabled ? color : 0xFF888888);
         }
     }
 
-    @Override
     public Rectangle getBounds() {
-        return new Rectangle(x, y, CHECKBOX_WIDTH + Minecraft.getMinecraft().fontRenderer.getStringWidth(I18n.format(text)), CHECKBOX_HEIGHT);
+        return new Rectangle(x, y, CHECKBOX_WIDTH + Minecraft.getInstance().fontRenderer.getStringWidth(I18n.format(getMessage())), CHECKBOX_HEIGHT);
     }
 
     @Override
-    public void onMouseClicked(int mouseX, int mouseY, int button) {
+    public void onClick(double mouseX, double mouseY) {
         if (enabled) {
             checked = !checked;
-            if (listener != null) listener.actionPerformed(this);
+            if (pressable != null) pressable.accept(this);
+            if (tag != null) NetworkHandler.sendToServer(new PacketGuiButton(tag));
         }
-    }
-
-    @Override
-    public void onMouseClickedOutsideBounds(int mouseX, int mouseY, int button) {
-
     }
 
     public GuiCheckBox setTooltip(String tooltip) {
@@ -97,40 +95,46 @@ public class GuiCheckBox extends Gui implements IGuiWidget {
         return this;
     }
 
-    @Override
-    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed) {
-        if (visible) curTooltip.addAll(tooltip);
-    }
-
-    public String getTooltip() {
-        return tooltip.size() > 0 ? tooltip.get(0) : "";
-    }
-
-    @Override
-    public boolean onKey(char key, int keyCode) {
-        return false;
-    }
-
-    @Override
-    public void setListener(IWidgetListener gui) {
-        listener = gui;
-    }
-
     public GuiCheckBox setChecked(boolean checked) {
         this.checked = checked;
         return this;
     }
 
-    @Override
-    public void update() {
+//    @Override
+//    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed) {
+//        if (visible) curTooltip.addAll(tooltip);
+//    }
+//
+    public String getTooltip() {
+        return tooltip.size() > 0 ? tooltip.get(0) : "";
     }
 
     @Override
-    public void handleMouseInput() {
+    public String getTag() {
+        return tag;
     }
-
-    @Override
-    public void postRender(int mouseX, int mouseY, float partialTick) {
-
-    }
+//
+//    @Override
+//    public boolean onKey(char key, int keyCode) {
+//        return false;
+//    }
+//
+//    @Override
+//    public void setListener(IWidgetListener gui) {
+//        listener = gui;
+//    }
+//
+//
+//    @Override
+//    public void update() {
+//    }
+//
+//    @Override
+//    public void handleMouseInput() {
+//    }
+//
+//    @Override
+//    public void postRender(int mouseX, int mouseY, float partialTick) {
+//
+//    }
 }

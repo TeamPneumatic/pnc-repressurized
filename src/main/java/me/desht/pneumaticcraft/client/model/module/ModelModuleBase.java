@@ -1,16 +1,16 @@
 package me.desht.pneumaticcraft.client.model.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.model.RendererModel;
+import net.minecraft.client.renderer.model.Model;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
-public abstract class ModelModuleBase extends ModelBase {
-    protected final void setRotation(ModelRenderer model, float x, float y, float z) {
+public abstract class ModelModuleBase extends Model {
+    protected final void setRotation(RendererModel model, float x, float y, float z) {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
@@ -19,8 +19,8 @@ public abstract class ModelModuleBase extends ModelBase {
     public final void renderModel(float scale, TubeModule module, float partialTicks) {
         GlStateManager.pushMatrix();
 
-        FMLClientHandler.instance().getClient().getTextureManager().bindTexture(getTexture());
-        RenderUtils.rotateMatrixByMetadata(module.getDirection().ordinal());
+        Minecraft.getInstance().getTextureManager().bindTexture(getTexture());
+        RenderUtils.rotateMatrixByMetadata(module.getDirection());
         renderDynamic(scale, partialTicks);
 
         GlStateManager.popMatrix();
@@ -38,7 +38,7 @@ public abstract class ModelModuleBase extends ModelBase {
 
         @Override
         protected ResourceLocation getTexture() {
-            return TextureMap.LOCATION_BLOCKS_TEXTURE;
+            return AtlasTexture.LOCATION_BLOCKS_TEXTURE;
         }
     }
 }

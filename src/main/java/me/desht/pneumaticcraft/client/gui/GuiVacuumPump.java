@@ -8,27 +8,31 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.awt.*;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
-public class GuiVacuumPump extends GuiPneumaticContainerBase<TileEntityVacuumPump> {
+public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump,TileEntityVacuumPump> {
 
-    public GuiVacuumPump(InventoryPlayer player, TileEntityVacuumPump te) {
-        super(new ContainerVacuumPump(player, te), te, Textures.GUI_VACUUM_PUMP_LOCATION);
+    public GuiVacuumPump(ContainerVacuumPump container, PlayerInventory inv, ITextComponent displayString) {
+        super(container, inv, displayString);
+    }
+
+    @Override
+    protected ResourceLocation getGuiTexture() {
+        return Textures.GUI_VACUUM_PUMP_LOCATION;
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        fontRenderer.drawString("Upgr.", 76, 19, 4210752);
+        font.drawString("Upgr.", 76, 19, 4210752);
 
-        fontRenderer.drawString("+", 32, 47, 0xFF00AA00);
-        fontRenderer.drawString("-", 138, 47, 0xFFFF0000);
+        font.drawString("+", 32, 47, 0xFF00AA00);
+        font.drawString("-", 138, 47, 0xFFFF0000);
     }
 
     @Override
@@ -37,8 +41,8 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<TileEntityVacuumPum
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        GuiUtils.drawPressureGauge(fontRenderer, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, te.getAirHandler(te.getInputSide()).getPressure(), xStart + xSize / 5, yStart + ySize / 5 + 4, zLevel);
-        GuiUtils.drawPressureGauge(fontRenderer, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, te.getAirHandler(te.getVacuumSide()).getPressure(), xStart + xSize * 4 / 5, yStart + ySize / 5 + 4, zLevel);
+        GuiUtils.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, te.getAirHandler(te.getInputSide()).getPressure(), xStart + xSize / 5, yStart + ySize / 5 + 4, 0x000000);
+        GuiUtils.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, te.getAirHandler(te.getVacuumSide()).getPressure(), xStart + xSize * 4 / 5, yStart + ySize / 5 + 4, 0x000000);
     }
 
     @Override

@@ -1,21 +1,21 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
-import me.desht.pneumaticcraft.common.network.DescSynced;
-import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
+
+import javax.annotation.Nullable;
 
 public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificProvider, ISpecificRequester {
 
-    public static final String ID = "logistic_frame_storage";
-
-    @DescSynced
-    @GuiSynced
-    private int minItemOrderSize;
-    @DescSynced
-    @GuiSynced
-    private int minFluidOrderSize;
+    public static final String ID = "logistics_frame_storage";
 
     @Override
     public int getColor() {
@@ -50,5 +50,16 @@ public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificPro
     @Override
     public boolean canProvide(FluidStack providingStack) {
         return passesFilter(providingStack.getFluid());
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return new ItemStack(ModItems.LOGISTICS_FRAME_STORAGE).getDisplayName();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerLogistics(ModContainerTypes.LOGISTICS_FRAME_STORAGE, i, playerInventory, getPos());
     }
 }

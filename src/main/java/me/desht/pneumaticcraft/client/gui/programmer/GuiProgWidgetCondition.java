@@ -3,38 +3,36 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
-import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCondition;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEntityCondition;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiLabel;
-import net.minecraft.util.EnumFacing;
-import org.apache.commons.lang3.math.NumberUtils;
+import net.minecraft.util.Direction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiProgWidgetCondition extends GuiProgWidgetAreaShow<ProgWidget> {
+public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiProgWidgetAreaShow<T> {
 
-    private WidgetTextField textField;
+    private WidgetTextFieldNumber textField;
 
-    public GuiProgWidgetCondition(ProgWidget widget, GuiProgrammer guiProgrammer) {
+    public GuiProgWidgetCondition(T widget, GuiProgrammer guiProgrammer) {
         super(widget, guiProgrammer);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
+    public void init() {
+        super.init();
 
         if (isSidedWidget()) {
-            for (int i = 0; i < 6; i++) {
-                String sideName = PneumaticCraftUtils.getOrientationName(EnumFacing.byIndex(i));
-                GuiCheckBox checkBox = new GuiCheckBox(i, guiLeft + 4, guiTop + 30 + i * 12, 0xFF404040, sideName);
-                checkBox.checked = ((ISidedWidget) widget).getSides()[i];
-                addWidget(checkBox);
+            for (Direction dir : Direction.VALUES) {
+                String sideName = PneumaticCraftUtils.getOrientationName(dir);
+                GuiCheckBox checkBox = new GuiCheckBox(guiLeft + 4, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
+                        b -> ((ISidedWidget) progWidget).getSides()[dir.getIndex()] = b.checked);
+                checkBox.checked = ((ISidedWidget) progWidget).getSides()[dir.getIndex()];
+                addButton(checkBox);
             }
         }
 
@@ -45,38 +43,42 @@ public class GuiProgWidgetCondition extends GuiProgWidgetAreaShow<ProgWidget> {
         GuiRadioButton radioButton;
         if (isUsingAndOr()) {
             radioButtons = new ArrayList<>();
-            radioButton = new GuiRadioButton(6, guiLeft + baseX, guiTop + 30, 0xFF404040, "Any block");
-            radioButton.checked = !((ICondition) widget).isAndFunction();
-            addWidget(radioButton);
+            radioButton = new GuiRadioButton(guiLeft + baseX, guiTop + 30, 0xFF404040, "Any block",
+                    b -> progWidget.setAndFunction(false));
+            radioButton.checked = !progWidget.isAndFunction();
+            addButton(radioButton);
             radioButtons.add(radioButton);
             radioButton.otherChoices = radioButtons;
 
-            radioButton = new GuiRadioButton(7, guiLeft + baseX, guiTop + 42, 0xFF404040, "All blocks");
-            radioButton.checked = ((ICondition) widget).isAndFunction();
-            addWidget(radioButton);
+            radioButton = new GuiRadioButton(guiLeft + baseX, guiTop + 42, 0xFF404040, "All blocks",
+                    b -> progWidget.setAndFunction(true));
+            radioButton.checked = progWidget.isAndFunction();
+            addButton(radioButton);
             radioButtons.add(radioButton);
             radioButton.otherChoices = radioButtons;
         }
 
         if (requiresNumber()) {
             radioButtons = new ArrayList<>();
-            for (int i = 0; i < ICondition.Operator.values().length; i++) {
-                radioButton = new GuiRadioButton(8 + i, guiLeft + baseX, guiTop + baseY + i * 12, 0xFF404040, ICondition.Operator.values()[i].toString());
-                radioButton.checked = ((ICondition) widget).getOperator().ordinal() == i;
-                addWidget(radioButton);
+            for (ICondition.Operator op : ICondition.Operator.values()) {
+                radioButton = new GuiRadioButton(guiLeft + baseX, guiTop + baseY + op.ordinal() * 12, 0xFF404040,
+                        op.toString(), b -> progWidget.setOperator(op));
+                radioButton.checked = progWidget.getOperator() == op;
+                addButton(radioButton);
                 radioButtons.add(radioButton);
                 radioButton.otherChoices = radioButtons;
             }
 
-            textField = new WidgetTextField(Minecraft.getMinecraft().fontRenderer, guiLeft + baseX, guiTop + baseY + 40, 50, 11);
-            textField.setText(((ICondition) widget).getRequiredCount() + "");
-            textField.setFocused(true);
-            addWidget(textField);
+            textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11);
+            textField.setText(progWidget.getRequiredCount() + "");
+            textField.setFocused2(true);
+            textField.func_212954_a(s -> progWidget.setRequiredCount(textField.getValue()));
+            addButton(textField);
         }
     }
 
     protected boolean isSidedWidget() {
-        return widget instanceof ISidedWidget;
+        return progWidget instanceof ISidedWidget;
     }
 
     protected boolean isUsingAndOr() {
@@ -88,39 +90,29 @@ public class GuiProgWidgetCondition extends GuiProgWidgetAreaShow<ProgWidget> {
     }
 
     @Override
-    public void actionPerformed(IGuiWidget checkBox) {
-        if (!(checkBox instanceof GuiLabel)) {
-            if (checkBox.getID() < 6) {
-                ((ISidedWidget) widget).getSides()[checkBox.getID()] = ((GuiCheckBox) checkBox).checked;
-            } else {
-                switch (checkBox.getID()) {
-                    case 6:
-                        ((ICondition) widget).setAndFunction(false);
-                        break;
-                    case 7:
-                        ((ICondition) widget).setAndFunction(true);
-                        break;
-                    default:
-                        ((ICondition) widget).setOperator(ICondition.Operator.values()[checkBox.getID() - 8]);
-                }
-            }
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        super.render(mouseX, mouseY, partialTicks);
+
+        if (isSidedWidget()) {
+            font.drawString("Accessing sides:", guiLeft + 4, guiTop + 20, 0xFF404060);
         }
-        super.actionPerformed(checkBox);
+        String s = progWidget.getExtraStringInfo();
+        font.drawString(s, guiLeft + xSize / 2f - font.getStringWidth(s) / 2f, guiTop + 120, 0xFF404060);
     }
 
-    @Override
-    public void onKeyTyped(IGuiWidget widget) {
-        if (requiresNumber()) {
-            ((ICondition) this.widget).setRequiredCount(NumberUtils.toInt(textField.getText()));
+    public static class Entity extends GuiProgWidgetCondition<ProgWidgetEntityCondition> {
+        public Entity(ProgWidgetEntityCondition widget, GuiProgrammer guiProgrammer) {
+            super(widget, guiProgrammer);
         }
-        super.onKeyTyped(widget);
-    }
 
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        if (isSidedWidget()) fontRenderer.drawString("Accessing sides:", guiLeft + 4, guiTop + 20, 0xFF404060);
-        fontRenderer.drawString(widget.getExtraStringInfo(), guiLeft + xSize / 2 - fontRenderer.getStringWidth(widget.getExtraStringInfo()) / 2, guiTop + 120, 0xFF404060);
-    }
+        @Override
+        protected boolean isSidedWidget() {
+            return false;
+        }
 
+        @Override
+        protected boolean isUsingAndOr() {
+            return false;
+        }
+    }
 }

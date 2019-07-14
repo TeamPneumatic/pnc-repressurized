@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.recipes.factories;
 
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemBasicDrone;
-import me.desht.pneumaticcraft.common.item.Itemss;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.crafting.IRecipeFactory;
@@ -31,7 +31,7 @@ public class DroneUpgradeRecipeFactory implements IRecipeFactory {
 
         @Nonnull
         @Override
-        public ItemStack getCraftingResult(InventoryCrafting inv) {
+        public ItemStack getCraftingResult(CraftingInventory inv) {
             ItemStack basicDrone = ItemStack.EMPTY;
             for (int i = 0; i < inv.getSizeInventory(); i++) {
                 ItemStack stack = inv.getStackInSlot(i);
@@ -40,10 +40,10 @@ public class DroneUpgradeRecipeFactory implements IRecipeFactory {
                     break;
                 }
             }
-            ItemStack drone = new ItemStack(Itemss.DRONE);
-            NBTTagCompound droneTag = basicDrone.getTagCompound();
+            ItemStack drone = new ItemStack(ModItems.DRONE);
+            CompoundNBT droneTag = basicDrone.getTagCompound();
             if (droneTag == null) {
-                droneTag = new NBTTagCompound();
+                droneTag = new CompoundNBT();
                 basicDrone.setTagCompound(droneTag);
             }
             drone.setTagCompound(droneTag);
@@ -51,14 +51,14 @@ public class DroneUpgradeRecipeFactory implements IRecipeFactory {
         }
 
         @Override
-        public boolean matches(InventoryCrafting inv, World world) {
+        public boolean matches(CraftingInventory inv, World world) {
             boolean hasDrone = false, hasPCB = false;
             for (int i = 0; i < inv.getSizeInventory(); i++) {
                 ItemStack stack = inv.getStackInSlot(i);
                 if (stack.getItem() instanceof ItemBasicDrone) {
                     if (!hasDrone) hasDrone = true;
                     else return false;
-                } else if (stack.getItem() == Itemss.PRINTED_CIRCUIT_BOARD) {
+                } else if (stack.getItem() == ModItems.PRINTED_CIRCUIT_BOARD) {
                     if (!hasPCB) hasPCB = true;
                     else return false;
                 }

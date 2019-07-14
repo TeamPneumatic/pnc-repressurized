@@ -1,21 +1,21 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerPlasticMixer;
-import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry;
 import me.desht.pneumaticcraft.common.recipes.PlasticMixerRegistry.PlasticMixerRecipe;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPlasticMixer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.Fluid;
@@ -40,7 +40,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
     private Fluid lastFluid;
     private ItemStack lastItemStack = ItemStack.EMPTY;
 
-    public GuiPlasticMixer(InventoryPlayer player, TileEntityPlasticMixer te) {
+    public GuiPlasticMixer(PlayerInventory player, TileEntityPlasticMixer te) {
         super(new ContainerPlasticMixer(player, te), te, Textures.GUI_PLASTIC_MIXER);
     }
 
@@ -59,10 +59,10 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
                 }
             }
         });
-        addWidget(new WidgetTank(3, guiLeft + 152, guiTop + 14, te.getTank()));
+        addWidget(new WidgetTank(guiLeft + 152, guiTop + 14, te.getTank()));
 
         PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(te.getTank().getFluid());
-        Item targetItem = recipe == null ? Itemss.PLASTIC : recipe.getItemStack().getItem();
+        Item targetItem = recipe == null ? ModItems.PLASTIC : recipe.getItemStack().getItem();
         selectionTab = addAnimatedStat("gui.tab.plasticMixer.plasticSelection", new ItemStack(targetItem, 1, 1), 0xFF005500, false);
         selectionTab.addPadding(12, 88 / fontRenderer.getStringWidth(" "));
 
@@ -74,15 +74,15 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
                 buttons[index] = new GuiButtonSpecial(index + 1, x * 21 + 15, y * 21 + 30, 20, 20, "")
                         .setRenderStacks(stack)
                         .setTooltipText(stack.getDisplayName());
-                selectionTab.addWidget(buttons[index]);
+                selectionTab.addSubWidget(buttons[index]);
             }
         }
         noItemsLabel = new WidgetLabel(15, 34, TextFormatting.GOLD.toString() + TextFormatting.ITALIC + I18n.format("gui.tab.plasticMixer.tankEmpty"));
-        selectionTab.addWidget(noItemsLabel);
+        selectionTab.addSubWidget(noItemsLabel);
         amountLabel = new WidgetLabel(15, 118, "");
-        selectionTab.addWidget(amountLabel);
+        selectionTab.addSubWidget(amountLabel);
 
-        selectionTab.addWidget(lockSelection = new GuiCheckBox(17, 15, 18, 0xFF000000, "gui.plasticMixer.lockSelection")
+        selectionTab.addSubWidget(lockSelection = new GuiCheckBox(17, 15, 18, 0xFF000000, "gui.plasticMixer.lockSelection")
                 .setChecked(te.lockSelection)
                 .setTooltip(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.plasticMixer.lockSelection.tooltip"))));
 
@@ -133,7 +133,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
         }
         lastFluid = getFluid();
 
-        ItemStack input = te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_INPUT);
+        ItemStack input = te.getInventoryCap().getStackInSlot(TileEntityPlasticMixer.INV_INPUT);
         if (!ItemStack.areItemsEqual(input, lastItemStack)) {
             PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(input);
             if (recipe != null && recipe.allowMelting()) {
@@ -142,7 +142,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
                 tempWidget.setScales(273);
             }
         }
-        lastItemStack = te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_OUTPUT).copy();
+        lastItemStack = te.getInventoryCap().getStackInSlot(TileEntityPlasticMixer.INV_OUTPUT).copy();
     }
 
     private Fluid getFluid() {
@@ -180,7 +180,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
     @Override
     protected void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
-        ItemStack stack = te.getPrimaryInventory().getStackInSlot(0);
+        ItemStack stack = te.getInventoryCap().getStackInSlot(0);
         if (te.getTank().getFluidAmount() == 0) {
             if (stack.isEmpty()) {
                 curInfo.add("gui.tab.problems.plasticMixer.noPlastic");
@@ -195,13 +195,13 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
                 curInfo.add("gui.tab.problems.plasticMixer.plasticOverflow");
             }
         }
-        if (te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_DYE_RED).isEmpty()) {
+        if (te.getInventoryCap().getStackInSlot(TileEntityPlasticMixer.INV_DYE_RED).isEmpty()) {
             curInfo.add(I18n.format("gui.tab.problems.plasticMixer.noDye", new ItemStack(Items.DYE, 1, 1).getDisplayName()));
         }
-        if (te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_DYE_GREEN).isEmpty()) {
+        if (te.getInventoryCap().getStackInSlot(TileEntityPlasticMixer.INV_DYE_GREEN).isEmpty()) {
             curInfo.add(I18n.format("gui.tab.problems.plasticMixer.noDye", new ItemStack(Items.DYE, 1, 2).getDisplayName()));
         }
-        if (te.getPrimaryInventory().getStackInSlot(TileEntityPlasticMixer.INV_DYE_BLUE).isEmpty()  ) {
+        if (te.getInventoryCap().getStackInSlot(TileEntityPlasticMixer.INV_DYE_BLUE).isEmpty()  ) {
             curInfo.add(I18n.format("gui.tab.problems.plasticMixer.noDye", new ItemStack(Items.DYE, 1, 4).getDisplayName()));
         }
     }
@@ -218,7 +218,7 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
     protected void addWarnings(List<String> curInfo) {
         super.addWarnings(curInfo);
 
-        if (nExposedFaces > 0 && !te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
+        if (nExposedFaces > 0 && !te.getInventoryCap().getStackInSlot(0).isEmpty()) {
             curInfo.add(I18n.format("gui.tab.problems.exposedFaces", nExposedFaces, 6));
         }
     }

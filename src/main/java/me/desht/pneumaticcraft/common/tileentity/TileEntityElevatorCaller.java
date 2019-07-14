@@ -1,13 +1,13 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.block.BlockElevatorCaller;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
 
@@ -19,7 +19,11 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     @DescSynced
     @Nonnull
     private ItemStack camoStack = ItemStack.EMPTY;
-    private IBlockState camoState;
+    private BlockState camoState;
+
+    public TileEntityElevatorCaller() {
+        super(ModTileEntityTypes.ELEVATOR_CALLER);
+    }
 
     public void setEmittingRedstone(boolean emittingRedstone) {
         if (emittingRedstone != this.emittingRedstone) {
@@ -29,8 +33,8 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
         if (shouldUpdateNeighbors) {
             updateNeighbours();
             shouldUpdateNeighbors = false;
@@ -49,45 +53,41 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
         emittingRedstone = tag.getBoolean("emittingRedstone");
-        thisFloor = tag.getInteger("thisFloor");
+        thisFloor = tag.getInt("thisFloor");
         camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
         camoState = ICamouflageableTE.getStateForStack(camoStack);
         shouldUpdateNeighbors = tag.getBoolean("shouldUpdateNeighbors");
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setBoolean("emittingRedstone", emittingRedstone);
-        tag.setInteger("thisFloor", thisFloor);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putBoolean("emittingRedstone", emittingRedstone);
+        tag.putInt("thisFloor", thisFloor);
         ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
-        tag.setBoolean("shouldUpdateNeighbors", shouldUpdateNeighbors);
+        tag.putBoolean("shouldUpdateNeighbors", shouldUpdateNeighbors);
         return tag;
     }
 
     @Override
-    public void readFromPacket(NBTTagCompound tag) {
+    public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
-        int floorAmount = tag.getInteger("floors");
+        int floorAmount = tag.getInt("floors");
         floors = new ElevatorButton[floorAmount];
         for (int i = 0; i < floorAmount; i++) {
-            NBTTagCompound buttonTag = tag.getCompoundTag("floor" + i);
-            floors[i] = new ElevatorButton();
-            floors[i].readFromNBT(buttonTag);
+            floors[i] = new ElevatorButton(tag.getCompound("floor" + i));
         }
     }
 
     @Override
-    public void writeToPacket(NBTTagCompound tag) {
+    public void writeToPacket(CompoundNBT tag) {
         super.writeToPacket(tag);
-        tag.setInteger("floors", floors.length);
+        tag.putInt("floors", floors.length);
         for (ElevatorButton floor : floors) {
-            NBTTagCompound buttonTag = new NBTTagCompound();
-            floor.writeToNBT(buttonTag);
-            tag.setTag("floor" + floor.floorNumber, buttonTag);
+            tag.put("floor" + floor.floorNumber, floor.writeToNBT(new CompoundNBT()));
         }
     }
 
@@ -98,6 +98,11 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         if (poweredRedstone > 0 && !wasPowered) {
             BlockElevatorCaller.setSurroundingElevators(getWorld(), getPos(), thisFloor);
         }
+    }
+
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
     }
 
     void setFloors(ElevatorButton[] floors, int thisFloorLevel) {
@@ -111,18 +116,17 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
     }
 
     @Override
-    public IBlockState getCamouflage() {
+    public BlockState getCamouflage() {
         return camoState;
     }
 
     @Override
-    public void setCamouflage(IBlockState state) {
+    public void setCamouflage(BlockState state) {
         camoState = state;
         camoStack = ICamouflageableTE.getStackForState(state);
         sendDescriptionPacket();
@@ -130,55 +134,53 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     public static class ElevatorButton {
-        public double posX, posY, width, height;
+        public final double posX, posY, width, height;
+        public final int floorNumber;
+        public final int floorHeight;
         public float red, green, blue;
-        public String buttonText = "";
-        public int floorNumber;
-        public int floorHeight;
+        public String buttonText;
 
-        public ElevatorButton(double posX, double posY, double width, double height, int floorNumber, int floorHeight) {
+        ElevatorButton(double posX, double posY, double width, double height, int floorNumber, int floorHeight) {
             this.posX = posX;
             this.posY = posY;
             this.width = width;
             this.height = height;
             this.floorNumber = floorNumber;
             this.floorHeight = floorHeight;
-            buttonText = floorNumber + 1 + "";
+            this.buttonText = floorNumber + 1 + "";
         }
 
-        public ElevatorButton() {
+        ElevatorButton(CompoundNBT tag) {
+            this.posX = tag.getDouble("posX");
+            this.posY = tag.getDouble("posY");
+            this.width = tag.getDouble("width");
+            this.height = tag.getDouble("height");
+            this.buttonText = tag.getString("buttonText");
+            this.floorNumber = tag.getInt("floorNumber");
+            this.floorHeight = tag.getInt("floorHeight");
+            this.red = tag.getFloat("red");
+            this.green = tag.getFloat("green");
+            this.blue = tag.getFloat("blue");
         }
 
-        public void setColor(float red, float green, float blue) {
+        void setColor(float red, float green, float blue) {
             this.red = red;
             this.green = green;
             this.blue = blue;
         }
 
-        public void writeToNBT(NBTTagCompound tag) {
-            tag.setDouble("posX", posX);
-            tag.setDouble("posY", posY);
-            tag.setDouble("width", width);
-            tag.setDouble("height", height);
-            tag.setString("buttonText", buttonText);
-            tag.setInteger("floorNumber", floorNumber);
-            tag.setInteger("floorHeight", floorHeight);
-            tag.setFloat("red", red);
-            tag.setFloat("green", green);
-            tag.setFloat("blue", blue);
-        }
-
-        public void readFromNBT(NBTTagCompound tag) {
-            posX = tag.getDouble("posX");
-            posY = tag.getDouble("posY");
-            width = tag.getDouble("width");
-            height = tag.getDouble("height");
-            buttonText = tag.getString("buttonText");
-            floorNumber = tag.getInteger("floorNumber");
-            floorHeight = tag.getInteger("floorHeight");
-            red = tag.getFloat("red");
-            green = tag.getFloat("green");
-            blue = tag.getFloat("blue");
+        public CompoundNBT writeToNBT(CompoundNBT tag) {
+            tag.putDouble("posX", posX);
+            tag.putDouble("posY", posY);
+            tag.putDouble("width", width);
+            tag.putDouble("height", height);
+            tag.putString("buttonText", buttonText);
+            tag.putInt("floorNumber", floorNumber);
+            tag.putInt("floorHeight", floorHeight);
+            tag.putFloat("red", red);
+            tag.putFloat("green", green);
+            tag.putFloat("blue", blue);
+            return tag;
         }
     }
 }

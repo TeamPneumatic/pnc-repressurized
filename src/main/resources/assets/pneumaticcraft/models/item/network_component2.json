@@ -1,6 +1,6 @@
 {
    "parent" : "item/generated",
    "textures" : {
-      "layer0" : "pneumaticcraft:items/network_components/network_data_storage"
+      "layer0" : "pneumaticcraft:item/network_components/network_data_storage"
    }
 }

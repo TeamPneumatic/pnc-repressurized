@@ -7,8 +7,13 @@ import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import org.apache.commons.lang3.Validate;
 
+import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ItemRegistry implements IItemRegistry {
 
@@ -22,19 +27,13 @@ public class ItemRegistry implements IItemRegistry {
     }
 
     @Override
-    public void registerInventoryItem(IInventoryItem handler) {
-        if (handler == null) throw new NullPointerException("IInventoryItem is null!");
+    public void registerInventoryItem(@Nonnull IInventoryItem handler) {
+        Validate.notNull(handler);
         inventoryItems.add(handler);
     }
 
     @Override
-    public Item getUpgrade(EnumUpgrade type) {
-        return Itemss.upgrades.get(type);
-    }
-
-    @Override
-    public void registerUpgradeAcceptor(IUpgradeAcceptor upgradeAcceptor) {
-        if (upgradeAcceptor == null) throw new NullPointerException("Upgrade acceptor is null!");
+    public void registerUpgradeAcceptor(@Nonnull IUpgradeAcceptor upgradeAcceptor) {
         Set<Item> applicableUpgrades = upgradeAcceptor.getApplicableUpgrades();
         if (applicableUpgrades != null) {
             for (Item applicableUpgrade : applicableUpgrades) {
@@ -45,15 +44,15 @@ public class ItemRegistry implements IItemRegistry {
     }
 
     @Override
-    public void addTooltip(Item upgrade, List<String> tooltip) {
+    public void addTooltip(Item upgrade, List<ITextComponent> tooltip) {
         List<IUpgradeAcceptor> acceptors = upgradeToAcceptors.get(upgrade);
         if (acceptors != null) {
             List<String> tempList = new ArrayList<>(acceptors.size());
             for (IUpgradeAcceptor acceptor : acceptors) {
-                tempList.add("\u2022 " + I18n.format(acceptor.getName()));
+                tempList.add("\u2022 " + I18n.format(acceptor.getUpgradeAcceptorTranslationKey()));
             }
             Collections.sort(tempList);
-            tooltip.addAll(tempList);
+            tooltip.addAll(tempList.stream().map(StringTextComponent::new).collect(Collectors.toList()));
         }
     }
 

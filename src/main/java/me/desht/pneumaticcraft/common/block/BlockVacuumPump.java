@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import me.desht.pneumaticcraft.lib.BBConstants;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -22,14 +22,14 @@ public class BlockVacuumPump extends BlockPneumaticCraftModeled {
             BBConstants.VACUUM_PUMP_MAX_POS, BBConstants.VACUUM_PUMP_MAX_POS_TOP, BBConstants.VACUUM_PUMP_MAX_POS);
 
 
-    BlockVacuumPump() {
+    public BlockVacuumPump() {
         super(Material.IRON, "vacuum_pump");
         setBlockBounds(BASE_BOUNDS);
     }
 
     @Nullable
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
+    public AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return COLL_BOUNDS;
     }
 

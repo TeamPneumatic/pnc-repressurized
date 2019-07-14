@@ -2,7 +2,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
 
 public class PacketUpdatePressureModule extends PacketUpdateTubeModule<PacketUpdatePressureModule> {
     private int fieldId;
@@ -17,6 +18,12 @@ public class PacketUpdatePressureModule extends PacketUpdateTubeModule<PacketUpd
         this.value = value;
     }
 
+    public PacketUpdatePressureModule(PacketBuffer buffer) {
+        super(buffer);
+        this.fieldId = buffer.readInt();
+        this.value = buffer.readFloat();
+    }
+
     @Override
     public void toBytes(ByteBuf buffer) {
         super.toBytes(buffer);
@@ -25,20 +32,13 @@ public class PacketUpdatePressureModule extends PacketUpdateTubeModule<PacketUpd
     }
 
     @Override
-    public void fromBytes(ByteBuf buffer) {
-        super.fromBytes(buffer);
-        fieldId = buffer.readInt();
-        value = buffer.readFloat();
-    }
-
-    @Override
-    protected void onModuleUpdate(TubeModule module, PacketUpdatePressureModule message, EntityPlayer player) {
-        if (message.fieldId == 0) {
-            module.lowerBound = message.value;
-        } else if (message.fieldId == 1) {
-            module.higherBound = message.value;
-        } else if (message.fieldId == 2) {
-            module.advancedConfig = message.value > 0.5F;
+    protected void onModuleUpdate(TubeModule module, PlayerEntity player) {
+        if (fieldId == 0) {
+            module.lowerBound = value;
+        } else if (fieldId == 1) {
+            module.higherBound = value;
+        } else if (fieldId == 2) {
+            module.advancedConfig = value > 0.5F;
         }
         if (!player.world.isRemote) {
             module.sendDescriptionPacket();

@@ -1,22 +1,29 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.item.IPressurizable;
+import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemArmor;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
 public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityChargingStation> {
 
-    public ContainerChargingStation(InventoryPlayer inventoryPlayer, TileEntityChargingStation te) {
-        super(te);
+    public ContainerChargingStation(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+        this(i, playerInventory, getTilePos(buffer));
+    }
 
-        addSlotToContainer(new SlotItemHandler(te.getPrimaryInventory(), 0, 91, 39) {
+    public ContainerChargingStation(int i, PlayerInventory inventoryPlayer, BlockPos pos) {
+        super(ModContainerTypes.CHARGING_STATION, i, inventoryPlayer, pos);
+
+        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 91, 39) {
             @Override
             public int getSlotStackLimit() {
                 return 1;
@@ -32,7 +39,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
 
     @Override
     @Nonnull
-    public ItemStack transferStackInSlot(EntityPlayer player, int slot) {
+    public ItemStack transferStackInSlot(PlayerEntity player, int slot) {
         Slot srcSlot = inventorySlots.get(slot);
         if (srcSlot == null || !srcSlot.getHasStack()) {
             return ItemStack.EMPTY;
@@ -40,7 +47,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
         ItemStack srcStack = srcSlot.getStack().copy();
         ItemStack copyOfSrcStack = srcStack.copy();
 
-        if (slot == 0 && srcStack.getItem() instanceof ItemArmor) {
+        if (slot == 0 && srcStack.getItem() instanceof ArmorItem) {
             // chargeable slot - move to armor if appropriate, player inv otherwise
             if (!mergeItemStack(srcStack, 5, 9, false)
                     && !mergeItemStack(srcStack, playerSlotsStart, playerSlotsStart + 36, false))

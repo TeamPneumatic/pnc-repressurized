@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.heat.behaviour;
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class HeatBehaviourManager {
     private static final HeatBehaviourManager INSTANCE = new HeatBehaviourManager();
-    private final Map<String, HeatBehaviour> behaviours = new HashMap<>();
+    private final Map<String, HeatBehaviour> behaviourRegistry = new HashMap<>();
 
     public static HeatBehaviourManager getInstance() {
         return INSTANCE;
@@ -31,9 +31,9 @@ public class HeatBehaviourManager {
         if (behaviour == null) throw new IllegalArgumentException("Can't register a null behaviour!");
         try {
             HeatBehaviour ins = behaviour.newInstance();
-            HeatBehaviour old = behaviours.put(ins.getId(), ins);
+            HeatBehaviour old = behaviourRegistry.put(ins.getId(), ins);
             if (old != null)
-                Log.warning("Registered a heat behaviour that has the same id as an already registered one. The old one will be discarded. Old behaviour class: " + old.getClass() + ". New class: " + behaviour.getClass());
+                Log.warning("Registered a heat behaviour that has the same id as an already registered one. The old one will be discarded. Old behaviour class: " + old.getClass().getName() + ". New class: " + behaviour.getName());
         } catch (InstantiationException e) {
             throw new IllegalArgumentException("The behaviour class doesn't have a nullary constructor, or is abstract! Class: " + behaviour);
         } catch (IllegalAccessException e) {
@@ -42,11 +42,11 @@ public class HeatBehaviourManager {
     }
 
     HeatBehaviour getBehaviour(String id) {
-        return behaviours.get(id);
+        return behaviourRegistry.get(id);
     }
 
-    public HeatBehaviour getNewBehaviourForId(String id) {
-        HeatBehaviour behaviour = behaviours.get(id);
+    public HeatBehaviour makeNewBehaviourForId(String id) {
+        HeatBehaviour behaviour = behaviourRegistry.get(id);
         if (behaviour != null) {
             try {
                 return behaviour.getClass().newInstance();
@@ -60,8 +60,8 @@ public class HeatBehaviourManager {
         }
     }
 
-    public void addHeatBehaviours(World world, BlockPos pos, EnumFacing direction, IHeatExchangerLogic logic, List<HeatBehaviour> list) {
-        for (HeatBehaviour behaviour : behaviours.values()) {
+    public void addHeatBehaviours(World world, BlockPos pos, Direction direction, IHeatExchangerLogic logic, List<HeatBehaviour> list) {
+        for (HeatBehaviour behaviour : behaviourRegistry.values()) {
             String id = behaviour.getId();
             behaviour.initialize(id, logic, world, pos, direction);
             if (behaviour.isApplicable()) {

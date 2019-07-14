@@ -6,10 +6,10 @@
     }
   },
   "variants": {
-    "normal": { "model": "pneumaticcraft:elevator_frame" },
+    "normal": { "model": "pneumaticcraft:block/elevator_frame" },
     "inventory": [
       {
-        "model": "pneumaticcraft:elevator_frame",
+        "model": "pneumaticcraft:block/elevator_frame",
         "transform": "forge:default-block"
       }
     ],
@@ -18,7 +18,7 @@
       "false": {
         "submodel": {
           "ne": {
-            "model": "pneumaticcraft:elevator_frame_single",
+            "model": "pneumaticcraft:block/elevator_frame_single",
             "y": 90
           }
         }
@@ -29,7 +29,7 @@
       "false": {
         "submodel": {
           "nw": {
-            "model": "pneumaticcraft:elevator_frame_single"
+            "model": "pneumaticcraft:block/elevator_frame_single"
           }
         }
       }
@@ -39,7 +39,7 @@
       "false": {
         "submodel": {
           "sw": {
-            "model": "pneumaticcraft:elevator_frame_single",
+            "model": "pneumaticcraft:block/elevator_frame_single",
             "y": 270
           }
         }
@@ -50,7 +50,7 @@
       "false": {
         "submodel": {
           "se": {
-            "model": "pneumaticcraft:elevator_frame_single",
+            "model": "pneumaticcraft:block/elevator_frame_single",
             "y": 180
           }
         }

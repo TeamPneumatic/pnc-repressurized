@@ -5,23 +5,30 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.Blockss;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nonnull;
@@ -32,18 +39,18 @@ import java.util.Map;
 import java.util.Optional;
 
 public class TileEntityRefinery extends TileEntityTickableBase
-        implements IHeatExchanger, IRedstoneControlled, IComparatorSupport, ISerializableTanks, ISmartFluidSync {
+        implements IHeatExchanger, IRedstoneControlled, IComparatorSupport, ISerializableTanks, ISmartFluidSync, INamedContainerProvider {
 
     @GuiSynced
     @DescSynced
     @LazySynced
     private final RefineryInputTank inputTank = new RefineryInputTank(PneumaticValues.NORMAL_TANK_CAPACITY);
-    
+
     @GuiSynced
     @DescSynced
     @LazySynced
     private final SmartSyncTank outputTank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY, 2);
-    
+
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
     
@@ -72,9 +79,12 @@ public class TileEntityRefinery extends TileEntityTickableBase
     private int prevRefineryCount = -1;
 
     private final RefineryFluidHandler refineryFluidHandler = new RefineryFluidHandler();
+    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> refineryFluidHandler);
+
     private boolean searchForRecipe = true;
 
     public TileEntityRefinery() {
+        super(ModTileEntityTypes.REFINERY);
     }
 
     public static boolean isInputFluidValid(Fluid fluid, int size) {
@@ -82,13 +92,8 @@ public class TileEntityRefinery extends TileEntityTickableBase
     }
 
     @Override
-    public String getName() {
-        return Blockss.REFINERY.getTranslationKey();
-    }
-
-    @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
         if (!getWorld().isRemote && isMaster()) {
             lastProgress = 0;
@@ -131,7 +136,7 @@ public class TileEntityRefinery extends TileEntityTickableBase
             updateComparatorValue(refineries, hasWork);
         } else if (getWorld().isRemote && lastProgress > 0) {
             for (int i = 0; i < lastProgress; i++) {
-                ClientUtils.emitParticles(getWorld(), getPos().offset(EnumFacing.UP, refineryCount - 1), EnumParticleTypes.SMOKE_LARGE);
+                ClientUtils.emitParticles(getWorld(), getPos().offset(Direction.UP, refineryCount - 1), ParticleTypes.SMOKE);
             }
         }
     }
@@ -192,8 +197,8 @@ public class TileEntityRefinery extends TileEntityTickableBase
         List<TileEntityRefinery> refineries = new ArrayList<>();
         refineries.add(this);
         TileEntityRefinery refinery = this;
-        while (refinery.getCachedNeighbor(EnumFacing.UP) instanceof TileEntityRefinery) {
-            refinery = (TileEntityRefinery) refinery.getCachedNeighbor(EnumFacing.UP);
+        while (refinery.getCachedNeighbor(Direction.UP) instanceof TileEntityRefinery) {
+            refinery = (TileEntityRefinery) refinery.getCachedNeighbor(Direction.UP);
             refineries.add(refinery);
         }
         return refineries;
@@ -228,8 +233,8 @@ public class TileEntityRefinery extends TileEntityTickableBase
 
     public TileEntityRefinery getMasterRefinery() {
         TileEntityRefinery master = this;
-        while (master.getCachedNeighbor(EnumFacing.DOWN) instanceof TileEntityRefinery) {
-            master = (TileEntityRefinery) master.getCachedNeighbor(EnumFacing.DOWN);
+        while (master.getCachedNeighbor(Direction.DOWN) instanceof TileEntityRefinery) {
+            master = (TileEntityRefinery) master.getCachedNeighbor(Direction.DOWN);
         }
         return master;
     }
@@ -243,8 +248,8 @@ public class TileEntityRefinery extends TileEntityTickableBase
         boolean isPoweredByRedstone = poweredRedstone > 0;
 
         TileEntityRefinery refinery = this;
-        while (refinery.poweredRedstone == 0 && refinery.getCachedNeighbor(EnumFacing.UP) instanceof TileEntityRefinery) {
-            refinery = (TileEntityRefinery) refinery.getCachedNeighbor(EnumFacing.UP);
+        while (refinery.poweredRedstone == 0 && refinery.getCachedNeighbor(Direction.UP) instanceof TileEntityRefinery) {
+            refinery = (TileEntityRefinery) refinery.getCachedNeighbor(Direction.UP);
             isPoweredByRedstone = refinery.poweredRedstone > 0;
         }
 
@@ -257,6 +262,11 @@ public class TileEntityRefinery extends TileEntityTickableBase
                 return !isPoweredByRedstone;
         }
         return false;
+    }
+
+    @Override
+    public IItemHandlerModifiable getPrimaryInventory() {
+        return null;
     }
 
     public FluidTank getInputTank() {
@@ -272,34 +282,26 @@ public class TileEntityRefinery extends TileEntityTickableBase
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
 
-        NBTTagCompound tankTag = new NBTTagCompound();
-        inputTank.writeToNBT(tankTag);
-        tag.setTag("oilTank", tankTag);
-
-        tankTag = new NBTTagCompound();
-        outputTank.writeToNBT(tankTag);
-        tag.setTag("outputTank", tankTag);
-
-        tag.setByte("redstoneMode", (byte) redstoneMode);
+        tag.putByte("redstoneMode", (byte) redstoneMode);
 
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        inputTank.readFromNBT(tag.getCompoundTag("oilTank"));
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+
         inputAmountScaled = inputTank.getScaledFluidAmount();
-        outputTank.readFromNBT(tag.getCompoundTag("outputTank"));
         outputAmountScaled = outputTank.getScaledFluidAmount();
+
         redstoneMode = tag.getByte("redstoneMode");
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(EnumFacing side) {
+    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
         return heatExchanger;
     }
 
@@ -309,8 +311,8 @@ public class TileEntityRefinery extends TileEntityTickableBase
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, EntityPlayer player) {
-        if (buttonID == 0) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
         }
@@ -325,7 +327,7 @@ public class TileEntityRefinery extends TileEntityTickableBase
         }
         if (value != comparatorValue) {
             comparatorValue = value;
-            getWorld().updateComparatorOutputLevel(getPos(), getBlockType());
+            getWorld().updateComparatorOutputLevel(getPos(), getBlockState().getBlock());
         }
     }
 
@@ -334,18 +336,13 @@ public class TileEntityRefinery extends TileEntityTickableBase
         return getMasterRefinery().comparatorValue;
     }
 
+    @Nonnull
     @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
-    }
-
-    @Nullable
-    @Override
-    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(refineryFluidHandler);
+    public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            return fluidCap.cast();
         } else {
-            return super.getCapability(capability, facing);
+            return super.getCapability(cap, side);
         }
     }
 
@@ -362,6 +359,17 @@ public class TileEntityRefinery extends TileEntityTickableBase
         } else if (tankIndex == 2) {
             outputAmountScaled = amount;
         }
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getDisplayNameInternal();
+    }
+
+    @Nullable
+    @Override
+    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        return new ContainerRefinery(i, playerInventory, getPos());
     }
 
     private class RefineryInputTank extends SmartSyncTank {

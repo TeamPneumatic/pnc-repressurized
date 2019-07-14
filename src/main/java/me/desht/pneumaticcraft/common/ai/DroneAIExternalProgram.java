@@ -5,9 +5,9 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetExternalProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -23,7 +23,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
     private final DroneAIManager subAI, mainAI;
     private final Set<BlockPos> traversedPositions = new HashSet<>();
     private int curSlot;
-    private NBTTagCompound curProgramTag; //Used to see if changes have been made to the program while running it.
+    private CompoundNBT curProgramTag; //Used to see if changes have been made to the program while running it.
 
     public DroneAIExternalProgram(IDroneBase drone, DroneAIManager mainAI, ProgWidgetExternalProgram widget) {
         super(drone, widget);
@@ -51,19 +51,21 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
         if (traversedPositions.add(pos)) {
             curSlot = 0;
             TileEntity te = drone.world().getTileEntity(pos);
-            return te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+            return te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
         }
         return false;
     }
 
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
-        IItemHandler inv = IOHelper.getInventoryForTE(drone.world().getTileEntity(pos));
-        if (inv == null) return false;
+        return IOHelper.getInventoryForTE(drone.world().getTileEntity(pos)).map(this::handleInv).orElse(false);
+    }
+
+    private boolean handleInv(IItemHandler inv) {
         if (curProgramTag != null) {
             if (curSlot < inv.getSlots()) {
                 ItemStack stack = inv.getStackInSlot(curSlot);
-                if (curProgramTag.equals(stack.getTagCompound())) {
+                if (curProgramTag.equals(stack.getTag())) {
                     subAI.onUpdateTasks();
                     if (subAI.isIdling() || isRunningSameProgram(subAI.getCurrentAI())) {
                         curProgramTag = null;
@@ -92,10 +94,10 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                         }
 
                         if (areWidgetsValid) {
-                            if (widget.shareVariables) mainAI.connectVariables(subAI);
+                            if (progWidget.shareVariables) mainAI.connectVariables(subAI);
                             subAI.getDrone().getAIManager().setLabel("Main");
                             subAI.setWidgets(widgets);
-                            curProgramTag = stack.getTagCompound();
+                            curProgramTag = stack.getTag();
                             if (!subAI.isIdling()) {
                                 return true;
                             }
@@ -109,7 +111,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
     }
 
     //Prevent a memory leak, as a result of the same External program recursively calling itself.
-    private boolean isRunningSameProgram(EntityAIBase ai) {
+    private boolean isRunningSameProgram(Goal ai) {
         return ai instanceof DroneAIExternalProgram && curProgramTag.equals(((DroneAIExternalProgram) ai).curProgramTag);
     }
 

@@ -2,31 +2,35 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.lib.EnumCustomParticleType;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.particles.IParticleData;
+import net.minecraft.particles.ParticleType;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.function.Supplier;
 
 /**
- * MineChess
- *
- * @author MineMaarten
- *         www.minemaarten.com
- * @license Lesser GNU Public License v3 (http://www.gnu.org/licenses/lgpl.html)
+ * Received on: CLIENT
+ * Sent by server to spawn a particle (with support for multiple particles in an random area around the target point)
  */
+public class PacketSpawnParticle extends LocationDoublePacket {
 
-public class PacketSpawnParticle extends LocationDoublePacket<PacketSpawnParticle> {
-
-    private double dx, dy, dz;
-    private int particleId;
+    private IParticleData particle;
+    private double dx;
+    private double dy;
+    private double dz;
     private int numParticles;
     private double rx, ry, rz;
 
     public PacketSpawnParticle() {
     }
 
-    public PacketSpawnParticle(EnumParticleTypes particle, double x, double y, double z, double dx, double dy, double dz) {
+    public PacketSpawnParticle(IParticleData particle, double x, double y, double z, double dx, double dy, double dz) {
         super(x, y, z);
-        particleId = particle.ordinal();
+        this.particle = particle;
         this.dx = dx;
         this.dy = dy;
         this.dz = dz;
@@ -34,7 +38,7 @@ public class PacketSpawnParticle extends LocationDoublePacket<PacketSpawnParticl
         this.rx = this.ry = this.rz = 0d;
     }
 
-    public PacketSpawnParticle(EnumParticleTypes particle, double x, double y, double z, double dx, double dy, double dz, int numParticles, double rx, double ry, double rz) {
+    public PacketSpawnParticle(IParticleData particle, double x, double y, double z, double dx, double dy, double dz, int numParticles, double rx, double ry, double rz) {
         this(particle, x, y, z, dx, dy, dz);
         this.numParticles = numParticles;
         this.rx = rx;
@@ -42,43 +46,10 @@ public class PacketSpawnParticle extends LocationDoublePacket<PacketSpawnParticl
         this.rz = rz;
     }
 
-    public PacketSpawnParticle(EnumCustomParticleType particle, double x, double y, double z, double dx, double dy, double dz) {
-        super(x, y, z);
-        particleId = EnumParticleTypes.values().length + particle.ordinal();
-        this.dx = dx;
-        this.dy = dy;
-        this.dz = dz;
-        this.numParticles = 1;
-        this.rx = this.ry = this.rz = 0d;
-    }
-
-    public PacketSpawnParticle(EnumCustomParticleType particle, double x, double y, double z, double dx, double dy, double dz, int numParticles, double rx, double ry, double rz) {
-        this(particle, x, y, z, dx, dy, dz);
-        this.numParticles = numParticles;
-        this.rx = rx;
-        this.ry = ry;
-        this.rz = rz;
-    }
-
-    @Override
-    public void toBytes(ByteBuf buffer) {
-        super.toBytes(buffer);
-        buffer.writeInt(particleId);
-        buffer.writeDouble(dx);
-        buffer.writeDouble(dy);
-        buffer.writeDouble(dz);
-        buffer.writeInt(numParticles);
-        if (numParticles > 1) {
-            buffer.writeDouble(rx);
-            buffer.writeDouble(ry);
-            buffer.writeDouble(rz);
-        }
-    }
-
-    @Override
-    public void fromBytes(ByteBuf buffer) {
-        super.fromBytes(buffer);
-        particleId = buffer.readInt();
+    public PacketSpawnParticle(PacketBuffer buffer) {
+        super(buffer);
+        ParticleType<?> type = ForgeRegistries.PARTICLE_TYPES.getValue(new ResourceLocation(PacketUtil.readUTF8String(buffer)));
+        assert type != null;
         dx = buffer.readDouble();
         dy = buffer.readDouble();
         dz = buffer.readDouble();
@@ -88,25 +59,40 @@ public class PacketSpawnParticle extends LocationDoublePacket<PacketSpawnParticl
             ry = buffer.readDouble();
             rz = buffer.readDouble();
         }
+        particle = readParticle(type, buffer);
+    }
+
+    private <T extends IParticleData> T readParticle(ParticleType<T> type, PacketBuffer buffer) {
+        return type.getDeserializer().read(type, buffer);
     }
 
     @Override
-    public void handleClientSide(PacketSpawnParticle message, EntityPlayer player) {
-        for (int i = 0; i < numParticles; i++) {
-            double x = message.x + (numParticles == 1 ? 0 : player.world.rand.nextDouble() * rx);
-            double y = message.y + (numParticles == 1 ? 0 :  player.world.rand.nextDouble() * ry);
-            double z = message.z + (numParticles == 1 ? 0 : player.world.rand.nextDouble() * rz);
-            if (particleId >= EnumParticleTypes.values().length) {
-                EnumCustomParticleType particle = EnumCustomParticleType.values()[message.particleId - EnumParticleTypes.values().length];
-                PneumaticCraftRepressurized.proxy.playCustomParticle(particle, player.world, x, y, z, message.dx, message.dy, message.dz);
-            } else {
-                player.world.spawnParticle(EnumParticleTypes.values()[message.particleId], x, y, z, message.dx, message.dy, message.dz);
-            }
+    public void toBytes(ByteBuf buffer) {
+        super.toBytes(buffer);
+
+        PacketUtil.writeUTF8String(buffer, particle.getType().getRegistryName().toString());
+        buffer.writeDouble(dx);
+        buffer.writeDouble(dy);
+        buffer.writeDouble(dz);
+        buffer.writeInt(numParticles);
+        if (numParticles > 1) {
+            buffer.writeDouble(rx);
+            buffer.writeDouble(ry);
+            buffer.writeDouble(rz);
         }
+        particle.write(new PacketBuffer(buffer));
     }
 
-    @Override
-    public void handleServerSide(PacketSpawnParticle message, EntityPlayer player) {
+    public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            World world = PneumaticCraftRepressurized.proxy.getClientWorld();
+            for (int i = 0; i < numParticles; i++) {
+                double x1 = x + (numParticles == 1 ? 0 : world.rand.nextDouble() * rx);
+                double y1 = y + (numParticles == 1 ? 0 : world.rand.nextDouble() * ry);
+                double z1 = z + (numParticles == 1 ? 0 : world.rand.nextDouble() * rz);
+                world.addParticle(particle, x1, y1, z1, dx, dy, dz);
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
-
 }

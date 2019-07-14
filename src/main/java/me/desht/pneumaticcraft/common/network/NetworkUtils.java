@@ -1,11 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.network.SyncedField.*;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -179,13 +176,4 @@ public class NetworkUtils {
         if (ItemStackHandler.class.isAssignableFrom(field.getType())) return new SyncedItemStackHandler(te, field);
         return null;
     }
-
-    static void writeBlockPos(ByteBuf buf, BlockPos pos) {
-        new PacketBuffer(buf).writeBlockPos(pos);
-    }
-
-    static BlockPos readBlockPos(ByteBuf buf) {
-        return new PacketBuffer(buf).readBlockPos();
-    }
-
 }

@@ -4,7 +4,7 @@ import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -22,7 +22,7 @@ public class Baubles implements IThirdParty {
         available = true;
     }
 
-    public static void chargeBaubles(EntityPlayer player, PneumaticEnergyStorage energyStorage, int rfPerTick) {
+    public static void chargeBaubles(PlayerEntity player, PneumaticEnergyStorage energyStorage, int rfPerTick) {
         IBaublesItemHandler handler = BaublesApi.getBaublesHandler(player);
 
         if (handler != null) {

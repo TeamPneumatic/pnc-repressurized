@@ -6,9 +6,9 @@ import net.minecraft.nbt.*;
 import java.util.Set;
 
 public class NBTToJsonConverter {
-    private final NBTTagCompound tag;
+    private final CompoundNBT tag;
 
-    public NBTToJsonConverter(NBTTagCompound tag) {
+    public NBTToJsonConverter(CompoundNBT tag) {
         this.tag = tag;
     }
 
@@ -25,38 +25,38 @@ public class NBTToJsonConverter {
         return gson.toJson(el); // done
     }
 
-    public static JsonObject getObject(NBTTagCompound tag) {
-        Set<String> keys = tag.getKeySet();
+    public static JsonObject getObject(CompoundNBT tag) {
+        Set<String> keys = tag.keySet();
         JsonObject jsonRoot = new JsonObject();
         for (String key : keys) {
             JsonObject keyObject = new JsonObject();
             jsonRoot.add(key, keyObject);
-            NBTBase nbt = tag.getTag(key);
+            INBT nbt = tag.get(key);
 
             keyObject.addProperty("type", nbt.getId());
 
-            if (nbt instanceof NBTTagCompound) {
-                keyObject.add("value", getObject((NBTTagCompound) nbt));
-            } else if (nbt instanceof NBTPrimitive) {
-                keyObject.addProperty("value", ((NBTPrimitive) nbt).getDouble());
-            } else if (nbt instanceof NBTTagString) {
-                keyObject.addProperty("value", ((NBTTagString) nbt).getString());
-            } else if (nbt instanceof NBTTagList) {
+            if (nbt instanceof CompoundNBT) {
+                keyObject.add("value", getObject((CompoundNBT) nbt));
+            } else if (nbt instanceof NumberNBT) {
+                keyObject.addProperty("value", ((NumberNBT) nbt).getDouble());
+            } else if (nbt instanceof StringNBT) {
+                keyObject.addProperty("value", ((StringNBT) nbt).getString());
+            } else if (nbt instanceof ListNBT) {
                 JsonArray array = new JsonArray();
-                NBTTagList tagList = (NBTTagList) nbt;
-                for (int i = 0; i < tagList.tagCount(); i++) {
-                    array.add(getObject(tagList.getCompoundTagAt(i)));
+                ListNBT tagList = (ListNBT) nbt;
+                for (int i = 0; i < tagList.size(); i++) {
+                    array.add(getObject(tagList.getCompound(i)));
                 }
                 keyObject.add("value", array);
-            } else if (nbt instanceof NBTTagIntArray) {
+            } else if (nbt instanceof IntArrayNBT) {
                 JsonArray array = new JsonArray();
-                NBTTagIntArray intArray = (NBTTagIntArray) nbt;
+                IntArrayNBT intArray = (IntArrayNBT) nbt;
                 for (int i : intArray.getIntArray()) {
                     array.add(new JsonPrimitive(i));
                 }
                 keyObject.add("value", array);
             } else {
-                throw new IllegalArgumentException("NBT to JSON converter doesn't support the nbt tag: " + NBTBase.NBT_TYPES[nbt.getId()] + ", tag: " + nbt);
+                throw new IllegalArgumentException("NBT to JSON converter doesn't support the nbt tag: " + INBT.NBT_TYPES[nbt.getId()] + ", tag: " + nbt);
             }
         }
         return jsonRoot;

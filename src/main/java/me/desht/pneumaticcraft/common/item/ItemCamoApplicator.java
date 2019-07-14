@@ -1,27 +1,28 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
+import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.Sounds;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ItemCamoApplicator extends ItemPressurizable {
     public ItemCamoApplicator() {
@@ -29,36 +30,39 @@ public class ItemCamoApplicator extends ItemPressurizable {
     }
 
     @Override
-    public String getItemStackDisplayName(ItemStack stack) {
-        IBlockState camoState = getCamoState(stack);
-        String disp = super.getItemStackDisplayName(stack);
+    public ITextComponent getDisplayName(ItemStack stack) {
+        BlockState camoState = getCamoState(stack);
+        ITextComponent disp = super.getDisplayName(stack);
         if (camoState != null) {
-            return disp + ": " + TextFormatting.YELLOW + getCamoStateDisplayName(camoState);
+            return disp.appendText(": ").appendSibling(getCamoStateDisplayName(camoState)).applyTextStyle(TextFormatting.YELLOW);
         } else {
             return disp;
         }
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         // right-click air: clear any camo
         ItemStack stack = playerIn.getHeldItem(handIn);
         if (!worldIn.isRemote && playerIn.isSneaking() && getCamoState(stack) != null) {
             setCamoState(stack, null);
         }
-        return ActionResult.newResult(EnumActionResult.SUCCESS, stack);
+        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
 
     @Override
-    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
-        ItemStack stack = player.getHeldItem(hand);
+    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext ctx) {
+        World world = ctx.getWorld();
+        BlockPos pos = ctx.getPos();
+        PlayerEntity player = ctx.getPlayer();
+
         if (!world.isRemote) {
             if (player.isSneaking()) {
                 // copy blockstate of clicked block
-                IBlockState state = world.getBlockState(pos);
+                BlockState state = world.getBlockState(pos);
                 if (state.getBlock() instanceof BlockPneumaticCraftCamo) {
                     NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, pos, 1.0F, 2.0F, false), world);
-                    player.sendStatusMessage(new TextComponentTranslation("message.camo.invalidBlock", getCamoStateDisplayName(state)), true);
+                    player.sendStatusMessage(new TranslationTextComponent("message.camo.invalidBlock", getCamoStateDisplayName(state)), true);
                 } else {
                     setCamoState(stack, state);
                 }
@@ -66,98 +70,84 @@ public class ItemCamoApplicator extends ItemPressurizable {
                 // either apply saved camo, or remove current camo from block
                 TileEntity te = world.getTileEntity(pos);
                 if (!(te instanceof ICamouflageableTE)) {
-                    return EnumActionResult.PASS;
+                    return ActionResultType.PASS;
                 }
 
-                IBlockState camoState = getCamoState(stack);
+                BlockState camoState = getCamoState(stack);
 
                 float pressure = getPressure(stack);
-                if (pressure < 0.1 && !player.capabilities.isCreativeMode) {
+                if (pressure < 0.1 && !player.isCreative()) {
                     // not enough pressure
-                    return EnumActionResult.FAIL;
+                    return ActionResultType.FAIL;
                 }
 
                 // return any existing camouflage on the block/TE
-                IBlockState existingCamo = ((ICamouflageableTE) te).getCamouflage();
+                BlockState existingCamo = ((ICamouflageableTE) te).getCamouflage();
 
                 if (existingCamo == camoState) {
                     NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, pos, 1.0F, 2.0F, false), world);
-                    return EnumActionResult.SUCCESS;
+                    return ActionResultType.SUCCESS;
                 }
 
                 // make sure player has enough of the camo item
-                if (camoState != null && !player.capabilities.isCreativeMode) {
+                if (camoState != null && !player.isCreative()) {
                     ItemStack camoStack = ICamouflageableTE.getStackForState(camoState);
                     if (!PneumaticCraftUtils.consumeInventoryItem(player.inventory, camoStack)) {
-                        String name = camoStack.getDisplayName();
-                        player.sendStatusMessage(new TextComponentTranslation("message.camo.notEnoughBlocks", name), true);
+                        player.sendStatusMessage(new TranslationTextComponent("message.camo.notEnoughBlocks").appendSibling(camoStack.getDisplayName()).applyTextStyles(TextFormatting.RED), true);
                         NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, pos, 1.0F, 2.0F, false), world);
-                        return EnumActionResult.FAIL;
+                        return ActionResultType.FAIL;
                     }
                 }
 
                 // return existing camo block, if any
-                if (existingCamo != null && !player.capabilities.isCreativeMode) {
+                if (existingCamo != null && !player.isCreative()) {
                     ItemStack camoStack = ICamouflageableTE.getStackForState(existingCamo);
-                    EntityItem entity = new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, camoStack);
-                    world.spawnEntity(entity);
+                    ItemEntity entity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, camoStack);
+                    world.addEntity(entity);
                     entity.onCollideWithPlayer(player);
                 }
 
                 // and apply the new camouflage
                 addAir(stack, -PneumaticValues.USAGE_CAMO_APPLICATOR);
                 ((ICamouflageableTE) te).setCamouflage(camoState);
-                IBlockState particleState = camoState == null ? existingCamo : camoState;
+                BlockState particleState = camoState == null ? existingCamo : camoState;
                 if (particleState != null) {
                     player.getEntityWorld().playEvent(2001, pos, Block.getStateId(particleState));
                 }
                 NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.SHORT_HISS, SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
-                return EnumActionResult.SUCCESS;
+                return ActionResultType.SUCCESS;
             }
         } else {
-            return EnumActionResult.SUCCESS;
+            return ActionResultType.SUCCESS;
         }
 
-        return super.onItemUseFirst(player, world, pos, side, hitX, hitY, hitZ, hand);
+        return super.onItemUseFirst(stack, ctx);
     }
 
-    private static void setCamoState(ItemStack stack, IBlockState state) {
-        NBTTagCompound tag = stack.getTagCompound();
-        if (tag == null) tag = new NBTTagCompound();
+    private static void setCamoState(ItemStack stack, BlockState state) {
+        CompoundNBT tag = stack.getTag();
+        if (tag == null) tag = new CompoundNBT();
         if (state == null) {
-            tag.removeTag("CamoState");
+            tag.remove("CamoState");
         } else {
-            Block block = state.getBlock();
-            NBTTagCompound stateTag = new NBTTagCompound();
-            stateTag.setString("block", block.getRegistryName().toString());
-            stateTag.setInteger("meta", block.getMetaFromState(state));
-            stack.setTagCompound(stateTag);
-            tag.setTag("CamoState", stateTag);
+            tag.put("CamoState", NBTUtil.writeBlockState(state));
         }
-        stack.setTagCompound(tag);
+        stack.setTag(tag);
     }
 
-    private static IBlockState getCamoState(ItemStack stack) {
-        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("CamoState")) {
-            NBTTagCompound stateTag = stack.getTagCompound().getCompoundTag("CamoState");
-            Block b = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(stateTag.getString("block")));
-            return b != null ? b.getStateFromMeta(stateTag.getInteger("meta")) : null;
+    private static BlockState getCamoState(ItemStack stack) {
+        CompoundNBT tag = stack.getTag();
+        if (tag != null && tag.contains("CamoState")) {
+            return NBTUtil.readBlockState(tag.getCompound("CamoState"));
         }
         return null;
     }
 
-    public static String getCamoStateDisplayName(IBlockState state) {
+    public static ITextComponent getCamoStateDisplayName(BlockState state) {
         if (state != null) {
-            Block b = state.getBlock();
-            Item item = Item.getItemFromBlock(b);
-            if (item != null) {
-                return new ItemStack(item, 1, b.getMetaFromState(state)).getDisplayName();
-            }
+            return new ItemStack(state.getBlock().asItem()).getDisplayName();
         }
-        return "<?>";
+        return new StringTextComponent("<?>");
     }
 
-    private static String getCamoStateDisplayName(ItemStack stack) {
-        return getCamoStateDisplayName(getCamoState(stack));
-    }
 }

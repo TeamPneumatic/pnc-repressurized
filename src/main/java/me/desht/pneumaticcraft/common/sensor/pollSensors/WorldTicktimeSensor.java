@@ -1,9 +1,8 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.universalSensor.IPollSensorSetting;
-import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
@@ -11,10 +10,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.Rectangle;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +28,7 @@ public class WorldTicktimeSensor implements IPollSensorSetting {
 
     @Override
     public Set<Item> getRequiredUpgrades() {
-        return ImmutableSet.of(Itemss.upgrades.get(EnumUpgrade.DISPENSER));
+        return ImmutableSet.of(IItemRegistry.EnumUpgrade.DISPENSER.getItem());
     }
 
     @Override
@@ -55,8 +53,8 @@ public class WorldTicktimeSensor implements IPollSensorSetting {
 
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-        double worldTickTime = mean(server.worldTickTimes.get(world.provider.getDimension())) * 1.0E-6D;
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        double worldTickTime = mean(server.getTickTime(world.dimension.getType())) * 1.0E-6D;
         try {
             int redstoneStrength = (int) (worldTickTime * Double.parseDouble(textBoxText));
             return Math.min(15, redstoneStrength);
@@ -71,13 +69,8 @@ public class WorldTicktimeSensor implements IPollSensorSetting {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
         fontRenderer.drawString("Tick Resolution", 70, 48, 0x404040);
-    }
-
-    @Override
-    public Rectangle needsSlot() {
-        return null;
     }
 }

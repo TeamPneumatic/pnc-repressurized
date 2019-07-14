@@ -1,10 +1,9 @@
 package me.desht.pneumaticcraft.common.thirdparty.computercraft;
 
 import dan200.computercraft.api.peripheral.IPeripheral;
-import me.desht.pneumaticcraft.api.client.pneumaticHelmet.IBlockTrackEntry;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -16,7 +15,7 @@ import java.util.List;
  */
 public class BlockTrackEntryPeripheral implements IBlockTrackEntry {
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockAccess world, BlockPos pos, IBlockState state, TileEntity te) {
+    public boolean shouldTrackWithThisEntry(IBlockAccess world, BlockPos pos, BlockState state, TileEntity te) {
         if (te instanceof IPeripheral) {
             IPeripheral peripheral = (IPeripheral) te;
             return peripheral.getMethodNames().length > 0;
@@ -24,8 +23,7 @@ public class BlockTrackEntryPeripheral implements IBlockTrackEntry {
         return false;
     }
 
-    @Override
-    public boolean shouldBeUpdatedFromServer(TileEntity te) {
+    public boolean getServerUpdatePositions(TileEntity te) {
         return false;
     }
 
@@ -35,7 +33,7 @@ public class BlockTrackEntryPeripheral implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, EnumFacing face, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList) {
         infoList.add("blockTracker.info.peripheral.title");
         infoList.add("blockTracker.info.peripheral.availableMethods");
         IPeripheral peripheral = (IPeripheral) te;

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.common.util.OreDictionaryHelper;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
@@ -66,7 +65,7 @@ public class ExplosionCraftingRecipe {
     private ItemStack createOutput(ItemStack stack) {
         Random rand = new Random();
         if (stack.getCount() >= 3 || rand.nextDouble() >= lossRate / 100D) {
-            ItemStack newStack = new ItemStack(output.getItem(), stack.getCount(), output.getItemDamage());
+            ItemStack newStack = new ItemStack(output.getItem(), stack.getCount());
             if (stack.getCount() >= 3) {
                 newStack.setCount((int) (stack.getCount() * (rand.nextDouble() * Math.min(lossRate * 0.02D, 0.2D) + (Math.max(0.9D, 1D - lossRate * 0.01D) - lossRate * 0.01D))));
             }
