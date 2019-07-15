@@ -6,6 +6,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.4-??? (unreleased)
+#### Fixes
+* Air Grate no longer redisplays its range lines whenever the pressure changes (this can be visually disturbing and potentially lag-inducing). Instead, right-click the grate to force the range to be displayed visually.
+* Fixed client-side NBT bug causing omni/liquid hoppers not to stack properly sometimes.
+* Added a couple of missing images to the Patchouli guidebook (for Redstone Modules and Thermal Compressors)
+* Fixed "Test Security" text not fitting the button in the Security Station GUI
+* Fixed Pneumatic Helmet not accepting Security Upgrades
+* Fixed Pressure Chamber enchanting adding duplicate enchants of the same type to items.
+* Fixed bug causing Security Station to be far too easily hacked.
+* Fixed visual bug in Security Station GUI causing network component connection lines being lopsides.
+
 ### 0.11.3-366 (20 Jun 2019)
 #### Fixes
 * Hotfix: fix client crash on player login (an initialization error while migrating Pneumatic Armor HUD layout data)
