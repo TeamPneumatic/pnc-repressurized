@@ -172,6 +172,7 @@ public class ItemPneumaticArmor extends ItemArmor
         }
         // piece-specific upgrades which don't have a specific handler
         addApplicableUpgrade(EntityEquipmentSlot.HEAD, EnumUpgrade.RANGE);
+        addApplicableUpgrade(EntityEquipmentSlot.HEAD, EnumUpgrade.SECURITY);
         addApplicableUpgrade(EntityEquipmentSlot.CHEST, EnumUpgrade.SECURITY);
     }
 
