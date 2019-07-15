@@ -5,6 +5,7 @@ import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
@@ -12,6 +13,7 @@ import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
+import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -71,7 +73,6 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public static final PropertyBool WEST = PropertyBool.create("west");
     static final PropertyBool[] CONNECTION_PROPERTIES = new PropertyBool[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
 
-    private static final String NBT_UPGRADE_INVENTORY = "UpgradeInventory";
     private static final String NBT_SIDECONFIG = "SideConfiguration";
     private static final String NBT_AIR_AMOUNT = "AirAmount";
 
@@ -160,18 +161,18 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entity, ItemStack stack) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof ISerializableTanks && stack.hasTagCompound() && stack.getTagCompound().hasKey(ISerializableTanks.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-            ((ISerializableTanks) te).deserializeTanks(stack.getTagCompound().getCompoundTag(ISerializableTanks.NBT_SAVED_TANKS));
+        if (te instanceof ISerializableTanks && NBTUtil.hasTag(stack, ISerializableTanks.NBT_SAVED_TANKS)) {
+            ((ISerializableTanks) te).deserializeTanks(NBTUtil.getCompoundTag(stack, ISerializableTanks.NBT_SAVED_TANKS));
         }
-        if (te instanceof TileEntityBase && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_UPGRADE_INVENTORY)) {
-            ((TileEntityBase) te).getUpgradesInventory().deserializeNBT(stack.getTagCompound().getCompoundTag(NBT_UPGRADE_INVENTORY));
+        if (te instanceof TileEntityBase && NBTUtil.hasTag(stack, ChargeableItemHandler.NBT_UPGRADE_TAG)) {
+            ((TileEntityBase) te).getUpgradesInventory().deserializeNBT(NBTUtil.getCompoundTag(stack, ChargeableItemHandler.NBT_UPGRADE_TAG));
         }
-        if (te instanceof ISideConfigurable && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_SIDECONFIG)) {
-            NBTTagCompound tag = stack.getTagCompound().getCompoundTag(NBT_SIDECONFIG);
+        if (te instanceof ISideConfigurable && NBTUtil.hasTag(stack, NBT_SIDECONFIG)) {
+            NBTTagCompound tag = NBTUtil.getCompoundTag(stack, NBT_SIDECONFIG);
             SideConfigurator.readFromNBT(tag, ((ISideConfigurable) te));
         }
-        if (te instanceof IPneumaticMachine && stack.hasTagCompound() && stack.getTagCompound().hasKey(NBT_AIR_AMOUNT)) {
-            int air = stack.getTagCompound().getInteger(NBT_AIR_AMOUNT);
+        if (te instanceof IPneumaticMachine && NBTUtil.hasTag(stack, NBT_AIR_AMOUNT)) {
+            int air = NBTUtil.getInteger(stack, NBT_AIR_AMOUNT);
             ((IPneumaticMachine) te).getAirHandler(null).addAir(air);
         }
         if (te instanceof IHeatExchanger) {
@@ -464,7 +465,13 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                 TileEntityBase.UpgradeHandler upgradeHandler = ((TileEntityBase) te).getUpgradesInventory();
                 for (int i = 0; i < upgradeHandler.getSlots(); i++) {
                     if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
-                        teStack.getTagCompound().setTag(NBT_UPGRADE_INVENTORY, upgradeHandler.serializeNBT());
+                        // store creative status directly since it's queried for item model rendering (performance)
+                        if (((TileEntityBase) te).getUpgrades(IItemRegistry.EnumUpgrade.CREATIVE) > 0) {
+                            NBTUtil.setBoolean(teStack, UpgradableItemUtils.NBT_CREATIVE, true);
+                        } else {
+                            NBTUtil.removeTag(teStack, UpgradableItemUtils.NBT_CREATIVE);
+                        }
+                        NBTUtil.setCompoundTag(teStack, ChargeableItemHandler.NBT_UPGRADE_TAG, upgradeHandler.serializeNBT());
                         break;
                     }
                 }

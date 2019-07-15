@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.semiblock.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -266,10 +267,9 @@ public class Itemss {
             return plasticColour >= 0 ? plasticColour : 0xffffff;
         }, Itemss.PLASTIC);
 
-        event.getItemColors().registerItemColorHandler((stack, tintIndex) -> {
-            int n = UpgradableItemUtils.getUpgrades(EnumUpgrade.CREATIVE, stack);
-            return n > 0 ? 0xFFFF60FF : 0xFFFFFFFF;
-        }, Item.getItemFromBlock(Blockss.OMNIDIRECTIONAL_HOPPER), Item.getItemFromBlock(Blockss.LIQUID_HOPPER));
+        event.getItemColors().registerItemColorHandler((stack, tintIndex) ->
+                NBTUtil.hasTag(stack, UpgradableItemUtils.NBT_CREATIVE) ? 0xFFFF60FF : 0xFFFFFFFF,
+                Item.getItemFromBlock(Blockss.OMNIDIRECTIONAL_HOPPER), Item.getItemFromBlock(Blockss.LIQUID_HOPPER));
 
         event.getItemColors().registerItemColorHandler((stack, tintIndex) -> {
             switch (tintIndex) {
