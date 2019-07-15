@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import com.google.gson.*;
 import net.minecraft.nbt.*;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.Set;
 
@@ -38,7 +39,20 @@ public class NBTToJsonConverter {
             if (nbt instanceof NBTTagCompound) {
                 keyObject.add("value", getObject((NBTTagCompound) nbt));
             } else if (nbt instanceof NBTPrimitive) {
-                keyObject.addProperty("value", ((NBTPrimitive) nbt).getDouble());
+                switch (nbt.getId()) {
+                    case Constants.NBT.TAG_BYTE:
+                        keyObject.addProperty("value", ((NBTPrimitive) nbt).getByte()); break;
+                    case Constants.NBT.TAG_INT:
+                        keyObject.addProperty("value", ((NBTPrimitive) nbt).getInt()); break;
+                    case Constants.NBT.TAG_SHORT:
+                        keyObject.addProperty("value", ((NBTPrimitive) nbt).getShort()); break;
+                    case Constants.NBT.TAG_LONG:
+                        keyObject.addProperty("value", ((NBTPrimitive) nbt).getLong()); break;
+                    case Constants.NBT.TAG_FLOAT:
+                        keyObject.addProperty("value", ((NBTPrimitive) nbt).getFloat()); break;
+                    case Constants.NBT.TAG_DOUBLE:
+                        keyObject.addProperty("value", ((NBTPrimitive) nbt).getDouble()); break;
+                }
             } else if (nbt instanceof NBTTagString) {
                 keyObject.addProperty("value", ((NBTTagString) nbt).getString());
             } else if (nbt instanceof NBTTagList) {
