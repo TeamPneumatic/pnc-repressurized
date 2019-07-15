@@ -8,7 +8,9 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 public class CommandDumpNBT extends CommandBase {
     @Override
@@ -30,12 +32,12 @@ public class CommandDumpNBT extends CommandBase {
         if (sender instanceof EntityPlayer) {
             ItemStack held = ((EntityPlayer) sender).getHeldItemMainhand();
             if (!held.hasTagCompound()) {
-                sender.sendMessage(new TextComponentString("No NBT"));
+                sender.sendMessage(held.getTextComponent().appendSibling(new TextComponentString(" has no NBT")).setStyle(new Style().setColor(TextFormatting.RED)));
                 return;
             }
             NBTToJsonConverter conv = new NBTToJsonConverter(held.getTagCompound());
-            String msg = conv.convert(true);
-            sender.sendMessage(new TextComponentString(msg));
+            String msg = conv.convert(false).replaceAll("([{,:}])", "$1 ");
+            sender.sendMessage(held.getTextComponent().setStyle(new Style().setColor(TextFormatting.YELLOW)).appendText(": ").appendSibling((new TextComponentString(msg)).setStyle(new Style().setColor(TextFormatting.WHITE))));
         }
     }
 }
