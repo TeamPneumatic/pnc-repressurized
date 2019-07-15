@@ -76,6 +76,7 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     private int widgetOffsetLeft = 0;
     private int widgetOffsetRight = 0;
     private boolean bevel = false;
+    private Pair<Integer, Integer> forcedDimensions = null;
 
     public GuiAnimatedStat(GuiScreen gui, String title, int xPos, int yPos, int backGroundColor,
                            IGuiAnimatedStat affectingStat, boolean leftSided) {
@@ -294,6 +295,12 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     }
 
     @Override
+    public void setForcedDimensions(int width, int height) {
+        //noinspection SuspiciousNameCombination
+        forcedDimensions = width > 0 && height > 0 ? Pair.of(width, height) : null;
+    }
+
+    @Override
     public void update() {
         oldBaseX = baseX;
         oldAffectedY = affectedY;
@@ -342,6 +349,8 @@ public class GuiAnimatedStat implements IGuiAnimatedStat, IGuiWidget, IWidgetLis
     }
 
     private Pair<Integer,Integer> calculateMaxSize() {
+        if (forcedDimensions != null) return forcedDimensions;
+
         FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
 
         // scale the box down if necessary to avoid extending beyond screen edge

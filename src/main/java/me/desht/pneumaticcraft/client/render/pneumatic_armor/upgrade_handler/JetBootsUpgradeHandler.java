@@ -75,7 +75,12 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
             r2 = String.format("%sGnd: %s%dm", g1, g2, pos.getY() - player.world.getHeight(pos.getX(), pos.getZ()));
             r3 = String.format("%sPch: %s%d°", g1, g2, (int)-player.rotationPitch);
             FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-            widestR = Math.max(fr.getStringWidth(r1), Math.max(fr.getStringWidth(r2), fr.getStringWidth(r3)));
+            int wl = Math.max(fr.getStringWidth(l1), Math.max(fr.getStringWidth(l2), fr.getStringWidth(l3)));
+            int wr = Math.max(fr.getStringWidth(r1), Math.max(fr.getStringWidth(r2), fr.getStringWidth(r3)));
+            if (wl + wr + 16 > jbStat.getWidth()) {
+                jbStat.setForcedDimensions(wl + wr + 16, 5 * fr.FONT_HEIGHT);
+            }
+            widestR = Math.max(wr, widestR);
         }
     }
 
@@ -108,7 +113,9 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
                     GuiAnimatedStat.StatIcon.of(CraftingRegistrator.getUpgrade(IItemRegistry.EnumUpgrade.JET_BOOTS)),
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.jetBootsStat);
             jbStat.setMinDimensionsAndReset(0, 0);
-            jbStat.addPadding(3, 32);
+            FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+            int n = fr.getStringWidth("  Spd: 00.00m/s   Gnd: 00.00");
+            jbStat.addPadding(3, n / fr.getStringWidth(" "));
         }
         return jbStat;
     }
