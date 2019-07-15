@@ -61,7 +61,9 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase {
         accessStat.addWidget(sharedUserTextField);
         accessStat.addWidget(addButton);
 
-        buttonList.add(new GuiButton(3, guiLeft + 108, guiTop + 103, 64, 20, I18n.format("gui.securityStation.test")));
+        GuiButtonSpecial testButton = new GuiButtonSpecial(3, guiLeft + 108, guiTop + 103, 64, 20, I18n.format("gui.securityStation.test"));
+        testButton.setTooltipText(I18n.format("gui.securityStation.test.tooltip"));
+        buttonList.add(testButton);
         buttonList.add(rebootButton);
         buttonList.add(new GuiButton(-1, guiLeft + 108, guiTop + 125, 64, 20, I18n.format("gui.universalSensor.button.showRange")));
 
@@ -101,7 +103,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase {
         accessStat.setTextWithoutCuttingString(getAccessText());
         String rebootButtonString;
         if (te.getRebootTime() > 0) {
-            rebootButtonString = te.getRebootTime() % 100 < 50 ? "Rebooting.." : PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false);
+            rebootButtonString = te.getRebootTime() % 100 < 50 ? TextFormatting.YELLOW + "Rebooting.." : PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false);
         } else {
             rebootButtonString = "Reboot";
         }
@@ -121,10 +123,10 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase {
     protected void addProblems(List<String> text) {
         super.addProblems(text);
         if (te.getRebootTime() > 0) {
-            text.add(TextFormatting.GRAY + "The Security Station doesn't provide security!");
+            text.add(TextFormatting.WHITE + "The Security Station doesn't provide security!");
             text.add(TextFormatting.BLACK + "The station is rebooting (" + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false) + ").");
         } else if (te.isHacked()) {
-            text.add(TextFormatting.GRAY + "This Station has been hacked!");
+            text.add(TextFormatting.WHITE + "This Station has been hacked!");
             text.add(TextFormatting.BLACK + "Reboot the station.");
         }
         if (!te.hasValidNetwork()) {
@@ -160,7 +162,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase {
 
     private List<String> getStatusText() {
         List<String> text = new ArrayList<>();
-        text.add(TextFormatting.GRAY + "Protection");
+        text.add(TextFormatting.WHITE + "Protection");
         if (te.getRebootTime() > 0) {
             text.add(TextFormatting.DARK_RED + "No protection because of rebooting!");
         } else if (te.isHacked()) {
@@ -171,11 +173,11 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase {
         } else {
             text.add(TextFormatting.BLACK + "System secure");
         }
-        text.add(TextFormatting.GRAY + "Security Level");
+        text.add(TextFormatting.WHITE + "Security Level");
         text.add(TextFormatting.BLACK + "Level " + te.getSecurityLevel());
-        text.add(TextFormatting.GRAY + "Intruder Detection Chance");
+        text.add(TextFormatting.WHITE + "Intruder Detection Chance");
         text.add(TextFormatting.BLACK.toString() + te.getDetectionChance() + "%%");
-        text.add(TextFormatting.GRAY + "Security Range");
+        text.add(TextFormatting.WHITE + "Security Range");
         text.add(TextFormatting.BLACK.toString() + te.getSecurityRange() + "m (square)");
         return text;
     }
