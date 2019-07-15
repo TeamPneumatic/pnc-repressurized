@@ -17,9 +17,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PressureChamberPressureEnchantHandler implements IPressureChamberRecipe {
-
-    private static final NonNullList<ItemStack> EMPTYLIST = NonNullList.create();
-
     @Override
     public float getCraftingPressure() {
         return 2F;
@@ -43,7 +40,9 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
                 for (ItemStack enchantedBook : enchantedBooks) {
                     Map<Enchantment, Integer> bookMap = EnchantmentHelper.getEnchantments(enchantedBook);
                     for (Map.Entry<Enchantment, Integer> entry : bookMap.entrySet()) {
-                        if (entry.getKey().canApply(inputStack)) {
+                        // if the enchantment is applicable, AND the item doesn't have an existing enchantment of the
+                        // same type which is equal or stronger to the book's enchantment level...
+                        if (entry.getKey().canApply(inputStack) && EnchantmentHelper.getEnchantmentLevel(entry.getKey(), inputStack) < entry.getValue()) {
                             return new ItemStack[]{ inputStack, enchantedBook};
                         }
                     }
@@ -60,7 +59,10 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
         ItemStack enchantedBook = recipeIngredients[1];
         
         Map<Enchantment, Integer> bookMap = EnchantmentHelper.getEnchantments(enchantedBook);
-        bookMap.forEach(enchantedTool::addEnchantment);
+        Map<Enchantment, Integer> itemMap = EnchantmentHelper.getEnchantments(enchantedTool);
+
+        bookMap.forEach(itemMap::put);
+        EnchantmentHelper.setEnchantments(itemMap, enchantedTool);
         
         enchantedBook.shrink(1);
         return NonNullList.from(ItemStack.EMPTY, new ItemStack(Items.BOOK));
