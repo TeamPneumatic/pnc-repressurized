@@ -116,7 +116,7 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
             ((GuiSecurityStationHacking) gui).onSlotHack(slot);
         }
         ItemStack stack = station.getPrimaryInventory().getStackInSlot(slot);
-        if (stack.getItemDamage() == ItemNetworkComponents.NETWORK_REGISTRY || stack.getItemDamage() == ItemNetworkComponents.DIAGNOSTIC_SUBROUTINE) {
+        if (stack.getItem() instanceof ItemNetworkComponents && (stack.getItemDamage() == ItemNetworkComponents.NETWORK_REGISTRY || stack.getItemDamage() == ItemNetworkComponents.DIAGNOSTIC_SUBROUTINE)) {
             hackedSuccessfully = true;
             EntityPlayer player = FMLClientHandler.instance().getClient().player;
             NetworkHandler.sendToServer(new PacketSecurityStationAddHacker(station, player.getName()));
