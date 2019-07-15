@@ -199,7 +199,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        if (rangeLineRenderer == null || !rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
+        if (rangeLineRenderer == null || rangeLineRenderer.isIdle()) return super.getRenderBoundingBox();
         int range = getRange();
         return new AxisAlignedBB(getPos().getX() - range, getPos().getY() - range, getPos().getZ() - range, getPos().getX() + 1 + range, getPos().getY() + 1 + range, getPos().getZ() + 1 + range);
     }

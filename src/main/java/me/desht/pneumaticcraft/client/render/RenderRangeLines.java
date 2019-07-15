@@ -54,8 +54,8 @@ public class RenderRangeLines {
         }
     }
 
-    public boolean isCurrentlyRendering() {
-        return rangeLines.size() > 0;
+    public boolean isIdle() {
+        return rangeLines.size() <= 0;
     }
 
     public void update() {

@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "The module's range can be expressed with these formulae:$(p)With positive pressure:$(p)  $(#272)Range = 4 x pressure (bar)/$$(p)With negative pressure:$(p)  $(#272)Range = -16 x pressure (bar)/$$(p)E.g. at 2 bar it repels at 4x2=8 blocks. At -0.5 bar, it attracts at -16x-0.5=8 blocks."
+      "text": "The module's range can be expressed with these formulae:$(p)With positive pressure:$(p)  $(#272)Range = 4 x pressure (bar)/$$(p)With negative pressure:$(p)  $(#272)Range = -16 x pressure (bar)/$$(p)E.g. at 2 bar it repels at 4x2=8 blocks. At -0.5 bar, it attracts at -16x-0.5=8 blocks. Right-clicking an Air Grate Module will visually display its area of effect."
     },
     {
       "type": "text",

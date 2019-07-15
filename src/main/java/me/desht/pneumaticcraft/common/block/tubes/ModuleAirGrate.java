@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -36,7 +37,7 @@ public class ModuleAirGrate extends TubeModule {
     private boolean vacuum;
     private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x5500FF00);
-    private boolean resetRendering = true;
+    private boolean resetRendering = false;
     private EntityFilter entityFilter = null;
     private TileEntity adjacentInv = null;
     private EnumFacing adjacentInvSide;
@@ -68,10 +69,9 @@ public class ModuleAirGrate extends TubeModule {
             grateRange = getRange();
             pressureTube.getAirHandler(null).addAir((vacuum ? 1 : -1) * grateRange * PneumaticValues.USAGE_AIR_GRATE);
             if (oldGrateRange != grateRange) sendDescriptionPacket();
-
             coolHeatSinks();
         } else {
-            if (resetRendering) {
+            if (resetRendering && grateRange > 0) {
                 rangeLineRenderer.resetRendering(grateRange);
                 resetRendering = false;
             }
@@ -93,7 +93,7 @@ public class ModuleAirGrate extends TubeModule {
             if (!entity.world.isRemote && entity instanceof EntityItem && !entity.isDead
                     && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 1D) {
                 tryItemInsertion((EntityItem) entity);
-            } else if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.isCreativeMode) {
+            } else if (!entity.isSneaking() && (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).capabilities.isCreativeMode)) {
                 Vec3d entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
                 RayTraceResult trace = world.rayTraceBlocks(entityVec, tileVec, false, true, false);
                 if (trace != null && trace.getBlockPos().equals(pos)) {
@@ -233,4 +233,11 @@ public class ModuleAirGrate extends TubeModule {
         entityFilter = EntityFilter.fromString(filter);
     }
 
+    @Override
+    public boolean onActivated(EntityPlayer player, EnumHand hand) {
+        if (player.world.isRemote && rangeLineRenderer.isIdle()) {
+            resetRendering = true;
+        }
+        return super.onActivated(player, hand);
+    }
 }

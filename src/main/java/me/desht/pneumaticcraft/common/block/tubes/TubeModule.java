@@ -182,7 +182,7 @@ public abstract class TubeModule implements ISidedPart {
     }
 
     public boolean onActivated(EntityPlayer player, EnumHand hand) {
-        if (!player.world.isRemote && upgraded && getGuiId() != null) {
+        if (!player.world.isRemote && upgraded && getGuiId() != null && !player.isSneaking()) {
             NetworkHandler.sendTo(new PacketOpenTubeModuleGui(getGuiId().ordinal(), pressureTube.pos()), (EntityPlayerMP) player);
             return true;
         }
@@ -228,4 +228,5 @@ public abstract class TubeModule implements ISidedPart {
     public int hashCode() {
         return Objects.hash(pressureTube.pos(), dir);
     }
+
 }

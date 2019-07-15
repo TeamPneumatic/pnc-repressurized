@@ -198,7 +198,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        if (rangeLineRenderer == null || !rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
+        if (rangeLineRenderer == null || rangeLineRenderer.isIdle()) return super.getRenderBoundingBox();
         return getAffectingAABB();
     }
     

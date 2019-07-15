@@ -156,11 +156,9 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         if (tryPlaceModule(player, world, pos, side, hand, false)) {
             return true;
         }
-        if (!player.isSneaking()) {
-            TubeModule module = getLookedModule(world, pos, player);
-            if (module != null) {
-                return module.onActivated(player, hand);
-            }
+        TubeModule module = getLookedModule(world, pos, player);
+        if (module != null) {
+            return module.onActivated(player, hand);
         }
         return false;
     }
