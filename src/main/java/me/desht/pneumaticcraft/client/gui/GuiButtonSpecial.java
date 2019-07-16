@@ -4,12 +4,12 @@ import me.desht.pneumaticcraft.client.gui.widget.IGuiWidget;
 import me.desht.pneumaticcraft.client.gui.widget.IWidgetListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
  * Extension of GuiButton that allows a invisible clickable field. It can be added in Gui's like buttons (with the buttonList).
  */
 
-public class GuiButtonSpecial extends GuiButton implements IGuiWidget {
+public class GuiButtonSpecial extends GuiButtonExt implements IGuiWidget {
 
     public enum IconPosition { MIDDLE, LEFT, RIGHT }
 

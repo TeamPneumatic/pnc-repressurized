@@ -51,7 +51,7 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
         heightField = new WidgetTextFieldNumber(fontRenderer, guiLeft + 100, guiTop + 138, 60, 10);
         heightField.setValue(widget.getHeight());
         heightField.minValue = 10;
-        heightField.maxValue = 20;
+        heightField.maxValue = 100;
         addWidget(heightField);
 
     }

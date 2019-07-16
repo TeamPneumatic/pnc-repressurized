@@ -36,6 +36,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
@@ -221,8 +222,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
         exportButton = new GuiButtonSpecial(2, xStart + xRight + 2, yStart + 20, 20, 15, "\u27f6");
         buttonList.add(exportButton);
 
-        buttonList.add(new GuiButton(3, xStart + xRight - 3, yStart + yBottom, 10, 10, "\u25c0"));
-        buttonList.add(new GuiButton(4, xStart + xRight + 38, yStart + yBottom, 10, 10, "\u25b6"));
+        buttonList.add(new GuiButtonExt(3, xStart + xRight - 3, yStart + yBottom, 10, 10, "\u25c0"));
+        buttonList.add(new GuiButtonExt(4, xStart + xRight + 38, yStart + yBottom, 10, 10, "\u25b6"));
 
         allWidgetsButton = new GuiButtonSpecial(8, xStart + xRight + 22, yStart + yBottom - 16, 10, 10, "\u25e4");
         allWidgetsButton.setTooltipText(I18n.format("gui.programmer.button.openPanel.tooltip"));
@@ -239,8 +240,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<TileEntityProgramme
             if (i == 2) radioButton.setTooltip(I18n.format("gui.programmer.difficulty.advanced.tooltip"));
         }
 
-        buttonList.add(new GuiButton(5, xStart + 5, yStart + yBottom + 4, 87, 20, I18n.format("gui.programmer.button.showStart")));
-        buttonList.add(new GuiButton(6, xStart + 5, yStart + yBottom + 26, 87, 20, I18n.format("gui.programmer.button.showLatest")));
+        buttonList.add(new GuiButtonExt(5, xStart + 5, yStart + yBottom + 4, 87, 20, I18n.format("gui.programmer.button.showStart")));
+        buttonList.add(new GuiButtonExt(6, xStart + 5, yStart + yBottom + 26, 87, 20, I18n.format("gui.programmer.button.showLatest")));
         addWidget(showInfo = new GuiCheckBox(-1, xStart + 5, yStart + yBottom + 49, 0xFF404040, "gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
         addWidget(showFlow = new GuiCheckBox(-1, xStart + 5, yStart + yBottom + 61, 0xFF404040, "gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
 
