@@ -6,16 +6,22 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.11.4-??? (unreleased)
-#### Fixes
+### 0.11.4-368 (16 Jul 2019)
+#### Updates
+* Buttons in the Remote GUI editor can now be made taller (previous max was 20 pixels, now 100).
+* Vastly increased the length of text which the Remote GUI dropdown editor can take, allowing for much longer dropdown labels to be configured.
+* Added tooltip information about displaying global variables in Remote GUI widgets, shown when mousing over the widget label editor field.
 * Air Grate no longer redisplays its range lines whenever the pressure changes (this can be visually disturbing and potentially lag-inducing). Instead, right-click the grate to force the range to be displayed visually.
+
+#### Fixes
 * Fixed client-side NBT bug causing omni/liquid hoppers not to stack properly sometimes.
-* Added a couple of missing images to the Patchouli guidebook (for Redstone Modules and Thermal Compressors)
-* Fixed "Test Security" text not fitting the button in the Security Station GUI
-* Fixed Pneumatic Helmet not accepting Security Upgrades
+* Fixed Pneumatic Helmet not accepting Security Upgrades.
 * Fixed Pressure Chamber enchanting adding duplicate enchants of the same type to items.
+* Fixed "Test Security" text not nicely fitting the button in the Security Station GUI.
 * Fixed bug causing Security Station to be far too easily hacked.
 * Fixed visual bug in Security Station GUI causing network component connection lines being lopsides.
+* Jet Boots stat window text now aligns better when using fonts other than the default Minecraft font (e.g. Smooth Font mod)
+* Added a couple of missing images to the Patchouli guidebook (for Redstone Modules and Thermal Compressors)
 
 ### 0.11.3-366 (20 Jun 2019)
 #### Fixes
