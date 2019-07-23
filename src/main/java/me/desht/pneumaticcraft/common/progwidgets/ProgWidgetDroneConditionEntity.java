@@ -24,6 +24,11 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneEvaluation im
     }
 
     @Override
+    public int getEntityFilterPosition() {
+        return 0;
+    }
+
+    @Override
     public void addErrors(List<String> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         EntityFilterPair.addErrors(this, curInfo);

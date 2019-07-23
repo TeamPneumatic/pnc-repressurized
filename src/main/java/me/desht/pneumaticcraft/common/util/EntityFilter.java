@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.util;
 import com.google.common.collect.ImmutableSet;
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetString;
 import net.minecraft.entity.Entity;
@@ -54,9 +55,9 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
     }
 
     public static EntityFilter fromProgWidget(IProgWidget widget, boolean whitelist) {
-        if (widget.getParameters().length > 1) {
-            // NOTE: assumption here that the entity filter string is always parameter #2 of prog widgets
-            IProgWidget w = widget.getConnectedParameters()[whitelist ? 1 : widget.getParameters().length + 1];
+        if (widget.getParameters().length > 1 && widget instanceof IEntityProvider) {
+            int pos = ((IEntityProvider) widget).getEntityFilterPosition();
+            IProgWidget w = widget.getConnectedParameters()[whitelist ? pos : widget.getParameters().length + pos];
             List<String> l = new ArrayList<>();
             if (w instanceof ProgWidgetString) {
                 while (w instanceof ProgWidgetString) {
