@@ -1,14 +1,18 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor.DoorState;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.items.IItemHandlerModifiable;
+
+import static me.desht.pneumaticcraft.common.block.BlockPneumaticCraft.ROTATION;
 
 public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     @DescSynced
@@ -23,6 +27,8 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     }
 
     public void setRotationAngle(float rotationAngle) {
+        if (oldRotationAngle == rotationAngle) return;
+
         oldRotationAngle = this.rotationAngle;
         this.rotationAngle = rotationAngle;
 
@@ -33,6 +39,21 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
                 getWorld().markForRerender(pos);
             }
         }
+
+        BlockState state = getBlockState();
+        if (rotationAngle == 0) {
+            state = state.with(BlockPneumaticDoor.DOOR_STATE, DoorState.CLOSED);
+        } else if (rotationAngle == 90) {
+            Direction originalRotation = state.get(ROTATION);
+            if (originalRotation != Direction.UP && originalRotation != Direction.DOWN) {
+                Direction facing = rightGoing ? originalRotation.rotateY() : originalRotation.rotateYCCW();
+                state = state.with(ROTATION, facing);
+            }
+            state = state.with(BlockPneumaticDoor.DOOR_STATE, DoorState.OPEN);
+        } else {
+            state = state.with(BlockPneumaticDoor.DOOR_STATE, DoorState.MOVING);
+        }
+        world.setBlockState(pos, state);
 
         // also rotate the TE for the other half of the door
         TileEntity otherTE = getWorld().getTileEntity(getPos().offset(isTopDoor() ? Direction.DOWN : Direction.UP));

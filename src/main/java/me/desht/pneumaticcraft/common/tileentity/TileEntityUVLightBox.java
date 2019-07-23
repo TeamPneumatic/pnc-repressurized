@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
@@ -10,6 +11,7 @@ import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -136,8 +138,9 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         boolean check = areLightsOn != lightsOn;
         areLightsOn = lightsOn;
         if (check) {
-            getWorld().getChunkProvider().getLightManager().checkBlock(getPos());
-            sendDescriptionPacket();
+            world.getChunkProvider().getLightManager().checkBlock(getPos());
+            BlockState state = world.getBlockState(pos).with(BlockUVLightBox.LIT, areLightsOn);
+            world.setBlockState(pos, state);
         }
     }
 
@@ -159,8 +162,8 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, PlayerEntity player) {
-        if (buttonID == 0) {
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 4) redstoneMode = 0;
             updateNeighbours();

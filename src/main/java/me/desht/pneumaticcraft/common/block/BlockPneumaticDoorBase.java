@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
@@ -25,11 +24,6 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
         return TileEntityPneumaticDoorBase.class;
     }
 
-    @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.PNEUMATIC_DOOR;
-    }
-
     /**
      * Called when the block is placed in the world.
      */
@@ -41,13 +35,13 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean b) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityPneumaticDoorBase) {
             updateDoorSide((TileEntityPneumaticDoorBase) te);
             Direction dir = ((TileEntityPneumaticDoorBase) te).getRotation();
             if (world.getBlockState(pos.offset(dir)).getBlock() == ModBlocks.PNEUMATIC_DOOR) {
-                ModBlocks.PNEUMATIC_DOOR.neighborChanged(world.getBlockState(pos.offset(dir)), world, pos, block, pos.offset(dir));
+                ModBlocks.PNEUMATIC_DOOR.neighborChanged(world.getBlockState(pos.offset(dir)), world, pos, block, pos.offset(dir), b);
             }
         }
     }

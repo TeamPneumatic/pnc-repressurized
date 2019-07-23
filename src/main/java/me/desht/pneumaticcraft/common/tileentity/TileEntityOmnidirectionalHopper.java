@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
@@ -33,10 +34,7 @@ import java.util.List;
 
 public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase implements IRedstoneControlled, IComparatorSupport, INamedContainerProvider {
     public static final int INVENTORY_SIZE = 5;
-    @DescSynced
-    Direction inputDir = Direction.UP;
-    @DescSynced
-    private Direction outputDir = Direction.UP;
+
     private final ComparatorItemStackHandler itemHandler = new ComparatorItemStackHandler(this, getInvSize());
     private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> itemHandler);
     private int lastComparatorValue = -1;
@@ -100,6 +98,8 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     }
 
     protected boolean doExport(final int maxItems) {
+        Direction outputDir = getRotation();
+
         LazyOptional<IItemHandler> cap = IOHelper.getInventoryForTE(getCachedNeighbor(outputDir), outputDir.getOpposite());
         if (cap.isPresent()) {
             return cap.map(otherHandler -> {
@@ -147,6 +147,8 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
         if (isInventoryFull()) {
             return false;
         }
+
+        Direction inputDir = getInputDirection();
 
         // Suck from input inventory
         LazyOptional<IItemHandler> cap = IOHelper.getInventoryForTE(getCachedNeighbor(inputDir), inputDir.getOpposite());
@@ -214,28 +216,13 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
         return 8 / (1 << getUpgrades(EnumUpgrade.SPEED));
     }
 
-    public void setInputDirection(Direction dir) {
-        inputDir = dir;
-    }
-
     public Direction getInputDirection() {
-        return inputDir;
-    }
-
-    @Override
-    public Direction getRotation() {
-        return outputDir;
-    }
-
-    public void setRotation(Direction rotation) {
-        outputDir = rotation;
+        return getBlockState().get(BlockOmnidirectionalHopper.INPUT);
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
-        tag.putInt("inputDir", inputDir.ordinal());
-        tag.putInt("outputDir", outputDir.ordinal());
         tag.putInt("redstoneMode", redstoneMode);
         tag.putInt("leaveMaterialCount", leaveMaterialCount);
         tag.put("Items", itemHandler.serializeNBT());
@@ -245,8 +232,6 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
-        inputDir = Direction.byIndex(tag.getInt("inputDir"));
-        outputDir = Direction.byIndex(tag.getInt("outputDir"));
         redstoneMode = tag.getInt("redstoneMode");
         if (tag.contains("leaveMaterial")) {
             leaveMaterialCount = (byte)(tag.getBoolean("leaveMaterial") ? 1 : 0);

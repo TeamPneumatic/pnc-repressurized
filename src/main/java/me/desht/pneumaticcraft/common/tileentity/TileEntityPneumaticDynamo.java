@@ -3,14 +3,15 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticDynamo;
 import me.desht.pneumaticcraft.common.config.Config;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
-import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -37,7 +38,6 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     private int rfPerTick;
     @GuiSynced
     private int airPerTick;
-    @DescSynced
     public boolean isEnabled;
     @GuiSynced
     private int redstoneMode;
@@ -74,7 +74,8 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
             }
             if (world.getGameTime() % 20 == 0 && newEnabled != isEnabled) {
                 isEnabled = newEnabled;
-                sendDescriptionPacket();
+                BlockState state = world.getBlockState(pos);
+                world.setBlockState(pos, state.with(BlockPneumaticDynamo.ACTIVE, isEnabled));
             }
 
             TileEntity receiver = getTileCache()[getRotation().ordinal()].getTileEntity();

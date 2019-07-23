@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.itemblock.ItemBlockLiquidHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import net.minecraft.item.BlockItem;
@@ -16,11 +15,6 @@ public class BlockLiquidHopper extends BlockOmnidirectionalHopper implements ICu
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return TileEntityLiquidHopper.class;
-    }
-
-    @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.LIQUID_HOPPER;
     }
 
     @Override

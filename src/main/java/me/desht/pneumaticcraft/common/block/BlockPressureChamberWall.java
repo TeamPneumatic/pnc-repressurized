@@ -2,9 +2,10 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -20,16 +21,16 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
         }
     }
 
-    private static final PropertyEnum<EnumWallState> WALL_STATE = PropertyEnum.create("wall_state", EnumWallState.class);
+    private static final EnumProperty<EnumWallState> WALL_STATE = EnumProperty.create("wall_state", EnumWallState.class);
 
     public BlockPressureChamberWall() {
-        super("pressure_chamber_wall");
-        setResistance(2000.0F);
+        super(DEFAULT_PROPS.hardnessAndResistance(3f, 2000f), "pressure_chamber_wall");
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, WALL_STATE);
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        builder.add(WALL_STATE);
     }
 
     public BlockState updateState(BlockState state, IBlockReader world, BlockPos pos) {

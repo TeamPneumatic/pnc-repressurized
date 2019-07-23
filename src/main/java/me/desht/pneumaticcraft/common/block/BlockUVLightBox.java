@@ -1,67 +1,44 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.BBConstants;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-
-import javax.annotation.Nullable;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
 
 public class BlockUVLightBox extends BlockPneumaticCraftModeled {
-    private static final PropertyBool LOADED = PropertyBool.create("loaded");
+    public static final BooleanProperty LOADED = BooleanProperty.create("loaded");
+    public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
-    private static final AxisAlignedBB BLOCK_BOUNDS_NS = new AxisAlignedBB(
-            BBConstants.UV_LIGHT_BOX_LENGTH_MIN, 0, BBConstants.UV_LIGHT_BOX_WIDTH_MIN,
-            1 - BBConstants.UV_LIGHT_BOX_LENGTH_MIN, BBConstants.UV_LIGHT_BOX_TOP_MAX, 1 - BBConstants.UV_LIGHT_BOX_WIDTH_MIN);
-    private static final AxisAlignedBB BLOCK_BOUNDS_EW = new AxisAlignedBB(
-            BBConstants.UV_LIGHT_BOX_WIDTH_MIN, 0, BBConstants.UV_LIGHT_BOX_LENGTH_MIN,
-            1 - BBConstants.UV_LIGHT_BOX_WIDTH_MIN, BBConstants.UV_LIGHT_BOX_TOP_MAX, 1 - BBConstants.UV_LIGHT_BOX_LENGTH_MIN
-    );
+    private static final VoxelShape SHAPE_NS = Block.makeCuboidShape(1, 0, 4.5, 15, 7, 11.5);
+    private static final VoxelShape SHAPE_EW = Block.makeCuboidShape(4.5, 0, 1, 11.5, 7, 15);
 
     public BlockUVLightBox() {
         super(Material.IRON, "uv_light_box");
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, ROTATION, LOADED);
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        builder.add(LOADED);
     }
 
     @Override
-    public BlockState getActualState(BlockState state, IBlockAccess worldIn, BlockPos pos) {
-        state = super.getActualState(state, worldIn, pos);
-        TileEntity te = PneumaticCraftUtils.getTileEntitySafely(worldIn, pos);
-        if (te instanceof TileEntityUVLightBox) {
-            state = state.withProperty(LOADED, ((TileEntityUVLightBox) te).hasLoadedPCB);
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+        Direction facing = state.get(ROTATION);
+        if (facing == Direction.NORTH || facing == Direction.SOUTH) {
+            return SHAPE_NS;
+        } else {
+            return SHAPE_EW;
         }
-        return state;
-    }
-
-    @Override
-    public AxisAlignedBB getBoundingBox(BlockState state, IBlockAccess source, BlockPos pos) {
-        if (!source.getBlockState(pos).getPropertyKeys().contains(ROTATION)) {
-            // getBoundingBox() can be called during placement (from World#mayPlace), before the
-            // block is actually placed; handle this, or we'll crash with an IllegalArgumentException
-            return BLOCK_BOUNDS_EW;
-        }
-        Direction facing = getRotation(source, pos);
-        return facing == Direction.NORTH || facing == Direction.SOUTH ? BLOCK_BOUNDS_NS : BLOCK_BOUNDS_EW;
-    }
-
-    @Nullable
-    @Override
-    public AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-        return getBoundingBox(blockState, worldIn, pos);
     }
 
     @Override
@@ -70,14 +47,9 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.UV_LIGHT_BOX;
-    }
-
-    @Override
-    public int getLightValue(BlockState state, IBlockAccess world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
-        return te instanceof TileEntityUVLightBox ? ((TileEntityUVLightBox) te).getLightLevel() : 0;
+    public int getLightValue(BlockState state) {
+        // todo 1.14 no pos-aware getlightlevel
+        return state.get(LIT) ? 15 : 0;
     }
 
     @Override
@@ -96,7 +68,7 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public int getWeakPower(BlockState blockState, IBlockAccess blockAccess, BlockPos pos, Direction side) {
+    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         TileEntity te = blockAccess.getTileEntity(pos);
         if (te instanceof TileEntityUVLightBox) {
             return ((TileEntityUVLightBox) te).shouldEmitRedstone() ? 15 : 0;

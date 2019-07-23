@@ -2,18 +2,15 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.pressure.AirHandler;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatExchanger, IHeatTinted {
     private final IHeatExchangerLogic coldHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
@@ -21,8 +18,6 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     private final IHeatExchangerLogic connectingExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
     private int visualizationTimer = 30;
 
-    @DescSynced
-    public final boolean[] sidesConnected = new boolean[6];
     @DescSynced
     private boolean visualize;
     @DescSynced
@@ -72,22 +67,14 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
-        CompoundNBT coldHeatTag = new CompoundNBT();
-        coldHeatExchanger.writeToNBT(coldHeatTag);
-        tag.put("coldHeat", coldHeatTag);
-        for (int i = 0; i < 6; i++) {
-            tag.putBoolean("sideConnected" + i, sidesConnected[i]);
-        }
+        tag.put("coldHeat", coldHeatExchanger.serializeNBT());
         return tag;
     }
 
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
-        coldHeatExchanger.readFromNBT(tag.getCompound("coldHeat"));
-        for (int i = 0; i < 6; i++) {
-            sidesConnected[i] = tag.getBoolean("sideConnected" + i);
-        }
+        coldHeatExchanger.deserializeNBT(tag.getCompound("coldHeat"));
     }
 
     public int getColdHeatLevel() {
@@ -131,11 +118,8 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     private void updateConnections() {
-        List<Pair<Direction, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
-        Arrays.fill(sidesConnected, false);
-        for (Pair<Direction, IAirHandler> entry : connections) {
-            sidesConnected[entry.getKey().ordinal()] = true;
-        }
+        BlockState newState = AirHandler.getBlockConnectionState(getBlockState(), getAirHandler(null));
+        world.setBlockState(pos, newState);
     }
 
     @Override
