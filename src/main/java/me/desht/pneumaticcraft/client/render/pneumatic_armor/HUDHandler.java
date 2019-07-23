@@ -250,8 +250,9 @@ public class HUDHandler implements IKeyListener {
             if (comHudHandler.isArmorEnabled() && anyArmorInInit) {
                 for (EntityEquipmentSlot slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                     if (isPneumaticArmorPiece(player, slot) && comHudHandler.getArmorPressure(slot) > 0F) {
-                        String text = Math.min(100, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot)) + "%";
-                        mc.fontRenderer.drawStringWithShadow(text, sr.getScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40);
+                        int startupTime = comHudHandler.getStartupTime(slot);
+                        int pct = startupTime == 0 ? 0 : comHudHandler.getTicksSinceEquipped(slot) * 100 / startupTime;
+                        mc.fontRenderer.drawStringWithShadow(pct + "%", sr.getScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40);
                     }
                 }
             }
