@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Dro
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackUpgradeHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPneumaticKick;
@@ -28,6 +29,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -259,13 +261,23 @@ public class HUDHandler implements IKeyListener {
         }
     }
 
+    private boolean checkHandlerDependencies(IUpgradeRenderHandler handler) {
+        for (Item item : handler.getRequiredUpgrades()) {
+            if (item instanceof ItemMachineUpgrade) {
+                IItemRegistry.EnumUpgrade upgrade = ((ItemMachineUpgrade) item).getUpgradeType();
+                if (!upgrade.isDepLoaded()) return false;
+            }
+        }
+        return true;
+    }
+
     private void update(EntityPlayer player, EntityEquipmentSlot slot, CommonArmorHandler comHudHandler) {
         boolean armorEnabled = GuiKeybindCheckBox.getCoreComponents().checked;
         List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
 
         // At start of init, inform the server which upgrades are enabled
         if (comHudHandler.getTicksSinceEquipped(slot) == 0) {
-            for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
+            for (IUpgradeRenderHandler handler : renderHandlers) {
                 handler.reset();
             }
             for (int i = 0; i < renderHandlers.size(); i++) {
@@ -297,9 +309,12 @@ public class HUDHandler implements IKeyListener {
         // During init, display found/not found message for each possible upgrade
         for (int i = 0; i < renderHandlers.size(); i++) {
             if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot) / (renderHandlers.size() + 2) * (i + 1)) {
-                playArmorInitSound(player, Sounds.HUD_INIT, 0.5F + (float) (i + 1) / (renderHandlers.size() + 2) * 0.5F);
-                boolean upgradeEnabled = comHudHandler.isUpgradeRendererInserted(slot, i);
-                addMessage(new ArmorMessage(I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeName()) + (upgradeEnabled ? " installed" : " not installed"), new ArrayList<>(), 80, upgradeEnabled ? 0x7000AA00 : 0x70FF8000));
+                IUpgradeRenderHandler handler = renderHandlers.get(i);
+                if (checkHandlerDependencies(handler)) {
+                    playArmorInitSound(player, Sounds.HUD_INIT, 0.5F + (float) (i + 1) / (renderHandlers.size() + 2) * 0.5F);
+                    boolean upgradeEnabled = comHudHandler.isUpgradeRendererInserted(slot, i);
+                    addMessage(new ArmorMessage(I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + handler.getUpgradeName()) + (upgradeEnabled ? " installed" : " not installed"), new ArrayList<>(), 80, upgradeEnabled ? 0x7000AA00 : 0x70FF8000));
+                }
             }
         }
 
