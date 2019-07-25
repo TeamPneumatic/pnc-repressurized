@@ -1,8 +1,5 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import java.util.List;
-import java.util.Set;
-
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetCoordinate;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
@@ -16,6 +13,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
+import java.util.Set;
 
 public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget {
 
@@ -101,7 +101,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     public BlockPos getCoordinate() {
-        if (useVariable) {
+        if (useVariable && aiManager != null) {
             return aiManager.getCoordinate(variable);
         } else {
             return getRawCoordinate();
