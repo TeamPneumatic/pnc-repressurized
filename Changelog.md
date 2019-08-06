@@ -6,6 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.5-371 (6 Aug 2019)
+#### Fixes
+* Fixed server crash with Amadron restocking and missing inventories
+* Fixed client crash related to copied coordinate puzzle pieces
+* Fixed client crash related to equipping Pneumatic Armor (possible race condition in HUD startup handling)
+* Fixed spurious "Air Conditioning not installed" message displayed even when Tough As Nails isn't present
+* Fixed "Drone Condition: Entity" puzzle piece not working (always measuring 0 carried entities)
+
 ### 0.11.4-368 (16 Jul 2019)
 #### Updates
 * Buttons in the Remote GUI editor can now be made taller (previous max was 20 pixels, now 100).
