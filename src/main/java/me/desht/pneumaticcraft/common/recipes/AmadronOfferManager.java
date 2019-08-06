@@ -127,7 +127,7 @@ public class AmadronOfferManager {
                         getItemHandler(input), getItemHandler(output),
                         getFluidHandler(input), getFluidHandler(output),
                         null);
-                if (possiblePickups > 0) {
+                if (possiblePickups > 0 && input != null) {
                     BlockPos pos = new BlockPos(input.getPos().getX(), input.getPos().getY(), input.getPos().getZ());
                     EntityDrone drone = ContainerAmadron.retrieveOrderItems(custom, possiblePickups, input.getWorld(), pos, input.getWorld(), pos);
                     if (drone != null) {
