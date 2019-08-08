@@ -6,7 +6,7 @@ If there are still some functions you'd like to have exposed after reading this,
 You can get the following info from any PneumaticCraft block that runs on compressed air (including the Air Compressor, Pressure Tube):
 • getPressure(), getPressure(<side>) - Will get the pressure in the block. The side parameter is an optional parameter, and is currently only useful when getting the pressure from a Vacuum Pump, as it contains two different pressures.
 • getDangerPressure() - This is a constant, it'll be 5 bar for tier one machines, and 20 for tier two.
-• getCriticalPressure() - This is a constant, it'll be 7 bar for tier two machines, and 25 for tier two.
+• getCriticalPressure() - This is a constant, it'll be 7 bar for tier one machines, and 25 for tier two.
 
 [prefix{l}]Every machine that is heat-related[prefix{}]
 This is for blocks like the Heat Sink, or Compressed Iron Block, that have a temperature.
