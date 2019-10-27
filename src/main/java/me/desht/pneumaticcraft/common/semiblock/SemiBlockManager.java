@@ -205,6 +205,7 @@ public class SemiBlockManager {
         chunksMarkedForRemoval.clear();
 
         semiBlocks.values().forEach(this::update);
+        semiBlocks.values().removeIf(Map::isEmpty);
     }
 
     @SubscribeEvent
@@ -246,24 +247,32 @@ public class SemiBlockManager {
     private void addPendingBlock(Chunk chunk, ISemiBlock semiBlock){
         Map<BlockPos, List<ISemiBlock>> map = getOrCreateMap(chunk);
         List<ISemiBlock> semiBlocksForPos = map.computeIfAbsent(semiBlock.getPos(), k -> new ArrayList<>());
-//        for (int i = 0; i < semiBlocksForPos.size(); i++) {
-//            // can't have multiple semiblocks of the same type; replace any such existing semiblock
-//            if (semiBlocksForPos.get(i).getClass() == semiBlock.getClass()) {
-//                semiBlocksForPos.set(i, semiBlock);
-//                return;
-//            }
-//        }
         semiBlocksForPos.add(semiBlock);
     }
-    
-    private void update(Map<BlockPos, List<ISemiBlock>> map){
-        for (List<ISemiBlock> semiBlocks : map.values()) {
-            for(ISemiBlock semiBlock : semiBlocks){
-                if (!semiBlock.isInvalid()) semiBlock.update();
+
+    /**
+     * Update all the semiblocks in a chunk, deleting from the map any that are marked as invalid.
+     * Called both server- and client-side.
+     *
+     * @param map map of blockpos to a list of semiblocks in that block position
+     */
+    private void update(Map<BlockPos, List<ISemiBlock>> map) {
+        List<BlockPos> toRemove = new ArrayList<>();
+        map.forEach((pos, semiblocks) -> {
+            Iterator<ISemiBlock> iter = semiblocks.iterator();
+            while (iter.hasNext()) {
+                ISemiBlock semiBlock = iter.next();
+                if (semiBlock.isInvalid()) {
+                    iter.remove();
+                } else {
+                    semiBlock.update();
+                }
             }
-            semiBlocks.removeIf(ISemiBlock::isInvalid);
-        }
-        map.values().removeIf(List::isEmpty);
+            if (semiblocks.isEmpty()) {
+                toRemove.add(pos);
+            }
+        });
+        toRemove.forEach(map::remove);
     }
 
     @SubscribeEvent
@@ -332,7 +341,6 @@ public class SemiBlockManager {
 
         } else {
             // client side
-            BlockPos pos = event.getPos();
             event.setCancellationResult(EnumActionResult.SUCCESS);
             event.setCanceled(true);
         }
