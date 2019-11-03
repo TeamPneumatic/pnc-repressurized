@@ -342,9 +342,11 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @Override
     public void setText(int textFieldID, String text) {
         entityFilter = text;
-        entitySelector.setFilter(text);
-        if (minigun != null) minigun.setAttackTarget(null);
-        markDirty();
+        if (!world.isRemote) {
+            entitySelector.setFilter(text);
+            if (minigun != null) minigun.setAttackTarget(null);
+            markDirty();
+        }
     }
 
     @Override
