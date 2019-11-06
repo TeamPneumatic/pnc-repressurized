@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.6-374 (6 Nov 2019)
+#### Fixes
+* Hopefully fix ConcurrentModificationError related to semiblock (crop support) handling. Couldn't reproduce this myself.
+* Fixed server crash occurring after custom Amadron trade was added.  Again, couldn't fix this myself, but added extra checks to log an error in the server log instead of simply crashing.
+* Fixed client-side crash after editing a Sentry Turret entity filter.
+
 ### 0.11.5-371 (6 Aug 2019)
 #### Fixes
 * Fixed server crash with Amadron restocking and missing inventories
