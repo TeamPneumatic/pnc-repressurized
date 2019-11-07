@@ -427,7 +427,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     public void onDescUpdate() {
         super.onDescUpdate();
         nParticles = IntMath.pow(multiBlockSize - 2, 3);
-        nParticles = Math.max(1, (int)(nParticles / (6 - roundedPressure)));
+        nParticles = Math.max(1, (int)(nParticles / ((dangerPressure + 1) - Math.min(dangerPressure, roundedPressure))));
     }
 
     public static boolean checkIfProperlyFormed(World world, BlockPos pos) {
@@ -526,7 +526,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                         IBlockState state = world.getBlockState(te.getPos());
                         world.setBlockState(te.getPos(), state.withProperty(BlockPressureChamberValve.FORMED, ((TileEntityPressureChamberValve) te).isPrimaryValve()), 2);
                     }
-                    if (te != null) {
+                    if (te != null && !te.getWorld().isRemote) {
                         double dx = x == 0 ? -0.1 : 0.1;
                         double dz = z == 0 ? -0.1 : 0.1;
                         NetworkHandler.sendToAllAround(
