@@ -120,6 +120,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     protected void onFirstServerUpdate() {
         super.onFirstServerUpdate();
         updateAmmo();
+        setText(0, entityFilter);
     }
 
     @Override
@@ -166,7 +167,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         super.readFromNBT(tag);
         inventory.deserializeNBT(tag.getCompoundTag("Items"));
         redstoneMode = tag.getByte("redstoneMode");
-        setText(0, tag.getString("entityFilter"));
+        entityFilter = tag.getString("entityFilter");
     }
 
     @Override
@@ -342,7 +343,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @Override
     public void setText(int textFieldID, String text) {
         entityFilter = text;
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             entitySelector.setFilter(text);
             if (minigun != null) minigun.setAttackTarget(null);
             markDirty();

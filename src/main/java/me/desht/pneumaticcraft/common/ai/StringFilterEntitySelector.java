@@ -5,11 +5,10 @@ import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.entity.Entity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class StringFilterEntitySelector implements Predicate<Entity> {
-    private List<EntityFilter> filters = new ArrayList<>();
+    private List<EntityFilter> filters = new ArrayList<>();  // needs to be a mutable list
 
     @Override
     public boolean apply(Entity entity) {
@@ -26,7 +25,8 @@ public class StringFilterEntitySelector implements Predicate<Entity> {
     public StringFilterEntitySelector setFilter(String filterStr) {
         EntityFilter filter = EntityFilter.fromString(filterStr);
         if (filter != null) {
-            this.filters = Collections.singletonList(filter);
+            this.filters = new ArrayList<>();
+            this.filters.add(filter);
         } else {
             this.filters.clear();
         }
@@ -34,7 +34,7 @@ public class StringFilterEntitySelector implements Predicate<Entity> {
     }
 
     public StringFilterEntitySelector setFilter(List<EntityFilter> filters) {
-        this.filters = filters;
+        this.filters = new ArrayList<>(filters);
         return this;
     }
 
