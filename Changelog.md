@@ -6,10 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.7-375 (7 Nov 2019)
+#### Fixes
+* Fixed bug causing clientside lockup if Pressure Chamber pressure reaches 6.0 bar (generally doesn't happen since this in the danger zone, but...)
+* Supplementary fix to Sentry Turret; previous fix in 0.11.6 was flawed and caused NBT read failure on startup.
+
 ### 0.11.6-374 (6 Nov 2019)
 #### Fixes
 * Hopefully fix ConcurrentModificationError related to semiblock (crop support) handling. Couldn't reproduce this myself.
-* Fixed server crash occurring after custom Amadron trade was added.  Again, couldn't fix this myself, but added extra checks to log an error in the server log instead of simply crashing.
+* Fixed server crash occurring after custom Amadron trade was added.  Again, couldn't reproduce this myself, but added extra checks to log an error in the server log instead of simply crashing.
 * Fixed client-side crash after editing a Sentry Turret entity filter.
 
 ### 0.11.5-371 (6 Aug 2019)
