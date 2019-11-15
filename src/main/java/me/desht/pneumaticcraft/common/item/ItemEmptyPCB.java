@@ -18,7 +18,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemEmptyPCB extends ItemNonDespawning {
     public ItemEmptyPCB() {
-        super(DEFAULT_PROPS.maxDamage(100).setNoRepair(), "empty_pcb");
+        super(defaultProps().maxDamage(100).setNoRepair(), "empty_pcb");
     }
 
     @Override

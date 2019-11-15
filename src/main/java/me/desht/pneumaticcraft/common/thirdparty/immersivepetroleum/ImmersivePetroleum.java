@@ -6,6 +6,7 @@ public class ImmersivePetroleum implements IThirdParty {
     @Override
     public void init() {
         // Don't need to register IP "diesel" - it's native to PneumaticCraft
-        IThirdParty.registerFuel("gasoline", "Immersive Petroleum", 1500000);
+        // TODO 1.14 verify fluid name
+        IThirdParty.registerFuel("immersivepetroleum:gasoline", 1500000);
     }
 }

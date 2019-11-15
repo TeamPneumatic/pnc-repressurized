@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:item/module/air_grate"
+      "layer0" : "pneumaticcraft:items/module/air_grate"
    },
    "parent" : "item/generated"
 }

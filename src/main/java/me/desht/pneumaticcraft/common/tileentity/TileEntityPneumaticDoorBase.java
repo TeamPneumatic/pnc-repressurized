@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
-import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -150,7 +150,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         boolean wasOpening = this.opening;
         this.opening = opening;
         if (this.opening != wasOpening) {
-            NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PNEUMATIC_DOOR, SoundCategory.BLOCKS, getPos(), 1.0F, 1.0F, false), getWorld());
+            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_DOOR, SoundCategory.BLOCKS, getPos(), 1.0F, 1.0F, false), getWorld());
             sendDescriptionPacket();
         }
     }

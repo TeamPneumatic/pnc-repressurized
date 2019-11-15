@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.thirdparty;
 
 import com.google.common.collect.Maps;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.forgespi.language.IModInfo;
 
 import java.util.Map;
 
@@ -14,10 +14,12 @@ public class ModNameCache {
     private static final Map<String, String> id2name = Maps.newHashMap();
 
     public static void init() {
-        for (ModContainer mod : Loader.instance().getModList()) {
-            id2name.put(mod.getModId(), mod.getName());
-            id2name.put(mod.getModId().toLowerCase(), mod.getName());
-        }
+        ModList.get().forEachModFile(modFile -> {
+            for (IModInfo info : modFile.getModInfos()) {
+                id2name.put(info.getModId(), info.getDisplayName());
+                id2name.put(info.getModId().toLowerCase(), info.getDisplayName());
+            }
+        });
         id2name.put("minecraft", "Minecraft");
     }
 

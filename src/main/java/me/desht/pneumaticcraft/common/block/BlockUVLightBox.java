@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -22,13 +21,13 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     private static final VoxelShape SHAPE_EW = Block.makeCuboidShape(4.5, 0, 1, 11.5, 7, 15);
 
     public BlockUVLightBox() {
-        super(Material.IRON, "uv_light_box");
+        super("uv_light_box");
     }
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
-        builder.add(LOADED);
+        builder.add(LOADED, LIT);
     }
 
     @Override

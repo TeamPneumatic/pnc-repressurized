@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyDrill;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderAssemblyDrill extends AbstractModelRenderer<TileEntityAssemblyDrill> {
+public class RenderAssemblyDrill extends AbstractTileModelRenderer<TileEntityAssemblyDrill> {
     private final ModelAssemblyDrill model;
 
     public RenderAssemblyDrill() {

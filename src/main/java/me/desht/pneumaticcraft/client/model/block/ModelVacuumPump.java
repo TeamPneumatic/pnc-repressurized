@@ -1,14 +1,14 @@
 package me.desht.pneumaticcraft.client.model.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 
-public class ModelVacuumPump extends AbstractModelRenderer.BaseModel {
+public class ModelVacuumPump extends AbstractTileModelRenderer.BaseModel {
     private final RendererModel turbineCase;
     private final RendererModel top;
     private final RendererModel blade;

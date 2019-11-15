@@ -1,35 +1,34 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import me.desht.pneumaticcraft.lib.BBConstants;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-
 public class BlockProgrammer extends BlockPneumaticCraftModeled {
-
-    private static final AxisAlignedBB BLOCK_BOUNDS = new AxisAlignedBB(
-            BBConstants.SECURITY_STATION_MIN_POS, 0F, BBConstants.SECURITY_STATION_MIN_POS,
-            BBConstants.SECURITY_STATION_MAX_POS, BBConstants.SECURITY_STATION_MAX_POS_TOP, BBConstants.SECURITY_STATION_MAX_POS
-    );
-    private static final AxisAlignedBB COLLISION_BOUNDS = new AxisAlignedBB(
-            BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MIN_POS,
-            BBConstants.SECURITY_STATION_MAX_POS, BBConstants.SECURITY_STATION_MAX_POS_TOP, BBConstants.SECURITY_STATION_MAX_POS
-    );
+    private static final VoxelShape BODY = Block.makeCuboidShape(0, 8, 0, 16, 11, 16);
+    private static final VoxelShape LEG1 = Block.makeCuboidShape(0, 0, 0, 1, 8, 1);
+    private static final VoxelShape LEG2 = Block.makeCuboidShape(15, 0, 15, 16, 8, 16);
+    private static final VoxelShape LEG3 = Block.makeCuboidShape(0, 0, 15, 1, 8, 16);
+    private static final VoxelShape LEG4 = Block.makeCuboidShape(15, 0, 0, 16, 8, 1);
+    private static final VoxelShape SHAPE = VoxelShapes.or(BODY, LEG1, LEG2, LEG3, LEG4);
 
     public BlockProgrammer() {
-        super(Material.IRON, "programmer");
-        setBlockBounds(BLOCK_BOUNDS);
+        super("programmer");
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return SHAPE;
     }
 
     @Override
@@ -38,38 +37,15 @@ public class BlockProgrammer extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.PROGRAMMER;
-    }
-
-    @Override
-    public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, Direction face, float par7, float par8, float par9) {
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         if (!world.isRemote) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityProgrammer) {
                 ((TileEntityProgrammer) te).sendDescriptionPacket();
             }
         }
-        return super.onBlockActivated(world, pos, state, player, hand, face, par7, par8, par9);
+        return super.onBlockActivated(state, world, pos, player, hand, brtr);
     }
-
-    @Nullable
-    @Override
-    public AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-        return COLLISION_BOUNDS;
-    }
-
-//    @Override
-//    public void setBlockBoundsBasedOnState(IBlockAccess par1IBlockAccess, BlockPos pos) {
-//        setBlockBounds(BBConstants.SECURITY_STATION_MIN_POS, 0F, BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MAX_POS, BBConstants.SECURITY_STATION_MAX_POS_TOP, BBConstants.SECURITY_STATION_MAX_POS);
-//    }
-//
-//    @Override
-//    public void addCollisionBoxesToList(World world, BlockPos pos, IBlockState state, AxisAlignedBB axisalignedbb, List arraylist, Entity par7Entity) {
-//        setBlockBounds(BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MAX_POS, BBConstants.SECURITY_STATION_MAX_POS_TOP, BBConstants.SECURITY_STATION_MAX_POS);
-//        super.addCollisionBoxesToList(world, pos, state, axisalignedbb, arraylist, par7Entity);
-//        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-//    }
 
     @Override
     public boolean isRotatable() {

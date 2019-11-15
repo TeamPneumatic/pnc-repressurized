@@ -9,7 +9,7 @@
     "uvlock": false
   },
   "variants": {
-    "normal": [
+    "": [
       {}
     ],
     "inventory": [{

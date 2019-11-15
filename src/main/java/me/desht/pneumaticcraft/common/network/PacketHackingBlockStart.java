@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
@@ -28,11 +27,6 @@ public class PacketHackingBlockStart extends LocationIntPacket {
 
     public PacketHackingBlockStart(PacketBuffer buffer) {
         super(buffer);
-    }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
-        super.toBytes(buf);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

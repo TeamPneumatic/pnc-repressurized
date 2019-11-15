@@ -8,13 +8,14 @@ import me.desht.pneumaticcraft.api.drone.AmadronRetrievalEvent;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
 import me.desht.pneumaticcraft.common.DroneRegistry;
+import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.capabilities.Hacking;
-import me.desht.pneumaticcraft.common.config.AmadronOfferStaticConfig;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.aux.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
@@ -25,16 +26,17 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketModWrenchBlock;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.ExplosionCraftingRecipe;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -44,12 +46,11 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -69,8 +70,8 @@ import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidBlock;
 
 import java.io.IOException;
@@ -84,17 +85,18 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void handleFuelEvent(FurnaceFuelBurnTimeEvent event) {
-        // todo 1.14 fluids
-//        FluidStack fluidStack = FluidUtil.getFluidContained(event.getItemStack());
-//        if (fluidStack != null && Names.MOD_ID.equals(FluidRegistry.getModId(fluidStack))) {
-//            int value = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(fluidStack.getFluid().getName(), -1);
-//            event.setBurnTime(value > 0 ? (int)(value * ConfigHandler.general.fuelBucketEfficiencyMultiplier) : -1);
-//        }
+        FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
+            ResourceLocation name = fluidStack.getFluid().getRegistryName();
+            if (Names.MOD_ID.equals(name.getNamespace())) {
+                int value = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(name, -1);
+                event.setBurnTime(value > 0 ? (int)(value * PNCConfig.Common.General.fuelBucketEfficiency) : -1);
+            }
+        });
     }
 
     @SubscribeEvent
     public void explosionCraftingEvent(ExplosionEvent.Detonate event) {
-        if (!Config.Common.General.explosionCrafting) {
+        if (!PNCConfig.Common.Recipes.explosionCrafting || event.getWorld().isRemote) {
             return;
         }
 
@@ -104,11 +106,27 @@ public class EventHandlerPneumaticCraft {
             if (entity instanceof ItemEntity && entity.isAlive()) {
                 ItemStack stack = ((ItemEntity) entity).getItem();
                 if (!stack.isEmpty()) {
-                    ItemStack result = ExplosionCraftingRecipe.tryToCraft(stack);
-                    if (!result.isEmpty()) {
-                        ((ItemEntity) entity).setItem(result);
-                        iterator.remove();
-                        checkForAdvancement(event, result);
+                    NonNullList<ItemStack> l = ExplosionCraftingRecipe.tryToCraft(stack);
+                    for (int i = 0; i < l.size(); i++) {
+                        ItemStack result = l.get(i);
+                        if (!result.isEmpty()) {
+                            if (i == 0) {
+                                // first item in result: just replace the existing entity
+                                ((ItemEntity) entity).setItem(result);
+                                iterator.remove();
+                            } else {
+                                // subsequent items: add a new item entity
+                                PneumaticCraftUtils.dropItemOnGround(result, event.getWorld(), entity.getPosition());
+                            }
+                            checkForAdvancement(event, result);
+                        }
+                    }
+                    for (ItemStack result : ExplosionCraftingRecipe.tryToCraft(stack)) {
+                        if (!result.isEmpty()) {
+                            ((ItemEntity) entity).setItem(result);
+                            iterator.remove();
+                            checkForAdvancement(event, result);
+                        }
                     }
                 }
             }
@@ -116,8 +134,7 @@ public class EventHandlerPneumaticCraft {
     }
 
     private void checkForAdvancement(ExplosionEvent.Detonate event, ItemStack result) {
-        if (!event.getWorld().isRemote
-                && (result.getItem() == ModItems.INGOT_IRON_COMPRESSED || result.getItem() == ModBlocks.COMPRESSED_IRON.asItem())) {
+        if ((result.getItem() == ModItems.INGOT_IRON_COMPRESSED || result.getItem() == ModBlocks.COMPRESSED_IRON_BLOCK.asItem())) {
             Vec3d exp = event.getExplosion().getPosition();
             for (PlayerEntity player : event.getWorld().getEntitiesWithinAABB(PlayerEntity.class, new AxisAlignedBB(exp.x - 32, exp.y - 32, exp.z - 32, exp.x + 32, exp.y + 32, exp.z + 32))) {
                 AdvancementTriggers.EXPLODE_IRON.trigger((ServerPlayerEntity) player);
@@ -169,8 +186,8 @@ public class EventHandlerPneumaticCraft {
             Block b = event.getWorld().getBlockState(brtr.getPos()).getBlock();
             if (b instanceof IFluidBlock) {
                 Fluid fluid = ((IFluidBlock) b).getFluid();
-                if (TileEntityRefinery.isInputFluidValid(fluid, 4) && event.getEntityPlayer() instanceof ServerPlayerEntity) {
-                    AdvancementTriggers.OIL_BUCKET.trigger((ServerPlayerEntity) event.getEntityPlayer());
+                if (TileEntityRefinery.isInputFluidValid(fluid, 4) && event.getPlayer() instanceof ServerPlayerEntity) {
+                    AdvancementTriggers.OIL_BUCKET.trigger((ServerPlayerEntity) event.getPlayer());
                 }
             }
         }
@@ -180,18 +197,18 @@ public class EventHandlerPneumaticCraft {
     public void onPlayerClick(PlayerInteractEvent event) {
         if (event instanceof PlayerInteractEvent.RightClickEmpty) return;
 
-        ItemStack heldItem = event.getEntityPlayer().getHeldItem(event.getHand());
+        ItemStack heldItem = event.getPlayer().getHeldItem(event.getHand());
         BlockState interactedBlockState = event.getWorld().getBlockState(event.getPos());
         Block interactedBlock = interactedBlockState.getBlock();
 
-        if (!event.getEntityPlayer().isCreative() || !event.getEntityPlayer().getCommandSource().hasPermissionLevel(2)) {
+        if (!event.getPlayer().isCreative() || !event.getPlayer().getCommandSource().hasPermissionLevel(2)) {
             if (event.getWorld() != null && !event.getWorld().isRemote) {
                 if (interactedBlock != ModBlocks.SECURITY_STATION || event instanceof PlayerInteractEvent.LeftClickBlock) {
                     boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem && ((BlockItem) heldItem.getItem()).getBlock() == ModBlocks.SECURITY_STATION;
-                    int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.getWorld(), event.getPos(), event.getEntityPlayer(), true, tryingToPlaceSecurityStation);
+                    int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.getWorld(), event.getPos(), event.getPlayer(), true, tryingToPlaceSecurityStation);
                     if (blockingStations > 0) {
                         event.setCanceled(true);
-                        event.getEntityPlayer().sendStatusMessage(
+                        event.getPlayer().sendStatusMessage(
                                 new TranslationTextComponent(
                                         tryingToPlaceSecurityStation ? "message.securityStation.stationPlacementPrevented" : "message.securityStation.accessPrevented",
                                         blockingStations), false);
@@ -209,9 +226,9 @@ public class EventHandlerPneumaticCraft {
     public void onModdedWrenchBlock(PlayerInteractEvent.RightClickBlock event) {
         BlockState state = event.getWorld().getBlockState(event.getPos());
         if (!event.isCanceled() && state.getBlock() instanceof IPneumaticWrenchable) {
-            if (event.getHand() == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(Hand.MAIN_HAND))) {
+            if (event.getHand() == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getHeldItem(Hand.MAIN_HAND))) {
                 event.setCanceled(true);
-            } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(event.getHand()))) {
+            } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getHeldItem(event.getHand()))) {
                 if (event.getWorld().isRemote) {
                     NetworkHandler.sendToServer(new PacketModWrenchBlock(event.getPos(), event.getFace(), event.getHand()));
                 }
@@ -223,9 +240,9 @@ public class EventHandlerPneumaticCraft {
     @SubscribeEvent
     public void onModdedWrenchEntity(PlayerInteractEvent.EntityInteract event) {
         if (!event.isCanceled() && event.getTarget() instanceof IPneumaticWrenchable) {
-            if (event.getHand() == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(Hand.MAIN_HAND))) {
+            if (event.getHand() == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getHeldItem(Hand.MAIN_HAND))) {
                 event.setCanceled(true);
-            } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntityPlayer().getHeldItem(event.getHand()))) {
+            } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getHeldItem(event.getHand()))) {
                 if (event.getWorld().isRemote) {
                     NetworkHandler.sendToServer(new PacketModWrenchBlock(event.getPos(), event.getHand(), event.getTarget().getEntityId()));
                 }
@@ -266,23 +283,24 @@ public class EventHandlerPneumaticCraft {
             EntityDrone drone = (EntityDrone) event.drone;
             AmadronOffer offer = drone.getHandlingOffer();
             if (offer != null) {
-                int times = drone.getOfferTimes();
-                if (offer.getInput() instanceof ItemStack) {
-                    int requiredCount = ((ItemStack) offer.getInput()).getCount() * times;
-                    for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                        requiredCount -= drone.getInv().getStackInSlot(i).getCount();
-                    }
-                    if (requiredCount <= 0) {
+                int requiredCount = offer.getInput().getAmount() * drone.getOfferTimes();
+                switch (offer.getInput().getType()) {
+                    case ITEM:
                         for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                            drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
+                            requiredCount -= drone.getInv().getStackInSlot(i).getCount();
                         }
-                        MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
-                    }
-                } else {
-                    int requiredCount = ((FluidStack) offer.getInput()).amount * times;
-                    if (drone.getTank().getFluidAmount() >= requiredCount) {
-                        MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
-                    }
+                        if (requiredCount <= 0) {
+                            for (int i = 0; i < drone.getInv().getSlots(); i++) {
+                                drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
+                            }
+                            MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
+                        }
+                        break;
+                    case FLUID:
+                        if (drone.getTank().getFluidAmount() >= requiredCount) {
+                            MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
+                        }
+                        break;
                 }
             }
         }
@@ -321,34 +339,37 @@ public class EventHandlerPneumaticCraft {
         }
         if (shouldDeliver) {
             ItemStack usedTablet = drone.getUsedTablet();
-            if (offer.getOutput() instanceof ItemStack) {
-                ItemStack offeringItems = (ItemStack) offer.getOutput();
-                int producedItems = offeringItems.getCount() * drone.getOfferTimes();
-                List<ItemStack> stacks = new ArrayList<>();
-                while (producedItems > 0) {
-                    ItemStack stack = offeringItems.copy();
-                    stack.setCount(Math.min(producedItems, stack.getMaxStackSize()));
-                    stacks.add(stack);
-                    producedItems -= stack.getCount();
-                }
-                GlobalPos pos = ItemAmadronTablet.getItemProvidingLocation(usedTablet);
-                if (pos != null) {
-                    DroneRegistry.getInstance().deliverItemsAmazonStyle(pos, stacks.toArray(new ItemStack[0]));
-                }
-            } else {
-                FluidStack offeringFluid = ((FluidStack) offer.getOutput()).copy();
-                offeringFluid.amount *= drone.getOfferTimes();
-                GlobalPos pos = ItemAmadronTablet.getFluidProvidingLocation(usedTablet);
-                if (pos != null) {
-                    DroneRegistry.getInstance().deliverFluidAmazonStyle(pos, offeringFluid);
-                }
+            switch (offer.getOutput().getType()) {
+                case ITEM:
+                    ItemStack offeringItems = offer.getOutput().getItem();
+                    int producedItems = offeringItems.getCount() * drone.getOfferTimes();
+                    List<ItemStack> stacks = new ArrayList<>();
+                    while (producedItems > 0) {
+                        ItemStack stack = offeringItems.copy();
+                        stack.setCount(Math.min(producedItems, stack.getMaxStackSize()));
+                        stacks.add(stack);
+                        producedItems -= stack.getCount();
+                    }
+                    GlobalPos pos = ItemAmadronTablet.getItemProvidingLocation(usedTablet);
+                    if (pos != null) {
+                        DroneRegistry.getInstance().deliverItemsAmazonStyle(pos, stacks.toArray(new ItemStack[0]));
+                    }
+                    break;
+                case FLUID:
+                    FluidStack offeringFluid = offer.getOutput().getFluid().copy();
+                    offeringFluid.setAmount(offeringFluid.getAmount() * drone.getOfferTimes());
+                    GlobalPos fpos = ItemAmadronTablet.getFluidProvidingLocation(usedTablet);
+                    if (fpos != null) {
+                        DroneRegistry.getInstance().deliverFluidAmazonStyle(fpos, offeringFluid);
+                    }
+                    break;
             }
         }
     }
 
     @SubscribeEvent
     public void onLootTableLoad(LootTableLoadEvent event) {
-        if (Config.Common.General.enableDungeonLoot) {
+        if (PNCConfig.Common.General.enableDungeonLoot) {
             String prefix = "minecraft:chests/";
             String name = event.getName().toString();
             if (name.startsWith(prefix)) {
@@ -361,7 +382,7 @@ public class EventHandlerPneumaticCraft {
                     case "spawn_bonus_chest":
                     case "stronghold_corridor":
                     case "village_blacksmith":
-                        // todo 1.14 loot
+                        // todo 1.14 loot tables are in datapack
 //                        ILootGenerator entry = new TableLootEntry(RL("inject/simple_dungeon_loot"), 1, 0,  new ILootCondition[0], "pneumaticcraft_inject_entry");
 //                        LootPool pool = new LootPool(new ILootGenerator[]{entry}, new ILootCondition[0], new RandomValueRange(1), new RandomValueRange(0, 1), "pneumaticcraft_inject_pool");
 //                        event.getTable().addPool(pool);

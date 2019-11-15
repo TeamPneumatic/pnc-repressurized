@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderSentryTurret extends AbstractModelRenderer<TileEntitySentryTurret> {
+public class RenderSentryTurret extends AbstractTileModelRenderer<TileEntitySentryTurret> {
     private final ModelSentryTurret model;
 
     public RenderSentryTurret() {

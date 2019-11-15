@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.tileentity.IGUITextFieldSensitive;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -29,14 +28,14 @@ public class PacketUpdateTextfield extends LocationIntPacket {
     public PacketUpdateTextfield(PacketBuffer buffer) {
         super(buffer);
         textFieldID = buffer.readInt();
-        text = PacketUtil.readUTF8String(buffer);
+        text = buffer.readString();
     }
 
     @Override
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
         buffer.writeInt(textFieldID);
-        PacketUtil.writeUTF8String(buffer, text);
+        buffer.writeString(text);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

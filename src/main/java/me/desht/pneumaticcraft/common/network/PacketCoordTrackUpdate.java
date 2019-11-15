@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -30,21 +30,21 @@ public class PacketCoordTrackUpdate extends LocationIntPacket {
     }
 
     @Override
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        PacketUtil.writeUTF8String(buffer, dimensionID.toString());
+        buffer.writeResourceLocation(dimensionID);
     }
 
     public PacketCoordTrackUpdate(PacketBuffer buffer) {
         super(buffer);
-        dimensionID = new ResourceLocation(PacketUtil.readUTF8String(buffer));
+        dimensionID = buffer.readResourceLocation();
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ItemStack stack = ctx.get().getSender().getItemStackFromSlot(EquipmentSlotType.HEAD);
             if (stack.getItem() instanceof ItemPneumaticArmor) {
-                ItemPneumaticArmor.setCoordTrackerPos(stack, dimensionID, pos);
+                ItemPneumaticArmor.setCoordTrackerPos(stack, GlobalPos.of(DimensionType.byName(dimensionID), pos));
             }
         });
         ctx.get().setPacketHandled(true);

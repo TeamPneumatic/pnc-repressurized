@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -29,15 +28,15 @@ public class PacketCommandGetGlobalVariableOutput extends LocationIntPacket {
 
     PacketCommandGetGlobalVariableOutput(PacketBuffer buffer) {
         super(buffer);
-        varName = PacketUtil.readUTF8String(buffer);
+        varName = buffer.readString();
         stack = buffer.readItemStack();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        PacketUtil.writeUTF8String(buf, varName);
-        new PacketBuffer(buf).writeItemStack(stack);
+        buf.writeString(varName);
+        buf.writeItemStack(stack);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

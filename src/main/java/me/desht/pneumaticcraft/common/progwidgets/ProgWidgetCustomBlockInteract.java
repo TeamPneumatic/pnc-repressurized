@@ -35,7 +35,7 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAICustomBlockInteract(drone, (ProgWidgetAreaItemBase) widget, interactor);
+        return new DroneAICustomBlockInteract(drone, (ProgWidgetInventoryBase) widget, interactor);
     }
 
     @Override

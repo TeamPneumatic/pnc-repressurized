@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
@@ -34,12 +33,12 @@ public class PacketMultiHeader {
 
     PacketMultiHeader(PacketBuffer buffer) {
         length = buffer.readInt();
-        className = PacketUtil.readUTF8String(buffer);
+        className = buffer.readString();
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeInt(length);
-        PacketUtil.writeUTF8String(buf, className);
+        buf.writeString(className);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

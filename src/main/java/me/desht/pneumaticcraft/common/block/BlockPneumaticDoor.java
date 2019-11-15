@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -37,7 +36,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
     public boolean isTrackingPlayerEye;
 
     public BlockPneumaticDoor() {
-        super(Material.IRON, "pneumatic_door");
+        super("pneumatic_door");
     }
 
     @Override

@@ -5,24 +5,28 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicTicking;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HeatBehaviourHeatFrame extends HeatBehaviour<TileEntity> {
+    private static final ResourceLocation ID = RL("heat_frame");
+
     private SemiBlockHeatFrame semiBlock;
 
     @Override
-    public void initialize(String id, IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
-        super.initialize(id, connectedHeatLogic, world, pos, direction);
+    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+        super.initialize(connectedHeatLogic, world, pos, direction);
         semiBlock = null;
     }
 
     @Override
-    public String getId() {
-        return Names.MOD_ID + ":heatFrame";
+    public ResourceLocation getId() {
+        return ID;
     }
 
     private SemiBlockHeatFrame getSemiBlock() {
@@ -38,7 +42,7 @@ public class HeatBehaviourHeatFrame extends HeatBehaviour<TileEntity> {
     }
 
     @Override
-    public void update() {
+    public void tick() {
         HeatExchangerLogicTicking.exchange(getSemiBlock().getHeatExchangerLogic(null), getHeatExchanger());
     }
 

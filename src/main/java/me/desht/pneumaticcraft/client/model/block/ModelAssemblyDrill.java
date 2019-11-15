@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.client.model.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 
-public class ModelAssemblyDrill extends AbstractModelRenderer.BaseModel {
+public class ModelAssemblyDrill extends AbstractTileModelRenderer.BaseModel {
     private final RendererModel baseTurn;
     private final RendererModel baseTurn2;
     private final RendererModel armBase1;

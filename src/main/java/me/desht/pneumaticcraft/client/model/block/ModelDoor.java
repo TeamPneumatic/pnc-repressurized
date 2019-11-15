@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.client.model.block;
 
-import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 
-public class ModelDoor extends AbstractModelRenderer.BaseModel {
+public class ModelDoor extends AbstractTileModelRenderer.BaseModel {
     private final RendererModel Shape1;
     private final RendererModel Shape2;
     private final RendererModel Shape3;

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.math.IntMath;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
@@ -13,7 +14,6 @@ import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberValve;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.recipes.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -146,7 +146,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 isSufficientPressureInChamber = false;
                 recipePressure = Float.MAX_VALUE;
                 applicableRecipes.clear();
-                for (IPressureChamberRecipe recipe : PressureChamberRecipe.recipes) {
+                for (IPressureChamberRecipe recipe : PneumaticCraftRecipes.pressureChamberRecipes.values()) {
                     if (recipe.isValidRecipe(itemsInChamber)) {
                         applicableRecipes.add(recipe);
                     }
@@ -436,7 +436,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     public void onDescUpdate() {
         super.onDescUpdate();
         nParticles = IntMath.pow(multiBlockSize - 2, 3);
-        nParticles = Math.max(1, (int)(nParticles / (6 - roundedPressure)));
+        nParticles = Math.max(1, (int)(nParticles / ((dangerPressure + 1) - Math.min(dangerPressure, roundedPressure))));
     }
 
     @Override

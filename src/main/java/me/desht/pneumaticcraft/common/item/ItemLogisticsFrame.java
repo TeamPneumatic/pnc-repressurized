@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlockBase;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -27,13 +27,18 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.BULLET;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ItemLogisticsFrame extends ItemSemiBlockBase {
 
-    public ItemLogisticsFrame(String registryName) {
-        super(ItemPneumatic.DEFAULT_PROPS, registryName);
+    ItemLogisticsFrame(ResourceLocation registryName) {
+        super(registryName.toString());
+    }
+
+    @SuppressWarnings("unused")
+    ItemLogisticsFrame(String registryName) {
+        super(registryName);
     }
 
     @Override
@@ -69,12 +74,11 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlockBase {
             SemiBlockLogistics logistics = ContainerLogistics.getLogistics(world, stack);
             if (logistics == null) return;
             if (logistics.isInvisible()) {
-                curInfo.add(BULLET.appendSibling(xlate("gui.logistic_frame.invisible")));
+                curInfo.add(bullet().appendSibling(xlate("gui.logistic_frame.invisible")));
             }
-            String key = SemiBlockManager.getKeyForSemiBlock(SemiBlockManager.getSemiBlockForItem((ItemSemiBlockBase) stack.getItem()));
             if (sneaking) {
-                if (logistics.isFuzzyDamage()) curInfo.add(BULLET.appendSibling(xlate("gui.logistic_frame.fuzzyDamage")));
-                if (logistics.isFuzzyNBT()) curInfo.add(BULLET.appendSibling(xlate("gui.logistic_frame.fuzzyNBT")));
+                if (logistics.isFuzzyDamage()) curInfo.add(bullet().appendSibling(xlate("gui.logistic_frame.fuzzyDamage")));
+                if (logistics.isFuzzyNBT()) curInfo.add(bullet().appendSibling(xlate("gui.logistic_frame.fuzzyNBT")));
                 ItemStack[] stacks = new ItemStack[logistics.getFilters().getSlots()];
                 for (int i = 0; i < logistics.getFilters().getSlots(); i++) {
                     stacks[i] = logistics.getFilters().getStackInSlot(i);
@@ -87,11 +91,12 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlockBase {
                 for (int i = 0; i < 9; i++) {
                     FluidStack fluid = logistics.getTankFilter(i).getFluid();
                     if (fluid != null) {
-                        curInfo.add(BULLET.appendText(fluid.amount + "mB " + fluid.getLocalizedName()));
+                        curInfo.add(bullet().appendText(fluid.getAmount() + "mB ").appendSibling(fluid.getDisplayName()));
                     }
                 }
                 if (curInfo.size() == l) curInfo.add(xlate("gui.misc.no_fluids"));
             } else {
+                String key = stack.getItem().getRegistryName().getPath();
                 curInfo.add(xlate(String.format("gui.%s.hasFilters", key)));
             }
         }

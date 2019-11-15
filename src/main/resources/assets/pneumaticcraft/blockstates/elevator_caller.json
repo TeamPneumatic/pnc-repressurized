@@ -4,7 +4,7 @@
     "model": "pneumaticcraft:block/elevator_caller"
   },
   "variants":{
-    "normal": { "model": "pneumaticcraft:block/elevator_caller" },
+    "": { "model": "pneumaticcraft:block/elevator_caller" },
     "inventory": [{
       "model": "pneumaticcraft:block/elevator_caller"
     }],

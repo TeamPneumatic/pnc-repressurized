@@ -1,16 +1,16 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.util.ResourceLocation;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class ModCategoryUid {
-    static final String AMADRON_TRADE = Names.MOD_ID + ".amadron_trade";
-    static final String ASSEMBLY_CONTROLLER = Names.MOD_ID + ".assembly_controller";
-    static final String EXPLOSION_CRAFTING = Names.MOD_ID + ".compressed_iron_explosion";
-    static final String ETCHING_ACID = Names.MOD_ID + ".etching_acid";
-    static final String PLASTIC_MIXER = Names.MOD_ID + ".plastic_mixer";
-    static final String PRESSURE_CHAMBER = Names.MOD_ID + ".pressure_chamber";
-    static final String REFINERY = Names.MOD_ID + ".refinery";
-    static final String THERMO_PNEUMATIC = Names.MOD_ID + ".thermo_pneumatic";
-    static final String UV_LIGHT_BOX = Names.MOD_ID + ".uv_light_box";
-    static final String HEAT_FRAME_COOLING = ".heat_frame_cooling";
+    static final ResourceLocation AMADRON_TRADE = RL("amadron_trade");
+    static final ResourceLocation ASSEMBLY_CONTROLLER = RL("assembly_controller");
+    static final ResourceLocation EXPLOSION_CRAFTING = RL("compressed_iron_explosion");
+    static final ResourceLocation PRESSURE_CHAMBER = RL("pressure_chamber");
+    static final ResourceLocation REFINERY = RL("refinery");
+    static final ResourceLocation THERMO_PNEUMATIC = RL("thermo_pneumatic");
+    static final ResourceLocation UV_LIGHT_BOX = RL("uv_light_box");
+    static final ResourceLocation HEAT_FRAME_COOLING = RL("heat_frame_cooling");
 }

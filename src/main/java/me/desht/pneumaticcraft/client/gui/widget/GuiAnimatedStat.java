@@ -5,8 +5,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
-import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.MainWindow;
@@ -16,10 +16,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.BlockItem;
@@ -242,7 +239,7 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
     }
 
     private void calculateColorHighlights(int color) {
-        if (Config.Client.guiBevel) {
+        if (PNCConfig.Client.guiBevel) {
             float fgR = (float) (color >> 16 & 255) / 255.0F;
             float fgG = (float) (color >> 8 & 255) / 255.0F;
             float fgB = (float) (color & 255) / 255.0F;
@@ -552,8 +549,8 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
     }
 
     @Override
-    public Rectangle getBounds() {
-        return new Rectangle(x - (leftSided ? width : 0), affectedY, width, height);
+    public Rectangle2d getBounds() {
+        return new Rectangle2d(x - (leftSided ? width : 0), affectedY, width, height);
     }
 
     @Override

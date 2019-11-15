@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
@@ -40,17 +39,12 @@ public class AreaTypeGrid extends AreaType{
     @Override
     public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);
-        tag.setInteger("interval", interval);
+        tag.putInt("interval", interval);
     }
     
     @Override
     public void readFromNBT(CompoundNBT tag){
         super.readFromNBT(tag);
-        interval = tag.getInteger("interval");
-    }
-    
-    @Override
-    public void convertFromLegacy(EnumAreaType oldAreaType, int typeInfo){
-        interval = typeInfo;
+        interval = tag.getInt("interval");
     }
 }

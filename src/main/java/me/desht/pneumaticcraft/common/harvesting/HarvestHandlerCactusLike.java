@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.harvesting;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
-import me.desht.pneumaticcraft.api.harvesting.IHarvestHandler;
+import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 import java.util.function.Predicate;
 
-public class HarvestHandlerCactusLike implements IHarvestHandler {
+public class HarvestHandlerCactusLike extends HarvestHandler {
 
     private final Predicate<BlockState> blockChecker;
     

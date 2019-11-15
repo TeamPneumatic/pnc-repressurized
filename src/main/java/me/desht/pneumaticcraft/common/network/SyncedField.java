@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -8,7 +7,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
 import org.apache.commons.lang3.ArrayUtils;
@@ -364,7 +363,7 @@ public abstract class SyncedField<T> {
         }
     }
 
-    static Object fromBytes(ByteBuf buf, int type) {
+    static Object fromBytes(PacketBuffer buf, int type) {
         switch (type) {
             case 0:
                 return buf.readInt();
@@ -375,11 +374,11 @@ public abstract class SyncedField<T> {
             case 3:
                 return buf.readBoolean();
             case 4:
-                return PacketUtil.readUTF8String(buf);
+                return buf.readString();
             case 5:
                 return buf.readByte();
             case 6:
-                return new PacketBuffer(buf).readItemStack();
+                return buf.readItemStack();
             case 7:
                 if (!buf.readBoolean()) return null;
                 return FluidStack.loadFluidStackFromNBT(new PacketBuffer(buf).readCompoundTag());
@@ -394,7 +393,7 @@ public abstract class SyncedField<T> {
         throw new IllegalArgumentException("Invalid sync type! " + type);
     }
 
-    static void toBytes(ByteBuf buf, Object value, int type) {
+    static void toBytes(PacketBuffer buf, Object value, int type) {
         switch (type) {
             case 0:
                 buf.writeInt((Integer) value);
@@ -409,7 +408,7 @@ public abstract class SyncedField<T> {
                 buf.writeBoolean((Boolean) value);
                 break;
             case 4:
-                PacketUtil.writeUTF8String(buf, (String) value);
+                buf.writeString((String) value);
                 break;
             case 5:
                 buf.writeByte((Byte) value);

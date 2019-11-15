@@ -3,10 +3,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.AreaShowManager;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
-import me.desht.pneumaticcraft.common.config.ProgWidgetConfig;
+import me.desht.pneumaticcraft.common.config.aux.ProgWidgetConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
-import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
@@ -297,7 +297,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             }
             writeProgWidgetsToNBT(stack.getTag());
             if (player != null) {
-                NetworkHandler.sendToPlayer(new PacketPlaySound(Sounds.HUD_INIT_COMPLETE, SoundCategory.BLOCKS, getPos(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
+                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.HUD_INIT_COMPLETE, SoundCategory.BLOCKS, getPos(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
                 AdvancementTriggers.PROGRAM_DRONE.trigger((ServerPlayerEntity) player);
             }
         }

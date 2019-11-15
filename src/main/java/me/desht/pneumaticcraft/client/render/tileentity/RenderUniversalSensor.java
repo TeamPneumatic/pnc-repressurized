@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderUniversalSensor extends AbstractModelRenderer<TileEntityUniversalSensor> {
+public class RenderUniversalSensor extends AbstractTileModelRenderer<TileEntityUniversalSensor> {
     private final ModelUniversalSensor model;
 
     public RenderUniversalSensor() {

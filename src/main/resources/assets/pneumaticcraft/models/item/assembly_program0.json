@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:item/programs/program_drill"
+      "layer0" : "pneumaticcraft:items/programs/program_drill"
    },
    "parent" : "item/generated"
 }

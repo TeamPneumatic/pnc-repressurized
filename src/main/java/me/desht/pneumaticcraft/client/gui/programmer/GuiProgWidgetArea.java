@@ -6,10 +6,11 @@ import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
@@ -55,7 +56,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         addLabel(I18n.format("gui.progWidget.area.point2"), guiLeft + 177, guiTop + 10);
         addLabel(I18n.format("gui.progWidget.area.type"), guiLeft + 4, guiTop + 50);
 
-        boolean advancedMode = ConfigHandler.getProgrammerDifficulty() == 2;
+        boolean advancedMode = PNCConfig.Client.programmerDifficulty == IProgWidget.WidgetDifficulty.ADVANCED;
         GuiButtonSpecial gpsButton1 = new GuiButtonSpecial(guiLeft + (advancedMode ? 6 : 55), guiTop + 20, 20, 20, "", b -> openInvSearchGUI(0));
         GuiButtonSpecial gpsButton2 = new GuiButtonSpecial(guiLeft + (advancedMode ? 133 : 182), guiTop + 20, 20, 20, "", b -> openInvSearchGUI(1));
         gpsButton1.setRenderStacks(new ItemStack(ModItems.GPS_TOOL));

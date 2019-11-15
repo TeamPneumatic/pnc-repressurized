@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 /**
  * Represents an object (typically a tile entity) which syncs its fluid tanks carefully to avoid excessive packets
@@ -37,7 +37,7 @@ public interface ISmartFluidSync {
             super(capacity);
             this.holder = holder;
             this.tankIndex = tankIndex;
-            this.scaleValue = getCapacity() * Config.Common.Advanced.liquidTankUpdateThreshold;
+            this.scaleValue = getCapacity() * PNCConfig.Common.Advanced.liquidTankUpdateThreshold;
         }
 
         /**

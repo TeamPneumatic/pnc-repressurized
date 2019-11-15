@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
-import com.google.common.collect.HashBiMap;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.event.SemiblockEvent;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -8,7 +7,7 @@ import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
-import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,10 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -29,33 +25,36 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.Validate;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class SemiBlockManager {
     private final Map<IChunk, Map<BlockPos, List<ISemiBlock>>> semiBlocks = new HashMap<>();
     private final List<ISemiBlock> addingBlocks = new LinkedList<>();
     private final Map<IChunk, Set<PlayerEntity>> syncList = new HashMap<>();
     private final Set<IChunk> chunksMarkedForRemoval = new HashSet<>();
+
     private static final int SYNC_DISTANCE_SQ = 64 * 64;
     private static final int SYNC_DISTANCE_SQ5 = 69 * 69;
     private static final int SYNC_DISTANCE_SQ10 = 74 * 74;
-    private static final HashBiMap<String, Class<? extends ISemiBlock>> registeredTypes = HashBiMap.create();
-    private static final HashBiMap<Class<? extends ISemiBlock>, ItemSemiBlockBase> semiBlockToItems = HashBiMap.create();
+//    private static final HashBiMap<ResourceLocation, Class<? extends ISemiBlock>> registeredTypes = HashBiMap.create();
+//    private static final HashBiMap<Class<? extends ISemiBlock>, ItemSemiBlockBase> semiBlockToItems = HashBiMap.create();
+    private static final Map<ResourceLocation, Supplier<? extends ISemiBlock>> registeredTypes = new HashMap<>();
+    private static final Map<ResourceLocation, Supplier<? extends ItemSemiBlockBase>> semiBlockToItems = new HashMap<>();
+
     private static final SemiBlockManager INSTANCE = new SemiBlockManager();
     private static final SemiBlockManager CLIENT_INSTANCE = new SemiBlockManager();
 
@@ -75,55 +74,57 @@ public class SemiBlockManager {
         return world.isRemote ? CLIENT_INSTANCE : INSTANCE;
     }
 
-    static void registerSemiBlock(String key, Class<? extends ISemiBlock> semiBlock) {
-        registerSemiBlock(key, semiBlock, ItemSemiBlockBase.class);
+    static void registerSemiBlock(ResourceLocation key, Supplier<? extends ISemiBlock> semiBlock) {
+        registerSemiBlock(key, semiBlock, () -> new ItemSemiBlockBase(key.toString()));
     }
 
-    static void registerSemiBlock(String key, Class<? extends ISemiBlock> semiBlock, Class<? extends ItemSemiBlockBase> itemClass) {
+    static void registerSemiBlock(ResourceLocation key, Supplier<? extends ISemiBlock> semiBlockFactory, Supplier<? extends ItemSemiBlockBase> itemFactory) {
         // called in preInit phase
         Validate.isTrue(!registeredTypes.containsKey(key), "Duplicate registration key: " + key);
-        registeredTypes.put(key, semiBlock);
+        registeredTypes.put(key, semiBlockFactory);
 
         // stash the item objects for registration when the registry event is received in onItemRegistration()
-        try {
-            Constructor<? extends ItemSemiBlockBase> ctor = itemClass.getDeclaredConstructor(String.class);
-            semiBlockToItems.put(semiBlock, itemClass.cast(ctor.newInstance(key)));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            Log.error("Failed to register semiblock " + key + " of class " + semiBlock.getCanonicalName());
-            e.printStackTrace();
-        }
+        semiBlockToItems.put(key, itemFactory);
+//        try {
+//            Constructor<? extends ItemSemiBlockBase> ctor = itemClass.getDeclaredConstructor(String.class);
+//            semiBlockToItems.put(semiBlock, itemClass.cast(ctor.newInstance(key.toString())));
+//        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+//            Log.error("Failed to register semiblock " + key + " of class " + semiBlock.getCanonicalName());
+//            e.printStackTrace();
+//        }
     }
 
     static ItemSemiBlockBase getItemForSemiBlock(ISemiBlock semiBlock) {
-        return semiBlockToItems.get(semiBlock.getClass());
+        return semiBlockToItems.get(semiBlock.getId()).get();
     }
 
-    public static Class<? extends ISemiBlock> getSemiBlockForItem(ItemSemiBlockBase item) {
-        return semiBlockToItems.inverse().get(item);
-    }
+//    public static ISemiBlock getSemiBlockForItem(ItemSemiBlockBase item) {
+//        return getSemiBlockForKey(item.getRegistryName());
+//    }
 
-    public static String getKeyForSemiBlock(ISemiBlock semiBlock) {
-        return getKeyForSemiBlock(semiBlock.getClass());
-    }
+//    public static ResourceLocation getKeyForSemiBlock(ISemiBlock semiBlock) {
+//        return getKeyForSemiBlock(semiBlock.getClass());
+//    }
 
-    public static String getKeyForSemiBlock(Class<? extends ISemiBlock> semiBlock) {
-        return registeredTypes.inverse().get(semiBlock);
-    }
+//    public static ResourceLocation getKeyForSemiBlock(Class<? extends ISemiBlock> semiBlock) {
+//        return registeredTypes.inverse().get(semiBlock);
+//    }
 
-    public static ISemiBlock getSemiBlockForKey(String key) {
-        try {
-            Validate.isTrue(registeredTypes.containsKey(key), "Semi Block with id '" + key + "' isn't registered!");
-            return registeredTypes.get(key).newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public static ISemiBlock getSemiBlockForKey(ResourceLocation key) {
+        return registeredTypes.get(key).get();
+//        try {
+//            Validate.isTrue(registeredTypes.containsKey(key), "Semi Block with id '" + key + "' isn't registered!");
+//            return registeredTypes.get(key).newInstance();
+//        } catch (InstantiationException | IllegalAccessException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
     }
 
     @SubscribeEvent
     public static void onItemRegistration(RegistryEvent.Register<Item> event) {
-        for (ItemSemiBlockBase item : semiBlockToItems.values()) {
-            ModItems.Registration.registerItem(event.getRegistry(), item);
+        for (Supplier<? extends ItemSemiBlockBase> item : semiBlockToItems.values()) {
+            ModItems.Registration.registerItem(event.getRegistry(), item.get());
         }
     }
 
@@ -144,7 +145,7 @@ public class SemiBlockManager {
                     CompoundNBT t = new CompoundNBT();
                     semiBlock.writeToNBT(t);
                     NBTUtil.setPos(t, entry.getKey());
-                    t.putString("type", getKeyForSemiBlock(semiBlock));
+                    t.putString("type", semiBlock.getId().toString()); // getKeyForSemiBlock(semiBlock).toString());
                     tagList.add(t);
                 }
             }
@@ -165,7 +166,7 @@ public class SemiBlockManager {
                         ListNBT tagList = event.getData().getList("SemiBlocks", 10);
                         for (int i = 0; i < tagList.size(); i++) {
                             CompoundNBT t = tagList.getCompound(i);
-                            ISemiBlock semiBlock = getSemiBlockForKey(t.getString("type"));
+                            ISemiBlock semiBlock = getSemiBlockForKey(new ResourceLocation(t.getString("type")));
                             if (semiBlock != null) {
                                 semiBlock.readFromNBT(t);
                                 addSemiBlock(event.getWorld().getWorld(), NBTUtil.getPos(t), semiBlock, event.getChunk());
@@ -307,7 +308,7 @@ public class SemiBlockManager {
 
     @SubscribeEvent
     public void onInteraction(PlayerInteractEvent.RightClickBlock event) {
-        ItemStack curItem = event.getEntityPlayer().getHeldItem(event.getHand());
+        ItemStack curItem = event.getPlayer().getHeldItem(event.getHand());
         if (!(curItem.getItem() instanceof ISemiBlockItem)) {
             return;
         }
@@ -322,8 +323,8 @@ public class SemiBlockManager {
             // Still can't be placed? If it has a GUI, open it.
             if (!success) {
                 ISemiBlock block = ((ISemiBlockItem) curItem.getItem()).getSemiBlock(event.getWorld(), event.getPos(), curItem);
-                if (block instanceof INamedContainerProvider && event.getEntityPlayer() instanceof ServerPlayerEntity) {
-                    NetworkHooks.openGui((ServerPlayerEntity) event.getEntityPlayer(), (INamedContainerProvider) block, event.getPos());
+                if (block instanceof INamedContainerProvider && event.getPlayer() instanceof ServerPlayerEntity) {
+                    NetworkHooks.openGui((ServerPlayerEntity) event.getPlayer(), (INamedContainerProvider) block, event.getPos());
                     success = true;
                 }
             }
@@ -339,17 +340,17 @@ public class SemiBlockManager {
     private boolean interact(PlayerInteractEvent.RightClickBlock event, ItemStack curItem, BlockPos pos){
         ISemiBlock newBlock = ((ISemiBlockItem) curItem.getItem()).getSemiBlock(event.getWorld(), pos, curItem);
         newBlock.initialize(event.getWorld(), pos);
-        newBlock.prePlacement(event.getEntityPlayer(), curItem, event.getFace());
+        newBlock.prePlacement(event.getPlayer(), curItem, event.getFace());
         
         Stream<ISemiBlock> existingSemiblocks = getSemiBlocks(event.getWorld(), pos);
         List<ISemiBlock> collidingBlocks = existingSemiblocks.filter(s -> !s.canCoexistInSameBlock(newBlock)).collect(Collectors.toList());
         
         if (!collidingBlocks.isEmpty()) {
             for(ISemiBlock collidingBlock : collidingBlocks){
-                if (event.getEntityPlayer().isCreative()) {
+                if (event.getPlayer().isCreative()) {
                     removeSemiBlock(collidingBlock);
                 } else {
-                    breakSemiBlock(collidingBlock, event.getEntityPlayer());
+                    breakSemiBlock(collidingBlock, event.getPlayer());
                 }
             }
             
@@ -357,8 +358,8 @@ public class SemiBlockManager {
         } else {            
             if (newBlock.canPlace(event.getFace())) {
                 addSemiBlock(event.getWorld(), pos, newBlock);
-                newBlock.onPlaced(event.getEntityPlayer(), curItem, event.getFace());
-                if (!event.getEntityPlayer().isCreative()) {
+                newBlock.onPlaced(event.getPlayer(), curItem, event.getFace());
+                if (!event.getPlayer().isCreative()) {
                     curItem.shrink(1);
                 }
                 NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_METAL_PLACE, SoundCategory.BLOCKS,

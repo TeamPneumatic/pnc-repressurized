@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -20,7 +19,7 @@ import net.minecraft.world.World;
 public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
 
     public BlockElevatorCaller() {
-        super(Material.IRON, "elevator_caller");
+        super("elevator_caller");
     }
 
     @Override

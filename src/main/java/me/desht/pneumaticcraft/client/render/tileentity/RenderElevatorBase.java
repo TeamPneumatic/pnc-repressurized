@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderElevatorBase extends AbstractModelRenderer<TileEntityElevatorBase> {
+public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElevatorBase> {
     private final ModelElevatorBase model;
 
     public RenderElevatorBase() {

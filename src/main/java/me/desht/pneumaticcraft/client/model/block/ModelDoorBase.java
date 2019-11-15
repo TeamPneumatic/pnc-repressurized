@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.client.model.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 
-public class ModelDoorBase extends AbstractModelRenderer.BaseModel {
+public class ModelDoorBase extends AbstractTileModelRenderer.BaseModel {
     private final RendererModel cylinder1;
     private final RendererModel cylinder2;
     private final RendererModel cylinder3;

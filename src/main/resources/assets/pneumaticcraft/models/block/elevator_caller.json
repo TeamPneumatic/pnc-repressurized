@@ -1,6 +1,6 @@
 {
     "parent": "block/cube_all",
     "textures": {
-        "all": "pneumaticcraft:block/elevator_caller"
+        "all": "pneumaticcraft:blocks/elevator_caller"
     }
 }

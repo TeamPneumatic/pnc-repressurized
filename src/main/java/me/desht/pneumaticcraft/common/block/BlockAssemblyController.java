@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +18,7 @@ public class BlockAssemblyController extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, LEG_SHAPE);
 
     public BlockAssemblyController() {
-        super(Material.IRON, "assembly_controller");
+        super("assembly_controller");
     }
 
     @Override

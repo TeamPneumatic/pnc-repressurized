@@ -10,8 +10,8 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandle
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
-import me.desht.pneumaticcraft.common.config.Config;
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -44,11 +44,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.*;
@@ -140,7 +140,7 @@ public class CommonArmorHandler {
     }
 
     @SubscribeEvent
-    public static void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+    public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
         // called client side when client disconnects
         PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
         if (player != null) {
@@ -181,7 +181,7 @@ public class CommonArmorHandler {
                             float oldPressure = addAir(slot, (int) -airUsage);
                             if (oldPressure > 0F && armorPressure[slot.getIndex()] == 0F) {
                                 // out of air!
-                                NetworkHandler.sendToPlayer(new PacketPlaySound(Sounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (ServerPlayerEntity) player);
+                                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (ServerPlayerEntity) player);
                             }
                         }
                     }
@@ -283,7 +283,7 @@ public class CommonArmorHandler {
 
             int airUsed = playerAir * PneumaticValues.PNEUMATIC_HELMET_SCUBA_MULTIPLIER;
             addAir(EquipmentSlotType.HEAD, -airUsed);
-            NetworkHandler.sendToPlayer(new PacketPlaySound(Sounds.SCUBA, SoundCategory.PLAYERS, player.getPosition(), 1.5f, 1.0f, false), (ServerPlayerEntity) player);
+            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA, SoundCategory.PLAYERS, player.getPosition(), 1.5f, 1.0f, false), (ServerPlayerEntity) player);
             Vec3d eyes = player.getEyePosition(1.0f).add(player.getLookVec().scale(0.5));
             NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.BUBBLE, eyes.x - 0.5, eyes.y, eyes.z -0.5, 0.0, 0.2, 0.0, 10, 1.0, 1.0, 1.0), player.world);
         }
@@ -341,7 +341,7 @@ public class CommonArmorHandler {
                 if (jetBootsBuilderMode && jetbootsCount >= 8) {
                     // builder mode - rise vertically (or hover if sneaking and firing)
                     setYMotion(player, player.isSneaking() ? 0 : 0.15 + 0.15 * (jetbootsCount - 8));
-                    jetbootsAirUsage = (int) (Config.Common.Armor.jetBootsAirUsage * jetbootsCount / 5F);
+                    jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount / 5F);
                 } else {
                     // jetboots firing - move in direction of looking
                     Vec3d lookVec = player.getLookVec().scale(0.15 * jetbootsCount);
@@ -350,7 +350,7 @@ public class CommonArmorHandler {
                     lookVec = lookVec.scale(flightAccel);
                     if (jetBootsActiveTicks < 10) lookVec = lookVec.scale(jetBootsActiveTicks * 0.1);
                     player.setMotion(lookVec.x, player.onGround ? 0 : lookVec.y, lookVec.z);
-                    jetbootsAirUsage = Config.Common.Armor.jetBootsAirUsage * jetbootsCount;
+                    jetbootsAirUsage = PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount;
                 }
                 jetBootsActiveTicks++;
             } else if (isJetBootsEnabled() && !player.onGround) {
@@ -358,7 +358,7 @@ public class CommonArmorHandler {
                 if (jetbootsCount > 6 && !player.isSneaking()) setYMotion(player, 0.0);
                 else setYMotion(player, player.isSneaking() ? -0.45 : -0.15 + 0.015 * jetbootsCount);
                 player.fallDistance = 0;
-                jetbootsAirUsage = (int) (Config.Common.Armor.jetBootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F));
+                jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F));
                 flightAccel = 1.0F;
             } else {
                 flightAccel = 1.0F;
@@ -451,7 +451,7 @@ public class CommonArmorHandler {
 
             if (item.getPositionVector().squareDistanceTo(playerVec) <= magnetRadiusSq
                     && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
-                    && !item.getEntityData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
+                    && !item.getPersistentData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
                 if (armorPressure[EquipmentSlotType.CHEST.getIndex()] < 0.1F) break;
                 item.setPosition(player.posX, player.posY, player.posZ);
                 if (item instanceof ItemEntity) ((ItemEntity) item).setPickupDelay(0);
@@ -517,7 +517,7 @@ public class CommonArmorHandler {
                 upgradeMatrix[slot.getIndex()][((ItemMachineUpgrade) stack.getItem()).getUpgradeType().ordinal()] += stack.getCount();
             }
         }
-        startupTimes[slot.getIndex()] = (int) (Config.Common.Armor.armorStartupTime * Math.pow(0.8, getSpeedFromUpgrades(slot) - 1));
+        startupTimes[slot.getIndex()] = (int) (PNCConfig.Common.Armor.armorStartupTime * Math.pow(0.8, getSpeedFromUpgrades(slot) - 1));
 
         // some slot-specific setup
         switch (slot) {

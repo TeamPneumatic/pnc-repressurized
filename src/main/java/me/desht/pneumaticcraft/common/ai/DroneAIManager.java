@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import net.minecraft.entity.ai.goal.Goal;
@@ -334,7 +334,7 @@ public class DroneAIManager implements IVariableProvider {
     public void onUpdateTasks() {
         pickupItemsIfMagnet();
         
-        if (Config.Common.Advanced.stopDroneAI) return;
+        if (PNCConfig.Common.Advanced.stopDroneAI) return;
 
         if (!drone.isAIOverriden()) {
             if (wasAIOveridden && curWidgetTargetAI != null) drone.getTargetAI().addGoal(2, curWidgetTargetAI);

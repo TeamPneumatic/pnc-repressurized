@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.item.ItemRemote;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -29,8 +28,8 @@ public class PacketUpdateRemoteLayout {
         this.layout = buffer.readCompoundTag();
     }
 
-    public void toBytes(ByteBuf buf) {
-        new PacketBuffer(buf).writeCompoundTag(layout);
+    public void toBytes(PacketBuffer buf) {
+        buf.writeCompoundTag(layout);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

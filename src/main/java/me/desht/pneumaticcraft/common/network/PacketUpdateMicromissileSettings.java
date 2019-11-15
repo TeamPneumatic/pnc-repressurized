@@ -1,8 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.common.config.MicromissileDefaults;
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.config.aux.MicromissileDefaults;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
 import me.desht.pneumaticcraft.lib.Log;
@@ -46,19 +45,19 @@ public class PacketUpdateMicromissileSettings {
         accel = buffer.readFloat();
         damage = buffer.readFloat();
         point = new Point(buffer.readInt(), buffer.readInt());
-        entityFilter = PacketUtil.readUTF8String(buffer);
-        fireMode = FireMode.fromString(PacketUtil.readUTF8String(buffer));
+        entityFilter = buffer.readString();
+        fireMode = FireMode.values()[buffer.readByte()];
         saveDefault = buffer.readBoolean();
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeFloat(topSpeed);
         buf.writeFloat(accel);
         buf.writeFloat(damage);
         buf.writeInt(point.x);
         buf.writeInt(point.y);
-        PacketUtil.writeUTF8String(buf, entityFilter);
-        PacketUtil.writeUTF8String(buf, fireMode.toString());
+        buf.writeString(entityFilter);
+        buf.writeByte(fireMode.ordinal());
         buf.writeBoolean(saveDefault);
     }
 
@@ -94,7 +93,7 @@ public class PacketUpdateMicromissileSettings {
                         new MicromissileDefaults.Entry(topSpeed, accel, damage, point, entityFilter, fireMode)
                 );
                 MicromissileDefaults.INSTANCE.writeToFile();
-                NetworkHandler.sendToPlayer(new PacketPlaySound(Sounds.CHIRP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 1.0f, false), (ServerPlayerEntity) player);
+                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 1.0f, false), (ServerPlayerEntity) player);
             } catch (IOException e) {
                 e.printStackTrace();
             }

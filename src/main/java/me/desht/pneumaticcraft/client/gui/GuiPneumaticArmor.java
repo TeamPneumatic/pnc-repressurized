@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInve
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -62,7 +61,7 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
     }
 
     private void addUpgradeStat(EnumUpgrade upgrade, boolean leftSided) {
-        ItemStack stack = CraftingRegistrator.getUpgrade(upgrade);
+        ItemStack stack = upgrade.getItemStack();
         String key = getTranslationKey(upgrade, equipmentSlot);
         if (!I18n.hasKey(key)) {
             key = getTranslationKey(upgrade, null);

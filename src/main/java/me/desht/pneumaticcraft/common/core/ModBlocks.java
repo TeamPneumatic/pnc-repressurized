@@ -6,7 +6,10 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
+import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.item.DyeColor;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -43,7 +46,7 @@ public class ModBlocks {
     public static final Block ASSEMBLY_LASER = null;
     public static final Block ASSEMBLY_CONTROLLER = null;
     public static final Block ADVANCED_PRESSURE_TUBE = null;
-    public static final Block COMPRESSED_IRON = null;
+    public static final Block COMPRESSED_IRON_BLOCK = null;
     public static final Block UV_LIGHT_BOX = null;
     public static final Block SECURITY_STATION = null;
     public static final Block UNIVERSAL_SENSOR = null;
@@ -54,7 +57,6 @@ public class ModBlocks {
     public static final Block ELEVATOR_CALLER = null;
     public static final Block PROGRAMMER = null;
     public static final Block CREATIVE_COMPRESSOR = null;
-    public static final Block PLASTIC_MIXER = null;
     public static final Block LIQUID_COMPRESSOR = null;
     public static final Block ADVANCED_LIQUID_COMPRESSOR = null;
     public static final Block ADVANCED_AIR_COMPRESSOR = null;
@@ -73,6 +75,14 @@ public class ModBlocks {
     public static final Block PNEUMATIC_DYNAMO = null;
     public static final Block FAKE_ICE = null;
     public static final Block THERMAL_COMPRESSOR = null;
+    public static final FlowingFluidBlock OIL_BLOCK = null;
+    public static final FlowingFluidBlock ETCHING_ACID_BLOCK = null;
+    public static final FlowingFluidBlock PLASTIC_BLOCK = null;
+    public static final FlowingFluidBlock DIESEL_BLOCK = null;
+    public static final FlowingFluidBlock KEROSENE_BLOCK = null;
+    public static final FlowingFluidBlock GASOLINE_BLOCK = null;
+    public static final FlowingFluidBlock LPG_BLOCK = null;
+    public static final FlowingFluidBlock LUBRICANT_BLOCK = null;
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class Registration {
@@ -114,7 +124,6 @@ public class ModBlocks {
             registerBlock(r, new BlockElevatorCaller());
             registerBlock(r, new BlockProgrammer());
             registerBlock(r, new BlockCreativeCompressor());
-            registerBlock(r, new BlockPlasticMixer());
             registerBlock(r, new BlockLiquidCompressor());
             registerBlock(r, new BlockAdvancedLiquidCompressor());
             registerBlock(r, new BlockDroneRedstoneEmitter());
@@ -131,6 +140,16 @@ public class ModBlocks {
             registerBlock(r, new BlockPneumaticDynamo());
             registerBlock(r, new BlockFakeIce());
             registerBlock(r, new BlockThermalCompressor());
+
+            Block.Properties fluidProps = Block.Properties.create(Material.WATER).doesNotBlockMovement().noDrops();
+            registerBlock(r, new BlockFluidPneumaticCraft(() -> (FlowingFluid) ModFluids.OIL_SOURCE, fluidProps, "oil_block"));
+            registerBlock(r, new BlockFluidEtchingAcid(() -> (FlowingFluid) ModFluids.ETCHING_ACID_SOURCE, fluidProps));
+            registerBlock(r, new BlockFluidPneumaticCraft(() -> (FlowingFluid) ModFluids.PLASTIC_SOURCE, fluidProps, "plastic_block"));
+            registerBlock(r, new BlockFluidPneumaticCraft(() -> (FlowingFluid) ModFluids.DIESEL_SOURCE, fluidProps, "diesel_block"));
+            registerBlock(r, new BlockFluidPneumaticCraft(() -> (FlowingFluid) ModFluids.KEROSENE_SOURCE, fluidProps, "kerosene_block"));
+            registerBlock(r, new BlockFluidPneumaticCraft(() -> (FlowingFluid) ModFluids.GASOLINE_SOURCE, fluidProps, "gasoline_block"));
+            registerBlock(r, new BlockFluidPneumaticCraft(() -> (FlowingFluid) ModFluids.LPG_SOURCE, fluidProps, "lpg_block"));
+            registerBlock(r, new BlockFluidPneumaticCraft(() -> (FlowingFluid) ModFluids.LUBRICANT_SOURCE, fluidProps, "lubricant_block"));
         }
 
         static void registerBlock(IForgeRegistry<Block> registry, Block block) {
@@ -151,7 +170,7 @@ public class ModBlocks {
                 return 0xFF000000 + ((int) (color[0] * 255) << 16) + ((int) (color[1] * 255) << 8) + (int) (color[2] * 255);
             }
             return 0xFFFFFFFF;
-        }, ModBlocks.COMPRESSED_IRON, ModBlocks.HEAT_SINK, ModBlocks.VORTEX_TUBE, ModBlocks.THERMAL_COMPRESSOR);
+        }, ModBlocks.COMPRESSED_IRON_BLOCK, ModBlocks.HEAT_SINK, ModBlocks.VORTEX_TUBE, ModBlocks.THERMAL_COMPRESSOR);
 
         event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
             if (blockAccess != null && pos != null) {

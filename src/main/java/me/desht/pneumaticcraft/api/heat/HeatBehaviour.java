@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -17,31 +18,30 @@ import net.minecraftforge.common.util.INBTSerializable;
  * PneumaticCraft uses this to power Furnaces with heat, and to turn Lava into Obsidian when heat is drained.
  * This only works for ticking heat logic, not for static heat sources like lava blocks.
  */
-public abstract class HeatBehaviour<Tile extends TileEntity> implements INBTSerializable<CompoundNBT> {
-
-    private String id;
+public abstract class HeatBehaviour<T extends TileEntity> implements INBTSerializable<CompoundNBT> {
     private IHeatExchangerLogic connectedHeatLogic;
     private World world;
     private BlockPos pos;
-    private Tile cachedTE;
+    private T cachedTE;
     private BlockState blockState;
     private Direction direction;  // direction of this behaviour from the tile entity's PoV
 
     /**
-     * Called by the connected IHeatExchangerLogic.
-     * @param id ID of this behaviour; can be used to
-     * @param connectedHeatLogic
-     * @param world
-     * @param pos
-     * @param direction direction of this behaviour from the tile entity's PoV
+     * This method is called by the connected {@link IHeatExchangerLogic} when it initialises itself as a hull
+     * heat exchanger; this happens when the owning tile entity gets a neighbor block update.  You can override
+     * and extend this method, but be sure to call the super method!
+     * @param connectedHeatLogic the connected heat exchanger logic
+     * @param world the world
+     * @param pos block pos of the owning tile entity
+     * @param direction direction of this behaviour (from the tile entity's point of view)
      */
-    public void initialize(String id, IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         this.connectedHeatLogic = connectedHeatLogic;
         this.world = world;
         this.pos = pos;
         this.direction = direction;
-        cachedTE = null;
-        blockState = null;
+        this.cachedTE = null;
+        this.blockState = null;
     }
 
     public IHeatExchangerLogic getHeatExchanger() {
@@ -60,8 +60,9 @@ public abstract class HeatBehaviour<Tile extends TileEntity> implements INBTSeri
         return direction;
     }
 
-    public Tile getTileEntity() {
-        if (cachedTE == null || cachedTE.isRemoved()) cachedTE = (Tile) world.getTileEntity(pos);
+    public T getTileEntity() {
+        if (cachedTE == null || cachedTE.isRemoved()) //noinspection unchecked
+            cachedTE = (T) world.getTileEntity(pos);
         return cachedTE;
     }
 
@@ -71,15 +72,15 @@ public abstract class HeatBehaviour<Tile extends TileEntity> implements INBTSeri
     }
 
     /**
-     * Unique id for this behaviour. Used in NBT saving. I recommend prefixing it with your modid.
+     * Unique id for this behaviour, also used in NBT saving.
      *
      * @return a unique ID
      */
-    public abstract String getId();
+    public abstract ResourceLocation getId();
 
     /**
      * Return true when this heat behaviour is applicable for this coordinate. World access methods can be used here
-     * (getWorld(), getPos(), getBlock(), getTileEntity()).
+     * (getWorld(), getPos(), getBlockState(), getTileEntity()).
      *
      * @return true if this behaviour is applicable here
      */
@@ -88,7 +89,7 @@ public abstract class HeatBehaviour<Tile extends TileEntity> implements INBTSeri
     /**
      * Called every tick to update this behaviour.
      */
-    public abstract void update();
+    public abstract void tick();
 
     @Override
     public CompoundNBT serializeNBT() {

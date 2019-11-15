@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.api.event.PuzzleRegistryEvent;
 import me.desht.pneumaticcraft.common.ai.DroneInteractRFExport;
 import me.desht.pneumaticcraft.common.ai.DroneInteractRFImport;
-import me.desht.pneumaticcraft.common.config.ProgWidgetConfig;
+import me.desht.pneumaticcraft.common.config.aux.ProgWidgetConfig;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.*;

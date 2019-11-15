@@ -3,13 +3,13 @@ package me.desht.pneumaticcraft.client.model.block;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.GuiRegistry;
-import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.BlockItem;
 
-public class ModelAssemblyPlatform extends AbstractModelRenderer.BaseModel {
+public class ModelAssemblyPlatform extends AbstractTileModelRenderer.BaseModel {
     private final RendererModel claw1;
     private final RendererModel claw2;
     private ItemRenderer customRenderItem = null;
@@ -37,7 +37,7 @@ public class ModelAssemblyPlatform extends AbstractModelRenderer.BaseModel {
         float scaleFactor = 0.7F;
 
         if (customRenderItem == null) {
-            customRenderItem = new AbstractModelRenderer.NoBobItemRenderer();
+            customRenderItem = new AbstractTileModelRenderer.NoBobItemRenderer();
         }
 
         IAssemblyRenderOverriding renderOverride = null;

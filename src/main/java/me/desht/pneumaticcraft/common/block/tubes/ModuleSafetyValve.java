@@ -2,11 +2,7 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.client.model.module.ModelSafetyValve;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.util.text.TextFormatting;
-
-import java.util.List;
 
 public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
 
@@ -18,12 +14,6 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
                 pressureTube.getAirHandler(null).airLeak(dir);
             }
         }
-    }
-
-    @Override
-    public void addInfo(List<String> curInfo) {
-        super.addInfo(curInfo);
-        curInfo.add("Threshold: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(getThreshold(), 1) + " bar");
     }
 
     @Override

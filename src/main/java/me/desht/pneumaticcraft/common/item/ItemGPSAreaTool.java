@@ -3,10 +3,10 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.areatool.GuiGPSAreaTool;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,27 +52,11 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
         if (handIn != Hand.MAIN_HAND) return ActionResult.newResult(ActionResultType.PASS, playerIn.getHeldItem(handIn));
         ItemStack stack = playerIn.getHeldItemMainhand();
         if (worldIn.isRemote) {
-            showGUI(stack, 0);
+            GuiGPSAreaTool.showGUI(handIn, stack, 0);
         }
         return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
-    
-    @SubscribeEvent
-    public void onBlockLeftClick(PlayerInteractEvent.LeftClickBlock event){
-        if(event.getItemStack().getItem() == this){
-            if(!event.getPos().equals(getGPSLocation(event.getItemStack(), 1))){
-                setGPSPosAndNotify(event.getEntityPlayer(), event.getPos(), event.getHand(), 1);
-            }
-            event.setCanceled(true);
-        }
-    }
-    
-    @SubscribeEvent
-    public void onLeftClickAir(PlayerInteractEvent.LeftClickEmpty event){
-        if(event.getItemStack().getItem() == this){
-            showGUI(event.getItemStack(), 1);
-        }
-    }
+
 
     public static void setGPSPosAndNotify(PlayerEntity player, BlockPos pos, Hand hand, int index){
         setGPSLocation(player.getHeldItem(hand), pos, index);
@@ -81,10 +65,6 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
             if (player instanceof ServerPlayerEntity)
                 ((ServerPlayerEntity) player).connection.sendPacket(new SHeldItemChangePacket(player.inventory.currentItem));
         }
-    }
-
-    private void showGUI(ItemStack stack, int index){
-        Minecraft.getInstance().displayGuiScreen(new GuiGPSAreaTool(stack, index));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -185,5 +165,24 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
     @Override
     public boolean disableDepthTest(){
         return false;
+    }
+
+    public static class EventHandler {
+        @SubscribeEvent
+        public static void onBlockLeftClick(PlayerInteractEvent.LeftClickBlock event) {
+            if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL) {
+                if (!event.getPos().equals(getGPSLocation(event.getItemStack(), 1))) {
+                    setGPSPosAndNotify(event.getPlayer(), event.getPos(), event.getHand(), 1);
+                }
+                event.setCanceled(true);
+            }
+        }
+
+        @SubscribeEvent
+        public static void onLeftClickAir(PlayerInteractEvent.LeftClickEmpty event) {
+            if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL) {
+                GuiGPSAreaTool.showGUI(event.getHand(), event.getItemStack(), 1);
+            }
+        }
     }
 }

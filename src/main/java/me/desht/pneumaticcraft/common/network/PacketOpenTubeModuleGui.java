@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiTubeModule;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
@@ -29,13 +28,13 @@ public class PacketOpenTubeModuleGui extends LocationIntPacket {
 
     PacketOpenTubeModuleGui(PacketBuffer buffer) {
         super(buffer);
-        moduleType = PacketUtil.readUTF8String(buffer);
+        moduleType = buffer.readString();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        PacketUtil.writeUTF8String(buf, moduleType);
+        buf.writeString(moduleType);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

@@ -17,6 +17,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItem;
@@ -28,11 +31,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -232,13 +236,14 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     private boolean suckLiquid() {
         BlockPos pos = getPos().offset(Direction.DOWN, currentDepth + 1);
 
-        FluidStack fluidStack = FluidUtils.getFluidAt(world, pos, false);
-        if (fluidStack == null || fluidStack.amount < Fluid.BUCKET_VOLUME) {
+        IFluidState fluidState = world.getFluidState(pos);
+        if (fluidState.getFluid() == Fluids.EMPTY) {
             pumpingLake = null;
             return false;
         }
+        FluidStack fluidStack = new FluidStack(fluidState.getFluid(), FluidAttributes.BUCKET_VOLUME);
 
-        if (tank.fill(fluidStack, false) == Fluid.BUCKET_VOLUME) {
+        if (tank.fill(fluidStack, FluidAction.SIMULATE) == fluidStack.getAmount()) {
             if (pumpingLake == null) {
                 findLake(fluidStack.getFluid());
             }
@@ -255,9 +260,8 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
             if (pumpingLake.isEmpty()) {
                 pumpingLake = null;
             } else if (foundSource) {
-                FluidStack fluidStack1 = FluidUtils.getFluidAt(world, curPos, true);
-                if (fluidStack1 != null && fluidStack1.amount == Fluid.BUCKET_VOLUME) {
-                    tank.fill(fluidStack1, true);
+                FluidStack taken = FluidUtils.tryPickupFluid(fluidCap, world, curPos, false, FluidAction.EXECUTE);
+                if (taken.getAmount() == FluidAttributes.BUCKET_VOLUME) {
                     addAir(-100);
                     status = Status.PUMPING;
                 }
@@ -375,11 +379,12 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
             super(PneumaticValues.NORMAL_TANK_CAPACITY);
         }
 
+        @Nonnull
         @Override
-        public FluidStack drain(int maxDrain, boolean doDrain) {
-            int inTank = fluid != null ? fluid.amount : 0;
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            int inTank = fluid.getAmount();
             int amount = pumpMode == PumpMode.PUMP_LEAVE_FLUID ? Math.max(0, inTank - 1) : inTank;
-            return super.drain(amount, doDrain);
+            return super.drain(Math.min(maxDrain, amount), action);
         }
     }
 }

@@ -2,21 +2,22 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.common.DroneRegistry;
-import me.desht.pneumaticcraft.common.config.AmadronOfferSettings;
-import me.desht.pneumaticcraft.common.config.AmadronOfferStaticConfig;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.aux.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeRemoved;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.AmadronOffer.TradeType;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeResource;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeType;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
@@ -38,7 +39,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.server.permission.PermissionAPI;
 
@@ -135,7 +135,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             }
             basketEmpty = Arrays.stream(shoppingAmounts).noneMatch(shoppingAmount -> shoppingAmount > 0);
             currentOffers = AmadronOfferManager.getInstance().countOffers(player.getGameProfile().getId().toString());
-            maxOffers = PneumaticCraftUtils.isPlayerOp(player) ? Integer.MAX_VALUE : AmadronOfferSettings.maxTradesPerPlayer;
+            maxOffers = PneumaticCraftUtils.isPlayerOp(player) ? Integer.MAX_VALUE : PNCConfig.Common.Amadron.maxTradesPerPlayer;
         }
     }
 
@@ -221,7 +221,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     private void removeCustomOffer(PlayerEntity player, AmadronOfferCustom offer) {
         if (offer.getPlayerId().equals(player.getGameProfile().getId().toString())) {
             if (AmadronOfferManager.getInstance().removeStaticOffer(offer)) {
-                if (AmadronOfferSettings.notifyOfTradeRemoval) NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(offer));
+                if (PNCConfig.Common.Amadron.notifyOfTradeRemoval) NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(offer));
                 offer.returnStock();
                 try {
                     AmadronOfferStaticConfig.INSTANCE.writeToFile();
@@ -250,7 +250,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                     }
                 }
                 if (placed && player instanceof ServerPlayerEntity) {
-                    NetworkHandler.sendToPlayer(new PacketPlaySound(Sounds.CHIRP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.2f, 1.0f, false), (ServerPlayerEntity) player);
+                    NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.2f, 1.0f, false), (ServerPlayerEntity) player);
                 }
             }
             Arrays.fill(shoppingAmounts, 0);
@@ -289,9 +289,9 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     public static EntityDrone retrieveOrderItems(AmadronOffer offer, int times, GlobalPos itemGPos, GlobalPos liquidGPos) {
-        if (offer.getInput() instanceof ItemStack) {
+        if (offer.getInput().getType() == TradeResource.Type.ITEM) {
             if (itemGPos == null) return null;
-            ItemStack queryingItems = (ItemStack) offer.getInput();
+            ItemStack queryingItems = offer.getInput().getItem();
             int amount = queryingItems.getCount() * times;
             NonNullList<ItemStack> stacks = NonNullList.create();
             while (amount > 0) {
@@ -301,11 +301,13 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 amount -= stack.getCount();
             }
             return (EntityDrone) DroneRegistry.getInstance().retrieveItemsAmazonStyle(itemGPos, stacks.toArray(new ItemStack[0]));
-        } else {
+        } else if (offer.getInput().getType() == TradeResource.Type.FLUID) {
             if (liquidGPos == null) return null;
-            FluidStack queryingFluid = ((FluidStack) offer.getInput()).copy();
-            queryingFluid.amount *= times;
+            FluidStack queryingFluid = offer.getInput().getFluid().copy();
+            queryingFluid.setAmount(queryingFluid.getAmount() * times);
             return (EntityDrone) DroneRegistry.getInstance().retrieveFluidAmazonStyle(liquidGPos, queryingFluid);
+        } else {
+            return null;
         }
     }
 
@@ -320,78 +322,67 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         return capShoppingAmount(offer, wantedAmount, inv, inv, fluidHandler, fluidHandler, container);
     }
 
-    public static int capShoppingAmount(AmadronOffer offer, int wantedAmount, IItemHandler inputInv, IItemHandler outputInv,
+    public static int capShoppingAmount(AmadronOffer offer, int wantedTradeCount, IItemHandler inputInv, IItemHandler outputInv,
                                         IFluidHandler inputFluidHandler, IFluidHandler outputFluidHandler, ContainerAmadron container) {
-        if (container != null && offer.getStock() >= 0 && wantedAmount > offer.getStock()) {
-            wantedAmount = offer.getStock();
+        if (container != null && offer.getStock() >= 0 && wantedTradeCount > offer.getStock()) {
+            wantedTradeCount = offer.getStock();
             container.problemState = EnumProblemState.OUT_OF_STOCK;
         }
-        if (offer.getInput() instanceof ItemStack) {
+
+        EnumProblemState problem = null;
+
+        // check there's enough of the required item/fluid in the input inventory/tank
+        if (offer.getInput().getType() == TradeResource.Type.ITEM) {
             if (inputInv != null) {
-                ItemStack searchingItem = (ItemStack) offer.getInput();
-                int count = 0;
-                for (int i = 0; i < inputInv.getSlots(); i++) {
-                    if (inputInv.getStackInSlot(i).isItemEqual(searchingItem) && ItemStack.areItemStackTagsEqual(inputInv.getStackInSlot(i), searchingItem)) {
-                        count += inputInv.getStackInSlot(i).getCount();
-                    }
-                }
-                int maxAmount = count / ((ItemStack) offer.getInput()).getCount();
-                if (wantedAmount > maxAmount) {
-                    if (container != null) container.problemState = EnumProblemState.NOT_ENOUGH_ITEMS;
-                    wantedAmount = maxAmount;
+                int availableTrades = offer.getInput().countTradesInInventory(inputInv);
+                if (wantedTradeCount > availableTrades) {
+                    problem = EnumProblemState.NOT_ENOUGH_ITEMS;
+                    wantedTradeCount = availableTrades;
                 }
             } else if (outputInv == null) {
-                wantedAmount = 0;
-                if (container != null) container.problemState = EnumProblemState.NO_ITEM_PROVIDER;
+                wantedTradeCount = 0;
+                problem = EnumProblemState.NO_ITEM_PROVIDER;
             }
-        } else {
+        } else if (offer.getInput().getType() == TradeResource.Type.FLUID) {
             if (inputFluidHandler != null) {
-                FluidStack searchingFluid = ((FluidStack) offer.getInput()).copy();
-                searchingFluid.amount = Integer.MAX_VALUE;
-                FluidStack extracted = inputFluidHandler.drain(searchingFluid, false);
-                int maxAmount = 0;
-                if (extracted != null) maxAmount = extracted.amount / ((FluidStack) offer.getInput()).amount;
-                if (wantedAmount > maxAmount) {
-                    if (container != null) container.problemState = EnumProblemState.NOT_ENOUGH_FLUID;
-                    wantedAmount = maxAmount;
+                int availableTrades = offer.getInput().countTradesInTank(inputFluidHandler);
+                if (wantedTradeCount > availableTrades) {
+                    problem = EnumProblemState.NOT_ENOUGH_FLUID;
+                    wantedTradeCount = availableTrades;
                 }
             } else if (outputFluidHandler == null) {
-                wantedAmount = 0;
-                if (container != null) container.problemState = EnumProblemState.NO_FLUID_PROVIDER;
+                wantedTradeCount = 0;
+                problem = EnumProblemState.NO_FLUID_PROVIDER;
             }
         }
-        if (offer.getOutput() instanceof ItemStack) {
+
+        // check there's enough space for the returned item/fluid in the output inventory/tank
+        if (offer.getOutput().getType() == TradeResource.Type.ITEM) {
             if (outputInv != null) {
-                ItemStack providingItem = ((ItemStack) offer.getOutput()).copy();
-                providingItem.setCount(providingItem.getCount() * wantedAmount);
-                ItemStack remainder = ItemHandlerHelper.insertItem(outputInv, providingItem.copy(), true);
-                if (!remainder.isEmpty()) {
-                    int maxAmount = (providingItem.getCount() - remainder.getCount()) / ((ItemStack) offer.getOutput()).getCount();
-                    if (wantedAmount > maxAmount) {
-                        wantedAmount = maxAmount;
-                        if (container != null) container.problemState = EnumProblemState.NOT_ENOUGH_ITEM_SPACE;
-                    }
+                int availableTrades = offer.getOutput().findSpaceInOutput(outputInv, wantedTradeCount);
+                if (wantedTradeCount > availableTrades) {
+                    wantedTradeCount = availableTrades;
+                    problem = EnumProblemState.NOT_ENOUGH_ITEM_SPACE;
                 }
             } else if (inputInv == null) {
-                wantedAmount = 0;
-                if (container != null) container.problemState = EnumProblemState.NO_ITEM_PROVIDER;
+                wantedTradeCount = 0;
+                problem = EnumProblemState.NO_ITEM_PROVIDER;
             }
-        } else {
+        } else if (offer.getOutput().getType() == TradeResource.Type.FLUID) {
             if (outputFluidHandler != null) {
-                FluidStack providingFluid = ((FluidStack) offer.getOutput()).copy();
-                providingFluid.amount *= wantedAmount;
-                int amountFilled = outputFluidHandler.fill(providingFluid, false);
-                int maxAmount = amountFilled / ((FluidStack) offer.getOutput()).amount;
-                if (wantedAmount > maxAmount) {
-                    wantedAmount = maxAmount;
-                    if (container != null) container.problemState = EnumProblemState.NOT_ENOUGH_FLUID_SPACE;
+                int availableTrades = offer.getOutput().findSpaceInOutput(outputFluidHandler, wantedTradeCount);
+                if (wantedTradeCount > availableTrades) {
+                    wantedTradeCount = availableTrades;
+                    problem = EnumProblemState.NOT_ENOUGH_FLUID_SPACE;
                 }
             } else if (inputFluidHandler == null) {
-                wantedAmount = 0;
-                if (container != null) container.problemState = EnumProblemState.NO_FLUID_PROVIDER;
+                wantedTradeCount = 0;
+                problem = EnumProblemState.NO_FLUID_PROVIDER;
             }
         }
-        return wantedAmount;
+
+        if (problem != null && container != null) container.problemState = problem;
+        return wantedTradeCount;
     }
 
     private int getCartSlot(int offerId) {

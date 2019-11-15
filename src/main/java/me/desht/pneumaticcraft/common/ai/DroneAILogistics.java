@@ -9,13 +9,13 @@ import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
@@ -200,7 +200,7 @@ public class DroneAILogistics extends Goal {
 
         @Override
         public int getCount() {
-            return !stack.isEmpty() ? stack.getCount() : fluid.amount;
+            return !stack.isEmpty() ? stack.getCount() : fluid.getAmount();
         }
 
         @Override

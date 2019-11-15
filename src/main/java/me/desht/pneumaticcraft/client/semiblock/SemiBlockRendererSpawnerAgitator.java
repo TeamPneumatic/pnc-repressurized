@@ -22,7 +22,7 @@ public class SemiBlockRendererSpawnerAgitator implements ISemiBlockRenderer<Semi
         GlStateManager.translated(aabb.minX, aabb.minY, aabb.minZ);
         GlStateManager.scaled(aabb.maxX - aabb.minX, aabb.maxY - aabb.minY, aabb.maxZ - aabb.minZ);
         GlStateManager.translated(0.5, -0.5, 0.5);
-        model.render(null, 0, 0, 0, 0, 0, 1 / 16F);
+        model.render(1 / 16F);
         GlStateManager.popMatrix();
         GlStateManager.color4f(1, 1, 1, 1);
     }

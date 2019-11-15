@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,7 +31,7 @@ public abstract class PacketUpdateTubeModule<REQ extends PacketUpdateTubeModule<
     }
 
     @Override
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
         buffer.writeByte((byte) moduleSide.ordinal());
     }

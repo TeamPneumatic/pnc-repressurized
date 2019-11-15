@@ -1,6 +1,6 @@
 {
    "parent" : "item/generated",
    "textures" : {
-      "layer0" : "pneumaticcraft:item/unassembled_pcb"
+      "layer0" : "pneumaticcraft:items/unassembled_pcb"
    }
 }

@@ -5,14 +5,12 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 
-import java.util.UUID;
-
 public class PacketSecurityStationAddHacker extends PacketSecurityStation {
 
     public PacketSecurityStationAddHacker() {
     }
 
-    public PacketSecurityStationAddHacker(TileEntity te, UUID username) {
+    public PacketSecurityStationAddHacker(TileEntity te, String username) {
         super(te, username);
     }
 
@@ -21,9 +19,9 @@ public class PacketSecurityStationAddHacker extends PacketSecurityStation {
     }
 
     @Override
-    protected void handle(TileEntity te, UUID uuid) {
+    protected void handle(TileEntity te, String username) {
         if (te instanceof TileEntitySecurityStation) {
-            ((TileEntitySecurityStation) te).addHacker(new GameProfile(uuid, null));
+            ((TileEntitySecurityStation) te).addHacker(new GameProfile(null, username));
         }
     }
 }

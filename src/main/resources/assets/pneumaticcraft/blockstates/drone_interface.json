@@ -9,7 +9,7 @@
     }
   },
   "variants": {
-    "normal": [{}],
+    "": [{}],
     "inventory": [{}],
     "connected": {
       "true": {

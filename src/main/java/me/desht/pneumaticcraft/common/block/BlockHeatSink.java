@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.BlockItemUseContext;
@@ -33,7 +32,7 @@ public class BlockHeatSink extends BlockPneumaticCraft {
     };
 
     public BlockHeatSink() {
-        super(Material.IRON, "heat_sink");
+        super("heat_sink");
     }
 
     @Override

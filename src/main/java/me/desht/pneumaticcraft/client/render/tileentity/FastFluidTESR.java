@@ -4,10 +4,10 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.client.model.animation.TileEntityRendererFast;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.IFluidTank;
 
 import java.util.BitSet;
@@ -30,7 +30,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
         if (tank.getFluidAmount() == 0) return;
 
         Fluid f = tank.getFluid().getFluid();
-        TextureAtlasSprite still = Minecraft.getInstance().getTextureMap().getAtlasSprite(f.getStill().toString());
+        TextureAtlasSprite still = Minecraft.getInstance().getTextureMap().getAtlasSprite(f.getAttributes().getStill(tank.getFluid()).toString());
         float u1 = still.getMinU(), v1 = still.getMinV(), u2 = still.getMaxU(), v2 = still.getMaxV();
 
         buffer.setTranslation(x,y,z);
@@ -103,7 +103,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
 
         double tankHeight = tankBounds.maxY - tankBounds.minY;
         double y1 = tankBounds.minY, y2 = (tankBounds.minY + (tankHeight * percent));
-        if (tank.getFluid().getFluid().getDensity() < 0) {
+        if (tank.getFluid().getFluid().getAttributes().getDensity() < 0) {
             double yOff = tankBounds.maxY - y2;  // lighter than air fluids move to the top of the tank
             y1 += yOff; y2 += yOff;
         }

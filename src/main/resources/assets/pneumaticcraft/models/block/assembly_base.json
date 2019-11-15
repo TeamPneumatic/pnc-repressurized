@@ -1,6 +1,6 @@
 {
   "textures": {
-    "base": "pneumaticcraft:block/assembly_base"
+    "base": "pneumaticcraft:blocks/assembly_base"
   },
   "elements": [
     {

@@ -8,7 +8,7 @@
     }
   },
   "variants": {
-    "normal": [{}],
+    "": [{}],
     "inventory": [{ "transform": "forge:default-block" }],
     "facing": {
       "up": { "transform": { "rotation": { "z": 90 } } },

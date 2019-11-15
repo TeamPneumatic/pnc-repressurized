@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.sound;
 
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.util.SoundCategory;
@@ -9,7 +9,7 @@ public class MovingSoundElevator extends TickableSound {
     private final TileEntityElevatorBase te;
 
     MovingSoundElevator(TileEntityElevatorBase te) {
-        super(Sounds.ELEVATOR_MOVING, SoundCategory.BLOCKS);
+        super(ModSounds.ELEVATOR_RISING, SoundCategory.BLOCKS);
         this.te = te;
         x = te.getPos().getX();
         y = te.getPos().getY() + te.extension / 2;

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
-import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.common.network.PacketUtil;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 
 public class DebugEntry {
@@ -28,15 +27,15 @@ public class DebugEntry {
      *
      * @param buf message buffer
      */
-    public DebugEntry(ByteBuf buf) {
-        message = PacketUtil.readUTF8String(buf);
+    public DebugEntry(PacketBuffer buf) {
+        message = buf.readString();
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         progWidgetId = buf.readInt();
         receivedTime = System.currentTimeMillis();
     }
 
-    public void toBytes(ByteBuf buf) {
-        PacketUtil.writeUTF8String(buf, message);
+    public void toBytes(PacketBuffer buf) {
+        buf.writeString(message);
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());

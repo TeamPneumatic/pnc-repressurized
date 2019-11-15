@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
 import mcjty.theoneprobe.api.*;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -24,9 +24,9 @@ public class TheOneProbe implements IThirdParty {
     static int elementPressure;
 
     @Override
-    public void preInit() {
+    public void init() {
         InterModComms.sendTo("theoneprobe", "getTheOneProbe", () -> (Function<ITheOneProbe, Void>) theOneProbe -> {
-            PneumaticCraftRepressurized.LOGGER.info("Enabled support for The One Probe");
+            Log.info("Enabled support for The One Probe");
 
             elementPressure = theOneProbe.registerElementFactory(ElementPressure::new);
 
@@ -39,12 +39,10 @@ public class TheOneProbe implements IThirdParty {
                 @Override
                 public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
                     if (blockState.getBlock() instanceof BlockPneumaticCraft) {
-                        TOPCallback.handle(mode, probeInfo, player, world, blockState, data);
-//                        ITOPInfoProvider provider = (ITOPInfoProvider) blockState.getBlock();
-//                        provider.addProbeInfo(mode, probeInfo, player, world, blockState, data);
+                        TOPInfoProvider.handle(mode, probeInfo, player, world, blockState, data);
                     }
                     SemiBlockManager.getInstance(world).getSemiBlocks(world, data.getPos())
-                            .forEach(semiBlock -> TOPCallback.handleSemiblock(mode, probeInfo, semiBlock));
+                            .forEach(semiBlock -> TOPInfoProvider.handleSemiblock(mode, probeInfo, semiBlock));
                 }
             });
 

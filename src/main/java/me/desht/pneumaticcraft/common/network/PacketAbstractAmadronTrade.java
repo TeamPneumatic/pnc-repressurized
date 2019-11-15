@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import net.minecraft.network.PacketBuffer;
 
 public abstract class PacketAbstractAmadronTrade<REQ extends PacketAbstractAmadronTrade<REQ>> {
@@ -18,7 +17,7 @@ public abstract class PacketAbstractAmadronTrade<REQ extends PacketAbstractAmadr
         offer = AmadronOfferCustom.loadFromBuf(buffer);
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         offer.writeToBuf(buf);
     }
 

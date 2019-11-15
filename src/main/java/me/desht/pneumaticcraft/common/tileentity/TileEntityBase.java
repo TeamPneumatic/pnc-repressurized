@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
@@ -231,7 +231,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     void rerenderTileEntity() {
-        world.markForRerender(getPos());
+        world.func_225319_b(getPos(), getBlockState(), getBlockState());
     }
 
     protected boolean shouldRerenderChunkOnDescUpdate() {
@@ -676,8 +676,8 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
      * remember to call the super method!
      */
     protected void onUpgradesChanged() {
-        actualSpeedMult = (float) Math.pow(Config.Common.Machines.speedUpgradeSpeedMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
-        actualUsageMult = (float) Math.pow(Config.Common.Machines.speedUpgradeUsageMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
+        actualSpeedMult = (float) Math.pow(PNCConfig.Common.Machines.speedUpgradeSpeedMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
+        actualUsageMult = (float) Math.pow(PNCConfig.Common.Machines.speedUpgradeUsageMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
     }
 
     public UpgradeCache getUpgradeCache() {
@@ -736,8 +736,8 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
                     customUpgradeCount.put(key, customUpgradeCount.getOrDefault(key, 0) + stack.getCount());
                 }
             }
-            te.onUpgradesChanged();
             isValid = true;
+            te.onUpgradesChanged();
         }
 
         /**

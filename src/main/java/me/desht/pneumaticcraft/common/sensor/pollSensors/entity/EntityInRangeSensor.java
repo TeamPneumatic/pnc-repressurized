@@ -4,9 +4,8 @@ import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.util.Rectangle;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,14 +54,9 @@ public class EntityInRangeSensor extends EntityPollSensor {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
         fontRenderer.drawString("Entity filter", 70, 48, 0x404040);
-    }
-
-    @Override
-    public Rectangle needsSlot() {
-        return null;
     }
 
     @Override

@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandle
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

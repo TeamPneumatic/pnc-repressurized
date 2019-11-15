@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 
 import java.util.function.Predicate;
 
-public class HarvestHandlerCropLike extends HarvestHandlerAbstractCrop{
+public class HarvestHandlerCropLike extends HarvestHandlerAbstractCrop {
 
     private final IntegerProperty ageProperty;
     private final int minAge, maxAge;

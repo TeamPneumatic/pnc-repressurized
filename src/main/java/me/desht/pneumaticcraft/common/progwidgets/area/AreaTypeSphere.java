@@ -66,7 +66,7 @@ public class AreaTypeSphere extends AreaType{
     @Override
     public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);
-        tag.setByte("sphereType", (byte)sphereType.ordinal());
+        tag.putByte("sphereType", (byte)sphereType.ordinal());
     }
     
     @Override

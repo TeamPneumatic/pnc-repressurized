@@ -4,8 +4,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import java.util.function.Consumer;
 
@@ -19,8 +20,8 @@ public class WidgetFluidStack extends WidgetFluidFilter {
 
     WidgetFluidStack(int x, int y, FluidStack stack, Consumer<WidgetFluidFilter> pressable) {
         super(x, y);
-        tank = new FluidTank(stack.amount);
-        tank.fill(stack, true);
+        tank = new FluidTank(stack.getAmount());
+        tank.fill(stack, IFluidHandler.FluidAction.EXECUTE);
     }
 
     @Override

@@ -16,8 +16,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
-import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
@@ -31,13 +30,13 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -67,12 +66,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.UniversalBucket;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -99,7 +96,7 @@ public class ClientEventHandler {
     public void onItemTooltip(ItemTooltipEvent event) {
         if (event.getItemStack().getItem() instanceof IProgrammable) {
             handleProgrammableTooltip(event);
-        } else if (event.getItemStack().getItem() instanceof BucketItem || event.getItemStack().getItem() instanceof UniversalBucket) {
+        } else if (event.getItemStack().getItem() instanceof BucketItem/* || event.getItemStack().getItem() instanceof UniversalBucket*/) {
             handleFluidContainerTooltip(event);
         }
     }
@@ -136,18 +133,18 @@ public class ClientEventHandler {
 
     private void handleFluidContainerTooltip(ItemTooltipEvent event) {
         FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
-            String key = "gui.tooltip.item." + fluidStack.getFluid().getName() + "_bucket";
+            String name = fluidStack.getFluid().getRegistryName().getPath();
+            String key = "gui.tooltip.item." + event.getItemStack().getItem().getRegistryName().getPath();
             if (I18n.hasKey(key)) {
                 if (event.getToolTip().get(event.getToolTip().size() - 1).getFormattedText().contains("Minecraft Forge")) {
                     // bit of a kludge!  otherwise the blue "Minecraft Forge" string gets shown twice
                     event.getToolTip().remove(event.getToolTip().size() - 1);
                 }
                 String prefix = "";
-                // TODO 1.14 fluids
-//                if (!FluidRegistry.getDefaultFluidName(fluidStack.getFluid()).startsWith(Names.MOD_ID)) {
-//                    // fluid is owned by another mod; let's make it clear that this tooltip applies to PneumaticCraft
-//                    prefix = TextFormatting.DARK_AQUA + "" + TextFormatting.ITALIC + "[" + Names.MOD_NAME + "] ";
-//                }
+                if (!fluidStack.getFluid().getRegistryName().getNamespace().equals(Names.MOD_ID)) {
+                    // fluid is owned by another mod; let's make it clear that this tooltip applies to PneumaticCraft
+                    prefix = TextFormatting.DARK_AQUA + "" + TextFormatting.ITALIC + "[" + Names.MOD_NAME + "] ";
+                }
                 if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
                     String translatedInfo = TextFormatting.AQUA + I18n.format(key);
                     event.getToolTip().addAll(PneumaticCraftUtils.convertStringIntoList(prefix + translatedInfo, 40).stream().map(StringTextComponent::new).collect(Collectors.toList()));
@@ -182,7 +179,7 @@ public class ClientEventHandler {
 
     private void setRenderHead(LivingEntity entity, boolean setRender) {
         if (entity.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET
-                && (Config.Client.fancyArmorModels || DateEventHandler.isIronManEvent())) {
+                && (PNCConfig.Client.Armor.fancyArmorModels || DateEventHandler.isIronManEvent())) {
             EntityRenderer renderer = Minecraft.getInstance().getRenderManager().getRenderer(entity);
             if (renderer instanceof BipedRenderer) {
                 BipedModel modelBiped = (BipedModel) ((BipedRenderer) renderer).getEntityModel();
@@ -206,7 +203,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void tickEnd(TickEvent.RenderTickEvent event) {
         if (event.phase == TickEvent.Phase.END && Minecraft.getInstance().isGameFocused() 
-                && PneumaticCraftRepressurized.proxy.getClientPlayer().world != null 
+                && PneumaticCraftRepressurized.proxy.getClientPlayer() != null
                 && (ModuleRegulatorTube.inverted || !ModuleRegulatorTube.inLine)) {
             Minecraft mc = Minecraft.getInstance();
             MainWindow mw = mc.mainWindow;
@@ -650,14 +647,6 @@ public class ClientEventHandler {
             }
             Tessellator.getInstance().draw();
             GlStateManager.enableTexture();
-        }
-    }
-
-    @SubscribeEvent
-    public void onPlayerLogin(EntityJoinWorldEvent event) {
-        if (event.getEntity() instanceof ClientPlayerEntity) {
-            MainWindow mw = Minecraft.getInstance().mainWindow;
-            ArmorHUDLayout.INSTANCE.maybeImportLegacySettings(mw.getScaledWidth(), mw.getScaledHeight());
         }
     }
 

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.util.ResourceLocation;
@@ -23,13 +23,8 @@ public class ResourceDrawable implements IDrawable {
         this.texHeight = texHeight;
     }
 
-    public ResourceDrawable(String texture, int x, int y, int u, int v, int drawWidth, int drawHeight) {
+    public ResourceDrawable(ResourceLocation texture, int x, int y, int u, int v, int drawWidth, int drawHeight) {
         this(texture, x, y, u, v, drawWidth, drawHeight, 256, 256);
-    }
-
-    public ResourceDrawable(String texture, int x, int y, int u, int v, int drawWidth, int drawHeight, int texWidth,
-                            int texHeight) {
-        this(new ResourceLocation(texture), x, y, u, v, drawWidth, drawHeight, texWidth, texHeight);
     }
 
     @Override
@@ -47,14 +42,8 @@ public class ResourceDrawable implements IDrawable {
     }
 
     @Override
-    public void draw(Minecraft minecraft) {
-        draw(minecraft, 0, 0);
+    public void draw(int xOffset, int yOffset) {
+        Minecraft.getInstance().getTextureManager().bindTexture(resource);
+        AbstractGui.blit(x + xOffset, y + yOffset, u, v, drawWidth, drawHeight, texWidth, texHeight);
     }
-
-    @Override
-    public void draw(Minecraft minecraft, int xOffset, int yOffset) {
-        minecraft.getTextureManager().bindTexture(resource);
-        AbstractGui.drawModalRectWithCustomSizedTexture(x + xOffset, y + yOffset, u, v, drawWidth, drawHeight, texWidth, texHeight);
-    }
-
 }

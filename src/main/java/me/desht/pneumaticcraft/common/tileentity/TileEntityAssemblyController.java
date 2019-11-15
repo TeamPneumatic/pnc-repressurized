@@ -9,8 +9,8 @@ import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.pressure.AirHandler;
-import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
-import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram.EnumMachine;
+import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
+import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
@@ -138,7 +138,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
         EnumMachine[] requiredMachines = curProgram != null ? curProgram.getRequiredMachines() : EnumMachine.values();
 
         duplicateMachine = null;
-        AssemblySystem assemblySystem = new AssemblySystem(this);
+        AssemblySystem assemblySystem = new AssemblySystem();
         for (IAssemblyMachine machine : findMachines(requiredMachines.length * 2)) {  // *2 ensures duplicates are noticed
             if (!assemblySystem.addMachine(machine)) {
                 duplicateMachine = machine.getAssemblyType();
@@ -277,9 +277,6 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     public class AssemblySystem {
         final IAssemblyMachine[] machines = new IAssemblyMachine[EnumMachine.values().length];
-
-        AssemblySystem(TileEntityAssemblyController controller) {
-        }
 
         private IAssemblyMachine get(EnumMachine machine) {
             return machines[machine.ordinal()];

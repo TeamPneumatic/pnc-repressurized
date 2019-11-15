@@ -40,7 +40,7 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIEntityImport(drone, widget);
+        return new DroneAIEntityImport(drone, (IEntityProvider) widget);
     }
 
     @Override

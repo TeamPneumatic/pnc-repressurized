@@ -241,7 +241,7 @@ public class Textures {
     public static final ResourceLocation GUI_PASTE_ICON_LOCATION = guiTexture("gui_paste.png");
     public static final ResourceLocation GUI_DELETE_ICON_LOCATION = guiTexture("gui_delete.png");
     public static final ResourceLocation GUI_4UPGRADE_SLOTS = guiTexture("gui_pressure_chamber.png");
-    public static final ResourceLocation GUI_NEI_PRESSURE_CHAMBER_LOCATION = guiTexture("gui_nei_pressure_chamber.png");
+    public static final ResourceLocation GUI_JEI_PRESSURE_CHAMBER_LOCATION = guiTexture("gui_nei_pressure_chamber.png");
     public static final ResourceLocation GUI_CHARGING_STATION_LOCATION = guiTexture("gui_charging_station.png");
     public static final ResourceLocation GUI_PNEUMATIC_ARMOR_LOCATION = guiTexture("gui_pneumatic_armor.png");
     public static final ResourceLocation GUI_PRESSURE_CHAMBER_INTERFACE_LOCATION = guiTexture("gui_pressure_chamber_interface.png");
@@ -274,12 +274,11 @@ public class Textures {
     public static final ResourceLocation GUI_THERMOPNEUMATIC_PROCESSING_PLANT = guiTexture("gui_thermopneumatic_processing_plant.png");
     public static final ResourceLocation GUI_LOGISTICS_REQUESTER = guiTexture("gui_logistics_requester.png");
     public static final ResourceLocation GUI_AMADRON = guiTexture("gui_amadron.png");
-    public static final ResourceLocation GUI_NEI_MISC_RECIPES = guiTexture("gui_nei_misc_recipes.png");
+    public static final ResourceLocation GUI_JEI_MISC_RECIPES = guiTexture("gui_nei_misc_recipes.png");
     public static final ResourceLocation GUI_KEROSENE_LAMP = guiTexture("gui_kerosene_lamp.png");
     public static final ResourceLocation GUI_SENTRY_TURRET = guiTexture("gui_sentry_turret.png");
     public static final ResourceLocation GUI_MINIGUN_MAGAZINE = guiTexture("gui_minigun_magazine.png");
     public static final ResourceLocation GUI_THERMAL_COMPRESSOR_LOCATION = guiTexture("gui_thermal_compressor.png");
-    public static final String WIDGET_AMADRON_OFFER_STRING = WIDGET_LOCATION + "widget_amadron_offer.png";
 
     public static final ResourceLocation GUI_WIDGET_AREA = guiTexture("gui_widget_area.png");
     public static final ResourceLocation GUI_PASTEBIN = guiTexture("gui_pastebin.png");
@@ -290,7 +289,7 @@ public class Textures {
     public static final ResourceLocation GUI_MODULE_SIMPLE = guiTexture("gui_tube_module_simple.png");
     public static final ResourceLocation WIDGET_TEMPERATURE = new ResourceLocation(WIDGET_LOCATION + "widget_temperature.png");
     public static final ResourceLocation WIDGET_TANK = new ResourceLocation(WIDGET_LOCATION + "widget_tank.png");
-    public static final ResourceLocation WIDGET_AMADRON_OFFER = new ResourceLocation(WIDGET_AMADRON_OFFER_STRING);
+    public static final ResourceLocation WIDGET_AMADRON_OFFER = new ResourceLocation(WIDGET_LOCATION + "widget_amadron_offer.png");
     public static final ResourceLocation GUI_MINIGUN_CROSSHAIR = guiTexture("minigun_crosshair.png");
     public static final ResourceLocation GUI_MICROMISSILE = guiTexture("gui_micromissile.png");
 

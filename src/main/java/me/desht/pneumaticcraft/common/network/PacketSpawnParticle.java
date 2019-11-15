@@ -1,11 +1,9 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleType;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -48,7 +46,7 @@ public class PacketSpawnParticle extends LocationDoublePacket {
 
     public PacketSpawnParticle(PacketBuffer buffer) {
         super(buffer);
-        ParticleType<?> type = ForgeRegistries.PARTICLE_TYPES.getValue(new ResourceLocation(PacketUtil.readUTF8String(buffer)));
+        ParticleType<?> type = ForgeRegistries.PARTICLE_TYPES.getValue(buffer.readResourceLocation());
         assert type != null;
         dx = buffer.readDouble();
         dy = buffer.readDouble();
@@ -67,10 +65,10 @@ public class PacketSpawnParticle extends LocationDoublePacket {
     }
 
     @Override
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
 
-        PacketUtil.writeUTF8String(buffer, particle.getType().getRegistryName().toString());
+        buffer.writeResourceLocation(particle.getType().getRegistryName());
         buffer.writeDouble(dx);
         buffer.writeDouble(dy);
         buffer.writeDouble(dz);

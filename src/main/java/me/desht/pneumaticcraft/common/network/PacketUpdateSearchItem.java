@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
@@ -18,27 +17,27 @@ import java.util.function.Supplier;
  */
 public class PacketUpdateSearchItem {
 
-    private String itemId;
+    private ResourceLocation itemId;
 
     public PacketUpdateSearchItem() {
     }
 
     public PacketUpdateSearchItem(Item item) {
-        itemId = item.getRegistryName().toString();
+        itemId = item.getRegistryName();
     }
 
     public PacketUpdateSearchItem(PacketBuffer buffer) {
-        itemId = PacketUtil.readUTF8String(buffer);
+        itemId = buffer.readResourceLocation();
     }
 
-    public void toBytes(ByteBuf buffer) {
-        PacketUtil.writeUTF8String(buffer, itemId);
+    public void toBytes(PacketBuffer buffer) {
+        buffer.writeResourceLocation(itemId);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ItemStack helmetStack = ctx.get().getSender().getItemStackFromSlot(EquipmentSlotType.HEAD);
-            Item searchedItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemId));
+            Item searchedItem = ForgeRegistries.ITEMS.getValue(itemId);
             if (!helmetStack.isEmpty() && searchedItem != null) {
                 ItemPneumaticArmor.setSearchedItem(helmetStack, searchedItem);
             }

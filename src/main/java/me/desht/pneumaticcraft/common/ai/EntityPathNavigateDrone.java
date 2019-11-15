@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import com.google.common.collect.Lists;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -48,7 +48,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
      * Returns the path to the given EntityLiving
      */
     @Override
-    public Path getPathToEntityLiving(Entity par1Entity) {
+    public Path getPathToEntityLiving(Entity par1Entity, int p2) {
         BlockPos pos = new BlockPos(par1Entity.posX, par1Entity.getBoundingBox().minY, par1Entity.posZ);
 
         if ((par1Entity instanceof ItemEntity && !pathfindingEntity.isBlockValidPathfindBlock(pos)) || par1Entity instanceof AbstractMinecartEntity) {
@@ -59,7 +59,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
                 pos = pos.up();
             }
         }
-        return getPathToPos(pos);
+        return getPathToPos(pos, p2);
     }
 
     void setForceTeleport(boolean forceTeleport) {
@@ -68,14 +68,15 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
 
     @Nullable
     @Override
-    public Path getPathToPos(BlockPos pos) {
+    public Path getPathToPos(BlockPos pos, int p2) {
         // When the destination is not a valid block, we can stop right away
         if (!pathfindingEntity.isBlockValidPathfindBlock(pos))
             return null;
 
         // 0.75 is the squared dist from a block corner to its center (0.5^2 + 0.5^2 + 0.5^2)
         if(pathfindingEntity.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 0.75) {
-            return new Path(Lists.newArrayList(new PathPoint(pos.getX(), pos.getY(), pos.getZ())));
+            // TODO 1.14 what does this boolean do?  true or false here?  may be villager-related...
+            return new Path(Lists.newArrayList(new PathPoint(pos.getX(), pos.getY(), pos.getZ())), pos, true);
         }
 
         //Store the potential teleport destination
@@ -88,7 +89,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         }
         
         pathfindingEntity.setStandby(false);
-        Path path = super.getPathToPos(pos);
+        Path path = super.getPathToPos(pos, p2);
         
         // Only paths that actually end up where we want to are valid, not just halfway.
         if(path != null){
@@ -128,7 +129,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     public void tick() {
         if (isGoingToTeleport()) {
             if (teleportCounter == 0 || teleportCounter == 60) {
-                NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.HUD_INIT, SoundCategory.PLAYERS, pathfindingEntity.posX, pathfindingEntity.posY, pathfindingEntity.posZ, 0.1F, teleportCounter == 0 ? 0.7F : 1F, true), pathfindingEntity.world);
+                NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.HUD_INIT, SoundCategory.PLAYERS, pathfindingEntity.posX, pathfindingEntity.posY, pathfindingEntity.posZ, 0.1F, teleportCounter == 0 ? 0.7F : 1F, true), pathfindingEntity.world);
             }
 
             if (teleportCounter < TELEPORT_TICKS - 40) {

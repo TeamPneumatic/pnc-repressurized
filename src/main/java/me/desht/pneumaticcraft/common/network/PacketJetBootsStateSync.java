@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,7 +32,7 @@ public class PacketJetBootsStateSync {
         state = new JetBootsStateTracker.JetBootsState(buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeLong(playerId.getMostSignificantBits());
         buf.writeLong(playerId.getLeastSignificantBits());
         buf.writeBoolean(state.isEnabled());

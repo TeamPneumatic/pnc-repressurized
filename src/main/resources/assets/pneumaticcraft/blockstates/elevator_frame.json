@@ -6,7 +6,7 @@
     }
   },
   "variants": {
-    "normal": { "model": "pneumaticcraft:block/elevator_frame" },
+    "": { "model": "pneumaticcraft:block/elevator_frame" },
     "inventory": [
       {
         "model": "pneumaticcraft:block/elevator_frame",

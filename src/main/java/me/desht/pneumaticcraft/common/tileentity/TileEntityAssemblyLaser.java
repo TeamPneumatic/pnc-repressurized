@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
+import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -132,10 +132,11 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
 
     @Nonnull
     private static ItemStack getLaseredOutputForItem(ItemStack input) {
-        for (AssemblyRecipe recipe : AssemblyRecipe.laserRecipes) {
-            if (AssemblyProgram.isValidInput(recipe, input)) return recipe.getOutput().copy();
-        }
-        return ItemStack.EMPTY;
+        return PneumaticCraftRecipes.assemblyLaserRecipes.values().stream()
+                .filter(recipe -> recipe.matches(input))
+                .findFirst()
+                .map(recipe -> recipe.getOutput().copy())
+                .orElse(ItemStack.EMPTY);
     }
 
     @Override

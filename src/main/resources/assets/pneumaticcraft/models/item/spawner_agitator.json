@@ -1,6 +1,6 @@
 {
    "parent" : "item/generated",
    "textures" : {
-      "layer0" : "pneumaticcraft:item/semiblock/spawner_agitator"
+      "layer0" : "pneumaticcraft:items/semiblock/spawner_agitator"
    }
 }

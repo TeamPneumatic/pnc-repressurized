@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
-import me.desht.pneumaticcraft.common.recipes.programs.ProgramDrill;
-import me.desht.pneumaticcraft.common.recipes.programs.ProgramDrillLaser;
-import me.desht.pneumaticcraft.common.recipes.programs.ProgramLaser;
+import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
+import me.desht.pneumaticcraft.common.recipes.assembly.ProgramDrill;
+import me.desht.pneumaticcraft.common.recipes.assembly.ProgramDrillLaser;
+import me.desht.pneumaticcraft.common.recipes.assembly.ProgramLaser;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
@@ -15,7 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.BULLET;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemAssemblyProgram extends ItemPneumatic {
@@ -45,6 +45,10 @@ public class ItemAssemblyProgram extends ItemPneumatic {
         this.programType = programType;
     }
 
+    public AssemblyProgramType getProgramType() {
+        return programType;
+    }
+
     public AssemblyProgram getProgram() {
         return programType.program;
     }
@@ -53,26 +57,26 @@ public class ItemAssemblyProgram extends ItemPneumatic {
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
         infoList.add(new StringTextComponent("Required Machines:"));
-        infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_CONTROLLER.getTranslationKey())));
+        infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_CONTROLLER.getTranslationKey())));
 
         AssemblyProgram program = getProgram();
         AssemblyProgram.EnumMachine[] requiredMachines = program.getRequiredMachines();
         for (AssemblyProgram.EnumMachine machine : requiredMachines) {
             switch (machine) {
                 case PLATFORM:
-                    infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_PLATFORM.getTranslationKey())));
+                    infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_PLATFORM.getTranslationKey())));
                     break;
                 case DRILL:
-                    infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_DRILL.getTranslationKey())));
+                    infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_DRILL.getTranslationKey())));
                     break;
                 case LASER:
-                    infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_LASER.getTranslationKey())));
+                    infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_LASER.getTranslationKey())));
                     break;
                 case IO_UNIT_EXPORT:
-                    infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_IO_UNIT.getTranslationKey()).appendText(" (export)")));//TODO localize
+                    infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_IO_UNIT.getTranslationKey()).appendText(" (export)")));//TODO localize
                     break;
                 case IO_UNIT_IMPORT:
-                    infoList.add(BULLET.appendSibling(xlate(ModBlocks.ASSEMBLY_IO_UNIT.getTranslationKey()).appendText(" (import)")));
+                    infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_IO_UNIT.getTranslationKey()).appendText(" (import)")));
                     break;
             }
         }

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -20,8 +20,8 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -32,7 +32,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public abstract class ItemGunAmmo extends ItemPneumatic {
 
     public ItemGunAmmo(Item.Properties props, String name) {
-        super(props.maxStackSize(1), name);
+        super(props, name);
     }
 
     /**
@@ -122,7 +122,7 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
                 ((MultiPartEntityPart) target).parent.attackEntityFromPart((MultiPartEntityPart) target, getDamageSource(minigun), ConfigHandler.minigun.baseDamage * dmgMult * times);
             } else*/
             if (target instanceof LivingEntity || target instanceof EnderCrystalEntity) {
-                target.attackEntityFrom(getDamageSource(minigun), (float)(Config.Common.Minigun.baseDamage * dmgMult * times));
+                target.attackEntityFrom(getDamageSource(minigun), (float)(PNCConfig.Common.Minigun.baseDamage * dmgMult * times));
             } else if (target instanceof ShulkerBulletEntity || target instanceof DamagingProjectileEntity) {
                 target.remove();
             }

@@ -1,6 +1,6 @@
 {
    "parent" : "item/generated",
    "textures" : {
-      "layer0" : "pneumaticcraft:item/pcb_blueprint"
+      "layer0" : "pneumaticcraft:items/pcb_blueprint"
    }
 }

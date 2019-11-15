@@ -1,17 +1,16 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeResource;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.awt.*;
@@ -30,11 +29,11 @@ public class WidgetAmadronOffer extends Widget implements ITooltipSupplier {
     public WidgetAmadronOffer(int x, int y, AmadronOffer offer) {
         super(x, y, 73, 35, "");
         this.offer = offer;
-        if (offer.getInput() instanceof FluidStack) {
-            subWidgets.add(new WidgetFluidStack(x + 6, y + 15, (FluidStack) offer.getInput(), null));
+        if (offer.getInput().getType() == TradeResource.Type.FLUID) {
+            subWidgets.add(new WidgetFluidStack(x + 6, y + 15, offer.getInput().getFluid(), null));
         }
-        if (offer.getOutput() instanceof FluidStack) {
-            subWidgets.add(new WidgetFluidStack(x + 51, y + 15, (FluidStack) offer.getOutput(), null));
+        if (offer.getOutput().getType() == TradeResource.Type.FLUID) {
+            subWidgets.add(new WidgetFluidStack(x + 51, y + 15, offer.getOutput().getFluid(), null));
         }
         tooltipRectangles[0] = new Rectangle(x + 6, y + 15, 16, 16);
         tooltipRectangles[1] = new Rectangle(x + 51, y + 15, 16, 16);
@@ -67,8 +66,9 @@ public class WidgetAmadronOffer extends Widget implements ITooltipSupplier {
         return this;
     }
 
-    public void setCanBuy(boolean canBuy) {
+    public WidgetAmadronOffer setCanBuy(boolean canBuy) {
         this.canBuy = canBuy;
+        return this;
     }
 
     @Override
@@ -86,9 +86,9 @@ public class WidgetAmadronOffer extends Widget implements ITooltipSupplier {
         }
         if (!isInBounds) {
             curTip.add(I18n.format("gui.amadron.amadronWidget.vendor", offer.getVendor()));
-            curTip.add(I18n.format("gui.amadron.amadronWidget.selling", getStringForObject(offer.getOutput())));
-            curTip.add(I18n.format("gui.amadron.amadronWidget.buying", getStringForObject(offer.getInput())));
-            curTip.add(I18n.format("gui.amadron.amadronWidget.inBasket", getStringForObject(offer.getOutput(), shoppingAmount)));
+            curTip.add(I18n.format("gui.amadron.amadronWidget.selling", offer.getOutput().toString()));
+            curTip.add(I18n.format("gui.amadron.amadronWidget.buying", offer.getInput().toString()));
+            curTip.add(I18n.format("gui.amadron.amadronWidget.inBasket", shoppingAmount));
             if (offer.getStock() >= 0) curTip.add(I18n.format("gui.amadron.amadronWidget.stock", offer.getStock()));
             // todo we should be using UUID here
             if (offer.getVendor().equals(Minecraft.getInstance().player.getGameProfile().getName())) {
@@ -97,19 +97,6 @@ public class WidgetAmadronOffer extends Widget implements ITooltipSupplier {
         }
     }
 
-    public static String getStringForObject(Object o) {
-        return getStringForObject(o, 1);
-    }
-
-    public static String getStringForObject(Object o, int times) {
-        if (o instanceof ItemStack) {
-            ItemStack stack = (ItemStack) o;
-            return times * stack.getCount() + "x " + stack.getDisplayName();
-        } else {
-            FluidStack stack = (FluidStack) o;
-            return times * stack.amount + "mB " + stack.getLocalizedName();
-        }
-    }
 
     public AmadronOffer getOffer() {
         return offer;

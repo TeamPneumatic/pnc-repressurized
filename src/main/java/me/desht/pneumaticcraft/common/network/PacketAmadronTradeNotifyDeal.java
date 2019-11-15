@@ -1,10 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAmadronOffer;
-import me.desht.pneumaticcraft.common.config.AmadronOfferSettings;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -31,24 +29,24 @@ public class PacketAmadronTradeNotifyDeal extends PacketAbstractAmadronTrade<Pac
     public PacketAmadronTradeNotifyDeal(PacketBuffer buffer) {
         super(buffer);
         offerAmount = buffer.readInt();
-        buyingPlayer = PacketUtil.readUTF8String(buffer);
+        buyingPlayer = buffer.readString();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
         buf.writeInt(offerAmount);
-        PacketUtil.writeUTF8String(buf, buyingPlayer);
+        buf.writeString(buyingPlayer);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (AmadronOfferSettings.notifyOfDealMade)
+            if (PNCConfig.Common.Amadron.notifyOfDealMade)
                 PneumaticCraftRepressurized.proxy.getClientPlayer().sendStatusMessage(
                         xlate("message.amadron.playerBought",
                                 buyingPlayer,
-                                WidgetAmadronOffer.getStringForObject(getOffer().getOutput(), offerAmount),
-                                WidgetAmadronOffer.getStringForObject(getOffer().getInput(), offerAmount)
+                                getOffer().getOutput().toString(),
+                                getOffer().getInput().toString()
                         ), false
                 );
         });

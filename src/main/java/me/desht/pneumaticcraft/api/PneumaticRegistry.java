@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
-import me.desht.pneumaticcraft.api.harvesting.IHarvestRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
@@ -14,13 +13,11 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModLoadingContext;
 
 /**
@@ -69,8 +66,6 @@ public final class PneumaticRegistry {
         ISensorRegistry getSensorRegistry();
 
         IItemRegistry getItemRegistry();
-        
-        IHarvestRegistry getHarvestRegistry();
 
         /**
          * Adds a burnable liquid to the Liquid Compressor's available burnable fuels.  This also allows a bucket
@@ -105,26 +100,7 @@ public final class PneumaticRegistry {
          * @param liquidToPointRatio the amount of liquid (in mB) used to get one XP point; use a value of 0 or less to
          *                          unregister this fluid
          */
-        void registerXPLiquid(Fluid fluid, int liquidToPointRatio);
-
-        /**
-         * Register this fluid as a raw input to the refinery.
-         *
-         * @param fluid the fluid to register
-         * @deprecated use {@link IPneumaticRecipeRegistry#registerRefineryRecipe(net.minecraftforge.fluids.FluidStack, net.minecraftforge.fluids.FluidStack...)}
-         */
-        @Deprecated
-        void registerRefineryInput(Fluid fluid);
-
-        /**
-         * Register a fluid as a valid input for the Plastic Mixer.
-         *
-         * @deprecated use {@link IPneumaticRecipeRegistry#registerPlasticMixerRecipe(FluidStack, ItemStack, int, boolean, boolean)}
-         * @param fluid the fluid to register
-         * @param ratio amount in mB which will be used to make 1 solid plastic sheet
-         */
-        @Deprecated
-        void registerPlasticFluid(Fluid fluid, int ratio);
+        void registerXPFluid(Fluid fluid, int liquidToPointRatio);
     }
 
     @CapabilityInject(IHacking.class)

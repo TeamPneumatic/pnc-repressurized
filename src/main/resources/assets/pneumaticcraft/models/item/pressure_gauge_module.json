@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:item/module/pressure_gauge"
+      "layer0" : "pneumaticcraft:items/module/pressure_gauge"
    },
    "parent" : "item/generated"
 }

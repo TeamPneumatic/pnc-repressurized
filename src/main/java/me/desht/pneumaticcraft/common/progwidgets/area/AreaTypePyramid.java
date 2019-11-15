@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
@@ -149,8 +148,8 @@ public class AreaTypePyramid extends AreaType{
     @Override
     public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);
-        tag.setByte("axis", (byte)axis.ordinal());
-        tag.setByte("pyramidType", (byte)pyramidType.ordinal());
+        tag.putByte("axis", (byte)axis.ordinal());
+        tag.putByte("pyramidType", (byte)pyramidType.ordinal());
     }
     
     @Override
@@ -158,22 +157,5 @@ public class AreaTypePyramid extends AreaType{
         super.readFromNBT(tag);
         axis = EnumAxis.values()[tag.getByte("axis")];
         pyramidType = EnumAreaTypePyramid.values()[tag.getByte("pyramidType")];
-    }
-
-    @Override
-    public void convertFromLegacy(EnumAreaType oldAreaType, int typeInfo){
-        switch(oldAreaType){
-            case X_PYRAMID:
-                axis = EnumAxis.X;
-                break;
-            case Y_PYRAMID:
-                axis = EnumAxis.Y;
-                break;
-            case Z_PYRAMID:
-                axis = EnumAxis.Z;
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
     }
 }

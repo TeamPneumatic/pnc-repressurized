@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -17,7 +16,7 @@ import net.minecraft.world.World;
 public class BlockElevatorBase extends BlockPneumaticCraftCamo {
 
     public BlockElevatorBase() {
-        super(Material.IRON, "elevator_base");
+        super("elevator_base");
     }
 
     @Override

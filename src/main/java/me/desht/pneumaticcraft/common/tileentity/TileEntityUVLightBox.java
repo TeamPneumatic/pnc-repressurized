@@ -146,10 +146,9 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     @Override
     public void onDescUpdate() {
-        super.onDescUpdate();
-
         getWorld().getChunkProvider().getLightManager().checkBlock(getPos());
-        getWorld().markForRerender(getPos());
+
+        super.onDescUpdate();
     }
 
     public int getLightLevel() {

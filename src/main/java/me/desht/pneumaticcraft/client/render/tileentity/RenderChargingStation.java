@@ -1,15 +1,15 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderChargingStation extends AbstractModelRenderer<TileEntityChargingStation> {
+public class RenderChargingStation extends AbstractTileModelRenderer<TileEntityChargingStation> {
     private ItemRenderer customRenderItem = null;
 
     public RenderChargingStation() {
@@ -23,8 +23,8 @@ public class RenderChargingStation extends AbstractModelRenderer<TileEntityCharg
     @Override
     void renderModel(TileEntityChargingStation te, float partialTicks) {
         if (te != null && !te.chargingStackSynced.isEmpty()) {
-            ItemEntity ghostEntityItem = new ItemEntity(te.getWorld());
-            ghostEntityItem.hoverStart = 0.0F;
+            ItemEntity ghostEntityItem = new ItemEntity(te.getWorld(), 0, 0, 0);
+//            ghostEntityItem.hoverStart = 0.0F;
             ghostEntityItem.setItem(te.chargingStackSynced);
             if (customRenderItem == null) {
                 customRenderItem = new NoBobItemRenderer();

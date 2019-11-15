@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.inventory.*;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockDefaultStorage;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockPassiveProvider;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockRequester;
+import me.desht.pneumaticcraft.common.semiblock.SemiBlockStorage;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
@@ -148,13 +149,13 @@ public class ModContainerTypes {
             registry.register(IForgeContainerType.create(ContainerLogistics::createDefaultStorageContainer)
                     .setRegistryName(SemiBlockDefaultStorage.ID));
             registry.register(IForgeContainerType.create(ContainerLogistics::createStorageContainer)
-                    .setRegistryName(SemiBlockDefaultStorage.ID));
+                    .setRegistryName(SemiBlockStorage.ID));
             registry.register(IForgeContainerType.create(ContainerInventorySearcher::new)
                     .setRegistryName("inventory_searcher"));
             registry.register(IForgeContainerType.create(ContainerRemote::createRemoteContainer)
                     .setRegistryName("remote"));
             registry.register(IForgeContainerType.create(ContainerRemote::createRemoteEditorContainer)
-                    .setRegistryName("remote"));
+                    .setRegistryName("remote_editor"));
             registry.register(IForgeContainerType.create(ContainerSearcher::new)
                     .setRegistryName("searcher"));
         }

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
@@ -34,15 +33,15 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
 
     public PacketChangeGPSToolCoordinate(PacketBuffer buf) {
         super(buf);
-        variable = PacketUtil.readUTF8String(buf);
+        variable = buf.readString();
         metadata = buf.readInt();
         hand = buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        PacketUtil.writeUTF8String(buf, variable);
+        buf.writeString(variable);
         buf.writeInt(metadata);
         buf.writeBoolean(hand == Hand.MAIN_HAND);
     }

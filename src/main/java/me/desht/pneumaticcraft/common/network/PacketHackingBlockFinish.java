@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,7 +38,7 @@ public class PacketHackingBlockFinish extends LocationIntPacket {
                 hackableBlock.onHackFinished(player.world, pos, player);
                 PneumaticCraftRepressurized.proxy.getHackTickHandler().trackBlock(GlobalPos.of(player.world.getDimension().getType(), pos), hackableBlock);
                 CommonArmorHandler.getHandlerForPlayer(player).setHackedBlockPos(null);
-                player.playSound(Sounds.HELMET_HACK_FINISH, 1.0F, 1.0F);
+                player.playSound(ModSounds.HELMET_HACK_FINISH, 1.0F, 1.0F);
             }
         });
         ctx.get().setPacketHandled(true);

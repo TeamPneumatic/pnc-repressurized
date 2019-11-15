@@ -8,7 +8,7 @@
     "model": "pneumaticcraft:block/gas_lift.obj"
   },
   "variants": {
-    "normal": [{}],
+    "": [{}],
     "inventory": [{
       "transform": "forge:default-block"
     }],

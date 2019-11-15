@@ -34,7 +34,7 @@ public class ItemNetworkComponent extends ItemPneumatic implements IProgrammable
     }
 
     public ItemNetworkComponent(NetworkComponentType type) {
-        super(DEFAULT_PROPS, type.getRegistryName());
+        super(type.getRegistryName());
         this.type = type;
     }
 

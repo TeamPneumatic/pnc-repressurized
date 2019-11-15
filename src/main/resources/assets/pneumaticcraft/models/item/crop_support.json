@@ -1,6 +1,6 @@
 {
    "parent" : "item/generated",
    "textures" : {
-      "layer0" : "pneumaticcraft:item/semiblock/crop_support"
+      "layer0" : "pneumaticcraft:items/semiblock/crop_support"
    }
 }

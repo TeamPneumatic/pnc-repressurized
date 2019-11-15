@@ -2,13 +2,13 @@ package me.desht.pneumaticcraft.client.model.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.model.entity.ModelDroneMinigun;
-import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 
-public class ModelSentryTurret extends AbstractModelRenderer.BaseModel {
+public class ModelSentryTurret extends AbstractTileModelRenderer.BaseModel {
     private final ModelDroneMinigun model = new ModelDroneMinigun();
     private TileEntitySentryTurret fakeTurret;// = new TileEntitySentryTurret();
 

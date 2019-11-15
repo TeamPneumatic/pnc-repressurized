@@ -8,12 +8,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.stream.IntStream;
 
 public class LogisticsManager {
 
@@ -57,7 +58,7 @@ public class LogisticsManager {
                                 int requestedAmount = getRequestedAmount(requester, fluid);
                                 if (requestedAmount > 0) {
                                     fluid = fluid.copy();
-                                    fluid.amount = requestedAmount;
+                                    fluid.setAmount(requestedAmount);
                                     tasks.add(new LogisticsTask(provider, requester, new FluidStackWrapper(fluid)));
                                     return tasks;
                                 }
@@ -92,15 +93,15 @@ public class LogisticsManager {
         });
 
         provider.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, provider.getSide()).ifPresent(fluidHandler -> {
-            FluidStack providingStack = fluidHandler.drain(16000, false);
-            if (providingStack != null) {
-                boolean canDrain = Arrays.stream(fluidHandler.getTankProperties()).anyMatch(p -> p.canDrainFluidType(providingStack));
+            FluidStack providingStack = fluidHandler.drain(16000, IFluidHandler.FluidAction.SIMULATE);
+            if (!providingStack.isEmpty()) {
+                boolean canDrain = IntStream.range(0, fluidHandler.getTanks()).anyMatch(i -> fluidHandler.isFluidValid(i, providingStack));
                 if (canDrain &&
                         (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
                     int requestedAmount = getRequestedAmount(requester, providingStack);
                     if (requestedAmount > 0) {
                         FluidStack stack = providingStack.copy();
-                        stack.amount = requestedAmount;
+                        stack.setAmount(requestedAmount);
                         tasks.add(new LogisticsTask(provider, requester, new FluidStackWrapper(stack)));
                     }
                 }
@@ -126,23 +127,22 @@ public class LogisticsManager {
     }
 
     private static int getRequestedAmount(SemiBlockLogistics requester, FluidStack providingStack) {
-        int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.amount;
+        int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.getAmount();
         int minOrderSize = requester instanceof SemiBlockRequester ? ((SemiBlockRequester) requester).getMinFluidOrderSize() : 1;
         if (requestedAmount < minOrderSize) return 0;
         providingStack = providingStack.copy();
-        providingStack.amount = requestedAmount;
+        providingStack.setAmount(requestedAmount);
         FluidStack remainder = providingStack.copy();
-        remainder.amount += requester.getIncomingFluid(remainder.getFluid());
+        remainder.grow(requester.getIncomingFluid(remainder.getFluid()));
         if (requester.getTileEntity() == null) return 0;
         requester.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requester.getSide()).ifPresent(fluidHandler -> {
-            int fluidFilled = fluidHandler.fill(remainder, false);
+            int fluidFilled = fluidHandler.fill(remainder, IFluidHandler.FluidAction.SIMULATE);
             if (fluidFilled > 0) {
-                remainder.amount -= fluidFilled;
+                remainder.shrink(fluidFilled);
             }
         });
-        providingStack.amount -= remainder.amount;
-        if (providingStack.amount <= 0) return 0;
-        return providingStack.amount;
+        providingStack.shrink(remainder.getAmount());
+        return providingStack.getAmount();
     }
 
     public static class LogisticsTask implements Comparable<LogisticsTask> {
@@ -181,7 +181,7 @@ public class LogisticsManager {
                 return requestedAmount == ((ItemStack) stack).getCount();
             } else if (transportingFluid != null && stack instanceof FluidStack) {
                 int requestedAmount = getRequestedAmount(requester, (FluidStack) stack);
-                return requestedAmount == ((FluidStack) stack).amount;
+                return requestedAmount == ((FluidStack) stack).getAmount();
             } else {
                 return false;
             }
@@ -189,8 +189,8 @@ public class LogisticsManager {
 
         @Override
         public int compareTo(LogisticsTask task) {
-            int value = !transportingItem.isEmpty() ? transportingItem.getCount() * 100 : transportingFluid.stack.amount;
-            int otherValue = !task.transportingItem.isEmpty() ? task.transportingItem.getCount() * 100 : task.transportingFluid.stack.amount;
+            int value = !transportingItem.isEmpty() ? transportingItem.getCount() * 100 : transportingFluid.stack.getAmount();
+            int otherValue = !task.transportingItem.isEmpty() ? task.transportingItem.getCount() * 100 : task.transportingFluid.stack.getAmount();
             return otherValue - value;
         }
 

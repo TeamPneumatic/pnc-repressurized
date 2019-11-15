@@ -20,7 +20,7 @@ public class ProgWidgetInventoryExport extends ProgWidgetInventoryBase {
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneEntityAIInventoryExport(drone, (ProgWidgetAreaItemBase) widget);
+        return new DroneEntityAIInventoryExport(drone, (ProgWidgetInventoryBase) widget);
     }
 
     @Override

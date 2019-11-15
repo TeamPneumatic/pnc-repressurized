@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.block.BlockElectrostaticCompressor;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase implements IRedstoneControl, INamedContainerProvider {
 
     @ObjectHolder("chisel:ironpane")
-    private static final Block CHISELED_BARS = null;
+    private static Block CHISELED_BARS = null;
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.button.never",
@@ -88,7 +88,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     }
 
     public int getStrikeChance() {
-        int strikeChance = Config.Common.Machines.electrostaticLightningChance;
+        int strikeChance = PNCConfig.Common.Machines.electrostaticLightningChance;
         if (getWorld().isRaining()) strikeChance *= 0.5;  // slightly more likely if raining
         if (getWorld().isThundering()) strikeChance *= 0.2; // much more likely if thundering
         strikeChance *= (1f - (0.02f * ironBarsAbove));

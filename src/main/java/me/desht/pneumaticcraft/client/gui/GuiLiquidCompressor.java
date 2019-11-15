@@ -6,14 +6,14 @@ import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
@@ -60,14 +60,15 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     private List<String> getAllFuels() {
         List<String> fuels = new ArrayList<>();
         fuels.add("L/Bucket | Fluid");
-        for (Map.Entry<String, Integer> map : sortByValue(PneumaticCraftAPIHandler.getInstance().liquidFuels).entrySet()) {
-            String value = map.getValue() / 1000 + "";
+        PneumaticCraftAPIHandler.getInstance().liquidFuels.forEach((fluidName, v) -> {
+            String value = v / 1000 + "";
             while (font.getStringWidth(value) < 25) {
                 value = value + " ";
             }
-            Fluid fluid = FluidRegistry.getFluid(map.getKey());
-            fuels.add(value + "| " + StringUtils.abbreviate(fluid.getLocalizedName(new FluidStack(fluid, 1)), 25));
-        }
+            Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidName);
+            FluidStack stack = new FluidStack(fluid, 1);
+            fuels.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getFormattedText(), 25));
+        });
         return fuels;
     }
 
@@ -100,7 +101,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
 
         if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
             te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(fluidHandler -> {
-                if (!te.isProducing && fluidHandler.getTankProperties()[0].getContents() == null) {
+                if (!te.isProducing && fluidHandler.getFluidInTank(0).isEmpty()) {
                     curInfo.add("gui.tab.problems.liquidCompressor.noFuel");
                 }
             });

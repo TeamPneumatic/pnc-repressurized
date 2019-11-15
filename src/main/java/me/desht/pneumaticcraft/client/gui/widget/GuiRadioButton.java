@@ -40,7 +40,6 @@ public class GuiRadioButton extends Widget implements ITooltipSupplier {
         this.pressable = pressable;
     }
 
-
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
         drawCircle(x + BUTTON_WIDTH / 2, y + BUTTON_HEIGHT / 2, BUTTON_WIDTH / 2, enabled ? 0xFFA0A0A0 : 0xFF999999);

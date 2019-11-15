@@ -1,81 +1,104 @@
 package me.desht.pneumaticcraft.common.recipes;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.recipe.IExplosionCraftingRecipe;
+import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class ExplosionCraftingRecipe {
+public class ExplosionCraftingRecipe implements IExplosionCraftingRecipe {
+    private static final NonNullList<ItemStack> EMPTY_RESULT = NonNullList.create();
+
     public static final List<ExplosionCraftingRecipe> recipes = new ArrayList<>();
 
-    private final ItemStack input;
-    private final String oreDictKey;
-    private final ItemStack output;
+    private final ResourceLocation id;
+    private final Ingredient input;
+    private final int amount;
+    private final List<ItemStack> outputs;
     private final int lossRate;
 
-    public static void addExplosionRecipe(ItemStack input, ItemStack output, int lossRate) {
-        PneumaticRegistry.getInstance().getRecipeRegistry().registerExplosionCraftingRecipe(input, output, lossRate);
-    }
-
-    public static void addExplosionRecipe(String oreDictKey, ItemStack output, int lossRate) {
-        PneumaticRegistry.getInstance().getRecipeRegistry().registerExplosionCraftingRecipe(oreDictKey, output, lossRate);
-    }
-
-    public ExplosionCraftingRecipe(ItemStack input, ItemStack output, int lossRate) {
+    public ExplosionCraftingRecipe(ResourceLocation id, Ingredient input, int amount, int lossRate, ItemStack... outputs) {
+        this.id = id;
         this.input = input;
-        this.output = output;
+        this.amount = amount;
+        this.outputs = Arrays.asList(outputs);
         this.lossRate = lossRate;
-        this.oreDictKey = null;
     }
 
-    public ExplosionCraftingRecipe(String oreDictKey, ItemStack output, int lossRate) {
-        this.input = ItemStack.EMPTY;
-        this.output = output;
-        this.lossRate = lossRate;
-        this.oreDictKey = oreDictKey;
+    public ExplosionCraftingRecipe(ResourceLocation id, Ingredient input, ItemStack output, int lossRate) {
+        this(id, input, 1, lossRate, output);
     }
 
-    public ItemStack getInput() {
+    @Override
+    public Ingredient getInput() {
         return input;
     }
 
-    public String getOreDictKey() {
-        return oreDictKey;
+    @Override
+    public int getAmount() {
+        return amount;
     }
 
-    public ItemStack getOutput() {
-        return output;
+    @Override
+    public List<ItemStack> getOutputs() {
+        return outputs;
     }
 
+    @Override
     public int getLossRate() {
         return lossRate;
     }
 
-    public static ItemStack tryToCraft(ItemStack stack) {
-        for (ExplosionCraftingRecipe recipe : recipes) {
-            if (recipe.match(stack)) {
-                return recipe.createOutput(stack);
-            }
-        }
-        return ItemStack.EMPTY;
+    @Override
+    public boolean matches(ItemStack stack) {
+        return input.test(stack) && amount <= stack.getCount();
     }
 
-    private ItemStack createOutput(ItemStack stack) {
+    @Override
+    public ResourceLocation getId() {
+        return id;
+    }
+
+    @Override
+    public void write(PacketBuffer buf) {
+        buf.writeResourceLocation(id);
+        input.write(buf);
+        buf.writeVarInt(amount);
+        buf.writeVarInt(outputs.size());
+        outputs.forEach(buf::writeItemStack);
+        buf.writeVarInt(lossRate);
+    }
+
+    public static NonNullList<ItemStack> tryToCraft(ItemStack stack) {
+        for (IExplosionCraftingRecipe recipe : PneumaticCraftRecipes.explosionCraftingRecipes.values()) {
+            if (recipe.matches(stack)) {
+                return createOutput(recipe, stack);
+            }
+        }
+        return EMPTY_RESULT;
+    }
+
+    private static NonNullList<ItemStack> createOutput(IExplosionCraftingRecipe recipe, ItemStack stack) {
         Random rand = new Random();
-        if (stack.getCount() >= 3 || rand.nextDouble() >= lossRate / 100D) {
-            ItemStack newStack = new ItemStack(output.getItem(), stack.getCount());
-            if (stack.getCount() >= 3) {
-                newStack.setCount((int) (stack.getCount() * (rand.nextDouble() * Math.min(lossRate * 0.02D, 0.2D) + (Math.max(0.9D, 1D - lossRate * 0.01D) - lossRate * 0.01D))));
-            }
-            return newStack;
-        }
-        return ItemStack.EMPTY;
-    }
+        int lossRate = recipe.getLossRate();
 
-    private boolean match(ItemStack ingredient) {
-        return !input.isEmpty() && ItemStack.areItemsEqual(input, ingredient)
-                || oreDictKey != null && OreDictionaryHelper.isItemEqual(oreDictKey, ingredient);
+        NonNullList<ItemStack> res = NonNullList.create();
+        if (stack.getCount() >= 3 || rand.nextDouble() >= lossRate / 100D) {
+            for (ItemStack s : recipe.getOutputs()) {
+                ItemStack newStack = s.copy();
+                if (stack.getCount() >= 3) {
+                    newStack.setCount((int) (stack.getCount() * (rand.nextDouble() * Math.min(lossRate * 0.02D, 0.2D) + (Math.max(0.9D, 1D - lossRate * 0.01D) - lossRate * 0.01D))));
+                }
+                res.add(newStack);
+            }
+        }
+        return res;
     }
 }

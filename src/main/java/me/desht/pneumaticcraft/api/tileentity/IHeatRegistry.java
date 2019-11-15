@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import net.minecraft.block.Block;
 
 /**
- * Get an instance of this via {@link PneumaticRegistry.IPneumaticCraftInterface#getHeatRegistry()}.
+ * Get an instance of this via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getHeatRegistry()}.
  */
 public interface IHeatRegistry {
     /**
@@ -18,7 +18,7 @@ public interface IHeatRegistry {
     /**
      * Register a block as a heat exchanger.
      * <p>
-     * Note: the preferred way to do this is via the BlockHeatProperties.cfg config file.
+     * Note: the preferred way to do this is via the block_heat_properties.json config file.
      *
      * @param block the block
      * @param temperature the block's temperature
@@ -26,22 +26,10 @@ public interface IHeatRegistry {
      */
     void registerBlockExchanger(Block block, double temperature, double thermalResistance);
 
-//    /**
-//     * Register a block state as a heat exchanger.  This should only be used to distinguish block variants, never
-//     * rotation states.
-//     * <p>
-//     * Note: the preferred way to do this is via the BlockHeatProperties.cfg config file.
-//     *
-//     * @param state the blockstate
-//     * @param temperature the block variant's temperature
-//     * @param thermalResistance the thermal resistance, i.e. how quickly heat will be transferred
-//     */
-//    void registerBlockExchanger(BlockState state, double temperature, double thermalResistance);
-
     /**
      * Register a heat behaviour instance.
      * <p>
-     * Note: the preferred way to do this is via the BlockHeatProperties.cfg config file.
+     * Note: the preferred way to do this is via the block_heat_properties.json config file.
      *
      * @param heatBehaviour a heat behaviour
      */

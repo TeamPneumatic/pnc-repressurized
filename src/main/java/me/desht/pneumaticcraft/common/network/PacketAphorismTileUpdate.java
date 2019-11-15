@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 /**
@@ -24,7 +24,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
         int lines = buffer.readInt();
         text = new String[lines];
         for (int i = 0; i < lines; i++) {
-            text[i] = PacketUtil.readUTF8String(buffer);
+            text[i] = buffer.readString();
         }
     }
 
@@ -34,12 +34,10 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
     }
 
     @Override
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
         buffer.writeInt(text.length);
-        for (String line : text) {
-            PacketUtil.writeUTF8String(buffer, line);
-        }
+        Arrays.stream(text).forEach(buffer::writeString);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

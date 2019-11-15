@@ -187,7 +187,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
             return blockState.getBlock() == ((BlockItem) filter.getFilter().getItem()).getBlock();
         } else {
             // match by item
-            if (PneumaticCraftUtils.areStacksEqual(filter.getFilter(), stack, filter.useItemDamage && blockState == null, filter.useNBT, filter.useItemTags, filter.useModSimilarity)) {
+            if (PneumaticCraftUtils.areStacksEquivalent(filter.getFilter(), stack, filter.useItemDamage && blockState == null, filter.useNBT, filter.useItemTags, filter.useModSimilarity)) {
                 return blockState == null || !filter.useItemDamage;
             }
         }

@@ -1,33 +1,31 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public abstract class PacketSecurityStation extends LocationIntPacket {
 
-    protected UUID username;
+    protected String username;
 
     public PacketSecurityStation() {
     }
 
-    public PacketSecurityStation(TileEntity te, UUID player) {
+    public PacketSecurityStation(TileEntity te, String username) {
         super(te.getPos());
-        this.username = player;
+        this.username = username;
     }
 
     public PacketSecurityStation(PacketBuffer buffer) {
         super(buffer);
-        username = UUID.fromString(PacketUtil.readUTF8String(buffer));
+        username = buffer.readString();
     }
 
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        PacketUtil.writeUTF8String(buffer, username.toString());
+        buffer.writeString(username);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -38,6 +36,6 @@ public abstract class PacketSecurityStation extends LocationIntPacket {
         ctx.get().setPacketHandled(true);
     }
 
-    protected abstract void handle(TileEntity te, UUID username);
+    protected abstract void handle(TileEntity te, String username);
 
 }

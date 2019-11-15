@@ -4,16 +4,18 @@ import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
-import me.desht.pneumaticcraft.common.config.BlockHeatPropertiesConfig;
-import me.desht.pneumaticcraft.common.config.BlockHeatPropertiesConfig.CustomHeatEntry;
+import me.desht.pneumaticcraft.common.config.aux.BlockHeatPropertiesConfig;
+import me.desht.pneumaticcraft.common.config.aux.BlockHeatPropertiesConfig.CustomHeatEntry;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
@@ -28,10 +30,20 @@ public class HeatExchangerManager implements IHeatRegistry {
     }
 
     public void onPostInit() {
-        // todo datapack
+        // todo datapack?
         BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntries().values().forEach(this::registerCustomHeatEntry);
 
-        // todo 1.14 fluids
+        for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
+            Block b = fluid.getDefaultState().getBlockState().getBlock();
+            if (b == null || specialBlockExchangers.containsKey(b)) continue;
+            CustomHeatEntry entry = BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntry(b);
+            if (entry != null) {
+                registerBlockExchanger(b, entry.getTemperature(), entry.getThermalResistance());
+            } else {
+                Log.warning("unable to retrieve custom heat entry for fluid " + fluid.getRegistryName() + " - block: " + b.getRegistryName());
+            }
+        }
+
 //        Map<String, Fluid> fluids = FluidRegistry.getRegisteredFluids();
 //        for (Fluid fluid : fluids.values()) {
 //            if (fluid.getBlock() != null && !specialBlockExchangers.containsKey(fluid.getBlock())) {
@@ -50,11 +62,11 @@ public class HeatExchangerManager implements IHeatRegistry {
 
 
     private void registerCustomHeatEntry(CustomHeatEntry rec) {
-        registerBlockExchanger(rec.getBlockState().getBlock(), rec.getTemperature(), rec.getThermalResistance());
+        registerBlockExchanger(rec.getBlock().getBlock(), rec.getTemperature(), rec.getThermalResistance());
     }
 
     public IHeatExchangerLogic getLogic(World world, BlockPos pos, Direction side) {
-        if (!world.isBlockLoaded(pos)) return null;
+        if (!world.isAreaLoaded(pos, 0)) return null;
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof IHeatExchanger) {
             return ((IHeatExchanger) te).getHeatExchangerLogic(side);
@@ -64,6 +76,7 @@ public class HeatExchangerManager implements IHeatRegistry {
             } else {
                 BlockState state = world.getBlockState(pos);
                 Block block = state.getBlock();
+                // TODO 1.14 capability
                 if (block instanceof IHeatExchanger) {
                     return ((IHeatExchanger) block).getHeatExchangerLogic(side);
                 } else {
@@ -104,7 +117,6 @@ public class HeatExchangerManager implements IHeatRegistry {
     public IHeatExchangerLogic getHeatExchangerLogic() {
         return new HeatExchangerLogicTicking();
     }
-
 
     public static class TemperatureData {
         private final Double[] temp = new Double[7];

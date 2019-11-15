@@ -6,7 +6,7 @@
         "model": "pneumaticcraft:block/plastic_mixer.obj"
     },
 	"variants": {
-		"normal": [{}],
+		"": [{}],
 		"inventory": [{
           "transform": "forge:default-block"
         }]

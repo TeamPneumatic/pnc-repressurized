@@ -1,102 +1,143 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
+import me.desht.pneumaticcraft.api.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
+import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.lib.Textures;
-import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.gui.IDrawableAnimated.StartDirection;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import static me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram.EnumMachine.IO_UNIT_EXPORT;
-import static me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram.EnumMachine.IO_UNIT_IMPORT;
+import static me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine.IO_UNIT_EXPORT;
+import static me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine.IO_UNIT_IMPORT;
 
-public class JEIAssemblyControllerCategory extends PneumaticCraftCategory<JEIAssemblyControllerCategory.AssemblyRecipeWrapper> {
+public class JEIAssemblyControllerCategory extends JEIPneumaticCraftCategory<IAssemblyRecipe> {
+    private final String localizedName;
+    private final IDrawable background;
+    private final IDrawable icon;
+
     JEIAssemblyControllerCategory(IJeiHelpers jeiHelpers) {
         super(jeiHelpers);
+
+        background = jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_NEI_ASSEMBLY_CONTROLLER, 5, 11, 166, 130);
+        icon = jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER));
+        localizedName = I18n.format(ModBlocks.ASSEMBLY_CONTROLLER.getTranslationKey());
     }
 
     @Override
-    public String getUid() {
+    public ResourceLocation getUid() {
         return ModCategoryUid.ASSEMBLY_CONTROLLER;
     }
 
     @Override
-    public String getTitle() {
-        return I18n.format(ModBlocks.ASSEMBLY_CONTROLLER.getTranslationKey() + ".name");
+    public Class<? extends IAssemblyRecipe> getRecipeClass() {
+        return IAssemblyRecipe.class;
     }
 
     @Override
-    public ResourceDrawable getGuiTexture() {
-        return new ResourceDrawable(Textures.GUI_NEI_ASSEMBLY_CONTROLLER, 0, 0, 5, 11, 166, 130);
+    public String getTitle() {
+        return localizedName;
     }
 
-    static class AssemblyRecipeWrapper extends PneumaticCraftCategory.MultipleInputOutputRecipeWrapper {
-        AssemblyRecipeWrapper(AssemblyRecipe recipe) {
-            AssemblyProgram program = AssemblyProgram.fromRecipe(recipe);
+    @Override
+    public IDrawable getBackground() {
+        return background;
+    }
 
-            ItemStack[] inputStacks = new ItemStack[]{recipe.getInput()};//for now not useful to put it in an array, but supports when adding multiple input/output.
-            for (int i = 0; i < inputStacks.length; i++) {
-                PositionedStack stack = new PositionedStack(inputStacks[i], 29 + i % 2 * 18, 66 + i / 2 * 18);
-                this.addIngredient(stack);
-            }
+    @Override
+    public IDrawable getIcon() {
+        return icon;
+    }
 
-            ItemStack[] outputStacks = new ItemStack[]{recipe.getOutput()};
-            for (int i = 0; i < outputStacks.length; i++) {
-                PositionedStack stack = new PositionedStack(outputStacks[i], 96 + i % 2 * 18, 66 + i / 2 * 18);
-                this.addOutput(stack);
-            }
-            this.addIngredient(new PositionedStack(program.getItemStack(1), 133, 22));
-            ItemStack[] requiredMachines = getMachinesFromEnum(program.getRequiredMachines());
-            for (int i = 0; i < requiredMachines.length; i++) {
-                this.addIngredient(new PositionedStack(requiredMachines[i], 5 + i * 18, 25));
-            }
+    @Override
+    public void setIngredients(IAssemblyRecipe recipe, IIngredients ingredients) {
+        AssemblyProgram program = AssemblyProgram.fromRecipe(recipe);
+
+        List<List<ItemStack>> inputs = new ArrayList<>();
+        inputs.add(Arrays.asList(recipe.getInput().getMatchingStacks()));
+        inputs.add(Collections.singletonList(new ItemStack(recipe.getProgram())));
+        for (ItemStack stack: getMachines(program.getRequiredMachines())) {
+            inputs.add(Collections.singletonList(stack));
+        }
+        ingredients.setInputLists(VanillaTypes.ITEM, inputs);
+
+        ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutput());
+    }
+
+    @Override
+    public void setRecipe(IRecipeLayout recipeLayout, IAssemblyRecipe recipe, IIngredients ingredients) {
+        // TODO one day support multiple inputs/outputs
+        recipeLayout.getItemStacks().init(0, true, 29, 66);
+        recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
+
+        recipeLayout.getItemStacks().init(1, true, 133, 22);
+        recipeLayout.getItemStacks().set(1, ingredients.getInputs(VanillaTypes.ITEM).get(1));
+
+        int nMachines = ingredients.getInputs(VanillaTypes.ITEM).size();
+        for (int i = 0; i < nMachines; i++) {
+            recipeLayout.getItemStacks().init(i + 2, true, 5 + i * 18, 25);
+            recipeLayout.getItemStacks().set(i + 2, ingredients.getInputs(VanillaTypes.ITEM).get(i + 2));
         }
 
-        private ItemStack[] getMachinesFromEnum(AssemblyProgram.EnumMachine[] requiredMachines) {
-            ItemStack[] machineStacks = new ItemStack[requiredMachines.length];
-            for (int i = 0; i < requiredMachines.length; i++) {
-                switch (requiredMachines[i]) {
-                    case PLATFORM:
-                        machineStacks[i] = new ItemStack(ModBlocks.ASSEMBLY_PLATFORM);
-                        break;
-                    case DRILL:
-                        machineStacks[i] = new ItemStack(ModBlocks.ASSEMBLY_DRILL);
-                        break;
-                    case LASER:
-                        machineStacks[i] = new ItemStack(ModBlocks.ASSEMBLY_LASER);
-                        break;
-                    case IO_UNIT_IMPORT:
-                        machineStacks[i] = makeIOUnitStack(IO_UNIT_IMPORT);
-                        break;
-                    case IO_UNIT_EXPORT:
-                        machineStacks[i] = makeIOUnitStack(IO_UNIT_EXPORT);
-                        break;
-                }
+        recipeLayout.getItemStacks().init(nMachines + 2, false, 96, 66);
+        recipeLayout.getItemStacks().set(nMachines + 2, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
+    }
+
+    private List<ItemStack> getMachines(AssemblyProgram.EnumMachine[] requiredMachines) {
+        List<ItemStack> res = new ArrayList<>();
+
+        for (AssemblyProgram.EnumMachine m : requiredMachines) {
+            switch (m) {
+                case PLATFORM:
+                    res.add(new ItemStack(ModBlocks.ASSEMBLY_PLATFORM));
+                    break;
+                case DRILL:
+                    res.add(new ItemStack(ModBlocks.ASSEMBLY_DRILL));
+                    break;
+                case LASER:
+                    res.add(new ItemStack(ModBlocks.ASSEMBLY_LASER));
+                    break;
+                case IO_UNIT_IMPORT:
+                    res.add(makeIOUnitStack(IO_UNIT_IMPORT));
+                    break;
+                case IO_UNIT_EXPORT:
+                    res.add(makeIOUnitStack(IO_UNIT_EXPORT));
+                    break;
             }
-            return machineStacks;
         }
+        return res;
     }
 
     @Nonnull
-    private static ItemStack makeIOUnitStack(AssemblyProgram.EnumMachine what) {
-        ItemStack stack = new ItemStack(ModBlocks.ASSEMBLY_IO_UNIT, 1, what == IO_UNIT_IMPORT ? 0 : 1);
-        return stack.setStackDisplayName(TextFormatting.RESET.toString() + TextFormatting.WHITE +
-                stack.getDisplayName() + (what == IO_UNIT_IMPORT ? " (import)" : " (export)"));
+    private ItemStack makeIOUnitStack(AssemblyProgram.EnumMachine what) {
+        ItemStack stack = new ItemStack(ModBlocks.ASSEMBLY_IO_UNIT);
+        stack.getOrCreateTag().putBoolean("Import", what == IO_UNIT_IMPORT);
+        return stack;
     }
 
     @Override
-    public void drawExtras(Minecraft minecraft) {
-        drawProgressBar(68, 75, 173, 0, 24, 17, StartDirection.LEFT);
-        FontRenderer fontRenderer = FMLClientHandler.instance().getClient().fontRenderer;
-        fontRenderer.drawString("Required Machines", 5, 15, 4210752);
-        fontRenderer.drawString("Prog.", 129, 9, 4210752);
+    public void draw(IAssemblyRecipe recipe, double mouseX, double mouseY) {
+        super.draw(recipe, mouseX, mouseY);
+
+        drawProgressBar(Textures.GUI_NEI_ASSEMBLY_CONTROLLER, 68, 75, 173, 0, 24, 17, IDrawableAnimated.StartDirection.LEFT);
+
+        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+        fontRenderer.drawString("Required Machines", 5, 15, 0xFF404040);
+        fontRenderer.drawString("Prog.", 129, 9, 0xFF404040);
     }
+
 }

@@ -1,11 +1,16 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import net.minecraft.block.BlockState;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ITickable;
 
-public class TileEntityDroneRedstoneEmitter extends TileEntity implements ITickable {
+public class TileEntityDroneRedstoneEmitter extends TileEntity implements ITickableTileEntity {
+    public TileEntityDroneRedstoneEmitter() {
+        super(ModTileEntityTypes.DRONE_REDSTONE_EMITTER);
+    }
+
     @Override
     public void tick() {
         BlockState state = getWorld().getBlockState(getPos());
@@ -14,6 +19,6 @@ public class TileEntityDroneRedstoneEmitter extends TileEntity implements ITicka
                 return;
             }
         }
-        getWorld().setBlockToAir(getPos());
+        getWorld().removeBlock(getPos(), false);
     }
 }

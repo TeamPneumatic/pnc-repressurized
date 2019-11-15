@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.fluid.Fluids;
-import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.core.ModFluids;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
@@ -17,7 +16,7 @@ import java.util.Stack;
 
 public class ItemSeismicSensor extends ItemPneumatic {
     public ItemSeismicSensor() {
-        super(DEFAULT_PROPS.maxStackSize(1), "seismic_sensor");
+        super(defaultProps().maxStackSize(1), "seismic_sensor");
     }
 
     @Override
@@ -37,7 +36,7 @@ public class ItemSeismicSensor extends ItemPneumatic {
                         BlockPos checkingPos = pendingPositions.pop();
                         for (Direction d : Direction.values()) {
                             BlockPos newPos = checkingPos.offset(d);
-                            if (world.getBlockState(newPos).getBlock() == Fluids.OIL.getBlock() && FluidUtils.isSourceBlock(world, newPos) && oilPositions.add(newPos)) {
+                            if (world.getFluidState(newPos).getFluid() == ModFluids.OIL_SOURCE && oilPositions.add(newPos)) {
                                 pendingPositions.add(newPos);
                             }
                         }

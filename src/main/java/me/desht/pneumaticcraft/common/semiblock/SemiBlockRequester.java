@@ -8,12 +8,14 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 import javax.annotation.Nullable;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 
 //@Optional.InterfaceList({
@@ -28,7 +30,7 @@ import javax.annotation.Nullable;
 //})
 public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificRequester /*, IProvidingInventoryListener IGridHost, IGridBlock, ICraftingProvider, ICraftingWatcherHost, IStackWatcherHost, ICellContainer, IGridTickable, IMEInventoryHandler<IAEItemStack>*/ {
 
-    public static final String ID = "logistics_frame_requester";
+    public static final ResourceLocation ID = RL("logistics_frame_requester");
 
     @GuiSynced
     private int minItemOrderSize;
@@ -87,16 +89,16 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
             TileEntity te = getTileEntity();
             int count = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getSide()).map(handler -> {
                 int c = 0;
-                for (IFluidTankProperties properties : handler.getTankProperties()) {
-                    FluidStack contents = properties.getContents();
-                    if (contents != null && contents.getFluid() == stack.getFluid()) {
-                        c += contents.amount;
+                for (int i = 0; i < handler.getTanks(); i++) {
+                    FluidStack contents = handler.getFluidInTank(i);
+                    if (contents.getFluid() == stack.getFluid()) {
+                        c += contents.getAmount();
                     }
                 }
                 return c;
             }).orElse(0);
             count += getIncomingFluid(stack.getFluid());
-            return Math.max(0, Math.min(stack.amount, totalRequestingAmount - count));
+            return Math.max(0, Math.min(stack.getAmount(), totalRequestingAmount - count));
         }
         return 0;
     }
@@ -106,7 +108,7 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
         for (int i = 0; i < 9; i++) {
             FluidStack requestingStack = getTankFilter(i).getFluid();
             if (requestingStack != null && requestingStack.getFluid() == stack.getFluid()) {
-                requesting += requestingStack.amount;
+                requesting += requestingStack.getAmount();
             }
         }
         return requesting;
@@ -146,6 +148,11 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
     @Override
     protected boolean shouldSaveNBT() {
         return /*aeMode ||*/ shouldWriteOrderSizeNBT() || super.shouldSaveNBT();
+    }
+
+    @Override
+    public ResourceLocation getId() {
+        return ID;
     }
 
     @Override

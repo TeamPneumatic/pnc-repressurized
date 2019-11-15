@@ -26,8 +26,8 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
     }
 
     @Override
-    public void initialize(String id, IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
-        super.initialize(id, connectedHeatLogic, world, pos, direction);
+    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+        super.initialize(connectedHeatLogic, world, pos, direction);
 
         tracker = HeatExtractionTracker.getInstance(getWorld());
     }
@@ -39,7 +39,7 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
     protected boolean transformBlockCold() { return false; }
 
     @Override
-    public void update() {
+    public void tick() {
         if (blockTemp == -1) {
             blockTemp = logic.getTemperature();
             maxExchangedHeat = getMaxExchangedHeat() * (logic.getThermalResistance() + getHeatExchanger().getThermalResistance());

@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -18,7 +17,7 @@ import net.minecraft.world.World;
 
 public class BlockPressureChamberWallBase extends BlockPneumaticCraft implements IBlockPressureChamber {
     BlockPressureChamberWallBase(Block.Properties props, String registryName) {
-        super(Material.IRON, registryName);
+        super(registryName);
     }
 
     @Override

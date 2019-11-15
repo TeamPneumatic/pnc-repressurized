@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
@@ -8,14 +7,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificProvider, ISpecificRequester {
 
-    public static final String ID = "logistics_frame_storage";
+    public static final ResourceLocation ID = RL("logistics_frame_storage");
 
     @Override
     public int getColor() {
@@ -25,11 +27,6 @@ public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificPro
     @Override
     public int getPriority() {
         return 2;
-    }
-
-    @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.LOGISTICS_STORAGE;
     }
 
     @Override
@@ -44,7 +41,7 @@ public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificPro
 
     @Override
     public int amountRequested(FluidStack stack) {
-        return passesFilter(stack.getFluid()) ? stack.amount : 0;
+        return passesFilter(stack.getFluid()) ? stack.getAmount() : 0;
     }
 
     @Override
@@ -61,5 +58,10 @@ public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificPro
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerLogistics(ModContainerTypes.LOGISTICS_FRAME_STORAGE, i, playerInventory, getPos());
+    }
+
+    @Override
+    public ResourceLocation getId() {
+        return ID;
     }
 }

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.Block;
@@ -36,8 +35,8 @@ public abstract class LocationIntPacket {
         this.pos = pos;
     }
 
-    public void toBytes(ByteBuf buf) {
-        PacketUtil.writeBlockPos(buf, pos);
+    public void toBytes(PacketBuffer buf) {
+        buf.writeBlockPos(pos);
     }
 
     PacketDistributor.TargetPoint getTargetPoint(World world) {

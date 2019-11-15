@@ -1,24 +1,3 @@
 {
-  "type": "pneumaticcraft:shaped_fluid",
-  "pattern": [
-    "lsl",
-    "scs",
-    "lsl"
-  ],
-  "key": {
-    "s": {
-      "item": "minecraft:sugar"
-    },
-    "c": {
-      "type": "pneumaticcraft:fluid",
-      "fluid": "lubricant"
-    },
-    "l": {
-      "item": "minecraft:dye",
-      "data": 4
-    }
-  },
-  "result": {
-    "item": "pneumaticcraft:speed_upgrade"
-  }
+  "type": "pneumaticcraft:speed_upgrade_crafting"
 }

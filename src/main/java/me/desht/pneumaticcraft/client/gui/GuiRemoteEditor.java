@@ -4,7 +4,8 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
@@ -105,12 +106,9 @@ public class GuiRemoteEditor extends GuiRemote {
         pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
         addButton(pastebinButton);
 
-        GuiCheckBox snapCheck = new GuiCheckBox(guiLeft + 200, guiTop + 100, 0xFF404040, "Snap to Grid", b -> {
-            Config.setGuiRemoteGridSnap(b.checked);
-            // todo check if this gets called automatically
-            Config.Client.guiRemoteGridSnap = b.checked;
-        });
-        snapCheck.checked = Config.Client.guiRemoteGridSnap;
+        GuiCheckBox snapCheck = new GuiCheckBox(guiLeft + 200, guiTop + 100, 0xFF404040, "Snap to Grid",
+                b -> ConfigHelper.setGuiRemoteGridSnap(b.checked));
+        snapCheck.checked = PNCConfig.Client.guiRemoteGridSnap;
         addButton(snapCheck);
     }
 
@@ -135,7 +133,7 @@ public class GuiRemoteEditor extends GuiRemote {
         if (draggingWidget != null) {
             int x1 = x - dragMouseStartX + dragWidgetStartX - guiLeft;
             int y1 = y - dragMouseStartY + dragWidgetStartY - guiTop;
-            if (Config.Client.guiRemoteGridSnap) {
+            if (PNCConfig.Client.guiRemoteGridSnap) {
                 x1 = (x1 / 4) * 4;
                 y1 = (y1 / 4) * 4;
             }

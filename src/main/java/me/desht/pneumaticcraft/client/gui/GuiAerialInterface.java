@@ -15,14 +15,13 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import org.apache.commons.lang3.text.WordUtils;
@@ -125,8 +124,8 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
         if (fluid != null) {
             FluidStack fluidStack = new FluidStack(fluid, 1000);
             xpButton.setRenderStacks(FluidUtil.getFilledBucket(fluidStack));
-            String modname = ModNameCache.getModName(FluidRegistry.getModId(fluidStack));
-            xpButton.setTooltipText(ImmutableList.of(fluid.getLocalizedName(fluidStack), TextFormatting.BLUE.toString() + TextFormatting.ITALIC + modname));
+            String modName = ModNameCache.getModName(fluid.getRegistryName().getNamespace());
+            xpButton.setTooltipText(ImmutableList.of(fluidStack.getDisplayName().getFormattedText(), TextFormatting.BLUE.toString() + TextFormatting.ITALIC + modName));
         } else {
             xpButton.setRenderStacks(new ItemStack(Items.BUCKET));
             xpButton.setTooltipText(I18n.format("gui.tooltip.aerial_interface.xpDisabled"));
@@ -145,8 +144,8 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
         } else {
             for (Fluid f : PneumaticCraftAPIHandler.getInstance().availableLiquidXPs) {
                 FluidStack stack = new FluidStack(f, 1000);
-                String modId = FluidRegistry.getModId(stack);
-                liquidXpText.add(TextFormatting.BLACK + "\u2022  " + f.getLocalizedName(stack) + " (" + ModNameCache.getModName(modId) + ")");
+                String modName = ModNameCache.getModName(f.getRegistryName().getNamespace());
+                liquidXpText.add(TextFormatting.BLACK + "\u2022  " + stack.getDisplayName().getFormattedText() + " (" + modName + ")");
             }
         }
         return liquidXpText;

@@ -66,7 +66,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     }
 
     public ItemMinigun() {
-        super(DEFAULT_PROPS.setTEISR(() -> RenderItemMinigun::new), "minigun", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
+        super(defaultProps().setTEISR(() -> RenderItemMinigun::new), "minigun", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
 
     public static MagazineHandler getMagazine(ItemStack stack) {

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -32,7 +31,7 @@ public class PacketAmadronOrderUpdate {
         sneaking = buffer.readBoolean();
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeInt(orderId);
         buf.writeByte(mouseButton);
         buf.writeBoolean(sneaking);

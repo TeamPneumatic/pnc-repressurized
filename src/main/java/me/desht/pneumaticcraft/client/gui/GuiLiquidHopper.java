@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
@@ -89,7 +89,7 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
 
     @Override
     protected void addExtraUpgradeText(List<String> text) {
-        if (Config.Common.Machines.liquidHopperDispenser) {
+        if (PNCConfig.Common.Machines.liquidHopperDispenser) {
             text.add("gui.tab.upgrades.tile.liquid_hopper.dispenser");
         }
     }

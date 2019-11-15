@@ -1,7 +1,7 @@
 {
   "textures": {
-    "particle": "pneumaticcraft:block/universal_sensor",
-    "face": "pneumaticcraft:block/universal_sensor"
+    "particle": "pneumaticcraft:blocks/universal_sensor",
+    "face": "pneumaticcraft:blocks/universal_sensor"
   },
   "elements": [
     {

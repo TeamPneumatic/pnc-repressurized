@@ -8,14 +8,18 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity> implements IDirectionalSemiblock {
+    public static final ResourceLocation ID = RL("transfer_gadget");
+
     private static final int TRANSFER_INTERVAL = 40;
-    public static final String ID = "transfer_gadget";
-    
+
     public enum EnumInputOutput{
         INPUT,
         OUTPUT
@@ -128,7 +132,12 @@ public class SemiBlockTransferGadget extends SemiBlockBasic<TileEntity> implemen
     public EnumInputOutput getInputOutput(){
         return io;
     }
-    
+
+    @Override
+    public ResourceLocation getId() {
+        return ID;
+    }
+
     @Override
     public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);

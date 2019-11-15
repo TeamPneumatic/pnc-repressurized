@@ -1,6 +1,6 @@
 {
    "parent" : "item/generated",
    "textures" : {
-      "layer0" : "pneumaticcraft:item/semiblock/requester_frame"
+      "layer0" : "pneumaticcraft:items/semiblock/requester_frame"
    }
 }

@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.client.model.block;
 
-import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 
-public class ModelAssemblyControllerScreen extends AbstractModelRenderer.BaseModel {
+public class ModelAssemblyControllerScreen extends AbstractTileModelRenderer.BaseModel {
     private final RendererModel screen;
 
     public ModelAssemblyControllerScreen() {

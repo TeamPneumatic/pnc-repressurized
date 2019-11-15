@@ -1,49 +1,44 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
+import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import me.desht.pneumaticcraft.lib.BBConstants;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class BlockSecurityStation extends BlockPneumaticCraftModeled {
-
-    private static final AxisAlignedBB BLOCK_BOUNDS = new AxisAlignedBB(
-            BBConstants.SECURITY_STATION_MIN_POS, 0F, BBConstants.SECURITY_STATION_MIN_POS,
-            BBConstants.SECURITY_STATION_MAX_POS, BBConstants.SECURITY_STATION_MAX_POS_TOP, BBConstants.SECURITY_STATION_MAX_POS
-    );
-    private static final AxisAlignedBB COLLISION_BOUNDS = new AxisAlignedBB(
-            BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MIN_POS, BBConstants.SECURITY_STATION_MIN_POS,
-            BBConstants.SECURITY_STATION_MAX_POS, BBConstants.SECURITY_STATION_MAX_POS_TOP, BBConstants.SECURITY_STATION_MAX_POS
-    );
+    private static final VoxelShape BODY = Block.makeCuboidShape(0, 8, 0, 16, 11, 16);
+    private static final VoxelShape LEG1 = Block.makeCuboidShape(0, 0, 0, 1, 8, 1);
+    private static final VoxelShape LEG2 = Block.makeCuboidShape(15, 0, 15, 16, 8, 16);
+    private static final VoxelShape LEG3 = Block.makeCuboidShape(0, 0, 15, 1, 8, 16);
+    private static final VoxelShape LEG4 = Block.makeCuboidShape(15, 0, 0, 16, 8, 1);
+    private static final VoxelShape SHAPE = VoxelShapes.or(BODY, LEG1, LEG2, LEG3, LEG4);
 
     public BlockSecurityStation() {
-        super(Material.IRON, "security_station");
-        setBlockBounds(BLOCK_BOUNDS);
+        super("security_station");
     }
 
-    @Nullable
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(BlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-        return COLLISION_BOUNDS;
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return SHAPE;
     }
 
     @Override
@@ -69,22 +64,23 @@ public class BlockSecurityStation extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, BlockState state, PlayerEntity player, Hand hand, Direction side, float par7, float par8, float par9) {
-        if (player.isSneaking()) return false;
-        else {
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+        if (player.isSneaking()) {
+            return false;
+        } else {
             if (!world.isRemote) {
                 TileEntitySecurityStation te = (TileEntitySecurityStation) world.getTileEntity(pos);
                 if (te != null) {
                     if (te.isPlayerOnWhiteList(player)) {
-                        player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.SECURITY_STATION_INVENTORY.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
+                        return super.onBlockActivated(state, world, pos, player, hand, brtr);
                     } else if (!te.hasValidNetwork()) {
-                        player.sendStatusMessage(new StringTextComponent(TextFormatting.GREEN + "This Security Station is out of order: Its network hasn't been properly configured."), false);
+                        player.sendStatusMessage(PneumaticCraftUtils.xlate("message.securityStation.outOfOrder"), false);
                     } else if (te.hasPlayerHacked(player)) {
-                        player.sendStatusMessage(new StringTextComponent(TextFormatting.GREEN + "You've already hacked this Security Station!"), false);
+                        player.sendStatusMessage(PneumaticCraftUtils.xlate("message.securityStation.alreadyHacked"), false);
                     } else if (getPlayerHackLevel(player) < te.getSecurityLevel()) {
-                        player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "You can't access or hack this Security Station. To hack it you need at least a Pneumatic Helmet upgraded with " + te.getSecurityLevel() + " Security upgrade(s)."), false);
+                        player.sendStatusMessage(PneumaticCraftUtils.xlate("message.securityStation.cantHack", te.getSecurityLevel()), false);
                     } else {
-                        player.openGui(PneumaticCraftRepressurized.instance, EnumGuiId.HACKING.ordinal(), world, pos.getX(), pos.getY(), pos.getZ());
+                        NetworkHooks.openGui((ServerPlayerEntity) player, te.getHackingContainerProvider(), pos);
                     }
                 }
             }
@@ -103,7 +99,7 @@ public class BlockSecurityStation extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public int getWeakPower(BlockState blockState, IBlockAccess blockAccess, BlockPos pos, Direction side) {
+    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         TileEntity te = blockAccess.getTileEntity(pos);
         if (te instanceof TileEntitySecurityStation) {
             return ((TileEntitySecurityStation) te).shouldEmitRedstone() ? 15 : 0;

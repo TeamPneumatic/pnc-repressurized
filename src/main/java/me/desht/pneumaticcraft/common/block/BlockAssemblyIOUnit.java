@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyIOUnit;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
@@ -23,7 +22,7 @@ public class BlockAssemblyIOUnit extends BlockPneumaticCraft {
     private static final VoxelShape COLLISION_SHAPE = Block.makeCuboidShape(2, 2, 2, 14, 14, 14);
 
     public BlockAssemblyIOUnit() {
-        super(Material.IRON, "assembly_io_unit");
+        super("assembly_io_unit");
     }
 
     @Override

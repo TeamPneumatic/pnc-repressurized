@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.model.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -11,7 +11,7 @@ import net.minecraft.entity.item.ItemEntity;
 
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface.MAX_PROGRESS;
 
-public class ModelPressureChamberInterface extends AbstractModelRenderer.BaseModel {
+public class ModelPressureChamberInterface extends AbstractTileModelRenderer.BaseModel {
     private final RendererModel input;
     private final RendererModel output;
     private ItemRenderer customRenderItem = null;
@@ -53,7 +53,7 @@ public class ModelPressureChamberInterface extends AbstractModelRenderer.BaseMod
 
         if (ghostEntityItem != null) {
             if (customRenderItem == null) {
-                customRenderItem = new AbstractModelRenderer.NoBobItemRenderer();
+                customRenderItem = new AbstractTileModelRenderer.NoBobItemRenderer();
             }
 
             float zOff = 0f;

@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -21,7 +21,7 @@ public interface ISerializableTanks {
      * @return a map of tag names to tanks
      */
     @Nonnull
-    Map<String,FluidTank> getSerializableTanks();
+    Map<String, FluidTank> getSerializableTanks();
 
     default void deserializeTanks(CompoundNBT tag) {
         for (Map.Entry<String,FluidTank> entry : getSerializableTanks().entrySet()) {
@@ -54,7 +54,7 @@ public interface ISerializableTanks {
      */
      static void serializeTank(FluidTank tank, ItemStack stack, String tagName) {
          CompoundNBT subTag = NBTUtil.getCompoundTag(stack, NBTKeys.NBT_SAVED_TANKS);
-         if (tank.getFluid() != null && tank.getFluid().amount > 0) {
+         if (tank.getFluid() != null && tank.getFluid().getAmount() > 0) {
              subTag.put(tagName, tank.writeToNBT(new CompoundNBT()));
          } else {
              subTag.remove(tagName);

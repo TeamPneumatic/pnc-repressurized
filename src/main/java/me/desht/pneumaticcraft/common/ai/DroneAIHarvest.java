@@ -1,7 +1,8 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.api.harvesting.IHarvestHandler;
-import me.desht.pneumaticcraft.common.harvesting.HarvestRegistry;
+import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
+import me.desht.pneumaticcraft.api.harvesting.HoeHandler;
+import me.desht.pneumaticcraft.common.core.ModRegistries;
 import me.desht.pneumaticcraft.common.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import net.minecraft.block.BlockState;
@@ -10,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
@@ -45,10 +45,11 @@ public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBa
         }
     }
     
-    private IHarvestHandler getApplicableHandler(BlockPos pos){
+    private HarvestHandler getApplicableHandler(BlockPos pos){
         BlockState state = worldCache.getBlockState(pos);
-        return HarvestRegistry.getInstance()
-                              .getHarvestHandlers()
+        return ModRegistries.HARVEST_HANDLERS.getValues()
+//        return HarvestRegistry.getInstance()
+//                              .getHarvestHandlers()
                               .stream()
                               .filter(handler -> handler.canHarvest(drone.world(), worldCache, pos, state, drone) &&
                                                   hasApplicableItemFilters(handler, pos, state))
@@ -56,7 +57,7 @@ public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBa
                               .orElse(null);
     }
     
-    private boolean hasApplicableItemFilters(IHarvestHandler harvestHandler, BlockPos pos, BlockState blockState){
+    private boolean hasApplicableItemFilters(HarvestHandler harvestHandler, BlockPos pos, BlockState blockState){
         List<ItemStack> droppedStacks = harvestHandler.addFilterItems(drone.world(), worldCache, pos, blockState, drone);
         for (ItemStack droppedStack : droppedStacks) {
             if (progWidget.isItemValidForFilters(droppedStack, blockState)) {
@@ -73,29 +74,31 @@ public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBa
 
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
-        IHarvestHandler applicableHandler = getApplicableHandler(pos);
-        if(applicableHandler != null){
+        HarvestHandler applicableHandler = getApplicableHandler(pos);
+        if (applicableHandler != null) {
             BlockState state = worldCache.getBlockState(pos);
-            if(applicableHandler.canHarvest(drone.world(), worldCache, pos, state, drone)){
+            if (applicableHandler.canHarvest(drone.world(), worldCache, pos, state, drone)) {
                 Consumer<PlayerEntity> damageableHoe = getDamageableHoe();
-                if(damageableHoe != null){
-                    if(applicableHandler.harvestAndReplant(drone.world(), worldCache, pos, state, drone)){
+                if (damageableHoe != null) {
+                    if (applicableHandler.harvestAndReplant(drone.world(), worldCache, pos, state, drone)) {
                         damageableHoe.accept(drone.getFakePlayer());
                     }
-                }else{
+                } else {
                     applicableHandler.harvest(drone.world(), worldCache, pos, state, drone);
                 }
-                
+
             }
         }
         return false;
     }
     
-    private Consumer<PlayerEntity> getDamageableHoe(){
-        for(int i = 0; i < drone.getInv().getSlots(); i++){
+    private Consumer<PlayerEntity> getDamageableHoe() {
+        for (int i = 0; i < drone.getInv().getSlots(); i++){
             ItemStack stack = drone.getInv().getStackInSlot(i);
-            BiConsumer<ItemStack, PlayerEntity> damageableHoe = HarvestRegistry.getInstance().getDamageableHoe(stack);
-            if(damageableHoe != null) return player -> damageableHoe.accept(stack, player);
+            HoeHandler handler = ModRegistries.HOE_HANDLERS.getValues().stream()
+                    .filter(hoeHandler -> hoeHandler.test(stack))
+                    .findFirst().orElse(null);
+            if (handler != null) return handler.getConsumer(stack);
         }
         return null;
     }

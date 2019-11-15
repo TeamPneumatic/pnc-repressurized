@@ -42,7 +42,7 @@ public class ItemRemote extends ItemPneumatic {
     private static final String NBT_SECURITY_POS = "securityPos";
 
     public ItemRemote() {
-        super(DEFAULT_PROPS.maxStackSize(1), "remote");
+        super(defaultProps().maxStackSize(1), "remote");
     }
 
     @Override

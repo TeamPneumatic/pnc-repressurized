@@ -1,108 +1,86 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import me.desht.pneumaticcraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
-import me.desht.pneumaticcraft.common.fluid.Fluids;
-import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
-import me.desht.pneumaticcraft.common.util.ItemTagMatcher;
+import me.desht.pneumaticcraft.api.recipe.TemperatureRange;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.Nullable;
 
 public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumaticProcessingPlantRecipe {
-	public static final List<IThermopneumaticProcessingPlantRecipe> recipes = new ArrayList<>();
-	
-    private final FluidStack inputLiquid, outputLiquid;
-    private final ItemStack inputItem;
+	private final ResourceLocation id;
+    private final FluidStack inputFluid, outputFluid;
+    private final Ingredient inputItem;
     private final float requiredPressure;
-    private final double requiredTemperature;
+    private final boolean exothermic;
+    private final TemperatureRange operatingTemperature;
 
-    public BasicThermopneumaticProcessingPlantRecipe(FluidStack inputLiquid, @Nonnull ItemStack inputItem,
-                                                     FluidStack outputLiquid, double requiredTemperature, float requiredPressure) {
+    public BasicThermopneumaticProcessingPlantRecipe(ResourceLocation id, @Nonnull FluidStack inputFluid, @Nullable Ingredient inputItem,
+                                                     FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure, boolean exothermic) {
+        this.id = id;
         this.inputItem = inputItem;
-        this.inputLiquid = inputLiquid;
-        this.outputLiquid = outputLiquid;
-        this.requiredTemperature = requiredTemperature;
+        this.inputFluid = inputFluid;
+        this.outputFluid = outputFluid;
+        this.operatingTemperature = operatingTemperature;
         this.requiredPressure = requiredPressure;
+        this.exothermic = exothermic;
     }
 
     @Override
-    public boolean isValidRecipe(FluidStack fluidStack, @Nonnull ItemStack inputItem) {
-        if (inputLiquid != null) {
-            if (fluidStack == null) return false;
-            if (!Fluids.areFluidsEqual(fluidStack.getFluid(), inputLiquid.getFluid())) return false;
-            if (fluidStack.amount < inputLiquid.amount) return false;
-        }
-        if (!this.inputItem.isEmpty()) {
-            if (inputItem.isEmpty()) return false;
-            if (!inputItem.isItemEqual(this.inputItem) && !ItemTagMatcher.matchTags(inputItem, this.inputItem))
-                return false;
-            return inputItem.getCount() >= this.inputItem.getCount();
-        }
-        return true;
-    }
-    
-    @Override
-    public boolean isValidInput(FluidStack inputFluid){
-        return inputLiquid != null && Fluids.areFluidsEqual(inputFluid.getFluid(), inputLiquid.getFluid());
-    }
-    
-    @Override
-    public boolean isValidInput(ItemStack inputItem){
-        return !this.inputItem.isEmpty() && inputItem.isItemEqual(this.inputItem) || ItemTagMatcher.matchTags(inputItem, this.inputItem);
+    public boolean matches(FluidStack fluidStack, @Nonnull ItemStack stack) {
+        return (inputFluid.isEmpty() || (fluidStack.isFluidEqual(inputFluid) && fluidStack.getAmount() >= inputFluid.getAmount()))
+                && (inputItem == null || inputItem.test(stack));
     }
 
     @Override
-    public FluidStack getRecipeOutput(FluidStack inputTank, @Nonnull ItemStack inputItem) {
-        return outputLiquid;
+    public TemperatureRange getOperatingTemperature() {
+        return operatingTemperature;
     }
 
     @Override
-    public void useRecipeItems(FluidStack inputTank, @Nonnull ItemStack inputItem) {
-        if (inputLiquid != null) inputTank.amount -= inputLiquid.amount;
-        if (!this.inputItem.isEmpty()) inputItem.shrink(this.inputItem.getCount());
-    }
-
-    @Override
-    public void useResources(IFluidHandler fluidHandler, IItemHandler itemHandler) {
-        fluidHandler.drain(inputLiquid.amount, true);
-        itemHandler.extractItem(0, inputItem.getCount(), false);
-    }
-
-    @Override
-    public double getRequiredTemperature(FluidStack inputTank, @Nonnull ItemStack inputItem) {
-        return requiredTemperature;
-    }
-
-    @Override
-    public float getRequiredPressure(FluidStack inputTank, @Nonnull ItemStack inputItem) {
+    public float getRequiredPressure() {
         return requiredPressure;
     }
 
     @Override
-    public double heatUsed(FluidStack inputTank, @Nonnull ItemStack inputItem) {
-        return (requiredTemperature - HeatExchangerLogicAmbient.BASE_AMBIENT_TEMP) / 10D;
-    }
-
-    @Override
-    public int airUsed(FluidStack inputTank, @Nonnull ItemStack inputItem) {
-        return (int) (requiredPressure * 50);
-    }
-
-    public FluidStack getInputLiquid() {
-        return inputLiquid;
-    }
-
-    public FluidStack getOutputLiquid() {
-        return outputLiquid;
+    public FluidStack getInputFluid() {
+        return inputFluid;
     }
 
     @Nonnull
-    public ItemStack getInputItem() {
+    @Override
+    public Ingredient getInputItem() {
         return inputItem;
+    }
+
+    @Override
+    public FluidStack getOutputFluid() {
+        return outputFluid;
+    }
+
+    @Override
+    public boolean isExothermic() {
+        return exothermic;
+    }
+
+    @Override
+    public ResourceLocation getId() {
+        return id;
+    }
+
+    @Override
+    public void write(PacketBuffer buf) {
+        buf.writeResourceLocation(id);
+        buf.writeVarInt(operatingTemperature.getMin());
+        buf.writeVarInt(operatingTemperature.getMax());
+        buf.writeFloat(requiredPressure);
+        inputItem.write(buf);
+        inputFluid.writeToPacket(buf);
+        outputFluid.writeToPacket(buf);
+        buf.writeBoolean(exothermic);
     }
 }

@@ -239,7 +239,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     public abstract boolean canMoveToDiagonalNeighbours();
 
     Direction[] getPlatformDirection() {
-        for (Direction dir : Direction.HORIZONTALS) {
+        for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
             if (getWorld().getTileEntity(getPos().offset(dir)) instanceof TileEntityAssemblyPlatform)
                 return new Direction[]{dir, null};
         }

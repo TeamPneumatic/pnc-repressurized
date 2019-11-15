@@ -1,10 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAmadronOffer;
-import me.desht.pneumaticcraft.common.config.AmadronOfferStaticConfig;
-import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.config.aux.AmadronOfferStaticConfig;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -33,7 +31,7 @@ public class PacketAmadronTradeAddStatic {
         this.trade = AmadronOffer.readFromBuf(buffer);
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         trade.writeToBuf(buf);
     }
 
@@ -48,8 +46,8 @@ public class PacketAmadronTradeAddStatic {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    String in = WidgetAmadronOffer.getStringForObject(trade.getInput());
-                    String out = WidgetAmadronOffer.getStringForObject(trade.getOutput());
+                    String in = trade.getInput().toString();
+                    String out = trade.getOutput().toString();
                     player.sendStatusMessage(new TranslationTextComponent("message.amadron.addedStaticOffer", in, out), false);
                 } else {
                     player.sendStatusMessage(new TranslationTextComponent("message.amadron.duplicateOffer"), false);

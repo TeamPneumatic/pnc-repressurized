@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.sound;
 
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,7 +13,7 @@ public class MovingSoundJetBoots extends TickableSound {
     private int endTimer = -1;
 
     MovingSoundJetBoots(PlayerEntity player) {
-        super(Sounds.LEAKING_GAS_LOW, SoundCategory.NEUTRAL);
+        super(ModSounds.LEAKING_GAS_LOW, SoundCategory.NEUTRAL);
 
         this.player = player;
         this.repeat = true;

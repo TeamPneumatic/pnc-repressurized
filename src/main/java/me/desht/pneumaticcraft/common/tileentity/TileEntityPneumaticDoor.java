@@ -36,7 +36,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
                 (oldRotationAngle == 0f || oldRotationAngle == 90f || rotationAngle == 0f || rotationAngle == 90f)) {
             if (getWorld().isRemote) {
                 // force a redraw to make the static door model appear or disappear
-                getWorld().markForRerender(pos);
+                rerenderTileEntity();
             }
         }
 

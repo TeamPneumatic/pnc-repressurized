@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -15,7 +14,7 @@ public class BlockVacuumPump extends BlockPneumaticCraftModeled {
     private static final VoxelShape COLLISION_SHAPE = Block.makeCuboidShape(2, 2, 2, 14, 14, 14);
 
     public BlockVacuumPump() {
-        super(Material.IRON, "vacuum_pump");
+        super("vacuum_pump");
     }
 
     @Override

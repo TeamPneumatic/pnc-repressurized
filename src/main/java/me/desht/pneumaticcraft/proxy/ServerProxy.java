@@ -4,17 +4,17 @@ import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ServerProxy implements IProxy {
     private final HackTickHandler serverHackTickHandler = new HackTickHandler();
 
-    @Override
-    public void initConfig() {
-    }
+//    @Override
+//    public void initConfig() {
+//    }
 
     @Override
     public World getWorldFor(NetworkEvent.Context ctx) {

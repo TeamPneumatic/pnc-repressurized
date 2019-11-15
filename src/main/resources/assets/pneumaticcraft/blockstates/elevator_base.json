@@ -9,7 +9,7 @@
     "model": "pneumaticcraft:block/elevator_base.obj"
   },
   "variants": {
-    "normal": [{}],
+    "": [{}],
     "inventory": [{
       "transform": "forge:default-block"
     }],

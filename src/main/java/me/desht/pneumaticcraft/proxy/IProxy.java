@@ -27,7 +27,7 @@ public interface IProxy {
 
     boolean isSneakingInGui();
 
-    void initConfig();
+//    void initConfig();
 
     String xlate(String key);
 

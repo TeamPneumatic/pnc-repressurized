@@ -13,7 +13,7 @@
     }
   },
   "variants": {
-    "normal": [{}],
+    "": [{}],
     "inventory": [{
       "transform": "forge:default-item"
     }],

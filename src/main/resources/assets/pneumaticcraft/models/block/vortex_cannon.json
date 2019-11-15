@@ -1,6 +1,6 @@
 {
   "textures": {
-    "face": "pneumaticcraft:block/vortex_cannon"
+    "face": "pneumaticcraft:blocks/vortex_cannon"
   },
   "elements": [
     {

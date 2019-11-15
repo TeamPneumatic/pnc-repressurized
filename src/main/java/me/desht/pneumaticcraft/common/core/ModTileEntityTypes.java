@@ -19,13 +19,13 @@ public class ModTileEntityTypes {
     public static final TileEntityType<TileEntityAirCannon> AIR_CANNON = null;
     public static final TileEntityType<TileEntityPressureChamberWall> PRESSURE_CHAMBER_WALL = null;
     public static final TileEntityType<TileEntityPressureChamberGlass> PRESSURE_CHAMBER_GLASS = null;
-    public static final TileEntityType<?> PRESSURE_CHAMBER_VALVE = null;
-    public static final TileEntityType<?> CHARGING_STATION = null;
-    public static final TileEntityType<?> ELEVATOR_BASE = null;
-    public static final TileEntityType<?> ELEVATOR_FRAME = null;
-    public static final TileEntityType<?> PRESSURE_CHAMBER_INTERFACE = null;
-    public static final TileEntityType<?> VACUUM_PUMP = null;
-    public static final TileEntityType<?> PNEUMATIC_DOOR_BASE = null;
+    public static final TileEntityType<TileEntityPressureChamberValve> PRESSURE_CHAMBER_VALVE = null;
+    public static final TileEntityType<TileEntityChargingStation> CHARGING_STATION = null;
+    public static final TileEntityType<TileEntityElevatorBase> ELEVATOR_BASE = null;
+    public static final TileEntityType<TileEntityElevatorFrame> ELEVATOR_FRAME = null;
+    public static final TileEntityType<TileEntityPressureChamberInterface> PRESSURE_CHAMBER_INTERFACE = null;
+    public static final TileEntityType<TileEntityVacuumPump> VACUUM_PUMP = null;
+    public static final TileEntityType<TileEntityPneumaticDoorBase> PNEUMATIC_DOOR_BASE = null;
     public static final TileEntityType<?> PNEUMATIC_DOOR = null;
     public static final TileEntityType<?> ASSEMBLY_IO_UNIT = null;
     public static final TileEntityType<?> ASSEMBLY_PLATFORM = null;
@@ -35,7 +35,6 @@ public class ModTileEntityTypes {
     public static final TileEntityType<?> UV_LIGHT_BOX = null;
     public static final TileEntityType<?> SECURITY_STATION = null;
     public static final TileEntityType<?> UNIVERSAL_SENSOR = null;
-    public static final TileEntityType<?> UNIVERSAL_ACTUATOR = null;
     public static final TileEntityType<?> AERIAL_INTERFACE = null;
     public static final TileEntityType<?> ELECTROSTATIC_COMPRESSOR = null;
     public static final TileEntityType<?> APHORISM_TILE = null;
@@ -44,7 +43,6 @@ public class ModTileEntityTypes {
     public static final TileEntityType<?> ELEVATOR_CALLER = null;
     public static final TileEntityType<?> PROGRAMMER = null;
     public static final TileEntityType<?> CREATIVE_COMPRESSOR = null;
-    public static final TileEntityType<?> PLASTIC_MIXER = null;
     public static final TileEntityType<?> LIQUID_COMPRESSOR = null;
     public static final TileEntityType<?> ADVANCED_LIQUID_COMPRESSOR = null;
     public static final TileEntityType<?> DRONE_REDSTONE_EMITTER = null;
@@ -77,6 +75,8 @@ public class ModTileEntityTypes {
                     .build(null).setRegistryName(RL("air_cannon")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityPressureChamberWall::new, ModBlocks.PRESSURE_CHAMBER_WALL)
                     .build(null).setRegistryName(RL("pressure_chamber_wall")));
+            event.getRegistry().register(TileEntityType.Builder.create(TileEntityPressureChamberGlass::new, ModBlocks.PRESSURE_CHAMBER_GLASS)
+                    .build(null).setRegistryName(RL("pressure_chamber_glass")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityPressureChamberValve::new, ModBlocks.PRESSURE_CHAMBER_VALVE)
                     .build(null).setRegistryName(RL("pressure_chamber_valve")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityChargingStation::new, ModBlocks.CHARGING_STATION)
@@ -125,15 +125,13 @@ public class ModTileEntityTypes {
                     .build(null).setRegistryName(RL("programmer")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityCreativeCompressor::new, ModBlocks.CREATIVE_COMPRESSOR)
                     .build(null).setRegistryName(RL("creative_compressor")));
-            event.getRegistry().register(TileEntityType.Builder.create(TileEntityPlasticMixer::new, ModBlocks.PLASTIC_MIXER)
-                    .build(null).setRegistryName(RL("plastic_mixer")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityLiquidCompressor::new, ModBlocks.LIQUID_COMPRESSOR)
                     .build(null).setRegistryName(RL("liquid_compressor")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityAdvancedLiquidCompressor::new, ModBlocks.ADVANCED_LIQUID_COMPRESSOR)
                     .build(null).setRegistryName(RL("advanced_liquid_compressor")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityDroneRedstoneEmitter::new, ModBlocks.DRONE_REDSTONE_EMITTER)
                     .build(null).setRegistryName(RL("drone_redstone_emitter")));
-            event.getRegistry().register(TileEntityType.Builder.create(TileEntityCompressedIronBlock::new, ModBlocks.COMPRESSED_IRON)
+            event.getRegistry().register(TileEntityType.Builder.create(TileEntityCompressedIronBlock::new, ModBlocks.COMPRESSED_IRON_BLOCK)
                     .build(null).setRegistryName(RL("compressed_iron_block")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityHeatSink::new, ModBlocks.HEAT_SINK)
                     .build(null).setRegistryName(RL("heat_sink")));

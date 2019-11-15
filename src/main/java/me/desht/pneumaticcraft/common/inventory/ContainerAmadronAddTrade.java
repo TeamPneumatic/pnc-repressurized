@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.recipes.AmadronOffer.TradeType;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

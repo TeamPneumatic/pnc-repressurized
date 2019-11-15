@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.entity.model.RendererModel;
+import net.minecraft.item.DyeColor;
 import net.minecraft.util.math.AxisAlignedBB;
 
 public class ModelDrone extends EntityModel<EntityDroneBase> {
@@ -209,7 +210,7 @@ public class ModelDrone extends EntityModel<EntityDroneBase> {
         if (drone instanceof EntityProgrammableController) f5 /= 2F;
         super.render(drone, f, f1, f2, f3, f4, f5);
         setRotationAngles(drone, f, f1, f2, f3, f4, f5);
-        if (drone != null) RenderUtils.glColorHex(0xFF000000 + drone.getDroneColor());
+        if (drone != null) RenderUtils.glColorHex(0xFF000000 + DyeColor.byId(drone.getDroneColor()).getColorValue());
         Base2.render(f5);
         Base3.render(f5);
         Base4.render(f5);

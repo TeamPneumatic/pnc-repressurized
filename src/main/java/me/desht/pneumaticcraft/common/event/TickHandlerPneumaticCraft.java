@@ -1,13 +1,13 @@
 package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.common.ai.DroneClaimManager;
-import me.desht.pneumaticcraft.common.config.AmadronOfferPeriodicConfig;
+import me.desht.pneumaticcraft.common.config.aux.AmadronOfferPeriodicConfig;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketServerTickTime;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import net.minecraft.world.World;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class TickHandlerPneumaticCraft {

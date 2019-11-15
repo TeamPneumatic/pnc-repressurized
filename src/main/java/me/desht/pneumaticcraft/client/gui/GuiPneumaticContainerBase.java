@@ -24,6 +24,7 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -38,6 +39,7 @@ import javax.annotation.Nonnull;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -456,7 +458,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         return guiTop;
     }
 
-    public List<Rectangle> getTabRectangles() {
+    public Collection<Rectangle2d> getTabRectangles() {
         return getStatWidgets().stream()
                 .map(IGuiAnimatedStat::getBounds)
                 .collect(Collectors.toList());

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.block.Block;
@@ -142,12 +142,12 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
                     if (clickedBorder(state, brtr.getHitVec())) {
                         if (teAT.getBorderColor() != color.getId()) {
                             teAT.setBorderColor(color.getId());
-                            if (Config.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
+                            if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
                         }
                     } else {
                         if (teAT.getBackgroundColor() != color.getId()) {
                             teAT.setBackgroundColor(color.getId());
-                            if (Config.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
+                            if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
                         }
                     }
                 }

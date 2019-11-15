@@ -15,10 +15,10 @@ repositories {
 //        name = "CoFH Maven"
 //        url = "http://maven.covers1624.net"
 //    }
-//    maven {
-//        name = "JEI"
-//        url = "http://dvs1.progwml6.com/files/maven"
-//    }
+    maven {
+        name = "JEI"
+        url = "http://dvs1.progwml6.com/files/maven"
+    }
 //    maven {
 //        name = "MCMP"
 //        url = "http://maven.amadornes.com/"
@@ -31,18 +31,18 @@ repositories {
 //        name = "ComputerCraft"
 //        url = "http://cc.crzd.me/maven"
 //    }
-//    maven {
-//        name = "hwyla"
-//        url = 'http://tehnut.info/maven/'
-//    }
+    maven {
+        name = "hwyla"
+        url = 'http://tehnut.info/maven/'
+    }
     maven { // TOP
         name = "tterrag maven"
         url = "http://maven.tterrag.com/"
     }
-//    maven {
-//        name = 'BlameJared - Crafttweaker/Patchouli'
-//        url = 'http://maven.blamejared.com/'
-//    }
+    maven {
+        name = 'BlameJared - Crafttweaker/Patchouli'
+        url = 'http://maven.blamejared.com/'
+    }
 //    maven {
 //        name = "K-4u Mod maven"
 //        url = "https://modmaven.k-4u.nl/"
@@ -154,6 +154,11 @@ dependencies {
     compile fg.deobf (project.dependencies.create("mcjty.theoneprobe:TheOneProbe-1.14:${top_version}") {
         transitive = false
     })
+    compile fg.deobf (project.dependencies.create("mcp.mobius.waila:Hwyla:${hwyla_version}") {
+        transitive = false
+    })
+    compileOnly fg.deobf("mezz.jei:jei-1.14.4:${jei_version}:api")
+    runtime fg.deobf("mezz.jei:jei-1.14.4:${jei_version}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
 //    compileOnly("mekanism:Mekanism:${mekanism_version}:api") { exclude group: "mezz.jei" }
 //    compileOnly "mezz.jei:jei_${mc_version}:${jei_version}"
@@ -164,6 +169,7 @@ dependencies {
 //    compileOnly "mcp.mobius.waila:Hwyla:${hwyla_version}"
 //    compileOnly "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
 //    compileOnly "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
+    compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.14.4:${crafttweaker_version}")
 //    compileOnly "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
 //    compileOnly "igwmod:IGW-Mod-1.12.2:${igwmod_version}:universal"  // using universal instead of userdev for now
 //    compileOnly "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"

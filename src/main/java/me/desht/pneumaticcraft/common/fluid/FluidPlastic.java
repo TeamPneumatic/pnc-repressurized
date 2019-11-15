@@ -1,63 +1,70 @@
 package me.desht.pneumaticcraft.common.fluid;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModFluids;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.item.DyeItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.block.material.MaterialColor;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.state.StateContainer;
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.ForgeFlowingFluid;
 
-public class FluidPlastic extends FluidPneumaticCraft {
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
+public abstract class FluidPlastic extends ForgeFlowingFluid {
+    private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
+            RL("fluid/plastic_still"), RL("fluid/plastic_flow")
+    ).temperature(PneumaticValues.PLASTIC_MIXER_MELTING_TEMP).color(MaterialColor.GRAY.colorValue);
+
+    private static final ForgeFlowingFluid.Properties PROPS =
+            new ForgeFlowingFluid.Properties(
+                    () -> ModFluids.PLASTIC_SOURCE, () -> ModFluids.PLASTIC_FLOWING, ATTRS)
+                    .block(() -> ModBlocks.PLASTIC_BLOCK).bucket(() -> ModItems.PLASTIC_BUCKET
+            );
 
     public FluidPlastic(String name) {
-        super(name);
-        setTemperature(PneumaticValues.PLASTIC_MIXER_MELTING_TEMP);
+        super(PROPS);
+
+        setRegistryName(name);
     }
 
-    @Override
-    public int getColor(FluidStack plastic) {
-        return getColorS(plastic);
-    }
-
-    public static int getColorS(FluidStack plastic) {
-        return plastic.tag != null ? plastic.tag.getInt("color") : 0xFFFFFF;
-    }
-
-    private static int[] getColor3(FluidStack plastic) {
-        int color = getColorS(plastic);
-        return new int[]{color >> 16, color >> 8 & 255, color & 255};
-    }
-
-    @Override
-    public int getTemperature(FluidStack plastic) {
-        return PneumaticValues.PLASTIC_MIXER_MELTING_TEMP + 1;
-    }
-
-    public static void addDye(FluidStack plastic, int dyeMetadata) {
-        if (!Fluids.areFluidsEqual(plastic.getFluid(), Fluids.PLASTIC))
-            throw new IllegalArgumentException("Given fluid stack isn't mixable! " + plastic);
-        int dyeColor = DyeItem.DYE_COLORS[dyeMetadata];
-        int[] dyeColors = new int[]{dyeColor >> 16, dyeColor >> 8 & 255, dyeColor & 255};
-        int[] plasticColor = getColor3(plastic);
-        double ratio = PneumaticValues.PLASTIC_MIX_RATIO / (PneumaticValues.PLASTIC_MIX_RATIO * (plastic.amount / 1000D));
-        for (int i = 0; i < 3; i++) {
-            plasticColor[i] = (int) (ratio * dyeColors[i] + (1 - ratio) * plasticColor[i]);
+    public static class Source extends FluidPlastic {
+        public Source() {
+            super("plastic_source");
         }
-        if (plastic.tag == null) plastic.tag = new CompoundNBT();
-        plastic.tag.setInteger("color", (plasticColor[0] << 16) + (plasticColor[1] << 8) + plasticColor[2]);
+
+        @Override
+        public boolean isSource(IFluidState state) {
+            return true;
+        }
+
+        @Override
+        public int getLevel(IFluidState state) {
+            return 8;
+        }
     }
 
-    public static FluidStack mixFluid(FluidStack plastic, FluidStack otherPlastic) {
-        if (plastic == null) return otherPlastic;
-        if (otherPlastic == null) return plastic;
-        int[] otherColor = getColor3(otherPlastic);
-        int[] color = getColor3(plastic);
-        double ratio = (double) plastic.amount / (plastic.amount + otherPlastic.amount);
-        int[] newColor = new int[3];
-        for (int i = 0; i < 3; i++) {
-            newColor[i] = (int) (ratio * color[i] + (1 - ratio) * otherColor[i]);
+    public static class Flowing extends FluidPlastic {
+        public Flowing() {
+            super("plastic_flowing");
         }
-        CompoundNBT newTag = new CompoundNBT();
-        newTag.setInteger("color", (newColor[0] << 16) + (newColor[1] << 8) + newColor[2]);
-        // newTag.setInteger("temperature", (int)(ratio * getTemperatureS(plastic) + (1 - ratio) * getTemperatureS(otherPlastic)));
-        return new FluidStack(Fluids.PLASTIC, plastic.amount + otherPlastic.amount, newTag);
+
+        @Override
+        protected void fillStateContainer(StateContainer.Builder<Fluid, IFluidState> builder) {
+            super.fillStateContainer(builder);
+            builder.add(LEVEL_1_8);
+        }
+
+        @Override
+        public boolean isSource(IFluidState state) {
+            return false;
+        }
+
+        @Override
+        public int getLevel(IFluidState state) {
+            return state.get(LEVEL_1_8);
+        }
     }
 }

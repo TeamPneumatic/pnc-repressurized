@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
@@ -13,7 +13,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetLogisticsFilterStack;
 import me.desht.pneumaticcraft.common.network.PacketSetLogisticsFluidFilterStack;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -30,6 +29,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.awt.*;
@@ -75,15 +75,14 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
         addButton(invisible = new GuiCheckBox(guiLeft + xSize - 15 - font.getStringWidth(invisibleText), guiTop + 6, 0xFF404040, invisibleText).withTag("invisible"));
         invisible.setTooltip(Arrays.asList(WordUtils.wrap(I18n.format("gui.logistic_frame.invisible.tooltip"), 40).split(System.getProperty("line.separator"))));
 
-        addButton(new WidgetLabel(guiLeft + 8, guiTop + 18, I18n.format(String.format("gui.%s.filters",
-                SemiBlockManager.getKeyForSemiBlock(logistics)))));
+        addButton(new WidgetLabel(guiLeft + 8, guiTop + 18, I18n.format(String.format("gui.%s.filters", logistics.getId().getPath()))));
         addButton(new WidgetLabel(guiLeft + 8, guiTop + 90, I18n.format("gui.logistic_frame.liquid")));
         for (int i = 0; i < 9; i++) {
             final int idx = i;
             addButton(new WidgetFluidStack(guiLeft + i * 18 + 8, guiTop + 101, logistics.getTankFilter(i), b -> fluidClicked(idx)));
         }
 
-        addInfoTab(I18n.format("gui.tab.info." + SemiBlockManager.getKeyForSemiBlock(logistics)));
+        addInfoTab(I18n.format("gui.tab.info." + logistics.getId().getPath()));
         addFilterTab();
         if (!container.isItemContainer()) {
             addFacingTab();
@@ -99,12 +98,12 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
             if (middleClick) {
                 logistics.setFilter(idx, null);
             } else if (leftClick) {
-                tank.drain(shift ? tank.getFluidAmount() / 2 : 1000, true);
+                tank.drain(shift ? tank.getFluidAmount() / 2 : 1000, IFluidHandler.FluidAction.EXECUTE);
                 if (tank.getFluidAmount() < 1000) {
-                    tank.drain(1000, true);
+                    tank.drain(1000, IFluidHandler.FluidAction.EXECUTE);
                 }
             } else {
-                tank.fill(new FluidStack(tank.getFluid().getFluid(), shift ? tank.getFluidAmount() : 1000), true);
+                tank.fill(new FluidStack(tank.getFluid().getFluid(), shift ? tank.getFluidAmount() : 1000), IFluidHandler.FluidAction.EXECUTE);
             }
             NetworkHandler.sendToServer(new PacketSetLogisticsFluidFilterStack(logistics, tank.getFluid(), idx));
         } else {
@@ -147,7 +146,7 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
 
     @Override
     protected int getBackgroundTint() {
-        if (!Config.Client.logisticsGuiTint) return super.getBackgroundTint();
+        if (!PNCConfig.Client.logisticsGuiTint) return super.getBackgroundTint();
 
         int c = logistics.getColor();
         // desaturate; this is a background colour...

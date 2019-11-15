@@ -6,11 +6,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public interface ISemiBlock {
+
+    /**
+     * Get an ID for this semiblock, which should match the corresponding item's registry name.
+     * @return a semiblock ID
+     */
+    ResourceLocation getId();
 
     World getWorld();
 
@@ -51,5 +58,4 @@ public interface ISemiBlock {
     }
 
     PacketDescription getDescriptionPacket();
-//    EnumGuiId getGuiID();
 }

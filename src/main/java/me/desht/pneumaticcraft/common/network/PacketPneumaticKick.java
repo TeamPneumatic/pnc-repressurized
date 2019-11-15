@@ -1,8 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -32,7 +31,7 @@ public class PacketPneumaticKick {
         // empty
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         // empty
     }
 
@@ -68,7 +67,7 @@ public class PacketPneumaticKick {
         }
         target.setMotion(target.getMotion().add(lookVec.scale(1.0 + upgrades * 0.5f)));
 
-        NetworkHandler.sendToAllAround(new PacketPlaySound(Sounds.PUNCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0f, 1.0f, false), player.world);
+        NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PUNCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0f, 1.0f, false), player.world);
         NetworkHandler.sendToAllAround(new PacketSetEntityMotion(target, target.getMotion()), player.world);
         NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.posX, target.posY, target.posZ, 1.0D, 0.0D, 0.0D), player.world);
         CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlotType.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * (2 << upgrades));

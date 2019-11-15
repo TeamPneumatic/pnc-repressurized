@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -14,7 +13,7 @@ public class BlockThermalCompressor extends BlockPneumaticCraft {
     private VoxelShape BOUNDS = Block.makeCuboidShape(2, 0, 2, 14, 15, 14);
 
     public BlockThermalCompressor() {
-        super(Material.IRON, "thermal_compressor");
+        super("thermal_compressor");
     }
 
     @Override

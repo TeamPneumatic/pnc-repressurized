@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:item/network_components/nuke_virus"
+      "layer0" : "pneumaticcraft:items/network_components/nuke_virus"
    },
    "parent" : "item/generated"
 }

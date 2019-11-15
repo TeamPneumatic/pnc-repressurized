@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -28,8 +27,8 @@ public class PacketUseItem {
         this.stack = buffer.readItemStack();
     }
 
-    public void toBytes(ByteBuf buffer) {
-        new PacketBuffer(buffer).writeItemStack(stack);
+    public void toBytes(PacketBuffer buffer) {
+        buffer.writeItemStack(stack);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

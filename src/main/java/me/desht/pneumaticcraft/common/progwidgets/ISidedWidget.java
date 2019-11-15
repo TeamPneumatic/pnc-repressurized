@@ -7,7 +7,7 @@ public interface ISidedWidget {
 
     boolean[] getSides();
 
-    static boolean checkSide(ProgWidget progWidget, Direction side) {
-        return progWidget instanceof ISidedWidget && ((ISidedWidget) progWidget).getSides()[side.getIndex()];
+    static boolean checkSide(ISidedWidget progWidget, Direction side) {
+        return progWidget.getSides()[side.getIndex()];
     }
 }

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
@@ -23,7 +22,7 @@ public class BlockKeroseneLamp extends BlockPneumaticCraftModeled {
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
     public BlockKeroseneLamp() {
-        super(Material.IRON, "kerosene_lamp");
+        super("kerosene_lamp");
     }
 
     @Override

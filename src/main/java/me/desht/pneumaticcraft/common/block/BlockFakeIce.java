@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -33,7 +33,7 @@ public class BlockFakeIce extends BreakableBlock {
             ((LivingEntity) entityIn).addPotionEffect(new EffectInstance(Effects.SLOWNESS, 40, 10));
         }
         if (worldIn.rand.nextInt(5) == 0) {
-            double amount = Config.Common.Minigun.freezingAmmoFakeIceDamage;
+            double amount = PNCConfig.Common.Minigun.freezingAmmoFakeIceDamage;
             if (entityIn.isImmuneToFire()) amount *= 1.5;
             entityIn.attackEntityFrom(DamageSourcePneumaticCraft.FREEZING, (float) amount);
         }

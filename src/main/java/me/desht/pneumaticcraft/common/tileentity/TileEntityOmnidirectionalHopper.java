@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
@@ -45,12 +45,13 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     int leaveMaterialCount; // leave items/liquids (used as filter)
     @DescSynced
     public boolean isCreative; // has a creative upgrade installed
+    protected Direction inputDir = Direction.UP;
 
     public TileEntityOmnidirectionalHopper() {
         super(ModTileEntityTypes.OMNIDIRECTIONAL_HOPPER, 4);
         addApplicableUpgrade(EnumUpgrade.SPEED);
         addApplicableUpgrade(EnumUpgrade.CREATIVE);
-        if (Config.Common.Machines.omniHopperDispenser) addApplicableUpgrade(EnumUpgrade.DISPENSER);
+        if (PNCConfig.Common.Machines.omniHopperDispenser) addApplicableUpgrade(EnumUpgrade.DISPENSER);
     }
 
     protected int getInvSize() {
@@ -77,6 +78,8 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     @Override
     public void tick() {
         super.tick();
+
+        inputDir = getInputDirection();
 
         if (!getWorld().isRemote && --cooldown <= 0 && redstoneAllows()) {
             int maxItems = getMaxItems();
@@ -121,7 +124,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
                 }
                 return false;
             }).orElse(false);
-        } else if (Config.Common.Machines.omniHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        } else if (PNCConfig.Common.Machines.omniHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             BlockPos pos = getPos().offset(outputDir);
             int remaining = maxItems;
             if (!Block.hasSolidSide(world.getBlockState(pos), world, pos, outputDir.getOpposite())) {

@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 
 public class ItemBlockLiquidHopper extends BlockItem {
     public ItemBlockLiquidHopper(BlockLiquidHopper blockLiquidHopper) {
-        super(blockLiquidHopper, ItemPneumatic.DEFAULT_PROPS);
+        super(blockLiquidHopper, ItemPneumatic.defaultProps());
     }
 
     @Nullable

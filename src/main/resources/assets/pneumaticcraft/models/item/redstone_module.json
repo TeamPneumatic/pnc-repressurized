@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:item/module/redstone"
+      "layer0" : "pneumaticcraft:items/module/redstone"
    },
    "parent" : "item/generated"
 }

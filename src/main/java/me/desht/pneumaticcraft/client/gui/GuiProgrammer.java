@@ -9,7 +9,8 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
@@ -19,6 +20,7 @@ import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.progwidgets.*;
+import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -39,6 +41,7 @@ import org.lwjgl.glfw.GLFW;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer,TileEntityProgrammer> {
@@ -217,15 +220,14 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         addButton(allWidgetsButton);
 
         difficultyButtons = new ArrayList<>();
-        for (int i = 0; i < IProgWidget.WidgetDifficulty.values().length; i++) {
-            GuiRadioButton radioButton = new GuiRadioButton(xStart + xRight - 36, yStart + yBottom + 29 + i * 12, 0xFF404040,
-                    IProgWidget.WidgetDifficulty.values()[i].getTranslationKey(), b -> updateDifficulty());
-            radioButton.checked = ConfigHandler.getProgrammerDifficulty() == i;
-            addButton(radioButton);
-            difficultyButtons.add(radioButton);
-            radioButton.otherChoices = difficultyButtons;
-            if (i == 1) radioButton.setTooltip(I18n.format("gui.programmer.difficulty.medium.tooltip"));
-            if (i == 2) radioButton.setTooltip(I18n.format("gui.programmer.difficulty.advanced.tooltip"));
+        for (WidgetDifficulty difficulty : WidgetDifficulty.values()) {
+            DifficultyButton dButton = new DifficultyButton(xStart + xRight - 36, yStart + yBottom + 29 + difficulty.ordinal() * 12,
+                    0xFF404040, difficulty, b -> updateDifficulty(difficulty));
+            dButton.checked = difficulty == PNCConfig.Client.programmerDifficulty;
+            addButton(dButton);
+            difficultyButtons.add(dButton);
+            dButton.otherChoices = difficultyButtons;
+            dButton.setTooltip("gui.programmer.difficulty." + difficulty.toString().toLowerCase() + ".tooltip");
         }
 
         addButton(new Button(xStart + 5, yStart + yBottom + 4, 87, 20, I18n.format("gui.programmer.button.showStart"), b -> gotoStart()));
@@ -294,13 +296,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         filterField.setFocused2(showingAllWidgets);
     }
 
-    private void updateDifficulty() {
-        for (int i = 0; i < difficultyButtons.size(); i++) {
-            if (difficultyButtons.get(i).checked) {
-                ConfigHandler.setProgrammerDifficulty(i);
-                break;
-            }
-        }
+    private void updateDifficulty(WidgetDifficulty difficulty) {
+        ConfigHelper.setProgrammerDifficulty(difficulty);
         if (showingAllWidgets) toggleShowWidgets();
         updateVisibleProgWidgets();
     }
@@ -1031,7 +1028,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
     }
 
-    public enum Difficulty {
-        EASY, MEDIUM, ADVANCED
+    private class DifficultyButton extends GuiRadioButton {
+        final WidgetDifficulty difficulty;
+
+        public DifficultyButton(int x, int y, int color, WidgetDifficulty difficulty, Consumer<GuiRadioButton> pressable) {
+            super(x, y, color, difficulty.getTranslationKey(), pressable);
+            this.difficulty = difficulty;
+        }
     }
+
 }

@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import java.awt.*;
+import net.minecraft.client.renderer.Rectangle2d;
+
 import java.util.List;
 
 public interface IGuiWidget {
@@ -16,7 +17,7 @@ public interface IGuiWidget {
 
     boolean onMouseClickedOutsideBounds(double mouseX, double mouseY, int button);
 
-    Rectangle getBounds();
+    Rectangle2d getBounds();
 
     void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed);
 

@@ -40,7 +40,7 @@ import java.util.Set;
 public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor {
 
     ItemDrone(String registryName) {
-        super(DEFAULT_PROPS.maxDamage(1), registryName);
+        super(defaultProps().maxDamage(1), registryName);
     }
 
     ItemDrone(Item.Properties props, String registryName) {

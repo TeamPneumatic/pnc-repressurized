@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -14,7 +13,7 @@ import net.minecraft.world.World;
 
 public class BlockAerialInterface extends BlockPneumaticCraft {
     public BlockAerialInterface() {
-        super(Material.IRON, "aerial_interface");
+        super("aerial_interface");
     }
 
     @Override

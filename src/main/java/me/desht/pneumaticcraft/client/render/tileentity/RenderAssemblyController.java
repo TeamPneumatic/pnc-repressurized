@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderAssemblyController extends AbstractModelRenderer<TileEntityAssemblyController> {
+public class RenderAssemblyController extends AbstractTileModelRenderer<TileEntityAssemblyController> {
     private final ModelAssemblyControllerScreen model;
 
     public RenderAssemblyController() {

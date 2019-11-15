@@ -1,13 +1,12 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVortexTube;
-import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 
 public class BlockVortexTube extends BlockPneumaticCraftModeled {
 
     public BlockVortexTube() {
-        super(Material.IRON, "vortex_tube");
+        super("vortex_tube");
     }
 
     @Override

@@ -30,7 +30,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
     public ItemGPSTool() {
-        super(DEFAULT_PROPS, "gps_tool");
+        super("gps_tool");
     }
 
     @Override

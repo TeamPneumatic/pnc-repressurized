@@ -10,9 +10,8 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiSearchUpgradeOption
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
-import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -242,7 +241,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     @OnlyIn(Dist.CLIENT)
     public GuiAnimatedStat getAnimatedStat() {
         if (searchInfo == null) {
-            GuiAnimatedStat.StatIcon icon = GuiAnimatedStat.StatIcon.of(CraftingRegistrator.getUpgrade(EnumUpgrade.SEARCH));
+            GuiAnimatedStat.StatIcon icon = GuiAnimatedStat.StatIcon.of(EnumUpgrade.SEARCH.getItem());
             searchInfo = new GuiAnimatedStat(null, "Currently searching for:", icon,
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.itemSearchStat);
             searchInfo.setMinDimensionsAndReset(0, 0);

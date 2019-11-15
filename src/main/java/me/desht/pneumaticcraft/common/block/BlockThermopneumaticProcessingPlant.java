@@ -1,35 +1,30 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.GuiHandler.EnumGuiId;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
 
 public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraftModeled {
-    private static final AxisAlignedBB BLOCK_BOUNDS = new AxisAlignedBB(0, 0, 0, 1, 12 / 16F, 1);
+    private static final VoxelShape BOUNDS = Block.makeCuboidShape(0, 0, 0, 1, 12 / 16D, 1);
 
     public BlockThermopneumaticProcessingPlant() {
-        super(Material.IRON, "thermopneumatic_processing_plant");
+        super("thermopneumatic_processing_plant");
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(BlockState state, IBlockAccess source, BlockPos pos) {
-        return BLOCK_BOUNDS;
+    public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
+        return BOUNDS;
     }
 
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return TileEntityThermopneumaticProcessingPlant.class;
-    }
-
-    @Override
-    public EnumGuiId getGuiID() {
-        return EnumGuiId.THERMOPNEUMATIC_PROCESSING_PLANT;
     }
 
     @Override

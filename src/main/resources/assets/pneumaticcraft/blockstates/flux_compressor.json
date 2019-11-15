@@ -4,7 +4,7 @@
     "model": "pneumaticcraft:block/flux_compressor"
   },
   "variants": {
-    "normal": [{}],
+    "": [{}],
     "inventory": [{}],
     "facing": {
       "up": {},

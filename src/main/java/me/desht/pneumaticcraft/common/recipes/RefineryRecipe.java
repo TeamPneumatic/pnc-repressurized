@@ -1,39 +1,62 @@
 package me.desht.pneumaticcraft.common.recipes;
 
-import net.minecraftforge.fluids.Fluid;
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.recipe.IRefineryRecipe;
+import me.desht.pneumaticcraft.api.recipe.TemperatureRange;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class RefineryRecipe {
+public class RefineryRecipe implements IRefineryRecipe {
 
 	public static final int MAX_OUTPUTS = 4;
-	public static final List<RefineryRecipe> recipes = new ArrayList<>();
+	public static final List<IRefineryRecipe> recipes = new ArrayList<>();
 	
 	public final FluidStack input;
-	public final FluidStack[] outputs;
-	private final int minimumTemp;
+	public final List<FluidStack> outputs;
+	private ResourceLocation id;
+	private final TemperatureRange operatingTemp;
 
-	public RefineryRecipe(int minimumTemp, FluidStack input, FluidStack[] outputs) {
-		this.minimumTemp = minimumTemp;
+	public RefineryRecipe(ResourceLocation id, FluidStack input, TemperatureRange operatingTemp, FluidStack... outputs) {
+		this.id = id;
+		this.operatingTemp = operatingTemp;
 		if (outputs.length < 2 || outputs.length > MAX_OUTPUTS) {
 			throw new IllegalArgumentException("Recipe must have between 2 and " + MAX_OUTPUTS + " (inclusive) outputs");
 		}
 		this.input = input;
-		this.outputs = outputs;
+		this.outputs = ImmutableList.copyOf(outputs);
 	}
 
-	public int getMinimumTemp() {
-		return minimumTemp;
+	@Override
+	public FluidStack getInput() {
+		return input;
 	}
 
-	public static Optional<RefineryRecipe> getRecipe(Fluid input, int size) {
-		if (input == null || size <= 0) return Optional.empty();
-		
-		return recipes.stream()
-				.filter(r -> r.outputs.length <= size && r.input.getFluid().equals(input))
-				.min((r1, r2) -> Integer.compare(r2.outputs.length, r1.outputs.length));
+	@Override
+	public List<FluidStack> getOutputs() {
+		return outputs;
+	}
+
+	@Override
+	public TemperatureRange getOperatingTemp() {
+		return operatingTemp;
+	}
+
+	@Override
+	public ResourceLocation getId() {
+		return id;
+	}
+
+	@Override
+	public void write(PacketBuffer buf) {
+		buf.writeResourceLocation(id);
+		input.writeToPacket(buf);
+		buf.writeVarInt(operatingTemp.getMin());
+		buf.writeVarInt(operatingTemp.getMax());
+		buf.writeVarInt(outputs.size());
+		outputs.forEach(f -> f.writeToPacket(buf));
 	}
 }

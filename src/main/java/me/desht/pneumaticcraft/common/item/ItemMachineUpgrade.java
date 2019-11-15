@@ -25,15 +25,15 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemMachineUpgrade extends ItemPneumatic {
     public static final String NBT_DIRECTION = "Facing";
-    private final int index;
+    private final EnumUpgrade upgrade;
 
-    public ItemMachineUpgrade(String registryName, int index) {
-        super(DEFAULT_PROPS, registryName);
-        this.index = index;
+    public ItemMachineUpgrade(String registryName, EnumUpgrade upgrade) {
+        super(registryName);
+        this.upgrade = upgrade;
     }
 
     public EnumUpgrade getUpgradeType() {
-        return EnumUpgrade.values()[index];
+        return upgrade;
     }
 
     @Override

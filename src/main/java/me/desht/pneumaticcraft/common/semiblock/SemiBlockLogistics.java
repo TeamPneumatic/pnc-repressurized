@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -19,11 +20,10 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -169,7 +169,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> impl
     public int getIncomingFluid(Fluid fluid) {
         int count = 0;
         for (FluidStackWrapper wrapper : incomingFluid.keySet()) {
-            if (wrapper.stack.getFluid() == fluid) count += wrapper.stack.amount;
+            if (wrapper.stack.getFluid() == fluid) count += wrapper.stack.getAmount();
         }
         return count;
     }

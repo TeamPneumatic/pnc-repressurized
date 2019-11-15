@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
@@ -27,7 +28,9 @@ public class RenderNavigator {
 
     public void updatePath() {
         PlayerEntity player = Minecraft.getInstance().player;
-        path = PneumaticCraftUtils.getPathFinder().findPath(player.world, PneumaticCraftUtils.createDummyEntity(player), targetPos.getX() + 0.5, targetPos.getY() + 0.5, targetPos.getZ() + 0.5, CoordTrackUpgradeHandler.SEARCH_RANGE);
+        MobEntity e = PneumaticCraftUtils.createDummyEntity(player);
+        path = e.getNavigator().getPathToPos(targetPos, CoordTrackUpgradeHandler.SEARCH_RANGE);
+//        path = PneumaticCraftUtils.getPathFinder().findPath(player.world, PneumaticCraftUtils.createDummyEntity(player), targetPos.getX() + 0.5, targetPos.getY() + 0.5, targetPos.getZ() + 0.5, CoordTrackUpgradeHandler.SEARCH_RANGE);
         // TODO: this just doesn't work anymore
         if (!tracedToDestination()) {
             path = CoordTrackUpgradeHandler.getDronePath(player, targetPos);

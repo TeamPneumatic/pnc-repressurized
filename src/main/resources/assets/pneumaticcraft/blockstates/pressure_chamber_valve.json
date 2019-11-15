@@ -1,7 +1,7 @@
 {
 	"forge_marker": 1,
 	"defaults":{
-	   "model": "cube_column"
+	   "model": "block/cube_column"
 	},
 	"variants":{
 		"formed":{

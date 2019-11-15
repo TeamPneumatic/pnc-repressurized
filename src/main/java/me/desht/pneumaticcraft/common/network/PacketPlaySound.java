@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -42,7 +41,7 @@ public class PacketPlaySound extends LocationDoublePacket {
 
     public PacketPlaySound(PacketBuffer buffer) {
         super(buffer);
-        soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(PacketUtil.readUTF8String(buffer)));
+        soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(buffer.readResourceLocation());
         category = SoundCategory.values()[buffer.readInt()];
         volume = buffer.readFloat();
         pitch = buffer.readFloat();
@@ -50,9 +49,9 @@ public class PacketPlaySound extends LocationDoublePacket {
     }
 
     @Override
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        PacketUtil.writeUTF8String(buffer, soundName.toString());
+        buffer.writeResourceLocation(soundName);
         buffer.writeInt(category.ordinal());
         buffer.writeFloat(volume);
         buffer.writeFloat(pitch);

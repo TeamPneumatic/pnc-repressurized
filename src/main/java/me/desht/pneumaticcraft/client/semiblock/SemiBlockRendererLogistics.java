@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.semiblock;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import net.minecraft.client.Minecraft;
@@ -80,7 +80,7 @@ public class SemiBlockRendererLogistics implements ISemiBlockRenderer<SemiBlockL
     }
 
     private float getLightMultiplier(ISemiBlock semiBlock) {
-        return Config.Client.semiBlockLighting ?
+        return PNCConfig.Client.semiBlockLighting ?
                 Math.max(1, Minecraft.getInstance().world.getLight(semiBlock.getPos())) / 15F :
                 1F;
     }

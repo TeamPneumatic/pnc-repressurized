@@ -55,7 +55,7 @@ public interface IItemRegistry {
 
         /**
          * Check if this upgrade's dependent mod (if any) is loaded.  If this returns false, then
-         * {@link IItemRegistry#getUpgrade(EnumUpgrade)} will return null.
+         * {@link #getItem()} will return null.
          *
          * @return true if this upgrade's dependent mod is loaded, false otherwise
          */
@@ -64,7 +64,16 @@ public interface IItemRegistry {
         }
 
         public Item getItem() {
-            return ModItems.Registration.UPGRADES.get(this);
+            return isDepLoaded() ? ModItems.Registration.UPGRADES.get(this) : null;
+        }
+
+        public ItemStack getItemStack() {
+            return getItemStack(1);
+        }
+
+        public ItemStack getItemStack(int amount) {
+            Item item = getItem();
+            return item == null ? ItemStack.EMPTY : new ItemStack(getItem(), amount);
         }
     }
 

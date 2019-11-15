@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderAirCannon extends AbstractModelRenderer<TileEntityAirCannon> {
+public class RenderAirCannon extends AbstractTileModelRenderer<TileEntityAirCannon> {
     private final ModelAirCannon model;
 
     public RenderAirCannon() {

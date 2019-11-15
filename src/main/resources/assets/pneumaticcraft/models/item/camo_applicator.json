@@ -1,6 +1,6 @@
 {
   "textures" : {
-    "layer0" : "pneumaticcraft:item/camo_applicator"
+    "layer0" : "pneumaticcraft:items/camo_applicator"
   },
   "parent" : "item/generated",
   "display": {

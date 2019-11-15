@@ -7,12 +7,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class SemiBlockDefaultStorage extends SemiBlockStorage {
-    public static final String ID = "logistics_frame_default_storage";
+    public static final ResourceLocation ID = RL("logistics_frame_default_storage");
 
     @Override
     public int getColor() {
@@ -35,4 +38,8 @@ public class SemiBlockDefaultStorage extends SemiBlockStorage {
         return new ContainerLogistics(ModContainerTypes.LOGISTICS_FRAME_DEFAULT_STORAGE, i, playerInventory, getPos());
     }
 
+    @Override
+    public ResourceLocation getId() {
+        return ID;
+    }
 }

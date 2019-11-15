@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -62,7 +62,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
 
         if (!world.isRemote) {
             if (world.getGameTime() % 5 == 0) {
-                airPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * getEfficiency() * Config.Common.Machines.fluxCompressorEfficiency / 100 / 100);
+                airPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * getEfficiency() * PNCConfig.Common.Machines.fluxCompressorEfficiency / 100 / 100);
                 rfPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades());
             }
             if (redstoneAllows() && energy.getEnergyStored() >= rfPerTick) {
@@ -114,8 +114,10 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void handleGUIButtonPress(int buttonID, PlayerEntity player){
-        if (buttonID == 0 && ++redstoneMode > 2) redstoneMode = 0;
+    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG) && ++redstoneMode == 2) {
+            redstoneMode = 0;
+        }
     }
 
     @Override

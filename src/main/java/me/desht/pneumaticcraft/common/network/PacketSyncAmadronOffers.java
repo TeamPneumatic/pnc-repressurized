@@ -1,16 +1,12 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.server.permission.PermissionAPI;
 
@@ -47,29 +43,6 @@ public class PacketSyncAmadronOffers {
         this.mayAddStatic = buf.readBoolean();
     }
 
-    public static Object readFluidOrItemStack(ByteBuf buf) {
-        return readFluidOrItemStack(new PacketBuffer(buf));
-    }
-
-    public static Object readFluidOrItemStack(PacketBuffer buf) {
-        if (buf.readByte() == 0) {
-            return buf.readItemStack();
-        } else {
-            return FluidStack.loadFluidStackFromNBT(buf.readCompoundTag());
-        }
-    }
-
-    public static void writeFluidOrItemStack(Object object, ByteBuf buf) {
-        PacketBuffer pb = new PacketBuffer(buf);
-        if (object instanceof ItemStack) {
-            pb.writeByte(0);
-            pb.writeItemStack((ItemStack) object);
-        } else {
-            pb.writeByte(1);
-            pb.writeCompoundTag(((FluidStack) object).writeToNBT(new CompoundNBT()));
-        }
-    }
-
     private Collection<AmadronOffer> readOffers(PacketBuffer buf) {
         int offerCount = buf.readInt();
         List<AmadronOffer> offers = new ArrayList<>();
@@ -77,13 +50,13 @@ public class PacketSyncAmadronOffers {
             if (buf.readBoolean()) {
                 offers.add(AmadronOfferCustom.loadFromBuf(buf));
             } else {
-                offers.add(new AmadronOffer(readFluidOrItemStack(buf), readFluidOrItemStack(buf)));
+                offers.add(AmadronOffer.readFromBuf(buf));
             }
         }
         return offers;
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeInt(staticOffers.size());
         for (AmadronOffer offer : staticOffers) {
             buf.writeBoolean(offer instanceof AmadronOfferCustom);

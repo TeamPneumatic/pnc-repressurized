@@ -13,9 +13,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.lwjgl.opengl.GL11;
@@ -161,19 +161,16 @@ public class GuiUtils {
 
         Fluid fluid = fluidStack.getFluid();
         AtlasTexture textureMapBlocks = Minecraft.getInstance().getTextureMap();
-        ResourceLocation fluidStill = fluid.getStill();
+        ResourceLocation fluidStill = fluid.getAttributes().getStill(fluidStack);
         TextureAtlasSprite fluidStillSprite = null;
         if (fluidStill != null) {
             fluidStillSprite = textureMapBlocks.getSprite(fluidStill);
         }
-        if (fluidStillSprite == null) {
-            fluidStillSprite = textureMapBlocks.getMissingSprite();
-        }
 
-        int fluidColor = fluid.getColor(fluidStack);
+        int fluidColor = fluid.getAttributes().getColor(fluidStack);
 
-        int scaledAmount = tank == null ? bounds.height : fluidStack.amount * bounds.height / tank.getCapacity();
-        if (fluidStack.amount > 0 && scaledAmount < 1) {
+        int scaledAmount = tank == null ? bounds.height : fluidStack.getAmount() * bounds.height / tank.getCapacity();
+        if (fluidStack.getAmount() > 0 && scaledAmount < 1) {
             scaledAmount = 1;
         }
         scaledAmount = Math.min(scaledAmount, bounds.height);
@@ -187,7 +184,7 @@ public class GuiUtils {
         final int yRemainder = scaledAmount - yTileCount * TEX_HEIGHT;
 
         int yStart = bounds.y + bounds.height;
-        if (fluid.getDensity() < 0) yStart -= (bounds.height - scaledAmount);
+        if (fluid.getAttributes().getDensity() < 0) yStart -= (bounds.height - scaledAmount);
 
         for (int xTile = 0; xTile <= xTileCount; xTile++) {
             for (int yTile = 0; yTile <= yTileCount; yTile++) {

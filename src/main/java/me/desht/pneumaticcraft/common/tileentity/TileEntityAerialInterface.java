@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
@@ -24,19 +25,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -44,6 +42,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 
 import javax.annotation.Nonnull;
@@ -62,7 +61,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     private static final int RF_PER_TICK = 1000;
 
     @ObjectHolder("baubles:ring")
-    private static final Item BAUBLES_RING = null;
+    private static Item BAUBLES_RING = null;
 
     @GuiSynced
     @DescSynced
@@ -118,10 +117,10 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerOffhandInvHandler);
         itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStack(Blocks.ENDER_CHEST),
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerEnderInvHandler);
-        if (Baubles.available) {
-            itemHandlerSideConfigurator.registerHandler("baublesInv", new ItemStack(BAUBLES_RING),
-                    CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, new PlayerBaublesHandler());
-        }
+//        if (Baubles.available) {
+//            itemHandlerSideConfigurator.registerHandler("baublesInv", new ItemStack(BAUBLES_RING),
+//                    CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, new PlayerBaublesHandler());
+//        }
     }
 
     public void setPlayer(PlayerEntity player) {
@@ -263,7 +262,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         redstoneMode = tag.getInt("redstoneMode");
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
         setPlayer(tag.getString("playerName"), tag.getString("playerUUID"));
-        curXpFluid = tag.contains("curXpFluid") ? FluidRegistry.getFluid(tag.getString("curXpFluid")) : null;
+        curXpFluid = tag.contains("curXpFluid") ? ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("curXpFluid"))) : null;
         energyStorage.readFromNBT(tag);
 
         curXPFluidIndex = curXpFluid == null ? -1 : PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.indexOf(curXpFluid);
@@ -278,7 +277,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         tag.putString("feedMode", feedMode.toString());
         tag.putString("playerName", playerName);
         tag.putString("playerUUID", playerUUID);
-        if (curXpFluid != null) tag.putString("curXpFluid", curXpFluid.getName());
+        if (curXpFluid != null) tag.putString("curXpFluid", curXpFluid.getRegistryName().toString());
         energyStorage.writeToNBT(tag);
         return tag;
     }
@@ -435,12 +434,12 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
     }
 
-    private class PlayerBaublesHandler extends PlayerInvHandler {
-        @Override
-        protected IItemHandler getInvWrapper() {
-            return getPlayer().getCapability(Baubles.CAPABILITY_BAUBLES, null);
-        }
-    }
+//    private class PlayerBaublesHandler extends PlayerInvHandler {
+//        @Override
+//        protected IItemHandler getInvWrapper() {
+//            return getPlayer().getCapability(Baubles.CAPABILITY_BAUBLES, null);
+//        }
+//    }
 
     private class PlayerFoodHandler implements IItemHandler {
         @Override
@@ -519,30 +518,41 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     private class PlayerExperienceHandler implements IFluidHandler {
-
         @Override
-        public IFluidTankProperties[] getTankProperties() {
+        public int getTanks() {
+            return 1;
+        }
+
+        @Nonnull
+        @Override
+        public FluidStack getFluidInTank(int tank) {
             if (curXpFluid != null) {
                 PlayerEntity player = getPlayer();
                 if (player != null) {
-                    return new FluidTankProperties[] {
-                        new FluidTankProperties(
-                                new FluidStack(curXpFluid, EnchantmentUtils.getPlayerXP(player) * PneumaticCraftAPIHandler.getInstance().liquidXPs.get(curXpFluid)),
-                                Integer.MAX_VALUE)
-                    };
+                    return new FluidStack(curXpFluid, EnchantmentUtils.getPlayerXP(player) * PneumaticCraftAPIHandler.getInstance().liquidXPs.get(curXpFluid));
                 }
             }
-            return null;
+            return FluidStack.EMPTY;
         }
 
         @Override
-        public int fill(FluidStack resource, boolean doFill) {
+        public int getTankCapacity(int tank) {
+            return 0;
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
+            return curXpFluid != null && stack.getFluid() == curXpFluid;
+        }
+
+        @Override
+        public int fill(FluidStack resource, FluidAction doFill) {
             if (resource != null && canFill(resource.getFluid())) {
                 PlayerEntity player = getPlayer();
                 if (player != null) {
                     int liquidToXP = PneumaticCraftAPIHandler.getInstance().liquidXPs.get(resource.getFluid());
-                    int pointsAdded = resource.amount / liquidToXP;
-                    if (doFill) {
+                    int pointsAdded = resource.getAmount() / liquidToXP;
+                    if (doFill.execute()) {
                         player.giveExperiencePoints(pointsAdded);
                     }
                     return pointsAdded * liquidToXP;
@@ -558,15 +568,14 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                     && getPressure() >= getMinWorkingPressure();
         }
 
-        @Nullable
         @Override
-        public FluidStack drain(FluidStack resource, boolean doDrain) {
+        public FluidStack drain(FluidStack resource, FluidAction doDrain) {
             if (resource != null && canDrain(resource.getFluid())) {
                 PlayerEntity player = getPlayer();
                 if (player != null) {
                     int liquidToXP = PneumaticCraftAPIHandler.getInstance().liquidXPs.get(resource.getFluid());
-                    int pointsDrained = Math.min(EnchantmentUtils.getPlayerXP(player), resource.amount / liquidToXP);
-                    if (doDrain) EnchantmentUtils.addPlayerXP(player, -pointsDrained);
+                    int pointsDrained = Math.min(EnchantmentUtils.getPlayerXP(player), resource.getAmount() / liquidToXP);
+                    if (doDrain.execute()) EnchantmentUtils.addPlayerXP(player, -pointsDrained);
                     return new FluidStack(resource.getFluid(), pointsDrained * liquidToXP);
                 }
             }
@@ -580,9 +589,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                     && getPressure() >= getMinWorkingPressure();
         }
 
-        @Nullable
         @Override
-        public FluidStack drain(int maxDrain, boolean doDrain) {
+        public FluidStack drain(int maxDrain, FluidAction doDrain) {
             if (curXpFluid == null) return null;
             return drain(new FluidStack(curXpFluid, maxDrain), doDrain);
         }

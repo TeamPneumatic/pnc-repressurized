@@ -1,7 +1,8 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
@@ -21,9 +22,11 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
     }
 
     @Override
-    public void addInfo(List<String> curInfo) {
+    public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
-        curInfo.add("Applied redstone: " + TextFormatting.WHITE + redstoneLevel);
+
+        curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.receiving", redstoneLevel));
+        curInfo.add(PneumaticCraftUtils.xlate("waila.tubeModule.threshold", PneumaticCraftUtils.roundNumberTo(getThreshold(), 1)));
     }
 
     @Override

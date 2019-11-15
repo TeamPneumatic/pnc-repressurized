@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAphorismTileUpdate;
@@ -31,7 +31,7 @@ public class GuiAphorismTile extends Screen {
 
         this.tile = tile;
         textLines = tile.getTextLines();
-        if (Config.Client.aphorismDrama && textLines.length == 1 && textLines[0].equals("")) {
+        if (PNCConfig.Client.aphorismDrama && textLines.length == 1 && textLines[0].equals("")) {
             List<String> l = PneumaticCraftUtils.convertStringIntoList(DramaSplash.getInstance().getSplash(), 20);
             tile.setTextLines(l.toArray(new String[0]));
         }

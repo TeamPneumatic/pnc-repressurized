@@ -9,7 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderAssemblyPlatform extends AbstractModelRenderer<TileEntityAssemblyPlatform> {
+public class RenderAssemblyPlatform extends AbstractTileModelRenderer<TileEntityAssemblyPlatform> {
     private final ModelAssemblyPlatform model;
 
     public RenderAssemblyPlatform() {

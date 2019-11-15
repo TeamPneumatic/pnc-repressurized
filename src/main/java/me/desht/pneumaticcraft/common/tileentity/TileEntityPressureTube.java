@@ -3,6 +3,8 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
+import me.desht.pneumaticcraft.common.block.BlockPressureTube;
+import me.desht.pneumaticcraft.common.block.BlockPressureTube.ConnectionType;
 import me.desht.pneumaticcraft.common.block.tubes.IInfluenceDispersing;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
@@ -50,20 +52,11 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public void read(CompoundNBT nbt) {
         super.read(nbt);
 
-        if (nbt.contains("sidesConnected")) {
-            // new-style: far more compact storage
-            byte connected = nbt.getByte("sidesConnected");
-            byte closed = nbt.getByte("sidesClosed");
-            for (int i = 0; i < 6; i++) {
-                sidesConnected[i] = ((connected & 1 << i) != 0);
-                sidesClosed[i] = ((closed & 1 << i) != 0);
-            }
-        } else {
-            // old-style
-            for (int i = 0; i < 6; i++) {
-                sidesConnected[i] = nbt.getBoolean("sideConnected" + i);
-                sidesClosed[i] = nbt.getBoolean("sideClosed" + i);
-            }
+        byte connected = nbt.getByte("sidesConnected");
+        byte closed = nbt.getByte("sidesClosed");
+        for (int i = 0; i < 6; i++) {
+            sidesConnected[i] = ((connected & 1 << i) != 0);
+            sidesClosed[i] = ((closed & 1 << i) != 0);
         }
         camoStack = ICamouflageableTE.readCamoStackFromNBT(nbt);
         camoState = ICamouflageableTE.getStateForStack(camoStack);
@@ -253,6 +246,14 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         for (int i = 0; i < 6; i++) {
             if (modules[i] != null && modules[i].isInline()) sidesConnected[i] = false;
         }
+
+        // update the blockstate
+        BlockState state = getBlockState();
+        for (int i = 0; i < 6; i++)  {
+            ConnectionType val = sidesClosed[i] ? ConnectionType.CLOSED : (sidesConnected[i] ? ConnectionType.CONNECTED : ConnectionType.UNCONNECTED);
+            state = state.with(BlockPressureTube.CONNECTION_PROPERTIES_3[i], val);
+        }
+        world.setBlockState(pos, state);
     }
 
     @Override

@@ -1,7 +1,7 @@
 {
     "textures": {
-        "all": "pneumaticcraft:block/compressed_iron_block",
-        "particle" : "pneumaticcraft:block/compressed_iron_block"
+        "all": "pneumaticcraft:blocks/compressed_iron_block",
+        "particle" : "pneumaticcraft:blocks/compressed_iron_block"
     },
     "elements": [
         {   "from": [ 0.5, 0, 0.5 ],

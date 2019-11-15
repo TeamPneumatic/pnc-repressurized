@@ -29,9 +29,9 @@ public class GuiCoordinateTrackerOptions implements IOptionPage {
 
     @Override
     public void initGui(IGuiScreen gui) {
-        gui.addButton(new GuiButtonSpecial(30, 40, 150, 20,
+        gui.getWidgetList().add(new GuiButtonSpecial(30, 40, 150, 20,
                 "Select Target...", b -> selectTarget()));
-        gui.addButton(new GuiButtonSpecial(30, 62, 150, 20,
+        gui.getWidgetList().add(new GuiButtonSpecial(30, 62, 150, 20,
                 "Navigate to Surface...", b -> navigateToSurface()));
         pathEnabled = new GuiButtonSpecial(30, 128, 150, 20, "",
                 b -> {
@@ -53,14 +53,14 @@ public class GuiCoordinateTrackerOptions implements IOptionPage {
                 });
         pathUpdateRate = new GuiButtonSpecial(30, 194, 150, 20, "",
                 b -> {
-                    coordHandler.pathUpdateSetting = (coordHandler.pathUpdateSetting + 1) % 3;
+                    coordHandler.pathUpdateSetting = coordHandler.pathUpdateSetting.cycle();
                     updateButtonTexts();
                     coordHandler.saveToConfig();
                 });
-        gui.addButton(pathEnabled);
-        gui.addButton(wirePath);
-        gui.addButton(xRayEnabled);
-        gui.addButton(pathUpdateRate);
+        gui.getWidgetList().add(pathEnabled);
+        gui.getWidgetList().add(wirePath);
+        gui.getWidgetList().add(xRayEnabled);
+        gui.getWidgetList().add(pathUpdateRate);
         updateButtonTexts();
     }
 
@@ -119,13 +119,13 @@ public class GuiCoordinateTrackerOptions implements IOptionPage {
         wirePath.setMessage(coordHandler.wirePath ? "Wire Navigation" : "Tile Navigation");
         xRayEnabled.setMessage(coordHandler.xRayEnabled ? "X-Ray Enabled" : "X-Ray Disabled");
         switch (coordHandler.pathUpdateSetting) {
-            case 0:
+            case SLOW:
                 pathUpdateRate.setMessage("Path update rate: Low");
                 break;
-            case 1:
+            case NORMAL:
                 pathUpdateRate.setMessage("Path update rate: Normal");
                 break;
-            case 2:
+            case FAST:
                 pathUpdateRate.setMessage("Path update rate: Fast");
                 break;
         }

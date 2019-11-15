@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -18,14 +18,14 @@ public class MovingSoundMinigun extends TickableSound {
     private final TileEntity tileEntity;
 
     MovingSoundMinigun(Entity entity) {
-        super(Sounds.MINIGUN, SoundCategory.NEUTRAL);
+        super(ModSounds.MINIGUN, SoundCategory.NEUTRAL);
         this.entity = entity;
         this.tileEntity = null;
         init();
     }
 
     MovingSoundMinigun(TileEntity tileEntity) {
-        super(Sounds.MINIGUN, SoundCategory.NEUTRAL);
+        super(ModSounds.MINIGUN, SoundCategory.NEUTRAL);
         this.entity = null;
         this.tileEntity = tileEntity;
         x = tileEntity.getPos().getX();

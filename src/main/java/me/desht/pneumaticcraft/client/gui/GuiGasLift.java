@@ -85,7 +85,7 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
         List<String> textList = new ArrayList<>();
         textList.add(I18n.format("gui.tab.status.gasLift.action"));
         String status = "gui.tab.status.gasLift.action." + te.status.desc;
-        textList.add(I18n.format(status, te.getTank().getFluid() != null ? te.getTank().getFluid().getLocalizedName() : ""));
+        textList.add(I18n.format(status, te.getTank().getFluid() != null ? te.getTank().getFluid().getDisplayName().getFormattedText() : ""));
         textList.add(I18n.format("gui.tab.status.gasLift.currentDepth", te.currentDepth));
         return textList;
     }

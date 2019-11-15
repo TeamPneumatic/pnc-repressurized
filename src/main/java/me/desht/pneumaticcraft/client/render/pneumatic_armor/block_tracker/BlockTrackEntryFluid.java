@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,15 +39,13 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList) {
         try {
             te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).ifPresent(handler -> {
-                int i = 1;
-                for (IFluidTankProperties tank : handler.getTankProperties()) {
-                    FluidStack stack = tank.getContents();
-                    if (stack != null) {
-                        infoList.add(I18n.format("blockTracker.info.fluids.tankFull", i, stack.amount, tank.getCapacity(), stack.getLocalizedName()));
+                for (int i = 0; i < handler.getTanks(); i++) {
+                    FluidStack stack = handler.getFluidInTank(i);
+                    if (stack.isEmpty()) {
+                        infoList.add(I18n.format("blockTracker.info.fluids.tankEmpty", i + 1, handler.getTankCapacity(i)));
                     } else {
-                        infoList.add(I18n.format("blockTracker.info.fluids.tankEmpty", i, tank.getCapacity()));
+                        infoList.add(I18n.format("blockTracker.info.fluids.tankFull", i + 1, stack.getAmount(), handler.getTankCapacity(i), stack.getDisplayName().getFormattedText()));
                     }
-                    i++;
                 }
             });
         } catch (Throwable e) {

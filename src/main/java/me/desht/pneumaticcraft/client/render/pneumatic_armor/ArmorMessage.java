@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.common.config.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.api.distmarker.Dist;
@@ -22,7 +22,7 @@ public class ArmorMessage {
         stat.setMinDimensionsAndReset(0, 0);
         stat.setText(message);
         PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
-        player.world.playSound(player.posX, player.posY, player.posZ, Sounds.SCIFI, SoundCategory.PLAYERS, 0.1F, 1.0F, true);
+        player.world.playSound(player.posX, player.posY, player.posZ, ModSounds.SCI_FI, SoundCategory.PLAYERS, 0.1F, 1.0F, true);
     }
 
     void setDependingMessage(GuiAnimatedStat dependingStat) {

@@ -20,7 +20,7 @@ public interface IHarvestRegistry{
      * Registers a generic harvest handler.
      * @param harvestHandler the harvest handler to register
      */
-    void registerHarvestHandler(IHarvestHandler harvestHandler);
+    void registerHarvestHandler(HarvestHandler harvestHandler);
     
     /**
      * Registers a harvest handler for block states that need to be farmed like cactus or sugar cane,

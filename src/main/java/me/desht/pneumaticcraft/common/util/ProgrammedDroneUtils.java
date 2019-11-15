@@ -14,6 +14,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.Validate;
 
@@ -94,7 +95,7 @@ public class ProgrammedDroneUtils {
 
         if (world == null || world.isRemote) return null;
         Validate.notNull(deliveredFluid, "Can't deliver a null FluidStack");
-        Validate.isTrue(deliveredFluid.amount > 0, "Can't deliver a FluidStack with an amount of <= 0");
+        Validate.isTrue(deliveredFluid.getAmount() > 0, "Can't deliver a FluidStack with an amount of <= 0");
 
         EntityDrone drone = makeDeliveryDrone(world, pos);
 
@@ -106,7 +107,7 @@ public class ProgrammedDroneUtils {
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets.addAll(builder.build());
 
-        drone.getTank().fill(deliveredFluid, true);
+        drone.getTank().fill(deliveredFluid, IFluidHandler.FluidAction.EXECUTE);
         world.addEntity(drone);
         return drone;
     }
@@ -147,7 +148,7 @@ public class ProgrammedDroneUtils {
 
         if (world == null || world.isRemote) return null;
         Validate.notNull(queriedFluid, "Can't retrieve a null FluidStack");
-        Validate.isTrue(queriedFluid.amount > 0, "Can't retrieve a FluidStack with an amount of <= 0");
+        Validate.isTrue(queriedFluid.getAmount() > 0, "Can't retrieve a FluidStack with an amount of <= 0");
 
         EntityDrone drone = makeDeliveryDrone(world, pos);
 
@@ -156,7 +157,7 @@ public class ProgrammedDroneUtils {
         builder.add(new ProgWidgetStart());
         ProgWidgetLiquidImport liquidImport = new ProgWidgetLiquidImport();
         liquidImport.setUseCount(true);
-        liquidImport.setCount(queriedFluid.amount);
+        liquidImport.setCount(queriedFluid.getAmount());
         builder.add(liquidImport, ProgWidgetArea.fromPosition(pos), ProgWidgetLiquidFilter.withFilter(queriedFluid.getFluid()));
         builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.getPosition()));
         builder.add(new ProgWidgetSuicide());

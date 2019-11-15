@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import net.minecraft.client.resources.I18n;
@@ -38,22 +37,22 @@ public class PacketSendArmorHUDMessage {
     }
 
     PacketSendArmorHUDMessage(PacketBuffer buffer) {
-        this.title = PacketUtil.readUTF8String(buffer);
+        this.title = buffer.readString();
         this.duration = buffer.readInt();
         this.color = buffer.readInt();
         this.args = new ArrayList<>();
         int n = buffer.readByte();
         for (int i = 0; i < n; i++) {
-            this.args.add(PacketUtil.readUTF8String(buffer));
+            this.args.add(buffer.readString());
         }
     }
 
-    public void toBytes(ByteBuf buf) {
-        PacketUtil.writeUTF8String(buf, this.title);
+    public void toBytes(PacketBuffer buf) {
+        buf.writeString(this.title);
         buf.writeInt(this.duration);
         buf.writeInt(this.color);
         buf.writeByte(this.args.size());
-        this.args.forEach(s -> PacketUtil.writeUTF8String(buf, s));
+        this.args.forEach(buf::writeString);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

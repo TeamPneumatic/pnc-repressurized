@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyLaser;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -15,7 +14,7 @@ public class BlockAssemblyLaser extends BlockPneumaticCraft {
     private static final VoxelShape COLLISION_SHAPE = Block.makeCuboidShape(2, 2, 2, 14, 14, 14);
 
     public BlockAssemblyLaser() {
-        super(Material.IRON, "assembly_laser");
+        super("assembly_laser");
     }
 
     @Override

@@ -6,7 +6,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.function.Consumer;
 
-public class AreaTypeLine extends AreaType{
+public class AreaTypeLine extends AreaType {
 
     public static final String ID = "line";
     

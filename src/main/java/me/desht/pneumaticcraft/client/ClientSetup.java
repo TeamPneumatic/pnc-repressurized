@@ -6,9 +6,11 @@ import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsDefaultStorage;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsProvider;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsRequester;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsStorage;
+import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.render.entity.*;
 import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModParticleTypes;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -19,22 +21,29 @@ import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.Mod;
 
+@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientSetup {
     public static void init() {
         registerEntityRenderers();
         registerTESRs();
-        registerParticleFactories();
         registerScreenFactories();
         registerProgWidgetScreenFactories();
     }
 
-    private static void registerParticleFactories() {
-        // todo 1.14 waiting on https://github.com/MinecraftForge/MinecraftForge/pull/5926
-//        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE, new AirParticle.Factory());
+    @SubscribeEvent
+    public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
+        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE, AirParticle.Factory::new);
+        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE_2, AirParticle.Factory::new);
     }
 
     private static void registerEntityRenderers() {
@@ -67,7 +76,6 @@ public class ClientSetup {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefinery.class, new RenderRefinery());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiquidHopper.class, new RenderLiquidHopper());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityKeroseneLamp.class, new RenderKeroseneLamp());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPlasticMixer.class, new RenderPlasticMixer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityThermopneumaticProcessingPlant.class, new RenderThermopneumaticProcessingPlant());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySentryTurret.class, new RenderSentryTurret());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySecurityStation.class, new RenderSecurityStation());
@@ -101,6 +109,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainerTypes.PNEUMATIC_DYNAMO, GuiPneumaticDynamo::new);
         ScreenManager.registerFactory(ModContainerTypes.PRESSURE_CHAMBER_VALVE, GuiPressureChamber::new);
         ScreenManager.registerFactory(ModContainerTypes.PRESSURE_CHAMBER_INTERFACE, GuiPressureChamberInterface::new);
+        ScreenManager.registerFactory(ModContainerTypes.PROGRAMMER, GuiProgrammer::new);
         ScreenManager.registerFactory(ModContainerTypes.PROGRAMMABLE_CONTROLLER, GuiProgrammableController::new);
         ScreenManager.registerFactory(ModContainerTypes.REFINERY, GuiRefinery::new);
         ScreenManager.registerFactory(ModContainerTypes.REMOTE, GuiRemote::new);

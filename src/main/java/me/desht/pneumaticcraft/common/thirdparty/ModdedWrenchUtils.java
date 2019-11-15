@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.ObjectHolder;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
@@ -11,28 +11,28 @@ import java.util.Set;
 public enum ModdedWrenchUtils {
     INSTANCE;
 
-    @GameRegistry.ObjectHolder("thermalfoundation:wrench")
-    private static final Item CRESCENT_HAMMER = null;
-    @GameRegistry.ObjectHolder("rftools:smartwrench")
-    private static final Item SMART_WRENCH = null;
-    @GameRegistry.ObjectHolder("immersiveengineering:tool")
-    private static final Item IMMERSIVE_TOOL = null;
-    @GameRegistry.ObjectHolder("appliedenergistics2:certus_quartz_wrench")
-    private static final Item AE2_CERTUS_WRENCH = null;
-    @GameRegistry.ObjectHolder("appliedenergistics2:nether_quartz_wrench")
-    private static final Item AE2_NETHER_WRENCH = null;
-    @GameRegistry.ObjectHolder("enderio:item_yeta_wrench")
-    private static final Item YETA_WRENCH = null;
-    @GameRegistry.ObjectHolder("buildcraftcore:wrench")
-    private static final Item BC_WRENCH = null;
-    @GameRegistry.ObjectHolder("teslacorelib:wrench")
-    private static final Item TESLA_WRENCH = null;
-    @GameRegistry.ObjectHolder("ic2:wrench")
-    private static final Item IC2_WRENCH = null;
-    @GameRegistry.ObjectHolder("chiselsandbits:wrench_wood")
-    private static final Item CB_WRENCH_WOOD = null;
+    @ObjectHolder("thermalfoundation:wrench")
+    private static Item CRESCENT_HAMMER = null;
+    @ObjectHolder("rftools:smartwrench")
+    private static Item SMART_WRENCH = null;
+    @ObjectHolder("immersiveengineering:tool")
+    private static Item IMMERSIVE_TOOL = null;
+    @ObjectHolder("appliedenergistics2:certus_quartz_wrench")
+    private static Item AE2_CERTUS_WRENCH = null;
+    @ObjectHolder("appliedenergistics2:nether_quartz_wrench")
+    private static Item AE2_NETHER_WRENCH = null;
+    @ObjectHolder("enderio:item_yeta_wrench")
+    private static Item YETA_WRENCH = null;
+    @ObjectHolder("buildcraftcore:wrench")
+    private static Item BC_WRENCH = null;
+    @ObjectHolder("teslacorelib:wrench")
+    private static Item TESLA_WRENCH = null;
+    @ObjectHolder("ic2:wrench")
+    private static Item IC2_WRENCH = null;
+    @ObjectHolder("chiselsandbits:wrench_wood")
+    private static Item CB_WRENCH_WOOD = null;
 
-    private final Set<String> wrenches = new HashSet<>();
+    private final Set<Item> wrenches = new HashSet<>();
 
     public static ModdedWrenchUtils getInstance() {
         return INSTANCE;
@@ -52,16 +52,7 @@ public enum ModdedWrenchUtils {
     }
 
     private void registerWrench(Item wrench) {
-        if (wrench != null) wrenches.add(makeWrenchKey(new ItemStack(wrench)));
-    }
-
-    private static String makeWrenchKey(ItemStack wrench) {
-        return wrench.getItem().getRegistryName() + (getWrenchMeta(wrench) >= 0 ? ":" + wrench.getMetadata() : "");
-    }
-
-    private static int getWrenchMeta(ItemStack wrench) {
-        if (wrench.getItem() == IMMERSIVE_TOOL) return 0;
-        return -1;
+        if (wrench != null) wrenches.add(wrench);
     }
 
     /**
@@ -71,7 +62,7 @@ public enum ModdedWrenchUtils {
      * @return true if it's a modded wrench, false otherwise
      */
     public boolean isModdedWrench(@Nonnull ItemStack stack) {
-        return wrenches.contains(makeWrenchKey(stack));
+        return wrenches.contains(stack.getItem());
     }
 
 }

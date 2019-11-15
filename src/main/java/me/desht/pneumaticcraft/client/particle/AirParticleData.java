@@ -12,7 +12,7 @@ import java.util.Locale;
 
 public class AirParticleData implements IParticleData {
     public static final AirParticleData NORMAL = new AirParticleData(0.1f);
-    public static final AirParticleData DENSE = new AirParticleData(0.1f);
+    public static final AirParticleData DENSE = new AirParticleData(0.3f);
     public static final IDeserializer<AirParticleData> DESERIALIZER = new IDeserializer<AirParticleData>() {
         @Override
         public AirParticleData deserialize(ParticleType<AirParticleData> particleType, StringReader stringReader) throws CommandSyntaxException {

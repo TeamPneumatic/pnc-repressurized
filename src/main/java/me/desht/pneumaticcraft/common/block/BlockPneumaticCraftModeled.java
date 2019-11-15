@@ -1,11 +1,9 @@
 package me.desht.pneumaticcraft.common.block;
 
-import net.minecraft.block.material.Material;
-
 public abstract class BlockPneumaticCraftModeled extends BlockPneumaticCraft {
 
-    protected BlockPneumaticCraftModeled(Material par2Material, String registryName) {
-        super(par2Material, registryName);
+    protected BlockPneumaticCraftModeled(String registryName) {
+        super(registryName);
     }
 
 //    @Override

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
@@ -85,29 +84,12 @@ public class AreaTypeBox extends AreaType{
     @Override
     public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);
-        tag.setByte("boxType", (byte)boxType.ordinal());
+        tag.putByte("boxType", (byte)boxType.ordinal());
     }
     
     @Override
     public void readFromNBT(CompoundNBT tag){
         super.readFromNBT(tag);
         boxType = EnumBoxType.values()[tag.getByte("boxType")];
-    }
-
-    @Override
-    public void convertFromLegacy(EnumAreaType oldAreaType, int typeInfo){
-        switch(oldAreaType){
-            case FILL:
-                boxType = EnumBoxType.FILLED;
-                break;
-            case WALL:
-                boxType = EnumBoxType.HOLLOW;
-                break;
-            case FRAME:
-                boxType = EnumBoxType.FRAME;
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
     }
 }

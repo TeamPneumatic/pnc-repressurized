@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:item/module/safety_valve"
+      "layer0" : "pneumaticcraft:items/module/safety_valve"
    },
    "parent" : "item/generated"
 }

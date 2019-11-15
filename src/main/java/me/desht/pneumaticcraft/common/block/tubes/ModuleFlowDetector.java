@@ -2,9 +2,10 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.client.model.module.ModelFlowDetector;
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
@@ -44,10 +45,9 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
     }
 
     @Override
-    public void addInfo(List<String> curInfo) {
+    public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
-        curInfo.add("Flow: " + TextFormatting.WHITE + oldFlow + " mL/tick");
-        super.addInfo(curInfo);
+        curInfo.add(PneumaticCraftUtils.xlate("waila.flowModule.level", oldFlow));
     }
 
     @Override

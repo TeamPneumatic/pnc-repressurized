@@ -17,6 +17,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -189,12 +191,13 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     @Override
-    public void addInfo(List<String> curInfo) {
+    public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
-        curInfo.add("Status: " + TextFormatting.WHITE + (grateRange == 0 ? "Idle" : vacuum ? "Attracting" : "Repelling"));
-        curInfo.add("Range: " + TextFormatting.WHITE + grateRange + " blocks");
+        String txt = grateRange == 0 ? "Idle" : vacuum ? "Attracting" : "Repelling";
+        curInfo.add(new StringTextComponent("Status: ").appendText(txt).applyTextStyle(TextFormatting.WHITE));
+        curInfo.add(new StringTextComponent("Range: ").appendText(grateRange + " blocks").applyTextStyle(TextFormatting.WHITE));
         if (entityFilter != null)
-            curInfo.add("Entity Filter: " + TextFormatting.WHITE + "\"" + entityFilter.toString() + "\"");
+            curInfo.add(new StringTextComponent("Entity Filter: \"").appendText(entityFilter.toString()).appendText("\"").applyTextStyle(TextFormatting.WHITE));
     }
 
     @Override

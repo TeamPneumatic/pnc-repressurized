@@ -1,8 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 
@@ -19,9 +21,9 @@ public class ProgWidgetComment extends ProgWidgetString {
     }
 
     @Override
-    public void getTooltip(List<String> curTooltip) {
+    public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(I18n.format("gui.progWidget.comment.tooltip.freeToUse"));
+        curTooltip.add(new StringTextComponent("gui.progWidget.comment.tooltip.freeToUse"));
     }
 
     @Override
@@ -45,8 +47,8 @@ public class ProgWidgetComment extends ProgWidgetString {
     }
 
     @Override
-    public int getCraftingColorIndex() {
-        return -1;
+    public DyeColor getColor() {
+        return DyeColor.WHITE;
     }
 
     @Override

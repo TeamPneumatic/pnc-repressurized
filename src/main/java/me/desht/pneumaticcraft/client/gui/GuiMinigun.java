@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
-import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
@@ -40,7 +39,7 @@ public class GuiMinigun extends GuiPneumaticInventoryItem {
     }
 
     private void addUpgradeStat(EnumUpgrade upgrade, boolean leftSided) {
-        ItemStack stack = CraftingRegistrator.getUpgrade(upgrade);
+        ItemStack stack = upgrade.getItemStack();
         String key ="gui.tab.info.item.minigun." + upgrade.getName() + "Upgrade";
         addAnimatedStat(stack.getDisplayName().getFormattedText(), stack, 0xFF4040FF, leftSided).setText(key);
     }

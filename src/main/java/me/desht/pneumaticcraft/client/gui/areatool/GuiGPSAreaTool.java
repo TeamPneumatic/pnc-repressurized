@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.areatool;
 import me.desht.pneumaticcraft.client.gui.GuiGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -20,6 +21,10 @@ public class GuiGPSAreaTool extends GuiGPSTool {
     
     public GuiGPSAreaTool(Hand hand, ItemStack stack, int index) {
         this(hand, ItemGPSAreaTool.getGPSLocation(stack, index), ItemGPSAreaTool.getVariable(stack, index), index);
+    }
+
+    public static void showGUI(Hand hand, ItemStack stack, int index) {
+        Minecraft.getInstance().displayGuiScreen(new GuiGPSAreaTool(hand, stack, index));
     }
 
     @Override

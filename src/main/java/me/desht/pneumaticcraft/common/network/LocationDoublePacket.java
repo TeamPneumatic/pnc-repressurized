@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.Vec3d;
@@ -40,7 +39,7 @@ public abstract class LocationDoublePacket {
         z = buffer.readDouble();
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeDouble(x);
         buf.writeDouble(y);
         buf.writeDouble(z);

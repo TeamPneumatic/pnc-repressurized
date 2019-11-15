@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
@@ -60,7 +59,7 @@ public class PacketDescription extends LocationIntPacket {
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
         buf.writeByte(type.ordinal());
         buf.writeInt(values.length);
@@ -68,7 +67,7 @@ public class PacketDescription extends LocationIntPacket {
             buf.writeByte(types[i]);
             SyncedField.toBytes(buf, values[i], types[i]);
         }
-        new PacketBuffer(buf).writeCompoundTag(extraData);
+        buf.writeCompoundTag(extraData);
     }
 
     public void process(Supplier<NetworkEvent.Context> ctx) {
@@ -121,7 +120,7 @@ public class PacketDescription extends LocationIntPacket {
         compound.put("Pos", NBTUtil.writeBlockPos(pos));
         compound.putInt("SyncType", type.ordinal());
         compound.putInt("Length", values.length);
-        ByteBuf buf = Unpooled.buffer();
+        PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
         ListNBT list = new ListNBT();
         for (int i = 0; i < types.length; i++) {
             CompoundNBT element = new CompoundNBT();
@@ -148,7 +147,7 @@ public class PacketDescription extends LocationIntPacket {
             CompoundNBT element = list.getCompound(i);
             types[i] = element.getByte("Type");
             byte[] b = element.getByteArray("Value");
-            values[i] = SyncedField.fromBytes(Unpooled.wrappedBuffer(b), types[i]);
+            values[i] = SyncedField.fromBytes(new PacketBuffer(Unpooled.wrappedBuffer(b)), types[i]);
         }
         extraData = compound.getCompound("Extra");
     }

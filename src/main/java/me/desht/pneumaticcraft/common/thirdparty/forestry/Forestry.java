@@ -5,7 +5,8 @@ import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 public class Forestry implements IThirdParty {
     @Override
     public void init() {
-        IThirdParty.registerFuel("biomass", "Forestry", 500000);
-        IThirdParty.registerFuel("bio.ethanol", "Forestry", 500000);
+        // TODO 1.14 verify fluid names
+        IThirdParty.registerFuel("forestry:biomass", 500000);
+        IThirdParty.registerFuel("forestry:bio_ethanol", 500000);
     }
 }

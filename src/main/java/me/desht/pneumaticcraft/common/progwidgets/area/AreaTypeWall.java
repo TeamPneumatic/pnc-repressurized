@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -96,29 +95,12 @@ public class AreaTypeWall extends AreaType{
     @Override
     public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);
-        tag.setByte("axis", (byte)axis.ordinal());
+        tag.putByte("axis", (byte)axis.ordinal());
     }
     
     @Override
     public void readFromNBT(CompoundNBT tag){
         super.readFromNBT(tag);
         axis = EnumAxis.values()[tag.getByte("axis")];
-    }
-
-    @Override
-    public void convertFromLegacy(EnumAreaType oldAreaType, int typeInfo){
-        switch(oldAreaType){
-            case X_WALL:
-                axis = EnumAxis.X;
-                break;
-            case Y_WALL:
-                axis = EnumAxis.Y;
-                break;
-            case Z_WALL:
-                axis = EnumAxis.Z;
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
     }
 }

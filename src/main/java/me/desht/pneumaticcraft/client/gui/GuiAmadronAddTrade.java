@@ -16,22 +16,24 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeAddCustom;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeAddPeriodic;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeAddStatic;
-import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.AmadronOffer.TradeType;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeResource;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeType;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.awt.*;
@@ -205,19 +207,17 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void addTrade() {
-        Object input;
+        TradeResource input;
         if (!container.getInputStack().isEmpty()) {
-            input = container.getInputStack().copy();
-            ((ItemStack) input).setCount(inputNumber.getValue());
+            input = TradeResource.of(ItemHandlerHelper.copyStackWithSize(container.getInputStack(), inputNumber.getValue()));
         } else {
-            input = new FluidStack(inputFluid.getFluid(), inputNumber.getValue());
+            input = TradeResource.of(new FluidStack(inputFluid.getFluid(), inputNumber.getValue()));
         }
-        Object output;
+        TradeResource output;
         if (!container.getOutputStack().isEmpty()) {
-            output = container.getOutputStack().copy();
-            ((ItemStack) output).setCount(outputNumber.getValue());
+            output = TradeResource.of(ItemHandlerHelper.copyStackWithSize(container.getOutputStack(), outputNumber.getValue()));
         } else {
-            output = new FluidStack(outputFluid.getFluid(), outputNumber.getValue());
+            output = TradeResource.of(new FluidStack(outputFluid.getFluid(), outputNumber.getValue()));
         }
         if (tradeType == TradeType.PLAYER) {
             AmadronOfferCustom trade = new AmadronOfferCustom(input, output, minecraft.player);

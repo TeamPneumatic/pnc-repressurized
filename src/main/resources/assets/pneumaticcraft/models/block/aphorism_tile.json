@@ -1,8 +1,8 @@
 {
   "textures": {
-    "all": "pneumaticcraft:block/aphorism_tile",
-    "border": "pneumaticcraft:block/aphorism_tile_border",
-    "particle" : "pneumaticcraft:block/aphorism_tile"
+    "all": "pneumaticcraft:blocks/aphorism_tile",
+    "border": "pneumaticcraft:blocks/aphorism_tile_border",
+    "particle" : "pneumaticcraft:blocks/aphorism_tile"
   },
   "elements": [
     {

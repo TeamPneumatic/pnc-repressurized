@@ -1,35 +1,46 @@
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
-import cofh.api.util.ThermalExpansionHelper;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
-import me.desht.pneumaticcraft.common.fluid.Fluids;
+import me.desht.pneumaticcraft.api.recipe.RegisterMachineRecipesEvent;
+import me.desht.pneumaticcraft.common.recipes.ModRefineryRecipes;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
+import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
+@Mod.EventBusSubscriber(modid= Names.MOD_ID)
 public class CoFHCore implements IThirdParty {
 
     @Override
     public void init() {
         // gasoline is equivalent to Thermal Foundation refined fuel @ 2,000,000
         // "oil" gets added by CoFH so no need to do it here
-        ThermalExpansionHelper.addCompressionFuel(Fluids.DIESEL.getName(), 1000000);
-        ThermalExpansionHelper.addCompressionFuel(Fluids.KEROSENE.getName(), 1500000);
-        ThermalExpansionHelper.addCompressionFuel(Fluids.GASOLINE.getName(), 2000000);
-        ThermalExpansionHelper.addCompressionFuel(Fluids.LPG.getName(), 2500000);
-        PneumaticCraftRepressurized.logger.info("Added PneumaticCraft: Repressurized fuels to CoFH Compression Dynamo");
+        // TODO 1.14
+//        ThermalExpansionHelper.addCompressionFuel(Fluids.DIESEL.getName(), 1000000);
+//        ThermalExpansionHelper.addCompressionFuel(Fluids.KEROSENE.getName(), 1500000);
+//        ThermalExpansionHelper.addCompressionFuel(Fluids.GASOLINE.getName(), 2000000);
+//        ThermalExpansionHelper.addCompressionFuel(Fluids.LPG.getName(), 2500000);
+        Log.info("(not implemented) Added PneumaticCraft: Repressurized fuels to CoFH Compression Dynamo");
 
-        IThirdParty.registerFuel("creosote", "CoFH", 75000);
-        IThirdParty.registerFuel("coal", "CoFH", 300000);
-        IThirdParty.registerFuel("tree_oil", "CoFH", 750000);
-        IThirdParty.registerFuel("refined_oil", "CoFH", 937500);
-        IThirdParty.registerFuel("refined_fuel", "CoFH", 1500000);
+        // TODO 1.14 verify these will be the right fluid names
+        IThirdParty.registerFuel("thermalfoundation:creosote", 75000);
+        IThirdParty.registerFuel("thermalfoundation:coal", 300000);
+        IThirdParty.registerFuel("thermalfoundation:tree_oil", 750000);
+        IThirdParty.registerFuel("thermalfoundation:refined_oil", 937500);
+        IThirdParty.registerFuel("thermalfoundation:refined_fuel", 1500000);
+    }
 
-        Fluid crudeOil = FluidRegistry.getFluid("crude_oil");
-        if (crudeOil != null) {
-            PneumaticCraftAPIHandler.getInstance().registerRefineryInput(crudeOil);
-            PneumaticCraftRepressurized.logger.info("Added CoFH Crude Oil as a Refinery input");
+    @SubscribeEvent
+    public static void register(RegisterMachineRecipesEvent evt) {
+        // TODO 1.14 verify this will be the right fluid name
+        Fluid crudeOil = ForgeRegistries.FLUIDS.getValue(new ResourceLocation("thermalfoundation:crude_oil"));
+        if (crudeOil != null && crudeOil != Fluids.EMPTY) {
+            ModRefineryRecipes.addDefaultRefiningRecipe(evt, crudeOil);
+            Log.info("Added CoFH Crude Oil as a Refinery input");
         }
     }
 }

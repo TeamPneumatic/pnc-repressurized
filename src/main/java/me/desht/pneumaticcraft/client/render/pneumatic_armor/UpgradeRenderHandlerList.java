@@ -12,17 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UpgradeRenderHandlerList {
-    private static UpgradeRenderHandlerList INSTANCE;
+public enum UpgradeRenderHandlerList {
+    INSTANCE;
 
     private final List<List<IUpgradeRenderHandler>> upgradeRenderers;
 
     public static UpgradeRenderHandlerList instance() {
         return INSTANCE;
-    }
-
-    public static void init() {
-        INSTANCE = new UpgradeRenderHandlerList();
     }
 
     private final Map<Class<? extends IUpgradeRenderHandler>, IUpgradeRenderHandler> classMap = new HashMap<>();
@@ -61,6 +57,14 @@ public class UpgradeRenderHandlerList {
         addUpgradeRenderer(new JetBootsUpgradeHandler());
         addUpgradeRenderer(new StepAssistUpgradeHandler());
         addUpgradeRenderer(new KickUpgradeHandler());
+    }
+
+    public void refreshConfig() {
+        for (EquipmentSlotType slot : ARMOR_SLOTS) {
+            for (IUpgradeRenderHandler renderHandler : getHandlersForSlot(slot)) {
+                renderHandler.initConfig();
+            }
+        }
     }
 
     void addUpgradeRenderer(IUpgradeRenderHandler handler) {

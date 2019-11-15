@@ -7,9 +7,9 @@ import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
 import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.Config;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -87,7 +87,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         variableField.setElements(guiProgrammer.te.getAllVariables());
         variableField.setText(progWidget.getVariable());
 
-        if (ConfigHandler.getProgrammerDifficulty() == 2) {
+        if (PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED) {
             addButton(variableField);
         }
 
@@ -128,7 +128,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
         
-        if (Config.Client.programmerDifficulty == GuiProgrammer.Difficulty.ADVANCED) {
+        if (PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED) {
             font.drawString("Variable:", guiLeft + 90, guiTop + 45, 0xFF404040);
         }
         font.drawString("Filter:", guiLeft + 10, guiTop + 53, 0xFF404040);

@@ -6,11 +6,10 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderCoordWireframe;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.recipes.CraftingRegistrator;
-import me.desht.pneumaticcraft.common.recipes.factories.OneProbeRecipeFactory;
+import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -72,7 +71,7 @@ public class ItemPneumaticArmor extends ArmorItem
     public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
 
     public ItemPneumaticArmor(String name, EquipmentSlotType equipmentSlotIn) {
-        super(COMPRESSED_IRON_MATERIAL, equipmentSlotIn, ItemPneumatic.DEFAULT_PROPS);
+        super(COMPRESSED_IRON_MATERIAL, equipmentSlotIn, ItemPneumatic.defaultProps());
 
         setRegistryName(name);
     }
@@ -119,7 +118,7 @@ public class ItemPneumaticArmor extends ArmorItem
     }
 
     private void addHelmetInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        if (stack.hasTag() && stack.getTag().getInt(OneProbeRecipeFactory.ONE_PROBE_TAG) == 1) {
+        if (OneProbeCrafting.isOneProbeEnabled(stack)) {
             tooltip.add(new StringTextComponent("The One Probe installed").applyTextStyle(TextFormatting.BLUE));
         }
 
@@ -169,9 +168,9 @@ public class ItemPneumaticArmor extends ArmorItem
         addApplicableUpgrade(EquipmentSlotType.CHEST, EnumUpgrade.SECURITY);
     }
 
-    private static void addApplicableUpgrade(EquipmentSlotType slot, EnumUpgrade what) {
-        if (what.isDepLoaded()) {
-            applicableUpgrades.get(slot.getIndex()).add(CraftingRegistrator.getUpgrade(what).getItem());
+    private static void addApplicableUpgrade(EquipmentSlotType slot, EnumUpgrade upgrade) {
+        if (upgrade.isDepLoaded()) {
+            applicableUpgrades.get(slot.getIndex()).add(upgrade.getItem());
         }
     }
 
@@ -306,11 +305,11 @@ public class ItemPneumaticArmor extends ArmorItem
 
     @Override
     public float getFOVModifier(ItemStack stack, PlayerEntity player, EquipmentSlotType slot) {
-        if (slot == EquipmentSlotType.LEGS && Config.Client.leggingsFOVFactor > 0) {
+        if (slot == EquipmentSlotType.LEGS && PNCConfig.Client.Armor.leggingsFOVFactor > 0) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             double boost = handler.getSpeedBoostFromLegs();
             if (boost > 0) {
-                return 1.0f + (float) (boost * 2.0 * Config.Client.leggingsFOVFactor);
+                return 1.0f + (float) (boost * 2.0 * PNCConfig.Client.Armor.leggingsFOVFactor);
             }
         }
         return 1.0f;

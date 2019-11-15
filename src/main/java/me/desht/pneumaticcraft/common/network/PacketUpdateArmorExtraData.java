@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -55,9 +54,9 @@ public class PacketUpdateArmorExtraData {
         data = buffer.readCompoundTag();
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeByte(slot.ordinal());
-        new PacketBuffer(buf).writeCompoundTag(data);
+        buf.writeCompoundTag(data);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

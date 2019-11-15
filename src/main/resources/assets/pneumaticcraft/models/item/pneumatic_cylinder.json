@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:item/pneumatic_cylinder"
+      "layer0" : "pneumaticcraft:items/pneumatic_cylinder"
    },
    "parent" : "item/generated"
 }

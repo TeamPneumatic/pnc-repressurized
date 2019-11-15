@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -16,7 +15,7 @@ import net.minecraft.world.World;
 public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
 
     public BlockPneumaticDoorBase() {
-        super(Material.IRON, "pneumatic_door_base");
+        super("pneumatic_door_base");
     }
 
     @Override

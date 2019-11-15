@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
@@ -192,6 +191,8 @@ public class NetworkHandler {
 				PacketSendArmorHUDMessage::toBytes, PacketSendArmorHUDMessage::new, PacketSendArmorHUDMessage::handle);
 		registerMessage(PacketChestplateLauncher.class,
 				PacketChestplateLauncher::toBytes, PacketChestplateLauncher::new, PacketChestplateLauncher::handle);
+		registerMessage(PacketSyncRecipes.class,
+				PacketSyncRecipes::toBytes, PacketSyncRecipes::new, PacketSyncRecipes::handle);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
@@ -234,8 +235,14 @@ public class NetworkHandler {
         }
     }
 
+	public static void sendNonLocal(ServerPlayerEntity player, Object packet) {
+		if (player.server.isDedicatedServer() || !player.getGameProfile().getName().equals(player.server.getServerOwner())) {
+			sendToPlayer(packet, player);
+		}
+	}
+
     private static List<Object> getSplitMessages(ILargePayload message) {
-        ByteBuf buf = message.dumpToBuffer();
+		PacketBuffer buf = message.dumpToBuffer();
         byte[] bytes = buf.array();
         if (bytes.length < MAX_PAYLOAD_SIZE) {
             return Collections.singletonList(message);

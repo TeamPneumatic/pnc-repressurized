@@ -2,14 +2,15 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
@@ -58,14 +59,13 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     @Override
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        // todo 1.14 fluids
-//        fluid = FluidRegistry.getFluid(tag.getString("fluid"));
+        fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("fluid")));
     }
 
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        if (fluid != null) tag.putString("fluid", fluid.getName());
+        if (fluid != null) tag.putString("fluid", fluid.getRegistryName().toString());
     }
 
     @Override
@@ -116,7 +116,9 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
 
     @Override
     public String getExtraStringInfo() {
-        return fluid != null ? fluid.getLocalizedName(new FluidStack(fluid, 1)) : I18n.format("gui.progWidget.liquidFilter.noFluid");
+        return fluid != null ?
+                new FluidStack(fluid, 1).getDisplayName().getFormattedText() :
+                I18n.format("gui.progWidget.liquidFilter.noFluid");
     }
 
     public void setFluid(Fluid fluid) {

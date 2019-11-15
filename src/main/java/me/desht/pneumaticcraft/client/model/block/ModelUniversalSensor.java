@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.client.model.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.render.tileentity.AbstractModelRenderer;
+import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 
-public class ModelUniversalSensor extends AbstractModelRenderer.BaseModel {
+public class ModelUniversalSensor extends AbstractTileModelRenderer.BaseModel {
     private final RendererModel dish1;
     private final RendererModel dish2;
     private final RendererModel dish3;

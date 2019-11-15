@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 /**
  * Implement this and register it via {@code PneumaticRegistry.getItemRegistry().registerMagnetSuppressor() }
  */
+@FunctionalInterface
 public interface IMagnetSuppressor {
     /**
      * Check if there is a magnet-suppressor near the given entity (which is usually, but not necessarily, an

@@ -13,21 +13,8 @@ public class ItemReinforcedAirCanister extends ItemPneumatic implements IPressur
     private static final int MAX_DAMAGE = 250;  // arbitrary
 
     public ItemReinforcedAirCanister() {
-        super(DEFAULT_PROPS.maxStackSize(1).maxDamage(MAX_DAMAGE).setNoRepair(), "reinforced_air_canister");
+        super(defaultProps().maxDamage(MAX_DAMAGE).setNoRepair(), "reinforced_air_canister");
     }
-
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> par3List) {
-//        if (isInCreativeTab(tab)) {
-//            ItemStack stack2 = new ItemStack(this);
-//            addAir(stack2, PneumaticValues.REINFORCED_AIR_CANISTER_MAX_AIR);
-//            ItemStack stack = new ItemStack(this);
-//            addAir(stack, 0);
-//            par3List.add(stack);
-//            par3List.add(stack2);
-//        }
-//    }
 
     @Override
     public int getDamage(ItemStack stack) {

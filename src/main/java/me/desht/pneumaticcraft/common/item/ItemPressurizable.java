@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IPressurizable;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,11 +17,11 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
     private final float maxPressure;
 
     public ItemPressurizable(String registryName, int maxAir, int volume) {
-        this(DEFAULT_PROPS, registryName, maxAir, volume);
+        this(defaultProps(), registryName, maxAir, volume);
     }
 
     public ItemPressurizable(Item.Properties props, String registryName, int maxAir, int volume) {
-        super(props.setNoRepair().defaultMaxDamage(maxAir).maxStackSize(1), registryName);
+        super(props.setNoRepair().defaultMaxDamage(maxAir), registryName);
         this.volume = volume;
         maxPressure = (float)maxAir / volume;
     }
@@ -95,7 +95,7 @@ public class ItemPressurizable extends ItemPneumatic implements IPressurizable {
     }
 
     public static boolean shouldShowPressureDurability(ItemStack stack) {
-        if (Config.Client.alwaysShowPressureDurabilityBar) return true;
+        if (PNCConfig.Client.alwaysShowPressureDurabilityBar) return true;
         IPressurizable p = IPressurizable.of(stack);
         return p != null && p.getPressure(stack) < p.maxPressure(stack);
     }

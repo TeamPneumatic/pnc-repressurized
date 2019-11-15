@@ -2,10 +2,11 @@ package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.recipe.IHeatFrameCoolingRecipe;
+import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import me.desht.pneumaticcraft.common.recipes.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -14,14 +15,19 @@ import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IHeatExchanger {
-    public static final String ID = "heat_frame";
+    public static final ResourceLocation ID = RL("heat_frame");
 
     private final IHeatExchangerLogic logic = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
     private int lastValidSlot; // cache the current cooking slot for performance boost
@@ -122,49 +128,68 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
 
     private boolean tryCoolSlot(IItemHandler handler, int slot) {
         ItemStack stack = handler.getStackInSlot(slot);
-        if (!stack.isEmpty()) {
-            for (HeatFrameCoolingRecipe recipe : HeatFrameCoolingRecipe.recipes) {
-                if (recipe.input.isItemEqual(stack)) {
-                    if (stack.getCount() >= recipe.input.getItemAmount()) {
-                        ItemStack containerItem = stack.getItem().getContainerItem(stack);
-                        boolean canStoreContainerItem = false;
-                        boolean canStoreOutput = false;
-                        for (int i = 0; i < handler.getSlots(); i++) {
-                            ItemStack s = handler.getStackInSlot(i);
-                            if (s.isEmpty()) {
-                                if (canStoreOutput) {
-                                    canStoreContainerItem = true;
-                                } else {
-                                    canStoreOutput = true;
-                                }
-                            } else {
-                                if (s.isItemEqual(recipe.output) && ItemStack.areItemStackTagsEqual(s, recipe.output) && s.getMaxStackSize() >= s.getCount() + recipe.output.getCount()) {
-                                    canStoreOutput = true;
-                                }
-                                if (!containerItem.isEmpty() && s.isItemEqual(containerItem) && ItemStack.areItemStackTagsEqual(s, containerItem) && s.getMaxStackSize() >= s.getCount() + containerItem.getCount()) {
-                                    canStoreContainerItem = true;
-                                }
-                            }
-                        }
-                        if (canStoreOutput && (containerItem.isEmpty() || canStoreContainerItem)) {
-                            handler.extractItem(slot, 1, false);
-                            IOHelper.insert(getTileEntity(), recipe.output.copy(), false);
-                            if (!containerItem.isEmpty()) {
-                                IOHelper.insert(getTileEntity(), containerItem.copy(), false);
-                            }
-                            return true;
-                        }
+        if (stack.isEmpty()) return false;
+
+        IHeatFrameCoolingRecipe recipe = PneumaticCraftRecipes.heatFrameCoolingRecipes.values().stream()
+                .filter(r -> r.matches(stack))
+                .findFirst()
+                .orElse(null);
+
+        if (recipe != null) {
+            ItemStack output = recipe.getOutput();
+            if (stack.getCount() >= recipe.getInputAmount()) {
+                ItemStack containerItem = stack.getItem().getContainerItem(stack);
+                Pair<Integer,Integer> slots = findOutputSpace(handler, output, containerItem);
+                if (slots.getLeft() >= 0 && (slots.getRight() >= 0 || containerItem.isEmpty())) {
+                    handler.extractItem(slot, recipe.getInputAmount(), false);
+                    handler.insertItem(slots.getLeft(), output, false);
+                    if (!containerItem.isEmpty()) {
+                        handler.insertItem(slots.getRight(), containerItem, false);
                     }
+                    lastValidSlot = slot;
+                    return true;
                 }
             }
         }
         return false;
     }
 
+    Pair<Integer,Integer> findOutputSpace(IItemHandler handler, ItemStack output, ItemStack containerItem) {
+        int outSlot = -1;
+        int containerSlot = -1;
+
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack s = handler.getStackInSlot(i);
+            if (s.isEmpty()) {
+                if (outSlot >= 0) {
+                    containerSlot = i;
+                } else {
+                    outSlot = i;
+                }
+            } else {
+                if (ItemHandlerHelper.canItemStacksStack(s, output) && s.getCount() + output.getCount() < s.getMaxStackSize()) {
+                    outSlot = i;
+                }
+                if (!containerItem.isEmpty()
+                        && ItemHandlerHelper.canItemStacksStack(s, containerItem)
+                        && s.getCount() + containerItem.getCount() < s.getMaxStackSize()) {
+                    containerSlot = i;
+                }
+            }
+        }
+
+        return Pair.of(outSlot, containerSlot);
+    }
+
+    @Override
+    public ResourceLocation getId() {
+        return ID;
+    }
+
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        logic.writeToNBT(tag);
+        tag.put("heatExchanger", logic.serializeNBT());
         tag.putInt("cookingProgress", cookingProgress);
         tag.putInt("coolingProgress", coolingProgress);
     }
@@ -172,7 +197,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     @Override
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        logic.readFromNBT(tag);
+        logic.deserializeNBT(tag.getCompound("heatExchanger"));
         cookingProgress = tag.getInt("cookingProgress");
         coolingProgress = tag.getInt("coolingProgress");
     }

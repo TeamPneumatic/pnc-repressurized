@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.heat;
 
-import me.desht.pneumaticcraft.common.config.BlockHeatPropertiesConfig;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -11,7 +11,7 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
     private static final HeatExchangerLogicAmbient DEFAULT_AIR_EXCHANGER = new HeatExchangerLogicAmbient(BASE_AMBIENT_TEMP);
 
     public static HeatExchangerLogicAmbient atPosition(World world, BlockPos pos) {
-        if (BlockHeatPropertiesConfig.ambientTempBiomeModifier == 0 && BlockHeatPropertiesConfig.ambientTempHeightModifier == 0) {
+        if (PNCConfig.Common.BlockHeatDefaults.ambientTempBiomeModifier == 0 && PNCConfig.Common.BlockHeatDefaults.ambientTempHeightModifier == 0) {
             return DEFAULT_AIR_EXCHANGER;
         }
 
@@ -27,8 +27,8 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
         }
 
         double temp = BASE_AMBIENT_TEMP
-                + BlockHeatPropertiesConfig.ambientTempBiomeModifier * t
-                + BlockHeatPropertiesConfig.ambientTempHeightModifier * h;
+                + PNCConfig.Common.BlockHeatDefaults.ambientTempBiomeModifier * t
+                + PNCConfig.Common.BlockHeatDefaults.ambientTempHeightModifier * h;
 
         return new HeatExchangerLogicAmbient(temp);
     }

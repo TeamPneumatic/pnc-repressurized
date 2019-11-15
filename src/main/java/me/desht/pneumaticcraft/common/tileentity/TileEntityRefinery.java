@@ -3,6 +3,9 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.recipe.IRefineryRecipe;
+import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.recipe.TemperatureRange;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
@@ -10,10 +13,10 @@ import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
-import me.desht.pneumaticcraft.common.recipes.RefineryRecipe;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
@@ -22,21 +25,18 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class TileEntityRefinery extends TileEntityTickableBase
         implements IHeatExchanger, IRedstoneControlled, IComparatorSupport, ISerializableTanks, ISmartFluidSync, INamedContainerProvider {
@@ -66,13 +66,17 @@ public class TileEntityRefinery extends TileEntityTickableBase
 
     @GuiSynced
     public int minTemp;
+    @GuiSynced
+    public int maxTemp;
 
     @DescSynced
     private int refineryCount; // for particle spawning
     @DescSynced
     private int lastProgress; // for particle spawning
 
-    private RefineryRecipe currentRecipe;
+    private TemperatureRange operatingTemp = TemperatureRange.invalid();
+
+    private IRefineryRecipe currentRecipe;
     private int workTimer = 0;
     private int comparatorValue;
 
@@ -88,7 +92,14 @@ public class TileEntityRefinery extends TileEntityTickableBase
     }
 
     public static boolean isInputFluidValid(Fluid fluid, int size) {
-        return RefineryRecipe.getRecipe(fluid, size).isPresent();
+        return PneumaticCraftRecipes.refineryRecipes.values().stream().anyMatch(r -> r.getInput().getFluid() == fluid);
+    }
+
+    private static IRefineryRecipe getRecipeFor(FluidStack fluid) {
+        return PneumaticCraftRecipes.refineryRecipes.values().stream()
+                .filter(r -> r.getInput().isFluidEqual(fluid))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -101,10 +112,10 @@ public class TileEntityRefinery extends TileEntityTickableBase
             refineryCount = refineries.size();
             if (prevRefineryCount != refineryCount) searchForRecipe = true;
             if (searchForRecipe) {
-                Optional<RefineryRecipe> recipe = RefineryRecipe.getRecipe(inputTank.getFluid() != null ?
-                        inputTank.getFluid().getFluid() : null, refineries.size());
-                currentRecipe = recipe.orElse(null);
-                minTemp = currentRecipe == null ? 0 : currentRecipe.getMinimumTemp();
+                currentRecipe = getRecipeFor(inputTank.getFluid());
+                operatingTemp = currentRecipe == null ? TemperatureRange.invalid() : currentRecipe.getOperatingTemp();
+                minTemp = operatingTemp.getMin();
+                maxTemp = operatingTemp.getMax();
                 searchForRecipe = false;
             }
             boolean hasWork = false;
@@ -113,18 +124,19 @@ public class TileEntityRefinery extends TileEntityTickableBase
                     redistributeFluids(refineries, currentRecipe);
                 }
 
-                if (refineries.size() > 1 && redstoneAllows() && refine(refineries, true)) {
+                if (refineries.size() > 1 && redstoneAllows() && refine(refineries, FluidAction.SIMULATE)) {
                     hasWork = true;
-                    if (heatExchanger.getTemperature() >= currentRecipe.getMinimumTemp()
-                            && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
-                        int progress = Math.max(0, ((int) heatExchanger.getTemperature() - (currentRecipe.getMinimumTemp() - 30)) / 30);
+                    if (operatingTemp.inRange(heatExchanger.getTemperature())
+                            && inputTank.getFluidAmount() >= currentRecipe.getInput().getAmount()) {
+                        // TODO support for cryo-refining (faster as it gets colder, adds heat instead of removing)
+                        int progress = Math.max(0, ((int) heatExchanger.getTemperature() - (operatingTemp.getMin() - 30)) / 30);
                         progress = Math.min(5, progress);
                         heatExchanger.addHeat(-progress);
                         workTimer += progress;
-                        while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.input.amount) {
+                        while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.getInput().getAmount()) {
                             workTimer -= 20;
-                            refine(refineries, false);
-                            inputTank.drain(currentRecipe.input.amount, true);
+                            refine(refineries, FluidAction.EXECUTE);
+                            inputTank.drain(currentRecipe.getInput().getAmount(), FluidAction.EXECUTE);
                         }
                         lastProgress = progress;
                     }
@@ -149,7 +161,7 @@ public class TileEntityRefinery extends TileEntityTickableBase
      * @param refineries list of all refineries (master - this one - is the first)
      * @param currentRecipe the current recipe, guaranteed to match the list of refineries
      */
-    private void redistributeFluids(List<TileEntityRefinery> refineries, RefineryRecipe currentRecipe) {
+    private void redistributeFluids(List<TileEntityRefinery> refineries, IRefineryRecipe currentRecipe) {
         // only the master refinery should have fluid in its input tank
         // scan all non-master refineries, move any fluid from their input tank to the master (this TE), if possible
         for (int i = 1; i < refineries.size(); i++) {
@@ -165,11 +177,11 @@ public class TileEntityRefinery extends TileEntityTickableBase
         for (int i = 0; i < refineries.size(); i++) {
             FluidTank sourceTank = refineries.get(i).getOutputTank();
             FluidStack fluid = sourceTank.getFluid();
-            if (fluid != null && !fluid.isFluidEqual(currentRecipe.outputs[i])) {
+            if (fluid != null && !fluid.isFluidEqual(currentRecipe.getOutputs().get(i))) {
                 // this fluid shouldn't be here; find the appropriate output tank to move it to
                 // using an intermediate temporary tank here to allow for possible swapping of fluids
-                for (int j = 0; j < currentRecipe.outputs.length; j++) {
-                    if (currentRecipe.outputs[j].isFluidEqual(fluid)) {
+                for (int j = 0; j < currentRecipe.getOutputs().size(); j++) {
+                    if (currentRecipe.getOutputs().get(j).isFluidEqual(fluid)) {
                         tryMoveFluid(sourceTank, tempTanks[j]);
                         break;
                     }
@@ -184,11 +196,11 @@ public class TileEntityRefinery extends TileEntityTickableBase
     }
 
     private void tryMoveFluid(FluidTank sourceTank, FluidTank destTank) {
-        FluidStack fluid = sourceTank.drain(sourceTank.getCapacity(), false);
-        if (fluid != null && fluid.amount > 0) {
-            int moved = destTank.fill(fluid, true);
+        FluidStack fluid = sourceTank.drain(sourceTank.getCapacity(), FluidAction.SIMULATE);
+        if (fluid != null && fluid.getAmount() > 0) {
+            int moved = destTank.fill(fluid, FluidAction.EXECUTE);
             if (moved > 0) {
-                sourceTank.drain(moved, true);
+                sourceTank.drain(moved, FluidAction.EXECUTE);
             }
         }
     }
@@ -204,22 +216,22 @@ public class TileEntityRefinery extends TileEntityTickableBase
         return refineries;
     }
 
-    private boolean refine(List<TileEntityRefinery> refineries, boolean simulate) {
+    private boolean refine(List<TileEntityRefinery> refineries, FluidAction action) {
     	if(currentRecipe == null) {
     		blocked = true;
     		return false;
     	}
     	
-        FluidStack[] outputs = currentRecipe.outputs;
+        List<FluidStack> outputs = currentRecipe.getOutputs();
 
         int i = 0;
         for (TileEntityRefinery refinery : refineries) {
-        	if (i > outputs.length - 1) {
+        	if (i > outputs.size() - 1) {
         		blocked = false;
         		return true;
         	}
 
-            if (outputs[i].amount != refinery.outputTank.fill(outputs[i], !simulate)) {
+            if (outputs.get(i).getAmount() != refinery.outputTank.fill(outputs.get(i), action)) {
             	blocked = true;
             	return false;
             }
@@ -320,7 +332,7 @@ public class TileEntityRefinery extends TileEntityTickableBase
 
     private void updateComparatorValue(List<TileEntityRefinery> refineries, boolean didWork) {
         int value;
-        if (inputTank.getFluidAmount() < 10 || refineries.size() < 2 || currentRecipe == null || refineries.size() > currentRecipe.outputs.length) {
+        if (inputTank.getFluidAmount() < 10 || refineries.size() < 2 || currentRecipe == null || refineries.size() > currentRecipe.getOutputs().size()) {
             value = 0;
         } else {
             value = didWork ? 15 : 0;
@@ -380,7 +392,7 @@ public class TileEntityRefinery extends TileEntityTickableBase
         }
 
         @Override
-        public boolean canFillFluidType(FluidStack fluid) {
+        public boolean isFluidValid(FluidStack fluid) {
             return getFluid() != null && getFluid().isFluidEqual(fluid)
                     || isInputFluidValid(fluid.getFluid(), 4);
         }
@@ -397,26 +409,47 @@ public class TileEntityRefinery extends TileEntityTickableBase
     }
 
     private class RefineryFluidHandler implements IFluidHandler {
-        @Override
-        public IFluidTankProperties[] getTankProperties() {
-            return ArrayUtils.addAll(getMasterRefinery().inputTank.getTankProperties(), outputTank.getTankProperties());
+        private FluidTank[] tanks = new FluidTank[2];
+
+        RefineryFluidHandler() {
+            tanks[0] = getMasterRefinery().inputTank;
+            tanks[1] = getMasterRefinery().outputTank;
         }
 
         @Override
-        public int fill(FluidStack resource, boolean doFill) {
-            return getMasterRefinery().inputTank.fill(resource, doFill);
+        public int getTanks() {
+            return tanks.length;
         }
 
-        @Nullable
+        @Nonnull
         @Override
-        public FluidStack drain(FluidStack resource, boolean doDrain) {
-            return outputTank.drain(resource, doDrain);
+        public FluidStack getFluidInTank(int tank) {
+            return tanks[tank].getFluid();
         }
 
-        @Nullable
         @Override
-        public FluidStack drain(int maxDrain, boolean doDrain) {
-            return outputTank.drain(maxDrain, doDrain);
+        public int getTankCapacity(int tank) {
+            return tanks[tank].getCapacity();
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
+            return tanks[tank].isFluidValid(stack);
+        }
+
+        @Override
+        public int fill(FluidStack resource, FluidAction doFill) {
+            return tanks[0].fill(resource, doFill);
+        }
+
+        @Override
+        public FluidStack drain(FluidStack resource, FluidAction doDrain) {
+            return tanks[1].drain(resource, doDrain);
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, FluidAction doDrain) {
+            return tanks[1].drain(maxDrain, doDrain);
         }
     }
 }

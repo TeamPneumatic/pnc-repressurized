@@ -46,15 +46,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -314,35 +314,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         int oldDispenserUpgrades = getUpgrades(EnumUpgrade.INVENTORY);
         int dispenserUpgrades = Math.min(35, getUpgrades(EnumUpgrade.DISPENSER));
         if (!getWorld().isRemote && oldDispenserUpgrades != dispenserUpgrades) {
-//            resizeDroneInventory(oldDispenserUpgrades + 1, dispenserUpgrades + 1);
-
             tank.setCapacity((dispenserUpgrades + 1) * 16000);
             if (tank.getFluidAmount() > tank.getCapacity()) {
-                tank.getFluid().amount = tank.getCapacity();
+                tank.getFluid().setAmount(tank.getCapacity());
             }
         }
 
         speedUpgrades = getUpgrades(EnumUpgrade.SPEED);
     }
-
-//    private void resizeDroneInventory(int oldSize, int newSize) {
-//        DroneItemHandler tmpHandler = new DroneItemHandler(newSize, this);
-//
-//        for (int i = 0; i < oldSize && i < newSize; i++) {
-//            tmpHandler.setStackInSlot(i, droneInventory.getStackInSlot(i));
-//        }
-//
-//        // if the inventory has shrunk, eject any excess items
-//        for (int i = newSize; i < oldSize; i++) {
-//            ItemStack stack = droneInventory.getStackInSlot(i);
-//            if (!stack.isEmpty()) {
-//                PneumaticCraftUtils.dropItemOnGround(stack, getWorld(), getPos().up());
-//            }
-//        }
-//
-//        droneInventory = tmpHandler;
-//        itemHandlerSideConfigurator.updateHandler("droneInv", droneInventory);
-//    }
 
     @Override
     public void read(CompoundNBT tag) {

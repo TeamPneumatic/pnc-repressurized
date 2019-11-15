@@ -1,13 +1,12 @@
 package me.desht.pneumaticcraft.common.heat.behaviour;
 
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.config.BlockHeatPropertiesConfig;
+import me.desht.pneumaticcraft.common.config.aux.BlockHeatPropertiesConfig;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -15,55 +14,58 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
+    private static final ResourceLocation ID = RL("custom_transition");
+
     private BlockHeatPropertiesConfig.CustomHeatEntry heatEntry;
 
     @Override
-    public void initialize(String id, IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
-        super.initialize(id, connectedHeatLogic, world, pos, direction);
+    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+        super.initialize(connectedHeatLogic, world, pos, direction);
 
-        heatEntry = BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntry(getBlockState());
+        heatEntry = BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntry(getBlockState().getBlock());
     }
 
     @Override
-    public String getId() {
-        return Names.MOD_ID + ":customTransition";
+    public ResourceLocation getId() {
+        return ID;
     }
 
     @Override
     public boolean isApplicable() {
         if (!super.isApplicable()) return false;
 
-        BlockHeatPropertiesConfig.CustomHeatEntry entry = getHeatEntry();
-        return getHeatEntry() != null && getHeatEntry().getTotalHeat() != 0;
+        return heatEntry != null && heatEntry.getTotalHeatCapacity() != 0;
     }
 
     @Override
     protected int getMaxExchangedHeat() {
-        return getHeatEntry().getTotalHeat();
+        return getHeatEntry().getTotalHeatCapacity();
     }
 
     @Override
     protected boolean transformBlockHot() {
-        BlockState hot = getHeatEntry().getTransformHot();
+        Block hot = getHeatEntry().getTransformHot();
         if (hot == null) return false;
         if (getFluid() != null) {
-            transformFluidBlocks(hot, getHeatEntry().getTransformHotFlowing());
+            transformFluidBlocks(hot.getDefaultState(), getHeatEntry().getTransformHotFlowing().getDefaultState());
             return true;
         } else {
-            return getWorld().setBlockState(getPos(), hot);
+            return getWorld().setBlockState(getPos(), hot.getDefaultState());
         }
     }
 
     @Override
     protected boolean transformBlockCold() {
-        BlockState cold = getHeatEntry().getTransformCold();
+        Block cold = getHeatEntry().getTransformCold();
         if (cold == null) return false;
         if (getFluid() != null) {
-            transformFluidBlocks(cold, getHeatEntry().getTransformColdFlowing());
+            transformFluidBlocks(cold.getDefaultState(), getHeatEntry().getTransformColdFlowing().getDefaultState());
             return true;
         } else {
-            return getWorld().setBlockState(getPos(), cold);
+            return getWorld().setBlockState(getPos(), cold.getDefaultState());
         }
     }
 
@@ -108,10 +110,10 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
     }
 
     private boolean blocksSame(Block b1, Block b2) {
-        return b1 == b2
-                || b1 == Blocks.FLOWING_LAVA && b2 == Blocks.LAVA
-                || b1 == Blocks.LAVA && b2 == Blocks.FLOWING_LAVA
-                || b1 == Blocks.FLOWING_WATER && b2 == Blocks.WATER
-                || b1 == Blocks.WATER && b2 == Blocks.FLOWING_WATER;
+        return b1 == b2;
+//                || b1 == Blocks.FLOWING_LAVA && b2 == Blocks.LAVA
+//                || b1 == Blocks.LAVA && b2 == Blocks.FLOWING_LAVA
+//                || b1 == Blocks.FLOWING_WATER && b2 == Blocks.WATER
+//                || b1 == Blocks.WATER && b2 == Blocks.FLOWING_WATER;
     }
 }

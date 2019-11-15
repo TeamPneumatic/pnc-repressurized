@@ -42,13 +42,13 @@ public class GuiThermopneumaticProcessingPlant extends
         addButton(new WidgetTank(guiLeft + 13, guiTop + 15, te.getInputTank()));
         addButton(new WidgetTank(guiLeft + 79, guiTop + 15, te.getOutputTank()));
 
-        tempWidget = new WidgetTemperature(guiLeft + 98, guiTop + 15, 273, 673, te.getHeatExchangerLogic(null), (int) te.requiredTemperature) {
+        tempWidget = new WidgetTemperature(guiLeft + 98, guiTop + 15, 273, 673, te.getHeatExchangerLogic(null), (int) te.minTemperature) {
             @Override
             public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
-                if (te.requiredTemperature > 0) {
-                    TextFormatting tf = te.requiredTemperature < te.getHeatExchangerLogic(null).getTemperatureAsInt() ? TextFormatting.GREEN : TextFormatting.GOLD;
-                    curTip.add(tf + "Required Temperature: " + (te.requiredTemperature - 273) + "\u00b0C");
+                if (te.minTemperature > 0) {
+                    TextFormatting tf = te.minTemperature < te.getHeatExchangerLogic(null).getTemperatureAsInt() ? TextFormatting.GREEN : TextFormatting.GOLD;
+                    curTip.add(tf + "Required Temperature: " + (te.minTemperature - 273) + "\u00b0C");
                 }
             }
         };
@@ -64,7 +64,7 @@ public class GuiThermopneumaticProcessingPlant extends
 
     @Override
     public void tick() {
-        tempWidget.setScales((int) te.requiredTemperature);
+        tempWidget.setScales((int) te.minTemperature);
         super.tick();
     }
 
@@ -107,7 +107,7 @@ public class GuiThermopneumaticProcessingPlant extends
 
         if (!te.hasRecipe) {
             curInfo.add("gui.tab.problems.thermopneumaticProcessingPlant.noSufficientIngredients");
-        } else if (te.getHeatExchangerLogic(null).getTemperatureAsInt() < te.requiredTemperature) {
+        } else if (te.getHeatExchangerLogic(null).getTemperatureAsInt() < te.minTemperature) {
             curInfo.add("gui.tab.problems.notEnoughHeat");
         }
     }

@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.api.client;
 
+import net.minecraft.client.renderer.Rectangle2d;
+
 import java.awt.*;
 import java.util.List;
 
@@ -197,7 +199,7 @@ public interface IGuiAnimatedStat {
      */
     int getWidth();
 
-    Rectangle getBounds();
+    Rectangle2d getBounds();
 
     /**
      * This method should be called every game tick to update the logic of the stat (expanding of the stat).

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyPlatform;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -15,7 +14,7 @@ public class BlockAssemblyPlatform extends BlockPneumaticCraft {
     private static final VoxelShape COLLISION_SHAPE = Block.makeCuboidShape(2, 2, 2, 14, 7, 14);
 
     public BlockAssemblyPlatform() {
-        super(Material.IRON, "assembly_platform");
+        super("assembly_platform");
     }
 
     @Override

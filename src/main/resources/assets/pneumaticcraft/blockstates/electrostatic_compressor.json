@@ -6,7 +6,7 @@
         "model": "pneumaticcraft:block/electrostatic_compressor.obj"
     },
 	"variants": {
-		"normal": [{
+		"": [{
 		}],
       "inventory": [{
         "transform": {

@@ -52,7 +52,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -75,7 +75,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public static final Block.Properties DEFAULT_PROPS = Block.Properties.create(Material.IRON)
             .hardnessAndResistance(3f, 10f).sound(SoundType.METAL);
 
-    protected BlockPneumaticCraft(Material material, String registryName) {
+    protected BlockPneumaticCraft(String registryName) {
         super(DEFAULT_PROPS);
         setRegistryName(registryName);
     }
@@ -316,8 +316,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                     FluidTank tank = new FluidTank(tankTag.getInt("Amount"));
                     tank.readFromNBT(tankTag);
                     FluidStack fluidStack = tank.getFluid();
-                    if (fluidStack != null && fluidStack.amount > 0) {
-                        curInfo.add(new StringTextComponent(fluidStack.getFluid().getLocalizedName(fluidStack) + ": " + fluidStack.amount + "mB"));
+                    if (!fluidStack.isEmpty()) {
+                        curInfo.add(fluidStack.getDisplayName().appendText(": " + fluidStack.getAmount() + "mB"));
                     }
                 }
             }

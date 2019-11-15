@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.item.ItemPneumatic;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressor;
-import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
@@ -11,7 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 public class BlockCreativeCompressor extends BlockPneumaticCraft implements ICustomItemBlock {
 
     public BlockCreativeCompressor() {
-        super(Material.IRON, "creative_compressor");
+        super("creative_compressor");
     }
 
     @Override
@@ -26,7 +25,7 @@ public class BlockCreativeCompressor extends BlockPneumaticCraft implements ICus
 
     public static class ItemBlockCreativeCompressor extends BlockItem {
         ItemBlockCreativeCompressor(BlockCreativeCompressor blockCreativeCompressor) {
-            super(blockCreativeCompressor, ItemPneumatic.DEFAULT_PROPS);
+            super(blockCreativeCompressor, ItemPneumatic.defaultProps());
         }
 
         @Override

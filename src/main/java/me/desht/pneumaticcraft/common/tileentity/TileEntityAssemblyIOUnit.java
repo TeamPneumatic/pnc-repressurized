@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.api.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.block.BlockAssemblyIOUnit;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
-import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.recipes.programs.AssemblyProgram;
+import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
@@ -15,12 +15,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.*;
 
-import java.util.List;
+import java.util.Collection;
 
 public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private static final int INVENTORY_SIZE = 1;
@@ -35,7 +32,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE);
     private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> itemHandler);
 
-    private List<AssemblyRecipe> recipeList;
+    private Collection<IAssemblyRecipe> recipeList;
     private ItemStack searchedItemStack = ItemStack.EMPTY;
     private byte state = 0;
     private byte tickCounter = 0;
@@ -138,7 +135,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     /**
      * @return true if the controller should use air and display 'running'
      */
-    public boolean pickupItem(List<AssemblyRecipe> list) {
+    public boolean pickupItem(Collection<IAssemblyRecipe> list) {
         recipeList = list;
 
         if (state == STATE_IDLE) state++;
@@ -160,10 +157,11 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         if (isImportUnit()) {
             searchedItemStack = ItemStack.EMPTY;
             if (recipeList != null) {
-                for (AssemblyRecipe recipe : recipeList) {
-                    inventoryDir = getInventoryDirectionForItem(recipe.getInput());
-                    if (inventoryDir != null) {
-                        searchedItemStack = recipe.getInput();
+                for (IAssemblyRecipe recipe : recipeList) {
+                    ItemImport result = getInventoryDirectionForItem(recipe);
+                    if (result != null) {
+                        searchedItemStack = result.stack;
+                        inventoryDir = result.dirs;
                         break;
                     }
                 }
@@ -375,28 +373,47 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         return isImportUnit() ? AssemblyProgram.EnumMachine.IO_UNIT_IMPORT : AssemblyProgram.EnumMachine.IO_UNIT_EXPORT;
     }
 
-    private Direction[] getInventoryDirectionForItem(ItemStack searchedItem) {
-        ItemStack stack = itemHandler.getStackInSlot(0);
-        if (!searchedItem.isEmpty() && (stack.isEmpty() || stack.isItemEqual(searchedItem))) {
+    private ItemImport getInventoryDirectionForItem(IAssemblyRecipe recipe) {
+        ItemStack heldStack = itemHandler.getStackInSlot(0);
+        if (heldStack.isEmpty() || recipe.getInput().test(heldStack)) {
             for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
-                ItemStack inInv = IOHelper.getInventoryForTE(getCachedNeighbor(dir), Direction.UP)
-                        .map(h -> IOHelper.extract(h, searchedItem, IOHelper.ExtractCount.EXACT, true, false))
-                        .orElse(ItemStack.EMPTY);
-                if (!inInv.isEmpty()) return new Direction[]{dir, null};
+                ItemStack found = IOHelper.getInventoryForTE(getCachedNeighbor(dir), Direction.UP)
+                        .map(h -> findIngredientInInventory(h, recipe)).orElse(ItemStack.EMPTY);
+                if (!found.isEmpty()) return new ItemImport(new Direction[]{dir, null}, found);
             }
             if (canMoveToDiagonalNeighbours()) {
                 for (Direction secDir : new Direction[]{Direction.WEST, Direction.EAST}) {
                     for (Direction primDir : new Direction[]{Direction.NORTH, Direction.SOUTH}) {
                         TileEntity te = getWorld().getTileEntity(getPos().offset(primDir).offset(secDir));
-                        ItemStack inInv = IOHelper.getInventoryForTE(te, Direction.UP)
-                                .map(h -> IOHelper.extract(h, searchedItem, IOHelper.ExtractCount.EXACT, true, false))
-                                .orElse(ItemStack.EMPTY);
-                        if (!inInv.isEmpty()) return new Direction[]{primDir, secDir};
+                        ItemStack found = IOHelper.getInventoryForTE(te, Direction.UP)
+                                .map(h -> findIngredientInInventory(h, recipe)).orElse(ItemStack.EMPTY);
+                        if (!found.isEmpty()) return new ItemImport(new Direction[]{primDir, secDir}, found);
                     }
                 }
             }
         }
+
         return null;
+    }
+
+    private ItemStack findIngredientInInventory(IItemHandler handler, IAssemblyRecipe recipe) {
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
+            if (stack.getCount() >= recipe.getInputAmount() && recipe.getInput().test(stack)) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    private static class ItemImport {
+        final Direction[] dirs;
+        final ItemStack stack;
+
+        ItemImport(Direction[] dirs, ItemStack stack) {
+            this.dirs = dirs;
+            this.stack = stack;
+        }
     }
 
     private Direction[] getExportLocationForItem(ItemStack exportedItem) {

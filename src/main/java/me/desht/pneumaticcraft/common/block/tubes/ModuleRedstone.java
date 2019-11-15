@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.client.model.module.ModelRedstone;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
@@ -17,7 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -241,26 +242,26 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public void addInfo(List<String> curInfo) {
+    public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
         if (getRedstoneDirection() == EnumRedstoneDirection.INPUT) {
-            curInfo.add("Receiving Redstone: " + TextFormatting.YELLOW + inputLevel);
+            curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.receiving", inputLevel));
         } else {
-            curInfo.add("Emitting Redstone: " + TextFormatting.YELLOW + outputLevel);
+            curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.emitting", outputLevel));
             if (upgraded) addAdvancedInfo(curInfo);
         }
     }
 
-    private void addAdvancedInfo(List<String> curInfo) {
-        String s = "Operation: " + TextFormatting.YELLOW + PneumaticCraftUtils.xlate(operation.getTranslationKey()) + " ";
+    private void addAdvancedInfo(List<ITextComponent> curInfo) {
+        ITextComponent s = new TranslationTextComponent("waila.redstoneModule.op", PneumaticCraftUtils.xlate(operation.getTranslationKey()));
         if (operation.useOtherColor) {
-            s += "(" + PneumaticCraftUtils.dyeColorDesc(otherColor) + ")";
+            s = s.appendText(" (").appendSibling(PneumaticCraftUtils.xlate(PneumaticCraftUtils.dyeColorDesc(otherColor)).appendText(")"));
         }
         if (operation.useConst) {
-            s += "(" + constantVal + ")";
+            s = s.appendText(" (" + constantVal + ")");
         }
         curInfo.add(s);
-        curInfo.add("Output inverted: " + TextFormatting.YELLOW + (invert ? "Yes" : "No"));
+        if (invert) curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.inverted"));
     }
 
     @Override
@@ -270,7 +271,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         if (dyeColor != null) {
             int colorId = dyeColor.getId();
             setColorChannel(colorId);
-            if (Config.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
+            if (PNCConfig.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
                 heldStack.shrink(1);
             }
             return true;

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -51,8 +51,8 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
             curInfo.add(xlate("gui.progWidget.area.error.noArea"));
         }
         Set<BlockPos> areaSet = getCachedAreaSet();
-        if (areaSet.size() > Config.Common.General.maxProgrammingArea) {
-            curInfo.add(xlate("gui.progWidget.area.error.areaTooBig", Config.Common.General.maxProgrammingArea));
+        if (areaSet.size() > PNCConfig.Common.General.maxProgrammingArea) {
+            curInfo.add(xlate("gui.progWidget.area.error.areaTooBig", PNCConfig.Common.General.maxProgrammingArea));
         }
         EntityFilterPair.addErrors(this, curInfo);
     }

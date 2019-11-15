@@ -2,26 +2,8 @@ package me.desht.pneumaticcraft.common.thirdparty;
 
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.common.config.ThirdPartyConfig;
-import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2;
-import me.desht.pneumaticcraft.common.thirdparty.baubles.Baubles;
-import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
-import me.desht.pneumaticcraft.common.thirdparty.buildcraft.BuildCraft;
-import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.OpenComputers;
-import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CraftTweaker;
-import me.desht.pneumaticcraft.common.thirdparty.enderio.EnderIO;
-import me.desht.pneumaticcraft.common.thirdparty.forestry.Forestry;
-import me.desht.pneumaticcraft.common.thirdparty.ic2.IC2;
-import me.desht.pneumaticcraft.common.thirdparty.igwmod.IGWMod;
-import me.desht.pneumaticcraft.common.thirdparty.immersiveengineering.ImmersiveEngineering;
-import me.desht.pneumaticcraft.common.thirdparty.immersivepetroleum.ImmersivePetroleum;
-import me.desht.pneumaticcraft.common.thirdparty.mekanism.Mekanism;
-import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
-import me.desht.pneumaticcraft.common.thirdparty.thaumcraft.Thaumcraft;
+import me.desht.pneumaticcraft.common.config.aux.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
-import me.desht.pneumaticcraft.common.thirdparty.toughasnails.ToughAsNails;
 import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -47,28 +29,28 @@ public class ThirdPartyManager {
     public void index() {
         Map<String, Class<? extends IThirdParty>> thirdPartyClasses = new HashMap<>();
         try {
-            thirdPartyClasses.put(ModIds.BUILDCRAFT, BuildCraft.class);
-            thirdPartyClasses.put(ModIds.IGWMOD, IGWMod.class);
-            thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft.class);
-            if (!ModList.get().isLoaded(ModIds.COMPUTERCRAFT)) {
-                thirdPartyClasses.put(ModIds.OPEN_COMPUTERS, OpenComputers.class);
-            }
-            thirdPartyClasses.put(ModIds.AE2, AE2.class);
-            thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
-            thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
-            thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
+//            thirdPartyClasses.put(ModIds.BUILDCRAFT, BuildCraft.class);
+//            thirdPartyClasses.put(ModIds.IGWMOD, IGWMod.class);
+//            thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft.class);
+//            if (!ModList.get().isLoaded(ModIds.COMPUTERCRAFT)) {
+//                thirdPartyClasses.put(ModIds.OPEN_COMPUTERS, OpenComputers.class);
+//            }
+//            thirdPartyClasses.put(ModIds.AE2, AE2.class);
+//            thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
+//            thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
+//            thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
             thirdPartyClasses.put(ModIds.WAILA, Waila.class);
             thirdPartyClasses.put(ModIds.TOP, TheOneProbe.class);
-            thirdPartyClasses.put(ModIds.CRAFTTWEAKER, CraftTweaker.class);
-            thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
-            thirdPartyClasses.put(ModIds.IMMERSIVEENGINEERING, ImmersiveEngineering.class);
-            thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
-            thirdPartyClasses.put(ModIds.BOTANIA, Botania.class);
-            thirdPartyClasses.put(ModIds.IMMERSIVE_PETROLEUM, ImmersivePetroleum.class);
-            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli.class);
-            thirdPartyClasses.put(ModIds.MEKANISM, Mekanism.class);
-            thirdPartyClasses.put(ModIds.BAUBLES, Baubles.class);
-            thirdPartyClasses.put(ModIds.TOUGH_AS_NAILS, ToughAsNails.class);
+//            thirdPartyClasses.put(ModIds.CRAFTTWEAKER, CraftTweaker.class);
+//            thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
+//            thirdPartyClasses.put(ModIds.IMMERSIVEENGINEERING, ImmersiveEngineering.class);
+//            thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
+//            thirdPartyClasses.put(ModIds.BOTANIA, Botania.class);
+//            thirdPartyClasses.put(ModIds.IMMERSIVE_PETROLEUM, ImmersivePetroleum.class);
+//            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli.class);
+//            thirdPartyClasses.put(ModIds.MEKANISM, Mekanism.class);
+//            thirdPartyClasses.put(ModIds.BAUBLES, Baubles.class);
+//            thirdPartyClasses.put(ModIds.TOUGH_AS_NAILS, ToughAsNails.class);
         } catch (Throwable e) {
             Log.error("A class loader loaded a class where we didn't expect it to do so! Please report, as third party content is broken.");
             e.printStackTrace();

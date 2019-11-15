@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.state.BooleanProperty;
@@ -31,7 +30,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft {
     private static final BooleanProperty NW = BooleanProperty.create("nw");
 
     public BlockElevatorFrame() {
-        super(Material.IRON, "elevator_frame");
+        super("elevator_frame");
     }
 
     @Override

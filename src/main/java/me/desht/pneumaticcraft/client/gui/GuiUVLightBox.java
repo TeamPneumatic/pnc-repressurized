@@ -21,8 +21,8 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("Upgr.", 28, 19, 4210752);
-        font.drawString("PCB", 70, 25, 4210752);
+        font.drawString("Upgr.", 28, 19, 0x404040);
+        font.drawString("PCB", 70, 25, 0x404040);
     }
 
     @Override

@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.common.inventory.SlotUntouchable;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronInvSync;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
-import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -156,12 +156,12 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         children.removeAll(widgetOffers);
         for (int i = 0; i < visibleOffers.size(); i++) {
             AmadronOffer offer = visibleOffers.get(i);
-            if (offer.getInput() instanceof ItemStack) {
-                container.getSlot(i * 2).putStack((ItemStack) offer.getInput());
+            if (!offer.getInput().getItem().isEmpty()) {
+                container.getSlot(i * 2).putStack(offer.getInput().getItem());
                 ((SlotUntouchable) container.getSlot(i * 2)).setEnabled(true);
             }
-            if (offer.getOutput() instanceof ItemStack) {
-                container.getSlot(i * 2 + 1).putStack((ItemStack) offer.getOutput());
+            if (!offer.getOutput().getItem().isEmpty()) {
+                container.getSlot(i * 2 + 1).putStack(offer.getOutput().getItem());
                 ((SlotUntouchable) container.getSlot(i * 2 + 1)).setEnabled(true);
             }
 

@@ -6,7 +6,7 @@
         "model": "pneumaticcraft:block/creative_compressor.obj"
     },
 	"variants": {
-		"normal": [{}],
+		"": [{}],
 		"inventory": [{
           "transform": "forge:default-block"
         }]

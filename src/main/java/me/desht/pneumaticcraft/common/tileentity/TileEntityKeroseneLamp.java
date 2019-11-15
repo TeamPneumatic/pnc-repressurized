@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.block.BlockKeroseneLamp;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
-import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.inventory.ContainerKeroseneLamp;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -18,6 +18,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -30,12 +31,11 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -135,22 +135,22 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     }
 
     private void recalculateFuelQuality() {
-        if (tank.getFluid() != null && tank.getFluid().amount > 0) {
-            if (Config.Common.Machines.keroseneLampCanUseAnyFuel) {
+        if (!tank.isEmpty()) {
+            if (PNCConfig.Common.Machines.keroseneLampCanUseAnyFuel) {
                 Fluid f = tank.getFluid().getFluid();
                 // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
-                fuelQuality = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(f.getName(), 0) / 110f;
+                fuelQuality = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(f.getRegistryName(), 0) / 110f;
             } else {
-                fuelQuality = Fluids.areFluidsEqual(tank.getFluid().getFluid(), Fluids.KEROSENE) ? 10000f : 0f;
+                fuelQuality = tank.getFluid().getFluid() == ModFluids.KEROSENE_SOURCE ? 10000f : 0f;
             }
-            fuelQuality *= Config.Common.Machines.keroseneLampFuelEfficiency;
+            fuelQuality *= PNCConfig.Common.Machines.keroseneLampFuelEfficiency;
         }
     }
 
     private void useFuel() {
         if (fuelQuality == 0) return; // tank is empty or a non-burnable liquid in the tank
         fuel -= range * range * range;
-        while (fuel <= 0 && tank.drain(1, true) != null) {
+        while (fuel <= 0 && tank.drain(1, IFluidHandler.FluidAction.EXECUTE) != null) {
             fuel += fuelQuality;
         }
         if (fuel < 0) fuel = 0;
@@ -258,7 +258,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     }
 
     private void tryAddLight(BlockPos pos, BlockPos lampPos) {
-        if (!Config.Common.Advanced.disableKeroseneLampFakeAirBlock && PneumaticCraftUtils.distBetween(pos, lampPos) <= range) {
+        if (!PNCConfig.Common.Advanced.disableKeroseneLampFakeAirBlock && PneumaticCraftUtils.distBetween(pos, lampPos) <= range) {
             if (getWorld().isAirBlock(pos) && !isLampLight(pos)) {
                 if (passesRaytraceTest(pos, lampPos)) {
                     getWorld().setBlockState(pos, ModBlocks.KEROSENE_LAMP_LIGHT.getDefaultState());
@@ -286,9 +286,14 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     }
 
     @Override
+    protected boolean shouldRerenderChunkOnDescUpdate() {
+        return true;
+    }
+
+    @Override
     public void onDescUpdate() {
         getWorld().getChunkProvider().getLightManager().checkBlock(getPos());
-        getWorld().markForRerender(getPos());
+        super.onDescUpdate();
     }
 
     @Override

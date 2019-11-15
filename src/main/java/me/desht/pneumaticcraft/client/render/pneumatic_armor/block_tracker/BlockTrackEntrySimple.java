@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
+import java.util.Collections;
 import java.util.List;
 
 public class BlockTrackEntrySimple implements IBlockTrackEntry {
@@ -22,8 +23,8 @@ public class BlockTrackEntrySimple implements IBlockTrackEntry {
     }
 
     @Override
-    public boolean getServerUpdatePositions(TileEntity te) {
-        return false;
+    public List<BlockPos> getServerUpdatePositions(TileEntity te) {
+        return Collections.emptyList();
     }
 
     @Override

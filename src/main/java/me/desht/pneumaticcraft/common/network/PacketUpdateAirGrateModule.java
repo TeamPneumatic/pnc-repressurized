@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,13 +18,13 @@ public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule<PacketUpd
 
     public PacketUpdateAirGrateModule(PacketBuffer buffer) {
         super(buffer);
-        entityFilter = PacketUtil.readUTF8String(buffer);
+        entityFilter = buffer.readString();
     }
 
     @Override
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        PacketUtil.writeUTF8String(buffer, entityFilter);
+        buffer.writeString(entityFilter);
     }
 
     @Override

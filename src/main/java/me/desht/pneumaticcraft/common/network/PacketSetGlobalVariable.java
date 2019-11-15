@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.gui.GuiRemote;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import net.minecraft.network.PacketBuffer;
@@ -34,12 +33,12 @@ public class PacketSetGlobalVariable extends LocationIntPacket {
 
     public PacketSetGlobalVariable(PacketBuffer buf) {
         super(buf);
-        this.varName = PacketUtil.readUTF8String(buf);
+        this.varName = buf.readString();
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        PacketUtil.writeUTF8String(buf, varName);
+        buf.writeString(varName);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

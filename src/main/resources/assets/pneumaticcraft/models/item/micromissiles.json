@@ -1,6 +1,6 @@
 {
   "textures" : {
-    "layer0" : "pneumaticcraft:item/micromissiles"
+    "layer0" : "pneumaticcraft:items/micromissiles"
   },
   "parent" : "item/generated"
 }

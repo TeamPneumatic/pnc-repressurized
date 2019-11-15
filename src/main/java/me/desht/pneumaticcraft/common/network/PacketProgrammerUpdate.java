@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,17 +32,17 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
     public PacketProgrammerUpdate(PacketBuffer buffer) {
         super(buffer);
         try {
-            progWidgets = new PacketBuffer(buffer).readCompoundTag();
+            progWidgets = buffer.readCompoundTag();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
         try {
-            new PacketBuffer(buffer).writeCompoundTag(progWidgets);
+            buffer.writeCompoundTag(progWidgets);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,8 +73,8 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
     }
 
     @Override
-    public ByteBuf dumpToBuffer() {
-        ByteBuf buf = Unpooled.buffer();
+    public PacketBuffer dumpToBuffer() {
+        PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
         toBytes(buf);
         return buf;
     }

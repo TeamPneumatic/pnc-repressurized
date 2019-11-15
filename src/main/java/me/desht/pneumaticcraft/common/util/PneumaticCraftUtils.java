@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
+import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -9,6 +10,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -55,7 +57,9 @@ import java.util.stream.Stream;
 public class PneumaticCraftUtils {
     private static final List<Item> inventoryItemBlacklist = new ArrayList<>();
 
-    public static final StringTextComponent BULLET = new StringTextComponent("\u2022 ");
+    public static ITextComponent bullet() {
+        return new StringTextComponent("\u2022 ");
+    }
 
     // this may return to Direction.HORIZONTALS one day (like in 1.12.2) but for now...
     public static final Direction[] HORIZONTALS = new Direction[] {
@@ -502,7 +506,7 @@ public class PneumaticCraftUtils {
         return distBetween(vec1, vec2.x, vec2.y, vec2.z);
     }
 
-    public static boolean areStacksEqual(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2, boolean checkMeta, boolean checkNBT, boolean checkItemTags, boolean checkModSimilarity) {
+    public static boolean areStacksEquivalent(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2, boolean checkDurability, boolean checkNBT, boolean checkItemTags, boolean checkModSimilarity) {
         if (stack1.isEmpty() && stack2.isEmpty()) return true;
         if (stack1.isEmpty() || stack2.isEmpty()) return false;
 
@@ -512,34 +516,19 @@ public class PneumaticCraftUtils {
             return mod1.equals(mod2);
         }
         if (checkItemTags) {
-            return ItemTagMatcher.matchTags(stack1, stack2);
+            return !Sets.intersection(stack1.getItem().getTags(), stack2.getItem().getTags()).isEmpty();
         }
 
         if (stack1.getItem() != stack2.getItem()) return false;
 
-        boolean metaOK = !checkMeta || (stack1.getDamage() == stack2.getDamage());
+        boolean durabilityOK = !checkDurability || (stack1.getMaxDamage() > 0 && stack1.getDamage() == stack2.getDamage());
         boolean nbtOK = !checkNBT || (stack1.hasTag() ? stack1.getTag().equals(stack2.getTag()) : !stack2.hasTag());
 
-        return metaOK && nbtOK;
+        return durabilityOK && nbtOK;
     }
 
-//    public static boolean isSameOreDictStack(ItemStack stack1, ItemStack stack2) {
-//        int[] oredictIds = OreDictionary.getOreIDs(stack1);
-//        for (int oredictId : oredictIds) {
-//            List<ItemStack> oreDictStacks = OreDictionary.getOres(OreDictionary.getOreName(oredictId));
-//            for (ItemStack oreDictStack : oreDictStacks) {
-//                if (OreDictionary.itemMatches(oreDictStack, stack2, false)) {
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
-
-    // TODO 1.14 fluids
     public static boolean isBlockLiquid(Block block) {
-        return false;
-//        return block instanceof BlockLiquid || block instanceof IFluidBlock;
+        return block instanceof FlowingFluidBlock;
     }
 
     public static String getOrientationName(Direction dir) {

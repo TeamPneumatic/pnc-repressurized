@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
 import net.minecraft.entity.Entity;
@@ -8,6 +7,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 /**
@@ -38,13 +38,11 @@ public class PacketSpawnRing extends LocationDoublePacket {
     }
 
     @Override
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
         buffer.writeInt(targetEntityId);
         buffer.writeInt(colors.length);
-        for (int i : colors) {
-            buffer.writeInt(i);
-        }
+        Arrays.stream(colors).forEach(buffer::writeInt);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

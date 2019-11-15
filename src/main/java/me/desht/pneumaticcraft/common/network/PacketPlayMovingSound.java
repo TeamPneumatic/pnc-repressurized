@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import net.minecraft.entity.Entity;
@@ -52,13 +51,13 @@ public class PacketPlayMovingSound {
         }
     }
 
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         buffer.writeByte(sound.ordinal());
         buffer.writeByte(sourceType.ordinal());
         if (sourceType == SourceType.ENTITY) {
             buffer.writeInt(entityId);
         } else if (sourceType == SourceType.STATIC_POS) {
-            new PacketBuffer(buffer).writeBlockPos(pos);
+            buffer.writeBlockPos(pos);
         }
     }
 

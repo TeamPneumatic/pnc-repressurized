@@ -50,7 +50,7 @@ public class ModItems {
     public static final Item TURBINE_ROTOR = null;
     public static final Item ASSEMBLY_PROGRAM_LASER = null;
     public static final Item ASSEMBLY_PROGRAM_DRILL = null;
-    public static final Item ASSEMBLY_PROGRAM_LASER_DRILL = null;
+    public static final Item ASSEMBLY_PROGRAM_DRILL_LASER = null;
     public static final Item EMPTY_PCB = null;
     public static final Item UNASSEMBLED_PCB = null;
     public static final Item PCB_BLUEPRINT = null;
@@ -95,13 +95,23 @@ public class ModItems {
     public static final Item MINIGUN = null;
     public static final Item CAMO_APPLICATOR = null;
     public static final Item MICROMISSILES = null;
+    public static final Item OIL_BUCKET = null;
+    public static final Item ETCHING_ACID_BUCKET = null;
+    public static final Item PLASTIC_BUCKET = null;
+    public static final Item DIESEL_BUCKET = null;
+    public static final Item KEROSENE_BUCKET = null;
+    public static final Item GASOLINE_BUCKET = null;
+    public static final Item LPG_BUCKET = null;
+    public static final Item LUBRICANT_BUCKET = null;
 
-    public static final ItemGroup PNC_CREATIVE_TAB = new ItemGroup(Names.MOD_ID) {
-        @Override
-        public ItemStack createIcon() {
-            return new ItemStack(ModBlocks.AIR_COMPRESSOR);
-        }
-    };
+    public static class Groups {
+        public static final ItemGroup PNC_CREATIVE_TAB = new ItemGroup(Names.MOD_ID) {
+            @Override
+            public ItemStack createIcon() {
+                return new ItemStack(ModBlocks.AIR_COMPRESSOR);
+            }
+        };
+    }
 
     public static Item getUpgradeItem(EnumUpgrade upgrade) {
         return Registration.UPGRADES.get(upgrade);
@@ -171,6 +181,15 @@ public class ModItems {
             registerItem(registry, new ItemCamoApplicator());
             registerItem(registry, new ItemMicromissiles());
 
+            registerItem(registry, new ItemBucketPneumaticCraft("oil", () -> ModFluids.OIL_SOURCE));
+            registerItem(registry, new ItemBucketPneumaticCraft("etching_acid", () -> ModFluids.ETCHING_ACID_SOURCE));
+            registerItem(registry, new ItemBucketPneumaticCraft("plastic", () -> ModFluids.PLASTIC_SOURCE));
+            registerItem(registry, new ItemBucketPneumaticCraft("diesel", () -> ModFluids.DIESEL_SOURCE));
+            registerItem(registry, new ItemBucketPneumaticCraft("kerosene", () -> ModFluids.KEROSENE_SOURCE));
+            registerItem(registry, new ItemBucketPneumaticCraft("gasoline", () -> ModFluids.GASOLINE_SOURCE));
+            registerItem(registry, new ItemBucketPneumaticCraft("lpg", () -> ModFluids.LPG_SOURCE));
+            registerItem(registry, new ItemBucketPneumaticCraft("lubricant", () -> ModFluids.LUBRICANT_SOURCE));
+
             registerUpgrades(registry);
 
             ItemPneumaticArmor.initApplicableUpgrades();
@@ -180,7 +199,7 @@ public class ModItems {
                     .forEach(b -> {
                         Item itemBlock = b instanceof ICustomItemBlock ?
                                 ((ICustomItemBlock) b).getCustomItemBlock() :
-                                new BlockItem(b, new Item.Properties().group(PNC_CREATIVE_TAB));
+                                new BlockItem(b, new Item.Properties().group(Groups.PNC_CREATIVE_TAB));
                         registerItem(registry, itemBlock.setRegistryName(b.getRegistryName()));
                     });
         }
@@ -189,7 +208,7 @@ public class ModItems {
             for (EnumUpgrade upgrade : EnumUpgrade.values()) {
                 if (upgrade.isDepLoaded()) {
                     String upgradeName = upgrade.toString().toLowerCase() + "_upgrade";
-                    Item upgradeItem = new ItemMachineUpgrade(upgradeName, upgrade.ordinal());
+                    Item upgradeItem = new ItemMachineUpgrade(upgradeName, upgrade);
                     registerItem(registry, upgradeItem);
                     UPGRADES.add(upgradeItem);
                 } else {

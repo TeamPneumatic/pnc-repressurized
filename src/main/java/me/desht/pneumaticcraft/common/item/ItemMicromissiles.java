@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.GuiMicromissile;
-import me.desht.pneumaticcraft.common.config.Config;
-import me.desht.pneumaticcraft.common.config.MicromissileDefaults;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.aux.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -49,7 +49,7 @@ public class ItemMicromissiles extends ItemPneumatic {
     }
 
     public ItemMicromissiles() {
-        super(DEFAULT_PROPS.maxStackSize(1).maxDamage(Config.Common.Micromissiles.missilePodSize), "micromissiles");
+        super(defaultProps().maxStackSize(1).maxDamage(PNCConfig.Common.Micromissiles.missilePodSize), "micromissiles");
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ItemMicromissiles extends ItemPneumatic {
         missile.posZ += directionVec.z;
         missile.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, getInitialVelocity(stack), 0.0F);
 
-        playerIn.getCooldownTracker().setCooldown(this, Config.Common.Micromissiles.launchCooldown);
+        playerIn.getCooldownTracker().setCooldown(this, PNCConfig.Common.Micromissiles.launchCooldown);
 
         if (!worldIn.isRemote) {
             RayTraceResult res = PneumaticCraftUtils.getMouseOverServer(playerIn, 100);
@@ -121,7 +121,7 @@ public class ItemMicromissiles extends ItemPneumatic {
             curInfo.add(xlate("gui.micromissile.firingMode")
                     .appendText(": " + TextFormatting.AQUA)
                     .appendSibling(xlate("gui.micromissile.mode." + tag.getString(NBT_FIRE_MODE))));
-            if (Config.Common.Micromissiles.damageTerrain) {
+            if (PNCConfig.Common.Micromissiles.damageTerrain) {
                 curInfo.add(xlate("gui.tooltip.terrainWarning"));
             } else {
                 curInfo.add(xlate("gui.tooltip.terrainSafe"));

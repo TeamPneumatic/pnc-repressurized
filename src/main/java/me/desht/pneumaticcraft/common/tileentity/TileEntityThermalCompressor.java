@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
@@ -54,7 +54,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase impleme
 
     private IHeatExchangerLogic makeConnector(Direction side) {
         IHeatExchangerLogic connector = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
-        connector.setThermalResistance(Config.Common.Machines.thermalCompressorThermalResistance);
+        connector.setThermalResistance(PNCConfig.Common.Machines.thermalCompressorThermalResistance);
         connector.addConnectedExchanger(heatExchangers[side.getHorizontalIndex()]);
         connector.addConnectedExchanger(heatExchangers[side.getOpposite().getHorizontalIndex()]);
         return connector;
@@ -84,11 +84,11 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase impleme
             }
 
             if (redstoneAllows()) {
-                connector1.setThermalResistance(Config.Common.Machines.thermalCompressorThermalResistance);
-                connector2.setThermalResistance(Config.Common.Machines.thermalCompressorThermalResistance);
+                connector1.setThermalResistance(PNCConfig.Common.Machines.thermalCompressorThermalResistance);
+                connector2.setThermalResistance(PNCConfig.Common.Machines.thermalCompressorThermalResistance);
             } else {
-                connector1.setThermalResistance(Config.Common.Machines.thermalCompressorThermalResistance * 100);
-                connector2.setThermalResistance(Config.Common.Machines.thermalCompressorThermalResistance * 100);
+                connector1.setThermalResistance(PNCConfig.Common.Machines.thermalCompressorThermalResistance * 100);
+                connector2.setThermalResistance(PNCConfig.Common.Machines.thermalCompressorThermalResistance * 100);
             }
 
             connector1.tick();
@@ -143,9 +143,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase impleme
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
         for (int i = 0; i < 4; i++) {
-            CompoundNBT t1 = new CompoundNBT();
-            heatExchangers[i].writeToNBT(t1);
-            tag.put("side" + i, t1);
+            tag.put("side" + i, heatExchangers[i].serializeNBT());
         }
         tag.putInt("redstoneMode", redstoneMode);
         return tag;
@@ -155,7 +153,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase impleme
     public void read(CompoundNBT tag) {
         super.read(tag);
         for (int i = 0; i < 4; i++) {
-            heatExchangers[i].readFromNBT(tag.getCompound("side" + i));
+            heatExchangers[i].deserializeNBT(tag.getCompound("side" + i));
         }
         redstoneMode = tag.getInt("redstoneMode");
     }
@@ -166,8 +164,8 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase impleme
     }
 
     @Override
-    public void handleGUIButtonPress(int guiID, PlayerEntity player) {
-        if (guiID == 0) {
+    public void handleGUIButtonPress(String guiID, PlayerEntity player) {
+        if (guiID.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
         }

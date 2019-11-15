@@ -1,8 +1,9 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
@@ -30,9 +31,9 @@ public abstract class TubeModuleRedstoneEmitting extends TubeModule {
     }
 
     @Override
-    public void addInfo(List<String> curInfo) {
+    public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
-        curInfo.add("Emitting redstone: " + TextFormatting.WHITE + redstone);
+        curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.emitting", redstone));
     }
 
     @Override

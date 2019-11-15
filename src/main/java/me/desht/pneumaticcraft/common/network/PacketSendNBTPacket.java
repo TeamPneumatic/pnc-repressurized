@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.TrackerBlacklistManager;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.nbt.CompoundNBT;
@@ -37,10 +36,10 @@ public class PacketSendNBTPacket extends LocationIntPacket {
         }
     }
 
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
         try {
-            new PacketBuffer(buffer).writeCompoundTag(tag);
+            buffer.writeCompoundTag(tag);
         } catch (Exception e) {
             Log.error("An exception occured when trying to encode a Send NBT Packet.");
             e.printStackTrace();

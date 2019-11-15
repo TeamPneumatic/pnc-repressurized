@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -36,7 +35,7 @@ public class PacketAmadronInvSync {
         }
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         PacketBuffer pb = new PacketBuffer(buf);
         items.forEach(pb::writeItemStack);
     }

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -33,7 +32,7 @@ public class PacketToggleArmorFeature {
         slot = EquipmentSlotType.values()[buffer.readByte()];
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeByte(featureIndex);
         buf.writeBoolean(state);
         buf.writeByte(slot.ordinal());

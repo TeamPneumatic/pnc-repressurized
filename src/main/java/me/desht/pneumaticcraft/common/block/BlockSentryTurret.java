@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -26,7 +25,7 @@ public class BlockSentryTurret extends BlockPneumaticCraft {
     private static final String NBT_ENTITY_FILTER = "EntityFilter";
 
     public BlockSentryTurret() {
-        super(Material.IRON, "sentry_turret");
+        super("sentry_turret");
     }
 
     @Override

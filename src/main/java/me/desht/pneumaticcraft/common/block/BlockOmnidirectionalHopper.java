@@ -3,17 +3,13 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -32,11 +28,11 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
     public static final EnumProperty<Direction> INPUT = EnumProperty.create("input", Direction.class);
 
     BlockOmnidirectionalHopper(String registryName) {
-        super(Material.IRON, registryName);
+        super(registryName);
     }
 
     public BlockOmnidirectionalHopper() {
-        super(Material.IRON, "omnidirectional_hopper");
+        super("omnidirectional_hopper");
     }
 
     @Override
@@ -87,19 +83,19 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
         return true;
     }
 
-    @Override
-    public RayTraceResult collisionRayTrace(BlockState blockState, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityOmnidirectionalHopper) {
-            Direction o = ((TileEntityOmnidirectionalHopper) te).getInputDirection();
-            boolean isColliding = false;
-            setBlockBounds(new AxisAlignedBB(o.getXOffset() == 1 ? 10 / 16F : 0, o.getYOffset() == 1 ? 10 / 16F : 0, o.getZOffset() == 1 ? 10 / 16F : 0, o.getXOffset() == -1 ? 6 / 16F : 1, o.getYOffset() == -1 ? 6 / 16F : 1, o.getZOffset() == -1 ? 6 / 16F : 1));
-            if (super.collisionRayTrace(blockState, world, pos, origin, direction) != null) isColliding = true;
-            setBlockBounds(new AxisAlignedBB(4 / 16F, 4 / 16F, 4 / 16F, 12 / 16F, 12 / 16F, 12 / 16F));
-            if (super.collisionRayTrace(blockState, world, pos, origin, direction) != null) isColliding = true;
-            setBlockBounds(FULL_BLOCK_AABB);
-            return isColliding ? super.collisionRayTrace(blockState, world, pos, origin, direction) : null;
-        }
-        return null;
-    }
+//    @Override
+//    public RayTraceResult collisionRayTrace(BlockState blockState, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
+//        TileEntity te = world.getTileEntity(pos);
+//        if (te instanceof TileEntityOmnidirectionalHopper) {
+//            Direction o = ((TileEntityOmnidirectionalHopper) te).getInputDirection();
+//            boolean isColliding = false;
+//            setBlockBounds(new AxisAlignedBB(o.getXOffset() == 1 ? 10 / 16F : 0, o.getYOffset() == 1 ? 10 / 16F : 0, o.getZOffset() == 1 ? 10 / 16F : 0, o.getXOffset() == -1 ? 6 / 16F : 1, o.getYOffset() == -1 ? 6 / 16F : 1, o.getZOffset() == -1 ? 6 / 16F : 1));
+//            if (super.collisionRayTrace(blockState, world, pos, origin, direction) != null) isColliding = true;
+//            setBlockBounds(new AxisAlignedBB(4 / 16F, 4 / 16F, 4 / 16F, 12 / 16F, 12 / 16F, 12 / 16F));
+//            if (super.collisionRayTrace(blockState, world, pos, origin, direction) != null) isColliding = true;
+//            setBlockBounds(FULL_BLOCK_AABB);
+//            return isColliding ? super.collisionRayTrace(blockState, world, pos, origin, direction) : null;
+//        }
+//        return null;
+//    }
 }

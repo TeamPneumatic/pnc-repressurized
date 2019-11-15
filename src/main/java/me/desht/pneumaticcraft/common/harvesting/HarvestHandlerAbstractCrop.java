@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.harvesting;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
-import me.desht.pneumaticcraft.api.harvesting.IHarvestHandler;
+import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import java.util.List;
 import java.util.function.Predicate;
 
-public abstract class HarvestHandlerAbstractCrop implements IHarvestHandler {
+public abstract class HarvestHandlerAbstractCrop extends HarvestHandler {
 
     private final Predicate<BlockState> blockChecker;
     

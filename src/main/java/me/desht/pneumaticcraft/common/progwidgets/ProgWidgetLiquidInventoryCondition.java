@@ -2,15 +2,14 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
 
@@ -36,8 +35,8 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
             }
 
             private int countFluid(World world, BlockPos pos) {
-                FluidStack fluidStack = FluidUtils.getFluidAt(world, pos, false);
-                if (fluidStack != null && ProgWidgetLiquidFilter.isLiquidValid(fluidStack.getFluid(), progWidget, 1)) {
+                IFluidState state = world.getFluidState(pos);
+                if (ProgWidgetLiquidFilter.isLiquidValid(state.getFluid(), progWidget, 1)) {
                     return 1000;
                 } else {
                     return 0;
@@ -47,12 +46,10 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
             private int countFluid(TileEntity te) {
                 return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).map(handler -> {
                     int total = 0;
-                    for (IFluidTankProperties prop : handler.getTankProperties()) {
-                        FluidStack stack = prop.getContents();
-                        if (stack != null) {
-                            if (ProgWidgetLiquidFilter.isLiquidValid(stack.getFluid(), progWidget, 1)) {
-                                total += stack.amount;
-                            }
+                    for (int i = 0; i < handler.getTanks(); i++) {
+                        FluidStack stack = handler.getFluidInTank(i);
+                        if (!stack.isEmpty() && ProgWidgetLiquidFilter.isLiquidValid(stack.getFluid(), progWidget, 1)) {
+                            total += stack.getAmount();
                         }
                     }
                     return total;

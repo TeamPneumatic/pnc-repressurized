@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -27,8 +26,8 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
     public static final ModelProperty<IEnviromentBlockReader> BLOCK_ACCESS = new ModelProperty<>();
     public static final ModelProperty<BlockPos> BLOCK_POS = new ModelProperty<>();
 
-    protected BlockPneumaticCraftCamo(Material material, String registryName) {
-        super(material, registryName);
+    protected BlockPneumaticCraftCamo(String registryName) {
+        super(registryName);
     }
 
     /**

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory.handler;
 
+import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.item.ItemStack;

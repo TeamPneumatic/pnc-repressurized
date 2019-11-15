@@ -1,14 +1,5 @@
 package me.desht.pneumaticcraft.common.event;
 
-import net.minecraft.entity.item.FireworkRocketEntity;
-import net.minecraft.item.DyeItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.world.World;
-
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
@@ -48,53 +39,52 @@ public class DateEventHandler {
         return isIronManEvent;
     }
 
-    public static void spawnFirework(World world, double x, double y, double z) {
-        ItemStack rocket = new ItemStack(Items.FIREWORK_ROCKET);
-
-        ItemStack itemstack1 = getFireworkCharge();
-
-        CompoundNBT nbttagcompound = new CompoundNBT();
-        CompoundNBT nbttagcompound1 = new CompoundNBT();
-        ListNBT nbttaglist = new ListNBT();
-
-        if (itemstack1 != null && itemstack1.getItem() == Items.FIRE_CHARGE && itemstack1.hasTag() && itemstack1.getTag().contains("Explosion")) {
-            nbttaglist.add(nbttaglist.size(), itemstack1.getTag().getCompound("Explosion"));
-        }
-
-        nbttagcompound1.put("Explosions", nbttaglist);
-        nbttagcompound1.putByte("Flight", (byte) 2);
-        nbttagcompound.put("Fireworks", nbttagcompound1);
-
-        rocket.setTag(nbttagcompound);
-
-        FireworkRocketEntity entity = new FireworkRocketEntity(world, x, y, z, rocket);
-        world.addEntity(entity);
-    }
-
-    private static ItemStack getFireworkCharge() {
-        ItemStack charge = new ItemStack(Items.FIRE_CHARGE);
-        CompoundNBT nbttagcompound = new CompoundNBT();
-        CompoundNBT nbttagcompound1 = new CompoundNBT();
-        ArrayList<Integer> arraylist = new ArrayList<>();
-
-        arraylist.add(DyeItem.DYE_COLORS[rand.nextInt(16)]);
-
-        if (rand.nextBoolean()) nbttagcompound1.setBoolean("Flicker", true);
-
-        if (rand.nextBoolean()) nbttagcompound1.setBoolean("Trail", true);
-
-        byte b0 = (byte) rand.nextInt(5);
-
-        int[] aint = new int[arraylist.size()];
-
-        for (int j2 = 0; j2 < aint.length; ++j2) {
-            aint[j2] = arraylist.get(j2);
-        }
-
-        nbttagcompound1.setIntArray("Colors", aint);
-        nbttagcompound1.setByte("Type", b0);
-        nbttagcompound.setTag("Explosion", nbttagcompound1);
-        charge.setTagCompound(nbttagcompound);
-        return charge;
-    }
+//    public static void spawnFirework(World world, double x, double y, double z) {
+//        ItemStack rocket = new ItemStack(Items.FIREWORK_ROCKET);
+//
+//        ItemStack itemstack1 = getFireworkCharge();
+//
+//        CompoundNBT nbttagcompound = new CompoundNBT();
+//        CompoundNBT nbttagcompound1 = new CompoundNBT();
+//        ListNBT nbttaglist = new ListNBT();
+//
+//        if (itemstack1 != null && itemstack1.getItem() == Items.FIRE_CHARGE && itemstack1.hasTag() && itemstack1.getTag().contains("Explosion")) {
+//            nbttaglist.add(nbttaglist.size(), itemstack1.getTag().getCompound("Explosion"));
+//        }
+//
+//        nbttagcompound1.put("Explosions", nbttaglist);
+//        nbttagcompound1.putByte("Flight", (byte) 2);
+//        nbttagcompound.put("Fireworks", nbttagcompound1);
+//
+//        rocket.setTag(nbttagcompound);
+//
+//        FireworkRocketEntity entity = new FireworkRocketEntity(world, x, y, z, rocket);
+//        world.addEntity(entity);
+//    }
+//
+//    private static ItemStack getFireworkCharge() {
+//        ItemStack charge = new ItemStack(Items.FIRE_CHARGE);
+//        CompoundNBT nbttagcompound = new CompoundNBT();
+//        CompoundNBT nbttagcompound1 = new CompoundNBT();
+//        ArrayList<DyeColor> arraylist = new ArrayList<>();
+//
+//        arraylist.add(DyeColor.byId(rand.nextInt(16)));
+//
+//        if (rand.nextBoolean()) nbttagcompound1.putBoolean("Flicker", true);
+//        if (rand.nextBoolean()) nbttagcompound1.putBoolean("Trail", true);
+//
+//        byte b0 = (byte) rand.nextInt(5);
+//
+//        DyeColor[] aint = new DyeColor[arraylist.size()];
+//
+//        for (int j2 = 0; j2 < aint.length; ++j2) {
+//            aint[j2] = arraylist.get(j2);
+//        }
+//
+//        nbttagcompound1.setIntArray("Colors", aint);
+//        nbttagcompound1.setByte("Type", b0);
+//        nbttagcompound.setTag("Explosion", nbttagcompound1);
+//        charge.setTagCompound(nbttagcompound);
+//        return charge;
+//    }
 }

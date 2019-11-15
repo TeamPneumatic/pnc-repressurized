@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -23,11 +22,11 @@ public class PacketGuiButton {
     }
 
     public PacketGuiButton(PacketBuffer buffer) {
-        tag = PacketUtil.readUTF8String(buffer);
+        tag = buffer.readString();
     }
 
-    public void toBytes(ByteBuf buffer) {
-        PacketUtil.writeUTF8String(buffer, tag);
+    public void toBytes(PacketBuffer buffer) {
+        buffer.writeString(tag);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

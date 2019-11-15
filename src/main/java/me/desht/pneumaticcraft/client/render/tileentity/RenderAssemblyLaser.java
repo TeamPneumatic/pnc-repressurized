@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyLaser;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderAssemblyLaser extends AbstractModelRenderer<TileEntityAssemblyLaser> {
+public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAssemblyLaser> {
     private final ModelAssemblyLaser model;
 
     public RenderAssemblyLaser() {

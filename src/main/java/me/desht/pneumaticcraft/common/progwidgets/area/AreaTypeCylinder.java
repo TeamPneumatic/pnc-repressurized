@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea.EnumAreaType;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
@@ -134,8 +133,8 @@ public class AreaTypeCylinder extends AreaType{
     @Override
     public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);
-        tag.setByte("axis", (byte)axis.ordinal());
-        tag.setByte("cylinderType", (byte)cylinderType.ordinal());
+        tag.putByte("axis", (byte)axis.ordinal());
+        tag.putByte("cylinderType", (byte)cylinderType.ordinal());
     }
     
     @Override
@@ -143,22 +142,5 @@ public class AreaTypeCylinder extends AreaType{
         super.readFromNBT(tag);
         axis = EnumAxis.values()[tag.getByte("axis")];
         cylinderType = EnumCylinderType.values()[tag.getByte("cylinderType")];
-    }
-
-    @Override
-    public void convertFromLegacy(EnumAreaType oldAreaType, int typeInfo){
-        switch(oldAreaType){
-            case X_CYLINDER:
-                axis = EnumAxis.X;
-                break;
-            case Y_CYLINDER:
-                axis = EnumAxis.Y;
-                break;
-            case Z_CYLINDER:
-                axis = EnumAxis.Z;
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
     }
 }

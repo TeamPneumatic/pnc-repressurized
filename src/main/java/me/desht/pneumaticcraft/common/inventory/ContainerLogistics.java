@@ -60,7 +60,7 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> {
 
     private static SemiBlockLogistics getLogistics(World world, PlayerEntity player, ItemStack stack) {
         if (stack.getItem() instanceof ItemLogisticsFrame) {
-            SemiBlockLogistics logistics = (SemiBlockLogistics) SemiBlockManager.getSemiBlockForKey(((ItemLogisticsFrame) stack.getItem()).semiBlockId);
+            SemiBlockLogistics logistics = (SemiBlockLogistics) SemiBlockManager.getSemiBlockForKey(stack.getItem().getRegistryName());
             if (logistics != null) {
                 logistics.initialize(world, BlockPos.ZERO);
                 logistics.onPlaced(player, stack, null);

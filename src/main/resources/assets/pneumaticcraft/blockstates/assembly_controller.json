@@ -10,7 +10,7 @@
     "model": "pneumaticcraft:block/assembly_controller"
   },
   "variants": {
-    "normal": [{}],
+    "": [{}],
     "inventory": [{
       "model": "pneumaticcraft:block/assembly_controller_inv.obj",
       "custom": { "flip-v" : true},

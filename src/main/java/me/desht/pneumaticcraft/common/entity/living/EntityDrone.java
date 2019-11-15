@@ -16,11 +16,11 @@ import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft.DamageSourceDro
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.ai.*;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
@@ -28,8 +28,8 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
-import me.desht.pneumaticcraft.common.recipes.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.AmadronOfferCustom;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -67,6 +67,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.client.CPlayerDiggingPacket;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
@@ -81,9 +82,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -94,10 +95,10 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.FMLPlayMessages;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -110,6 +111,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+import static net.minecraft.util.Direction.UP;
 
 public class EntityDrone extends EntityDroneBase implements
         IManoMeasurable, IPneumaticWrenchable, IEntityAdditionalSpawnData,
@@ -290,13 +292,13 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer data) {
-        PacketUtil.writeUTF8String(data, getFakePlayer().getName().getFormattedText());
+    public void writeSpawnData(PacketBuffer buffer) {
+        buffer.writeString(getFakePlayer().getName().getFormattedText());
     }
 
     @Override
-    public void readSpawnData(PacketBuffer data) {
-        playerName = PacketUtil.readUTF8String(data);
+    public void readSpawnData(PacketBuffer buffer) {
+        playerName = buffer.readString();
     }
 
     /**
@@ -315,13 +317,13 @@ public class EntityDrone extends EntityDroneBase implements
     @Nullable
     @Override
     protected SoundEvent getHurtSound(DamageSource p_184601_1_) {
-        return Sounds.DRONE_HURT;
+        return ModSounds.DRONE_HURT;
     }
 
     @Nullable
     @Override
     protected SoundEvent getDeathSound() {
-        return Sounds.DRONE_DEATH;
+        return ModSounds.DRONE_DEATH;
     }
 
     @Override
@@ -485,7 +487,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public ItemStack getDroneHeldItem() {
-        return Config.Client.dronesRenderHeldItem ? dataManager.get(HELD_ITEM) : ItemStack.EMPTY;
+        return PNCConfig.Client.dronesRenderHeldItem ? dataManager.get(HELD_ITEM) : ItemStack.EMPTY;
     }
 
     @Override
@@ -678,7 +680,7 @@ public class EntityDrone extends EntityDroneBase implements
                 DyeColor color = DyeColor.getColor(equippedItem);
                 if (color != null) {
                     setDroneColor(color.getId());
-                    if (Config.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
+                    if (PNCConfig.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
                         equippedItem.shrink(1);
                         if (equippedItem.getCount() <= 0) {
                             player.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY);
@@ -761,7 +763,10 @@ public class EntityDrone extends EntityDroneBase implements
                 }
             }
         }
-        if (!world.isRemote) getFakePlayer().interactionManager.abortDestroyBlock();
+        if (!world.isRemote) {
+            // 3rd & 3th parameters are unimportant here
+            getFakePlayer().interactionManager.func_225416_a(getDugBlock(), CPlayerDiggingPacket.Action.ABORT_DESTROY_BLOCK, UP, 0);
+        }
         setCustomName(new StringTextComponent(""));  // keep other mods (like CoFH Core) quiet about death message broadcasts
         super.onDeath(par1DamageSource);
         MinecraftForge.EVENT_BUS.unregister(this);
@@ -1016,7 +1021,7 @@ public class EntityDrone extends EntityDroneBase implements
     public boolean attackEntityFrom(DamageSource damageSource, float damage) {
         if (damageSource == DamageSource.IN_WALL) {
             isSuffocating = true;
-            if (suffocationCounter-- > 0 || !Config.Common.General.enableDroneSuffocation) {
+            if (suffocationCounter-- > 0 || !PNCConfig.Common.General.enableDroneSuffocation) {
                 return false;
             }
         }
@@ -1405,7 +1410,7 @@ public class EntityDrone extends EntityDroneBase implements
 
         @Override
         public void updateHeldItem() {
-            if (heldItemChanged && Config.Client.dronesRenderHeldItem)
+            if (heldItemChanged && PNCConfig.Client.dronesRenderHeldItem)
                 dataManager.set(HELD_ITEM, getStackInSlot(0));
 
             super.updateHeldItem();

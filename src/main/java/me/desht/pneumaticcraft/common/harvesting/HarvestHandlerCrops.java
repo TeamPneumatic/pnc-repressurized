@@ -11,7 +11,7 @@ import net.minecraft.world.World;
  * @author MineMaarten
  *
  */
-public class HarvestHandlerCrops extends HarvestHandlerAbstractCrop{    
+public class HarvestHandlerCrops extends HarvestHandlerAbstractCrop {
     public HarvestHandlerCrops(){
         super(state -> state.getBlock() instanceof CropsBlock);
     }

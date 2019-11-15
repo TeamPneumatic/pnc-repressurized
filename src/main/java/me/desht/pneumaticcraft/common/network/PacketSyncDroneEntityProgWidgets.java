@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
@@ -36,8 +35,8 @@ public class PacketSyncDroneEntityProgWidgets {
         entityId = buffer.readInt();
     }
 
-    public void toBytes(ByteBuf buf) {
-        new PacketBuffer(buf).writeCompoundTag(TileEntityProgrammer.setWidgetsToNBT(progWidgets, new CompoundNBT()));
+    public void toBytes(PacketBuffer buf) {
+        buf.writeCompoundTag(TileEntityProgrammer.setWidgetsToNBT(progWidgets, new CompoundNBT()));
         buf.writeInt(entityId);
     }
 

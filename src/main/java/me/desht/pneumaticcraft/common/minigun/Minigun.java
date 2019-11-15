@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.config.Config;
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -243,11 +243,11 @@ public abstract class Minigun {
             if (getMinigunTriggerTimeOut() > 0) {
                 setMinigunTriggerTimeOut(getMinigunTriggerTimeOut() - 1);
                 if (getMinigunSpeed() == 0) {
-                    playSound(Sounds.HUD_INIT, 3, 0.9F);
+                    playSound(ModSounds.HUD_INIT, 3, 0.9F);
                 }
             }
             if (getMinigunSoundCounter() == 0 && getMinigunTriggerTimeOut() == 0) {
-                playSound(Sounds.MINIGUN_STOP, 3, 0.5F);
+                playSound(ModSounds.MINIGUN_STOP, 3, 0.5F);
                 setMinigunSoundCounter(-1);
             }
         }
@@ -349,7 +349,7 @@ public abstract class Minigun {
 
     public double getRange() {
         double mul = getAmmoStack().getItem() instanceof ItemGunAmmo ? ((ItemGunAmmo) ammoStack.getItem()).getRangeMultiplier(ammoStack) : 1;
-        return (Config.Common.Minigun.baseRange + 5 * getUpgrades(EnumUpgrade.RANGE)) * mul;
+        return (PNCConfig.Common.Minigun.baseRange + 5 * getUpgrades(EnumUpgrade.RANGE)) * mul;
     }
 
     public boolean dispenserWeightedPercentage(int basePct) {

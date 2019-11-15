@@ -118,7 +118,8 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
         if (stack.getItem() == ModItems.NETWORK_REGISTRY || stack.getItem() == ModItems.DIAGNOSTIC_SUBROUTINE) {
             hackedSuccessfully = true;
             PlayerEntity player = Minecraft.getInstance().player;
-            NetworkHandler.sendToServer(new PacketSecurityStationAddHacker(station, player.getUniqueID()));
+            // TODO should be sending entity or player UUID here
+            NetworkHandler.sendToServer(new PacketSecurityStationAddHacker(station, player.getName().getString()));
             player.closeScreen();
             player.sendStatusMessage(new StringTextComponent(TextFormatting.GREEN + "Hacking successful! This Security Station has been disabled!"), false);
             if (gui instanceof GuiSecurityStationHacking) {

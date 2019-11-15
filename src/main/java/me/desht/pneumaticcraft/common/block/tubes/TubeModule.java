@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
@@ -15,6 +14,8 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -155,16 +156,16 @@ public abstract class TubeModule {
         if (pressureTube instanceof TileEntityPressureTube) ((TileEntityPressureTube) pressureTube).sendDescriptionPacket();
     }
 
-    public void addInfo(List<String> curInfo) {
+    public void addInfo(List<ITextComponent> curInfo) {
         if (upgraded) {
             ItemStack stack = new ItemStack(ModItems.ADVANCED_PCB);
-            curInfo.add(TextFormatting.GREEN + stack.getDisplayName().getFormattedText() + " installed");
+            curInfo.add(stack.getDisplayName().appendText(" installed").applyTextStyle(TextFormatting.GREEN));
         }
         if (this instanceof INetworkedModule) {
             int colorChannel = ((INetworkedModule) this).getColorChannel();
-            curInfo.add(PneumaticCraftUtils.xlate("waila.logisticsModule.channel") + " "
-                    + TextFormatting.YELLOW
-                    + PneumaticCraftUtils.xlate("color.minecraft." + DyeColor.byId(colorChannel).getTranslationKey()));
+            String key = "color.minecraft." + DyeColor.byId(colorChannel);
+            curInfo.add(new StringTextComponent("waila.logisticsModule.channel").appendText(" ")
+                    .appendSibling(new StringTextComponent(key).applyTextStyle(TextFormatting.YELLOW)));
         }
     }
 

@@ -7,9 +7,11 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.*;
 
@@ -115,7 +117,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         ListNBT tagList = new ListNBT();
         for (HeatBehaviour behaviour : behaviours) {
             CompoundNBT t = behaviour.serializeNBT();
-            t.putString("id", behaviour.getId());
+            t.putString("id", behaviour.getId().toString());
             tagList.add(t);
         }
         tag.put("behaviours", tagList);
@@ -126,10 +128,10 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     public void deserializeNBT(CompoundNBT nbt) {
         temperature = nbt.getDouble("temperature");
         behaviours.clear();
-        ListNBT tagList = nbt.getList("behaviours", 10);
+        ListNBT tagList = nbt.getList("behaviours", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
             CompoundNBT t = tagList.getCompound(i);
-            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().makeNewBehaviourForId(t.getString("id"));
+            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().makeNewBehaviourForId(new ResourceLocation(t.getString("id")));
             if (behaviour != null) {
                 behaviour.deserializeNBT(t);
                 behaviours.add(behaviour);
@@ -162,7 +164,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
             // upon loading from NBT the world is null. gets initialized once 'initializeAsHull' is invoked.
             if (behaviour.getWorld() != null) {
                 if (behaviour.isApplicable()) {
-                    behaviour.update();
+                    behaviour.tick();
                 } else {
                     iterator.remove();
                 }

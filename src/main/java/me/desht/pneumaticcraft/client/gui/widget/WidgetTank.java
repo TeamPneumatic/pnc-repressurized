@@ -5,11 +5,12 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import java.awt.*;
 import java.util.List;
@@ -28,12 +29,18 @@ public class WidgetTank extends Widget implements ITooltipSupplier {
     }
 
     public WidgetTank(int x, int y, FluidStack stack) {
-        this(x, y, new FluidTank(stack, 160000));
+        this(x, y, makeTank(stack, 160000));
     }
 
     public WidgetTank(int x, int y, int width, int height, FluidStack stack) {
         super(x, y, width, height, "");
-        tank = new FluidTank(stack, stack.amount);
+        tank = makeTank(stack, stack.getAmount());
+    }
+
+    private static FluidTank makeTank(FluidStack stack, int capacity) {
+        FluidTank tank = new FluidTank(capacity);
+        tank.fill(stack, IFluidHandler.FluidAction.EXECUTE);
+        return tank;
     }
 
     @Override
@@ -73,7 +80,7 @@ public class WidgetTank extends Widget implements ITooltipSupplier {
             curTip.add(TextFormatting.GRAY + I18n.format("gui.liquid.empty"));
         } else {
             curTip.add(amt + "/" + capacity + " mb");
-            curTip.add(TextFormatting.GRAY + fluid.getLocalizedName(new FluidStack(fluid, amt)));
+            curTip.add(TextFormatting.GRAY + new FluidStack(fluid, amt).getDisplayName().getFormattedText());
         }
     }
 

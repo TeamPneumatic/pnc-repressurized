@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.proxy;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.AreaShowManager;
 import me.desht.pneumaticcraft.client.ClientEventHandler;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
@@ -9,7 +8,6 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.model.TintedOBJLoader;
 import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassModelLoader;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
@@ -26,7 +24,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.settings.KeyModifier;
@@ -89,14 +86,14 @@ public class ClientProxy implements IProxy {
         return Screen.hasShiftDown();
     }
 
-    @Override
-    public void initConfig() {
-        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-            for (IUpgradeRenderHandler renderHandler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
-                renderHandler.initConfig();
-            }
-        }
-    }
+//    @Override
+//    public void initConfig() {
+//        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+//            for (IUpgradeRenderHandler renderHandler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
+//                renderHandler.initConfig();
+//            }
+//        }
+//    }
 
     @Override
     public String xlate(String key) {

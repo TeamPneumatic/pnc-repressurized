@@ -6,10 +6,10 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
-import me.desht.pneumaticcraft.common.core.Sounds;
 import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.pressure.AirHandler;
@@ -126,7 +126,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                     if (!getWorld().isRemote) updateFloors();
                 }
                 if (isStopped) {
-                    soundName = Sounds.ELEVATOR_START;
+                    soundName = ModSounds.ELEVATOR_RISING_START;
                     isStopped = false;
                     if (!world.isRemote) {
                         PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
@@ -158,7 +158,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                     if (!getWorld().isRemote) updateFloors();
                 }
                 if (isStopped) {
-                    soundName = Sounds.ELEVATOR_START;
+                    soundName = ModSounds.ELEVATOR_RISING_START;
                     isStopped = false;
                     if (!world.isRemote) {
                         PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
@@ -172,7 +172,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 //  movePlayerDown();
             }
             if (oldExtension == extension && !isStopped) {
-                soundName = Sounds.ELEVATOR_STOP;
+                soundName = ModSounds.ELEVATOR_RISING_STOP;
                 isStopped = true;
             }
 
@@ -257,7 +257,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             elevatorBases++;
         } while (getWorld().getBlockState(getPos().add(0, -elevatorBases, 0)).getBlock() == ModBlocks.ELEVATOR_BASE);
 
-        maxFloorHeight = Math.min(i, elevatorBases * Config.Common.Machines.elevatorBaseBlocksPerBase);
+        maxFloorHeight = Math.min(i, elevatorBases * PNCConfig.Common.Machines.elevatorBaseBlocksPerBase);
     }
 
     // NBT methods-----------------------------------------------

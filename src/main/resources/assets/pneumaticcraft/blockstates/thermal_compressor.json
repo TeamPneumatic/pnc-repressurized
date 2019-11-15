@@ -8,7 +8,7 @@
     "model": "pneumaticcraft:block/thermal_compressor"
   },
   "variants": {
-    "normal": [{}],
+    "": [{}],
     "inventory": [{
       "transform": "forge:default-block"
     }]

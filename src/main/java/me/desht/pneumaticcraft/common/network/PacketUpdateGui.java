@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.network.PacketBuffer;
@@ -33,16 +32,11 @@ public class PacketUpdateGui {
         value = SyncedField.fromBytes(buf, type);
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeInt(syncId);
         buf.writeByte(type);
         SyncedField.toBytes(buf, value, type);
     }
-
-//    @Override
-//    public boolean canHandlePacketAlready(PacketUpdateGui message, PlayerEntity player) {
-//        return super.canHandlePacketAlready(message, player) && player.openContainer instanceof ContainerPneumaticBase;
-//    }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {

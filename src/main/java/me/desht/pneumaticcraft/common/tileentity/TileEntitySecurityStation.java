@@ -170,6 +170,10 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         sendDescriptionPacket();
     }
 
+    public HackingContainerProvider getHackingContainerProvider() {
+        return new HackingContainerProvider();
+    }
+
     public void addSharedUser(GameProfile user) {
         for (GameProfile sharedUser : sharedUsers) {
             if (gameProfileEquals(sharedUser, user)) return;

@@ -8,7 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderPressureChamberInterface extends AbstractModelRenderer<TileEntityPressureChamberInterface> {
+public class RenderPressureChamberInterface extends AbstractTileModelRenderer<TileEntityPressureChamberInterface> {
     private final ModelPressureChamberInterface model;
 
     public RenderPressureChamberInterface() {

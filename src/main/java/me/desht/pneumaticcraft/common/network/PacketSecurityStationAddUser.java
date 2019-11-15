@@ -20,9 +20,9 @@ public class PacketSecurityStationAddUser extends PacketSecurityStation {
     }
 
     @Override
-    protected void handle(TileEntity te, String profile) {
+    protected void handle(TileEntity te, String username) {
         if (te instanceof TileEntitySecurityStation) {
-            ((TileEntitySecurityStation) te).addSharedUser(new GameProfile(null, profile));
+            ((TileEntitySecurityStation) te).addSharedUser(new GameProfile(null, username));
         }
     }
 

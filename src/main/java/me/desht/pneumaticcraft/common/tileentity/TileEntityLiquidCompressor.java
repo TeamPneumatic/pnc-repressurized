@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -21,12 +22,11 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -76,7 +76,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     private int getFuelValue(Fluid fluid) {
-        Integer value = PneumaticCraftAPIHandler.getInstance().liquidFuels.get(fluid.getName());
+        Integer value = PneumaticCraftAPIHandler.getInstance().liquidFuels.get(fluid.getRegistryName());
         return value == null ? 0 : value;
     }
 
@@ -94,7 +94,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
                     double fuelValue = getFuelValue(tank.getFluid()) / 1000D;
                     if (fuelValue > 0) {
                         int usedFuel = Math.min(tank.getFluidAmount(), (int) (usageRate / fuelValue) + 1);
-                        tank.drain(usedFuel, true);
+                        tank.drain(usedFuel, IFluidHandler.FluidAction.EXECUTE);
                         internalFuelBuffer += usedFuel * fuelValue;
                     }
                 }

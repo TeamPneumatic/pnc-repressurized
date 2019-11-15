@@ -7,7 +7,7 @@
     "model": "pneumaticcraft:block/assembly_base"
   },
   "variants": {
-    "normal": [{}],
+    "": [{}],
     "inventory": [{
       "custom": { "flip-v" : true},
       "model": "pneumaticcraft:block/assembly_drill.obj",

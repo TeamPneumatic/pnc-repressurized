@@ -1,22 +1,26 @@
 package me.desht.pneumaticcraft.api.recipe;
 
+import me.desht.pneumaticcraft.common.recipes.BasicPressureChamberRecipe;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public interface IPressureChamberRecipe {
-    List<ItemIngredient> EMPTY_INPUT = Collections.emptyList();
-    NonNullList<ItemStack> EMPTY_RESULT = NonNullList.create();
+public interface IPressureChamberRecipe extends IModRecipe {
+    NonNullList<ItemStack> EMPTY_LIST = NonNullList.create();
     String NBT_TOOLTIP_KEY = "pnc:tooltip_key";
 
     /**
-     * Returns the threshold which is minimal to craft the recipe. Negative pressures are also acceptable; in this
+     * Returns the minimum pressure required to craft the recipe. Negative pressures are also acceptable; in this
      * case the pressure chamber's pressure must be <strong>lower</strong> than the required pressure.
      *
      * @return threshold pressure
@@ -33,17 +37,19 @@ public interface IPressureChamberRecipe {
 
     /**
      * Get the input items for this recipe. This is primarily intended for recipe display purposes by
-     * JEI or any other recipe display mod.
+     * JEI or any other recipe display mod.  This is a list of lists so that alternates can be displayed where
+     * multiple items match a tag, for example.
      */
-    default List<ItemIngredient> getInput() {
-        return EMPTY_INPUT;
+    default List<List<ItemStack>> getInputsForDisplay() {
+        return Collections.emptyList();
     }
+
     /**
      * Get the output of this recipe, without crafting it.  This is primarily intended for recipe display purposes by
      * JEI or any other recipe display mod.
      */
-    default NonNullList<ItemStack> getResult() {
-        return EMPTY_RESULT;
+    default NonNullList<ItemStack> getResultForDisplay() {
+        return EMPTY_LIST;
     }
 
     /**
@@ -79,4 +85,38 @@ public interface IPressureChamberRecipe {
         return stack.getTag().getString(NBT_TOOLTIP_KEY);
     }
 
+    /**
+     * Create a standard Pressure Chamber recipe.  Note that each input ingredient represents a
+     * single item, but the same item can appear in the input list more than once.
+     *
+     * @param id unique recipe ID
+     * @param inputs a list of input ingredients
+     * @param pressureRequired the pressure require (this is a minimum if positive, and a maximum if negative)
+     * @param outputs the output item(s)
+     * @return a recipe suitable for adding via {@link RegisterMachineRecipesEvent#getPressureChamber()}
+     */
+    static IPressureChamberRecipe basicRecipe(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs) {
+        return new BasicPressureChamberRecipe(id, inputs, pressureRequired, outputs);
+    }
+
+    /**
+     * Used for client-side sync'ing of recipes: do not call directly!
+     * @param buf a packet buffer
+     * @return a deserialised recipe
+     */
+    static IPressureChamberRecipe read(PacketBuffer buf) {
+        ResourceLocation id = buf.readResourceLocation();
+        float pressure = buf.readFloat();
+        int nInputs = buf.readVarInt();
+        List<Ingredient> in = new ArrayList<>();
+        for (int i = 0; i < nInputs; i++) {
+            in.add(Ingredient.read(buf));
+        }
+        int nOutputs = buf.readVarInt();
+        ItemStack[] out = new ItemStack[nOutputs];
+        for (int i = 0; i < nOutputs; i++) {
+            out[i] = buf.readItemStack();
+        }
+        return new BasicPressureChamberRecipe(id, in, pressure, out);
+    }
 }

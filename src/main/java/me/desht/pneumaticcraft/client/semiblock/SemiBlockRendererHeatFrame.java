@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.semiblock;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.model.semiblocks.ModelHeatFrame;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockHeatFrame;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -24,12 +24,12 @@ public class SemiBlockRendererHeatFrame implements ISemiBlockRenderer<SemiBlockH
         GlStateManager.translated(aabb.minX, aabb.minY, aabb.minZ);
         GlStateManager.scaled(aabb.maxX - aabb.minX, aabb.maxY - aabb.minY, aabb.maxZ - aabb.minZ);
         GlStateManager.translated(0.5, -0.5, 0.5);
-        model.render(null, 0, 0, 0, 0, 0, 1 / 16F);
+        model.render(1 / 16F);
         GlStateManager.color4f(1, 1, 1, 1);
     }
 
     private float getLightMultiplier(SemiBlockHeatFrame semiBlock) {
-        if (!Config.Client.semiBlockLighting) return 1.0F;
+        if (!PNCConfig.Client.semiBlockLighting) return 1.0F;
 
         float lightMul = Math.max(0.05F, Minecraft.getInstance().world.getLight(semiBlock.getPos()) / 15F);
         if (semiBlock.getHeatLevel() > 15) {

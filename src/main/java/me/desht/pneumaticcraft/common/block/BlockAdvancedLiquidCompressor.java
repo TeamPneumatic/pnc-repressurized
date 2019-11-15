@@ -1,13 +1,12 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedLiquidCompressor;
-import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 
 public class BlockAdvancedLiquidCompressor extends BlockPneumaticCraft {
 
     public BlockAdvancedLiquidCompressor() {
-        super(Material.IRON, "advanced_liquid_compressor");
+        super("advanced_liquid_compressor");
     }
 
     @Override

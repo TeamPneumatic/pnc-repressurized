@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -37,7 +37,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     private static final String NBT_POTION = "potion";
 
     public ItemGunAmmoStandard() {
-        super(DEFAULT_PROPS.maxDamage(Config.Common.Minigun.standardAmmoCartridgeSize), "gun_ammo");
+        super(defaultProps().maxDamage(PNCConfig.Common.Minigun.standardAmmoCartridgeSize), "gun_ammo");
     }
 
     @Nonnull
@@ -124,7 +124,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
         if (!potion.isEmpty() && target instanceof LivingEntity) {
             LivingEntity entity = (LivingEntity) target;
             PlayerEntity shooter = minigun.getPlayer();
-            if (minigun.dispenserWeightedPercentage(Config.Common.Minigun.potionProcChance, 0.25f)) {
+            if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.potionProcChance, 0.25f)) {
                 if (potion.getItem() == Items.POTION) {
                     List<EffectInstance> effects = PotionUtils.getEffectsFromStack(potion);
                     for (EffectInstance effect : effects) {
@@ -150,7 +150,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
         ItemStack potion = getPotion(ammo);
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
             PlayerEntity shooter = minigun.getPlayer();
-            int chance = Config.Common.Minigun.potionProcChance + minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) * 2;
+            int chance = PNCConfig.Common.Minigun.potionProcChance + minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) * 2;
             if (shooter.world.rand.nextInt(100) < chance) {
                 PotionEntity entityPotion = new PotionEntity(shooter.world, shooter);
                 entityPotion.setItem(potion);

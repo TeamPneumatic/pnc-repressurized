@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -20,7 +19,7 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     private static final VoxelShape SHAPE = Block.makeCuboidShape(3, 0, 3, 13, 10, 13);
 
     public BlockChargingStation() {
-        super(Material.IRON, "charging_station");
+        super("charging_station");
     }
 
     @Override

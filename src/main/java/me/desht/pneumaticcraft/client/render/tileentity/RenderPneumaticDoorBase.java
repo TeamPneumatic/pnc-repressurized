@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
-public class RenderPneumaticDoorBase extends AbstractModelRenderer<TileEntityPneumaticDoorBase> {
+public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<TileEntityPneumaticDoorBase> {
     private final ModelDoorBase model;
 
     public RenderPneumaticDoorBase() {

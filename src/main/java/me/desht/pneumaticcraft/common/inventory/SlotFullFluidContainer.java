@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -16,7 +15,6 @@ public class SlotFullFluidContainer extends SlotItemHandler {
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
-        FluidStack fluidStack = FluidUtil.getFluidContained(stack);
-        return fluidStack != null && fluidStack.amount > 0;
+        return FluidUtil.getFluidContained(stack).map(fluidStack -> fluidStack.getAmount() > 0).orElse(false);
     }
 }

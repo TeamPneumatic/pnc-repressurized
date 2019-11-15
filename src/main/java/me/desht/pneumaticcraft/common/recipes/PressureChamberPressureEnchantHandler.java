@@ -1,22 +1,28 @@
 package me.desht.pneumaticcraft.common.recipes;
 
-import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
-import me.desht.pneumaticcraft.api.recipe.ItemIngredient;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.ItemStackHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class PressureChamberPressureEnchantHandler implements IPressureChamberRecipe {
+
+    private static final ResourceLocation ID = RL("pressure_chamber_enchanting");
 
     @Override
     public float getCraftingPressure() {
@@ -54,6 +60,8 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
     @Override
     public NonNullList<ItemStack> craftRecipe(ItemStackHandler chamberHandler) {
         ItemStack[] recipeIngredients = getRecipeIngredients(chamberHandler);
+        if (recipeIngredients == null) return IPressureChamberRecipe.EMPTY_LIST;
+
         ItemStack enchantedTool = recipeIngredients[0];
         ItemStack enchantedBook = recipeIngredients[1];
         
@@ -65,23 +73,42 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
     }
 
     @Override
-    public List<ItemIngredient> getInput() {
-        ItemIngredient pick = new ItemIngredient(Items.DIAMOND_PICKAXE, 1, 0).setTooltip("gui.nei.tooltip.pressureEnchantItem");
+    public List<List<ItemStack>> getInputsForDisplay() {
+        List<List<ItemStack>> res = new ArrayList<>();
+
+        ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
+        res.add(NonNullList.from(ItemStack.EMPTY, pick));
 
         ItemStack enchBook = new ItemStack(Items.ENCHANTED_BOOK);
         enchBook.addEnchantment(Enchantments.FORTUNE, 1);
-        ItemIngredient book = new ItemIngredient(enchBook).setTooltip("gui.nei.tooltip.pressureEnchantBook");
+        IPressureChamberRecipe.setTooltipKey(enchBook, "gui.nei.tooltip.pressureEnchantBook");
+        res.add(NonNullList.from(ItemStack.EMPTY, enchBook));
 
-        return ImmutableList.of(pick, book);
+        return res;
     }
 
     @Override
-    public NonNullList<ItemStack> getResult() {
+    public NonNullList<ItemStack> getResultForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         pick.addEnchantment(Enchantments.FORTUNE, 1);
         IPressureChamberRecipe.setTooltipKey(pick, "gui.nei.tooltip.pressureEnchantItemOut");
         ItemStack book = new ItemStack(Items.BOOK);
         IPressureChamberRecipe.setTooltipKey(book, "gui.nei.tooltip.pressureEnchantBookOut");
         return NonNullList.from(ItemStack.EMPTY, pick, book);
+    }
+
+    @Override
+    public ResourceLocation getId() {
+        return ID;
+    }
+
+    @Override
+    public void write(PacketBuffer buf) {
+        buf.writeResourceLocation(ID);
+        buf.writeFloat(getCraftingPressure());
+        buf.writeVarInt(2);
+        getInputsForDisplay().get(0).forEach(s -> Ingredient.fromStacks(s).write(buf));
+        buf.writeVarInt(2);
+        getResultForDisplay().forEach(buf::writeItemStack);
     }
 }

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.config.Config;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
@@ -135,7 +135,7 @@ public class EntityMicromissile extends ThrowableEntity {
             }
         }
 
-        if (ticksExisted > Config.Common.Micromissiles.lifetime) {
+        if (ticksExisted > PNCConfig.Common.Micromissiles.lifetime) {
             outOfFuel = true;
         }
 
@@ -217,8 +217,8 @@ public class EntityMicromissile extends ThrowableEntity {
 
     private void explode() {
         remove();
-        Explosion.Mode mode = Config.Common.Micromissiles.damageTerrain ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
-        getEntityWorld().createExplosion(this, posX, posY, posZ, (float)Config.Common.Micromissiles.baseExplosionDamage * explosionPower, false, mode);
+        Explosion.Mode mode = PNCConfig.Common.Micromissiles.damageTerrain ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
+        getEntityWorld().createExplosion(this, posX, posY, posZ, (float) PNCConfig.Common.Micromissiles.baseExplosionDamage * explosionPower, false, mode);
     }
 
     @Override

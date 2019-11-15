@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.core.Sounds;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +23,7 @@ public class ItemVortexCannon extends ItemPressurizable {
         ItemStack iStack = playerIn.getHeldItem(handIn);
         if (getPressure(iStack) > 0.1f) {
             double factor = 0.2D * getPressure(iStack);
-            world.playSound(playerIn.posX, playerIn.posY, playerIn.posZ, Sounds.CANNON_SOUND, SoundCategory.PLAYERS, 1.0F, 0.7F + (float) factor * 0.2F, false);
+            world.playSound(playerIn.posX, playerIn.posY, playerIn.posZ, ModSounds.AIR_CANNON, SoundCategory.PLAYERS, 1.0F, 0.7F + (float) factor * 0.2F, false);
             EntityVortex vortex = new EntityVortex(world, playerIn);
             Vec3d directionVec = playerIn.getLookVec().normalize();
             vortex.posX += directionVec.x;

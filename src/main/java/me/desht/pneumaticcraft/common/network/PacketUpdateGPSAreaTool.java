@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import net.minecraft.item.ItemStack;
@@ -33,9 +32,9 @@ public class PacketUpdateGPSAreaTool {
         }
     }
 
-    public void toBytes(ByteBuf buffer) {
+    public void toBytes(PacketBuffer buffer) {
         try {
-            new PacketBuffer(buffer).writeCompoundTag(areaWidgetData);
+            buffer.writeCompoundTag(areaWidgetData);
             buffer.writeBoolean(hand == Hand.MAIN_HAND);
         } catch (Exception e) {
             e.printStackTrace();
