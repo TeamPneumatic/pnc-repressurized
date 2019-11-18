@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:items/module/flow_detector"
+      "layer0" : "pneumaticcraft:item/module/flow_detector"
    },
    "parent" : "item/generated"
 }

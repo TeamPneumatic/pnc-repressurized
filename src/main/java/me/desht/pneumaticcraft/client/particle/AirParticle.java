@@ -73,7 +73,7 @@ public class AirParticle extends SpriteTexturedParticle {
         @Nullable
         @Override
         public Particle makeParticle(AirParticleData airParticleData, World world, double x, double y, double z, double dx, double dy, double dz) {
-            AirParticle p = new AirParticle(world, x, y, z, dx, dy, dz, 1f, spriteSet);
+            AirParticle p = new AirParticle(world, x, y, z, dx, dy, dz, 0.2f, spriteSet);
             p.setAlphaF(airParticleData.getAlpha());
             return p;
         }

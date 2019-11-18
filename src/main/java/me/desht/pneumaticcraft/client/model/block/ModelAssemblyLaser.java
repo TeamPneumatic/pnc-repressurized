@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.model.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 
@@ -113,7 +113,7 @@ public class ModelAssemblyLaser extends AbstractTileModelRenderer.BaseModel {
         GlStateManager.rotated(-90, 1, 0, 0);
         GlStateManager.translated(0, 0, 18);
         GlStateManager.disableLighting();
-        GuiPneumaticContainerBase.drawTexture(Textures.GUI_LASER_DANGER, -8, -65);
+        GuiUtils.drawTexture(Textures.GUI_LASER_DANGER, -8, -65);
         GlStateManager.enableLighting();
 
         GlStateManager.popMatrix();

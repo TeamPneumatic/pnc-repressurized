@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:items/capacitor"
+      "layer0" : "pneumaticcraft:item/capacitor"
    },
    "parent" : "item/generated"
 }

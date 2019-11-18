@@ -157,9 +157,9 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
 
         otherStats.forEach(stat -> {
             int c = stat.getBackgroundColor();
-            stat.setBackGroundColor(0x30606060);
+            stat.setBackgroundColor(0x30606060);
             stat.render(-1, -1, partialTicks);
-            stat.setBackGroundColor(c);
+            stat.setBackgroundColor(c);
         });
     }
 

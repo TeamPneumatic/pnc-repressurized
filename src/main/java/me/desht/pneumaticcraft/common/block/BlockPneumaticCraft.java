@@ -32,7 +32,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.EnumProperty;
+import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -42,6 +42,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -62,9 +63,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+import static net.minecraft.state.properties.BlockStateProperties.FACING;
+import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
 public abstract class BlockPneumaticCraft extends Block implements IPneumaticWrenchable, IUpgradeAcceptor {
-    public static final EnumProperty<Direction> ROTATION = EnumProperty.create("facing", Direction.class);
+    public static final VoxelShape ALMOST_FULL_SHAPE = Block.makeCuboidShape(0.5, 0, 0.5, 15.5, 16, 15.5);
     public static final BooleanProperty UP = BooleanProperty.create("up");
     public static final BooleanProperty DOWN = BooleanProperty.create("down");
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
@@ -149,7 +152,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         BlockState state = super.getStateForPlacement(ctx);
         if (isRotatable()) {
             Direction f = PneumaticCraftUtils.getDirectionFacing(ctx.getPlayer(), canRotateToTopOrBottom());
-            return state.with(ROTATION, reversePlacementRotation() ? f.getOpposite() : f);
+            return state.with(directionProperty(), reversePlacementRotation() ? f.getOpposite() : f);
         } else {
             return state;
         }
@@ -172,20 +175,22 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         }
     }
 
-    protected void setRotation(World world, BlockPos pos, Direction rotation) {
-        setRotation(world, pos, rotation, world.getBlockState(pos));
-    }
+    DirectionProperty directionProperty() { return canRotateToTopOrBottom() ? FACING : HORIZONTAL_FACING; }
 
     protected Direction getRotation(IBlockReader world, BlockPos pos) {
         return getRotation(world.getBlockState(pos));
     }
 
-    protected Direction getRotation(BlockState state) {
-        return state.get(ROTATION);
+    public Direction getRotation(BlockState state) {
+        return state.get(directionProperty());
+    }
+
+    protected void setRotation(World world, BlockPos pos, Direction rotation) {
+        setRotation(world, pos, rotation, world.getBlockState(pos));
     }
 
     private void setRotation(World world, BlockPos pos, Direction rotation, BlockState state) {
-        world.setBlockState(pos, state.with(ROTATION, rotation));
+        world.setBlockState(pos, state.with(directionProperty(), rotation));
     }
 
     public boolean isRotatable() {
@@ -199,7 +204,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         if (isRotatable()) {
-            builder.add(ROTATION);
+            builder.add(directionProperty());
         }
     }
 

@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:items/stone_base"
+      "layer0" : "pneumaticcraft:item/stone_base"
    },
    "parent" : "item/generated"
 }

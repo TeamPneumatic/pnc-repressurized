@@ -209,7 +209,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             } else {
                 curXpFluid = null;
             }
-        } else if (itemHandlerSideConfigurator.handleButtonPress(tag)) {
+        } else if (tag.startsWith("SideConf") && itemHandlerSideConfigurator.handleButtonPress(tag)) {
             updateNeighbours = true;
         } else {
             try {

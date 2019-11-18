@@ -3,9 +3,9 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {
-      "pipe": "pneumaticcraft:blocks/advanced_pressure_tube",
-      "pipeplug": "pneumaticcraft:blocks/tube_closed",
-      "particle": "pneumaticcraft:blocks/advanced_pressure_tube"
+      "pipe": "pneumaticcraft:block/advanced_pressure_tube",
+      "pipeplug": "pneumaticcraft:block/tube_closed",
+      "particle": "pneumaticcraft:block/advanced_pressure_tube"
     },
     "uvlock": false
   },

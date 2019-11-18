@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberGlass;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
@@ -28,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -492,8 +492,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                         boolean xMid = x != 0 && x != size - 1;
                         boolean yMid = y != 0 && y != size - 1;
                         boolean zMid = z != 0 && z != size - 1;
-                        Direction facing = state.get(BlockPneumaticCraft.ROTATION); //(TileEntityBase) world.getTileEntity(mPos)).getRotation();
-                        if (xMid && yMid && (facing == Direction.NORTH || facing == Direction.SOUTH) || xMid && zMid && (facing == Direction.UP || facing == Direction.DOWN) || yMid && zMid && (facing == Direction.EAST || facing == Direction.WEST)) {
+                        Direction facing = state.get(BlockStateProperties.FACING);
+                        if (xMid && yMid && facing.getAxis() == Direction.Axis.Z
+                                || xMid && zMid && facing.getAxis() == Direction.Axis.Y
+                                || yMid && zMid && facing.getAxis() == Direction.Axis.X) {
                             TileEntity te = world.getTileEntity(mPos);
                             if (te instanceof TileEntityPressureChamberValve) {
                                 valveList.add((TileEntityPressureChamberValve) te);

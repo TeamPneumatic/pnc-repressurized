@@ -1,6 +1,6 @@
 {
    "parent" : "item/generated",
    "textures" : {
-      "layer0" : "pneumaticcraft:items/ingot_iron_compressed"
+      "layer0" : "pneumaticcraft:item/ingot_iron_compressed"
    }
 }

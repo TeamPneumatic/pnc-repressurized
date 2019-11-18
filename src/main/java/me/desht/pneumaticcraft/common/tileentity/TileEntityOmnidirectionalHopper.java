@@ -220,7 +220,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityTickableBase impl
     }
 
     public Direction getInputDirection() {
-        return getBlockState().get(BlockOmnidirectionalHopper.INPUT);
+        return getBlockState().get(BlockOmnidirectionalHopper.INPUT_FACING);
     }
 
     @Override

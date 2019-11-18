@@ -3,9 +3,9 @@
   "defaults": {
     "model": "pneumaticcraft:block/drone_interface",
     "textures": {
-      "top": "pneumaticcraft:blocks/generic/plain_base",
-      "bottom": "pneumaticcraft:blocks/generic/plain_base",
-      "side": "pneumaticcraft:blocks/drone_interface_side"
+      "top": "pneumaticcraft:block/generic/plain_base",
+      "bottom": "pneumaticcraft:block/generic/plain_base",
+      "side": "pneumaticcraft:block/drone_interface_side"
     }
   },
   "variants": {
@@ -14,7 +14,7 @@
     "connected": {
       "true": {
         "textures": {
-          "side": "pneumaticcraft:blocks/drone_interface_side_on"
+          "side": "pneumaticcraft:block/drone_interface_side_on"
         }
       },
       "false": {

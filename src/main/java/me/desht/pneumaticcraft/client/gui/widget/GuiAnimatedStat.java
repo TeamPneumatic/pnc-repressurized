@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -17,13 +18,14 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
@@ -36,9 +38,10 @@ import java.util.stream.IntStream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, ITooltipSupplier/*, IGuiWidget, IWidgetListener*/ {
+public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, ITooltipSupplier, ITickable/*, IGuiWidget, IWidgetListener*/ {
     private static final int ANIMATED_STAT_SPEED = 30;
     private static final int MIN_WIDTH_HEIGHT = 17;
+    private static final int MAX_LINES = 12;
 
     private IGuiAnimatedStat affectingStat;
 
@@ -47,11 +50,7 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
     private final Screen gui;
     private final List<String> textList = new ArrayList<>();
     private final List<Widget> subWidgets = new ArrayList<>();
-//    private int baseX;
-//    private int baseY;
     private int affectedY;
-//    private int width;
-//    private int height;
 
     private int oldBaseX;
     private int oldAffectedY;
@@ -67,10 +66,7 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
     private boolean doneExpanding;
     private float textSize;
     private float textScale = 1F;
-//    private IWidgetListener listener;
     private int curScroll;
-    private static final int MAX_LINES = 12;
-//    private int lastMouseX, lastMouseY;
     private int lineSpacing = 10;
     private int widgetOffsetLeft = 0;
     private int widgetOffsetRight = 0;
@@ -82,11 +78,7 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
         super(xPos, yPos, MIN_WIDTH_HEIGHT, MIN_WIDTH_HEIGHT, title);
 
         this.gui = gui;
-//        baseX = xPos;
-//        baseY = yPos;
         this.affectingStat = affectingStat;
-//        width = minWidth;
-//        height = minHeight;
         this.backGroundColor = backGroundColor;
         calculateColorHighlights(this.backGroundColor);
         setTitle(title);
@@ -98,6 +90,8 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
         if (affectingStat != null) {
             affectedY += affectingStat.getAffectedY() + affectingStat.getHeight();
         }
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public GuiAnimatedStat(Screen gui, int backgroundColor) {
@@ -149,10 +143,10 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
     }
 
     @Override
-    public Rectangle getButtonScaledRectangle(int origX, int origY, int width, int height) {
+    public Rectangle2d getButtonScaledRectangle(int origX, int origY, int width, int height) {
         int scaledX = (int) (origX * textSize);
         int scaledY = (int) (origY * textSize);
-        return new Rectangle(scaledX, scaledY, (int) (width * textSize), (int) (height * textSize));
+        return new Rectangle2d(scaledX, scaledY, (int) (width * textSize), (int) (height * textSize));
     }
 
     @Override
@@ -226,10 +220,10 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
     }
 
     @Override
-    public void setBackGroundColor(int backGroundColor) {
-        if (backGroundColor != this.backGroundColor) {
-            this.backGroundColor = backGroundColor;
-            calculateColorHighlights(backGroundColor);
+    public void setBackgroundColor(int backgroundColor) {
+        if (backgroundColor != this.backGroundColor) {
+            this.backGroundColor = backgroundColor;
+            calculateColorHighlights(backgroundColor);
         }
     }
 
@@ -270,7 +264,7 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
                 if (widget == scrollBar) return;
             }
             curScroll = 0;
-            addSubWidget(scrollBar = new WidgetVerticalScrollbar(leftSided ? -16 : 2, 20, (int) ((MAX_LINES * lineSpacing - 20) * textSize)).setStates(textList.size() - MAX_LINES));
+            addSubWidget(scrollBar = new WidgetVerticalScrollbar(leftSided ? -16 : 2, 20, (int) ((MAX_LINES * lineSpacing - 20) * textSize)).setStates(textList.size() - MAX_LINES).setListening(true));
         } else {
             Iterator<Widget> iterator = subWidgets.iterator();
             while (iterator.hasNext()) {
@@ -384,9 +378,16 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-//        lastMouseX = mouseX;
-//        lastMouseY = mouseY;
+    public void render(int x, int y, float partialTicks) {
+        if (this.visible) {
+            int baseX = leftSided ? this.x - this.width : this.x;
+            this.isHovered = x >= baseX && y >= this.affectedY && x < baseX + this.width && y < this.affectedY + this.height;
+            renderButton(x, y, partialTicks);
+        }
+    }
+
+    @Override
+    public void renderButton(int mouseX, int mouseY, float partialTicks) {
         float zLevel = 0;
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         int renderBaseX = (int) (oldBaseX + (x - oldBaseX) * partialTicks);
@@ -440,7 +441,7 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
             GlStateManager.popMatrix();
         }
         if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
-            statIcon.render(gui, renderBaseX, renderAffectedY, leftSided);
+            statIcon.render(renderBaseX, renderAffectedY, leftSided);
         }
     }
 
@@ -455,27 +456,66 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
         }
     }
 
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return this.active && this.visible && getBounds().contains((int)mouseX, (int)mouseY);
+    }
+
     /*
      * button: 0 = left 1 = right 2 = middle
      */
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.active && this.visible) {
-            if (this.isValidClickButton(button)) {
-                if (clicked(mouseX, mouseY)) {
-                    for (Widget widget : subWidgets) {
-                        if (widget.mouseClicked(mouseX, mouseY, button)) {
-                            return true;
-                        }
-                    }
+        if (isHovered()) {
+            for (Widget widget : subWidgets) {
+                if (widget.mouseClicked(mouseX - this.x, mouseY - this.affectedY, button)) {
+                    return true;
                 }
-                // no sub-widgets took the click; toggle ourselves
-                toggle();
+            }
+            // no sub-widgets took the click; toggle this animated stat open/closed
+            toggle();
+            return true;
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (isHovered()) {
+            for (Widget widget : subWidgets) {
+                if (widget.mouseReleased(mouseX - this.x, mouseY - this.affectedY, button)) {
+                    return true;
+                }
             }
             return true;
-        } else {
-            return false;
         }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (isHovered()) {
+            Rectangle2d bounds = getBounds();
+            for (Widget widget : subWidgets) {
+                if (widget.mouseDragged(mouseX - bounds.getX(), mouseY - bounds.getY(), button, dragX, dragY)) {
+                    return true;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double x, double y, double dir) {
+        Rectangle2d bounds = getBounds();
+        for (Widget widget : subWidgets) {
+            if (widget.mouseScrolled(x - bounds.getX(), y - bounds.getY(), dir)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -573,16 +613,6 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
         }
     }
 
-    @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
-        for (Widget widget : subWidgets) {
-            if (widget.mouseScrolled(x, y, dir)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void setLineSpacing(int lineSpacing) {
         this.lineSpacing = lineSpacing;
     }
@@ -618,13 +648,13 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
             return new StatIcon(ItemStack.EMPTY, texture);
         }
 
-        void render(AbstractGui gui, int x, int y, boolean leftSided) {
+        void render(int x, int y, boolean leftSided) {
             GlStateManager.color4f(1, 1, 1, 1);
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             if (texture != null) {
-                GuiPneumaticContainerBase.drawTexture(texture, x - (leftSided ? 16 : 0), y);
-            } else if (!stack.isEmpty() && gui != null || !(stack.getItem() instanceof BlockItem)) {
+                GuiUtils.drawTexture(texture, x - (leftSided ? 16 : 0), y);
+            } else if (!stack.isEmpty()) {
                 ItemRenderer renderItem = Minecraft.getInstance().getItemRenderer();
                 renderItem.zLevel = 1;
                 GlStateManager.pushMatrix();

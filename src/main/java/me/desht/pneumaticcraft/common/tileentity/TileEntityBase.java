@@ -64,7 +64,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     private boolean descriptionPacketScheduled;
     private List<SyncedField> descriptionFields;
     private TileEntityCache[] tileCache;
-    private BlockState cachedBlockState;
     private boolean preserveStateOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
@@ -322,15 +321,12 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     public Direction getRotation() {
-        if (cachedBlockState == null) {
-            cachedBlockState = world.getBlockState(getPos());
-        }
-        return cachedBlockState.get(BlockPneumaticCraft.ROTATION);
+        BlockState state = getBlockState();
+        return state.getBlock() instanceof BlockPneumaticCraft ? ((BlockPneumaticCraft) state.getBlock()).getRotation(state) : Direction.NORTH;
     }
 
     @Override
     public void updateContainingBlockInfo() {
-        cachedBlockState = null;
         super.updateContainingBlockInfo();
     }
 

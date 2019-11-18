@@ -2,9 +2,9 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {
-      "particle": "pneumaticcraft:blocks/uv_light_box",
-      "face": "pneumaticcraft:blocks/uv_light_box",
-      "blueprint": "pneumaticcraft:items/pcb_blueprint"
+      "particle": "pneumaticcraft:block/uv_light_box",
+      "face": "pneumaticcraft:block/uv_light_box",
+      "blueprint": "pneumaticcraft:item/pcb_blueprint"
     },
     "model": "pneumaticcraft:block/uv_light_box"
   },

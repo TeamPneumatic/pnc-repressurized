@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -37,10 +36,8 @@ public class WidgetVerticalScrollbar extends Widget {
     @Override
     public boolean mouseScrolled(double x, double y, double dir) {
         if (listening) {
-            // todo verify values
-            int wheel = (int)-dir;
-            wheel = MathHelper.clamp(wheel, -1, 1);
-            currentScroll += (float) wheel / states;
+            double wheel = MathHelper.clamp(-dir, -1, 1);
+            currentScroll = MathHelper.clamp(currentScroll + (float) wheel / states,0f, 1);
         }
         return false;
     }
@@ -82,22 +79,14 @@ public class WidgetVerticalScrollbar extends Widget {
     @Override
     public void render(int mouseX, int mouseY, float partialTick) {
         GlStateManager.color4f(1, 1, 1, 1);
-//        if (!Mouse.isButtonDown(0)) dragging = false;
-//        if (!wasClicking && Mouse.isButtonDown(0) && getBounds().contains(mouseX, mouseY)) {
-//            dragging = true;
-//        }
-//        if (!enabled) dragging = false;
-//        wasClicking = Mouse.isButtonDown(0);
-//        if (dragging) currentScroll = (float) (mouseY - 7 - getBounds().y) / (getBounds().height - 17);
-
         Minecraft.getInstance().getTextureManager().bindTexture(SCROLL_TEXTURE);
-        AbstractGui.blit(x, y, 12, 0, width, 1, 26, 15);
+        blit(x, y, 12, 0, width, 1, 26, 15);
         for (int i = 0; i < height - 2; i++)
-            AbstractGui.blit(x, y + 1 + i, 12, 1, width, 1, 26, 15);
-        AbstractGui.blit(x, y + height - 1, 12, 14, width, 1, 26, 15);
+            blit(x, y + 1 + i, 12, 1, width, 1, 26, 15);
+        blit(x, y + height - 1, 12, 14, width, 1, 26, 15);
 
         if (!enabled) GlStateManager.color4f(0.6F, 0.6F, 0.6F, 1);
-        AbstractGui.blit(x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
+        blit(x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
         GlStateManager.color4f(1, 1, 1, 1);
     }
 

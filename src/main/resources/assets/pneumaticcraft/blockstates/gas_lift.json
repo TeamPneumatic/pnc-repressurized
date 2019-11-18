@@ -2,7 +2,7 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {
-      "pipe": "pneumaticcraft:blocks/advanced_pressure_tube"
+      "pipe": "pneumaticcraft:block/advanced_pressure_tube"
     },
     "custom": { "flip-v" : true},
     "model": "pneumaticcraft:block/gas_lift.obj"

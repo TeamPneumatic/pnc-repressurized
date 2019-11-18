@@ -1,0 +1,8 @@
+{
+  "loader": "forge:obj",
+  "model": "pneumaticcraft:models/block/air_compressor.obj",
+  "custom": { "flip-v": true },
+  "textures": {
+    "particle": "pneumaticcraft:models/block/compressed_iron_block"
+  }
+}

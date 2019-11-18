@@ -1,0 +1,6 @@
+{
+  "parent": "forge:item/default",
+  "loader": "forge:obj",
+  "model": "pneumaticcraft:models/block/air_compressor.obj",
+  "transform": "forge:default-item"
+}

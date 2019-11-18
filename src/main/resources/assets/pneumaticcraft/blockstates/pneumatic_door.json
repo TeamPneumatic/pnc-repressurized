@@ -45,7 +45,7 @@
     "top_door": {
       "false": {
         "textures": {
-          "particle": "pneumaticcraft:blocks/compressed_iron_block"
+          "particle": "pneumaticcraft:block/compressed_iron_block"
         }
       },
       "true": { }

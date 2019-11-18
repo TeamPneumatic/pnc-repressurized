@@ -1,31 +1,45 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
 
-    VoxelShape INPUT_SHAPE = Block.makeCuboidShape(0.0D, 10.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-    VoxelShape BOWL_SHAPE = Block.makeCuboidShape(2.0D, 11.0D, 2.0D, 14.0D, 16.0D, 14.0D);
-    VoxelShape INPUT_CUTOUT = VoxelShapes.combineAndSimplify(INPUT_SHAPE, BOWL_SHAPE, IBooleanFunction.ONLY_FIRST);
-    VoxelShape MIDDLE_SHAPE = Block.makeCuboidShape(4.0D, 4.0D, 4.0D, 12.0D, 10.0D, 12.0D);
+    private static final VoxelShape MIDDLE_SHAPE = Block.makeCuboidShape(4, 6, 4, 12, 10, 12);
+    private static final VoxelShape INPUT_SHAPE = Block.makeCuboidShape(0.0D, 10.0D, 0.0D, 16.0D, 16.0D, 16.0D);
+    private static final VoxelShape INPUT_MIDDLE_SHAPE = VoxelShapes.or(MIDDLE_SHAPE, INPUT_SHAPE);
+    private static final VoxelShape BOWL_SHAPE = Block.makeCuboidShape(2.0D, 11.0D, 2.0D, 14.0D, 16.0D, 14.0D);
 
-    // superclass ROTATION property is used for the output direction
+    private static final VoxelShape INPUT_UP    = VoxelShapes.combineAndSimplify(INPUT_MIDDLE_SHAPE, BOWL_SHAPE, IBooleanFunction.ONLY_FIRST);
+    private static final VoxelShape INPUT_NORTH = VoxelShapeUtils.rotateX(INPUT_UP, 270);
+    private static final VoxelShape INPUT_DOWN  = VoxelShapeUtils.rotateX(INPUT_NORTH, 270);
+    private static final VoxelShape INPUT_SOUTH = VoxelShapeUtils.rotateX(INPUT_UP, 90);
+    private static final VoxelShape INPUT_WEST  = VoxelShapeUtils.rotateY(INPUT_NORTH, 270);
+    private static final VoxelShape INPUT_EAST  = VoxelShapeUtils.rotateY(INPUT_NORTH, 90);
+    private static final VoxelShape[] INPUT_SHAPES = {
+        INPUT_DOWN, INPUT_UP, INPUT_NORTH, INPUT_SOUTH, INPUT_WEST, INPUT_EAST
+    };
 
-    public static final EnumProperty<Direction> INPUT = EnumProperty.create("input", Direction.class);
+    // standard FACING property is used for the output direction
+    public static final EnumProperty<Direction> INPUT_FACING = EnumProperty.create("input", Direction.class);
 
     BlockOmnidirectionalHopper(String registryName) {
         super(registryName);
@@ -41,15 +55,22 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
-        builder.add(INPUT);
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        // TODO combine with output shape
+        return INPUT_SHAPES[state.get(INPUT_FACING).getIndex()];
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockState state, Direction facing, BlockState state2, IWorld world, BlockPos pos1, BlockPos pos2, Hand hand) {
-        // todo 1.14 no placer entity available - intended or bug?
-        return state.with(ROTATION, facing.getOpposite()).with(INPUT, facing);
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        builder.add(INPUT_FACING);
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+        return this.getDefaultState()
+                .with(BlockStateProperties.FACING, ctx.getFace().getOpposite())
+                .with(INPUT_FACING, PneumaticCraftUtils.getDirectionFacing(ctx.getPlayer(), true).getOpposite());
     }
 
     @Override
@@ -62,23 +83,23 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
         return true;
     }
 
-    public Direction getInputDirection(World world, BlockPos pos) {
-        return world.getBlockState(pos).get(BlockOmnidirectionalHopper.INPUT);
+    private Direction getInputDirection(World world, BlockPos pos) {
+        return world.getBlockState(pos).get(BlockOmnidirectionalHopper.INPUT_FACING);
     }
 
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction face, Hand hand) {
         BlockState state = world.getBlockState(pos);
         if (player != null && player.isSneaking()) {
-            Direction outputDir = state.get(ROTATION);
+            Direction outputDir = getRotation(state);
             outputDir = Direction.byIndex(outputDir.ordinal() + 1);
             if (outputDir == getInputDirection(world, pos)) outputDir = Direction.byIndex(outputDir.ordinal() + 1);
-            world.setBlockState(pos, state.with(ROTATION, outputDir));
+            setRotation(world, pos, outputDir);
         } else {
-            Direction inputDir = state.get(INPUT);
+            Direction inputDir = state.get(INPUT_FACING);
             inputDir = Direction.byIndex(inputDir.ordinal() + 1);
             if (inputDir == getRotation(world, pos)) inputDir = Direction.byIndex(inputDir.ordinal() + 1);
-            world.setBlockState(pos, state.with(INPUT, inputDir));
+            world.setBlockState(pos, state.with(INPUT_FACING, inputDir));
         }
         return true;
     }

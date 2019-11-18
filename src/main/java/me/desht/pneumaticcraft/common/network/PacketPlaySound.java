@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -59,7 +60,7 @@ public class PacketPlaySound extends LocationDoublePacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> ctx.get().getSender().world.playSound(x, y, z, soundEvent, category, volume, pitch, distanceDelay));
+        ctx.get().enqueueWork(() -> PneumaticCraftRepressurized.proxy.getClientWorld().playSound(x, y, z, soundEvent, category, volume, pitch, distanceDelay));
         ctx.get().setPacketHandled(true);
     }
 }

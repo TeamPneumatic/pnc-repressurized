@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:items/turbine_rotor"
+      "layer0" : "pneumaticcraft:item/turbine_rotor"
    },
    "parent" : "item/generated"
 }

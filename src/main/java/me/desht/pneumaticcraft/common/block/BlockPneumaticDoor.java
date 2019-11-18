@@ -74,7 +74,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
         float zMax = 1;
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityPneumaticDoor) {
-            Direction rotation = state.get(ROTATION);
+            Direction rotation = getRotation(state);
             TileEntityPneumaticDoor door = (TileEntityPneumaticDoor) te;
             float cosinus = thickness / 16F - MathHelper.sin((float)Math.toRadians(door.rotationAngle)) * thickness / 16F;
             float sinus = thickness / 16F - MathHelper.cos((float) Math.toRadians(door.rotationAngle)) * thickness / 16F;

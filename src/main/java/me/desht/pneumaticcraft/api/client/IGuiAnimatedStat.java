@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.api.client;
 
 import net.minecraft.client.renderer.Rectangle2d;
 
-import java.awt.*;
 import java.util.List;
 
 /**
@@ -22,7 +21,7 @@ public interface IGuiAnimatedStat {
      * @param height Button height.
      * @return rectangle containing the new location and dimensions.
      */
-    Rectangle getButtonScaledRectangle(int origX, int origY, int width, int height);
+    Rectangle2d getButtonScaledRectangle(int origX, int origY, int width, int height);
 
     /**
      * When passed 0.5F for example, the text of the stat will be half as big (so more text can fit into a certain area).
@@ -74,7 +73,7 @@ public interface IGuiAnimatedStat {
 
     /**
      * Sets the main text of this stat. Every line should be stored in a separate list element. Upon rendering,
-     * TextFormattings will be respected. This version of the text setting doesn't handle too long lines.
+     * TextFormattings will be respected. This method doesn't split overlong lines.
      *
      * @param text
      */
@@ -139,9 +138,9 @@ public interface IGuiAnimatedStat {
     /**
      * Change the background color of this stat.
      *
-     * @param backGroundColor color, in ARGB format
+     * @param backgroundColor color, in ARGB format
      */
-    void setBackGroundColor(int backGroundColor);
+    void setBackgroundColor(int backgroundColor);
 
     /**
      * Get the background color of this stat.
@@ -174,8 +173,8 @@ public interface IGuiAnimatedStat {
     void setBaseY(int y);
 
     /**
-     * Returns the real Y of this stat. This is the same as getBaseY when there is no parent stat, but if there is this method
-     * returns the value described in setParentStat(IGuiAnimatedStat stat).
+     * Returns the actual Y position of this stat. This is the same as getBaseY when there is no parent stat, but if
+     * there is, this method returns the value described in {@link #setParentStat(IGuiAnimatedStat)}.
      *
      * @return
      */
@@ -188,17 +187,22 @@ public interface IGuiAnimatedStat {
     /**
      * Returns the Y size of this stat.
      *
-     * @return
+     * @return the stat's height
      */
     int getHeight();
 
     /**
      * Returns the X size of this stat.
      *
-     * @return
+     * @return the stat's width
      */
     int getWidth();
 
+    /**
+     * Get a bounding box for this stat.
+     *
+     * @return a bounding box
+     */
     Rectangle2d getBounds();
 
     /**
@@ -214,16 +218,6 @@ public interface IGuiAnimatedStat {
      * @param partialTicks
      */
     void render(int mouseX, int mouseY, float partialTicks);
-
-//    /**
-//     * This method will handle mouse clicks. This will handle open/closing of the stat when the mouse clicks it.
-//     *
-//     * @param x
-//     * @param y
-//     * @param button
-//     * @return
-//     */
-//    void onMouseClicked(int x, int y, int button);
 
     /**
      * Forces the stat to close.

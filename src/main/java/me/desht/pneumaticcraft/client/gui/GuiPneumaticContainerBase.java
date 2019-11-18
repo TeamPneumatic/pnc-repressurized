@@ -18,22 +18,20 @@ import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -116,7 +114,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
         if (te != null) {
             if (shouldAddInfoTab()) {
-                addInfoTab("gui.tab.info." + te.getType().getRegistryName().getPath());
+                addInfoTab("gui.tab.info.tile." + te.getType().getRegistryName().getPath());
             }
             if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
                 addRedstoneTab();
@@ -139,13 +137,13 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         curInfo.add(I18n.format(te.getRedstoneTabTitle()));
         int width = getWidestRedstoneLabel();
         redstoneTab.addPadding(curInfo,4, width / font.getStringWidth(" "));
-        Rectangle buttonRect = redstoneTab.getButtonScaledRectangle(-width - 12, 24, width + 10, 20);
-        redstoneButton = new GuiButtonSpecial(buttonRect.x, buttonRect.y, buttonRect.width, buttonRect.height, "-", button -> { }).withTag(IGUIButtonSensitive.REDSTONE_TAG);
+        Rectangle2d buttonRect = redstoneTab.getButtonScaledRectangle(-width - 12, 24, width + 10, 20);
+        redstoneButton = new GuiButtonSpecial(buttonRect.getX(), buttonRect.getY(), buttonRect.getWidth(), buttonRect.getHeight(), "-", button -> { }).withTag(IGUIButtonSensitive.REDSTONE_TAG);
         redstoneTab.addSubWidget(redstoneButton);
     }
 
     private void addUpgradeTab() {
-        String upgrades = "gui.tab.upgrades." + te.getType().getRegistryName().getPath();
+        String upgrades = "gui.tab.upgrades.tile." + te.getType().getRegistryName().getPath();
         String translatedUpgrades = I18n.format(upgrades);
         List<String> upgradeText = new ArrayList<>();
         if (te instanceof TileEntityPneumaticBase) {
@@ -263,7 +261,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             Point gaugeLocation = getGaugeLocation();
             if (gaugeLocation != null) {
                 TileEntityPneumaticBase pneu = (TileEntityPneumaticBase) te;
-                GuiUtils.drawPressureGauge(font, -1, pneu.criticalPressure, pneu.dangerPressure, te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE, pneu.getPressure(), gaugeLocation.x, gaugeLocation.y);
+                GuiUtils.drawPressureGauge(font, -1, pneu.criticalPressure, pneu.dangerPressure, te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE, pneu.getPressure(), gaugeLocation.x - guiLeft, gaugeLocation.y - guiTop);
             }
         }
     }
@@ -277,6 +275,16 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     protected abstract ResourceLocation getGuiTexture();
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
+        for (IGuiAnimatedStat w : statWidgets) {
+            if (((GuiAnimatedStat) w).mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY)) {
+                return true;
+            }
+        }
+        return super.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
+    }
 
     @Override
     public void render(int x, int y, float partialTick) {
@@ -321,6 +329,8 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     public void tick() {
         super.tick();
 
+        buttons.stream().filter(w -> w instanceof ITickable).forEach(w -> ((ITickable) w).tick());
+
         if (pressureStat != null) {
             List<String> pressureText = new ArrayList<>();
             addPressureStatInfo(pressureText);
@@ -346,15 +356,15 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         if (nProbs > 0) {
             problemTab.setTexture(Textures.GUI_PROBLEMS_TEXTURE);
             problemTab.setTitle("gui.tab.problems");
-            problemTab.setBackGroundColor(0xFFFF0000);
+            problemTab.setBackgroundColor(0xFFFF0000);
         } else if (nWarnings > 0) {
             problemTab.setTexture(Textures.GUI_WARNING_TEXTURE);
             problemTab.setTitle("gui.tab.problems.warning");
-            problemTab.setBackGroundColor(0xFFC0C000);
+            problemTab.setBackgroundColor(0xFFC0C000);
         } else {
             problemTab.setTexture(Textures.GUI_NO_PROBLEMS_TEXTURE);
             problemTab.setTitle("gui.tab.problems.noProblems");
-            problemTab.setBackGroundColor(0xFFA0FFA0);
+            problemTab.setBackgroundColor(0xFFA0FFA0);
         }
         if (problemText.isEmpty()) problemText.add("");
         problemTab.setText(problemText);
@@ -425,27 +435,16 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(text, x, y, width, height, -1, fontRenderer);
     }
 
-    public static void drawTexture(ResourceLocation texture, int x, int y) {
-        Minecraft.getInstance().getTextureManager().bindTexture(texture);
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        wr.pos(x, y + 16, 0).tex(0.0, 1.0).endVertex();
-        wr.pos(x + 16, y + 16, 0).tex(1.0, 1.0).endVertex();
-        wr.pos(x + 16, y, 0).tex(1.0, 0.0).endVertex();
-        wr.pos(x, y, 0).tex(0.0, 0.0).endVertex();
-        Tessellator.getInstance().draw();
+    GuiButtonSpecial getButtonFromRectangle(String tag, Rectangle2d buttonSize, String buttonText, Button.IPressable pressable) {
+        return new GuiButtonSpecial(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), buttonText, pressable).withTag(tag);
     }
 
-    GuiButtonSpecial getButtonFromRectangle(String tag, Rectangle buttonSize, String buttonText, Button.IPressable pressable) {
-        return new GuiButtonSpecial(buttonSize.x, buttonSize.y, buttonSize.width, buttonSize.height, buttonText, pressable).withTag(tag);
+    GuiButtonSpecial getInvisibleButtonFromRectangle(String tag, Rectangle2d buttonSize, Button.IPressable pressable) {
+        return new GuiButtonSpecial(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), "", pressable).withTag(tag);
     }
 
-    GuiButtonSpecial getInvisibleButtonFromRectangle(String tag, Rectangle buttonSize, Button.IPressable pressable) {
-        return new GuiButtonSpecial(buttonSize.x, buttonSize.y, buttonSize.width, buttonSize.height, "", pressable).withTag(tag);
-    }
-
-    WidgetTextField getTextFieldFromRectangle(Rectangle textFieldSize) {
-        return new WidgetTextField(font, textFieldSize.x, textFieldSize.y, textFieldSize.width, textFieldSize.height);
+    WidgetTextField getTextFieldFromRectangle(Rectangle2d textFieldSize) {
+        return new WidgetTextField(font, textFieldSize.getX(), textFieldSize.getY(), textFieldSize.getWidth(), textFieldSize.getHeight());
     }
 
     @Override
@@ -464,13 +463,13 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
                 .collect(Collectors.toList());
     }
 
-//    void refreshScreen() {
-//        MainWindow mw = Minecraft.getInstance().mainWindow;
-////        ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
-//        int i = mw.getScaledWidth();
-//        int j = mw.getScaledHeight();
-//        init(Minecraft.getInstance(), i, j);
-////        setWorldAndResolution(Minecraft.getMinecraft(), i, j);
-//        widgets.stream().filter(widget -> widget instanceof GuiAnimatedStat).forEach(IGuiWidget::update);
-//    }
+    void refreshScreen() {
+        MainWindow mw = Minecraft.getInstance().mainWindow;
+//        ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
+        int i = mw.getScaledWidth();
+        int j = mw.getScaledHeight();
+        init(Minecraft.getInstance(), i, j);
+//        setWorldAndResolution(Minecraft.getMinecraft(), i, j);
+        buttons.stream().filter(widget -> widget instanceof ITickable).forEach(w -> ((ITickable) w).tick());
+    }
 }

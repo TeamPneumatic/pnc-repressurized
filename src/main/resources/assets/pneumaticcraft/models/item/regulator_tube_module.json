@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:items/module/regulator"
+      "layer0" : "pneumaticcraft:item/module/regulator"
    },
    "parent" : "item/generated"
 }

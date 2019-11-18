@@ -248,4 +248,15 @@ public class GuiUtils {
         }
         GlStateManager.translated(0, 0, -300);
     }
+
+    public static void drawTexture(ResourceLocation texture, int x, int y) {
+        Minecraft.getInstance().getTextureManager().bindTexture(texture);
+        BufferBuilder wr = Tessellator.getInstance().getBuffer();
+        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        wr.pos(x, y + 16, 0).tex(0.0, 1.0).endVertex();
+        wr.pos(x + 16, y + 16, 0).tex(1.0, 1.0).endVertex();
+        wr.pos(x + 16, y, 0).tex(1.0, 0.0).endVertex();
+        wr.pos(x, y, 0).tex(0.0, 0.0).endVertex();
+        Tessellator.getInstance().draw();
+    }
 }

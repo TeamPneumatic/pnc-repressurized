@@ -2,8 +2,8 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {
-      "particle": "pneumaticcraft:blocks/thermal_compressor",
-      "face": "pneumaticcraft:blocks/thermal_compressor"
+      "particle": "pneumaticcraft:block/thermal_compressor",
+      "face": "pneumaticcraft:block/thermal_compressor"
     },
     "model": "pneumaticcraft:block/thermal_compressor"
   },

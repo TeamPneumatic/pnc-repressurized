@@ -17,9 +17,12 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.registration.*;
 import net.minecraft.block.Block;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -56,10 +59,18 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipes(AmadronOfferManager.getInstance().getAllOffers(), ModCategoryUid.AMADRON_TRADE);
 
         for (Item item : ModItems.Registration.ALL_ITEMS) {
-            registration.addIngredientInfo(new ItemStack(item), VanillaTypes.ITEM, "gui.tooltip.item." + item.getRegistryName().getPath());
+            addStackInfo(registration, new ItemStack(item));
         }
         for (Block block : ModBlocks.Registration.ALL_BLOCKS) {
-            registration.addIngredientInfo(new ItemStack(block), VanillaTypes.ITEM, "gui.tab.info.tile." + block.getRegistryName().getPath());
+            addStackInfo(registration, new ItemStack(block));
+        }
+    }
+
+    private void addStackInfo(IRecipeRegistration registry, ItemStack stack) {
+        String k = (stack.getItem() instanceof BlockItem ? "gui.tab.info.tile." : "gui.tooltip.") + stack.getTranslationKey();
+        if (I18n.hasKey(k)) {
+            String raw = TextFormatting.getTextWithoutFormattingCodes(I18n.format(k));
+            registry.addIngredientInfo(stack, VanillaTypes.ITEM, raw.split(" \\\\n"));
         }
     }
 

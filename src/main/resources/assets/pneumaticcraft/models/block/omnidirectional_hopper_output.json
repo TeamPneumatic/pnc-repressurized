@@ -2,14 +2,12 @@
     "parent": "block/block",
     "ambientocclusion": false,
     "textures": {
-        "particle": "blocks/hopper_outside",
-        "top": "blocks/hopper_top",
-        "side": "blocks/hopper_outside",
-        "inside": "blocks/hopper_inside"
+        "particle": "block/hopper_outside",
+        "side": "pneumaticcraft:model/omnihopper_outside"
     },
     "elements": [
-        {   "from": [ 6, 12, 6 ],
-            "to": [ 10, 16, 10 ],
+        {   "from": [ 6.001, 10, 6.001 ],
+            "to": [ 9.999, 16, 9.999 ],
             "faces": {
                 "down":  { "uv": [ 6,  6, 10, 10 ], "texture": "#side", "tintindex": 0 },
                 "up":    { "uv": [ 6,  6, 10, 10 ], "texture": "#side", "tintindex": 0 },

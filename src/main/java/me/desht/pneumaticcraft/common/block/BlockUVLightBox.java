@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IEnviromentBlockReader;
 
 public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     public static final BooleanProperty LOADED = BooleanProperty.create("loaded");
@@ -32,7 +33,7 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        Direction facing = state.get(ROTATION);
+        Direction facing = getRotation(state);
         if (facing == Direction.NORTH || facing == Direction.SOUTH) {
             return SHAPE_NS;
         } else {
@@ -46,8 +47,7 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public int getLightValue(BlockState state) {
-        // todo 1.14 no pos-aware getlightlevel
+    public int getLightValue(BlockState state, IEnviromentBlockReader world, BlockPos pos) {
         return state.get(LIT) ? 15 : 0;
     }
 

@@ -72,7 +72,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return slot == FUEL_SLOT &&
-                    (itemStack.isEmpty() || PneumaticCraftUtils.getBurnTime(itemStack) > 0 && FluidUtil.getFluidContained(itemStack) == null);
+                    (itemStack.isEmpty() || PneumaticCraftUtils.getBurnTime(itemStack) > 0 && !FluidUtil.getFluidContained(itemStack).isPresent());
         }
 
     }

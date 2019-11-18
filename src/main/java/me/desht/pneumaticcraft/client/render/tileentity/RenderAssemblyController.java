@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.model.block.ModelAssemblyControllerScreen;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -39,7 +39,7 @@ public class RenderAssemblyController extends AbstractTileModelRenderer<TileEnti
         GlStateManager.disableLighting();
         Minecraft.getInstance().fontRenderer.drawString(te.displayedText, 1, 4, 0xFFFFFFFF);
         if(te.hasProblem) {
-            GuiPneumaticContainerBase.drawTexture(Textures.GUI_PROBLEMS_TEXTURE, 28, 12);
+            GuiUtils.drawTexture(Textures.GUI_PROBLEMS_TEXTURE, 28, 12);
         }
         GlStateManager.enableLighting();
     }

@@ -1,5 +1,11 @@
 {
     "parent": "block/block",
+    "textures": {
+        "particle": "pneumaticcraft:model/omnihopper_outside",
+        "top": "pneumaticcraft:model/omnihopper_top",
+        "side": "pneumaticcraft:model/omnihopper_outside",
+        "inside": "pneumaticcraft:model/omnihopper_inside"
+    },
     "ambientocclusion": false,
     "elements": [
         {   "from": [ 0, 10, 0 ],
@@ -57,15 +63,16 @@
                 "east":  { "uv": [ 14,  0, 16,  5 ], "texture": "#side", "tintindex": 0 }
             }
         },
-        {   "from": [ 4, 4, 4 ],
+        {   "from": [ 4, 6, 4 ],
             "to": [ 12, 10, 12 ],
             "faces": {
                 "down":  { "uv": [ 4, 4, 12, 12 ], "texture": "#side", "tintindex": 0 },
                 "up":    { "uv": [ 4, 4, 12, 12 ], "texture": "#side", "tintindex": 0 },
-                "north": { "uv": [ 4, 6, 12, 12 ], "texture": "#side", "tintindex": 0 },
-                "south": { "uv": [ 4, 6, 12, 12 ], "texture": "#side", "tintindex": 0 },
-                "west":  { "uv": [ 4, 6, 12, 12 ], "texture": "#side", "tintindex": 0 },
-                "east":  { "uv": [ 4, 6, 12, 12 ], "texture": "#side", "tintindex": 0 }
+                "north": { "uv": [ 4, 6, 10, 10 ], "texture": "#side", "tintindex": 0 },
+                "south": { "uv": [ 4, 6, 10, 10 ], "texture": "#side", "tintindex": 0 },
+                "west":  { "uv": [ 4, 6, 10, 10 ], "texture": "#side", "tintindex": 0 },
+                "east":  { "uv": [ 4, 6, 10, 10 ], "texture": "#side", "tintindex": 0 }
             }
-        }]
-  }
+        }
+    ]
+}

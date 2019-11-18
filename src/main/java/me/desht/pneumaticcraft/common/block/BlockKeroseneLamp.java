@@ -27,7 +27,7 @@ public class BlockKeroseneLamp extends BlockPneumaticCraftModeled {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        Direction facing = state.get(ROTATION);
+        Direction facing = getRotation(state);
         if (facing == Direction.NORTH || facing == Direction.SOUTH) {
             return SHAPE_NS;
         } else {

@@ -1,6 +1,6 @@
 {
    "parent" : "item/generated",
    "textures" : {
-      "layer0" : "pneumaticcraft:items/semiblock/transfer_gadget"
+      "layer0" : "pneumaticcraft:item/semiblock/transfer_gadget"
    }
 }

@@ -114,7 +114,11 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
                 for (int i = 0; i < modeButtons.length; i++) {
                     modeButtons[i].active = te.feedMode != FeedMode.values()[i];
                 }
+            } else {
+                refreshScreen();
             }
+        } else if (modeButtons[0] != null) {
+            refreshScreen();
         }
     }
 

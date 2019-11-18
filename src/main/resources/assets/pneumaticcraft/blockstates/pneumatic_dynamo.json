@@ -3,8 +3,8 @@
   "defaults": {
     "model": "pneumaticcraft:block/pneumatic_dynamo",
     "textures": {
-      "particle": "pneumaticcraft:blocks/pneumatic_dynamo_off",
-      "dynamo": "pneumaticcraft:blocks/pneumatic_dynamo_on"
+      "particle": "pneumaticcraft:block/pneumatic_dynamo_off",
+      "dynamo": "pneumaticcraft:block/pneumatic_dynamo_on"
     }
   },
   "variants": {
@@ -20,7 +20,7 @@
     },
     "active": {
       "true": { },
-      "false": { "textures": { "dynamo": "pneumaticcraft:blocks/pneumatic_dynamo_off" } }
+      "false": { "textures": { "dynamo": "pneumaticcraft:block/pneumatic_dynamo_off" } }
     }
   }
 }

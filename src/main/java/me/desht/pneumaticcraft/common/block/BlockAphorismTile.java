@@ -55,7 +55,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        return SHAPES[state.get(ROTATION).getIndex()];
+        return SHAPES[getRotation(state).getIndex()];
     }
 
     @Override

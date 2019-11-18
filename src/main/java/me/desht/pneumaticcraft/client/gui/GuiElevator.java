@@ -10,13 +10,13 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,20 +35,20 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
         GuiAnimatedStat floorNameStat = addAnimatedStat("Floor Names", new ItemStack(ModBlocks.ELEVATOR_CALLER), 0xFF005500, false);
         floorNameStat.setTextWithoutCuttingString(getFloorNameStat());
 
-        Rectangle fieldRectangle = floorNameStat.getButtonScaledRectangle(6, 60, 160, 20);
+        Rectangle2d fieldRectangle = floorNameStat.getButtonScaledRectangle(6, 60, 160, 20);
         WidgetTextField floorNameField = getTextFieldFromRectangle(fieldRectangle);
         floorNameField.setText(te.getFloorName(currentEditedFloor));
         floorNameField.func_212954_a(this::updateFloor);  // gui responder
         floorNameStat.addSubWidget(floorNameField);
 
-        Rectangle namePreviousRectangle = floorNameStat.getButtonScaledRectangle(5, 35, 20, 20);
+        Rectangle2d namePreviousRectangle = floorNameStat.getButtonScaledRectangle(5, 35, 20, 20);
         floorNameStat.addSubWidget(getButtonFromRectangle("", namePreviousRectangle, "\u27f5", button -> {
             if (--currentEditedFloor < 0) {
                 currentEditedFloor = Math.max(0, te.floorHeights.length - 1);
             }
         }));
 
-        Rectangle nameNextRectangle = floorNameStat.getButtonScaledRectangle(145, 35, 20, 20);
+        Rectangle2d nameNextRectangle = floorNameStat.getButtonScaledRectangle(145, 35, 20, 20);
         floorNameStat.addSubWidget(getButtonFromRectangle("", nameNextRectangle, "\u27f6", button -> {
             if (++currentEditedFloor >= te.floorHeights.length) {
                 currentEditedFloor = 0;

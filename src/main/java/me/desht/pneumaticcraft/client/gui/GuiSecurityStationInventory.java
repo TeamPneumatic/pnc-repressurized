@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -51,7 +52,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         statusStat = addAnimatedStat("Security Status", new ItemStack(ModBlocks.SECURITY_STATION), 0xFFFFAA00, false);
         accessStat = addAnimatedStat("Shared Users", new ItemStack(Items.PLAYER_HEAD), 0xFF005500, false);
 
-        Rectangle accessButtonRectangle = accessStat.getButtonScaledRectangle(145, 10, 20, 20);
+        Rectangle2d accessButtonRectangle = accessStat.getButtonScaledRectangle(145, 10, 20, 20);
         addUserButton = getButtonFromRectangle(null, accessButtonRectangle, "+", b -> {
             if (!sharedUserTextField.getText().equals(""))
                 NetworkHandler.sendToServer(new PacketSecurityStationAddUser(te, sharedUserTextField.getText()));
@@ -208,7 +209,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         }
         removeUserButtons = new ArrayList<>();
         for (int i = 0; i < te.sharedUsers.size(); i++) {
-            Rectangle rect = accessStat.getButtonScaledRectangle(24, 30 + i * 10, font.getStringWidth(te.sharedUsers.get(i).getName()), 8);
+            Rectangle2d rect = accessStat.getButtonScaledRectangle(24, 30 + i * 10, font.getStringWidth(te.sharedUsers.get(i).getName()), 8);
             GuiButtonSpecial button = getInvisibleButtonFromRectangle("remove:" + i, rect, b -> {});
             button.setInvisibleHoverColor(0x44FF0000);
             button.setVisible(false);

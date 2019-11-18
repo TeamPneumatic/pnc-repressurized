@@ -1,13 +1,5 @@
 {
   "forge_marker": 1,
-  "defaults": {
-    "textures": {
-      "particle": "pneumaticcraft:model/omnihopper_outside",
-      "top": "pneumaticcraft:model/omnihopper_top",
-      "side": "pneumaticcraft:model/omnihopper_outside",
-      "inside": "pneumaticcraft:model/omnihopper_inside"
-    }
-  },
   "variants": {
     "facing":{
       "down":  { "submodel": { "down": { "model": "pneumaticcraft:block/omnidirectional_hopper_output", "x": 180 }}},
@@ -24,10 +16,6 @@
       "south":{ "submodel": {"south": { "model": "pneumaticcraft:block/omnidirectional_hopper_base", "x": 90, "y": 180 }}},
       "west":{ "submodel": { "west": {"model": "pneumaticcraft:block/omnidirectional_hopper_base", "x": 90, "y": 270 }}},
       "east":{ "submodel": { "east": {"model": "pneumaticcraft:block/omnidirectional_hopper_base", "x": 90, "y": 90 }}}
-    },
-    "inventory":[{
-      "model": "pneumaticcraft:block/omnidirectional_hopper_base",
-      "transform": "forge:default-block"
-    }]
+    }
   }
 }

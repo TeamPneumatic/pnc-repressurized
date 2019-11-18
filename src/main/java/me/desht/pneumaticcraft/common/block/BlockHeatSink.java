@@ -42,13 +42,13 @@ public class BlockHeatSink extends BlockPneumaticCraft {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        return SHAPES[state.get(ROTATION).getIndex()];
+        return SHAPES[getRotation(state).getIndex()];
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
-        return super.getStateForPlacement(ctx).with(ROTATION, ctx.getFace().getOpposite());
+        return super.getStateForPlacement(ctx).with(directionProperty(), ctx.getFace().getOpposite());
     }
 
     @Override

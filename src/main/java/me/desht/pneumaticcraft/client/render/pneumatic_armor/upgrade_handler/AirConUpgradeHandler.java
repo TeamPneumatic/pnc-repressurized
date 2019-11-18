@@ -63,7 +63,7 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
                     + TextFormatting.DARK_GRAY
                     + Strings.repeat("|", MAX_AC - Math.abs(ac));
             acStat.setTitle(TextFormatting.YELLOW + "A/C: " + bar);
-            acStat.setBackGroundColor(ac < 0 ? 0x300080FF : (ac == 0 ? 0x3000AA00 : 0x30FFD000));
+            acStat.setBackgroundColor(ac < 0 ? 0x300080FF : (ac == 0 ? 0x3000AA00 : 0x30FFD000));
         }
     }
 

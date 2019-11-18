@@ -1,7 +1,7 @@
 {
    "parent" : "item/generated",
    "textures" : {
-      "layer0" : "pneumaticcraft:items/gps_area_tool"
+      "layer0" : "pneumaticcraft:item/gps_area_tool"
    },
    "display": {
     "thirdperson_lefthand": {

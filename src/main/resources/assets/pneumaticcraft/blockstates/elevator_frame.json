@@ -2,7 +2,7 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {
-      "particle": "pneumaticcraft:blocks/compressed_iron_block"
+      "particle": "pneumaticcraft:block/compressed_iron_block"
     }
   },
   "variants": {
@@ -14,7 +14,7 @@
       }
     ],
     "ne": {
-      "true": { "submodel": "pneumaticcraft:blank" },
+      "true": { "submodel": "pneumaticcraft:block/blank" },
       "false": {
         "submodel": {
           "ne": {
@@ -25,7 +25,7 @@
       }
     },
     "nw": {
-      "true": { "submodel": "pneumaticcraft:blank" },
+      "true": { "submodel": "pneumaticcraft:block/blank" },
       "false": {
         "submodel": {
           "nw": {
@@ -35,7 +35,7 @@
       }
     },
     "sw": {
-      "true": { "submodel": "pneumaticcraft:blank" },
+      "true": { "submodel": "pneumaticcraft:block/blank" },
       "false": {
         "submodel": {
           "sw": {
@@ -46,7 +46,7 @@
       }
     },
     "se": {
-      "true": { "submodel": "pneumaticcraft:blank" },
+      "true": { "submodel": "pneumaticcraft:block/blank" },
       "false": {
         "submodel": {
           "se": {

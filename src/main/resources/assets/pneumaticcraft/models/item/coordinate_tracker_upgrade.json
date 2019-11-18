@@ -1,7 +1,7 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:items/upgrades/upgrade_layer0",
-      "layer1" : "pneumaticcraft:items/upgrades/coordinate_tracker"
+      "layer0" : "pneumaticcraft:item/upgrades/upgrade_layer0",
+      "layer1" : "pneumaticcraft:item/upgrades/coordinate_tracker"
    },
    "parent" : "item/generated"
 }

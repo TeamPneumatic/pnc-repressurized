@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:items/drone"
+      "layer0" : "pneumaticcraft:item/drone"
    },
    "parent" : "item/generated"
 }

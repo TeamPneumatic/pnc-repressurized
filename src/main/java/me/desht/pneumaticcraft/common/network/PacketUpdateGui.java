@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
+import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -40,9 +42,11 @@ public class PacketUpdateGui {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Container container = ctx.get().getSender().openContainer;
-            if (container instanceof ContainerPneumaticBase) {
-                ((ContainerPneumaticBase) container).updateField(syncId, value);
+            if (Minecraft.getInstance().currentScreen instanceof GuiPneumaticContainerBase) {
+                Container container = ((GuiPneumaticContainerBase) Minecraft.getInstance().currentScreen).getContainer();
+                if (container instanceof ContainerPneumaticBase) {
+                    ((ContainerPneumaticBase) container).updateField(syncId, value);
+                }
             }
         });
         ctx.get().setPacketHandled(true);

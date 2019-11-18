@@ -1,43 +1,30 @@
 {
-  "forge_marker": 1,
   "defaults": {
-    "model": "pneumaticcraft:block/aerial_interface",
     "textures": {
-      "particle": "pneumaticcraft:blocks/top_panel",
-      "north": "pneumaticcraft:blocks/aerial_interface_front",
-      "south": "pneumaticcraft:blocks/back_panel",
-      "up": "pneumaticcraft:blocks/top_panel",
-      "down": "pneumaticcraft:blocks/top_panel",
-      "east": "pneumaticcraft:blocks/side_panel",
-      "west": "pneumaticcraft:blocks/side_panel"
+      "particle": "pneumaticcraft:block/top_panel",
+      "north": "pneumaticcraft:block/aerial_interface_front",
+      "south": "pneumaticcraft:block/back_panel",
+      "up": "pneumaticcraft:block/top_panel",
+      "down": "pneumaticcraft:block/top_panel",
+      "east": "pneumaticcraft:block/side_panel",
+      "west": "pneumaticcraft:block/side_panel"
     }
   },
   "variants": {
-    "": [{}],
-    "inventory": [{
-      "transform": "forge:default-item"
-    }],
-    "facing": {
-      "up": {"transform": {"rotation" : {"x" : 90}}},
-      "down": {"transform": {"rotation" : {"x" : -90}}},
-      "east": {
-        "transform": {
-          "rotation": {"y" : 270}
-        }
-      },
-      "north": {
-        "transform": { }
-      },
-      "west": {
-        "transform": {
-          "rotation": {"y": 90}
-        }
-      },
-      "south": {
-        "transform": {
-          "rotation": {"y" : 180}
-        }
-      }
+    "facing=north": {
+      "model": "pneumaticcraft:block/aerial_interface"
+    },
+    "facing=south": {
+      "model": "pneumaticcraft:block/aerial_interface",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pneumaticcraft:block/aerial_interface",
+      "y": 90
+    },
+    "facing=east": {
+      "model": "pneumaticcraft:block/aerial_interface",
+      "y": 270
     }
   }
 }

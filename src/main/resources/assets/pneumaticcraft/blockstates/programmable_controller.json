@@ -3,13 +3,13 @@
   "defaults": {
     "model": "pneumaticcraft:block/programmable_controller",
     "textures": {
-      "particle": "pneumaticcraft:blocks/programmable_controller",
-      "north": "pneumaticcraft:blocks/programmable_controller",
-      "south": "pneumaticcraft:blocks/back_panel",
-      "up": "pneumaticcraft:blocks/top_panel",
-      "down": "pneumaticcraft:blocks/top_panel",
-      "east": "pneumaticcraft:blocks/side_panel",
-      "west": "pneumaticcraft:blocks/side_panel"
+      "particle": "pneumaticcraft:block/programmable_controller",
+      "north": "pneumaticcraft:block/programmable_controller",
+      "south": "pneumaticcraft:block/back_panel",
+      "up": "pneumaticcraft:block/top_panel",
+      "down": "pneumaticcraft:block/top_panel",
+      "east": "pneumaticcraft:block/side_panel",
+      "west": "pneumaticcraft:block/side_panel"
     }
   },
   "variants":{
