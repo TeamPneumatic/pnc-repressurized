@@ -1,11 +1,14 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.*;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
@@ -26,14 +29,15 @@ public class DroneAILiquidExport extends DroneAIImExBase {
     }
 
     private boolean fillTank(BlockPos pos, boolean simulate) {
-        if (drone.getTank().getFluidAmount() == 0) {
+        IFluidTank droneTank = drone.getTank();
+        if (droneTank.getFluidAmount() == 0) {
             drone.addDebugEntry("gui.progWidget.liquidExport.debug.emptyDroneTank");
             abort();
             return false;
         } else {
             TileEntity te = drone.world().getTileEntity(pos);
             if (te != null) {
-                FluidStack exportedFluid = drone.getTank().drain(Integer.MAX_VALUE, false);
+                FluidStack exportedFluid = droneTank.drain(Integer.MAX_VALUE, false);
                 if (exportedFluid != null && ((ILiquidFiltered) widget).isFluidValid(exportedFluid.getFluid())) {
                     for (int i = 0; i < 6; i++) {
                         if (((ISidedWidget) widget).getSides()[i] && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.byIndex(i))) {
@@ -44,7 +48,7 @@ public class DroneAILiquidExport extends DroneAIImExBase {
                                     filledAmount = Math.min(filledAmount, getRemainingCount());
                                 }
                                 if (!simulate) {
-                                    decreaseCount(tank.fill(drone.getTank().drain(filledAmount, true), true));
+                                    decreaseCount(tank.fill(droneTank.drain(filledAmount, true), true));
                                 }
                                 return true;
                             }
@@ -55,17 +59,22 @@ public class DroneAILiquidExport extends DroneAIImExBase {
                     drone.addDebugEntry("gui.progWidget.liquidExport.debug.noValidFluid");
                 }
             } else if (((ILiquidExport) widget).isPlacingFluidBlocks() && (!((ICountWidget) widget).useCount() || getRemainingCount() >= 1000)) {
-                Block fluidBlock = drone.getTank().getFluid().getFluid().getBlock();
-                if (drone.getTank().getFluidAmount() >= 1000 && fluidBlock != null && drone.world().isAirBlock(pos)) {
+                Block fluidBlock = droneTank.getFluid().getFluid().getBlock();
+                World w = drone.world();
+                if (droneTank.getFluidAmount() >= 1000 && fluidBlock != null && isBlockSuitableForExport(w, pos)) {
                     if (!simulate) {
                         decreaseCount(1000);
-                        drone.getTank().drain(1000, true);
-                        drone.world().setBlockState(pos, fluidBlock.getDefaultState()); //TODO 1.8 test
+                        droneTank.drain(1000, true);
+                        w.setBlockState(pos, fluidBlock.getDefaultState());
                     }
                     return true;
                 }
             }
             return false;
         }
+    }
+
+    private boolean isBlockSuitableForExport(World w, BlockPos pos) {
+        return !FluidUtils.isSourceBlock(w, pos) && w.getBlockState(pos).getBlock().isReplaceable(w, pos);
     }
 }
