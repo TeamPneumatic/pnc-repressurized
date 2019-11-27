@@ -293,7 +293,7 @@ public class SemiBlockManager {
                 if (chunk.getWorld() == world) {
                     double dist = PneumaticCraftUtils.distBetweenSq(player.posX, 0, player.posZ, chunkX, 0, chunkZ);
                     if (dist < SYNC_DISTANCE_SQ) {
-                        if (syncedPlayers.add(player)) {
+                        if (syncedPlayers.add(player) && semiBlocks.containsKey(chunk)) {
                             for(List<ISemiBlock> semiBlockList : semiBlocks.get(chunk).values()){
                                 for (ISemiBlock semiBlock : semiBlockList) {
                                     if (!semiBlock.isInvalid()) {
