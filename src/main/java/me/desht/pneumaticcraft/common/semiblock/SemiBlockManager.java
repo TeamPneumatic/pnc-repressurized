@@ -204,7 +204,14 @@ public class SemiBlockManager {
         }
         chunksMarkedForRemoval.clear();
 
-        semiBlocks.values().forEach(this::update);
+        Map<Chunk,Set<BlockPos>> toRemove = new HashMap<>();
+        semiBlocks.forEach((chunk, posMap) -> {
+            List<BlockPos> removePos = update(posMap);
+            if (!removePos.isEmpty()) {
+                toRemove.computeIfAbsent(chunk, c -> new HashSet<>()).addAll(removePos);
+            }
+        });
+        toRemove.forEach((chunk, posSet) -> posSet.forEach(pos -> semiBlocks.get(chunk).remove(pos)));
         semiBlocks.values().removeIf(Map::isEmpty);
     }
 
@@ -256,7 +263,7 @@ public class SemiBlockManager {
      *
      * @param map map of blockpos to a list of semiblocks in that block position
      */
-    private void update(Map<BlockPos, List<ISemiBlock>> map) {
+    private List<BlockPos> update(Map<BlockPos, List<ISemiBlock>> map) {
         List<BlockPos> toRemove = new ArrayList<>();
         map.forEach((pos, semiblocks) -> {
             Iterator<ISemiBlock> iter = semiblocks.iterator();
@@ -272,7 +279,7 @@ public class SemiBlockManager {
                 toRemove.add(pos);
             }
         });
-        toRemove.forEach(map::remove);
+        return toRemove;
     }
 
     @SubscribeEvent
