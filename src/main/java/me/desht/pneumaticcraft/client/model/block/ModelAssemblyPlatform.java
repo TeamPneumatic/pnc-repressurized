@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.client.model.block;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.GuiRegistry;
+import me.desht.pneumaticcraft.client.render.StaticItemRenderer;
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.BlockItem;
@@ -12,7 +12,7 @@ import net.minecraft.item.BlockItem;
 public class ModelAssemblyPlatform extends AbstractTileModelRenderer.BaseModel {
     private final RendererModel claw1;
     private final RendererModel claw2;
-    private ItemRenderer customRenderItem = null;
+    private StaticItemRenderer customRenderItem = null;
 
     public ModelAssemblyPlatform() {
         textureWidth = 64;
@@ -37,7 +37,7 @@ public class ModelAssemblyPlatform extends AbstractTileModelRenderer.BaseModel {
         float scaleFactor = 0.7F;
 
         if (customRenderItem == null) {
-            customRenderItem = new AbstractTileModelRenderer.NoBobItemRenderer();
+            customRenderItem = new StaticItemRenderer();
         }
 
         IAssemblyRenderOverriding renderOverride = null;

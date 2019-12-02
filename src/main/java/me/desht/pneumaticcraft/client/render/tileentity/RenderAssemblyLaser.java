@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.model.block.ModelAssemblyLaser;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyLaser;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 
 public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAssemblyLaser> {
     private final ModelAssemblyLaser model;
@@ -22,7 +23,7 @@ public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAss
         if (te != null) {
             float[] renderAngles = new float[5];
             for (int i = 0; i < 5; i++) {
-                renderAngles[i] = te.oldAngles[i] + (te.angles[i] - te.oldAngles[i]) * partialTicks;
+                renderAngles[i] = MathHelper.lerp(partialTicks, te.oldAngles[i], te.angles[i]);
             }
             model.renderModel(0.0625F, renderAngles, te.isLaserOn);
         } else {

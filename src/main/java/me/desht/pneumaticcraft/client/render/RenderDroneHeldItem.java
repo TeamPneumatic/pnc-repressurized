@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.*;
@@ -10,13 +9,13 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 
 public class RenderDroneHeldItem {
-    private AbstractTileModelRenderer.NoBobItemRenderer customRenderItem;
+    private StaticItemRenderer customRenderItem;
     private final World world;
 
     public RenderDroneHeldItem(World world) {
         this.world = world;
         if (customRenderItem == null) {
-            customRenderItem = new AbstractTileModelRenderer.NoBobItemRenderer();
+            customRenderItem = new StaticItemRenderer();
         }
     }
 

@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.client.model.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.client.render.StaticItemRenderer;
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.entity.item.ItemEntity;
 
@@ -14,7 +14,7 @@ import static me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChambe
 public class ModelPressureChamberInterface extends AbstractTileModelRenderer.BaseModel {
     private final RendererModel input;
     private final RendererModel output;
-    private ItemRenderer customRenderItem = null;
+    private StaticItemRenderer customRenderItem = null;
 
     public ModelPressureChamberInterface() {
         textureWidth = 128;
@@ -53,7 +53,7 @@ public class ModelPressureChamberInterface extends AbstractTileModelRenderer.Bas
 
         if (ghostEntityItem != null) {
             if (customRenderItem == null) {
-                customRenderItem = new AbstractTileModelRenderer.NoBobItemRenderer();
+                customRenderItem = new StaticItemRenderer();
             }
 
             float zOff = 0f;

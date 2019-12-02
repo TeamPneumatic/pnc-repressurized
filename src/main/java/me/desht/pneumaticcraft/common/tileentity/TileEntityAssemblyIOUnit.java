@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
-import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.inventory.handler.RenderedItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
@@ -15,7 +15,10 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.*;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Collection;
 
@@ -29,7 +32,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     public float clawProgress;
     public float oldClawProgress;
     @DescSynced
-    private ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE);
+    private final RenderedItemStackHandler itemHandler = new RenderedItemStackHandler(this);
     private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> itemHandler);
 
     private Collection<IAssemblyRecipe> recipeList;
@@ -464,7 +467,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         clawProgress = tag.getFloat("clawProgress");
         shouldClawClose = tag.getBoolean("clawClosing");
         state = tag.getByte("state");
-        itemHandler = new ItemStackHandler(INVENTORY_SIZE);
         itemHandler.deserializeNBT(tag.getCompound("Items"));
     }
 
