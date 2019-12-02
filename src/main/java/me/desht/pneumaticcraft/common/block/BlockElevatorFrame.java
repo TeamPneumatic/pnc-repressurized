@@ -17,7 +17,6 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -112,8 +111,12 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
         VoxelShape shape = getCachedShape(state);
         float blockHeight = getElevatorBlockHeight(world, pos);
-        if (blockHeight > 0) {
-            shape = VoxelShapes.or(shape, Block.makeCuboidShape(0.001, 0, 0.001, 15.999, blockHeight * 16, 15.999));
+        if (blockHeight > 0f && blockHeight <= 1f) {
+            float minY = Math.max(0f, blockHeight - 0.06125f) * 16f;
+            float maxY = blockHeight * 16f;
+            shape = VoxelShapes.or(shape, Block.makeCuboidShape(0.001, minY, 0.001, 15.999, maxY, 15.999));
+        } else if (blockHeight > 1f) {
+            shape = VoxelShapes.or(shape, Block.makeCuboidShape(5, 0, 5, 11, 16, 11));
         }
 
         if (shape.isEmpty()) {
@@ -183,6 +186,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     }
 
     static TileEntityElevatorBase getElevatorTE(IBlockReader world, BlockPos pos) {
+        // TODO cache the elevator base pos in the frame's TE (careful with cache invalidation!)
         while (true) {
             pos = pos.offset(Direction.DOWN);
             if (world.getBlockState(pos).getBlock() == ModBlocks.ELEVATOR_BASE) break;
@@ -193,7 +197,8 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     private float getElevatorBlockHeight(IBlockReader world, BlockPos pos) {
         TileEntityElevatorBase te = getElevatorTE(world, pos);
-        return te == null ? 0F : MathHelper.clamp(te.extension - (pos.getY() - te.getPos().getY()) + 1, 0F, 1F);
+//        return te == null ? 0F : MathHelper.clamp(te.extension - (pos.getY() - te.getPos().getY()) + 1, 0F, 1F);
+        return te == null ? 0F : Math.max(te.extension - (pos.getY() - te.getPos().getY()) + 1, 0F);
     }
 
     @Override

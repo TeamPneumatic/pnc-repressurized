@@ -6,7 +6,7 @@
   "elements": [
     {
       "from": [ 0.5, 0, 0.5 ],
-      "to": [ 1.5, 16, 1.5 ],
+      "to": [ 1.5, 15.999, 1.5 ],
       "faces": {
         "down":  { "texture": "#all", "cullface": "down" },
         "up":    { "texture": "#all", "cullface": "up" },
