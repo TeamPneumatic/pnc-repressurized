@@ -96,18 +96,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
     @Override
     public boolean canConnectTo(Direction side) {
-        switch (getRotation()) {
-            case UP:
-            case DOWN:
-                return side == Direction.UP || side == Direction.DOWN;
-            case NORTH:
-            case SOUTH:
-                return side == Direction.NORTH || side == Direction.SOUTH;
-            case EAST:
-            case WEST:
-                return side == Direction.EAST || side == Direction.WEST;
-        }
-        return false;
+        return side.getAxis() == getRotation().getAxis();
     }
 
     @Override
@@ -267,7 +256,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 isSufficientPressureInChamber = true;
                 giveOutput(recipe.craftRecipe(itemsInChamber));
                 if (getWorld().getGameTime() - lastSoundTick > 5) {
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, getPos(), 0.5f, 0.8f + getWorld().rand.nextFloat() * 0.4f, false), getWorld());
+                    NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, getPos(), 0.7f, 0.8f + getWorld().rand.nextFloat() * 0.4f, false), getWorld());
                     lastSoundTick = getWorld().getGameTime();
                 }
                 // Craft at most one recipe each tick; this is because crafting changes the contents of the
@@ -546,7 +535,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                         double dx = x == 0 ? -0.1 : 0.1;
                         double dz = z == 0 ? -0.1 : 0.1;
                         NetworkHandler.sendToAllAround(
-                                new PacketSpawnParticle(ParticleTypes.EXPLOSION,
+                                new PacketSpawnParticle(ParticleTypes.POOF,
                                         te.getPos().getX() + 0.5, te.getPos().getY() + 0.5, te.getPos().getZ() + 0.5,
                                         dx, 0.3, dz, 5, 0, 0, 0),
                                 world);

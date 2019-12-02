@@ -14,6 +14,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class BlockPressureChamberWallBase extends BlockPneumaticCraft implements IBlockPressureChamber {
     BlockPressureChamberWallBase(Block.Properties props, String registryName) {
@@ -28,30 +29,33 @@ public class BlockPressureChamberWallBase extends BlockPneumaticCraft implements
     @Override
     public void onBlockPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
         super.onBlockPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
-        if (TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos) && par5EntityLiving instanceof ServerPlayerEntity) {
+        if (!par1World.isRemote && TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos)) {
             AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayerEntity) par5EntityLiving);
         }
     }
 
     @Override
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (world.isRemote) return false;
+        if (world.isRemote) return true;
         // forward activation to the pressure chamber valve, which will open the GUI
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityPressureChamberWall) {
             TileEntityPressureChamberValve valve = ((TileEntityPressureChamberWall) te).getCore();
             if (valve != null) {
-                return valve.getBlockState().onBlockActivated(world, player, hand, brtr);
+                NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getPos());
+//                return valve.getBlockState().onBlockActivated(world, player, hand, brtr);
             }
         }
-        return false;
+        return true;
     }
 
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityPressureChamberWall && !world.isRemote) {
-            ((TileEntityPressureChamberWall) te).onBlockBreak();
+        if (state.getBlock() != newState.getBlock()) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof TileEntityPressureChamberWall && !world.isRemote) {
+                ((TileEntityPressureChamberWall) te).onBlockBreak();
+            }
         }
         super.onReplaced(state, world, pos, newState, isMoving);
     }

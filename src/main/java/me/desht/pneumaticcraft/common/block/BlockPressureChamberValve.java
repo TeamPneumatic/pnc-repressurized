@@ -24,6 +24,7 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
 
     public BlockPressureChamberValve() {
         super(IBlockPressureChamber.getPressureChamberBlockProps(), "pressure_chamber_valve");
+        setDefaultState(getStateContainer().getBaseState().with(FORMED, false));
     }
 
     @Override
@@ -37,7 +38,7 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     @Override
     public void onBlockPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
         super.onBlockPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
-        if (TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos) && par5EntityLiving instanceof ServerPlayerEntity) {
+        if (!par1World.isRemote && TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos)) {
             AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayerEntity) par5EntityLiving);
         }
     }
@@ -84,7 +85,9 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
 
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        invalidateMultiBlock(world, pos);
+        if (state.getBlock() != newState.getBlock()) {
+            invalidateMultiBlock(world, pos);
+        }
         super.onReplaced(state, world, pos, newState, isMoving);
     }
 
