@@ -68,7 +68,7 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
             textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11);
             textField.setText(progWidget.getRequiredCount() + "");
             textField.setFocused2(true);
-            textField.func_212954_a(s -> progWidget.setRequiredCount(textField.getValue()));
+            textField.setResponder(s -> progWidget.setRequiredCount(textField.getValue()));
             addButton(textField);
         }
     }

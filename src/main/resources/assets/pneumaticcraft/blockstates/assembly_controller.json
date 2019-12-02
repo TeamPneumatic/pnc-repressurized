@@ -1,21 +1,9 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "textures": {
-      "pipe": "pneumaticcraft:block/pressure_tube",
-      "base": "pneumaticcraft:block/assembly_base",
-      "leg": "pneumaticcraft:block/compressed_iron_block",
-      "particle": "pneumaticcraft:block/assembly_base"
-    },
     "model": "pneumaticcraft:block/assembly_controller"
   },
   "variants": {
-    "": [{}],
-    "inventory": [{
-      "model": "pneumaticcraft:block/assembly_controller_inv.obj",
-      "custom": { "flip-v" : true},
-      "transform": "forge:default-block"
-    }],
     "down": {
       "false": {},
       "true": {}

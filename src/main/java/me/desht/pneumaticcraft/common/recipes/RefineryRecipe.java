@@ -12,7 +12,6 @@ import java.util.List;
 
 public class RefineryRecipe implements IRefineryRecipe {
 
-	public static final int MAX_OUTPUTS = 4;
 	public static final List<IRefineryRecipe> recipes = new ArrayList<>();
 	
 	public final FluidStack input;

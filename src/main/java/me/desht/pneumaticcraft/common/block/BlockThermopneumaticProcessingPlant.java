@@ -11,7 +11,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 
 public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraftModeled {
-    private static final VoxelShape BOUNDS = Block.makeCuboidShape(0, 0, 0, 1, 12 / 16D, 1);
+    private static final VoxelShape BOUNDS = Block.makeCuboidShape(0.01, 0, 0, 16, 12, 16);
 
     public BlockThermopneumaticProcessingPlant() {
         super("thermopneumatic_processing_plant");

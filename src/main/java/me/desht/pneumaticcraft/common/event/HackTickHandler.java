@@ -17,8 +17,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class HackTickHandler {
+public enum HackTickHandler {
+    INSTANCE;
+
     private final Map<GlobalPos, IHackableBlock> hackedBlocks = new HashMap<>();
+
+    public static HackTickHandler instance() {
+        return INSTANCE;
+    }
 
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {

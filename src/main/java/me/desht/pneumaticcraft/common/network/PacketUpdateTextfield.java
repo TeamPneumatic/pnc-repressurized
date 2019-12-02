@@ -40,7 +40,7 @@ public class PacketUpdateTextfield extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = getTileEntity(ctx);
+            TileEntity te = ctx.get().getSender().getServerWorld().getTileEntity(pos);
             if (te instanceof IGUITextFieldSensitive) {
                 ((IGUITextFieldSensitive) te).setText(textFieldID, text);
             }

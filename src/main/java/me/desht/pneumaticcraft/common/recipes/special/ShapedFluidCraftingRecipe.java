@@ -91,7 +91,7 @@ public abstract class ShapedFluidCraftingRecipe extends ShapedRecipe {
 
         @Override
         protected FluidStack getRequiredFluid() {
-            return new FluidStack(ModFluids.LUBRICANT_SOURCE, 1000);
+            return new FluidStack(ModFluids.LUBRICANT, 1000);
         }
 
         @Override

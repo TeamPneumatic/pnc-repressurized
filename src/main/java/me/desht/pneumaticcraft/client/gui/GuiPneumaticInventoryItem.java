@@ -98,7 +98,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
         int yStart = (height - ySize) / 2;
         IPressurizable p = (IPressurizable) itemStack.getItem();
         GuiUtils.drawPressureGauge(font, 0, p.maxPressure(itemStack), p.maxPressure(itemStack), 0,
-                te.chargingItemPressure, xStart + xSize * 3 / 4 + 8, yStart + ySize / 4 + 4, 0x000000);
+                te.chargingItemPressure, xStart + xSize * 3 / 4 + 8, yStart + ySize / 4 + 4);
     }
 
     @Override

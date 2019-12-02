@@ -16,14 +16,10 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine.IO_UNIT_EXPORT;
-import static me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine.IO_UNIT_IMPORT;
 
 public class JEIAssemblyControllerCategory extends JEIPneumaticCraftCategory<IAssemblyRecipe> {
     private final String localizedName;
@@ -80,20 +76,22 @@ public class JEIAssemblyControllerCategory extends JEIPneumaticCraftCategory<IAs
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, IAssemblyRecipe recipe, IIngredients ingredients) {
+        super.setRecipe(recipeLayout, recipe, ingredients);
+
         // TODO one day support multiple inputs/outputs
-        recipeLayout.getItemStacks().init(0, true, 29, 66);
+        recipeLayout.getItemStacks().init(0, true, 28, 65);
         recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
 
-        recipeLayout.getItemStacks().init(1, true, 133, 22);
+        recipeLayout.getItemStacks().init(1, true, 132, 21);
         recipeLayout.getItemStacks().set(1, ingredients.getInputs(VanillaTypes.ITEM).get(1));
 
-        int nMachines = ingredients.getInputs(VanillaTypes.ITEM).size();
+        int nMachines = ingredients.getInputs(VanillaTypes.ITEM).size() - 2;  // -2 for the input item and program
         for (int i = 0; i < nMachines; i++) {
             recipeLayout.getItemStacks().init(i + 2, true, 5 + i * 18, 25);
             recipeLayout.getItemStacks().set(i + 2, ingredients.getInputs(VanillaTypes.ITEM).get(i + 2));
         }
 
-        recipeLayout.getItemStacks().init(nMachines + 2, false, 96, 66);
+        recipeLayout.getItemStacks().init(nMachines + 2, false, 95, 65);
         recipeLayout.getItemStacks().set(nMachines + 2, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
     }
 
@@ -112,21 +110,14 @@ public class JEIAssemblyControllerCategory extends JEIPneumaticCraftCategory<IAs
                     res.add(new ItemStack(ModBlocks.ASSEMBLY_LASER));
                     break;
                 case IO_UNIT_IMPORT:
-                    res.add(makeIOUnitStack(IO_UNIT_IMPORT));
+                    res.add(new ItemStack(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT));
                     break;
                 case IO_UNIT_EXPORT:
-                    res.add(makeIOUnitStack(IO_UNIT_EXPORT));
+                    res.add(new ItemStack(ModBlocks.ASSEMBLY_IO_UNIT_EXPORT));
                     break;
             }
         }
         return res;
-    }
-
-    @Nonnull
-    private ItemStack makeIOUnitStack(AssemblyProgram.EnumMachine what) {
-        ItemStack stack = new ItemStack(ModBlocks.ASSEMBLY_IO_UNIT);
-        stack.getOrCreateTag().putBoolean("Import", what == IO_UNIT_IMPORT);
-        return stack;
     }
 
     @Override

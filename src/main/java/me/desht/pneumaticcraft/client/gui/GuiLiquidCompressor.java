@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -59,16 +60,19 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
 
     private List<String> getAllFuels() {
         List<String> fuels = new ArrayList<>();
-        fuels.add("L/Bucket | Fluid");
-        PneumaticCraftAPIHandler.getInstance().liquidFuels.forEach((fluidName, v) -> {
-            String value = v / 1000 + "";
-            while (font.getStringWidth(value) < 25) {
+        fuels.add(TextFormatting.UNDERLINE + "mL/mB | Fluid");
+
+        for (Map.Entry<ResourceLocation, Integer> map : sortByValue(PneumaticCraftAPIHandler.getInstance().liquidFuels).entrySet()) {
+            String value = String.format("%4d", map.getValue() / 1000);
+            while (font.getStringWidth(value) < 30) {
                 value = value + " ";
             }
-            Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidName);
+            Fluid fluid = ForgeRegistries.FLUIDS.getValue(map.getKey());
             FluidStack stack = new FluidStack(fluid, 1);
             fuels.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getFormattedText(), 25));
-        });
+
+        }
+
         return fuels;
     }
 

@@ -8,6 +8,8 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.List;
 
 public interface IRefineryRecipe extends IModRecipe {
+    int MAX_OUTPUTS = 4;
+
     FluidStack getInput();
 
     List<FluidStack> getOutputs();

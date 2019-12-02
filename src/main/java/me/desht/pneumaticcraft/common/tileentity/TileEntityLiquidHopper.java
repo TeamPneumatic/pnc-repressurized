@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -19,7 +20,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper implements ISerializableTanks, ISmartFluidSync {
+public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements ISerializableTanks, ISmartFluidSync {
     private int comparatorValue = -1;
 
     @LazySynced
@@ -53,16 +53,11 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     private int fluidAmountScaled;
 
     public TileEntityLiquidHopper() {
-        super();
+        super(ModTileEntityTypes.LIQUID_HOPPER);
 
         if (PNCConfig.Common.Machines.liquidHopperDispenser) {
             addApplicableUpgrade(EnumUpgrade.DISPENSER);
         }
-    }
-
-    @Override
-    protected int getInvSize() {
-        return 0;
     }
 
     @Override
@@ -79,15 +74,17 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
     protected boolean doExport(int maxItems) {
         Direction dir = getRotation();
 
-        if (tank.getFluid() != null) {
+        if (!tank.getFluid().isEmpty()) {
             TileEntity neighbor = getCachedNeighbor(dir);
-            LazyOptional<IFluidHandler> cap = neighbor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
-            if (cap.isPresent()) {
-                return cap.map(fluidHandler -> {
-                    int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
-                    FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
-                    return !transferred.isEmpty();
-                }).orElse(false);
+            if (neighbor != null) {
+                LazyOptional<IFluidHandler> cap = neighbor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
+                if (cap.isPresent()) {
+                    return cap.map(fluidHandler -> {
+                        int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
+                        FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
+                        return !transferred.isEmpty();
+                    }).orElse(false);
+                }
             }
         }
 
@@ -163,10 +160,6 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
         return tank;
     }
 
-    public Direction getInputDirection() {
-        return inputDir;
-    }
-
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
@@ -228,11 +221,6 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
                 tank.setFluid(new FluidStack(fluidStack.getFluid(), PneumaticValues.NORMAL_TANK_CAPACITY));
             }
         }
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     @Nullable
@@ -331,12 +319,12 @@ public class TileEntityLiquidHopper extends TileEntityOmnidirectionalHopper impl
 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction doDrain) {
-            return inbound ? null : tank.drain(resource, doDrain);
+            return inbound ? FluidStack.EMPTY : tank.drain(resource, doDrain);
         }
 
         @Override
         public FluidStack drain(int maxDrain, FluidAction doDrain) {
-            return inbound ? null : wrappedTank.drain(maxDrain, doDrain);
+            return inbound ? FluidStack.EMPTY : wrappedTank.drain(maxDrain, doDrain);
         }
     }
 }

@@ -1,7 +1,5 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.client.model.module.ModelAirGrate;
-import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
@@ -10,12 +8,14 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -50,7 +50,7 @@ public class ModuleAirGrate extends TubeModule {
 
     @Override
     public double getWidth() {
-        return 1;
+        return 16D;
     }
 
     @Override
@@ -104,8 +104,8 @@ public class ModuleAirGrate extends TubeModule {
 
                     if (d5 > 0.0D) {
                         d5 *= d5;
-                        if (!vacuum) d5 *= -1;
-                        entity.setMotion(x / d4 * d5 * 0.1, y / d4 * d5 * 0.1, z / d4 * d5 * 0.1);
+                        if (vacuum) d5 *= -1;
+                        entity.move(MoverType.PISTON, new Vec3d(x / d4 * d5 * 0.1, y / d4 * d5 * 0.1, z / d4 * d5 * 0.1));
                         if (world.isRemote && world.rand.nextDouble() * 0.85 > d4) {
                             if (vacuum) {
                                 world.addParticle(AirParticleData.DENSE, entity.posX, entity.posY, entity.posZ, -x, -y, -z);
@@ -186,7 +186,7 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     @Override
-    public String getType() {
+    public ResourceLocation getType() {
         return Names.MODULE_AIR_GRATE;
     }
 
@@ -203,11 +203,6 @@ public class ModuleAirGrate extends TubeModule {
     @Override
     public boolean hasGui() {
         return true;
-    }
-
-    @Override
-    public Class<? extends ModelModuleBase> getModelClass() {
-        return ModelAirGrate.class;
     }
 
     @Override

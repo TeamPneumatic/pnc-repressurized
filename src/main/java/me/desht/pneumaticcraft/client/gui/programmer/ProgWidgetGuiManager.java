@@ -22,6 +22,7 @@ public class ProgWidgetGuiManager {
         return factory == null ? null : factory.createGui(widget, programmer);
     }
 
+    @FunctionalInterface
     public interface ProgWidgetGuiFactory<T extends IProgWidget> {
         GuiProgWidgetOptionBase createGui(T progWidget, GuiProgrammer programmer);
     }

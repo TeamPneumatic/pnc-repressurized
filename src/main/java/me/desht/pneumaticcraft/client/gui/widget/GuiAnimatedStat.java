@@ -16,6 +16,7 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.ITickable;
@@ -25,8 +26,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -91,7 +92,7 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
             affectedY += affectingStat.getAffectedY() + affectingStat.getHeight();
         }
 
-        MinecraftForge.EVENT_BUS.register(this);
+//        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public GuiAnimatedStat(Screen gui, int backgroundColor) {
@@ -453,6 +454,9 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
             widgets.stream()
                     .filter(stat -> this != stat && stat.isLeftSided() == isLeftSided()) // when the stat is on the same side, close it.
                     .forEach(IGuiAnimatedStat::closeWindow);
+            for (Widget w : subWidgets) {
+                if (w instanceof TextFieldWidget) ((TextFieldWidget) w).setFocused2(true);
+            }
         }
     }
 
@@ -520,6 +524,21 @@ public class GuiAnimatedStat extends Widget implements IGuiAnimatedStat, IToolti
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        for (Widget widget : subWidgets) {
+            if (widget.keyPressed(keyCode, scanCode, modifiers) || (widget instanceof TextFieldWidget && widget.isFocused()) && keyCode != GLFW.GLFW_KEY_ESCAPE) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {
+        for (Widget widget : subWidgets) {
+            if (widget.charTyped(p_charTyped_1_, p_charTyped_2_)) {
+                return true;
+            }
+        }
         return false;
     }
 

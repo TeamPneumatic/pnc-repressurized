@@ -2,9 +2,12 @@ package me.desht.pneumaticcraft.client.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
@@ -161,5 +164,19 @@ public class RenderUtils {
         }
         GlStateManager.rotated(metaRotation, 0, 1, 0);
         return metaRotation;
+    }
+
+    public static void renderItemAt(ItemStack stack, double x, double y, double z) {
+        GlStateManager.pushMatrix();
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.enableLighting();
+
+        GlStateManager.translated(x, y, z);
+        Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND);
+
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.disableLighting();
+        GlStateManager.disableBlend();
+        GlStateManager.popMatrix();
     }
 }

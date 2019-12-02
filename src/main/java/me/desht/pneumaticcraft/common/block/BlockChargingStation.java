@@ -8,6 +8,7 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -16,7 +17,11 @@ import net.minecraft.world.IBlockReader;
 public class BlockChargingStation extends BlockPneumaticCraftCamo {
     public static final BooleanProperty CHARGE_PAD = BooleanProperty.create("charge_pad");
 
-    private static final VoxelShape SHAPE = Block.makeCuboidShape(3, 0, 3, 13, 10, 13);
+    private static final VoxelShape BASE = Block.makeCuboidShape(1, 0, 1, 15, 1, 15);
+    private static final VoxelShape FRAME = Block.makeCuboidShape(4, 1, 4, 12, 6, 12);
+    private static final VoxelShape PAD_FRAME = Block.makeCuboidShape(3, 1, 3, 13, 16, 13);
+    private static final VoxelShape SHAPE = VoxelShapes.combineAndSimplify(BASE, FRAME, IBooleanFunction.OR);
+    private static final VoxelShape PAD_SHAPE = VoxelShapes.combineAndSimplify(BASE, PAD_FRAME, IBooleanFunction.OR);
 
     public BlockChargingStation() {
         super("charging_station");
@@ -30,7 +35,7 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        return state.get(CHARGE_PAD) ? VoxelShapes.fullCube() : SHAPE;
+        return state.get(CHARGE_PAD) ? PAD_SHAPE : SHAPE;
     }
 
     @Override

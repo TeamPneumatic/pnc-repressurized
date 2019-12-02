@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 public class BlockPressureChamberInterface extends BlockPneumaticCraft implements IBlockPressureChamber {
 
     public BlockPressureChamberInterface() {
-        super(DEFAULT_PROPS.hardnessAndResistance(3f, 2000f), "pressure_chamber_interface");
+        super(IBlockPressureChamber.getPressureChamberBlockProps(), "pressure_chamber_interface");
     }
 
     @Override

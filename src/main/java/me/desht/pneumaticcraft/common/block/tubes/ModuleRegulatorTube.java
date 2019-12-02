@@ -4,8 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
-import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
-import me.desht.pneumaticcraft.client.model.module.ModelPressureRegulator;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
@@ -13,6 +11,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
@@ -56,7 +55,7 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     }
 
     @Override
-    public String getType() {
+    public ResourceLocation getType() {
         return Names.MODULE_REGULATOR;
     }
 
@@ -83,10 +82,4 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     public boolean isInline() {
         return true;
     }
-
-    @Override
-    public Class<? extends ModelModuleBase> getModelClass() {
-        return ModelPressureRegulator.class;
-    }
-
 }

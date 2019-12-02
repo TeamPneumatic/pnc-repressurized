@@ -7,17 +7,12 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
-import me.desht.pneumaticcraft.client.model.BakedMinigunWrapper;
-import me.desht.pneumaticcraft.client.model.CamoModel;
-import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassBakedModel;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
 import me.desht.pneumaticcraft.common.item.*;
@@ -32,8 +27,6 @@ import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -41,15 +34,12 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.BipedRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.LivingEntity;
@@ -60,16 +50,17 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.HandSide;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -80,20 +71,21 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
+@Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEventHandler {
     private static final double MINIGUN_RADIUS = 1.1D;
     private static final double MINIGUN_TEXT_SIZE = 0.55D;
     private static final float MAX_SCREEN_ROLL = 25F;  // max roll in degrees when flying with jetboots
 
-    private float currentScreenRoll = 0F;
+    private static float currentScreenRoll = 0F;
 
     public static float playerRenderPartialTick;
-    private final RenderProgressingLine minigunFire = new RenderProgressingLine().setProgress(1);
+    private final static RenderProgressingLine minigunFire = new RenderProgressingLine().setProgress(1);
     private static int lastWidth = -1;
     private static int lastHeight = -1;
 
     @SubscribeEvent
-    public void onItemTooltip(ItemTooltipEvent event) {
+    public static void onItemTooltip(ItemTooltipEvent event) {
         if (event.getItemStack().getItem() instanceof IProgrammable) {
             handleProgrammableTooltip(event);
         } else if (event.getItemStack().getItem() instanceof BucketItem/* || event.getItemStack().getItem() instanceof UniversalBucket*/) {
@@ -101,7 +93,7 @@ public class ClientEventHandler {
         }
     }
 
-    private void handleProgrammableTooltip(ItemTooltipEvent event) {
+    private static void handleProgrammableTooltip(ItemTooltipEvent event) {
         IProgrammable programmable = (IProgrammable) event.getItemStack().getItem();
         if (programmable.canProgram(event.getItemStack()) && programmable.showProgramTooltip()) {
             boolean hasInvalidPrograms = false;
@@ -131,7 +123,7 @@ public class ClientEventHandler {
         }
     }
 
-    private void handleFluidContainerTooltip(ItemTooltipEvent event) {
+    private static void handleFluidContainerTooltip(ItemTooltipEvent event) {
         FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
             String name = fluidStack.getFluid().getRegistryName().getPath();
             String key = "gui.tooltip.item." + event.getItemStack().getItem().getRegistryName().getPath();
@@ -168,16 +160,16 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void onLivingRender(RenderLivingEvent.Pre event) {
+    public static void onLivingRender(RenderLivingEvent.Pre event) {
         setRenderHead(event.getEntity(), false);
     }
 
     @SubscribeEvent
-    public void onLivingRender(RenderLivingEvent.Post event) {
+    public static void onLivingRender(RenderLivingEvent.Post event) {
         setRenderHead(event.getEntity(), true);
     }
 
-    private void setRenderHead(LivingEntity entity, boolean setRender) {
+    private static void setRenderHead(LivingEntity entity, boolean setRender) {
         if (entity.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET
                 && (PNCConfig.Client.Armor.fancyArmorModels || DateEventHandler.isIronManEvent())) {
             EntityRenderer renderer = Minecraft.getInstance().getRenderManager().getRenderer(entity);
@@ -201,7 +193,7 @@ public class ClientEventHandler {
       }*/
 
     @SubscribeEvent
-    public void tickEnd(TickEvent.RenderTickEvent event) {
+    public static void tickEnd(TickEvent.RenderTickEvent event) {
         if (event.phase == TickEvent.Phase.END && Minecraft.getInstance().isGameFocused() 
                 && PneumaticCraftRepressurized.proxy.getClientPlayer() != null
                 && (ModuleRegulatorTube.inverted || !ModuleRegulatorTube.inLine)) {
@@ -214,7 +206,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void renderFirstPersonMinigun(RenderGameOverlayEvent.Pre event) {
+    public static void renderFirstPersonMinigun(RenderGameOverlayEvent.Pre event) {
         if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS && Minecraft.getInstance().gameSettings.thirdPersonView == 0) {
             PlayerEntity player = Minecraft.getInstance().player;
             Minecraft mc = Minecraft.getInstance();
@@ -253,7 +245,7 @@ public class ClientEventHandler {
         }
     }
 
-    private void drawBulletTraces2D(int color, int w, int h) {
+    private static void drawBulletTraces2D(int color, int w, int h) {
         GlStateManager.pushMatrix();
         GlStateManager.disableTexture();
         GlStateManager.enableBlend();
@@ -282,7 +274,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void onWorldRender(RenderWorldLastEvent event) {
+    public static void onWorldRender(RenderWorldLastEvent event) {
         // render everyone else's (and ours in 3rd person camera) minigun bullet traces
         PlayerEntity thisPlayer = Minecraft.getInstance().player;
         double playerX = thisPlayer.prevPosX + (thisPlayer.posX - thisPlayer.prevPosX) * event.getPartialTicks();
@@ -328,41 +320,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void onTextureStitch(TextureStitchEvent.Pre event) {
-        // pressure glass connected textures
-        for (int i = 0; i < PressureGlassBakedModel.TEXTURE_COUNT; i++) {
-            ResourceLocation loc = new ResourceLocation(Textures.PRESSURE_GLASS_LOCATION + "window_" + (i + 1));
-            event.addSprite(loc);
-            PressureGlassBakedModel.SPRITES[i] = event.getMap().getSprite(loc);
-        }
-    }
-
-    @SubscribeEvent
-    public void onModelBaking(ModelBakeEvent event) {
-        // set up camo models for camouflageable blocks
-        for (Block block : ModBlocks.Registration.ALL_BLOCKS) {
-            if (block instanceof BlockPneumaticCraftCamo) {
-                for (BlockState state : block.getStateContainer().getValidStates()) {
-                    ModelResourceLocation loc = BlockModelShapes.getModelLocation(state);
-                    IBakedModel model = event.getModelRegistry().get(loc);
-                    if (model != null) {
-                        event.getModelRegistry().put(loc, new CamoModel(model));
-                    }
-                }
-            }
-        }
-
-        // minigun model: using TEISR for in-hand transforms
-        ModelResourceLocation mrl = new ModelResourceLocation(ModItems.MINIGUN.getRegistryName(), "inventory");
-        IBakedModel object = event.getModelRegistry().get(mrl);
-        if (object != null) {
-            event.getModelRegistry().put(mrl, new BakedMinigunWrapper(object));
-        }
-    }
-
-
-    @SubscribeEvent
-    public void screenTilt(EntityViewRenderEvent.CameraSetup event) {
+    public static void screenTilt(EntityViewRenderEvent.CameraSetup event) {
         if (event.getInfo().getRenderViewEntity() instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) event.getInfo().getRenderViewEntity();
             if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.FEET) && !player.onGround) {
@@ -389,62 +347,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void registerModels(ModelRegistryEvent event) {
-
-        // TODO 1.14 may not need anything here?
-
-//        registerFluidModels();
-//
-//        for (Block block : ModBlocks.Registration.ALL_BLOCKS) {
-//            Item item = Item.getItemFromBlock(block);
-//            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
-//        }
-//
-//        Item assemblyIO = Item.getItemFromBlock(ModBlocks.ASSEMBLY_IO_UNIT);
-//        ModelLoader.setCustomModelResourceLocation(assemblyIO, 1, new ModelResourceLocation(RL("assembly_io_unit_import"), "inventory"));
-//
-//        for (Item item: ModItems.items) {
-//            if (item instanceof ItemPneumaticSubtyped) {
-//                ModelBakery.registerItemVariants(item);
-//                ItemPneumaticSubtyped subtyped = (ItemPneumaticSubtyped) item;
-//                NonNullList<ItemStack> stacks = NonNullList.create();
-//                item.getSubItems(PneumaticCraftRepressurized.tabPneumaticCraft, stacks);
-//                for (ItemStack stack : stacks) {
-//                    ModelLoader.setCustomModelResourceLocation(item, stack.getMetadata(),
-//                            new ModelResourceLocation(RL(subtyped.getSubtypeModelName(stack.getMetadata())), "inventory"));
-//                }
-//            } else {
-//                ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
-//            }
-//        }
-//
-//        ModelLoader.setCustomStateMapper(ModBlocks.DRONE_REDSTONE_EMITTER, blockIn -> Collections.emptyMap());
-//        ModelLoader.setCustomStateMapper(ModBlocks.KEROSENE_LAMP_LIGHT, blockIn -> Collections.emptyMap());
-//        ModelLoader.setCustomStateMapper(ModBlocks.PRESSURE_CHAMBER_GLASS, new StateMapperBase() {
-//            @Override
-//            protected ModelResourceLocation getModelResourceLocation(BlockState iBlockState) {
-//                return PressureGlassBakedModel.BAKED_MODEL;
-//            }
-//        });
-    }
-
-    private void registerFluidModels() {
-        // TODO 1.14 what do we need here?
-
-//        for (IFluidBlock fluidBlock : Fluids.MOD_FLUID_BLOCKS) {
-//            final Item item = Item.getItemFromBlock((Block) fluidBlock);
-//            assert item != null;
-//
-//            ModelBakery.registerItemVariants(item);
-//
-//            FluidStateMapper stateMapper = new FluidStateMapper(fluidBlock.getFluid());
-//            ModelLoader.setCustomMeshDefinition(item, stateMapper);
-//            ModelLoader.setCustomStateMapper((Block) fluidBlock, stateMapper);
-//        }
-    }
-
-    @SubscribeEvent
-    public void jetBootsEvent(TickEvent.PlayerTickEvent event) {
+    public static void jetBootsEvent(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             PlayerEntity player = event.player;
             if (player == null || player.world == null) return;
@@ -463,8 +366,8 @@ public class ClientEventHandler {
     private static final FloatBuffer BUF_FLOAT_16 = BufferUtils.createFloatBuffer(16);
 
     @SubscribeEvent
-    public void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
-        PlayerEntity player = event.getEntityPlayer();
+    public static void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
+        PlayerEntity player = event.getPlayer();
         JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(player);
         JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
         if (state != null && state.shouldRotatePlayer()) {
@@ -476,7 +379,7 @@ public class ClientEventHandler {
         }
     }
 
-    private FloatBuffer quatToGlMatrix(Quaternion quaternionIn) {
+    private static FloatBuffer quatToGlMatrix(Quaternion quaternionIn) {
         // lifted from 1.12.2 GlStateManager
         ClientEventHandler.BUF_FLOAT_16.clear();
         float f = quaternionIn.getX() * quaternionIn.getX();
@@ -509,8 +412,8 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void playerPostRotateEvent(RenderPlayerEvent.Post event) {
-        PlayerEntity player = event.getEntityPlayer();
+    public static void playerPostRotateEvent(RenderPlayerEvent.Post event) {
+        PlayerEntity player = event.getPlayer();
         JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(player);
         JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
         if (state != null && state.shouldRotatePlayer()) {
@@ -537,7 +440,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void adjustFOVEvent(FOVUpdateEvent event) {
+    public static void adjustFOVEvent(FOVUpdateEvent event) {
         float modifier = 1.0f;
         for (EquipmentSlotType slot : EquipmentSlotType.values()) {
             ItemStack stack = event.getEntity().getItemStackFromSlot(slot);
@@ -550,7 +453,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
+    public static void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
         if (event.getInfo().getFluidState().isTagged(FluidTags.WATER) && event.getInfo().getRenderViewEntity() instanceof PlayerEntity) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isScubaEnabled() && handler.getUpgradeCount(EquipmentSlotType.HEAD, IItemRegistry.EnumUpgrade.SCUBA) > 0) {
@@ -561,14 +464,14 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void guiContainerForeground(GuiContainerEvent.DrawForeground event) {
+    public static void guiContainerForeground(GuiContainerEvent.DrawForeground event) {
         if (Minecraft.getInstance().currentScreen instanceof IExtraGuiHandling) {
             ((IExtraGuiHandling) Minecraft.getInstance().currentScreen).drawExtras(event);
         }
     }
 
     @SubscribeEvent
-    public void renderTooltipEvent(RenderTooltipEvent.PostText event) {
+    public static void renderTooltipEvent(RenderTooltipEvent.PostText event) {
         ItemStack stack = event.getStack();
         if (stack.getItem() instanceof ItemMicromissiles && stack.hasTag()) {
             int width = 0;
@@ -601,13 +504,13 @@ public class ClientEventHandler {
         }
     }
 
-    private int renderString(FontRenderer fr, String s, int x, int y) {
+    private static int renderString(FontRenderer fr, String s, int x, int y) {
         fr.drawStringWithShadow(s, x, y, 0xFFAAAAAA);
         return fr.getStringWidth(s);
     }
 
     @SubscribeEvent
-    public void drawCustomDurabilityBars(GuiScreenEvent.DrawScreenEvent.Pre event) {
+    public static void drawCustomDurabilityBars(GuiScreenEvent.DrawScreenEvent.Pre event) {
         // with thanks to V0idWa1k3r
         // https://github.com/V0idWa1k3r/ExPetrum/blob/master/src/main/java/v0id/exp/client/ExPHandlerClient.java#L235
         if (event.getGui() instanceof ContainerScreen) {
@@ -651,7 +554,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void handleResolutionChange(GuiScreenEvent.InitGuiEvent event) {
+    public static void handleResolutionChange(GuiScreenEvent.InitGuiEvent event) {
         Screen gui = event.getGui();
         if (gui.getMinecraft().world != null) {
             MainWindow mw = gui.getMinecraft().mainWindow;

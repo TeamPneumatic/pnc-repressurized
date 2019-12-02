@@ -1,4 +1,9 @@
 {
+  "textures": {
+    "particle": "pneumaticcraft:block/uv_light_box",
+    "face": "pneumaticcraft:block/uv_light_box",
+    "blueprint": "pneumaticcraft:item/pcb_blueprint"
+  },
   "elements": [
     {
       "from": [ 1, 0, 4.5 ],

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.model.block.ModelDoor;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
@@ -21,7 +22,7 @@ public class RenderPneumaticDoor extends AbstractTileModelRenderer<TileEntityPne
 
     @Override
     protected boolean shouldRender(TileEntityPneumaticDoor te) {
-        return te.rotationAngle > 0f && te.rotationAngle < 90f;
+        return !te.getBlockState().get(BlockPneumaticDoor.TOP_DOOR);
     }
 
     @Override

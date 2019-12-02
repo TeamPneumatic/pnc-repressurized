@@ -1,0 +1,6 @@
+{
+  "textures" : {
+    "layer0" : "pneumaticcraft:item/sentry_turret_inv"
+  },
+  "parent" : "item/generated"
+}

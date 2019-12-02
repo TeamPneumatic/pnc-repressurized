@@ -1,0 +1,8 @@
+{
+  "textures": {
+    "particle": "pneumaticcraft:block/compressed_iron_block"
+  },
+  "loader": "forge:obj",
+  "model": "pneumaticcraft:models/block/pressure_chamber_interface.obj",
+  "flip-v": true
+}

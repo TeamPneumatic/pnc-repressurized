@@ -31,7 +31,6 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
     private GuiButtonSpecial filterButton;
     private TextFieldWidget nameFilterField;
     private boolean hasEnoughPressure = true;
-    private int sendDelay = -1;
 
     public GuiPressureChamberInterface(ContainerPressureChamberInterface container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -53,7 +52,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
 
         nameFilterField = new TextFieldWidget(font, xStart + 93, yStart + 58, 74, 10, "");
         nameFilterField.setText(te.itemNameFilter);
-        nameFilterField.func_212954_a(s -> sendFilterTextDelayed());
+        nameFilterField.setResponder(s -> sendDelayed(5));
 
         if (te.filterMode != TileEntityPressureChamberInterface.FilterMode.ITEM) {
             if (container.inventorySlots.get(FILTER_SLOT_START).xPos < HIDE_SLOTS_OFFSET) {
@@ -64,10 +63,6 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
                 adjustFilterSlotXPos(-HIDE_SLOTS_OFFSET);
             }
         }
-    }
-
-    private void sendFilterTextDelayed() {
-        sendDelay = 5;
     }
 
     private void cycleFilterMode() {
@@ -126,14 +121,14 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
     }
 
     @Override
+    protected void doDelayedAction() {
+        te.itemNameFilter = nameFilterField.getText();
+        NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
+    }
+
+    @Override
     public void tick() {
         super.tick();
-
-        if (sendDelay > 0 && --sendDelay == 0) {
-            te.itemNameFilter = nameFilterField.getText();
-            NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
-            sendDelay = -1;
-        }
 
         switch (te.filterMode) {
             case ITEM:

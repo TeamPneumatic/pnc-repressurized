@@ -196,36 +196,36 @@ public class AmadronOfferManager {
                 TradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL_LASER))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.OIL_SOURCE, 5000)),
+                TradeResource.of(new FluidStack(ModFluids.OIL, 5000)),
                 TradeResource.of(new ItemStack(Items.EMERALD, 1))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.OIL_SOURCE, 5000)),
+                TradeResource.of(new FluidStack(ModFluids.OIL, 5000)),
                 TradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.DIESEL_SOURCE, 4000)),
+                TradeResource.of(new FluidStack(ModFluids.DIESEL, 4000)),
                 TradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.KEROSENE_SOURCE, 3000)),
+                TradeResource.of(new FluidStack(ModFluids.KEROSENE, 3000)),
                 TradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.GASOLINE_SOURCE, 2000)),
+                TradeResource.of(new FluidStack(ModFluids.GASOLINE, 2000)),
                 TradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.LPG_SOURCE, 1000)),
+                TradeResource.of(new FluidStack(ModFluids.LPG, 1000)),
                 TradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
                 TradeResource.of(new ItemStack(Items.EMERALD)),
-                TradeResource.of(new FluidStack(ModFluids.OIL_SOURCE, 1000))
+                TradeResource.of(new FluidStack(ModFluids.OIL, 1000))
         ));
         addStaticOffer(new AmadronOffer(
                 TradeResource.of(new ItemStack(Items.EMERALD, 5)),
-                TradeResource.of(new FluidStack(ModFluids.LUBRICANT_SOURCE, 1000))
+                TradeResource.of(new FluidStack(ModFluids.LUBRICANT, 1000))
         ));
 
         addVillagerTrades();
@@ -233,13 +233,13 @@ public class AmadronOfferManager {
 
     private void addVillagerTrades() {
         Random rand = new Random();
-        VillagerTrades.field_221239_a.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
+        VillagerTrades.VILLAGER_DEFAULT_TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
             for (VillagerTrades.ITrade trade : trades) {
                 try {
                     MerchantOffer offer = trade.getOffer(null, rand);
                     addPeriodicOffer(new AmadronOffer(
-                            TradeResource.of(offer.func_222218_a()),  // buyingStackFirst
-                            TradeResource.of(offer.func_222200_d())   // sellingStack
+                            TradeResource.of(offer.getBuyingStackFirst()),
+                            TradeResource.of(offer.getSellingStack())
                     ));
                 } catch (NullPointerException ignored) {
                     // some offers need a non-null entity; all we can do is ignore those

@@ -31,9 +31,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
      *
      * @param world the world
      * @param pos  the position
-     * @param validSides Can be left out as vararg, meaning every side can be connected. When one or more sides are
-     *                   specified this will constrain this heat exchanger to only connect to other heat exchangers on
-     *                   these sides.
+     * @param validSides an array of sides to check for heat exchanging neighbours
      */
     void initializeAsHull(World world, BlockPos pos, Direction... validSides);
 

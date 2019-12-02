@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.text.TextFormatting;
@@ -12,7 +13,6 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
-import java.awt.*;
 import java.util.List;
 
 /**
@@ -44,9 +44,9 @@ public class WidgetTank extends Widget implements ITooltipSupplier {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTick) {
+    public void renderButton(int mouseX, int mouseY, float partialTick) {
         GlStateManager.disableLighting();
-        GuiUtils.drawFluid(new Rectangle(x, y, width, height), getFluid(), getTank());
+        GuiUtils.drawFluid(new Rectangle2d(x, y, width, height), getFluid(), getTank());
 
         // drawing a gauge rather than using the widget_tank texture since for some reason it doesn't work
         // https://github.com/desht/pnc-repressurized/issues/25

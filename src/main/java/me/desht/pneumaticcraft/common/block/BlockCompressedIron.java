@@ -6,7 +6,7 @@ import net.minecraft.tileentity.TileEntity;
 public class BlockCompressedIron extends BlockPneumaticCraft {
 
     public BlockCompressedIron() {
-        super(DEFAULT_PROPS, "compressed_iron_block");
+        super(getDefaultProps(), "compressed_iron_block");
     }
 
     @Override

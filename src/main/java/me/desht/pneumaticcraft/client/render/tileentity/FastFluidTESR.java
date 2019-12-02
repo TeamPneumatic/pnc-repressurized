@@ -14,8 +14,6 @@ import java.util.BitSet;
 import java.util.List;
 
 public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntityRendererFast<T> {
-    private static final float FLUID_ALPHA = 0.9f;
-
     @Override
     public void renderTileEntityFast(T te, double x, double y, double z, float partialTicks, int destroyStage, BufferBuilder buffer) {
         if (!te.getWorld().getChunkProvider().getChunk(te.getPos().getX() >> 4, te.getPos().getZ() >> 4, true).isEmpty()) {
@@ -31,7 +29,15 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
 
         Fluid f = tank.getFluid().getFluid();
         TextureAtlasSprite still = Minecraft.getInstance().getTextureMap().getAtlasSprite(f.getAttributes().getStill(tank.getFluid()).toString());
-        float u1 = still.getMinU(), v1 = still.getMinV(), u2 = still.getMaxU(), v2 = still.getMaxV();
+        float u1 = still.getMinU();
+        float v1 = still.getMinV();
+        float u2 = still.getMaxU();
+        float v2 = still.getMaxV();
+        int color = f.getAttributes().getColor(tank.getFluid());
+        float alpha = (color >> 24 & 0xFF) / 255F;
+        float red = (color >> 16 & 0xFF) / 255F;
+        float green = (color >> 8 & 0xFF) / 255F;
+        float blue = (color & 0xFF) / 255F;
 
         buffer.setTranslation(x,y,z);
 
@@ -41,60 +47,60 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
             int downCombined = getWorld().getCombinedLight(te.getPos().down(), 0);
             int downLMa = downCombined >> 16 & 65535;
             int downLMb = downCombined & 65535;
-            buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v2).lightmap(downLMa, downLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v1).lightmap(downLMa, downLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v1).lightmap(downLMa, downLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v2).lightmap(downLMa, downLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(downLMa, downLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(downLMa, downLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(downLMa, downLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(downLMa, downLMb).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.UP)) {
             int upCombined = getWorld().getCombinedLight(te.getPos().up(), 0);
             int upLMa = upCombined >> 16 & 65535;
             int upLMb = upCombined & 65535;
-            buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v2).lightmap(upLMa, upLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v2).lightmap(upLMa, upLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v1).lightmap(upLMa, upLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v1).lightmap(upLMa, upLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(upLMa, upLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(upLMa, upLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(upLMa, upLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(upLMa, upLMb).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.NORTH)) {
             int northCombined = getWorld().getCombinedLight(te.getPos().north(), 0);
             int northLMa = northCombined >> 16 & 65535;
             int northLMb = northCombined & 65535;
-            buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v1).lightmap(northLMa, northLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v2).lightmap(northLMa, northLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v2).lightmap(northLMa, northLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v1).lightmap(northLMa, northLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(northLMa, northLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(northLMa, northLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(northLMa, northLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(northLMa, northLMb).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.SOUTH)) {
             int southCombined = getWorld().getCombinedLight(te.getPos().south(), 0);
             int southLMa = southCombined >> 16 & 65535;
             int southLMb = southCombined & 65535;
-            buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v1).lightmap(southLMa, southLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v2).lightmap(southLMa, southLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v2).lightmap(southLMa, southLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v1).lightmap(southLMa, southLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(southLMa, southLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(southLMa, southLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(southLMa, southLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(southLMa, southLMb).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.WEST)) {
             int westCombined = getWorld().getCombinedLight(te.getPos().west(), 0);
             int westLMa = westCombined >> 16 & 65535;
             int westLMb = westCombined & 65535;
-            buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v2).lightmap(westLMa, westLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v2).lightmap(westLMa, westLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v1).lightmap(westLMa, westLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v1).lightmap(westLMa, westLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(westLMa, westLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(westLMa, westLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(westLMa, westLMb).endVertex();
+            buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(westLMa, westLMb).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.EAST)) {
             int eastCombined = getWorld().getCombinedLight(te.getPos().east(), 0);
             int eastLMa = eastCombined >> 16 & 65535;
             int eastLMb = eastCombined & 65535;
-            buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v1).lightmap(eastLMa, eastLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v1).lightmap(eastLMa, eastLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u2, v2).lightmap(eastLMa, eastLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).color(1.0f, 1.0f, 1.0f, FLUID_ALPHA).tex(u1, v2).lightmap(eastLMa, eastLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(eastLMa, eastLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(eastLMa, eastLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(eastLMa, eastLMb).endVertex();
+            buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(eastLMa, eastLMb).endVertex();
         }
     }
 

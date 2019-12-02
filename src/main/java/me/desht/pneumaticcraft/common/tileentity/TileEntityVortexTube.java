@@ -130,9 +130,9 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     @Override
     public int getHeatLevelForTintIndex(int tintIndex) {
         switch (tintIndex) {
-            case 0: return visualize ? 20 : hotHeatLevel;
-            case 1: return visualize ? 0 : coldHeatLevel;
-            default: return 0xFFFFFFFF;
+            case 1: return visualize ? 20 : hotHeatLevel;
+            case 2: return visualize ? 0 : coldHeatLevel;
+            default: return 11;
         }
     }
 }

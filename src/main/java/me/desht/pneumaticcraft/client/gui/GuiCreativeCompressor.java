@@ -60,7 +60,7 @@ public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCr
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        drawCenteredString(font, PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1) + " bar", width / 2, height / 2, 0xFFFFFF);
+        drawCenteredString(font, PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1) + " bar", width / 2 - guiLeft, height / 2 - guiTop, 0xFFFFFF);
     }
 
     @Override

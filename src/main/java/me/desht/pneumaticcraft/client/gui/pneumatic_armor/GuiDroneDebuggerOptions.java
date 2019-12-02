@@ -97,7 +97,7 @@ public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
         gui.getWidgetList().add(showActive);
 
         followCheckbox = new GuiCheckBox(30, 176, 0xFFFFFFFF, " " + I18n.format("gui.progWidget.debug.followActive"));
-        followCheckbox.x = 180 - followCheckbox.getBounds().width;
+        followCheckbox.x = 180 - followCheckbox.getWidth();
 
         programmingStartX = PROGAMMING_MARGIN;
         programmingWidth = guiScreen.width - PROGAMMING_MARGIN * 2;

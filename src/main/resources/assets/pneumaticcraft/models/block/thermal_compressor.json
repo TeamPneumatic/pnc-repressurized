@@ -1,4 +1,8 @@
 {
+  "textures": {
+    "particle": "pneumaticcraft:block/thermal_compressor",
+    "face": "pneumaticcraft:block/thermal_compressor"
+  },
   "elements": [
     {
       "__comment": "top_plate",

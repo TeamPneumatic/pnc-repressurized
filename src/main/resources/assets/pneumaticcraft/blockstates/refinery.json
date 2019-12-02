@@ -1,35 +1,8 @@
 {
-    "forge_marker": 1,
-    "defaults": {
-        "textures": {},
-        "model": "pneumaticcraft:block/refinery"
-    },
 	"variants": {
-		"facing": {
-			"up": {"transform": {"rotation" : {"x" : 90}}},
-			"down": {"x" : -90},
-			"east": {
-				"transform": {
-					"rotation": {"y" : 90}
-				}
-			},
-			"north": {
-				"transform": {
-					"rotation": {"y" : 180}
-				}
-			},
-			"west": {
-				"transform": {
-					"rotation": {"y": 270}
-				}
-			},
-			"south": {
-				"transform": {
-				}
-			}
-		},
-		"inventory": [{
-          "transform": "forge:default-block"
-        }]
+		"facing=north": { "model" :  "pneumaticcraft:block/refinery", "y": 180 },
+		"facing=south": { "model" :  "pneumaticcraft:block/refinery" },
+		"facing=west": { "model" :  "pneumaticcraft:block/refinery", "y": 90 },
+		"facing=east": { "model" :  "pneumaticcraft:block/refinery", "y": 270 }
 	}
 }

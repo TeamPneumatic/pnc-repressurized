@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.RedstoneTorchBlock;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -12,17 +13,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IEnviromentBlockReader;
 
-public class BlockUVLightBox extends BlockPneumaticCraftModeled {
+public class BlockUVLightBox extends BlockPneumaticCraft {
     public static final BooleanProperty LOADED = BooleanProperty.create("loaded");
-    public static final BooleanProperty LIT = BooleanProperty.create("lit");
+    public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
     private static final VoxelShape SHAPE_NS = Block.makeCuboidShape(1, 0, 4.5, 15, 7, 11.5);
     private static final VoxelShape SHAPE_EW = Block.makeCuboidShape(4.5, 0, 1, 11.5, 7, 15);
 
     public BlockUVLightBox() {
         super("uv_light_box");
+        setDefaultState(getStateContainer().getBaseState().with(LOADED, false).with(LIT, false));
     }
 
     @Override
@@ -33,12 +34,7 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        Direction facing = getRotation(state);
-        if (facing == Direction.NORTH || facing == Direction.SOUTH) {
-            return SHAPE_NS;
-        } else {
-            return SHAPE_EW;
-        }
+        return getRotation(state).getAxis() == Direction.Axis.Z ? SHAPE_NS : SHAPE_EW;
     }
 
     @Override
@@ -47,7 +43,7 @@ public class BlockUVLightBox extends BlockPneumaticCraftModeled {
     }
 
     @Override
-    public int getLightValue(BlockState state, IEnviromentBlockReader world, BlockPos pos) {
+    public int getLightValue(BlockState state) {
         return state.get(LIT) ? 15 : 0;
     }
 

@@ -14,13 +14,13 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public abstract class FluidEtchingAcid extends ForgeFlowingFluid {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            RL("fluid/etchacid_still"), RL("fluid/etchacid_flow")
-    ).color(MaterialColor.BROWN.colorValue);
+            RL("block/fluid/etchacid_still"), RL("block/fluid/etchacid_flow")
+    ).color(MaterialColor.EMERALD.colorValue | 0xFF000000);
 
     private static final ForgeFlowingFluid.Properties PROPS =
             new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.ETCHING_ACID_SOURCE, () -> ModFluids.ETCHING_ACID_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.ETCHING_ACID_BLOCK).bucket(() -> ModItems.ETCHING_ACID_BUCKET
+                    () -> ModFluids.ETCHING_ACID, () -> ModFluids.ETCHING_ACID_FLOWING, ATTRS)
+                    .block(() -> ModBlocks.ETCHING_ACID).bucket(() -> ModItems.ETCHING_ACID_BUCKET
             );
 
     FluidEtchingAcid(String name) {
@@ -31,7 +31,7 @@ public abstract class FluidEtchingAcid extends ForgeFlowingFluid {
 
     public static class Source extends FluidEtchingAcid {
         public Source() {
-            super("etching_acid_source");
+            super("etching_acid");
         }
 
         @Override

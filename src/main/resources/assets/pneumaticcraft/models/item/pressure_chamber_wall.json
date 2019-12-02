@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_all",
+  "textures":{
+    "all": "pneumaticcraft:block/pressure_chamber/pressure_chamber_wall"
+  },
+  "transform": "forge:default-block"
+}

@@ -7,7 +7,12 @@ import net.minecraft.item.ItemStack;
 
 public class ItemGunAmmoWeighted extends ItemGunAmmo {
     public ItemGunAmmoWeighted() {
-        super(defaultProps().maxDamage(PNCConfig.Common.Minigun.weightedAmmoCartridgeSize), "gun_ammo_weighted");
+        super("gun_ammo_weighted");
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return PNCConfig.Common.Minigun.weightedAmmoCartridgeSize;
     }
 
     @Override

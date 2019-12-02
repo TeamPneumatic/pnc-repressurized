@@ -25,7 +25,7 @@ public class GuiDrone extends GuiPneumaticInventoryItem {
         ItemDrone itemDrone = (ItemDrone) itemStack.getItem();
 
         maybeAddUpgradeTab(itemDrone, EnumUpgrade.SPEED, false);
-        maybeAddUpgradeTab(itemDrone, EnumUpgrade.DISPENSER, false);
+        maybeAddUpgradeTab(itemDrone, EnumUpgrade.INVENTORY, false);
         maybeAddUpgradeTab(itemDrone, EnumUpgrade.ITEM_LIFE, false);
         maybeAddUpgradeTab(itemDrone, EnumUpgrade.MAGNET, false);
         addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.item.drone");

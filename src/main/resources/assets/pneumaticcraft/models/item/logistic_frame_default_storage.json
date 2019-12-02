@@ -1,6 +1,0 @@
-{
-   "textures" : {
-      "layer0" : "pneumaticcraft:item/semiblock/default_storage_frame"
-   },
-   "parent" : "item/generated"
-}

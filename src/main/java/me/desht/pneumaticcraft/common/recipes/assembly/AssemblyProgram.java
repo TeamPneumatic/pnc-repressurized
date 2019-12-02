@@ -26,7 +26,7 @@ public abstract class AssemblyProgram {
         PLATFORM, DRILL, LASER, IO_UNIT_EXPORT, IO_UNIT_IMPORT, CONTROLLER;
 
         public String getTranslationKey() {
-            return "tile.assembly_" + this.toString().toLowerCase() + ".name";
+            return "block.pneumaticcraft.assembly_" + this.toString().toLowerCase();
         }
     }
 

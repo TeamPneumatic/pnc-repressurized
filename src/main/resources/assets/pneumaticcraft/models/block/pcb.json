@@ -1,6 +1,6 @@
 {
   "textures": {
-    "face": "pneumaticcraft:blocks/uv_light_box"
+    "face": "pneumaticcraft:block/uv_light_box"
   },
   "elements": [
     {

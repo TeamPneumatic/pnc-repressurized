@@ -1,8 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.client.model.module.ModelLogistics;
-import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -19,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -57,17 +56,12 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
 
     @Override
     protected double getHeight() {
-        return 4.5D / 16D;
+        return 4.5D;
     }
 
     @Override
-    public String getType() {
+    public ResourceLocation getType() {
         return Names.MODULE_LOGISTICS;
-    }
-
-    @Override
-    public Class<? extends ModelModuleBase> getModelClass() {
-        return ModelLogistics.class;
     }
 
     @Override

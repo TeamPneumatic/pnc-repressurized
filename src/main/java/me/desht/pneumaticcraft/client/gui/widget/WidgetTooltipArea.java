@@ -14,7 +14,7 @@ public class WidgetTooltipArea extends Widget implements ITooltipSupplier {
     }
 
     @Override
-    public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
+    public void renderButton(int p_render_1_, int p_render_2_, float p_render_3_) {
         // nothing
     }
 

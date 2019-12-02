@@ -33,7 +33,7 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
@@ -186,7 +186,7 @@ public class EventHandlerPneumaticCraft {
             Block b = event.getWorld().getBlockState(brtr.getPos()).getBlock();
             if (b instanceof IFluidBlock) {
                 Fluid fluid = ((IFluidBlock) b).getFluid();
-                if (TileEntityRefinery.isInputFluidValid(fluid, 4) && event.getPlayer() instanceof ServerPlayerEntity) {
+                if (TileEntityRefineryController.isInputFluidValid(fluid, 4) && event.getPlayer() instanceof ServerPlayerEntity) {
                     AdvancementTriggers.OIL_BUCKET.trigger((ServerPlayerEntity) event.getPlayer());
                 }
             }

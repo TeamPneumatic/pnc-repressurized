@@ -28,7 +28,7 @@ public class GuiRedstoneModule extends GuiTubeModule {
     private int otherColor;
     private GuiCheckBox invertCheckBox;
 
-    GuiRedstoneModule(BlockPos modulePos) {
+    public GuiRedstoneModule(BlockPos modulePos) {
         super(modulePos);
     }
 

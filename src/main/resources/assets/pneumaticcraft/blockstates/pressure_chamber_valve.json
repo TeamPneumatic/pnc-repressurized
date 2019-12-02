@@ -41,12 +41,6 @@
               },
               "up":{},
               "down":{}
-		},
-		"inventory": [{
-          "textures":{
-              "side": "pneumaticcraft:block/pressure_chamber/valve_side",
-              "end":  "pneumaticcraft:block/pressure_chamber/valve"
-          }
-        }]
+		}
 	}
 }

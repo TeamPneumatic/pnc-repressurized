@@ -16,7 +16,12 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemGunAmmoExplosive extends ItemGunAmmo {
     public ItemGunAmmoExplosive() {
-        super(defaultProps().maxDamage(PNCConfig.Common.Minigun.explosiveAmmoCartridgeSize),"gun_ammo_explosive");
+        super("gun_ammo_explosive");
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return PNCConfig.Common.Minigun.explosiveAmmoCartridgeSize;
     }
 
     @Override

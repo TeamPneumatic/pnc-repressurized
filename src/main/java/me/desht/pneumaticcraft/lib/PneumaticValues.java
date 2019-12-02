@@ -89,6 +89,7 @@ public class PneumaticValues {
 
     // volumes (mL)
     public static final int VOLUME_AIR_COMPRESSOR = 5000;
+    public static final int VOLUME_ADVANCED_AIR_COMPRESSOR = 10000;
     public static final int VOLUME_AIR_CANNON = 2000;
     public static final int VOLUME_PRESSURE_TUBE = 1000;
     public static final int VOLUME_CHARGING_STATION = 1000;

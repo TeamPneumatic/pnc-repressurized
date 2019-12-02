@@ -1,21 +1,11 @@
 package me.desht.pneumaticcraft.proxy;
 
-import me.desht.pneumaticcraft.client.AreaShowManager;
 import me.desht.pneumaticcraft.client.ClientEventHandler;
-import me.desht.pneumaticcraft.client.ClientTickHandler;
-import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
-import me.desht.pneumaticcraft.client.model.TintedOBJLoader;
-import me.desht.pneumaticcraft.client.model.pressureglass.PressureGlassModelLoader;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
-import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
-import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.DramaSplash;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -25,9 +15,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.settings.KeyModifier;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -39,23 +27,14 @@ import java.util.Map;
 
 public class ClientProxy implements IProxy {
 
-    private final HackTickHandler clientHackTickHandler = new HackTickHandler();
+//    private final HackTickHandler clientHackTickHandler = new HackTickHandler();
     public final Map<String, Pair<Integer,KeyModifier>> keybindToKeyCodes = new HashMap<>();
 
     @Override
     public void preInit() {
-        TintedOBJLoader.INSTANCE.addDomain(Names.MOD_ID);
-        ModelLoaderRegistry.registerLoader(TintedOBJLoader.INSTANCE);
-        ModelLoaderRegistry.registerLoader(PressureGlassModelLoader.INSTANCE);
-
-        MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
-        MinecraftForge.EVENT_BUS.register(HUDHandler.instance());
-        MinecraftForge.EVENT_BUS.register(ClientTickHandler.instance());
-        MinecraftForge.EVENT_BUS.register(getHackTickHandler());
-        MinecraftForge.EVENT_BUS.register(new ClientSemiBlockManager());
-        MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));
-        MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
-        MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
+//        TintedOBJLoader.INSTANCE.addDomain(Names.MOD_ID);
+//        ModelLoaderRegistry.registerLoader(TintedOBJLoader.INSTANCE);
+//        ModelLoaderRegistry.registerLoader(PressureGlassModelLoader.INSTANCE);
 
         ThirdPartyManager.instance().clientPreInit();
 
@@ -127,10 +106,10 @@ public class ClientProxy implements IProxy {
         return 0;
     }
 
-    @Override
-    public HackTickHandler getHackTickHandler() {
-        return clientHackTickHandler;
-    }
+//    @Override
+//    public HackTickHandler getHackTickHandler() {
+//        return clientHackTickHandler;
+//    }
 
     private void getAllKeybindsFromOptionsFile() {
         File optionsFile = new File(Minecraft.getInstance().gameDir, "options.txt");

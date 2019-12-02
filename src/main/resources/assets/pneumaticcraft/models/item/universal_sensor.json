@@ -1,0 +1,6 @@
+{
+  "loader": "forge:obj",
+  "model": "pneumaticcraft:models/block/universal_sensor_inv.obj",
+  "flip-v": true,
+  "transform": "forge:default-block"
+}

@@ -94,7 +94,7 @@ public class GuiItemSearcher extends DisplayEffectsScreen<ContainerSearcher> {
         searchField.setVisible(true);
         searchField.setFocused2(true);
         searchField.setTextColor(16777215);
-        searchField.func_212954_a(s -> updateCreativeSearch());
+        searchField.setResponder(s -> updateCreativeSearch());
 
         updateCreativeSearch();
     }

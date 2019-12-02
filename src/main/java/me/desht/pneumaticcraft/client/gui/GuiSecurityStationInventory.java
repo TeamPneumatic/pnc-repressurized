@@ -60,7 +60,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
 
         rebootButton = new GuiButtonSpecial(xStart + 110, yStart + 20, 60, 20, "Reboot").withTag("reboot");
         sharedUserTextField = getTextFieldFromRectangle(accessStat.getButtonScaledRectangle(20, 15, 120, 10));
-        sharedUserTextField.func_212954_a(s -> {
+        sharedUserTextField.setResponder(s -> {
             te.setText(0, sharedUserTextField.getText());
             NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
         });

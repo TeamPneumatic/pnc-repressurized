@@ -20,11 +20,6 @@ public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificPro
     public static final ResourceLocation ID = RL("logistics_frame_storage");
 
     @Override
-    public int getColor() {
-        return 0xFFFFFF00;
-    }
-
-    @Override
     public int getPriority() {
         return 2;
     }

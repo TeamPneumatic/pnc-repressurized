@@ -1,10 +1,9 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.client.model.module.ModelFlowDetector;
-import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
     }
 
     @Override
-    public String getType() {
+    public ResourceLocation getType() {
         return Names.MODULE_FLOW_DETECTOR;
     }
 
@@ -74,8 +73,8 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
         return false;
     }
 
-    @Override
-    public Class<? extends ModelModuleBase> getModelClass() {
-        return ModelFlowDetector.class;
-    }
+//    @Override
+//    public Class<? extends ModelModuleBase> getModelClass() {
+//        return ModelFlowDetector.class;
+//    }
 }

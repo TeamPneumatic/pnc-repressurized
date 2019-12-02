@@ -8,12 +8,14 @@ import me.desht.pneumaticcraft.client.gui.widget.ITooltipSupplier;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
@@ -68,6 +70,11 @@ public abstract class JEIPneumaticCraftCategory<T> implements IRecipeCategory<T>
     }
 
     @Override
+    public void setRecipe(IRecipeLayout recipeLayout, T recipe, IIngredients ingredients) {
+        subWidgets.clear();
+    }
+
+    @Override
     public void draw(T recipe, double mouseX, double mouseY) {
         subWidgets.forEach(widget -> widget.render((int) mouseX, (int) mouseY, 0));
 
@@ -83,7 +90,7 @@ public abstract class JEIPneumaticCraftCategory<T> implements IRecipeCategory<T>
 
     private void drawAnimatedPressureGauge(int x, int y, float minWorkingPressure, float dangerPressure, float maxPressure) {
         float p2 = minWorkingPressure * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
-        GuiUtils.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, maxPressure, dangerPressure, minWorkingPressure, p2, x, y, 90);
+        GuiUtils.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, maxPressure, dangerPressure, minWorkingPressure, p2, x, y);
     }
 
     @Override

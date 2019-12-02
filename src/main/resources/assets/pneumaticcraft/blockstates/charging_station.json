@@ -1,44 +1,19 @@
 {
-	"forge_marker": 1,
-	"defaults": {
-		"textures": {},
-		"custom": { "flip-v" : true},
-		"model": "pneumaticcraft:block/charging_station.obj"
-	},
-	"variants": {
-		"facing": {
-			"up": {"transform": {"rotation" : {"x" : 90}}},
-			"down": {"x" : -90},
-			"east": {
-				"transform": {
-					"rotation": {"y" : 90}
-				}
-			},
-			"north": {
-				"transform": {
-					"rotation": {"y" : 180}
-				}
-			},
-			"west": {
-				"transform": {
-					"rotation": {"y": 270}
-				}
-			},
-			"south": {
-				"transform": {
-				}
-			}
+	"multipart": [
+		{   "when": { "facing": "north" },
+			"apply": { "model": "pneumaticcraft:block/charging_station", "y": 180 }
 		},
-		"inventory": [{
-			"transform": "forge:default-block"
-		}],
-		"charge_pad": {
-			"true": {
-				"submodel": {
-					"charge_pad": { "model": "pneumaticcraft:block/charge_pad" }
-				}
-			},
-			"false": {}
+		{   "when": { "facing": "south" },
+			"apply": { "model": "pneumaticcraft:block/charging_station" }
+		},
+		{   "when": { "facing": "east" },
+			"apply": { "model": "pneumaticcraft:block/charging_station", "y": 270 }
+		},
+		{   "when": { "facing": "west" },
+			"apply": { "model": "pneumaticcraft:block/charging_station", "y": 90 }
+		},
+		{   "when": { "charge_pad": "true" },
+			"apply": { "model": "pneumaticcraft:block/charge_pad" }
 		}
-	}
+	]
 }

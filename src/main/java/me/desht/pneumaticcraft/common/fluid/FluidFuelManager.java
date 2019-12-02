@@ -8,7 +8,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class FluidFuelManager {
     public static void registerFuels() {
         for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
-            if (fluid.getAttributes().getTemperature() > PNCConfig.Common.General.minFluidFuelTemperature) {
+            if (fluid.getAttributes().getTemperature() > PNCConfig.Common.General.minFluidFuelTemperature && fluid.isSource(fluid.getDefaultState())) {
                 PneumaticRegistry.getInstance().registerFuel(fluid, (fluid.getAttributes().getTemperature() - 300) * 40);
             }
         }

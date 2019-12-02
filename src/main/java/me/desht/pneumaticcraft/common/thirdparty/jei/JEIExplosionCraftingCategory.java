@@ -69,11 +69,13 @@ public class JEIExplosionCraftingCategory extends JEIPneumaticCraftCategory<IExp
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, IExplosionCraftingRecipe recipe, IIngredients ingredients) {
-        recipeLayout.getItemStacks().init(0, true, 41, 1);
+        super.setRecipe(recipeLayout, recipe, ingredients);
+
+        recipeLayout.getItemStacks().init(0, true, 40, 0);
         recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
 
         for (int i = 0; i < ingredients.getOutputs(VanillaTypes.ITEM).size(); i++) {
-            recipeLayout.getItemStacks().init(1 + i , false, 105 + (i * 18), 1);
+            recipeLayout.getItemStacks().init(1 + i , false, 104 + (i * 18), 0);
             recipeLayout.getItemStacks().set(1 + i, ingredients.getOutputs(VanillaTypes.ITEM).get(i));
         }
     }

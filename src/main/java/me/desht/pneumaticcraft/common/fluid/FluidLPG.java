@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.block.material.MaterialColor;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.state.StateContainer;
@@ -14,13 +13,13 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public abstract class FluidLPG extends ForgeFlowingFluid {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            RL("fluid/lpg_still"), RL("fluid/lpg_flow")
-    ).color(MaterialColor.GOLD.colorValue).viscosity(250);
+            RL("block/fluid/lpg_still"), RL("block/fluid/lpg_flow")
+    ).viscosity(250);
 
     private static final ForgeFlowingFluid.Properties PROPS =
             new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.LPG_SOURCE, () -> ModFluids.LPG_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.LPG_BLOCK).bucket(() -> ModItems.LPG_BUCKET
+                    () -> ModFluids.LPG, () -> ModFluids.LPG_FLOWING, ATTRS)
+                    .block(() -> ModBlocks.LPG).bucket(() -> ModItems.LPG_BUCKET
             );
 
     FluidLPG(String name) {
@@ -31,7 +30,7 @@ public abstract class FluidLPG extends ForgeFlowingFluid {
 
     public static class Source extends FluidLPG {
         public Source() {
-            super("lpg_source");
+            super("lpg");
         }
 
         @Override

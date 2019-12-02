@@ -35,7 +35,7 @@ public class GuiAirGrateModule extends GuiTubeModule {
 
         textfield = new TextFieldWidget(font, guiLeft + 10, guiTop + 25, 140, 10,
                 ((ModuleAirGrate) module).getEntityFilterString());
-        textfield.func_212954_a(s -> sendTimer = 5);
+        textfield.setResponder(s -> sendTimer = 5);
 
         warningButton = new GuiButtonSpecial(guiLeft + 152, guiTop + 20, 20, 20, "");
         warningButton.setVisible(false);

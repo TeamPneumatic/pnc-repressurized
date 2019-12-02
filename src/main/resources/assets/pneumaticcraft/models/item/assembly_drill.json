@@ -1,0 +1,6 @@
+{
+  "loader": "forge:obj",
+  "model": "pneumaticcraft:models/block/assembly_drill.obj",
+  "flip-v": true,
+  "transform": "forge:default-block"
+}

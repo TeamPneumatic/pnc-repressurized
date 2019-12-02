@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "items/paper"
+      "layer0" : "item/paper"
    },
    "parent" : "item/generated"
 }

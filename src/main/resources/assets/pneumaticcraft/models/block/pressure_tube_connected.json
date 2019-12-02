@@ -1,4 +1,8 @@
 {
+  "textures": {
+    "pipe": "pneumaticcraft:block/pressure_tube",
+    "particle": "pneumaticcraft:block/pressure_tube"
+  },
   "elements": [
     { "from": [ 6.003, 9.997, 7.003 ],
       "to": [ 6.997, 16, 8.997 ],

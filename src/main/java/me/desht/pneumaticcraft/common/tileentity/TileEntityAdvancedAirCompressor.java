@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerAdvancedAirCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -15,11 +16,12 @@ import net.minecraft.util.Direction;
 import javax.annotation.Nullable;
 
 public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor implements IHeatExchanger {
+
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
 
     public TileEntityAdvancedAirCompressor() {
-        super(20, 25, 10000);
+        super(ModTileEntityTypes.ADVANCED_AIR_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_TIER_TWO, PneumaticValues.MAX_PRESSURE_TIER_TWO, PneumaticValues.VOLUME_ADVANCED_AIR_COMPRESSOR);
         heatExchanger.setThermalCapacity(100);
     }
 
@@ -48,4 +50,5 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerAdvancedAirCompressor(i, playerInventory, getPos());
     }
+
 }

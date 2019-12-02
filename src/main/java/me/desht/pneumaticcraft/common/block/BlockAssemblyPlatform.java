@@ -7,11 +7,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
 public class BlockAssemblyPlatform extends BlockPneumaticCraft {
-    private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(2, 0, 2, 14, 7, 14);
-    private static final VoxelShape COLLISION_SHAPE = Block.makeCuboidShape(2, 2, 2, 14, 7, 14);
+    private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 1, 16);
+    private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, Block.makeCuboidShape(4, 1, 4, 12, 6, 12));
 
     public BlockAssemblyPlatform() {
         super("assembly_platform");
@@ -19,12 +20,7 @@ public class BlockAssemblyPlatform extends BlockPneumaticCraft {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        return BASE_SHAPE;
-    }
-
-    @Override
-    public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        return COLLISION_SHAPE;
+        return SHAPE;
     }
 
     @Override

@@ -1,30 +1,27 @@
 package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
 import me.desht.pneumaticcraft.common.block.ICustomItemBlock;
 import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.AirBlock;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.*;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.ObjectHolder;
 
-import javax.annotation.Nonnull;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -181,26 +178,28 @@ public class ModItems {
             registerItem(registry, new ItemCamoApplicator());
             registerItem(registry, new ItemMicromissiles());
 
-            registerItem(registry, new ItemBucketPneumaticCraft("oil", () -> ModFluids.OIL_SOURCE));
-            registerItem(registry, new ItemBucketPneumaticCraft("etching_acid", () -> ModFluids.ETCHING_ACID_SOURCE));
-            registerItem(registry, new ItemBucketPneumaticCraft("plastic", () -> ModFluids.PLASTIC_SOURCE));
-            registerItem(registry, new ItemBucketPneumaticCraft("diesel", () -> ModFluids.DIESEL_SOURCE));
-            registerItem(registry, new ItemBucketPneumaticCraft("kerosene", () -> ModFluids.KEROSENE_SOURCE));
-            registerItem(registry, new ItemBucketPneumaticCraft("gasoline", () -> ModFluids.GASOLINE_SOURCE));
-            registerItem(registry, new ItemBucketPneumaticCraft("lpg", () -> ModFluids.LPG_SOURCE));
-            registerItem(registry, new ItemBucketPneumaticCraft("lubricant", () -> ModFluids.LUBRICANT_SOURCE));
+            registerItem(registry, new ItemBucketPneumaticCraft("oil", () -> ModFluids.OIL));
+            registerItem(registry, new ItemBucketPneumaticCraft("etching_acid", () -> ModFluids.ETCHING_ACID));
+            registerItem(registry, new ItemBucketPneumaticCraft("plastic", () -> ModFluids.PLASTIC));
+            registerItem(registry, new ItemBucketPneumaticCraft("diesel", () -> ModFluids.DIESEL));
+            registerItem(registry, new ItemBucketPneumaticCraft("kerosene", () -> ModFluids.KEROSENE));
+            registerItem(registry, new ItemBucketPneumaticCraft("gasoline", () -> ModFluids.GASOLINE));
+            registerItem(registry, new ItemBucketPneumaticCraft("lpg", () -> ModFluids.LPG));
+            registerItem(registry, new ItemBucketPneumaticCraft("lubricant", () -> ModFluids.LUBRICANT));
 
             registerUpgrades(registry);
 
             ItemPneumaticArmor.initApplicableUpgrades();
 
             ModBlocks.Registration.ALL_BLOCKS.stream()
-                    .filter(b -> !(b instanceof AirBlock))
+                    .filter(b -> !(b instanceof AirBlock || b instanceof FlowingFluidBlock))
                     .forEach(b -> {
                         Item itemBlock = b instanceof ICustomItemBlock ?
                                 ((ICustomItemBlock) b).getCustomItemBlock() :
                                 new BlockItem(b, new Item.Properties().group(Groups.PNC_CREATIVE_TAB));
-                        registerItem(registry, itemBlock.setRegistryName(b.getRegistryName()));
+                        if (itemBlock != null) {
+                            registerItem(registry, itemBlock.setRegistryName(b.getRegistryName()));
+                        }
                     });
         }
 
@@ -231,41 +230,6 @@ public class ModItems {
             public Item get(EnumUpgrade upgrade) {
                 return get(upgrade.ordinal());
             }
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void registerItemColorHandlers(ColorHandlerEvent.Item event) {
-        event.getItemColors().register((stack, tintIndex) -> {
-            if (tintIndex == 1) {
-                return getAmmoColor(stack);
-            }
-            return Color.WHITE.getRGB();
-        }, ModItems.GUN_AMMO, ModItems.GUN_AMMO_INCENDIARY, ModItems.GUN_AMMO_AP, ModItems.GUN_AMMO_EXPLOSIVE, ModItems.GUN_AMMO_WEIGHTED, ModItems.GUN_AMMO_FREEZING);
-
-        event.getItemColors().register((stack, tintIndex) -> {
-            int n = UpgradableItemUtils.getUpgrades(EnumUpgrade.CREATIVE, stack);
-            return n > 0 ? 0xFFFF60FF : 0xFFFFFFFF;
-        }, ModBlocks.OMNIDIRECTIONAL_HOPPER.asItem(), ModBlocks.LIQUID_HOPPER.asItem());
-
-        event.getItemColors().register((stack, tintIndex) -> {
-            switch (tintIndex) {
-                case 0: // border
-                    return DyeColor.byId(BlockAphorismTile.getBorderColor(stack)).func_218388_g();
-                case 1: // background
-                    return ModBlocks.desaturate(DyeColor.byId(BlockAphorismTile.getBackgroundColor(stack)).func_218388_g());
-                default:
-                    return 0xFFFFFF;
-            }
-        }, ModBlocks.APHORISM_TILE.asItem());
-    }
-
-    public static int getAmmoColor(@Nonnull ItemStack stack) {
-        if (stack.getItem() instanceof ItemGunAmmo) {
-            return ((ItemGunAmmo) stack.getItem()).getAmmoColor(stack);
-        } else {
-            return 0x00FFFF00;
         }
     }
 }

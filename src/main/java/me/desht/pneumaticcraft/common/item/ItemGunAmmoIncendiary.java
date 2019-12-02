@@ -11,7 +11,12 @@ import net.minecraft.util.math.BlockRayTraceResult;
 
 public class ItemGunAmmoIncendiary extends ItemGunAmmo {
     public ItemGunAmmoIncendiary() {
-        super(defaultProps().maxDamage(PNCConfig.Common.Minigun.incendiaryAmmoCartridgeSize), "gun_ammo_incendiary");
+        super("gun_ammo_incendiary");
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return PNCConfig.Common.Minigun.incendiaryAmmoCartridgeSize;
     }
 
     @Override

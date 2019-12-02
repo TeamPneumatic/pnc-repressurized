@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 
-public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule<PacketUpdateAirGrateModule> {
+public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule {
     private String entityFilter;
 
     public PacketUpdateAirGrateModule() {

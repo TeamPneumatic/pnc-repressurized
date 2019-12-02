@@ -48,11 +48,6 @@ public class SemiBlockRequester extends SemiBlockLogistics implements ISpecificR
 //    private final Set<TileEntityAndFace> providingInventories = new HashSet<>();
 
     @Override
-    public int getColor() {
-        return 0xFF0000FF;
-    }
-
-    @Override
     public int amountRequested(ItemStack stack) {
         final int totalRequestingAmount = getTotalRequestedAmount(stack);
         if (totalRequestingAmount > 0) {

@@ -142,7 +142,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     protected void onFirstServerUpdate() {
         super.onFirstServerUpdate();
 
-        chargingStackSynced = new ItemStack(getChargingStack().getItem());
+//        chargingStackSynced = new ItemStack(getChargingStack().getItem());
     }
 
     private List<Pair<IPressurizable, ItemStack>> findChargeableItems() {
@@ -194,11 +194,11 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 updateNeighbours();
                 break;
             case "open_upgrades":
-                NetworkHooks.openGui((ServerPlayerEntity) player, this, getPos());
-                break;
-            case "close_upgrades":
                 INamedContainerProvider provider = ((IChargeableContainerProvider) getChargingStack().getItem()).getContainerProvider(this);
                 NetworkHooks.openGui((ServerPlayerEntity) player, provider, getPos());
+                break;
+            case "close_upgrades":
+                NetworkHooks.openGui((ServerPlayerEntity) player, this, getPos());
                 break;
         }
     }

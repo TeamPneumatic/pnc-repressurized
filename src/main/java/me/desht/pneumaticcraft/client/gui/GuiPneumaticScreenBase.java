@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.gui.widget.ITooltipSupplier;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -40,6 +41,13 @@ public abstract class GuiPneumaticScreenBase extends Screen {
     }
 
     protected abstract ResourceLocation getTexture();
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        buttons.stream().filter(w -> w instanceof ITickable).forEach(w -> ((ITickable) w).tick());
+    }
 
     @Override
     public void render(int x, int y, float partialTicks) {

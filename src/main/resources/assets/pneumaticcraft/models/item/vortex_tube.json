@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/vortex_tube",
+  "transform": "forge:default-block"
+}

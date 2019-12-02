@@ -12,11 +12,12 @@ import java.util.Collection;
 public class HeatUtil {
     private static final int MIN_HEAT_LEVEL_TEMPERATURE = -200 + 273;
     private static final int MAX_HEAT_LEVEL_TEMPERATURE = 200 + 273;
+    private static final int N_HEAT_LEVELS = 20;  // scaled heat levels for client sync purposes
 
-    private static final float[][] HEAT_TINT_MAP = new float[20][];
+    private static final float[][] HEAT_TINT_MAP = new float[N_HEAT_LEVELS][];
 
     static {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < N_HEAT_LEVELS; i++) {
             if (i > 11) {
                 float greenAndBlue = 1 - (i - 11) / 10F;
                 HEAT_TINT_MAP[i] = new float[]{1F, greenAndBlue, greenAndBlue * 0.9F};
@@ -33,9 +34,9 @@ public class HeatUtil {
         if (temperature < MIN_HEAT_LEVEL_TEMPERATURE) {
             return 0;
         } else if (temperature > MAX_HEAT_LEVEL_TEMPERATURE) {
-            return 19;
+            return N_HEAT_LEVELS - 1;
         } else {
-            return (int) ((temperature - MIN_HEAT_LEVEL_TEMPERATURE) * 20 / (MAX_HEAT_LEVEL_TEMPERATURE - MIN_HEAT_LEVEL_TEMPERATURE));
+            return (int) ((temperature - MIN_HEAT_LEVEL_TEMPERATURE) * N_HEAT_LEVELS / (MAX_HEAT_LEVEL_TEMPERATURE - MIN_HEAT_LEVEL_TEMPERATURE));
         }
     }
 

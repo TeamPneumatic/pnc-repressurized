@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 /**
  * Received on: CLIENT
- * Sent periodically from server for tubes with a pressure gauge on them.
+ * Sent periodically from server for tubes with a pressure gauge on them so the TESR can draw the needle correctly.
  */
 public class PacketUpdatePressureBlock extends LocationIntPacket {
     private int currentAir;

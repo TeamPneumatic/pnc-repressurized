@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.block.material.MaterialColor;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.state.StateContainer;
@@ -14,13 +13,13 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public abstract class FluidDiesel extends ForgeFlowingFluid {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            RL("fluid/diesel_still"), RL("fluid/diesel_flow")
-    ).color(MaterialColor.RED.colorValue);
+            RL("block/fluid/diesel_still"), RL("block/fluid/diesel_flow")
+    );
 
     private static final ForgeFlowingFluid.Properties PROPS =
             new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.DIESEL_SOURCE, () -> ModFluids.DIESEL_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.DIESEL_BLOCK).bucket(() -> ModItems.DIESEL_BUCKET
+                    () -> ModFluids.DIESEL, () -> ModFluids.DIESEL_FLOWING, ATTRS)
+                    .block(() -> ModBlocks.DIESEL).bucket(() -> ModItems.DIESEL_BUCKET
             );
 
     FluidDiesel(String name) {
@@ -31,7 +30,7 @@ public abstract class FluidDiesel extends ForgeFlowingFluid {
 
     public static class Source extends FluidDiesel {
         public Source() {
-            super("diesel_source");
+            super("diesel");
         }
 
         @Override

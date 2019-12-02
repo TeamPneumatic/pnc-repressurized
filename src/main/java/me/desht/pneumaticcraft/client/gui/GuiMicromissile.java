@@ -81,7 +81,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         int textBoxX = guiLeft + 12 + font.getStringWidth(labelStr) + 5;
         int textBoxWidth = xSize - (textBoxX - guiLeft) - 20;
         textField = new WidgetTextField(font, textBoxX, guiTop + 128, textBoxWidth, 10);
-        textField.func_212954_a(s -> {
+        textField.setResponder(s -> {
             entityFilter = s;
             if (validateEntityFilter(entityFilter)) {
                 sendTimer = 5;  // delayed send to reduce packet spam while typing

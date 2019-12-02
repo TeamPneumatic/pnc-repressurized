@@ -50,7 +50,7 @@ public class GuiEntityTrackOptions implements IOptionPage {
         if (Minecraft.getInstance().player != null) {
             textField.setText(ItemPneumaticArmor.getEntityFilter(Minecraft.getInstance().player.getItemStackFromSlot(EquipmentSlotType.HEAD)));
         }
-        textField.func_212954_a(s -> {
+        textField.setResponder(s -> {
             if (validateEntityFilter(textField.getText())) {
                 sendTimer = 5;
             }

@@ -50,7 +50,7 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
         WidgetTextField searchField = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 90, 10);
         addButton(searchField);
         searchField.setFocused2(true);
-        searchField.func_212954_a(s -> addValidFluids());
+        searchField.setResponder(s -> addValidFluids());
 
         scrollbar = new WidgetVerticalScrollbar(guiLeft + 155, guiTop + 47, 112);
         scrollbar.setListening(true);

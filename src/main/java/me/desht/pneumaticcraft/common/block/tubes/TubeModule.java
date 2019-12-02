@@ -1,59 +1,60 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.ForgeRegistries;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Objects;
 
-import static me.desht.pneumaticcraft.lib.BBConstants.PRESSURE_PIPE_MAX_POS;
-import static me.desht.pneumaticcraft.lib.BBConstants.PRESSURE_PIPE_MIN_POS;
+import static me.desht.pneumaticcraft.common.block.BlockPressureTube.CORE_MAX;
+import static me.desht.pneumaticcraft.common.block.BlockPressureTube.CORE_MIN;
 
 public abstract class TubeModule {
     public static final float MAX_VALUE = 30;
 
     protected IPneumaticPosProvider pressureTube;
     protected Direction dir = Direction.UP;
-    public final AxisAlignedBB[] boundingBoxes = new AxisAlignedBB[6];
+    private final VoxelShape[] boundingBoxes;
     protected boolean upgraded;
     public float lowerBound = 7.5F, higherBound = 0;
     private boolean fake;
     public boolean advancedConfig;
     public boolean shouldDrop;
-    // FIXME - move to external renderer
-    @OnlyIn(Dist.CLIENT)
-    private ModelModuleBase model;
 
     public TubeModule() {
-        double width = getWidth() / 2;
-        double height = getHeight();
+        double w = getWidth() / 2;
+        double h = getHeight();
 
         // 0..6 = D,U,N,S,W,E
-        boundingBoxes[0] = new AxisAlignedBB(0.5 - width, PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 + width, PRESSURE_PIPE_MIN_POS, 0.5 + width);
-        boundingBoxes[1] = new AxisAlignedBB(0.5 - width, PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 + width, PRESSURE_PIPE_MAX_POS + height, 0.5 + width);
-        boundingBoxes[2] = new AxisAlignedBB(0.5 - width, 0.5 - width, PRESSURE_PIPE_MIN_POS - height, 0.5 + width, 0.5 + width, PRESSURE_PIPE_MIN_POS);
-        boundingBoxes[3] = new AxisAlignedBB(0.5 - width, 0.5 - width, PRESSURE_PIPE_MAX_POS, 0.5 + width, 0.5 + width, PRESSURE_PIPE_MAX_POS + height);
-        boundingBoxes[4] = new AxisAlignedBB(PRESSURE_PIPE_MIN_POS - height, 0.5 - width, 0.5 - width, PRESSURE_PIPE_MIN_POS, 0.5 + width, 0.5 + width);
-        boundingBoxes[5] = new AxisAlignedBB(PRESSURE_PIPE_MAX_POS, 0.5 - width, 0.5 - width, PRESSURE_PIPE_MAX_POS + height, 0.5 + width, 0.5 + width);
+        boundingBoxes = new VoxelShape[] {
+                Block.makeCuboidShape(8 - w, CORE_MIN - h, 8 - w, 8 + w, CORE_MIN, 8 + w),
+                Block.makeCuboidShape(8 - w, CORE_MAX, 8 - w, 8 + w, CORE_MAX + h, 8 + w),
+                Block.makeCuboidShape(8 - w, 8 - w, CORE_MIN - h, 8 + w, 8 + w, CORE_MIN),
+                Block.makeCuboidShape(8 - w, 8 - w, CORE_MAX, 8 + w, 8 + w, CORE_MAX + h),
+                Block.makeCuboidShape(CORE_MIN - h, 8 - w, 8 - w, CORE_MIN, 8 + w, 8 + w),
+                Block.makeCuboidShape(CORE_MAX, 8 - w, 8 - w, CORE_MAX + h, 8 + w, 8 + w),
+        };
     }
 
     public void markFake() {
@@ -72,12 +73,22 @@ public abstract class TubeModule {
         return pressureTube;
     }
 
+    /**
+     * Get the module's width (in range 0..16 as passed to {@link Block#makeCuboidShape(double, double, double, double, double, double)}
+     *
+     * @return the width
+     */
     public double getWidth() {
-        return PRESSURE_PIPE_MAX_POS - PRESSURE_PIPE_MIN_POS;
+        return CORE_MAX - CORE_MIN;
     }
 
+    /**
+     * Get the module's height (in range 0..16 as passed to {@link Block#makeCuboidShape(double, double, double, double, double, double)}
+     *
+     * @return the height
+     */
     protected double getHeight() {
-        return PRESSURE_PIPE_MIN_POS;
+        return CORE_MIN;
     }
 
     public float getThreshold(int redstone) {
@@ -94,10 +105,14 @@ public abstract class TubeModule {
     public NonNullList<ItemStack> getDrops() {
         NonNullList<ItemStack> drops = NonNullList.create();
         if (shouldDrop) {
-            drops.add(new ItemStack(ModuleRegistrator.getModuleItem(getType())));
+            drops.add(new ItemStack(getItem()));
             if (upgraded) drops.add(new ItemStack(ModItems.ADVANCED_PCB));
         }
         return drops;
+    }
+
+    public Item getItem() {
+        return ForgeRegistries.ITEMS.getValue(getType());
     }
 
     public void setDirection(Direction dir) {
@@ -134,11 +149,12 @@ public abstract class TubeModule {
     }
 
     /**
-     * Get a unique string identifier for this module type.
+     * Get a unique identifier for this module type, which <strong>must</strong> match the registry name of the
+     * corresponding module item.
      *
      * @return the module ID
      */
-    public abstract String getType();
+    public abstract ResourceLocation getType();
 
     public int getRedstoneLevel() {
         return 0;
@@ -184,35 +200,27 @@ public abstract class TubeModule {
     public boolean onActivated(PlayerEntity player, Hand hand) {
         if (!player.world.isRemote && upgraded && hasGui()) {
             NetworkHandler.sendToPlayer(new PacketOpenTubeModuleGui(getType(), pressureTube.pos()), (ServerPlayerEntity) player);
-            return true;
         }
-        return false;
+        return true;
     }
 
+    /**
+     * Does this module have a gui?  Server also needs to know about this, since module GUI's are opened in response
+     * to a packet from the server.
+     *
+     * @return true if the module has a gui
+     */
     public boolean hasGui() {
         return false;
     }
 
-    // FIXME move this out of here to external tube->model registry
-    @OnlyIn(Dist.CLIENT)
-    public abstract Class<? extends ModelModuleBase> getModelClass();
-
-    @OnlyIn(Dist.CLIENT)
-    public final ModelModuleBase getModel() {
-        if (model == null) {
-            try {
-                Constructor<? extends ModelModuleBase> ctor = getModelClass().getDeclaredConstructor(this.getClass());
-                model = ctor.newInstance(this);
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                e.printStackTrace();
-                model = new ModelModuleBase.MissingModel();
-            }
-        }
-        return model;
-    }
-
+    // FIXME should be in renderer
     @OnlyIn(Dist.CLIENT)
     public void doExtraRendering() {
+    }
+
+    public VoxelShape getShape() {
+        return boundingBoxes[getDirection().getIndex()];
     }
 
     public AxisAlignedBB getRenderBoundingBox() {

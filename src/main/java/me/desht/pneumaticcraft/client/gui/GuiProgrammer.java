@@ -210,9 +210,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         addButton(exportButton);
 
         addButton(new Button(xStart + xRight - 3, yStart + yBottom, 10, 10, "\u25c0",
-                b -> adjustPage(1)));
-        addButton(new Button(xStart + xRight + 38, yStart + yBottom, 10, 10, "\u25b6",
                 b -> adjustPage(-1)));
+        addButton(new Button(xStart + xRight + 38, yStart + yBottom, 10, 10, "\u25b6",
+                b -> adjustPage(1)));
 
         allWidgetsButton = new GuiButtonSpecial(xStart + xRight + 22, yStart + yBottom - 16, 10, 10, "\u25e4",
                 b -> toggleShowWidgets());
@@ -265,7 +265,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         addButton(nameField);
 
         filterField = new FilterTextField(font, guiLeft + 78, guiTop + 26, 100, font.FONT_HEIGHT);
-        filterField.func_212954_a(s -> filterSpawnWidgets());
+        filterField.setResponder(s -> filterSpawnWidgets());
 
         addButton(filterField);
 

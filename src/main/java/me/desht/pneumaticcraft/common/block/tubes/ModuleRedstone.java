@@ -1,7 +1,5 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
-import me.desht.pneumaticcraft.client.model.module.ModelRedstone;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -16,6 +14,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -40,7 +39,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     public float lastExtension;
 
     @Override
-    public String getType() {
+    public ResourceLocation getType() {
         return Names.MODULE_REDSTONE;
     }
 
@@ -50,23 +49,18 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public Class<? extends ModelModuleBase> getModelClass() {
-        return ModelRedstone.class;
-    }
-
-    @Override
     public void onNeighborBlockUpdate() {
         updateInputLevel();
     }
 
     @Override
     public double getWidth() {
-        return 0.5;
+        return 8D;
     }
 
     @Override
     protected double getHeight() {
-        return 0.25;
+        return 4D;
     }
 
     @Override

@@ -50,8 +50,8 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     public boolean areLightsOn;
     @GuiSynced
     public int redstoneMode;
-    @DescSynced
-    public boolean hasLoadedPCB;
+//    @DescSynced
+//    public boolean hasLoadedPCB;
 
     public final LightBoxItemHandlerInternal inventory = new LightBoxItemHandlerInternal();
     private final LightBoxItemHandlerExternal inventoryExt = new LightBoxItemHandlerExternal(inventory);
@@ -103,15 +103,19 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
                 oldRedstoneStatus = !oldRedstoneStatus;
                 updateNeighbours();
             }
+            boolean loaded = getBlockState().get(BlockUVLightBox.LOADED);
+            if (loaded == stack.isEmpty()) {
+                world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LOADED, !stack.isEmpty()));
+            }
         }
     }
 
-    @Override
-    protected void onFirstServerUpdate() {
-        super.onFirstServerUpdate();
-
-        hasLoadedPCB = !getLoadedPCB().isEmpty();
-    }
+//    @Override
+//    protected void onFirstServerUpdate() {
+//        super.onFirstServerUpdate();
+//
+//        hasLoadedPCB = !getLoadedPCB().isEmpty();
+//    }
 
     private int ticksPerProgress(int damage) {
         int ticks;
@@ -254,12 +258,11 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
             return itemStack.isEmpty() || itemStack.getItem() instanceof ItemEmptyPCB;
         }
 
-        @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
-
-            hasLoadedPCB = !getStackInSlot(slot).isEmpty();
-        }
+//        @Override
+//        protected void onContentsChanged(int slot) {
+//            super.onContentsChanged(slot);
+//
+//        }
     }
 
     private class LightBoxItemHandlerExternal implements IItemHandlerModifiable {

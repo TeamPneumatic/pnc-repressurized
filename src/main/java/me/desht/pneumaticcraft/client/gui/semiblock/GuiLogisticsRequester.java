@@ -58,7 +58,7 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
         minItems = new WidgetTextFieldNumber(font, 5, 30, 30, 12);
         minItems.minValue = 1;
         minItems.maxValue = 64;
-        minItems.func_212954_a(s -> packetSendDelay = 8);
+        minItems.setResponder(s -> packetSendDelay = 8);
         minAmountStat.addSubWidget(minItems);
 
         WidgetLabel minFluidLabel = new WidgetLabel(5, 47, I18n.format("gui.logistic_frame.min_fluid"));
@@ -67,7 +67,7 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
         minFluid = new WidgetTextFieldNumber(font, 5, 57, 50, 12);
         minFluid.minValue = 1;
         minFluid.maxValue = 16000;
-        minItems.func_212954_a(s -> packetSendDelay = 8);
+        minItems.setResponder(s -> packetSendDelay = 8);
         minAmountStat.addSubWidget(minFluid);
     }
 

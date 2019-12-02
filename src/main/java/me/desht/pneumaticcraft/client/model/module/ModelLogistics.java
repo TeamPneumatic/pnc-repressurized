@@ -8,17 +8,15 @@ import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelLogistics extends ModelModuleBase {
+public class ModelLogistics extends ModelModuleBase<ModuleLogistics> {
     private final RendererModel base2;
     private final RendererModel shape1;
     private final RendererModel shape2;
     private final RendererModel shape3;
     private final RendererModel shape4;
     private final RendererModel notPowered, powered, action, notEnoughAir;
-    private final ModuleLogistics module;
 
-    public ModelLogistics(ModuleLogistics module) {
-        this.module = module;
+    public ModelLogistics() {
         textureWidth = 128;
         textureHeight = 128;
 
@@ -79,8 +77,8 @@ public class ModelLogistics extends ModelModuleBase {
         setRotation(shape4, 0F, 0F, 0F);
     }
 
-    private void renderChannelColorFrame(float size) {
-        RenderUtils.glColorHex(0xFF000000 | DyeColor.byId(module.getColorChannel()).func_218388_g());
+    private void renderChannelColorFrame(int colorID, float size) {
+        RenderUtils.glColorHex(0xFF000000 | DyeColor.byId(colorID).getColorValue());
         shape1.render(size);
         shape2.render(size);
         shape3.render(size);
@@ -89,7 +87,7 @@ public class ModelLogistics extends ModelModuleBase {
     }
 
     @Override
-    protected void renderDynamic(float scale, float partialTicks) {
+    protected void renderDynamic(ModuleLogistics module, float scale, float partialTicks) {
         RendererModel base;
         if (module.getTicksSinceAction() >= 0) {
             base = action;
@@ -100,7 +98,7 @@ public class ModelLogistics extends ModelModuleBase {
         }
         base.render(scale);
         base2.render(scale);
-        renderChannelColorFrame(scale);
+        renderChannelColorFrame(module.getColorChannel(), scale);
     }
 
     @Override

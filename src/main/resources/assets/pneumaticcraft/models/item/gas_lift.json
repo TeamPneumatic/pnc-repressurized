@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/gas_lift",
+  "transform": "forge:default-block"
+}

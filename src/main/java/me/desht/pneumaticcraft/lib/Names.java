@@ -1,5 +1,9 @@
 package me.desht.pneumaticcraft.lib;
 
+import net.minecraft.util.ResourceLocation;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class Names {
     // Ore dict strings; camel-case is OK here
     public static final String INGOT_IRON_COMPRESSED = "ingotIronCompressed";
@@ -8,14 +12,14 @@ public class Names {
     public static final String DRONE = "pneumaticDrone";
     public static final String GUN_AMMO = "pneumaticGunAmmo";
 
-    public static final String MODULE_SAFETY_VALVE = "safety_tube_module";
-    public static final String MODULE_REGULATOR = "regulator_tube_module";
-    public static final String MODULE_GAUGE = "pressure_gauge_module";
-    public static final String MODULE_FLOW_DETECTOR = "flow_detector_module";
-    public static final String MODULE_AIR_GRATE = "air_grate_module";
-    public static final String MODULE_CHARGING = "charging_module";
-    public static final String MODULE_LOGISTICS = "logistics_module";
-    public static final String MODULE_REDSTONE = "redstone_module";
+    public static final ResourceLocation MODULE_SAFETY_VALVE = RL("safety_tube_module");
+    public static final ResourceLocation MODULE_REGULATOR = RL("regulator_tube_module");
+    public static final ResourceLocation MODULE_GAUGE = RL("pressure_gauge_module");
+    public static final ResourceLocation MODULE_FLOW_DETECTOR = RL("flow_detector_module");
+    public static final ResourceLocation MODULE_AIR_GRATE = RL("air_grate_module");
+    public static final ResourceLocation MODULE_CHARGING = RL("charging_module");
+    public static final ResourceLocation MODULE_LOGISTICS = RL("logistics_module");
+    public static final ResourceLocation MODULE_REDSTONE = RL("redstone_module");
 
     public static final String PNEUMATIC_KEYBINDING_CATEGORY = "key.pneumaticcraft.category";
 

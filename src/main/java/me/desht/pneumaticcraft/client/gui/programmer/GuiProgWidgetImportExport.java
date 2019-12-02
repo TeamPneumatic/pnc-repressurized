@@ -43,7 +43,7 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
         textField = new WidgetTextFieldNumber(font, guiLeft + 7, guiTop + (showSides() ? 128 : 43), 50, 11);
         textField.setValue(progWidget.getCount());
         textField.setEnabled(useItemCount.checked);
-        textField.func_212954_a(s -> progWidget.setCount(textField.getValue()));
+        textField.setResponder(s -> progWidget.setCount(textField.getValue()));
         addButton(textField);
     }
 

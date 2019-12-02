@@ -37,7 +37,12 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     private static final String NBT_POTION = "potion";
 
     public ItemGunAmmoStandard() {
-        super(defaultProps().maxDamage(PNCConfig.Common.Minigun.standardAmmoCartridgeSize), "gun_ammo");
+        super("gun_ammo");
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return PNCConfig.Common.Minigun.standardAmmoCartridgeSize;
     }
 
     @Nonnull

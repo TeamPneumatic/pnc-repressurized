@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public class BlockFluidEtchingAcid extends BlockFluidPneumaticCraft {
 
     public BlockFluidEtchingAcid(Supplier<? extends FlowingFluid> supplier, Properties props) {
-        super(supplier, props, "etching_acid_block");
+        super(supplier, props, "etching_acid");
     }
 
 //    public BlockFluidEtchingAcid(Fluid fluid) {

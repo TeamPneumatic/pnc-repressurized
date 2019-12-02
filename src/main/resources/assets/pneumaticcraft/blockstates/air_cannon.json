@@ -2,13 +2,10 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {},
-    "custom": { "flip-v" : true},
-    "model": "pneumaticcraft:block/air_cannon.obj"
+    "model": "pneumaticcraft:block/air_cannon"
   },
   "variants": {
     "facing": {
-      "up": {"transform": {"rotation" : {"x" : 90}}},
-      "down": {"x" : -90},
       "east": {
         "transform": {
           "translation": [ 0, -0.0625, 0 ],
@@ -36,10 +33,6 @@
           "scale" : [ 0.875, 0.875, 0.875 ]
         }
       }
-    },
-    "inventory": [{
-      "model": "pneumaticcraft:block/air_cannon_inv.obj",
-      "transform": "forge:default-block"
-    }]
+    }
   }
 }

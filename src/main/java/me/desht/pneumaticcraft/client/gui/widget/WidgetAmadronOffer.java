@@ -40,7 +40,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipSupplier {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTick) {
+    public void renderButton(int mouseX, int mouseY, float partialTick) {
         FontRenderer fr = Minecraft.getInstance().fontRenderer;
         if (renderBackground) {
             Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);

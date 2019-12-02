@@ -1,81 +1,13 @@
-  {
-  "forge_marker": 1,
-  "defaults": {
-    "textures": {},
-    "model": "pneumaticcraft:block/kerosene_lamp"
-  },
-  "variants": {
-    "facing": {
-      "up": {
-        "transform": { "rotation" : {"x" : 90} }
-      },
-      "down": {"x" : -90},
-      "east": {
-        "transform": { "rotation": {"y" : 90} }
-      },
-      "north": {
-        "transform": { "rotation": {"y" : 180} }
-      },
-      "west": {
-        "transform": { "rotation": {"y": 270} }
-      },
-      "south": {
-        "transform": { }
-      }
-    },
-    "connected": {
-      "down": {
-      },
-      "up": {
-        "submodel": {
-          "vert": {
-            "model": "pneumaticcraft:block/kerosene_lamp_support_v"
-          }
-        }
-      },
-      "north": {
-        "submodel": {
-          "vert": {
-            "model": "pneumaticcraft:block/kerosene_lamp_support_v"
-          },
-          "horiz": {
-            "model": "pneumaticcraft:block/kerosene_lamp_support_h"
-          }
-        }
-      },
-      "south": {
-        "submodel": {
-          "vert": {
-            "model": "pneumaticcraft:block/kerosene_lamp_support_v"
-          },
-          "horiz": {
-            "model": "pneumaticcraft:block/kerosene_lamp_support_h"
-          }
-        }
-      },
-      "east": {
-        "submodel": {
-          "vert": {
-            "model": "pneumaticcraft:block/kerosene_lamp_support_v"
-          },
-          "horiz": {
-            "model": "pneumaticcraft:block/kerosene_lamp_support_h"
-          }
-        }
-      },
-      "west": {
-        "submodel": {
-          "vert": {
-            "model": "pneumaticcraft:block/kerosene_lamp_support_v"
-          },
-          "horiz": {
-            "model": "pneumaticcraft:block/kerosene_lamp_support_h"
-          }
-        }
-      }
-    },
-    "inventory": [{
-      "transform": "forge:default-block"
-    }]
-  }
+{
+  "multipart": [
+    { "when": { "facing":  "north"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp", "y": 180 } },
+    { "when": { "facing":  "south"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp" } },
+    { "when": { "facing":  "west"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp", "y": 90 } },
+    { "when": { "facing":  "east"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp", "y": 270 } },
+    { "when": { "connected":  "up|west|east|south|north"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp_support_v" } },
+    { "when": { "connected":  "north"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp_support_h", "y": 180 } },
+    { "when": { "connected":  "south"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp_support_h" } },
+    { "when": { "connected":  "west"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp_support_h", "y": 90 } },
+    { "when": { "connected":  "east"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp_support_h", "y": 270 } }
+  ]
 }

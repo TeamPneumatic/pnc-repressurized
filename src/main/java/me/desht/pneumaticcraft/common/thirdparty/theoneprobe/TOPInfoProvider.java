@@ -137,14 +137,14 @@ public class TOPInfoProvider {
             for (int i = 0; i < handler.getTanks(); i++) {
                 FluidStack fluidStack = handler.getFluidInTank(i);
                 String fluidDesc = fluidStack.isEmpty() ? L("gui.liquid.empty") : fluidStack.getAmount() + "mB " + L(fluidStack.getTranslationKey());
-                probeInfo.text(COLOR + "#" + (i + 1) + ": " + TextFormatting.AQUA + fluidDesc);
+                probeInfo.text(COLOR + "Tank #" + (i + 1) + ": " + TextFormatting.AQUA + fluidDesc);
             }
         }
     }
 
     public static void handleCamo(ProbeMode mode, IProbeInfo probeInfo, BlockState camo) {
         if (camo != null) {
-            probeInfo.text(TextFormatting.YELLOW + "[Camo: " + ItemCamoApplicator.getCamoStateDisplayName(camo) + "]");
+            probeInfo.text(TextFormatting.YELLOW + "[Camo: " + ItemCamoApplicator.getCamoStateDisplayName(camo).getFormattedText() + "]");
         }
     }
 

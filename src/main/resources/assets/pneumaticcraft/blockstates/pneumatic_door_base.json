@@ -2,21 +2,10 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {},
-        "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:block/pneumatic_door_base.obj"
+        "model": "pneumaticcraft:block/pneumatic_door_base"
     },
 	"variants": {
 		"facing": {
-			"up": {
-			    "transform": {
-    			     "rotation" : {"x" : -90}
-    			}
-			},
-			"down": {
-                "transform": {
-                     "rotation" : {"x" : 90}
-                }
-            },
 			"east": {
 				"transform": {
 					"rotation": {"y" : 90}
@@ -36,9 +25,6 @@
 				"transform": {
 				}
 			}
-		},
-		"inventory": [{
-          "transform": "forge:default-block"
-        }]
+		}
 	}
 }

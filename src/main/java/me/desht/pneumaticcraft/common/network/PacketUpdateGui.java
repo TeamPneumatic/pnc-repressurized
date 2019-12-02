@@ -12,7 +12,8 @@ import java.util.function.Supplier;
 /**
  * Received on: CLIENT
  *
- * The primary mechanism for sync'ing data to an open GUI
+ * The primary mechanism for sync'ing TE fields to an open GUI.  TE fields annotated with @GuiSynced will be synced
+ * in this packet, via {@link ContainerPneumaticBase#detectAndSendChanges()}.
  */
 public class PacketUpdateGui {
     private int syncId;

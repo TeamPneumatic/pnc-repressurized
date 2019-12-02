@@ -6,6 +6,10 @@ import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsDefaultStorage;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsProvider;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsRequester;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsStorage;
+import me.desht.pneumaticcraft.client.gui.tubemodule.GuiAirGrateModule;
+import me.desht.pneumaticcraft.client.gui.tubemodule.GuiPressureModule;
+import me.desht.pneumaticcraft.client.gui.tubemodule.GuiRedstoneModule;
+import me.desht.pneumaticcraft.client.model.module.*;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.render.entity.*;
 import me.desht.pneumaticcraft.client.render.tileentity.*;
@@ -38,6 +42,7 @@ public class ClientSetup {
         registerTESRs();
         registerScreenFactories();
         registerProgWidgetScreenFactories();
+        registerTubeModuleFactories();
     }
 
     @SubscribeEvent
@@ -73,7 +78,8 @@ public class ClientSetup {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorCaller.class, new RenderElevatorCaller());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityUniversalSensor.class, new RenderUniversalSensor());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVacuumPump.class, new RenderVacuumPump());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefinery.class, new RenderRefinery());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefineryController.class, new RenderRefineryController());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefineryOutput.class, new RenderRefineryOutput());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiquidHopper.class, new RenderLiquidHopper());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityKeroseneLamp.class, new RenderKeroseneLamp());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityThermopneumaticProcessingPlant.class, new RenderThermopneumaticProcessingPlant());
@@ -111,7 +117,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainerTypes.PRESSURE_CHAMBER_INTERFACE, GuiPressureChamberInterface::new);
         ScreenManager.registerFactory(ModContainerTypes.PROGRAMMER, GuiProgrammer::new);
         ScreenManager.registerFactory(ModContainerTypes.PROGRAMMABLE_CONTROLLER, GuiProgrammableController::new);
-        ScreenManager.registerFactory(ModContainerTypes.REFINERY, GuiRefinery::new);
+        ScreenManager.registerFactory(ModContainerTypes.REFINERY, GuiRefineryController::new);
         ScreenManager.registerFactory(ModContainerTypes.REMOTE, GuiRemote::new);
         ScreenManager.registerFactory(ModContainerTypes.REMOTE_EDITOR, GuiRemoteEditor::new);
         ScreenManager.registerFactory(ModContainerTypes.SECURITY_STATION_MAIN, GuiSecurityStationInventory::new);
@@ -172,5 +178,22 @@ public class ClientSetup {
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEnergyCondition.class, GuiProgWidgetCondition::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetString.class, GuiProgWidgetString::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetTeleport.class, GuiProgWidgetGoToLocation::new);
+    }
+
+    private static void registerTubeModuleFactories() {
+        TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_AIR_GRATE, GuiAirGrateModule::new);
+        TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_GAUGE, GuiPressureModule::new);
+        TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_REGULATOR, GuiPressureModule::new);
+        TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_SAFETY_VALVE, GuiPressureModule::new);
+        TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_REDSTONE, GuiRedstoneModule::new);
+
+        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_AIR_GRATE, ModelAirGrate::new);
+        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_REDSTONE, ModelRedstone::new);
+        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_SAFETY_VALVE, ModelSafetyValve::new);
+        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_REGULATOR, ModelPressureRegulator::new);
+        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_GAUGE, ModelPressureGauge::new);
+        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_CHARGING, ModelCharging::new);
+        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_FLOW_DETECTOR, ModelFlowDetector::new);
+        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_LOGISTICS, ModelLogistics::new);
     }
 }

@@ -9,31 +9,32 @@ import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.util.ResourceLocation;
 
-public abstract class ModelModuleBase extends Model {
+public abstract class ModelModuleBase<T extends TubeModule> extends Model {
+
     protected final void setRotation(RendererModel model, float x, float y, float z) {
         model.rotateAngleX = x;
         model.rotateAngleY = y;
         model.rotateAngleZ = z;
     }
 
-    public final void renderModel(float scale, TubeModule module, float partialTicks) {
+    public final void render(float scale, T module, float partialTicks) {
         GlStateManager.pushMatrix();
 
         Minecraft.getInstance().getTextureManager().bindTexture(getTexture());
         RenderUtils.rotateMatrixByMetadata(module.getDirection());
-        renderDynamic(scale, partialTicks);
+        renderDynamic(module, scale, partialTicks);
 
         GlStateManager.popMatrix();
     }
 
-    protected abstract void renderDynamic(float scale, float partialTicks);
+    protected abstract void renderDynamic(T module, float scale, float partialTicks);
 
     protected abstract ResourceLocation getTexture();
 
     // used if there's any kind of problem instantiating the actual model for the module
-    public static class MissingModel extends ModelModuleBase {
+    public static class MissingModel extends ModelModuleBase<TubeModule> {
         @Override
-        protected void renderDynamic(float scale, float partialTicks) {
+        protected void renderDynamic(TubeModule module, float scale, float partialTicks) {
         }
 
         @Override

@@ -33,7 +33,7 @@ public class GuiPressureModule extends GuiTubeModule {
     private Rectangle lowerBoundArea, higherBoundArea;
     private boolean grabLower, grabHigher;
 
-    GuiPressureModule(BlockPos pos) {
+    public GuiPressureModule(BlockPos pos) {
         super(pos);
         ySize = 191;
     }
@@ -53,15 +53,17 @@ public class GuiPressureModule extends GuiTubeModule {
         addLabel("bar", guiLeft + 45, guiTop + 42);
         addLabel("higher", guiLeft + 140, guiTop + 30);
 
-        String title = I18n.format("item." + module.getType() + ".name");
-        addLabel(title, width / 2 - font.getStringWidth(title) / 2, guiTop + 5);
+        String titleText = title.getFormattedText();
+        addLabel(titleText, width / 2 - font.getStringWidth(titleText) / 2, guiTop + 5);
 
         lowerBoundField = new TextFieldWidget(font, xStart + 10, yStart + 41, 30, 10,
                 PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1));
-        lowerBoundField.func_212954_a(s -> updateBoundFromTextfield(0));
+        lowerBoundField.setResponder(s -> updateBoundFromTextfield(0));
+        addButton(lowerBoundField);
         higherBoundField = new TextFieldWidget(font, xStart + 140, yStart + 41, 30, 10,
                 PneumaticCraftUtils.roundNumberTo(module.higherBound, 1));
-        higherBoundField.func_212954_a(s -> updateBoundFromTextfield(1));
+        higherBoundField.setResponder(s -> updateBoundFromTextfield(1));
+        addButton(higherBoundField);
 
         graphLowY = guiTop + 153;
         graphHighY = guiTop + 93;
@@ -78,7 +80,7 @@ public class GuiPressureModule extends GuiTubeModule {
 
         GuiCheckBox advancedMode = new GuiCheckBox(guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
             module.advancedConfig = b.checked;
-            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 2, module.advancedConfig ? 1 : 0));
+            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
         }).setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
         advancedMode.checked = true;
         addButton(advancedMode);
@@ -160,8 +162,6 @@ public class GuiPressureModule extends GuiTubeModule {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-
 //        boolean wasFocused = lowerBoundField.isFocused();
 //        lowerBoundField.mouseClicked(mouseX, mouseY, mouseButton);
 //        if (wasFocused && !lowerBoundField.isFocused()) {
@@ -195,15 +195,15 @@ public class GuiPressureModule extends GuiTubeModule {
                 case 0:
                     prev = module.lowerBound;
                     module.lowerBound = MathHelper.clamp(Float.parseFloat(lowerBoundField.getText()), -1, TubeModule.MAX_VALUE);
-                    if (fne(module.lowerBound, prev)) {
-                        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 0, module.lowerBound));
+                    if (!MathHelper.epsilonEquals(module.lowerBound, prev)) {
+                        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
                     }
                     break;
                 case 1:
                     prev = module.higherBound;
                     module.higherBound = MathHelper.clamp(Float.parseFloat(higherBoundField.getText()), -1, TubeModule.MAX_VALUE);
-                    if (fne(module.higherBound, prev)) {
-                        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
+                    if (!MathHelper.epsilonEquals(module.higherBound, prev)) {
+                        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
                     }
                     break;
                 default:
@@ -211,10 +211,6 @@ public class GuiPressureModule extends GuiTubeModule {
             }
         } catch (NumberFormatException ignored) {
         }
-    }
-
-    private static boolean fne(float f1, float f2) {
-        return (Math.abs(f1 - f2) > 0.00001);
     }
 
     @Override
@@ -235,11 +231,11 @@ public class GuiPressureModule extends GuiTubeModule {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int state) {
         if (grabLower) {
-            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 0, module.lowerBound));
+            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
             grabLower = false;
             return true;
         } else if (grabHigher) {
-            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
+            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
             grabHigher = false;
             return true;
         } else {

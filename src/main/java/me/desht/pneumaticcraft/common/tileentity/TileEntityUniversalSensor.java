@@ -298,7 +298,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
             invertedRedstone = !invertedRedstone;
             redstoneStrength = 15 - redstoneStrength;
             updateNeighbours();
-        } else if (tag.startsWith("tag:")) {
+        } else if (tag.startsWith("set:")) {
             try {
                 int t = Integer.parseInt(tag.split(":")[1]);
                 String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(getSensorSetting());

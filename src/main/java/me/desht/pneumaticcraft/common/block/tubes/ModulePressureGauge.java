@@ -1,11 +1,10 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.client.model.module.ModelGauge;
-import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.util.ResourceLocation;
 
 public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     public ModulePressureGauge() {
@@ -29,27 +28,22 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     }
 
     @Override
-    public String getType() {
+    public ResourceLocation getType() {
         return Names.MODULE_GAUGE;
     }
 
     @Override
     public double getWidth() {
-        return 0.5;
+        return 8D;
     }
 
     @Override
     protected double getHeight() {
-        return 0.25;
+        return 4D;
     }
 
     @Override
     public boolean hasGui() {
         return true;
-    }
-
-    @Override
-    public Class<? extends ModelModuleBase> getModelClass() {
-        return ModelGauge.class;
     }
 }

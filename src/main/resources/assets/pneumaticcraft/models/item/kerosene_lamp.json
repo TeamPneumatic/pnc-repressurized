@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/kerosene_lamp",
+  "transform": "forge:default-block"
+}

@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.GuiTubeModule;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -15,26 +16,26 @@ import java.util.function.Supplier;
  * Sent by server when it needs the client to open a (containerless) module GUI
  */
 public class PacketOpenTubeModuleGui extends LocationIntPacket {
-    private String moduleType;
+    private ResourceLocation moduleType;
 
     public PacketOpenTubeModuleGui() {
         // empty
     }
 
-    public PacketOpenTubeModuleGui(String type, BlockPos pos) {
+    public PacketOpenTubeModuleGui(ResourceLocation type, BlockPos pos) {
         super(pos);
         this.moduleType = type;
     }
 
     PacketOpenTubeModuleGui(PacketBuffer buffer) {
         super(buffer);
-        moduleType = buffer.readString();
+        moduleType = buffer.readResourceLocation();
     }
 
     @Override
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeString(moduleType);
+        buf.writeResourceLocation(moduleType);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

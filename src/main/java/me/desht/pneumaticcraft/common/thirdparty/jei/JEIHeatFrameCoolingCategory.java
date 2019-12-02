@@ -73,6 +73,8 @@ public class JEIHeatFrameCoolingCategory extends JEIPneumaticCraftCategory<IHeat
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, IHeatFrameCoolingRecipe recipe, IIngredients ingredients) {
+        super.setRecipe(recipeLayout, recipe, ingredients);
+
         recipeLayout.getItemStacks().init(0, true, 41, 1);
         recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
 

@@ -30,7 +30,7 @@ public class DroneFakePlayer extends FakePlayer {
     @Nonnull
     @Override
     public ItemStack getItemStackFromSlot(@Nonnull EquipmentSlotType slotIn) {
-        return slotIn == EquipmentSlotType.MAINHAND ? drone.getInv().getStackInSlot(0) : ItemStack.EMPTY;
+        return slotIn == EquipmentSlotType.MAINHAND && drone != null && drone.getInv() != null ? drone.getInv().getStackInSlot(0) : ItemStack.EMPTY;
     }
 
     @Override

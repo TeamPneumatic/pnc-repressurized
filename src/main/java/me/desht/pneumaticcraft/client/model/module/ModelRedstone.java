@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelRedstone extends ModelModuleBase {
+public class ModelRedstone extends ModelModuleBase<ModuleRedstone> {
     private final RendererModel redstone_connector;
     private final RendererModel faceplate;
     private final RendererModel tube_connector;
@@ -17,11 +17,7 @@ public class ModelRedstone extends ModelModuleBase {
     private final RendererModel frame3;
     private final RendererModel frame4;
 
-    private final ModuleRedstone module;
-
-    public ModelRedstone(ModuleRedstone module) {
-        this.module = module;
-
+    public ModelRedstone() {
         this.textureWidth = 64;
         this.textureHeight = 32;
         this.frame1 = new RendererModel(this, 39, 0);
@@ -49,7 +45,7 @@ public class ModelRedstone extends ModelModuleBase {
     }
 
     @Override
-    protected void renderDynamic(float scale, float partialTicks) {
+    protected void renderDynamic(ModuleRedstone module, float scale, float partialTicks) {
         if (module.isUpgraded()) RenderUtils.glColorHex(0xFFA0FF60);
         this.tube_connector.render(scale);
         this.faceplate.render(scale);
@@ -67,7 +63,7 @@ public class ModelRedstone extends ModelModuleBase {
             GlStateManager.popMatrix();
         }
 
-        RenderUtils.glColorHex(0xFF000000 | DyeColor.byId(module.getColorChannel()).func_218388_g());
+        RenderUtils.glColorHex(0xFF000000 | DyeColor.byId(module.getColorChannel()).getColorValue());
         this.frame1.render(scale);
         this.frame2.render(scale);
         this.frame3.render(scale);

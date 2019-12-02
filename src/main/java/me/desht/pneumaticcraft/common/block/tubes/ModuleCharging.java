@@ -2,13 +2,12 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.client.model.module.ModelCharging;
-import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -18,13 +17,8 @@ public class ModuleCharging extends TubeModule {
     private LazyOptional<IItemHandler> cachedHandler = LazyOptional.empty();
 
     @Override
-    public String getType() {
+    public ResourceLocation getType() {
         return Names.MODULE_CHARGING;
-    }
-
-    @Override
-    public Class<? extends ModelModuleBase> getModelClass() {
-        return ModelCharging.class;
     }
 
     @Override

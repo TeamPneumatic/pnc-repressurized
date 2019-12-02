@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/elevator_base",
+  "transform": "forge:default-block"
+}

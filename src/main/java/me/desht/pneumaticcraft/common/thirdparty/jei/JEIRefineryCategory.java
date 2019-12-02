@@ -58,6 +58,8 @@ public class JEIRefineryCategory extends JEIPneumaticCraftCategory<IRefineryReci
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, IRefineryRecipe recipe, IIngredients ingredients) {
+        super.setRecipe(recipeLayout, recipe, ingredients);
+
         recipeLayout.getFluidStacks().init(0, true, 2, 10);
         recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
 

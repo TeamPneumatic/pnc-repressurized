@@ -1,22 +1,10 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "textures": {},
-    "custom": { "flip-v" : true},
-    "model": "pneumaticcraft:block/pneumatic_door.obj"
+    "model": "pneumaticcraft:block/pneumatic_door"
   },
   "variants": {
     "facing": {
-      "up": {
-        "transform": {
-          "rotation" : {"x" : -90}
-        }
-      },
-      "down": {
-        "transform": {
-          "rotation" : {"x" : 90}
-        }
-      },
       "east": {
         "transform": {
           "rotation": {"y" : 90}
@@ -37,11 +25,6 @@
         }
       }
     },
-    "door_state": {
-      "open": {},
-      "closed": {},
-      "moving": { "model": "pneumaticcraft:block/blank" }
-    },
     "top_door": {
       "false": {
         "textures": {
@@ -49,13 +32,6 @@
         }
       },
       "true": { }
-    },
-    "inventory": [{
-      "transform": {
-        "rotation": [ {"x": 30 }, { "y": 135 }, { "z": 0 }],
-        "translation": [ 0.2, -0.1, 0],
-        "scale":[ 0.47, 0.47, 0.47 ]
-      }
-    }]
+    }
   }
 }

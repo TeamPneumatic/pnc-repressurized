@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/thermopneumatic_processing_plant",
+  "transform": "forge:default-block"
+}

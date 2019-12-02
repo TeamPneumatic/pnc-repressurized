@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/creative_compressor",
+  "transform": "forge:default-block"
+}

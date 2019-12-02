@@ -33,6 +33,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
@@ -95,7 +96,9 @@ public class SemiBlockManager {
     }
 
     static ItemSemiBlockBase getItemForSemiBlock(ISemiBlock semiBlock) {
-        return semiBlockToItems.get(semiBlock.getId()).get();
+        Item item = ForgeRegistries.ITEMS.getValue(semiBlock.getId());
+        return item instanceof ItemSemiBlockBase ? (ItemSemiBlockBase) item : null;
+//        return semiBlockToItems.get(semiBlock.getId()).get();
     }
 
 //    public static ISemiBlock getSemiBlockForItem(ItemSemiBlockBase item) {
@@ -433,7 +436,7 @@ public class SemiBlockManager {
      */
     private void addSemiBlock(World world, BlockPos pos, ISemiBlock semiBlock, IChunk chunk) {
         Validate.notNull(semiBlock);
-        if (!registeredTypes.containsValue(semiBlock.getClass()))
+        if (!registeredTypes.containsKey(semiBlock.getId()))
             throw new IllegalStateException("ISemiBlock \"" + semiBlock + "\" was not registered!");
 
         semiBlock.initialize(world, pos);

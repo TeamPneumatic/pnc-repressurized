@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -203,7 +202,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     private void updateConnections() {
         BlockState newState = AirHandler.getBlockConnectionState(getBlockState(), getAirHandler(null));
-        newState = newState.with(BlockPneumaticCraft.UP, false);  // never connects from above
+//        newState = newState.with(BlockPneumaticCraft.UP, false);  // never connects from above
         world.setBlockState(pos, newState);
     }
 

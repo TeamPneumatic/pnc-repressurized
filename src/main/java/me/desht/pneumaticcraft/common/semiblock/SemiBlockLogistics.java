@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -63,6 +64,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> impl
     private Direction side = Direction.UP;
 
     private int alpha = 255;
+    private int tintColor = 0;
 
     public SemiBlockLogistics() {
         super(TileEntity.class);
@@ -82,8 +84,6 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> impl
     public boolean canStay() {
         return canPlace(getSide());
     }
-
-    public abstract int getColor();
 
     public abstract int getPriority();
 
@@ -368,6 +368,15 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> impl
 
     public boolean supportsBlacklisting() {
         return true;
+    }
+
+    public int getColor() {
+        // cache because this can get called very frequently (rendering)
+        if (tintColor == 0) {
+            Item item = SemiBlockManager.getItemForSemiBlock(this);
+            tintColor = item instanceof ItemLogisticsFrame ? ((ItemLogisticsFrame) item).getTintColor(new ItemStack(item), 0) : 0xFFFFFFFF;
+        }
+        return tintColor;
     }
 
     public static class FluidStackWrapper {

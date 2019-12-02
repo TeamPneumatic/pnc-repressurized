@@ -18,7 +18,12 @@ public class ItemGunAmmoArmorPiercing extends ItemGunAmmo {
     }
 
     public ItemGunAmmoArmorPiercing() {
-        super(defaultProps().maxDamage(PNCConfig.Common.Minigun.armorPiercingAmmoCartridgeSize), "gun_ammo_ap");
+        super("gun_ammo_ap");
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return PNCConfig.Common.Minigun.armorPiercingAmmoCartridgeSize;
     }
 
     @Override

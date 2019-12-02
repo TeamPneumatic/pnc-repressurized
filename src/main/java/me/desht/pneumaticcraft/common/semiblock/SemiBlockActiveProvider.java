@@ -19,11 +19,6 @@ public class SemiBlockActiveProvider extends SemiBlockLogistics implements ISpec
     public static final ResourceLocation ID = RL("logistics_frame_active_provider");
 
     @Override
-    public int getColor() {
-        return 0xFF93228c;
-    }
-
-    @Override
     public int getPriority() {
         return 0;
     }

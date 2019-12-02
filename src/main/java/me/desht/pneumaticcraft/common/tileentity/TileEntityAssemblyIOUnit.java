@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.recipe.IAssemblyRecipe;
-import me.desht.pneumaticcraft.common.block.BlockAssemblyIOUnit;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -343,7 +343,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     }
 
     public boolean isImportUnit() {
-        return getBlockState().get(BlockAssemblyIOUnit.IMPORT_UNIT);
+        return getBlockState().getBlock() == ModBlocks.ASSEMBLY_IO_UNIT_IMPORT;
     }
 
     public void switchMode() {

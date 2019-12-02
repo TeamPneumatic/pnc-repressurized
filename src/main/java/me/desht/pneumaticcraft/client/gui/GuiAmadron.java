@@ -58,7 +58,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         customTrades.addPadding(3, 21);
         searchBar = new WidgetTextField(font, guiLeft + 79, guiTop + 40, 73, font.FONT_HEIGHT);
         searchBar.setFocused2(true);
-        searchBar.func_212954_a(s -> {
+        searchBar.setResponder(s -> {
             needsRefreshing = true;
             scrollbar.setCurrentState(0);
         });

@@ -20,8 +20,13 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.lib.GuiConstants.ARROW_LEFT;
+import static me.desht.pneumaticcraft.lib.GuiConstants.ARROW_RIGHT;
+
 public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, TileEntityElevatorBase> {
     private GuiAnimatedStat statusStat;
+    private GuiAnimatedStat floorNameStat;
+    private WidgetTextField floorNameField;
     private int currentEditedFloor;
 
     public GuiElevator(ContainerElevator container, PlayerInventory inventoryPlayer, ITextComponent displayName) {
@@ -31,33 +36,43 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     @Override
     public void init() {
         super.init();
+
         statusStat = addAnimatedStat("Elevator Status", new ItemStack(ModBlocks.ELEVATOR_BASE), 0xFFFFAA00, false);
-        GuiAnimatedStat floorNameStat = addAnimatedStat("Floor Names", new ItemStack(ModBlocks.ELEVATOR_CALLER), 0xFF005500, false);
+
+        floorNameStat = addAnimatedStat("Floor Names", new ItemStack(ModBlocks.ELEVATOR_CALLER), 0xFF005500, false);
         floorNameStat.setTextWithoutCuttingString(getFloorNameStat());
 
         Rectangle2d fieldRectangle = floorNameStat.getButtonScaledRectangle(6, 60, 160, 20);
-        WidgetTextField floorNameField = getTextFieldFromRectangle(fieldRectangle);
+        floorNameField = getTextFieldFromRectangle(fieldRectangle);
         floorNameField.setText(te.getFloorName(currentEditedFloor));
-        floorNameField.func_212954_a(this::updateFloor);  // gui responder
+        floorNameField.setResponder(this::updateFloor);  // gui responder
         floorNameStat.addSubWidget(floorNameField);
 
-        Rectangle2d namePreviousRectangle = floorNameStat.getButtonScaledRectangle(5, 35, 20, 20);
-        floorNameStat.addSubWidget(getButtonFromRectangle("", namePreviousRectangle, "\u27f5", button -> {
-            if (--currentEditedFloor < 0) {
-                currentEditedFloor = Math.max(0, te.floorHeights.length - 1);
-            }
-        }));
+        Rectangle2d prev = floorNameStat.getButtonScaledRectangle(5, 35, 20, 20);
+        floorNameStat.addSubWidget(getButtonFromRectangle("", prev, ARROW_LEFT, button -> cycleFloor(-1)));
 
-        Rectangle2d nameNextRectangle = floorNameStat.getButtonScaledRectangle(145, 35, 20, 20);
-        floorNameStat.addSubWidget(getButtonFromRectangle("", nameNextRectangle, "\u27f6", button -> {
-            if (++currentEditedFloor >= te.floorHeights.length) {
-                currentEditedFloor = 0;
-            }
-        }));
+        Rectangle2d next = floorNameStat.getButtonScaledRectangle(145, 35, 20, 20);
+        floorNameStat.addSubWidget(getButtonFromRectangle("", next, ARROW_RIGHT, button -> cycleFloor(1)));
+    }
+
+    private void cycleFloor(int dir) {
+        currentEditedFloor += dir;
+        if (currentEditedFloor >= te.floorHeights.length) currentEditedFloor = 0;
+        else if (currentEditedFloor < 0) currentEditedFloor = te.floorHeights.length - 1;
+
+        floorNameField.setText(te.getFloorName(currentEditedFloor));
+        floorNameField.setFocused2(true);
+
+        floorNameStat.setTextWithoutCuttingString(getFloorNameStat());
     }
 
     private void updateFloor(String floorName) {
+        sendDelayed(5);
         te.setFloorName(currentEditedFloor, floorName);
+    }
+
+    @Override
+    protected void doDelayedAction() {
         NetworkHandler.sendToServer(new PacketUpdateTextfield(te, currentEditedFloor));
     }
 

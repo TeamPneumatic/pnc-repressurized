@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.client.gui.GuiAssemblyController;
 import me.desht.pneumaticcraft.client.gui.GuiPressureChamber;
-import me.desht.pneumaticcraft.client.gui.GuiRefinery;
+import me.desht.pneumaticcraft.client.gui.GuiRefineryController;
 import me.desht.pneumaticcraft.client.gui.GuiThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -28,6 +28,11 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
+    @Override
+    public void registerItemSubtypes(ISubtypeRegistration registration) {
+        registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB, itemStack -> String.valueOf(itemStack.getDamage()));
+    }
+
     @Override
     public void registerCategories(IRecipeCategoryRegistration registry) {
         IJeiHelpers helpers = registry.getJeiHelpers();
@@ -89,7 +94,7 @@ public class JEIPlugin implements IModPlugin {
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(GuiAssemblyController.class, 110, 10, 50, 50, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registration.addRecipeClickArea(GuiPressureChamber.class, 100, 7, 40, 40, ModCategoryUid.PRESSURE_CHAMBER);
-        registration.addRecipeClickArea(GuiRefinery.class, 47, 21, 27, 47, ModCategoryUid.REFINERY);
+        registration.addRecipeClickArea(GuiRefineryController.class, 47, 21, 27, 47, ModCategoryUid.REFINERY);
         registration.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 31, 48, 20, ModCategoryUid.THERMO_PNEUMATIC);
 
         registration.addGlobalGuiHandler(new GuiTabHandler());

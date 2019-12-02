@@ -18,6 +18,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -59,11 +60,11 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     public boolean isProducing;
 
     public TileEntityLiquidCompressor() {
-        this(5, 7, 5000);
+        this(ModTileEntityTypes.LIQUID_COMPRESSOR, 5, 7, 5000);
     }
 
-    public TileEntityLiquidCompressor(float dangerPressure, float criticalPressure, int volume) {
-        super(ModTileEntityTypes.LIQUID_COMPRESSOR, dangerPressure, criticalPressure, volume, 4);
+    public TileEntityLiquidCompressor(TileEntityType type, float dangerPressure, float criticalPressure, int volume) {
+        super(type, dangerPressure, criticalPressure, volume, 4);
         addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
@@ -72,12 +73,11 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     private int getFuelValue(FluidStack fluid) {
-        return fluid == null ? 0 : getFuelValue(fluid.getFluid());
+        return getFuelValue(fluid.getFluid());
     }
 
     private int getFuelValue(Fluid fluid) {
-        Integer value = PneumaticCraftAPIHandler.getInstance().liquidFuels.get(fluid.getRegistryName());
-        return value == null ? 0 : value;
+        return PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(fluid.getRegistryName(), 0);
     }
 
     @Override

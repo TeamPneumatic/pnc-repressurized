@@ -5,11 +5,15 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.IWaterLoggable;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -17,13 +21,19 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.*;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import javax.annotation.Nullable;
 
 import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class BlockElevatorFrame extends BlockPneumaticCraft {
+public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLoggable {
+    private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[16];
+    private static final VoxelShape MOSTLY_FULL = Block.makeCuboidShape(0.5, 0, 0.5, 15.5, 16, 15.5);
+    private static final VoxelShape MOSTLY_EMPTY = Block.makeCuboidShape(0.5, 0, 0.5, 15.5, 0.5, 15.5);
+
     private static final BooleanProperty NE = BooleanProperty.create("ne");
     private static final BooleanProperty SE = BooleanProperty.create("se");
     private static final BooleanProperty SW = BooleanProperty.create("sw");
@@ -31,11 +41,15 @@ public class BlockElevatorFrame extends BlockPneumaticCraft {
 
     public BlockElevatorFrame() {
         super("elevator_frame");
+        setDefaultState(getStateContainer().getBaseState()
+            .with(NE, false).with(SE, false).with(SW, false).with(NW, false)
+            .with(WATERLOGGED, false));
     }
 
     @Override
     public void onBlockAdded(BlockState newState, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onBlockAdded(newState, world, pos, oldState, isMoving);
+
         TileEntityElevatorBase elevatorBase = getElevatorTE(world, pos);
         if (elevatorBase != null) {
             elevatorBase.updateMaxElevatorHeight();
@@ -45,7 +59,30 @@ public class BlockElevatorFrame extends BlockPneumaticCraft {
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
-        builder.add(NE, SW, SE, NW);
+        builder.add(NE, SW, SE, NW, WATERLOGGED);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+        boolean[] connected = getConnections(ctx.getWorld(), ctx.getPos());
+        IFluidState fluidState = ctx.getWorld().getFluidState(ctx.getPos());
+        return super.getStateForPlacement(ctx)
+                .with(NE, connected[0]).with(SE, connected[1]).with(SW, connected[2]).with(NW, connected[3])
+                .with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public int getPackedLightmapCoords(BlockState state, IEnviromentBlockReader worldIn, BlockPos pos) {
+//        return 0xFFFF;
+        int i = worldIn.getLightFor(LightType.SKY, pos);
+        return (i << 20) | 0xF;
+    }
+
+    @Override
+    public IFluidState getFluidState(BlockState state) {
+        return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
     }
 
     @Override
@@ -67,27 +104,37 @@ public class BlockElevatorFrame extends BlockPneumaticCraft {
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
         if (selectionContext.hasItem(this.asItem())) {
-            // return a full bounding box if holding frames, for ease of placement of frames against frames
-            return VoxelShapes.fullCube();
+            // return a (mostly) full bounding box if holding frames, for ease of placement of frames against frames
+            return MOSTLY_FULL;
         }
 
-        // TODO can cache these; only 16 possible values here
-        VoxelShape shape = VoxelShapes.empty();
-        boolean[] connected = getConnections(world, pos);
-        for (Corner corner : Corner.values()) {
-            if (!connected[corner.ordinal()]) {
-                shape = VoxelShapes.or(shape, VoxelShapes.create(corner.aabb));
-            }
-        }
-
+        VoxelShape shape = getCachedShape(state);
         float blockHeight = getElevatorBlockHeight(world, pos);
         if (blockHeight > 0) {
-            shape = VoxelShapes.or(shape, VoxelShapes.create(new AxisAlignedBB(0, 0, 0, 1, blockHeight, 1)));
+            shape = VoxelShapes.or(shape, Block.makeCuboidShape(0.001, 0, 0.001, 15.999, blockHeight * 16, 15.999));
+        }
+
+        if (shape.isEmpty()) {
+            return MOSTLY_EMPTY;  // prevent a crash when trying to render break particles
         }
 
         return shape;
+    }
+
+    private VoxelShape getCachedShape(BlockState state) {
+        int shapeIdx = (state.get(NE) ? 1 : 0) | (state.get(SE) ? 2 : 0) | (state.get(SW) ? 4 : 0) | (state.get(NW) ? 8 : 0);
+        if (SHAPE_CACHE[shapeIdx] == null) {
+            VoxelShape shape = VoxelShapes.empty();
+            for (Corner corner : Corner.values()) {
+                if (!state.get(corner.prop)) {
+                    shape = VoxelShapes.or(shape, corner.shape);
+                }
+            }
+            SHAPE_CACHE[shapeIdx] = shape;
+        }
+        return SHAPE_CACHE[shapeIdx];
     }
 
     private boolean[] getConnections(IBlockReader world, BlockPos pos) {
@@ -104,6 +151,11 @@ public class BlockElevatorFrame extends BlockPneumaticCraft {
         res[Corner.NW.ordinal()]  = frameXNeg || frameZNeg;
 
         return res;
+    }
+
+    @Override
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
     }
 
     @Override
@@ -154,20 +206,20 @@ public class BlockElevatorFrame extends BlockPneumaticCraft {
     }
 
     private enum Corner {
-        NE(1, -1, BlockElevatorFrame.NE, new AxisAlignedBB(15f / 16f, 0, 0, 1, 15f/16f, 1f/16f)),
-        SE(1, 1, BlockElevatorFrame.SE, new AxisAlignedBB(15f / 16f, 0, 15f / 16f, 1, 15f/16f, 1)),
-        SW(-1, 1, BlockElevatorFrame.SW, new AxisAlignedBB(0, 0, 15f / 16f, 1f / 16f, 15f/16f, 1)),
-        NW(-1,-1, BlockElevatorFrame.NW, new AxisAlignedBB(0, 0, 0, 1f/16f, 15f/16f, 1f/16f));
+        NE( 1,-1, BlockElevatorFrame.NE, Block.makeCuboidShape(14.5f, 0,  0.5f, 15.5f, 16,  1.5f)),
+        SE( 1, 1, BlockElevatorFrame.SE, Block.makeCuboidShape(14.5f, 0, 14.5f, 15.5f, 16, 15.5f)),
+        SW(-1, 1, BlockElevatorFrame.SW, Block.makeCuboidShape( 0.5f, 0, 14.5f,  1.5f, 16, 15.5f)),
+        NW(-1,-1, BlockElevatorFrame.NW, Block.makeCuboidShape( 0.5f, 0,  0.5f,  1.5f, 16,  1.5f));
 
         final int x;
         final int z;
         final BooleanProperty prop;
-        final AxisAlignedBB aabb;
+        final VoxelShape shape;
 
-        Corner(int x, int z, BooleanProperty prop, AxisAlignedBB aabb) {
+        Corner(int x, int z, BooleanProperty prop, VoxelShape shape) {
             this.x = x; this.z = z;
             this.prop = prop;
-            this.aabb = aabb;
+            this.shape = shape;
         }
     }
 }

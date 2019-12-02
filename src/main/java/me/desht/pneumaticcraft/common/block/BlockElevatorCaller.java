@@ -9,15 +9,17 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.Direction.Axis;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
-
     public BlockElevatorCaller() {
         super("elevator_caller");
     }
@@ -43,13 +45,13 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     private int getFloorForHit(TileEntityElevatorCaller teEC, Direction side, double hitX, double hitY, double hitZ) {
         double x;
         switch (side) {
-            case NORTH: x = 1.0 - hitX; break;
-            case SOUTH: x = hitX; break;
-            case EAST: x = 1.0 - hitZ; break;
-            case WEST: x = hitZ; break;
+            case NORTH: x = Math.abs(hitX % 1); break;
+            case SOUTH: x = 1 - Math.abs(hitX % 1); break;
+            case EAST: x = Math.abs(hitZ % 1); break;
+            case WEST: x = 1 - Math.abs(hitZ % 1); break;
             default: return -1;
         }
-        double y = 1.0 - hitY;
+        double y = 1 - (hitY % 1);
 
         for (TileEntityElevatorCaller.ElevatorButton button : teEC.getFloors()) {
             if (x >= button.posX && x <= button.posX + button.width && y >= button.posY && y <= button.posY + button.height) {
@@ -134,22 +136,23 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     @Override
     public void onBlockAdded(BlockState newState, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onBlockAdded(newState, world, pos, oldState, isMoving);
+
         updateElevatorButtons(world, pos);
     }
 
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         updateElevatorButtons(world, pos);
+
         super.onReplaced(state, world, pos, newState, isMoving);
     }
 
     private void updateElevatorButtons(World world, BlockPos pos) {
-        for (Direction dir : Direction.VALUES) {
-            if (dir.getAxis() != Axis.Y) {
-                TileEntityElevatorBase elevator = getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2));
-                if (elevator != null) {
-                    elevator.updateFloors();
-                }
+        for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
+            TileEntityElevatorBase elevator = getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2));
+            if (elevator != null) {
+                elevator.updateFloors();
+                break;
             }
         }
     }
@@ -172,6 +175,12 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     @Override
     public boolean isRotatable() {
         return true;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public int getPackedLightmapCoords(BlockState state, IEnviromentBlockReader worldIn, BlockPos pos) {
+        int i = worldIn.getLightFor(LightType.SKY, pos);
+        return (i << 20) | 0xF0;
     }
 
 //    @Override

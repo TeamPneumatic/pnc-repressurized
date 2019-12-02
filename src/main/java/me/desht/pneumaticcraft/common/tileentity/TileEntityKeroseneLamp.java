@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
-import me.desht.pneumaticcraft.common.block.BlockKeroseneLamp;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
@@ -14,8 +13,6 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
@@ -29,7 +26,9 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -59,9 +58,10 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
 
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
+    private static final int LIGHT_SPACING = 3;
+    public static final int MAX_RANGE = 30;
 
     private final Set<BlockPos> managingLights = new HashSet<>();
-    @DescSynced
     private boolean isOn;
     @GuiSynced
     private int range;
@@ -71,18 +71,17 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     private int redstoneMode;
     @GuiSynced
     private int fuel;
-    private static final int LIGHT_SPACING = 3;
-    public static final int MAX_RANGE = 30;
     private int checkingX, checkingY, checkingZ;
+
     @LazySynced
     @DescSynced
     @GuiSynced
     private final SmartSyncTank tank = new SmartSyncTank(this, 2000) {
-        private FluidStack prevFluid;
+        private FluidStack prevFluid = FluidStack.EMPTY;
         @Override
         protected void onContentsChanged() {
             super.onContentsChanged();
-            if (prevFluid == null && fluid != null || prevFluid != null && fluid == null) {
+            if (prevFluid.getFluid() != fluid.getFluid()) {
                 recalculateFuelQuality();
             }
             prevFluid = fluid;
@@ -128,7 +127,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
                 useFuel();
             }
         } else {
-            if (isOn && getWorld().getGameTime() % 5 == 0) {
+            if (getBlockState().get(LIT) && getWorld().rand.nextInt(10) == 0) {
                 getWorld().addParticle(ParticleTypes.FLAME, getPos().getX() + 0.4 + 0.2 * getWorld().rand.nextDouble(), getPos().getY() + 0.2 + tank.getFluidAmount() / 1000D * 3 / 16D, getPos().getZ() + 0.4 + 0.2 * getWorld().rand.nextDouble(), 0, 0, 0);
             }
         }
@@ -141,7 +140,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
                 // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
                 fuelQuality = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(f.getRegistryName(), 0) / 110f;
             } else {
-                fuelQuality = tank.getFluid().getFluid() == ModFluids.KEROSENE_SOURCE ? 10000f : 0f;
+                fuelQuality = tank.getFluid().getFluid() == ModFluids.KEROSENE ? 10000f : 0f;
             }
             fuelQuality *= PNCConfig.Common.Machines.keroseneLampFuelEfficiency;
         }
@@ -149,8 +148,8 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
 
     private void useFuel() {
         if (fuelQuality == 0) return; // tank is empty or a non-burnable liquid in the tank
-        fuel -= range * range * range;
-        while (fuel <= 0 && tank.drain(1, IFluidHandler.FluidAction.EXECUTE) != null) {
+        fuel -= range * range * 3;// * range;
+        while (fuel <= 0 && !tank.drain(1, IFluidHandler.FluidAction.EXECUTE).isEmpty()) {
             fuel += fuelQuality;
         }
         if (fuel < 0) fuel = 0;
@@ -235,9 +234,9 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
                 }
             }
         }
-        boolean oldIsOn = isOn;
+        boolean wasOn = isOn;
         isOn = range > 0;
-        if (isOn != oldIsOn) {
+        if (isOn != wasOn) {
             world.getChunkProvider().getLightManager().checkBlock(pos);
             world.setBlockState(pos, getBlockState().with(LIT, isOn));
         }
@@ -248,13 +247,10 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     }
 
     private boolean passesRaytraceTest(BlockPos pos, BlockPos lampPos) {
-        // FIXME can't use a null entity here
-        RayTraceContext ctx = new RayTraceContext(new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), new Vec3d(lampPos.getX() + 0.5, lampPos.getY() + 0.5, lampPos.getZ() + 0.5), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, null);
+        // must be run on server!
+        RayTraceContext ctx = new RayTraceContext(new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), new Vec3d(lampPos.getX() + 0.5, lampPos.getY() + 0.5, lampPos.getZ() + 0.5), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, FakePlayerFactory.getMinecraft((ServerWorld) getWorld()));
         BlockRayTraceResult rtr = getWorld().rayTraceBlocks(ctx);
         return rtr.getType() == RayTraceResult.Type.BLOCK && rtr.getPos().equals(lampPos);
-
-//        RayTraceResult mop = getWorld().rayTraceBlocks(new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), new Vec3d(lampPos.getX() + 0.5, lampPos.getY() + 0.5, lampPos.getZ() + 0.5));
-//        return mop != null && lampPos.equals(mop.getBlockPos());
     }
 
     private void tryAddLight(BlockPos pos, BlockPos lampPos) {
@@ -266,23 +262,6 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
                 }
             }
         }
-    }
-
-    @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
-
-        BlockState state = getBlockState();
-        Direction connectedDir = Direction.DOWN;
-        for (Direction d : Direction.VALUES) {
-            BlockPos neighborPos = getPos().offset(d);
-            BlockState neighborState = getWorld().getBlockState(neighborPos);
-            if (Block.hasSolidSide(neighborState, getWorld(), neighborPos, d.getOpposite())) {
-                connectedDir = d;
-                break;
-            }
-        }
-        world.setBlockState(pos, state.with(BlockKeroseneLamp.CONNECTED, connectedDir));
     }
 
     @Override

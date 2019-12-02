@@ -1,8 +1,7 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
-import me.desht.pneumaticcraft.client.model.module.ModelSafetyValve;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.util.ResourceLocation;
 
 public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
 
@@ -17,12 +16,8 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
     }
 
     @Override
-    public String getType() {
+    public ResourceLocation getType() {
         return Names.MODULE_SAFETY_VALVE;
     }
 
-    @Override
-    public Class<? extends ModelModuleBase> getModelClass() {
-        return ModelSafetyValve.class;
-    }
 }

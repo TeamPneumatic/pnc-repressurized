@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.material.MaterialColor;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.state.StateContainer;
@@ -15,13 +14,13 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public abstract class FluidPlastic extends ForgeFlowingFluid {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            RL("fluid/plastic_still"), RL("fluid/plastic_flow")
-    ).temperature(PneumaticValues.PLASTIC_MIXER_MELTING_TEMP).color(MaterialColor.GRAY.colorValue);
+            RL("block/fluid/plastic_still"), RL("block/fluid/plastic_flow")
+    ).temperature(PneumaticValues.PLASTIC_MIXER_MELTING_TEMP);
 
     private static final ForgeFlowingFluid.Properties PROPS =
             new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.PLASTIC_SOURCE, () -> ModFluids.PLASTIC_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.PLASTIC_BLOCK).bucket(() -> ModItems.PLASTIC_BUCKET
+                    () -> ModFluids.PLASTIC, () -> ModFluids.PLASTIC_FLOWING, ATTRS)
+                    .block(() -> ModBlocks.PLASTIC).bucket(() -> ModItems.PLASTIC_BUCKET
             );
 
     public FluidPlastic(String name) {
@@ -32,7 +31,7 @@ public abstract class FluidPlastic extends ForgeFlowingFluid {
 
     public static class Source extends FluidPlastic {
         public Source() {
-            super("plastic_source");
+            super("plastic");
         }
 
         @Override

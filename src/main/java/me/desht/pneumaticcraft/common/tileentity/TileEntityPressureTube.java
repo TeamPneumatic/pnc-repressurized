@@ -20,6 +20,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
@@ -88,7 +89,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         for (int i = 0; i < modules.length; i++) {
             if (modules[i] != null) {
                 CompoundNBT moduleTag = new CompoundNBT();
-                moduleTag.putString("type", modules[i].getType());
+                moduleTag.putString("type", modules[i].getType().toString());
                 modules[i].writeToNBT(moduleTag);
                 moduleTag.putInt("side", i);
                 moduleList.add(moduleTag);
@@ -104,7 +105,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         ListNBT moduleList = tag.getList("modules", 10);
         for (int i = 0; i < moduleList.size(); i++) {
             CompoundNBT moduleTag = moduleList.getCompound(i);
-            TubeModule module = ModuleRegistrator.getModule(moduleTag.getString("type"));
+            TubeModule module = ModuleRegistrator.createModule(new ResourceLocation(moduleTag.getString("type")));
             if (module != null) {
                 module.readFromNBT(moduleTag);
                 setModule(module, Direction.byIndex(moduleTag.getInt("side")));
@@ -179,11 +180,11 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             module.setDirection(side);
             module.setTube(this);
         }
-        modules[side.ordinal()] = module;
+        modules[side.getIndex()] = module;
         if (getWorld() != null && !getWorld().isRemote) {
             sendDescriptionPacket();
+            markDirty();
         }
-        markDirty();
     }
 
     @Override
@@ -216,6 +217,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     private void updateConnections() {
+        IAirHandler h = getAirHandler(null);
+        if (h.getPos() == null) return;
         List<Pair<Direction, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);
         for (Pair<Direction, IAirHandler> entry : connections) {
@@ -253,6 +256,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             ConnectionType val = sidesClosed[i] ? ConnectionType.CLOSED : (sidesConnected[i] ? ConnectionType.CONNECTED : ConnectionType.UNCONNECTED);
             state = state.with(BlockPressureTube.CONNECTION_PROPERTIES_3[i], val);
         }
+
         world.setBlockState(pos, state);
     }
 

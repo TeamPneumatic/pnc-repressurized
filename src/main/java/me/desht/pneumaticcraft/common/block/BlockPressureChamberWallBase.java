@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 
 public class BlockPressureChamberWallBase extends BlockPneumaticCraft implements IBlockPressureChamber {
     BlockPressureChamberWallBase(Block.Properties props, String registryName) {
-        super(registryName);
+        super(props, registryName);
     }
 
     @Override

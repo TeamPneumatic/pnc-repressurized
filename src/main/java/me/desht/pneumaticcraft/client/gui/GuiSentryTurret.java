@@ -19,7 +19,6 @@ import java.util.List;
 
 public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTurret,TileEntitySentryTurret> {
     private WidgetTextField entityFilter;
-    private int sendDelay = -1;
 
     public GuiSentryTurret(ContainerSentryTurret container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -34,21 +33,14 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     public void init() {
         super.init();
         addButton(entityFilter = new WidgetTextField(font, guiLeft + 80, guiTop + 63, 70, font.FONT_HEIGHT));
-        entityFilter.func_212954_a(s -> sendDelay = 5);
-
+        entityFilter.setText(te.getText(0));
+        entityFilter.setResponder(s -> sendDelayed(5));
     }
 
     @Override
-    public void tick() {
-        super.tick();
-
-        if (!entityFilter.isFocused()) entityFilter.setText(te.getText(0));
-
-        if (sendDelay > 0 && --sendDelay == 0) {
-            te.setText(0, entityFilter.getText());
-            NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
-            sendDelay = 5;
-        }
+    protected void doDelayedAction() {
+        te.setText(0, entityFilter.getText());
+        NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
     }
 
     @Override

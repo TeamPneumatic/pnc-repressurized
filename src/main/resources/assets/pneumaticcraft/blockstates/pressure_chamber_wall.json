@@ -90,12 +90,6 @@
           "west": "pneumaticcraft:block/pressure_chamber/top_left"
         }
       }
-    },
-    "inventory": [{
-      "model": "block/cube_all",
-      "textures":{
-        "all": "pneumaticcraft:block/pressure_chamber/pressure_chamber_wall"
-      }
-    }]
+    }
   }
 }

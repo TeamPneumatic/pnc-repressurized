@@ -76,6 +76,8 @@ public class JEIUVLightBoxCategory extends JEIPneumaticCraftCategory<UVLightBoxR
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, UVLightBoxRecipe recipe, IIngredients ingredients) {
+        super.setRecipe(recipeLayout, recipe, ingredients);
+
         recipeLayout.getItemStacks().init(0, true, 41, 0);
         recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
 

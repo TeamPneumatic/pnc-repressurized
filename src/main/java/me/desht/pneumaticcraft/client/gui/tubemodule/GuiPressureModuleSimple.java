@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.glfw.GLFW;
 
 public class GuiPressureModuleSimple extends GuiTubeModule {
     private WidgetTextFieldNumber thresholdField;
@@ -32,18 +33,20 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
     public void init() {
         super.init();
 
-        String title = I18n.format("item." + module.getType() + ".name");
-        addLabel(title, width / 2 - font.getStringWidth(title) / 2, guiTop + 5);
+        String titleText = title.getFormattedText();
+        addLabel(titleText, width / 2 - font.getStringWidth(titleText) / 2, guiTop + 5);
 
         GuiCheckBox advancedMode = new GuiCheckBox(guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
             module.advancedConfig = true;
-            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 2, 1));
+            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
         }).setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
         advancedMode.checked = false;
         addButton(advancedMode);
 
         thresholdField = new WidgetTextFieldNumber(font, guiLeft + 110, guiTop + 33, 30, font.FONT_HEIGHT).setDecimals(1);
         addButton(thresholdField);
+        setFocused(thresholdField);
+        thresholdField.setFocused2(true);
 
         if (module instanceof TubeModuleRedstoneReceiving) {
             thresholdField.setValue(((TubeModuleRedstoneReceiving) module).getThreshold());
@@ -66,7 +69,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
         updateThreshold();
         moreOrLessButton.setMessage(module.lowerBound < module.higherBound ? ">" : "<");
         moreOrLessButton.setTooltipText(I18n.format(module.lowerBound < module.higherBound ? "gui.tubeModule.simpleConfig.higherThan" : "gui.tubeModule.simpleConfig.lowerThan"));
-        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
+        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
     }
 
     @Override
@@ -94,10 +97,19 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
     }
 
     @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ENTER && thresholdField.isFocused()) {
+            onClose();
+            return true;
+        } else {
+            return super.keyPressed(keyCode, scanCode, modifiers);
+        }
+    }
+
+    @Override
     public void onClose() {
         updateThreshold();
-        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 0, module.lowerBound));
-        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module, 1, module.higherBound));
+        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
         super.onClose();
     }
 }

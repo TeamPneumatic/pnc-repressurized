@@ -1,0 +1,8 @@
+{
+  "loader": "forge:obj",
+  "model": "pneumaticcraft:models/block/advanced_liquid_compressor.obj",
+  "flip-v": true,
+  "textures": {
+    "particle": "pneumaticcraft:block/compressed_iron_block"
+  }
+}

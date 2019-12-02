@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/security_station",
+  "transform": "forge:default-block"
+}

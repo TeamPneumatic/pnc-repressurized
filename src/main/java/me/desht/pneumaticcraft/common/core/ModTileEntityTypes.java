@@ -26,12 +26,12 @@ public class ModTileEntityTypes {
     public static final TileEntityType<TileEntityPressureChamberInterface> PRESSURE_CHAMBER_INTERFACE = null;
     public static final TileEntityType<TileEntityVacuumPump> VACUUM_PUMP = null;
     public static final TileEntityType<TileEntityPneumaticDoorBase> PNEUMATIC_DOOR_BASE = null;
-    public static final TileEntityType<?> PNEUMATIC_DOOR = null;
-    public static final TileEntityType<?> ASSEMBLY_IO_UNIT = null;
-    public static final TileEntityType<?> ASSEMBLY_PLATFORM = null;
-    public static final TileEntityType<?> ASSEMBLY_DRILL = null;
-    public static final TileEntityType<?> ASSEMBLY_LASER = null;
-    public static final TileEntityType<?> ASSEMBLY_CONTROLLER = null;
+    public static final TileEntityType<TileEntityPneumaticDoor> PNEUMATIC_DOOR = null;
+    public static final TileEntityType<TileEntityAssemblyIOUnit> ASSEMBLY_IO_UNIT = null;
+    public static final TileEntityType<TileEntityAssemblyPlatform> ASSEMBLY_PLATFORM = null;
+    public static final TileEntityType<TileEntityAssemblyDrill> ASSEMBLY_DRILL = null;
+    public static final TileEntityType<TileEntityAssemblyLaser> ASSEMBLY_LASER = null;
+    public static final TileEntityType<TileEntityAssemblyController> ASSEMBLY_CONTROLLER = null;
     public static final TileEntityType<?> UV_LIGHT_BOX = null;
     public static final TileEntityType<?> SECURITY_STATION = null;
     public static final TileEntityType<?> UNIVERSAL_SENSOR = null;
@@ -51,7 +51,8 @@ public class ModTileEntityTypes {
     public static final TileEntityType<?> VORTEX_TUBE = null;
     public static final TileEntityType<?> PROGRAMMABLE_CONTROLLER = null;
     public static final TileEntityType<?> GAS_LIFT = null;
-    public static final TileEntityType<?> REFINERY = null;
+    public static final TileEntityType<TileEntityRefineryController> REFINERY = null;
+    public static final TileEntityType<TileEntityRefineryOutput> REFINERY_OUTPUT = null;
     public static final TileEntityType<?> THERMOPNEUMATIC_PROCESSING_PLANT = null;
     public static final TileEntityType<?> KEROSENE_LAMP = null;
     public static final TileEntityType<?> SENTRY_TURRET = null;
@@ -93,7 +94,7 @@ public class ModTileEntityTypes {
                     .build(null).setRegistryName(RL("pneumatic_door_base")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityPneumaticDoor::new, ModBlocks.PNEUMATIC_DOOR)
                     .build(null).setRegistryName(RL("pneumatic_door")));
-            event.getRegistry().register(TileEntityType.Builder.create(TileEntityAssemblyIOUnit::new, ModBlocks.ASSEMBLY_IO_UNIT)
+            event.getRegistry().register(TileEntityType.Builder.create(TileEntityAssemblyIOUnit::new, ModBlocks.ASSEMBLY_IO_UNIT_IMPORT, ModBlocks.ASSEMBLY_IO_UNIT_EXPORT)
                     .build(null).setRegistryName(RL("assembly_io_unit")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityAssemblyPlatform::new, ModBlocks.ASSEMBLY_PLATFORM)
                     .build(null).setRegistryName(RL("assembly_platform")));
@@ -141,8 +142,10 @@ public class ModTileEntityTypes {
                     .build(null).setRegistryName(RL("programmable_controller")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityGasLift::new, ModBlocks.GAS_LIFT)
                     .build(null).setRegistryName(RL("gas_lift")));
-            event.getRegistry().register(TileEntityType.Builder.create(TileEntityRefinery::new, ModBlocks.REFINERY)
+            event.getRegistry().register(TileEntityType.Builder.create(TileEntityRefineryController::new, ModBlocks.REFINERY)
                     .build(null).setRegistryName(RL("refinery")));
+            event.getRegistry().register(TileEntityType.Builder.create(TileEntityRefineryOutput::new, ModBlocks.REFINERY_OUTPUT)
+                    .build(null).setRegistryName(RL("refinery_output")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityThermopneumaticProcessingPlant::new, ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT)
                     .build(null).setRegistryName(RL("thermopneumatic_processing_plant")));
             event.getRegistry().register(TileEntityType.Builder.create(TileEntityKeroseneLamp::new, ModBlocks.KEROSENE_LAMP)

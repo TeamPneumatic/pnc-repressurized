@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
 
-public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery> {
+public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefineryController> {
 
     public ContainerRefinery(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(i, playerInventory, getTilePos(buffer));
@@ -21,10 +21,10 @@ public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery
     public ContainerRefinery(int i, PlayerInventory playerInventory, BlockPos pos) {
         super(ModContainerTypes.REFINERY, i, playerInventory, pos);
 
-        TileEntityRefinery refinery = te;
+        TileEntityRefineryController refinery = te;
         refinery.onNeighborTileUpdate();
-        while (refinery.getTileCache()[Direction.UP.ordinal()].getTileEntity() instanceof TileEntityRefinery) {
-            refinery = (TileEntityRefinery) refinery.getTileCache()[Direction.UP.ordinal()].getTileEntity();
+        while (refinery.getTileCache()[Direction.UP.ordinal()].getTileEntity() instanceof TileEntityRefineryController) {
+            refinery = (TileEntityRefineryController) refinery.getTileCache()[Direction.UP.ordinal()].getTileEntity();
             addSyncedFields(refinery);
             refinery.onNeighborTileUpdate();
         }

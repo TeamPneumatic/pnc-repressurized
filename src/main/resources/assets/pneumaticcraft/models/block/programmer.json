@@ -1,0 +1,8 @@
+{
+  "loader": "forge:obj",
+  "model": "pneumaticcraft:models/block/programmer.obj",
+  "flip-v": true,
+  "textures": {
+    "particle": "block/red_concrete"
+  }
+}

@@ -6,14 +6,12 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelSafetyValve extends ModelModuleBase {
+public class ModelSafetyValve extends ModelModuleBase<ModuleSafetyValve> {
     private final RendererModel shape1;
     private final RendererModel shape2;
     private final RendererModel shape3;
-    private final ModuleSafetyValve valveModule;
 
-    public ModelSafetyValve(ModuleSafetyValve valve){
-        this.valveModule = valve;
+    public ModelSafetyValve(){
         textureWidth = 64;
         textureHeight = 32;
 
@@ -38,8 +36,8 @@ public class ModelSafetyValve extends ModelModuleBase {
     }
 
     @Override
-    protected void renderDynamic(float scale, float partialTicks) {
-        if (valveModule != null && valveModule.isUpgraded()) RenderUtils.glColorHex(0xFFC0FF70);
+    protected void renderDynamic(ModuleSafetyValve module, float scale, float partialTicks) {
+        if (module != null && module.isUpgraded()) RenderUtils.glColorHex(0xFFC0FF70);
         shape1.render(scale);
         shape2.render(scale);
         shape3.render(scale);

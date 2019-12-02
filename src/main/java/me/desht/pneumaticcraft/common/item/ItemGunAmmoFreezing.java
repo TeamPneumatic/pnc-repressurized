@@ -25,7 +25,12 @@ import java.util.Random;
 
 public class ItemGunAmmoFreezing extends ItemGunAmmo {
     public ItemGunAmmoFreezing() {
-        super(defaultProps().maxDamage(PNCConfig.Common.Minigun.freezingAmmoCartridgeSize), "gun_ammo_freezing");
+        super("gun_ammo_freezing");
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return PNCConfig.Common.Minigun.freezingAmmoCartridgeSize;
     }
 
     @Override

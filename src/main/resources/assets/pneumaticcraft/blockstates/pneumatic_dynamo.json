@@ -1,26 +1,16 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "pneumaticcraft:block/pneumatic_dynamo",
-    "textures": {
-      "particle": "pneumaticcraft:block/pneumatic_dynamo_off",
-      "dynamo": "pneumaticcraft:block/pneumatic_dynamo_on"
-    }
-  },
   "variants": {
-    "": [{}],
-    "inventory": [{ "transform": "forge:default-block" }],
-    "facing": {
-      "up": { "transform": { "rotation": { "z": 90 } } },
-      "down": { "transform": { "rotation": { "z": -90 } } },
-      "north": { "transform": { "rotation": { "y": 90 } } },
-      "south": { "transform": { "rotation": { "y": -90 } } },
-      "east": { },
-      "west": { "transform": { "rotation": { "y": 180 }} }
-    },
-    "active": {
-      "true": { },
-      "false": { "textures": { "dynamo": "pneumaticcraft:block/pneumatic_dynamo_off" } }
-    }
+    "active=false,facing=up": { "model": "pneumaticcraft:block/pneumatic_dynamo_off" },
+    "active=true,facing=up": { "model": "pneumaticcraft:block/pneumatic_dynamo_on" },
+    "active=false,facing=down": { "model": "pneumaticcraft:block/pneumatic_dynamo_off", "x": 180 },
+    "active=true,facing=down": { "model": "pneumaticcraft:block/pneumatic_dynamo_on", "x": 180 },
+    "active=false,facing=east": { "model": "pneumaticcraft:block/pneumatic_dynamo_off", "x": 90, "y": 90 },
+    "active=true,facing=east": { "model": "pneumaticcraft:block/pneumatic_dynamo_on", "x": 90, "y": 90 },
+    "active=false,facing=north": { "model": "pneumaticcraft:block/pneumatic_dynamo_off", "x": 90 },
+    "active=true,facing=north": { "model": "pneumaticcraft:block/pneumatic_dynamo_on", "x": 90 },
+    "active=false,facing=west": { "model": "pneumaticcraft:block/pneumatic_dynamo_off", "x": 90, "y": 270 },
+    "active=true,facing=west": { "model": "pneumaticcraft:block/pneumatic_dynamo_on", "x": 90, "y": 270 },
+    "active=false,facing=south": { "model": "pneumaticcraft:block/pneumatic_dynamo_off", "x": 90, "y": 180 },
+    "active=true,facing=south": { "model": "pneumaticcraft:block/pneumatic_dynamo_on", "x": 90, "y": 180 }
   }
 }

@@ -4,43 +4,42 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 
-public class PacketUpdatePressureModule extends PacketUpdateTubeModule<PacketUpdatePressureModule> {
-    private int fieldId;
-    private float value;
+public class PacketUpdatePressureModule extends PacketUpdateTubeModule {
+
+    private float lower;
+    private float higher;
+    private boolean advanced;
 
     public PacketUpdatePressureModule() {
     }
 
-    public PacketUpdatePressureModule(TubeModule module, int fieldId, float value) {
+    public PacketUpdatePressureModule(TubeModule module) {
         super(module);
-        this.fieldId = fieldId;
-        this.value = value;
+        this.lower = module.lowerBound;
+        this.higher = module.higherBound;
+        this.advanced = module.advancedConfig;
     }
 
     public PacketUpdatePressureModule(PacketBuffer buffer) {
         super(buffer);
-        this.fieldId = buffer.readInt();
-        this.value = buffer.readFloat();
+        this.lower = buffer.readFloat();
+        this.higher = buffer.readFloat();
+        this.advanced = buffer.readBoolean();
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        buffer.writeInt(fieldId);
-        buffer.writeFloat(value);
+        buffer.writeFloat(lower);
+        buffer.writeFloat(higher);
+        buffer.writeBoolean(advanced);
     }
 
     @Override
     protected void onModuleUpdate(TubeModule module, PlayerEntity player) {
-        if (fieldId == 0) {
-            module.lowerBound = value;
-        } else if (fieldId == 1) {
-            module.higherBound = value;
-        } else if (fieldId == 2) {
-            module.advancedConfig = value > 0.5F;
-        }
-        if (!player.world.isRemote) {
-            module.sendDescriptionPacket();
-        }
+        module.lowerBound = lower;
+        module.higherBound = higher;
+        module.advancedConfig = advanced;
+        module.sendDescriptionPacket();
     }
 }

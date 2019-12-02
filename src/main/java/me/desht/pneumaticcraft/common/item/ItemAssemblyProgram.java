@@ -73,10 +73,10 @@ public class ItemAssemblyProgram extends ItemPneumatic {
                     infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_LASER.getTranslationKey())));
                     break;
                 case IO_UNIT_EXPORT:
-                    infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_IO_UNIT.getTranslationKey()).appendText(" (export)")));//TODO localize
+                    infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_IO_UNIT_EXPORT.getTranslationKey())));
                     break;
                 case IO_UNIT_IMPORT:
-                    infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_IO_UNIT.getTranslationKey()).appendText(" (import)")));
+                    infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT.getTranslationKey())));
                     break;
             }
         }

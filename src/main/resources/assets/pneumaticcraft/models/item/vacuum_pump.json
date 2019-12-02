@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/vacuum_pump",
+  "transform": "forge:default-block"
+}

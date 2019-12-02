@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/charging_station",
+  "transform": "forge:default-block"
+}

@@ -8,13 +8,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.BreakableBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockFakeIce extends BreakableBlock {
+public class BlockFakeIce extends BreakableBlock implements ICustomItemBlock {
     public BlockFakeIce() {
         super(Block.Properties.from(Blocks.ICE).doesNotBlockMovement());
         setRegistryName("fake_ice");
@@ -37,5 +38,10 @@ public class BlockFakeIce extends BreakableBlock {
             if (entityIn.isImmuneToFire()) amount *= 1.5;
             entityIn.attackEntityFrom(DamageSourcePneumaticCraft.FREEZING, (float) amount);
         }
+    }
+
+    @Override
+    public BlockItem getCustomItemBlock() {
+        return null;
     }
 }

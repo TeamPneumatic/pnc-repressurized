@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.sensor;
 
+import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.api.universal_sensor.*;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.BlockInteractSensor;
@@ -8,6 +9,7 @@ import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerItemPickupSensor
 import me.desht.pneumaticcraft.common.sensor.pollSensors.*;
 import me.desht.pneumaticcraft.common.sensor.pollSensors.entity.EntityInRangeSensor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
@@ -20,6 +22,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.Event;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SensorHandler implements ISensorRegistry {
     private static final SensorHandler INSTANCE = new SensorHandler();
@@ -97,7 +100,8 @@ public class SensorHandler implements ISensorRegistry {
 
     public List<String> getUpgradeInfo() {
         List<String> text = new ArrayList<>();
-        text.add(TextFormatting.GRAY + "The following combinations of upgrades are used in sensors to work:");
+        text.add("");
+        text.add(I18n.format("gui.universalSensor.upgradeHeader"));
 
         Set<Set<Item>> upgrades = new HashSet<>();
         for (ISensorSetting sensor : sensors.values()) {
@@ -105,13 +109,8 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         for (Set<Item> requiredStacks : upgrades) {
-            StringBuilder upgradeTitle = new StringBuilder();
-            for (Item stack : requiredStacks) {
-                upgradeTitle.append(I18n.format(stack.getTranslationKey() + ".name")).append(" + ");
-            }
-            upgradeTitle = new StringBuilder(TextFormatting.BLACK + "-" + upgradeTitle.substring(0, upgradeTitle.length() - 3)
-                    .replace("Machine Upgrade: ", ""));
-            text.add(upgradeTitle.toString());
+            String s = Strings.join(requiredStacks.stream().map(item -> I18n.format(item.getTranslationKey())).collect(Collectors.toList()), " & ");
+            text.add(TextFormatting.BLACK + GuiConstants.BULLET + " " + s);
         }
         return text;
     }

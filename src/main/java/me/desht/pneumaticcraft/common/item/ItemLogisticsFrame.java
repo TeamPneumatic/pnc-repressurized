@@ -30,7 +30,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class ItemLogisticsFrame extends ItemSemiBlockBase {
+public abstract class ItemLogisticsFrame extends ItemSemiBlockBase implements IColorableItem {
 
     ItemLogisticsFrame(ResourceLocation registryName) {
         super(registryName.toString());

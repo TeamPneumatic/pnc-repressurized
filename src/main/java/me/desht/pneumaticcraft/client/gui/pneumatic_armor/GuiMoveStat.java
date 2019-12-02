@@ -79,11 +79,11 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         super.init();
 
         snapToGrid = new GuiCheckBox(10, (height * 3) / 5, 0xC0C0C0, "Snap To Grid");
-        snapToGrid.x = (width - snapToGrid.getBounds().width) / 2;
+        snapToGrid.x = (width - snapToGrid.getWidth()) / 2;
         snapToGrid.checked = snap;
         addButton(snapToGrid);
 
-        gridSlider = new GuiSlider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getBounds().width, 10,
+        gridSlider = new GuiSlider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getWidth(), 10,
                 "", "", 1, 12, gridSize, false, true, b -> {}, null);
         addButton(gridSlider);
     }

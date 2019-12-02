@@ -1,6 +1,39 @@
 {
   "textures": {
-    "face": "pneumaticcraft:blocks/vortex_cannon"
+    "face": "pneumaticcraft:block/vortex_cannon"
+  },
+  "display": {
+    "gui": {
+      "rotation": [ 30, 0, 30 ],
+      "translation": [ 0, 0, 0 ],
+      "scale":[ 0.75, 0.75, 0.75 ]
+    },
+    "ground": {
+      "translation": [ 0, 0.5, 0 ]
+    },
+    "fixed": {
+      "translation": [ 0, 0.4, 0 ]
+    },
+    "firstperson_righthand": {
+      "rotation": [ -90, 90, 90 ],
+      "translation": [ -0.2, 0.2, 0.3 ],
+      "scale":[ 0.45, 0.45, 0.45 ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [ -90, -90, -90 ],
+      "translation": [ 0, 0.2, 0.2 ],
+      "scale":[ 0.45, 0.45, 0.45 ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [ 0, 0, 90 ],
+      "translation": [ 0.01, 0.2, 0.3 ],
+      "scale":[ 1, 1, 1 ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [ 90, -90, 0 ],
+      "translation": [ 0, 0.2, 0.4 ],
+      "scale":[ 1, 1, 1 ]
+    }
   },
   "elements": [
     {

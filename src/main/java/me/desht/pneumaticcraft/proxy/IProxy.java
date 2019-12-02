@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.proxy;
 
-import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +22,7 @@ public interface IProxy {
 
     int getArmorRenderID(String armorName);
 
-    HackTickHandler getHackTickHandler();
+//    HackTickHandler getHackTickHandler();
 
     boolean isSneakingInGui();
 

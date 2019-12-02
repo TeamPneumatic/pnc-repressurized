@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/refinery_output",
+  "transform": "forge:default-block"
+}

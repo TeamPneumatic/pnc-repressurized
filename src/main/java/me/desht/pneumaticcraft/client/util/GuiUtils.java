@@ -6,10 +6,7 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -21,7 +18,6 @@ import net.minecraftforge.fluids.IFluidTank;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -154,7 +150,7 @@ public class GuiUtils {
     private static final int TEX_WIDTH = 16;
     private static final int TEX_HEIGHT = 16;
 
-    public static void drawFluid(final Rectangle bounds, @Nullable FluidStack fluidStack, @Nullable IFluidTank tank) {
+    public static void drawFluid(final Rectangle2d bounds, @Nullable FluidStack fluidStack, @Nullable IFluidTank tank) {
         if (fluidStack == null || fluidStack.getFluid() == null) {
             return;
         }
@@ -169,30 +165,30 @@ public class GuiUtils {
 
         int fluidColor = fluid.getAttributes().getColor(fluidStack);
 
-        int scaledAmount = tank == null ? bounds.height : fluidStack.getAmount() * bounds.height / tank.getCapacity();
+        int scaledAmount = tank == null ? bounds.getHeight() : fluidStack.getAmount() * bounds.getHeight() / tank.getCapacity();
         if (fluidStack.getAmount() > 0 && scaledAmount < 1) {
             scaledAmount = 1;
         }
-        scaledAmount = Math.min(scaledAmount, bounds.height);
+        scaledAmount = Math.min(scaledAmount, bounds.getHeight());
 
         Minecraft.getInstance().getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
         RenderUtils.glColorHex(fluidColor, 255);
 
-        final int xTileCount = bounds.width / TEX_WIDTH;
-        final int xRemainder = bounds.width - xTileCount * TEX_WIDTH;
+        final int xTileCount = bounds.getWidth() / TEX_WIDTH;
+        final int xRemainder = bounds.getWidth() - xTileCount * TEX_WIDTH;
         final int yTileCount = scaledAmount / TEX_HEIGHT;
         final int yRemainder = scaledAmount - yTileCount * TEX_HEIGHT;
 
-        int yStart = bounds.y + bounds.height;
-        if (fluid.getAttributes().getDensity() < 0) yStart -= (bounds.height - scaledAmount);
+        int yStart = bounds.getY() + bounds.getHeight();
+        if (fluid.getAttributes().getDensity() < 0) yStart -= (bounds.getHeight() - scaledAmount);
 
         for (int xTile = 0; xTile <= xTileCount; xTile++) {
             for (int yTile = 0; yTile <= yTileCount; yTile++) {
                 int w = xTile == xTileCount ? xRemainder : TEX_WIDTH;
                 int h = yTile == yTileCount ? yRemainder : TEX_HEIGHT;
-                int x = bounds.x + xTile * TEX_WIDTH;
+                int x = bounds.getX() + xTile * TEX_WIDTH;
                 int y = yStart - (yTile + 1) * TEX_HEIGHT;
-                if (bounds.width > 0 && h > 0) {
+                if (bounds.getWidth() > 0 && h > 0) {
                     int maskTop = TEX_HEIGHT - h;
                     int maskRight = TEX_WIDTH - w;
 

@@ -83,6 +83,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
                         entities.sort(new TargetSorter());
                         getMinigun().setAttackTarget(entities.get(0));
                         targetEntityId = entities.get(0).getEntityId();
+                    } else {
+                        targetEntityId = -1;
                     }
                 }
             } else {
@@ -129,6 +131,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         super.onFirstServerUpdate();
         tileVec = new Vec3d(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
         updateAmmo();
+        onFilterChanged(entityFilter);
     }
 
     @Override
@@ -359,8 +362,14 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @Override
     public void setText(int textFieldID, String text) {
         entityFilter = text;
+        if (world != null && !world.isRemote) {
+            onFilterChanged(text);
+            if (minigun != null) minigun.setAttackTarget(null);
+        }
+    }
+
+    private void onFilterChanged(String text) {
         entitySelector.setFilter(text);
-        if (minigun != null) minigun.setAttackTarget(null);
         markDirty();
     }
 

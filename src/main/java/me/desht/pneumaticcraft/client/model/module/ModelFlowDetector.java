@@ -5,11 +5,10 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelFlowDetector extends ModelModuleBase {
-    private final ModuleFlowDetector flowDetector;
+public class ModelFlowDetector extends ModelModuleBase<ModuleFlowDetector> {
     private final RendererModel shape1;
 
-    public ModelFlowDetector(ModuleFlowDetector flowDetector){
+    public ModelFlowDetector(){
         textureWidth = 64;
         textureHeight = 32;
 
@@ -19,14 +18,14 @@ public class ModelFlowDetector extends ModelModuleBase {
         shape1.setTextureSize(64, 32);
         shape1.mirror = true;
         setRotation(shape1, 0F, 0F, 0F);
-        this.flowDetector = flowDetector;
     }
 
     @Override
-    public void renderDynamic(float scale, float partialTicks) {
+    public void renderDynamic(ModuleFlowDetector module, float scale, float partialTicks) {
         int parts = 9;
         for(int i = 0; i < parts; i++) {
-            shape1.rotateAngleZ = (float)i / parts * 2 * (float)Math.PI + (flowDetector != null ? flowDetector.oldRotation + (flowDetector.rotation - flowDetector.oldRotation) * partialTicks : 0);
+            float rot = module != null ? module.oldRotation + (module.rotation - module.oldRotation) * partialTicks : 0f;
+            shape1.rotateAngleZ = (float)i / parts * 2 * (float)Math.PI + rot;
             shape1.render(scale);
         }
     }

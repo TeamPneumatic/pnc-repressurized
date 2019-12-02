@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/aphorism_tile",
+  "transform": "forge:default-item"
+}

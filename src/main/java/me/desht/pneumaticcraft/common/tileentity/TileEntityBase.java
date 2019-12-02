@@ -35,7 +35,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
@@ -58,6 +63,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     private final Set<String> applicableCustomUpgrades = new HashSet<>();
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
+    @GuiSynced
     private final UpgradeHandler upgradeHandler;
     boolean firstRun = true;  // True only the first time updateEntity invokes in a session
     int poweredRedstone; // The redstone strength currently applied to the block.
@@ -68,6 +74,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
 //    private LuaMethodRegistry luaMethodRegistry = null;
+    BlockState pendingState = null;
 
     public TileEntityBase(TileEntityType type) {
         this(type, 0);
@@ -210,6 +217,11 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
                 descriptionPacketScheduled = false;
                 sendDescriptionPacket();
             }
+
+            if (pendingState != null) {
+                world.setBlockState(getPos(), pendingState);
+                pendingState = null;
+            }
         }
     }
 
@@ -230,7 +242,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     void rerenderTileEntity() {
-        world.func_225319_b(getPos(), getBlockState(), getBlockState());
+        world.notifyBlockUpdate(getPos(), getBlockState(), getBlockState(), 0);
     }
 
     protected boolean shouldRerenderChunkOnDescUpdate() {
@@ -238,7 +250,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data written by write().
+     * Encoded into the description packet. Also included in saved data written by {@link TileEntityBase#write(CompoundNBT)}
      *
      * Prefer to use @DescSynced - only use this for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
@@ -253,7 +265,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data read by read().
+     * Encoded into the description packet. Also included in saved data read by {@link TileEntityBase#read(CompoundNBT)}.
      *
      * Prefer to use @DescSynced - only use this for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
@@ -271,8 +283,8 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
 
-        if (upgradeHandler.getSlots() > 0) {
-            tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, upgradeHandler.serializeNBT());
+        if (getUpgradeHandler().getSlots() > 0) {
+            tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, getUpgradeHandler().serializeNBT());
         }
         if (this instanceof IHeatExchanger) {
             tag.put(NBTKeys.NBT_HEAT_EXCHANGER, ((IHeatExchanger) this).getHeatExchangerLogic(null).serializeNBT());
@@ -289,8 +301,8 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     public void read(CompoundNBT tag) {
         super.read(tag);
 
-        if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && upgradeHandler != null) {
-            upgradeHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
+        if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
+            getUpgradeHandler().deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
         }
         if (this instanceof IHeatExchanger) {
             ((IHeatExchanger) this).getHeatExchangerLogic(null).deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER));
@@ -332,8 +344,8 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     public int getUpgrades(Item upgrade) {
         int upgrades = 0;
-        for (int i = 0; i < upgradeHandler.getSlots(); i++) {
-            ItemStack stack = upgradeHandler.getStackInSlot(i);
+        for (int i = 0; i < getUpgradeHandler().getSlots(); i++) {
+            ItemStack stack = getUpgradeHandler().getStackInSlot(i);
             if (stack.getItem() == upgrade) {
                 upgrades += stack.getCount();
             }
@@ -377,7 +389,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         return tileCache;
     }
 
-    TileEntity getCachedNeighbor(Direction dir) {
+    public TileEntity getCachedNeighbor(Direction dir) {
         return getTileCache()[dir.getIndex()].getTileEntity();
     }
 
@@ -413,12 +425,13 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     /**
-     * Gets the valid sides for heat exchanging to be allowed. returning an empty array will allow any side.
+     * Gets the valid sides for heat exchanging to be allowed.  An empty array means <strong>no</strong> valid sides
+     * (note: behaviour changed from 1.12 and earlier)
      *
      * @return an array of valid sides
      */
     protected Direction[] getConnectedHeatExchangerSides() {
-        return new Direction[0];
+        return Direction.VALUES;
     }
 
     @Override
@@ -434,55 +447,39 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
      * @param outputSlot output slot
      */
     void processFluidItem(int inputSlot, int outputSlot) {
-        // todo 1.14 fluids
-//        if (!hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
-//                || !hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))
-//            return;
-//        IItemHandler itemHandler = getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-//
-//        ItemStack fluidContainer = itemHandler.getStackInSlot(inputSlot);
-//        IFluidHandlerItem fluidHandlerItem = FluidUtil.getFluidHandler(fluidContainer);
-//        if (fluidHandlerItem == null) {
-//            return;
-//        }
-//        if (fluidContainer.getCount() > 1) {
-//            FluidStack stack = fluidHandlerItem.drain(1, false);
-//            if (stack != null && stack.amount > 0) {
-//                // disallow multiple filled items (shouldn't normally happen anyway but let's be paranoid)
-//                return;
-//            } else {
-//                // multiple empty items OK, but be sure to only fill one of them...
-//                ItemStack itemToFill = fluidContainer.copy();
-//                itemToFill.setCount(1);
-//                fluidHandlerItem = FluidUtil.getFluidHandler(fluidContainer);
-//            }
-//        }
-//
-//        IFluidHandler fluidHandler = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
-//
-//        FluidStack itemContents = fluidHandlerItem.drain(1000, false);
-//        if (itemContents != null && itemContents.amount > 0) {
-//            // input item contains fluid: drain from input item into tank, move to output if empty
-//            FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.amount, true);
-//            if (transferred != null && transferred.amount == itemContents.amount) {
-//                // all transferred; move empty container to output if possible
-//                ItemStack emptyContainerStack = fluidHandlerItem.getContainer();
-//                ItemStack excess = itemHandler.insertItem(outputSlot, emptyContainerStack, false);
-//                if (excess.isEmpty()) {
-//                    itemHandler.extractItem(inputSlot, 1, false);
-//                }
-//            }
-//        } else if (itemHandler.getStackInSlot(outputSlot).isEmpty()) {
-//            // input item(s) is/are empty: drain from tank to one input item, move to output
-//            FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandlerItem, fluidHandler, Integer.MAX_VALUE, true);
-//            if (transferred != null && transferred.amount > 0) {
-//                itemHandler.extractItem(inputSlot, 1, false);
-//                ItemStack filledContainerStack = fluidHandlerItem.getContainer();
-//                itemHandler.insertItem(outputSlot, filledContainerStack, false);
-//            }
-//        }
-    }
+        getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(itemHandler -> {
+            ItemStack inputStack = itemHandler.getStackInSlot(inputSlot);
+            if (inputStack.getCount() > 1) return;
 
+            FluidUtil.getFluidHandler(inputStack).ifPresent(fluidHandlerItem -> {
+                FluidStack itemContents = fluidHandlerItem.drain(1000, IFluidHandler.FluidAction.SIMULATE);
+
+                getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(fluidHandler -> {
+                    if (!itemContents.isEmpty()) {
+                        // input item contains fluid: drain from input item into tank, move to output if empty
+                        FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.getAmount(), true);
+                        if (transferred.getAmount() == itemContents.getAmount()) {
+                            // all transferred; move empty container to output if possible
+                            ItemStack emptyContainerStack = fluidHandlerItem.getContainer();
+                            ItemStack excess = itemHandler.insertItem(outputSlot, emptyContainerStack, true);
+                            if (excess.isEmpty()) {
+                                itemHandler.extractItem(inputSlot, 1, false);
+                                itemHandler.insertItem(outputSlot, emptyContainerStack, false);
+                            }
+                        }
+                    } else if (itemHandler.getStackInSlot(outputSlot).isEmpty()) {
+                        // input item(s) is/are empty: drain from tank to one input item, move to output
+                        FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandlerItem, fluidHandler, Integer.MAX_VALUE, true);
+                        if (!transferred.isEmpty()) {
+                            itemHandler.extractItem(inputSlot, 1, false);
+                            ItemStack filledContainerStack = fluidHandlerItem.getContainer();
+                            itemHandler.insertItem(outputSlot, filledContainerStack, false);
+                        }
+                    }
+                });
+            });
+        });
+    }
 
     @Override
     public Set<Item> getApplicableUpgrades() {
@@ -611,9 +608,10 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         });
 
         if (!shouldPreserveStateOnBreak()) {
-            for (int i = 0; i < upgradeHandler.getSlots(); i++) {
-                if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
-                    drops.add(upgradeHandler.getStackInSlot(i));
+            UpgradeHandler uh = getUpgradeHandler();
+            for (int i = 0; i < uh.getSlots(); i++) {
+                if (!uh.getStackInSlot(i).isEmpty()) {
+                    drops.add(uh.getStackInSlot(i));
                 }
             }
         }
@@ -694,6 +692,8 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
         @Override
         protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+
             upgradeCache.invalidate();
         }
     }
@@ -712,19 +712,21 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         void validate() {
             if (isValid) return;
 
+            IItemHandler handler = getUpgradeHandler();
+
             Arrays.fill(upgradeCount, 0);
             customUpgradeCount = null;
             ejectDirection = null;
-            for (int i = 0; i < upgradeHandler.getSlots(); i++) {
-                ItemStack stack = upgradeHandler.getStackInSlot(i);
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack stack = handler.getStackInSlot(i);
                 if (stack.getItem() instanceof ItemMachineUpgrade) {
                     // native upgrade
                     IItemRegistry.EnumUpgrade type = ((ItemMachineUpgrade) stack.getItem()).getUpgradeType();
-                    upgradeCount[type.ordinal()] += upgradeHandler.getStackInSlot(i).getCount();
+                    upgradeCount[type.ordinal()] += handler.getStackInSlot(i).getCount();
                     if (type == IItemRegistry.EnumUpgrade.DISPENSER && stack.hasTag()) {
                         ejectDirection = Direction.byName(NBTUtil.getString(stack, ItemMachineUpgrade.NBT_DIRECTION));
                     }
-                } else if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
+                } else if (!handler.getStackInSlot(i).isEmpty()) {
                     // custom upgrade from another mod
                     if (customUpgradeCount == null)
                         customUpgradeCount = Maps.newHashMap();

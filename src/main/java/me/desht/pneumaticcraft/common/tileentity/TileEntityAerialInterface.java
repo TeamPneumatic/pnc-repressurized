@@ -108,15 +108,15 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
         itemHandlerSideConfigurator.registerHandler("mainInv", new ItemStack(Blocks.CHEST),
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerMainInvHandler,
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerMainInvHandler,
                 RelativeFace.FRONT, RelativeFace.BACK, RelativeFace.LEFT, RelativeFace.RIGHT);
         itemHandlerSideConfigurator.registerHandler("armorInv", new ItemStack(ModItems.PNEUMATIC_CHESTPLATE),
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerArmorInvHandler,
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerArmorInvHandler,
                 RelativeFace.TOP, RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.registerHandler("offhandInv", new ItemStack(Items.SHIELD),
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerOffhandInvHandler);
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerOffhandInvHandler);
         itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStack(Blocks.ENDER_CHEST),
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, playerEnderInvHandler);
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerEnderInvHandler);
 //        if (Baubles.available) {
 //            itemHandlerSideConfigurator.registerHandler("baublesInv", new ItemStack(BAUBLES_RING),
 //                    CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, new PlayerBaublesHandler());

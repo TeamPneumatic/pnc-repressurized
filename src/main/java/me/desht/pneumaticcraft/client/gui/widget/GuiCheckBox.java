@@ -11,12 +11,11 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class GuiCheckBox extends Widget implements ITaggedWidget {
+public class GuiCheckBox extends Widget implements ITaggedWidget, ITooltipSupplier {
     public boolean checked, enabled = true, visible = true;
     public int color;
     private List<String> tooltip = new ArrayList<>();
@@ -27,7 +26,7 @@ public class GuiCheckBox extends Widget implements ITaggedWidget {
     private String tag = null;
 
     public GuiCheckBox(int x, int y, int color, String text, Consumer<GuiCheckBox> pressable) {
-        super(x, y, text);
+        super(x, y, CHECKBOX_WIDTH + 3 + Minecraft.getInstance().fontRenderer.getStringWidth(I18n.format(text)), CHECKBOX_HEIGHT, text);
         this.x = x;
         this.y = y;
         this.color = color;
@@ -44,7 +43,7 @@ public class GuiCheckBox extends Widget implements ITaggedWidget {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTick) {
+    public void renderButton(int mouseX, int mouseY, float partialTick) {
         if (visible) {
             fill(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, enabled ? 0xFFA0A0A0 : 0xFF999999);
             fill(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, enabled ? 0xFF202020 : 0xFFAAAAAA);
@@ -67,10 +66,6 @@ public class GuiCheckBox extends Widget implements ITaggedWidget {
             }
             Minecraft.getInstance().fontRenderer.drawString(I18n.format(getMessage()), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2f - Minecraft.getInstance().fontRenderer.FONT_HEIGHT / 2f, enabled ? color : 0xFF888888);
         }
-    }
-
-    public Rectangle getBounds() {
-        return new Rectangle(x, y, CHECKBOX_WIDTH + Minecraft.getInstance().fontRenderer.getStringWidth(I18n.format(getMessage())), CHECKBOX_HEIGHT);
     }
 
     @Override
@@ -100,11 +95,6 @@ public class GuiCheckBox extends Widget implements ITaggedWidget {
         return this;
     }
 
-//    @Override
-//    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed) {
-//        if (visible) curTooltip.addAll(tooltip);
-//    }
-//
     public String getTooltip() {
         return tooltip.size() > 0 ? tooltip.get(0) : "";
     }
@@ -113,28 +103,9 @@ public class GuiCheckBox extends Widget implements ITaggedWidget {
     public String getTag() {
         return tag;
     }
-//
-//    @Override
-//    public boolean onKey(char key, int keyCode) {
-//        return false;
-//    }
-//
-//    @Override
-//    public void setListener(IWidgetListener gui) {
-//        listener = gui;
-//    }
-//
-//
-//    @Override
-//    public void update() {
-//    }
-//
-//    @Override
-//    public void handleMouseInput() {
-//    }
-//
-//    @Override
-//    public void postRender(int mouseX, int mouseY, float partialTick) {
-//
-//    }
+
+    @Override
+    public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
+        curTip.addAll(tooltip);
+    }
 }

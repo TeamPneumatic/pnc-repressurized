@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/programmable_controller",
+  "transform": "forge:default-block"
+}

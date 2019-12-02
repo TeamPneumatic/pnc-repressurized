@@ -36,7 +36,7 @@ public class ItemSeismicSensor extends ItemPneumatic {
                         BlockPos checkingPos = pendingPositions.pop();
                         for (Direction d : Direction.values()) {
                             BlockPos newPos = checkingPos.offset(d);
-                            if (world.getFluidState(newPos).getFluid() == ModFluids.OIL_SOURCE && oilPositions.add(newPos)) {
+                            if (world.getFluidState(newPos).getFluid() == ModFluids.OIL && oilPositions.add(newPos)) {
                                 pendingPositions.add(newPos);
                             }
                         }

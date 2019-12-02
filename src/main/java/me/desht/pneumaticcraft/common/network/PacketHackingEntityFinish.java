@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.Entity;
@@ -42,7 +43,7 @@ public class PacketHackingEntityFinish {
                 IHackableEntity hackableEntity = HackableHandler.getHackableForEntity(entity, player);
                 if (hackableEntity != null) {
                     hackableEntity.onHackFinished(entity, player);
-                    PneumaticCraftRepressurized.proxy.getHackTickHandler().trackEntity(entity, hackableEntity);
+                    HackTickHandler.instance().trackEntity(entity, hackableEntity);
                     CommonArmorHandler.getHandlerForPlayer(player).setHackedEntity(null);
                     player.playSound(ModSounds.HELMET_HACK_FINISH, 1.0F, 1.0F);
                 }

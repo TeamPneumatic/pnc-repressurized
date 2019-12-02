@@ -11,12 +11,23 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockElevatorBase extends BlockPneumaticCraftCamo {
 
+    private static final VoxelShape SHAPE = Block.makeCuboidShape(0.001, 0, 0.001, 15.999, 16, 15.999);
+
     public BlockElevatorBase() {
         super("elevator_base");
+        setDefaultState(getStateContainer().getBaseState()
+                .with(BlockPneumaticCraft.NORTH, false)
+                .with(BlockPneumaticCraft.SOUTH, false)
+                .with(BlockPneumaticCraft.WEST, false)
+                .with(BlockPneumaticCraft.EAST, false)
+        );
     }
 
     @Override
@@ -37,6 +48,11 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return TileEntityElevatorBase.class;
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
+        return SHAPE;
     }
 
     @Override

@@ -2,57 +2,46 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
-import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
+import org.apache.commons.lang3.Validate;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModuleRegistrator {
-    private static final HashMap<String, Class<? extends TubeModule>> module2class = new HashMap<>();
-    private static final HashMap<String, Item> module2Item = new HashMap<>();
+    private static final Map<ResourceLocation, Supplier<? extends TubeModule>> moduleFactory = new HashMap<>();
 
     @SubscribeEvent
     public static void init(RegistryEvent.Register<Item> event) {
         IForgeRegistry<Item> registry = event.getRegistry();
 
-        registerModule(registry, new ModuleSafetyValve());
-        registerModule(registry, new ModulePressureGauge());
-        registerModule(registry, new ModuleFlowDetector());
-        registerModule(registry, new ModuleAirGrate());
-        registerModule(registry, new ModuleRegulatorTube());
-        registerModule(registry, new ModuleCharging());
-        registerModule(registry, new ModuleLogistics());
-        registerModule(registry, new ModuleRedstone());
+        registerModule(registry, ModuleSafetyValve::new);
+        registerModule(registry, ModulePressureGauge::new);
+        registerModule(registry, ModuleFlowDetector::new);
+        registerModule(registry, ModuleAirGrate::new);
+        registerModule(registry, ModuleRegulatorTube::new);
+        registerModule(registry, ModuleCharging::new);
+        registerModule(registry, ModuleLogistics::new);
+        registerModule(registry, ModuleRedstone::new);
     }
 
-    private static void registerModule(IForgeRegistry<Item> registry, TubeModule module) {
-        Item moduleItem = new ItemTubeModule(module.getType());
+    private static void registerModule(IForgeRegistry<Item> registry, Supplier<? extends TubeModule> moduleSupplier) {
+        String moduleType = moduleSupplier.get().getType().toString();
+        Item moduleItem = new ItemTubeModule(moduleType);
         ModItems.Registration.registerItem(registry, moduleItem);
-        module2class.put(module.getType(), module.getClass());
-        module2Item.put(module.getType(), moduleItem);
+        moduleFactory.put(moduleItem.getRegistryName(), moduleSupplier);
     }
 
-    public static TubeModule getModule(String moduleName) {
-        Class<? extends TubeModule> clazz = module2class.get(moduleName);
-        if (clazz == null) {
-            Log.error("No tube module found for the name \"" + moduleName + "\"!");
-            return null;
-        }
-        try {
-            return clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            // shouldn't happen...
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static Item getModuleItem(String moduleName) {
-        return module2Item.get(moduleName);
+    public static TubeModule createModule(ResourceLocation moduleName) {
+        Validate.isTrue(moduleFactory.containsKey(moduleName), "No tube module found for '" + moduleName + "' (forgot to register it?)");
+        return moduleFactory.get(moduleName).get();
     }
 }

@@ -17,6 +17,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
@@ -35,7 +36,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
     private static final int INVENTORY_SIZE = 1;
 
-    private final AirCompressorHandler itemHandler = new AirCompressorHandler();
+    private final AirCompressorFuelHandler itemHandler = new AirCompressorFuelHandler();
     private final LazyOptional<IItemHandlerModifiable> inventory = LazyOptional.of(() -> itemHandler);
 
     private static final int FUEL_SLOT = 0;
@@ -46,43 +47,28 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     private int maxBurnTime; // in here the total burn time of the current burning item is stored.
     @GuiSynced
     public int redstoneMode = 0; // determines how the compressor responds to redstone.
-
     @DescSynced
     private boolean isActive;
-
     @GuiSynced
     public int curFuelUsage;
+
+    public TileEntityAirCompressor() {
+        this(ModTileEntityTypes.AIR_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_AIR_COMPRESSOR, PneumaticValues.MAX_PRESSURE_AIR_COMPRESSOR, PneumaticValues.VOLUME_AIR_COMPRESSOR);
+    }
+
+    TileEntityAirCompressor(TileEntityType type, float dangerPressure, float criticalPressure, int volume) {
+        super(type, dangerPressure, criticalPressure, volume, 4);
+        addApplicableUpgrade(EnumUpgrade.SPEED);
+    }
 
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerAirCompressor(i, playerInventory, getPos());
     }
-
     @Override
     public ITextComponent getDisplayName() {
         return getDisplayNameInternal();
-    }
-
-    private class AirCompressorHandler extends BaseItemStackHandler {
-        AirCompressorHandler() {
-            super(TileEntityAirCompressor.this, INVENTORY_SIZE);
-        }
-
-        @Override
-        public boolean isItemValid(int slot, ItemStack itemStack) {
-            return slot == FUEL_SLOT &&
-                    (itemStack.isEmpty() || PneumaticCraftUtils.getBurnTime(itemStack) > 0 && !FluidUtil.getFluidContained(itemStack).isPresent());
-        }
-
-    }
-    public TileEntityAirCompressor() {
-        this(PneumaticValues.DANGER_PRESSURE_AIR_COMPRESSOR, PneumaticValues.MAX_PRESSURE_AIR_COMPRESSOR, PneumaticValues.VOLUME_AIR_COMPRESSOR);
-    }
-
-    TileEntityAirCompressor(float dangerPressure, float criticalPressure, int volume) {
-        super(ModTileEntityTypes.AIR_COMPRESSOR, dangerPressure, criticalPressure, volume, 4);
-        addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
     public boolean isActive() {
@@ -220,6 +206,18 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     @Override
     public int getRedstoneMode() {
         return redstoneMode;
+    }
+
+    private class AirCompressorFuelHandler extends BaseItemStackHandler {
+        AirCompressorFuelHandler() {
+            super(TileEntityAirCompressor.this, INVENTORY_SIZE);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack itemStack) {
+            return slot == FUEL_SLOT &&
+                    (itemStack.isEmpty() || PneumaticCraftUtils.getBurnTime(itemStack) > 0 && !FluidUtil.getFluidContained(itemStack).isPresent());
+        }
     }
 
 }

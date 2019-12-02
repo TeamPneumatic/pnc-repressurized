@@ -1,43 +1,22 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.util.math.ChunkPos;
 
-public class RenderChargingStation extends AbstractTileModelRenderer<TileEntityChargingStation> {
-    private ItemRenderer customRenderItem = null;
-
+public class RenderChargingStation extends TileEntityRenderer<TileEntityChargingStation> {
     public RenderChargingStation() {
     }
 
     @Override
-    ResourceLocation getTexture(TileEntityChargingStation te) {
-        return Textures.MODEL_CHARGING_STATION_PAD;
-    }
+    public void render(TileEntityChargingStation te, double x, double y, double z, float partialTicks, int destroyStage) {
+        if (!te.getWorld().getChunkProvider().isChunkLoaded(new ChunkPos(te.getPos()))) return;
 
-    @Override
-    void renderModel(TileEntityChargingStation te, float partialTicks) {
-        if (te != null && !te.chargingStackSynced.isEmpty()) {
-            ItemEntity ghostEntityItem = new ItemEntity(te.getWorld(), 0, 0, 0);
-//            ghostEntityItem.hoverStart = 0.0F;
-            ghostEntityItem.setItem(te.chargingStackSynced);
-            if (customRenderItem == null) {
-                customRenderItem = new NoBobItemRenderer();
-            }
-            GlStateManager.translated(0, 1.25f, 0);
-            GlStateManager.scaled(1.0F, -1F, -1F);
-            GlStateManager.rotated(90, 0F, 1F, 0F);
-
-            EntityRendererManager renderManager = Minecraft.getInstance().getRenderManager();
-            boolean fancySetting = renderManager.options.fancyGraphics;
-            renderManager.options.fancyGraphics = true;
-            customRenderItem.doRender(ghostEntityItem, 0, 0, 0, 0, 0);
-            renderManager.options.fancyGraphics = fancySetting;
-        }
+        GlStateManager.pushMatrix();
+        GlStateManager.translated(x + 0.5, y + 0.4, z + 0.5);
+        RenderUtils.renderItemAt(te.chargingStackSynced, 0, 0, 0);
+        GlStateManager.popMatrix();
     }
 }

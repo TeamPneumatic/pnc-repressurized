@@ -1,19 +1,45 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberGlass;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityType;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     public BlockPressureChamberGlass() {
         super(Block.Properties.create(Material.GLASS).hardnessAndResistance(3f, 20000f), "pressure_chamber_glass");
+    }
+
+    @Override
+    protected Class<? extends TileEntity> getTileEntityClass() {
+        return TileEntityPressureChamberGlass.class;
+    }
+
+    @Override
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (worldIn.isRemote()) {
+            TileEntity te = worldIn.getTileEntity(currentPos);
+            if (te instanceof TileEntityPressureChamberGlass) {
+                te.requestModelDataUpdate();
+                // handle any glass that's diagonally connected
+                for (Direction d : Direction.VALUES) {
+                    if (d.getAxis() != facing.getAxis()) {
+                        TileEntity te1 = ((TileEntityPressureChamberGlass) te).getCachedNeighbor(d);
+                        if (te1 instanceof TileEntityPressureChamberGlass) te1.requestModelDataUpdate();
+                    }
+                }
+            }
+        }
+        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override
@@ -31,10 +57,6 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     }
 
     public boolean causesSuffocation(BlockState p_220060_1_, IBlockReader p_220060_2_, BlockPos p_220060_3_) {
-        return false;
-    }
-
-    public boolean isNormalCube(BlockState p_220081_1_, IBlockReader p_220081_2_, BlockPos p_220081_3_) {
         return false;
     }
 

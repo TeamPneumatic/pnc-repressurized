@@ -8,11 +8,11 @@
     },
     "on=false,facing=north": {
       "model": "pneumaticcraft:block/air_compressor_off",
-      "y": 90
+      "y": 270
     },
     "on=true,facing=north": {
       "model": "pneumaticcraft:block/air_compressor_on",
-      "y": 90
+      "y": 270
     },
     "on=false,facing=west": {
       "model": "pneumaticcraft:block/air_compressor_off",
@@ -24,11 +24,11 @@
     },
     "on=false,facing=south": {
       "model": "pneumaticcraft:block/air_compressor_off",
-      "y": 270
+      "y": 90
     },
     "on=true,facing=south": {
       "model": "pneumaticcraft:block/air_compressor_on",
-      "y": 270
+      "y": 90
     }
   }
 }

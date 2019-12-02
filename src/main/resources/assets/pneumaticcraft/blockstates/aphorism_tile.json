@@ -1,43 +1,10 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "textures": {},
-    "model": "pneumaticcraft:block/aphorism_tile"
-  },
   "variants": {
-    "facing": {
-      "up": {
-        "transform": {
-          "rotation" : {"x" : -90}
-        }
-      },
-      "down": {
-        "transform": {
-          "rotation" : {"x" : 90}
-        }
-      },
-      "east": {
-        "transform": {
-          "rotation": {"y" : 90}
-        }
-      },
-      "north": {
-        "transform": {
-          "rotation": {"y" : 180}
-        }
-      },
-      "west": {
-        "transform": {
-          "rotation": {"y": 270}
-        }
-      },
-      "south": {
-        "transform": {
-        }
-      }
-    },
-    "inventory": [{
-      "transform": "forge:default-item"
-    }]
+    "facing=down": { "model": "pneumaticcraft:block/aphorism_tile", "x": 90 },
+    "facing=up": { "model": "pneumaticcraft:block/aphorism_tile", "x": -90 },
+    "facing=north": { "model": "pneumaticcraft:block/aphorism_tile", "y": 180 },
+    "facing=south": { "model": "pneumaticcraft:block/aphorism_tile" },
+    "facing=west": { "model": "pneumaticcraft:block/aphorism_tile", "y": 270 },
+    "facing=east": { "model": "pneumaticcraft:block/aphorism_tile", "y": 90 }
   }
 }

@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -33,6 +34,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static me.desht.pneumaticcraft.lib.GuiConstants.*;
+
 public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUniversalSensor,TileEntityUniversalSensor> {
     private GuiAnimatedStat sensorInfoStat;
     private TextFieldWidget nameFilterField;
@@ -40,7 +43,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     private int maxPage;
     private static final int MAX_SENSORS_PER_PAGE = 4;
     private int ticksExisted;
-    private int sendDelay = -1;
+    private final List<Widget> sensorButtons = new ArrayList<>();
 
     public GuiUniversalSensor(ContainerUniversalSensor container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -61,13 +64,14 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         int yStart = (height - ySize) / 2;
 
         sensorInfoStat = addAnimatedStat("Sensor Info", new ItemStack(ModBlocks.UNIVERSAL_SENSOR), 0xFFFFAA00, false);
-        addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText(getUpgradeText());
+        addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(getUpgradeText());
 
-        nameFilterField = new TextFieldWidget(font, xStart + 70, yStart + 58, 100, 10, "");
+        nameFilterField = new TextFieldWidget(font, xStart + 70, yStart + 58, 98, 10, "");
         nameFilterField.setText(te.getText(0));
-        nameFilterField.func_212954_a(s -> sendDelay = 5);
+        nameFilterField.setResponder(s -> sendDelayed(5));
+        addButton(nameFilterField);
 
-        updateButtons();//also adds the redstoneButton.
+        updateButtons();
     }
 
     @Override
@@ -119,8 +123,6 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
 
-//        if (nameFilterField != null) nameFilterField.drawTextBox();
-
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
         if (sensor != null) {
             GlStateManager.translated(guiLeft, guiTop, 0);
@@ -136,23 +138,17 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         return new Point(xStart + 34, yStart + ySize / 4);
     }
 
-//    @Override
-//    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-//        super.mouseClicked(mouseX, mouseY, mouseButton);
-//
-//        nameFilterField.mouseClicked(mouseX, mouseY, mouseButton);
-//    }
-
     public void updateButtons() {
-        buttons.clear();
-        children.clear();
-
-        addButton(redstoneButton);
+        sensorButtons.forEach(w -> {
+            buttons.remove(w);
+            children.remove(w);
+        });
+        sensorButtons.clear();
 
         if (!te.getSensorSetting().equals("")) {
-            addButton(new GuiButtonSpecial(guiLeft + 70, guiTop + 18, 20, 20, "\u2b05")).withTag("back");
+            addButtonLocal(new GuiButtonSpecial(guiLeft + 70, guiTop + 18, 20, 20, ARROW_LEFT_SHORT).withTag("back"));
         } else {
-            addButton(new GuiButtonSpecial(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.universalSensor.button.showRange"), b -> te.showRangeLines()));
+            addButtonLocal(new GuiButtonSpecial(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.universalSensor.button.showRange"), b -> te.showRangeLines()));
         }
 
         String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(te.getSensorSetting());
@@ -160,12 +156,12 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         if (page > maxPage) page = maxPage;
         if (page < 1) page = 1;
         if (maxPage > 1) {
-            addButton(new GuiButtonSpecial(guiLeft + 70, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, "\u27f5", b -> {
+            addButtonLocal(new GuiButtonSpecial(guiLeft + 70, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, ARROW_LEFT, b -> {
                 page--;
                 if (page <= 0) page = maxPage;
                 updateButtons();
             }));
-            addButton(new GuiButtonSpecial(guiLeft + 138, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, "\u27f6", b -> {
+            addButtonLocal(new GuiButtonSpecial(guiLeft + 138, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, ARROW_RIGHT, b -> {
                 page++;
                 if (page > maxPage) page = 1;
                 updateButtons();
@@ -196,33 +192,43 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
                 }
                 button.setRenderStacks(requiredStacks);
                 button.active = te.areGivenUpgradesInserted(requiredItems);
-                addButton(button);
+                addButtonLocal(button);
             } else {
-                addButton(new GuiButtonSpecial(buttonX, buttonY, buttonWidth, buttonHeight, buttonText)).withTag("set:" + buttonID);
+                addButtonLocal(new GuiButtonSpecial(buttonX, buttonY, buttonWidth, buttonHeight, buttonText).withTag("set:" + buttonID));
             }
         }
         sensorInfoStat.setText(getSensorInfo());
+
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
         boolean textboxEnabled = sensor != null && sensor.needsTextBox();
         nameFilterField.setVisible(textboxEnabled);
-        if (!textboxEnabled) nameFilterField.setFocused2(false);
+        if (textboxEnabled) {
+            setFocused(nameFilterField);
+        }
+        nameFilterField.setFocused2(textboxEnabled);
+    }
 
+    private void addButtonLocal(Widget w) {
+        addButton(w);
+        sensorButtons.add(w);
+    }
+
+    @Override
+    protected void doDelayedAction() {
+        te.setText(0, nameFilterField.getText());
+        NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
     }
 
     @Override
     public void tick() {
         super.tick();
+
         if (te.getSensorSetting().equals("") && ticksExisted++ > 5) {
             ticksExisted = 0;
             updateButtons();
         }
         if (!nameFilterField.isFocused()) {
             nameFilterField.setText(te.getText(0));
-        }
-        if (sendDelay > 0 && --sendDelay == 0) {
-            te.setText(0, nameFilterField.getText());
-            NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
-            sendDelay = 5;
         }
     }
 

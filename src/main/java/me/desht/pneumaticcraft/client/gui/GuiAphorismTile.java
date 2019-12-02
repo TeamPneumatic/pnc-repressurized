@@ -60,7 +60,9 @@ public class GuiAphorismTile extends Screen {
     }
 
     @Override
-    public boolean charTyped(char ch, int keyCode) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        boolean updateTE = false;
+
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
         } else if (keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_UP) {
@@ -72,6 +74,7 @@ public class GuiAphorismTile extends Screen {
         } else if (keyCode == GLFW.GLFW_KEY_ENTER) {
             cursorY++;
             textLines = ArrayUtils.insert(cursorY, textLines, "");
+            updateTE = true;
         } else if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
             if (textLines[cursorY].length() > 0) {
                 textLines[cursorY] = textLines[cursorY].substring(0, textLines[cursorY].length() - 1);
@@ -83,6 +86,7 @@ public class GuiAphorismTile extends Screen {
                 cursorY--;
                 if (cursorY < 0) cursorY = 0;
             }
+            updateTE = true;
         } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
             if (Screen.hasShiftDown()) {
                 textLines = new String[1];
@@ -95,7 +99,15 @@ public class GuiAphorismTile extends Screen {
                         cursorY = textLines.length - 1;
                 }
             }
-        } else if (SharedConstants.isAllowedCharacter(ch)) {
+            updateTE = true;
+        }
+        if (updateTE) tile.setTextLines(textLines);
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char ch, int keyCode) {
+        if (SharedConstants.isAllowedCharacter(ch)) {
             if (Screen.hasAltDown()) {
                 if (ch >= 'a' && ch <= 'f' || ch >= 'l' && ch <= 'o' || ch == 'r' || ch >= '0' && ch <= '9') {
                     textLines[cursorY] = textLines[cursorY] + "\u00a7" + ch;
@@ -103,8 +115,8 @@ public class GuiAphorismTile extends Screen {
             } else {
                 textLines[cursorY] = textLines[cursorY] + ch;
             }
+            tile.setTextLines(textLines);
         }
-        tile.setTextLines(textLines);
         return super.charTyped(ch, keyCode);
     }
 
@@ -116,5 +128,7 @@ public class GuiAphorismTile extends Screen {
     @Override
     public void onClose() {
         minecraft.keyboardListener.enableRepeatEvents(false);
+
+        super.onClose();
     }
 }

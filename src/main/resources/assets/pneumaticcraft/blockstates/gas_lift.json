@@ -1,76 +1,11 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "textures": {
-      "pipe": "pneumaticcraft:block/advanced_pressure_tube"
-    },
-    "custom": { "flip-v" : true},
-    "model": "pneumaticcraft:block/gas_lift.obj"
-  },
-  "variants": {
-    "": [{}],
-    "inventory": [{
-      "transform": "forge:default-block"
-    }],
-    "up": {
-      "false": {
-        "submodel": {
-          "up": { "model": "pneumaticcraft:block/pressure_tube_disconnected" }
-        }
-      },
-      "true": {
-        "submodel": {
-          "up": { "model": "pneumaticcraft:block/pressure_tube_connected" }
-        }
-      }
-    },
-    "north": {
-      "false": {
-        "submodel": {
-          "north": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90 }
-        }
-      },
-      "true": {
-        "submodel": {
-          "north": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90 }
-        }
-      }
-    },
-    "south": {
-      "false": {
-        "submodel": {
-          "south": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90, "y": 180 }
-        }
-      },
-      "true": {
-        "submodel": {
-          "south": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 180 }
-        }
-      }
-    },
-    "west": {
-      "false": {
-        "submodel": {
-          "west": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90, "y": 270 }
-        }
-      },
-      "true": {
-        "submodel": {
-          "west": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 270 }
-        }
-      }
-    },
-    "east": {
-      "false": {
-        "submodel": {
-          "east": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90, "y": 90 }
-        }
-      },
-      "true": {
-        "submodel": {
-          "east": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 90 }
-        }
-      }
-    }
-  }
+  "multipart": [
+    { "apply":  { "model": "pneumaticcraft:block/gas_lift" }},
+    { "apply":  { "model": "pneumaticcraft:block/assembly_connector" }},
+    { "when":  { "up": true }, "apply":  { "model": "pneumaticcraft:block/pressure_tube_connected" }},
+    { "when":  { "north": true }, "apply":  { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90 }},
+    { "when":  { "south": true }, "apply":  { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 180 }},
+    { "when":  { "west": true }, "apply":  { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 270 }},
+    { "when":  { "east": true }, "apply":  { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 90 }}
+  ]
 }

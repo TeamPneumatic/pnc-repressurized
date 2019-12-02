@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import net.minecraft.util.ResourceLocation;
@@ -42,7 +41,7 @@ public class ModuleNetworkManager {
                     modules.add(m);
                 }
             }
-            TileEntityCache[] cache = ((AirHandler) tube.getAirHandler(null)).getTileCache();
+            TileEntityCache[] cache = tube.getTileCache();//((AirHandler) tube.getAirHandler(null)).getTileCache();
             for (int dir = 0; dir < 6; dir++) {
                 if (isTubeConnected(tube, dir)) {
                     TileEntityPressureTube newTube = TileEntityPressureTube.getTube(cache[dir].getTileEntity());

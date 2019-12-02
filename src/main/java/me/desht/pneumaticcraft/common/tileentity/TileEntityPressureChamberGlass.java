@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import net.minecraft.util.Direction;
@@ -10,6 +11,7 @@ import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWall {
     public static final ModelProperty<Integer> DOWN = new ModelProperty<>();
@@ -18,6 +20,9 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
     public static final ModelProperty<Integer> SOUTH = new ModelProperty<>();
     public static final ModelProperty<Integer> WEST = new ModelProperty<>();
     public static final ModelProperty<Integer> EAST = new ModelProperty<>();
+    public static final List<ModelProperty<Integer>> DIR_PROPS = ImmutableList.of(DOWN, UP, NORTH, SOUTH, WEST, EAST);
+
+    // This comes from Amadornes, in the Blue Power mod.  I'm not gonna pretend to understand it...
     private static final int[] TEXTURE_LOOKUP_TABLE = {
             0, 0, 6, 6, 0, 0, 6, 6, 3, 3, 19, 15, 3, 3, 19, 15,
             1, 1, 18, 18, 1, 1, 13, 13, 2, 2, 23, 31, 2, 2, 27, 14,
@@ -39,13 +44,6 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
 
     public TileEntityPressureChamberGlass() {
         super(ModTileEntityTypes.PRESSURE_CHAMBER_GLASS, 0);
-    }
-
-    @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
-
-        requestModelDataUpdate();
     }
 
     @Nonnull

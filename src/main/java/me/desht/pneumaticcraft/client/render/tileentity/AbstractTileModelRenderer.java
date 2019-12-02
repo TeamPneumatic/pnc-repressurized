@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.ChunkPos;
 
@@ -47,6 +48,12 @@ public abstract class AbstractTileModelRenderer<T extends TileEntityBase> extend
     public static class NoBobItemRenderer extends ItemRenderer {
         public NoBobItemRenderer() {
             super(Minecraft.getInstance().getRenderManager(), Minecraft.getInstance().getItemRenderer());
+        }
+
+        @Override
+        public void doRender(ItemEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+            entity.age = 0;  // prevent rotation
+            super.doRender(entity, x, y, z, entityYaw, partialTicks);
         }
 
         @Override

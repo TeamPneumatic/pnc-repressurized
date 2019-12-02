@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/pressure_chamber_interface",
+  "transform": "forge:default-block"
+}

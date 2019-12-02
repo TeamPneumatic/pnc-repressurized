@@ -7,7 +7,7 @@ import net.minecraft.block.material.Material;
 
 public class BlockKeroseneLampLight extends AirBlock {
     public BlockKeroseneLampLight() {
-        super(Block.Properties.create(Material.AIR).doesNotBlockMovement());
+        super(Block.Properties.create(Material.AIR).doesNotBlockMovement().lightValue(15).noDrops());
         setRegistryName("kerosene_lamp_light");
     }
 

@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/pneumatic_door_base",
+  "transform": "forge:default-block"
+}

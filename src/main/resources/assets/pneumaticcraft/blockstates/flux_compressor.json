@@ -1,18 +1,8 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "pneumaticcraft:block/flux_compressor"
-  },
   "variants": {
-    "": [{}],
-    "inventory": [{}],
-    "facing": {
-      "up": {},
-      "down": {},
-      "north": { "y": 180 },
-      "south": {},
-      "east": { "y": 270 },
-      "west": { "y": 90 }
-    }
+    "facing=north": { "model": "pneumaticcraft:block/flux_compressor", "y": 180 },
+    "facing=south": { "model": "pneumaticcraft:block/flux_compressor" },
+    "facing=west": { "model": "pneumaticcraft:block/flux_compressor", "y": 90 },
+    "facing=east": { "model": "pneumaticcraft:block/flux_compressor", "y": 270 }
   }
 }

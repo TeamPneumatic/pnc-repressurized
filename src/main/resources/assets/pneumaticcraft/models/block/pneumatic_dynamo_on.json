@@ -1,0 +1,6 @@
+{
+  "parent": "pneumaticcraft:block/pneumatic_dynamo_off",
+  "textures": {
+    "dynamo": "pneumaticcraft:block/pneumatic_dynamo_on"
+  }
+}

@@ -18,11 +18,6 @@ public class SemiBlockPassiveProvider extends SemiBlockActiveProvider {
     public static final ResourceLocation ID = RL("logistics_frame_passive_provider");
 
     @Override
-    public int getColor() {
-        return 0xFFFF0000;
-    }
-
-    @Override
     public boolean shouldProvideTo(int priority) {
         return priority > 2;
     }

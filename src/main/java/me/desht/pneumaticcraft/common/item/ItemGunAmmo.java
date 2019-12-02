@@ -10,7 +10,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.entity.projectile.DamagingProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.IParticleData;
@@ -29,10 +28,15 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class ItemGunAmmo extends ItemPneumatic {
+public abstract class ItemGunAmmo extends ItemPneumatic implements IColorableItem {
 
-    public ItemGunAmmo(Item.Properties props, String name) {
-        super(props, name);
+    public ItemGunAmmo(String name) {
+        super(defaultProps().maxStackSize(1).setNoRepair(), name);
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return 1000;
     }
 
     /**
@@ -98,6 +102,11 @@ public abstract class ItemGunAmmo extends ItemPneumatic {
     public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
         infoList.add(xlate("gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getDamage(), stack.getMaxDamage()));
         super.addInformation(stack, world, infoList, extraInfo);
+    }
+
+    @Override
+    public int getTintColor(ItemStack stack, int tintIndex) {
+        return tintIndex == 1 ? getAmmoColor(stack) : 0xFFFFFFFF;
     }
 
     /**

@@ -1,16 +1,5 @@
 {
-    "forge_marker": 1,
-    "defaults": {
-        "textures": {
-          "particle": "pneumaticcraft:block/assembly_base"
-        },
-        "custom": { "flip-v" : true},
-        "model": "pneumaticcraft:block/assembly_platform.obj"
-    },
-	"variants": {
-		"": [{}],
-		"inventory": [{
-          "transform": "forge:default-block"
-        }]
-	}
+  "variants": {
+    "": { "model" :  "pneumaticcraft:block/assembly_platform" }
+  }
 }

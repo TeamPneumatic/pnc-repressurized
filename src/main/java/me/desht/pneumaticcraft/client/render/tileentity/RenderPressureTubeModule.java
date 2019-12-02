@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
+import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -10,9 +12,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockRayTraceResult;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPressureTube> {
+
+    private final Map<ResourceLocation, ModelModuleBase> models = new HashMap<>();
 
     @Override
     public void render(TileEntityPressureTube tile, double x, double y, double z, float partialTicks, int destroyStage) {
@@ -56,7 +64,8 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
                     GlStateManager.color4f(1, 1, 1, 0.5f);
                 }
 
-                module.getModel().renderModel(0.0625f, module, partialTicks);
+                // FIXME: map lookup isn't good for perfomance here: need a cached index-based lookup of module->model
+                getModel(module).render(0.0625f, module, partialTicks);
                 module.doExtraRendering();
 
                 if (module.isFake()) {
@@ -70,6 +79,10 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
         GlStateManager.enableAlphaTest();
 
         GlStateManager.popMatrix();
+    }
+
+    private ModelModuleBase getModel(TubeModule module) {
+        return models.computeIfAbsent(module.getType(), k -> TubeModuleClientRegistry.createModel(module));
     }
 
     private void attachFakeModule(Minecraft mc, TileEntityPressureTube tile, Hand hand) {

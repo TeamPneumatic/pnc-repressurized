@@ -1,4 +1,8 @@
 {
+  "textures": {
+    "particle": "pneumaticcraft:model/liquid_hopper",
+    "face": "pneumaticcraft:model/liquid_hopper"
+  },
   "elements": [
     {
       "from": [ 0, 15, 0 ],

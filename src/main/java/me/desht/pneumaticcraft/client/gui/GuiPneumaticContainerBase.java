@@ -50,10 +50,41 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     GuiButtonSpecial redstoneButton;
     protected boolean firstUpdate = true;
     private final List<IGuiAnimatedStat> statWidgets = new ArrayList<>();
+    private int sendDelay = -1;
 
     public GuiPneumaticContainerBase(C container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
         this.te = container.te;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        lastLeftStat = lastRightStat = null;
+        if (shouldAddPressureTab() && te instanceof TileEntityPneumaticBase) {
+            pressureStat = this.addAnimatedStat("gui.tab.pressure", new ItemStack(ModBlocks.PRESSURE_TUBE), 0xFF00AA00, false);
+        }
+        if (shouldAddProblemTab()) {
+            problemTab = addAnimatedStat("gui.tab.problems", 0xFFA0A0A0, false);
+        }
+        if (te != null) {
+            if (shouldAddInfoTab()) {
+                addInfoTab("gui.tab.info.tile." + te.getType().getRegistryName().getPath());
+            }
+            if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
+                addRedstoneTab();
+            }
+            if (te instanceof IHeatExchanger) {
+                addAnimatedStat("gui.tab.info.heat.title", new ItemStack(Items.BLAZE_POWDER), 0xFFFF5500, false).setText("gui.tab.info.heat");
+            }
+            if (shouldAddUpgradeTab()) {
+                addUpgradeTab();
+            }
+            if (shouldAddSideConfigTabs()) {
+                addSideConfiguratorTabs();
+            }
+        }
     }
 
     private GuiAnimatedStat addAnimatedStat(String title, StatIcon icon, int color, boolean leftSided) {
@@ -100,35 +131,6 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     public List<IGuiAnimatedStat> getStatWidgets() {
         return statWidgets;
-    }
-
-    @Override
-    public void init() {
-        super.init();
-        lastLeftStat = lastRightStat = null;
-        if (shouldAddPressureTab() && te instanceof TileEntityPneumaticBase) {
-            pressureStat = this.addAnimatedStat("gui.tab.pressure", new ItemStack(ModBlocks.PRESSURE_TUBE), 0xFF00AA00, false);
-        }
-        if (shouldAddProblemTab()) {
-            problemTab = addAnimatedStat("gui.tab.problems", 0xFFA0A0A0, false);
-        }
-        if (te != null) {
-            if (shouldAddInfoTab()) {
-                addInfoTab("gui.tab.info.tile." + te.getType().getRegistryName().getPath());
-            }
-            if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
-                addRedstoneTab();
-            }
-            if (te instanceof IHeatExchanger) {
-                addAnimatedStat("gui.tab.info.heat.title", new ItemStack(Items.BLAZE_POWDER), 0xFFFF5500, false).setText("gui.tab.info.heat");
-            }
-            if (shouldAddUpgradeTab()) {
-                addUpgradeTab();
-            }
-            if (shouldAddSideConfigTabs()) {
-                addSideConfiguratorTabs();
-            }
-        }
     }
 
     private void addRedstoneTab() {
@@ -329,6 +331,11 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     public void tick() {
         super.tick();
 
+        if (sendDelay > 0 && --sendDelay <= 0) {
+            doDelayedAction();
+            sendDelay = -1;
+        }
+
         buttons.stream().filter(w -> w instanceof ITickable).forEach(w -> ((ITickable) w).tick());
 
         if (pressureStat != null) {
@@ -342,6 +349,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         if (redstoneTab != null) {
             redstoneButton.setMessage(I18n.format(te.getRedstoneButtonText(((IRedstoneControl) te).getRedstoneMode())));
         }
+
         firstUpdate = false;
     }
 
@@ -465,11 +473,17 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     void refreshScreen() {
         MainWindow mw = Minecraft.getInstance().mainWindow;
-//        ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
         int i = mw.getScaledWidth();
         int j = mw.getScaledHeight();
         init(Minecraft.getInstance(), i, j);
-//        setWorldAndResolution(Minecraft.getMinecraft(), i, j);
         buttons.stream().filter(widget -> widget instanceof ITickable).forEach(w -> ((ITickable) w).tick());
+    }
+
+    void sendDelayed(int ticks) {
+        sendDelay = ticks;
+    }
+
+    protected void doDelayedAction() {
+        // nothing; override in subclasses
     }
 }

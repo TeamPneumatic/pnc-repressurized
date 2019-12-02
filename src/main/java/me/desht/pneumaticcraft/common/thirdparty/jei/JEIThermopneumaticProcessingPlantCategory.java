@@ -65,6 +65,8 @@ public class JEIThermopneumaticProcessingPlantCategory extends JEIPneumaticCraft
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, IThermopneumaticProcessingPlantRecipe recipe, IIngredients ingredients) {
+        super.setRecipe(recipeLayout, recipe, ingredients);
+
         if (recipe.getInputItem() != null) {
             recipeLayout.getItemStacks().init(0, true, 41, 3);
             recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));

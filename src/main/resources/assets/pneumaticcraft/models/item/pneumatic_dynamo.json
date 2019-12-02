@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/pneumatic_dynamo_off",
+  "transform": "forge:default-block"
+}

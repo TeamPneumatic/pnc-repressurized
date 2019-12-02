@@ -1,0 +1,4 @@
+{
+	"parent": "pneumaticcraft:block/heat_sink",
+	"transform": "forge:default-block"
+}

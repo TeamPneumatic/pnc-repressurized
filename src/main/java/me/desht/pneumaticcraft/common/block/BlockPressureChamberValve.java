@@ -23,7 +23,7 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
 
     public BlockPressureChamberValve() {
-        super(DEFAULT_PROPS.hardnessAndResistance(3f, 2000f), "pressure_chamber_valve");
+        super(IBlockPressureChamber.getPressureChamberBlockProps(), "pressure_chamber_valve");
     }
 
     @Override

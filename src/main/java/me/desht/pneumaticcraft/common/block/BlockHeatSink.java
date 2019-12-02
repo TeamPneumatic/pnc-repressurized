@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -65,6 +66,7 @@ public class BlockHeatSink extends BlockPneumaticCraft {
     public void onEntityCollision(BlockState state, World world, BlockPos pos,Entity entity) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityHeatSink && entity instanceof LivingEntity) {
+            if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative()) return;
             IHeatExchangerLogic heat = ((TileEntityHeatSink) te).getHeatExchangerLogic(null);
             int temp = (int) ((TileEntityHeatSink) te).getHeatExchangerLogic(null).getTemperature();
             if (temp > 323) { // +50C

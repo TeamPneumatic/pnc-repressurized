@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelAirGrate extends ModelModuleBase {
+public class ModelAirGrate extends ModelModuleBase<ModuleAirGrate> {
     private final RendererModel top;
     private final RendererModel side1;
     private final RendererModel side2;
@@ -15,10 +15,8 @@ public class ModelAirGrate extends ModelModuleBase {
     private final RendererModel base1;
     private final RendererModel base2;
     private final RendererModel base3;
-    private final ModuleAirGrate grateModule;
 
-    public ModelAirGrate(ModuleAirGrate grate) {
-        this.grateModule = grate;
+    public ModelAirGrate() {
         textureWidth = 128;
         textureHeight = 128;
 
@@ -73,8 +71,8 @@ public class ModelAirGrate extends ModelModuleBase {
     }
 
     @Override
-    protected void renderDynamic(float scale, float partialTicks) {
-        if (grateModule != null && grateModule.isUpgraded()) RenderUtils.glColorHex(0xFFC0FF70);
+    protected void renderDynamic(ModuleAirGrate module, float scale, float partialTicks) {
+        if (module != null && module.isUpgraded()) RenderUtils.glColorHex(0xFFC0FF70);
         top.render(scale);
         side1.render(scale);
         side2.render(scale);

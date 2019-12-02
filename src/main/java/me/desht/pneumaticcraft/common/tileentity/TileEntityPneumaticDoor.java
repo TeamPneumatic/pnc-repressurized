@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -43,11 +42,11 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
         if (rotationAngle == 0) {
             state = state.with(BlockPneumaticDoor.DOOR_STATE, DoorState.CLOSED);
         } else if (rotationAngle == 90) {
-            Direction originalRotation = state.get(BlockStateProperties.HORIZONTAL_FACING);
-            if (originalRotation != Direction.UP && originalRotation != Direction.DOWN) {
-                Direction facing = rightGoing ? originalRotation.rotateY() : originalRotation.rotateYCCW();
-                state = state.with(BlockStateProperties.HORIZONTAL_FACING, facing);
-            }
+//            Direction originalRotation = state.get(BlockStateProperties.HORIZONTAL_FACING);
+//            if (originalRotation != Direction.UP && originalRotation != Direction.DOWN) {
+//                Direction facing = rightGoing ? originalRotation.rotateY() : originalRotation.rotateYCCW();
+//                state = state.with(BlockStateProperties.HORIZONTAL_FACING, facing);
+//            }
             state = state.with(BlockPneumaticDoor.DOOR_STATE, DoorState.OPEN);
         } else {
             state = state.with(BlockPneumaticDoor.DOOR_STATE, DoorState.MOVING);

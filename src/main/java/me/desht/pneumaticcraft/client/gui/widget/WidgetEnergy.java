@@ -22,7 +22,7 @@ public class WidgetEnergy extends Widget implements ITooltipSupplier {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTick){
+    public void renderButton(int mouseX, int mouseY, float partialTick){
         int amount = getScaled();
 
         Minecraft.getInstance().getTextureManager().bindTexture(DEFAULT_TEXTURE);

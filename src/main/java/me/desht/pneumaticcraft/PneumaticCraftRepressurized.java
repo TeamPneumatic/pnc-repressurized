@@ -2,7 +2,13 @@ package me.desht.pneumaticcraft;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.client.AreaShowManager;
 import me.desht.pneumaticcraft.client.ClientSetup;
+import me.desht.pneumaticcraft.client.ClientTickHandler;
+import me.desht.pneumaticcraft.client.KeyHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.capabilities.Hacking;
@@ -83,9 +89,10 @@ public class PneumaticCraftRepressurized {
         });
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverStarting);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverStarted);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverStopping);
+        MinecraftForge.EVENT_BUS.addListener(this::serverAboutToStart);
+        MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
+        MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
+        MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
 
         Reflections.init();
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
@@ -102,7 +109,7 @@ public class PneumaticCraftRepressurized {
         MinecraftForge.EVENT_BUS.register(new DroneSpecialVariableHandler());
         MinecraftForge.EVENT_BUS.register(ItemGPSAreaTool.EventHandler.class);
         MinecraftForge.EVENT_BUS.register(CommonArmorHandler.class);
-        MinecraftForge.EVENT_BUS.register(proxy.getHackTickHandler());
+        MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
 
         // TODO 1.14 oil lake gen
 //        if (ConfigHandler.general.oilGenerationChance > 0) {
@@ -190,7 +197,7 @@ public class PneumaticCraftRepressurized {
         AmadronOfferManager.getInstance().shufflePeriodicOffers();
         AmadronOfferManager.getInstance().recompileOffers();
 
-        // TODO 1.14 fluids
+        // TODO 1.14 fluids & worldgen
 //        if (ConfigHandler.general.oilGenerationChance > 0) {
 //            Fluid oil = FluidRegistry.getFluid(Fluids.OIL.getName());
 //            if (oil.getBlock() == null) {
@@ -207,6 +214,14 @@ public class PneumaticCraftRepressurized {
 
     static class ClientHandler {
         static void clientSetup(FMLClientSetupEvent event) {
+            MinecraftForge.EVENT_BUS.register(HUDHandler.instance());
+            MinecraftForge.EVENT_BUS.register(ClientTickHandler.instance());
+            MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
+            MinecraftForge.EVENT_BUS.register(new ClientSemiBlockManager());
+            MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));
+            MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
+            MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
+
             DeferredWorkQueue.runLater(ClientSetup::init);
         }
 

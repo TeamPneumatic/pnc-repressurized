@@ -1,36 +1,10 @@
 {
-    "defaults": {
-        "textures": {},
-        "model": "pneumaticcraft:block/heat_sink"
-    },
 	"variants": {
-		"variants": {
-			"facing=down":  { "model": "block/heat_sink" },
-			"facing=up":    { "model": "block/heat_sink", "x": -180 },
-			"facing=north": { "model": "block/heat_sink", "x": 90, "y": -90 },
-			"facing=south": { "model": "block/heat_sink", "x": -90, "y": 90 },
-			"facing=west":  { "model": "block/heat_sink", "z": 270 },
-			"facing=east":  { "model": "block/heat_sink", "z": 90 }
-		},
-		"facing": {
-			"south": {
-			    "transform": { "rotation" : [ {"x" : -90}, { "y" : 90 } ] }
-			},
-			"north": {
-                "transform": { "rotation" : [ {"x" : 90}, { "y" : -90 } ] }
-            },
-			"down": {
-				"transform": { }
-			},
-			"up": {
-				"transform": { "rotation": {"x" : -180} }
-			},
-			"west": {
-				"transform": { "rotation": {"z": 270} }
-			},
-			"east": {
-				"transform": { "rotation": {"z": 90} }
-			}
-		}
+		"facing=down":  { "model": "pneumaticcraft:block/heat_sink" },
+		"facing=up":    { "model": "pneumaticcraft:block/heat_sink", "x": 180 },
+		"facing=north": { "model": "pneumaticcraft:block/heat_sink", "x": -90 },
+		"facing=south": { "model": "pneumaticcraft:block/heat_sink", "x": 90 },
+		"facing=west":  { "model": "pneumaticcraft:block/heat_sink", "x": 90, "y": 90 },
+		"facing=east":  { "model": "pneumaticcraft:block/heat_sink", "x": -90, "y": 90 }
 	}
 }

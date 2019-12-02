@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.block.material.MaterialColor;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.state.StateContainer;
@@ -14,13 +13,13 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public abstract class FluidLubricant extends ForgeFlowingFluid {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            RL("fluid/lubricant_still"), RL("fluid/lubricant_flow")
-    ).color(MaterialColor.PURPLE.colorValue);
+            RL("block/fluid/lubricant_still"), RL("block/fluid/lubricant_flow")
+    );
 
     private static final ForgeFlowingFluid.Properties PROPS =
             new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.LUBRICANT_SOURCE, () -> ModFluids.LUBRICANT_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.LUBRICANT_BLOCK).bucket(() -> ModItems.LUBRICANT_BUCKET
+                    () -> ModFluids.LUBRICANT, () -> ModFluids.LUBRICANT_FLOWING, ATTRS)
+                    .block(() -> ModBlocks.LUBRICANT).bucket(() -> ModItems.LUBRICANT_BUCKET
             );
 
     FluidLubricant(String name) {
@@ -31,7 +30,7 @@ public abstract class FluidLubricant extends ForgeFlowingFluid {
 
     public static class Source extends FluidLubricant {
         public Source() {
-            super("lubricant_source");
+            super("lubricant");
         }
 
         @Override

@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
@@ -142,7 +141,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
         if (destUpdateNeeded) updateDestination();
         updateRotationAngles();
-        updateTrackedItems();
+        if (!world.isRemote) {
+            updateTrackedItems();
+        }
 
         super.tick();
 
@@ -215,11 +216,10 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private void updateTrackedItems() {
         if (trackedItemIds != null) {
             trackedItems.clear();
-            for (Entity entity : PneumaticCraftRepressurized.proxy.getAllEntities(getWorld())) {
-                if (trackedItemIds.contains(entity.getUniqueID()) && entity instanceof ItemEntity) {
-                    trackedItems.add((ItemEntity) entity);
-                }
-            }
+            ((ServerWorld) world).getEntities()
+                    .filter(entity -> trackedItemIds.contains(entity.getUniqueID()) && entity instanceof ItemEntity)
+                    .map(entity -> (ItemEntity) entity)
+                    .forEach(trackedItems::add);
             trackedItemIds = null;
         }
         Iterator<ItemEntity> iterator = trackedItems.iterator();

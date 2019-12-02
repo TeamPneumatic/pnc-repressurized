@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.recipes;
 
+import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -14,6 +15,8 @@ import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -84,25 +87,30 @@ public class AssemblyRecipe implements IAssemblyRecipe {
      * @param recipes all known assembly recipes
      */
     static void setupRecipeSubtypes(Collection<IAssemblyRecipe> recipes) {
+        Map<ResourceLocation, IAssemblyRecipe> laser = new HashMap<>();
+        Map<ResourceLocation, IAssemblyRecipe> drill = new HashMap<>();
         for (IAssemblyRecipe recipe : recipes) {
             AssemblyProgramType type = ((ItemAssemblyProgram) recipe.getProgram()).getProgramType();
             switch (type) {
                 case LASER:
-                    PneumaticCraftRecipes.assemblyLaserRecipes.put(recipe.getId(), recipe);
+                    laser.put(recipe.getId(), recipe);
                     break;
                 case DRILL:
-                    PneumaticCraftRecipes.assemblyDrillRecipes.put(recipe.getId(), recipe);
+                    drill.put(recipe.getId(), recipe);
                     break;
             }
         }
-        calculateAssemblyChain();
+        PneumaticCraftRecipes.assemblyLaserRecipes = ImmutableMap.copyOf(laser);
+        PneumaticCraftRecipes.assemblyDrillRecipes = ImmutableMap.copyOf(drill);
+        PneumaticCraftRecipes.assemblyLaserDrillRecipes = ImmutableMap.copyOf(calculateAssemblyChain());
     }
 
     /**
      * Work out which recipes can be chained.  E.g. if laser recipe makes B from A, and drill recipe makes C from B,
      * then add a laser/drill recipe to make C from A. Takes into account the number of inputs & outputs from each step.
      */
-    private static void calculateAssemblyChain() {
+    private static Map<ResourceLocation,IAssemblyRecipe> calculateAssemblyChain() {
+        Map<ResourceLocation, IAssemblyRecipe> r = new HashMap<>();
         for (IAssemblyRecipe r1 : PneumaticCraftRecipes.assemblyDrillRecipes.values()) {
             for (IAssemblyRecipe r2 : PneumaticCraftRecipes.assemblyLaserRecipes.values()) {
                 if (r2.getInput().test(r1.getOutput())
@@ -112,10 +120,11 @@ public class AssemblyRecipe implements IAssemblyRecipe {
                     output.setCount(output.getCount() * (r1.getOutput().getCount() / r2.getInputAmount()));
                     String name = r1.getId().getPath() + "/" + r2.getId().getPath();
                     ResourceLocation id = RL(name);
-                    PneumaticCraftRecipes.assemblyLaserDrillRecipes.put(id, new AssemblyRecipe(id, r1.getInput(), output, ModItems.ASSEMBLY_PROGRAM_DRILL_LASER));
+                    r.put(id, new AssemblyRecipe(id, r1.getInput(), output, ModItems.ASSEMBLY_PROGRAM_DRILL_LASER));
                 }
             }
         }
+        return r;
     }
 
 //    static void addDrillRecipe(Object input, Object output) {

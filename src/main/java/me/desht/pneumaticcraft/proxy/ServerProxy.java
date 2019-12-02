@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.proxy;
 
-import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,7 +9,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ServerProxy implements IProxy {
-    private final HackTickHandler serverHackTickHandler = new HackTickHandler();
+//    private final HackTickHandler serverHackTickHandler = new HackTickHandler();
 
 //    @Override
 //    public void initConfig() {
@@ -49,10 +48,10 @@ public class ServerProxy implements IProxy {
         return 0;
     }
 
-    @Override
-    public HackTickHandler getHackTickHandler() {
-        return serverHackTickHandler;
-    }
+//    @Override
+//    public HackTickHandler getHackTickHandler() {
+//        return serverHackTickHandler;
+//    }
 
     @Override
     public boolean isSneakingInGui() {

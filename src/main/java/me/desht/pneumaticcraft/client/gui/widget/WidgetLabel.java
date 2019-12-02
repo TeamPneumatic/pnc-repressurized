@@ -20,6 +20,7 @@ public class WidgetLabel extends Widget {
 
     public WidgetLabel(int x, int y, String text, int color) {
         super(x, y, 0, 0, text);
+        this.color = color;
     }
 
     public WidgetLabel setAlignment(Alignment alignment) {

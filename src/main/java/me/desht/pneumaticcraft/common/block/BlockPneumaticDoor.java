@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
@@ -28,7 +30,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 public class BlockPneumaticDoor extends BlockPneumaticCraft {
-    private static final BooleanProperty TOP_DOOR = BooleanProperty.create("top_door");
+    public static final BooleanProperty TOP_DOOR = BooleanProperty.create("top_door");
     public static final EnumProperty<DoorState> DOOR_STATE = EnumProperty.create("door_state", DoorState.class);
 
     // true when the Pneumatic Door Base is determining if it should open the door dependent
@@ -37,12 +39,21 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
 
     public BlockPneumaticDoor() {
         super("pneumatic_door");
+        setDefaultState(getStateContainer().getBaseState()
+                .with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
+                .with(TOP_DOOR, false)
+                .with(DOOR_STATE, DoorState.CLOSED));
     }
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
         builder.add(TOP_DOOR, DOOR_STATE);
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     public static boolean isTopDoor(BlockState state) {
@@ -54,7 +65,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
         if (isTrackingPlayerEye) {
             return VoxelShapes.fullCube();
         } else {
-            return calculateVoxelShape(state, world, pos, 15);
+            return calculateVoxelShape(state, world, pos, 13);
         }
     }
 
@@ -68,10 +79,10 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
     }
 
     private VoxelShape calculateVoxelShape(BlockState state, IBlockReader world, BlockPos pos, int thickness) {
-        float xMin = 0;
-        float zMin = 0;
-        float xMax = 1;
-        float zMax = 1;
+        float xMin = 0.001f;
+        float zMin = 0.001f;
+        float xMax = 0.999f;
+        float zMax = 0.999f;
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityPneumaticDoor) {
             Direction rotation = getRotation(state);
@@ -99,7 +110,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
                         zMin = cosinus; xMin = sinus;
                         break;
                     case WEST:
-                        xMin = cosinus; zMax = 1 - sinus;
+                        xMin = 0.001f + cosinus; zMax = 0.999f - sinus;
                         break;
                     case SOUTH:
                         zMax = 1 - cosinus; xMax = 1 - sinus;
@@ -116,7 +127,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
 
     @Override
     public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-        return !state.get(TOP_DOOR) && super.canRenderInLayer(state, layer);
+        return this.getBlock().getRenderLayer() == layer; //!state.get(TOP_DOOR) && super.canRenderInLayer(state, layer);
     }
 
     @Override

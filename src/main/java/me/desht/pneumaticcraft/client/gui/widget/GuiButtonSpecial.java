@@ -5,11 +5,11 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +17,7 @@ import java.util.List;
 /**
  * Extension of GuiButton that allows a invisible clickable field. It can be added in Gui's like buttons (with the buttonList).
  */
-
-public class GuiButtonSpecial extends Button implements ITaggedWidget /*implements IGuiWidget*/ {
+public class GuiButtonSpecial extends GuiButtonExt implements ITaggedWidget, ITooltipSupplier {
     public enum IconPosition { MIDDLE, LEFT, RIGHT }
     private ItemStack[] renderedStacks;
 
@@ -27,18 +26,8 @@ public class GuiButtonSpecial extends Button implements ITaggedWidget /*implemen
     private final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
     private int invisibleHoverColor;
     private boolean thisVisible = true;
-//    private IWidgetListener listener;
     private IconPosition iconPosition = IconPosition.MIDDLE;
     private String tag = null;
-
-//    public GuiButtonSpecial(String tag, int startX, int startY, int xSize, int ySize, String buttonText, IPressable pressable) {
-//        super(startX, startY, xSize, ySize, buttonText, pressable);
-//        this.tag = tag;
-//    }
-//
-//    public GuiButtonSpecial(String tag, int startX, int startY, int xSize, int ySize, String buttonText) {
-//        this(tag, startX, startY, xSize, ySize, buttonText, b -> {});
-//    }
 
     public GuiButtonSpecial(int startX, int startY, int xSize, int ySize, String buttonText, IPressable pressable) {
         super(startX, startY, xSize, ySize, buttonText, pressable);
@@ -48,6 +37,13 @@ public class GuiButtonSpecial extends Button implements ITaggedWidget /*implemen
         this(startX, startY, xSize, ySize, buttonText, b -> {});
     }
 
+    /**
+     * Added a string tag to the button.  This will be sent to the server as the payload of a {@link PacketGuiButton}
+     * packet when the button is clicked.
+     *
+     * @param tag a string tag containing any arbitrary information
+     * @return the button, for fluency
+     */
     public GuiButtonSpecial withTag(String tag) {
         this.tag = tag;
         return this;
@@ -81,8 +77,9 @@ public class GuiButtonSpecial extends Button implements ITaggedWidget /*implemen
         return this;
     }
 
-    public void setRenderedIcon(ResourceLocation resLoc) {
+    public GuiButtonSpecial setRenderedIcon(ResourceLocation resLoc) {
         this.resLoc = resLoc;
+        return this;
     }
 
     public GuiButtonSpecial setTooltipText(List<String> tooltip) {
@@ -99,9 +96,10 @@ public class GuiButtonSpecial extends Button implements ITaggedWidget /*implemen
         return this;
     }
 
-    public void getTooltip(List<String> curTooltip) {
+    @Override
+    public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
         if (tooltipText != null) {
-            curTooltip.addAll(tooltipText);
+            curTip.addAll(tooltipText);
         }
     }
 

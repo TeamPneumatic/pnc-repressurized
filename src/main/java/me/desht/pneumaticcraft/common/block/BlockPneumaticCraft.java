@@ -75,17 +75,20 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty WEST = BooleanProperty.create("west");
     public static final BooleanProperty[] CONNECTION_PROPERTIES = new BooleanProperty[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
-    public static final Block.Properties DEFAULT_PROPS = Block.Properties.create(Material.IRON)
-            .hardnessAndResistance(3f, 10f).sound(SoundType.METAL);
 
     protected BlockPneumaticCraft(String registryName) {
-        super(DEFAULT_PROPS);
+        super(getDefaultProps());
         setRegistryName(registryName);
     }
 
     protected BlockPneumaticCraft(Block.Properties props, String registryName) {
         super(props);
         setRegistryName(registryName);
+    }
+
+    public static Block.Properties getDefaultProps() {
+        return Block.Properties.create(Material.IRON)
+                .hardnessAndResistance(3f, 10f).sound(SoundType.METAL);
     }
 
     @Override
@@ -99,7 +102,6 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         try {
             TileEntity te = getTileEntityClass().newInstance();
             if (world instanceof World) {
-                // should be true in all cases except worldgen (where we don't care anyway)
                 te.setWorld((World) world);
             }
             if (te instanceof TileEntityBase) {

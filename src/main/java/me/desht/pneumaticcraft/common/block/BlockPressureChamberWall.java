@@ -24,7 +24,7 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
     private static final EnumProperty<EnumWallState> WALL_STATE = EnumProperty.create("wall_state", EnumWallState.class);
 
     public BlockPressureChamberWall() {
-        super(DEFAULT_PROPS.hardnessAndResistance(3f, 2000f), "pressure_chamber_wall");
+        super(IBlockPressureChamber.getPressureChamberBlockProps(), "pressure_chamber_wall");
     }
 
     @Override

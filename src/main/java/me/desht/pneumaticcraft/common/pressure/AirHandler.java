@@ -72,10 +72,10 @@ public class AirHandler implements IAirHandler {
         this.defaultVolume = volume;
     }
 
-    public TileEntityCache[] getTileCache() {
-        if (tileCache == null) tileCache = TileEntityCache.getDefaultCache(getWorld(), getPos());
-        return tileCache;
-    }
+//    public TileEntityCache[] getTileCache() {
+//        if (tileCache == null) tileCache = TileEntityCache.getDefaultCache(getWorld(), getPos());
+//        return tileCache;
+//    }
 
     @Override
     public void createConnection(@Nonnull IAirHandler otherHandler) {
@@ -343,7 +343,7 @@ public class AirHandler implements IAirHandler {
             teList.add(new ImmutablePair<>(null, specialConnection));
         }
         for (Direction direction : Direction.VALUES) {
-            TileEntity te = getTileCache()[direction.ordinal()].getTileEntity();
+            TileEntity te = world.getTileEntity(pos.offset(direction)); //getTileCache()[direction.ordinal()].getTileEntity();
             IPneumaticMachine machine = IPneumaticMachine.getMachine(te);
             if (machine != null && parentPneumatic.getAirHandler(direction) == this && machine.getAirHandler(direction.getOpposite()) != null) {
                 teList.add(new ImmutablePair<>(direction, machine.getAirHandler(direction.getOpposite())));
@@ -355,9 +355,9 @@ public class AirHandler implements IAirHandler {
 
     @Override
     public void onNeighborChange() {
-        for (TileEntityCache cache : getTileCache()) {
-            cache.update();
-        }
+//        for (TileEntityCache cache : getTileCache()) {
+//            cache.update();
+//        }
     }
 
     @Override
@@ -429,7 +429,9 @@ public class AirHandler implements IAirHandler {
             conn[entry.getKey().ordinal()] = true;
         }
         for (int i = 0; i < 6; i++) {
-            state = state.with(BlockPneumaticCraft.CONNECTION_PROPERTIES[i], conn[i]);
+            if (state.has(BlockPneumaticCraft.CONNECTION_PROPERTIES[i])) {
+                state = state.with(BlockPneumaticCraft.CONNECTION_PROPERTIES[i], conn[i]);
+            }
         }
         return state;
     }

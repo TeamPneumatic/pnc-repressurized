@@ -10,21 +10,21 @@ import net.minecraftforge.registries.ObjectHolder;
 
 @ObjectHolder(Names.MOD_ID)
 public class ModFluids {
-    public static final Fluid OIL_SOURCE = null;
+    public static final Fluid OIL = null;
     public static final Fluid OIL_FLOWING = null;
-    public static final Fluid ETCHING_ACID_SOURCE = null;
+    public static final Fluid ETCHING_ACID = null;
     public static final Fluid ETCHING_ACID_FLOWING = null;
-    public static final Fluid PLASTIC_SOURCE = null;
+    public static final Fluid PLASTIC = null;
     public static final Fluid PLASTIC_FLOWING = null;
-    public static final Fluid DIESEL_SOURCE = null;
+    public static final Fluid DIESEL = null;
     public static final Fluid DIESEL_FLOWING = null;
-    public static final Fluid KEROSENE_SOURCE = null;
+    public static final Fluid KEROSENE = null;
     public static final Fluid KEROSENE_FLOWING = null;
-    public static final Fluid GASOLINE_SOURCE = null;
+    public static final Fluid GASOLINE = null;
     public static final Fluid GASOLINE_FLOWING = null;
-    public static final Fluid LPG_SOURCE = null;
+    public static final Fluid LPG = null;
     public static final Fluid LPG_FLOWING = null;
-    public static final Fluid LUBRICANT_SOURCE = null;
+    public static final Fluid LUBRICANT = null;
     public static final Fluid LUBRICANT_FLOWING = null;
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)

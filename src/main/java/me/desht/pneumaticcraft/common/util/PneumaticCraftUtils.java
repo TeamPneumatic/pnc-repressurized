@@ -310,7 +310,7 @@ public class PneumaticCraftUtils {
             if (!stack.isEmpty()) {
                 if (!stack.isItemEqual(prevItemStack) || prevInventoryItems != null && prevInventoryItems.size() > 0) {
                     if (!prevItemStack.isEmpty()) {
-                        addText(textList, prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName());
+                        addText(textList, prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getFormattedText());
                     }
                     if (prevInventoryItems != null) {
                         sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), "\u21b3 ");
@@ -324,7 +324,7 @@ public class PneumaticCraftUtils {
             }
         }
         if (itemCount > 0 && !prevItemStack.isEmpty()) {
-            addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName());
+            addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getFormattedText());
             if (prevInventoryItems != null) {
                 sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), "\u21b3 ");
             }

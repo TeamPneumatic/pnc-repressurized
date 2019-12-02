@@ -53,20 +53,22 @@ public class JEIPressureChamberRecipeCategory extends JEIPneumaticCraftCategory<
         iIngredients.setInputLists(VanillaTypes.ITEM, recipe.getInputsForDisplay());
         iIngredients.setOutputs(VanillaTypes.ITEM, recipe.getResultForDisplay());
 
-        setUsedPressure(120, 27, recipe.getCraftingPressure(), PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE);
+        setUsedPressure(120, 27, recipe.getCraftingPressure(), PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE);
     }
 
     @Override
     public void setRecipe(IRecipeLayout layout, IPressureChamberRecipe recipe, IIngredients iIngredients) {
+        super.setRecipe(layout, recipe, iIngredients);
+
         List<List<ItemStack>> inputs = iIngredients.getInputs(VanillaTypes.ITEM);
         for (int i = 0; i < inputs.size(); i++) {
-            layout.getItemStacks().init(i, true, 19 + i % 3 * 17, 93 - i / 3 * 17);
+            layout.getItemStacks().init(i, true, 18 + i % 3 * 17, 92 - i / 3 * 17);
             layout.getItemStacks().set(i, inputs.get(i));
         }
 
         List<List<ItemStack>> outputs = iIngredients.getOutputs(VanillaTypes.ITEM);
         for (int i = 0; i < outputs.size(); i++) {
-            layout.getItemStacks().init(inputs.size() + i, false, 101 + i % 3 * 18, 59 + i / 3 * 18);
+            layout.getItemStacks().init(inputs.size() + i, false, 100 + i % 3 * 18, 58 + i / 3 * 18);
             layout.getItemStacks().set(inputs.size() + i, outputs.get(i));
         }
     }

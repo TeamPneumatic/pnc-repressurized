@@ -33,7 +33,7 @@ public class WidgetTemperature extends Widget implements ITooltipSupplier {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTick) {
+    public void renderButton(int mouseX, int mouseY, float partialTick) {
         if (this.visible) {
             GlStateManager.disableLighting();
             Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_TEMPERATURE);

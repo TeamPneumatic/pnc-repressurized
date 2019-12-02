@@ -910,7 +910,7 @@ public class EntityDrone extends EntityDroneBase implements
             inventory.setStackInSlot(i, tmpInv.getStackInSlot(i).copy());
         }
 
-        tank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.DISPENSER)));
+        tank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.INVENTORY)));
         tank.readFromNBT(tag);
 
         energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.ai.ChunkPositionSorter;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
@@ -99,7 +98,6 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
 
     private void updateConnectionState() {
         BlockState newState = AirHandler.getBlockConnectionState(getBlockState(), getAirHandler(null));
-        newState = newState.with(BlockPneumaticCraft.DOWN, false);  // never connects from below
         world.setBlockState(pos, newState);
     }
 
@@ -117,7 +115,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     @Override
     public void onNeighborTileUpdate() {
         super.onNeighborTileUpdate();
-        updateConnectionState();
+//        updateConnectionState();
     }
 
     @Override
@@ -334,7 +332,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         redstoneMode = tag.getByte("redstoneMode");
-        pumpMode = PumpMode.valueOf(tag.getString("mode"));
+        if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getString("mode"));
         currentDepth = tag.getInt("currentDepth");
     }
 

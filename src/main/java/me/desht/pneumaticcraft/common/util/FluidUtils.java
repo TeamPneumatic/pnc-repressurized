@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
+import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IBucketPickupHandler;
@@ -276,5 +277,13 @@ public class FluidUtils {
         for(int l = 0; l < 8; ++l) {
             world.addParticle(ParticleTypes.LARGE_SMOKE, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0D, 0.0D, 0.0D);
         }
+    }
+
+    public static boolean matchFluid(FluidStack fluid, FluidStack fluid2, boolean matchTags) {
+        return matchFluid(fluid.getFluid(), fluid2.getFluid(), matchTags);
+    }
+
+    public static boolean matchFluid(Fluid fluid, Fluid fluid2, boolean matchTags) {
+        return fluid == fluid2 || matchTags && !Sets.intersection(fluid.getTags(), fluid2.getTags()).isEmpty();
     }
 }

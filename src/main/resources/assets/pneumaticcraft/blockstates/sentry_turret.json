@@ -1,14 +1,7 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "textures": {},
-    "custom": { "flip-v" : true},
-    "model": "pneumaticcraft:block/sentry_turret.obj"
-  },
   "variants": {
-    "": [{}],
-    "inventory": [{
-      "model": "pneumaticcraft:block/sentry_turret_item"
-    }]
+    "": {
+      "model": "pneumaticcraft:block/sentry_turret"
+    }
   }
 }

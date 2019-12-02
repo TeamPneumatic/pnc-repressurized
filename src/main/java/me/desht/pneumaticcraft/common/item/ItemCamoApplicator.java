@@ -45,7 +45,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
         // right-click air: clear any camo
         ItemStack stack = playerIn.getHeldItem(handIn);
         if (!worldIn.isRemote && playerIn.isSneaking() && getCamoState(stack) != null) {
-            setCamoState(stack, null);
+//            setCamoState(stack, null);
         }
         return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
@@ -115,13 +115,13 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     player.getEntityWorld().playEvent(2001, pos, Block.getStateId(particleState));
                 }
                 NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.SHORT_HISS, SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
-                return ActionResultType.SUCCESS;
             }
+//            return ActionResultType.SUCCESS;
         } else {
-            return ActionResultType.SUCCESS;
         }
+        return ActionResultType.SUCCESS;
 
-        return super.onItemUseFirst(stack, ctx);
+//        return super.onItemUseFirst(stack, ctx);
     }
 
     private static void setCamoState(ItemStack stack, BlockState state) {

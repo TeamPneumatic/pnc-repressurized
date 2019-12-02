@@ -169,7 +169,7 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargea
     public boolean upgradeApplies(EnumUpgrade upgrade) {
         switch (upgrade) {
             case VOLUME:
-            case DISPENSER:
+            case INVENTORY:
             case ITEM_LIFE:
             case SECURITY:
             case SPEED:

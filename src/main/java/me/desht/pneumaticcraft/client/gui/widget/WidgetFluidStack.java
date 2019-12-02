@@ -25,7 +25,7 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTick) {
+    public void renderButton(int mouseX, int mouseY, float partialTick) {
         fluid = tank.getFluid() != null ? tank.getFluid().getFluid() : null;
         super.render(mouseX, mouseY, partialTick);
         if (fluid != null) {

@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/uv_light_box",
+  "transform": "forge:default-block"
+}

@@ -69,20 +69,22 @@ public class JEIAmadronTradeCategory extends JEIPneumaticCraftCategory<AmadronOf
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, AmadronOffer recipe, IIngredients ingredients) {
+        super.setRecipe(recipeLayout, recipe, ingredients);
+
         AmadronOffer.TradeResource in = recipe.getInput();
         if (!in.getItem().isEmpty()) {
-            recipeLayout.getItemStacks().init(0, true, 6, 15);
+            recipeLayout.getItemStacks().init(0, true, 5, 14);
             recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
         } else if (!in.getFluid().isEmpty()) {
-            recipeLayout.getFluidStacks().init(0, true, 6, 15);
+            recipeLayout.getFluidStacks().init(0, true, 5, 14);
             recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
         }
         AmadronOffer.TradeResource out = recipe.getOutput();
         if (!out.getItem().isEmpty()) {
-            recipeLayout.getItemStacks().init(1, false, 51, 15);
+            recipeLayout.getItemStacks().init(1, false, 50, 14);
             recipeLayout.getItemStacks().set(1, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
         } else if (!out.getFluid().isEmpty()) {
-            recipeLayout.getFluidStacks().init(1, false, 51, 15);
+            recipeLayout.getFluidStacks().init(1, false, 50, 14);
             recipeLayout.getFluidStacks().set(1, ingredients.getOutputs(VanillaTypes.FLUID).get(0));
         }
 

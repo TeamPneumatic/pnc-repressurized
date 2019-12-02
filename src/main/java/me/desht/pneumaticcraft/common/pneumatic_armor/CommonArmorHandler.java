@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -467,7 +468,7 @@ public class CommonArmorHandler {
                 World world = PneumaticCraftUtils.getWorldForGlobalPos(hackedBlockPos);
                 if (world != null && ++hackTime >= hackableBlock.getHackTime(world, hackedBlockPos.getPos(), player)) {
                     hackableBlock.onHackFinished(player.world, hackedBlockPos.getPos(), player);
-                    PneumaticCraftRepressurized.proxy.getHackTickHandler().trackBlock(hackedBlockPos, hackableBlock);
+                    HackTickHandler.instance().trackBlock(hackedBlockPos, hackableBlock);
                     NetworkHandler.sendToAllAround(new PacketHackingBlockFinish(hackedBlockPos), player.world);
                     setHackedBlockPos(null);
                     AdvancementTriggers.BLOCK_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side
@@ -480,7 +481,7 @@ public class CommonArmorHandler {
             if (hackableEntity != null) {
                 if (++hackTime >= hackableEntity.getHackTime(hackedEntity, player)) {
                     hackableEntity.onHackFinished(hackedEntity, player);
-                    PneumaticCraftRepressurized.proxy.getHackTickHandler().trackEntity(hackedEntity, hackableEntity);
+                    HackTickHandler.instance().trackEntity(hackedEntity, hackableEntity);
                     NetworkHandler.sendToAllAround(new PacketHackingEntityFinish(hackedEntity), new PacketDistributor.TargetPoint(hackedEntity.posX, hackedEntity.posY, hackedEntity.posZ, 64, hackedEntity.world.getDimension().getType()));
                     setHackedEntity(null);
                     AdvancementTriggers.ENTITY_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side

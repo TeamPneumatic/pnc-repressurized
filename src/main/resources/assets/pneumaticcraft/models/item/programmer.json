@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/programmer",
+  "transform": "forge:default-block"
+}

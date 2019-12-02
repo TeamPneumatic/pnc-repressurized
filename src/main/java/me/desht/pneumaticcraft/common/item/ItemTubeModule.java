@@ -26,7 +26,7 @@ public class ItemTubeModule extends ItemPneumatic {
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack par1ItemStack, World par2EntityPlayer, List<ITextComponent> par3List, ITooltipFlag par4) {
         super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
-        TubeModule module = ModuleRegistrator.getModule(moduleName);
+        TubeModule module = ModuleRegistrator.createModule(getRegistryName());
         if (module != null) {
             par3List.add(new StringTextComponent("In line: " + (module.isInline() ? "Yes" : "No")).applyTextStyle(TextFormatting.DARK_AQUA));
         }

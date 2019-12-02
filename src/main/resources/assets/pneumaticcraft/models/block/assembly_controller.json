@@ -1,4 +1,10 @@
 {
+  "textures": {
+    "pipe": "pneumaticcraft:block/pressure_tube",
+    "base": "pneumaticcraft:block/assembly_base",
+    "leg": "pneumaticcraft:block/compressed_iron_block",
+    "particle": "pneumaticcraft:block/assembly_base"
+  },
   "elements": [
     {
       "from": [ 0, 0, 0],

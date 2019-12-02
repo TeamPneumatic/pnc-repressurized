@@ -1,4 +1,7 @@
 {
+  "textures": {
+    "pipe": "pneumaticcraft:block/pressure_tube"
+  },
   "elements": [
     {
       "from": [ 6, 1, 7 ],
