@@ -36,17 +36,16 @@ public class BlockPressureChamberWallBase extends BlockPneumaticCraft implements
 
     @Override
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (world.isRemote) return true;
         // forward activation to the pressure chamber valve, which will open the GUI
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityPressureChamberWall) {
             TileEntityPressureChamberValve valve = ((TileEntityPressureChamberWall) te).getCore();
             if (valve != null) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getPos());
-//                return valve.getBlockState().onBlockActivated(world, player, hand, brtr);
+                if (!world.isRemote) NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getPos());
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     @Override

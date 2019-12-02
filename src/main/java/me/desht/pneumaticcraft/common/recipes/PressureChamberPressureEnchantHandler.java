@@ -98,6 +98,11 @@ public class PressureChamberPressureEnchantHandler implements IPressureChamberRe
     }
 
     @Override
+    public boolean isOutputItem(ItemStack stack) {
+        return false;
+    }
+
+    @Override
     public ResourceLocation getId() {
         return ID;
     }

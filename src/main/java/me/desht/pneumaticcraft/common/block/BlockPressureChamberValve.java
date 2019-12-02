@@ -15,6 +15,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -107,9 +110,8 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
         }
     }
 
-    // todo 1.14 may need to override the voxel shape
-//    @Override
-//    public boolean isOpaqueCube(BlockState state) {
-//        return false;
-//    }
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return ALMOST_FULL_SHAPE;
+    }
 }

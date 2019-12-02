@@ -36,7 +36,7 @@ public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
     public boolean isValidRecipe(@Nonnull ItemStackHandler chamberHandler) {
         List<Ingredient> missing = new ArrayList<>(inputs);
 
-        for (int i = 0; i < chamberHandler.getSlots(); i++) {
+        for (int i = 0; i < chamberHandler.getSlots() && !missing.isEmpty(); i++) {
             ItemStack input = chamberHandler.getStackInSlot(i);
 
             int stackIndex = -1;
@@ -71,6 +71,14 @@ public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
     }
 
     @Override
+    public boolean isOutputItem(ItemStack stack) {
+        for (ItemStack out: outputs) {
+            if (ItemStack.areItemsEqual(out, stack)) return true;
+        }
+        return false;
+    }
+
+    @Override
     public ResourceLocation getId() {
         return id;
     }
@@ -90,11 +98,12 @@ public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
     public NonNullList<ItemStack> craftRecipe(@Nonnull ItemStackHandler chamberHandler) {
         // remove the recipe's input items from the chamber
         for (Ingredient ingredient : inputs) {
-//                int amountLeft = ingredient.getItemAmount();
-            for (int i = 0; i < chamberHandler.getSlots(); i++) {
+            int nItems = ingredient.hasNoMatchingItems() ? 0 : ingredient.getMatchingStacks()[0].getCount();
+            for (int i = 0; i < chamberHandler.getSlots() && nItems > 0; i++) {
                 ItemStack itemInChamber = chamberHandler.getStackInSlot(i);
                 if (ingredient.test(itemInChamber)) {
-                    chamberHandler.extractItem(i, 1, false);
+                    ItemStack extracted = chamberHandler.extractItem(i, nItems, false);
+                    nItems -= extracted.getCount();
                 }
             }
         }

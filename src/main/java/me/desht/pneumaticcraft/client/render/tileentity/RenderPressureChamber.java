@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
+import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
@@ -47,6 +48,9 @@ public class RenderPressureChamber extends TileEntityRenderer<TileEntityPressure
             double ticks = ClientTickHandler.TICKS + partialTicks;
             float yBob = MathHelper.sin(((float) ticks  / 10) % 360) * 0.01f;
             float yRot = (float) (ticks / 2) % 360;
+
+            int light = te.getWorld().getCombinedLight(te.getPos().offset(te.getRotation()), 0);  // otherwise it will render unlit
+            GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float) (light & 0xFFFF), (float) ((light >> 16) & 0xFFFF));
 
             for(int i = 0; i < stacks.size(); i++){
                 GlStateManager.pushMatrix();

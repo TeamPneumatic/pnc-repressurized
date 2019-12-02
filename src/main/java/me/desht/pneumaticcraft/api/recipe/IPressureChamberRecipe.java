@@ -53,10 +53,18 @@ public interface IPressureChamberRecipe extends IModRecipe {
     }
 
     /**
+     * Check if the given item stack is a valid output item for this recipe.  This is used by the Pressure Chamber
+     * Interface to decide if the item can be pulled from the chamber.
+     *
+     * @param stack the item stack to check
+     * @return true if it's a valid output, false otherwise
+     */
+    boolean isOutputItem(ItemStack stack);
+
+    /**
      * This method will be called when the recipe should output its items (after isValidRecipe returns true).  The
-     * implementation is responsible for removing the items that have been used from the {@code chamberHandler}. Output
-     * items will be automatically placed into the {@code chamberHandler} but this implementation should also return
-     * the list of crafted items, in case they do not all fit in the pressure chamber.
+     * implementation is responsible for removing the items that have been used from the {@code chamberHandler}. The
+     * implementation must also return the list of crafted items, for the Pressure Chamber to insert.
      *
      * @param chamberHandler  items in the pressure chamber; should be modified to remove recipe input items.
      * @return the resulting items; these do not have to be copies - the Pressure Chamber itself will make sure they are copied

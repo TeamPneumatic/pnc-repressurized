@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
@@ -29,16 +28,7 @@ public class ModPressureChamberRecipes {
 
             pc.accept(new BasicPressureChamberRecipe(
                     RL("coal_to_diamonds"),
-                    ImmutableList.of(
-                            Ingredient.fromItems(Blocks.COAL_BLOCK),
-                            Ingredient.fromItems(Blocks.COAL_BLOCK),
-                            Ingredient.fromItems(Blocks.COAL_BLOCK),
-                            Ingredient.fromItems(Blocks.COAL_BLOCK),
-                            Ingredient.fromItems(Blocks.COAL_BLOCK),
-                            Ingredient.fromItems(Blocks.COAL_BLOCK),
-                            Ingredient.fromItems(Blocks.COAL_BLOCK),
-                            Ingredient.fromItems(Blocks.COAL_BLOCK)
-                    ),
+                    ImmutableList.of(StackedIngredient.fromTag(Tags.Items.STORAGE_BLOCKS_COAL, 8)),
                     4.0F,
                     new ItemStack(Items.DIAMOND)
             ));
@@ -61,8 +51,7 @@ public class ModPressureChamberRecipes {
         pc.accept(new BasicPressureChamberRecipe(
                 RL("turbine_blade"),
                 ImmutableList.of(
-                        Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE),
-                        Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE),
+                        StackedIngredient.fromTag(Tags.Items.DUSTS_REDSTONE, 2),
                         Ingredient.fromTag(Tags.Items.INGOTS_GOLD)
                 ),
                 1F,
@@ -83,12 +72,9 @@ public class ModPressureChamberRecipes {
                 RL("etching_acid_bucket"),
                 ImmutableList.of(
                         Ingredient.fromItems(ModItems.PLASTIC_BUCKET),
-                        Ingredient.fromItems(Items.ROTTEN_FLESH),
-                        Ingredient.fromItems(Items.ROTTEN_FLESH),
-                        Ingredient.fromTag(Tags.Items.GUNPOWDER),
-                        Ingredient.fromTag(Tags.Items.GUNPOWDER),
-                        Ingredient.fromItems(Items.SPIDER_EYE),
-                        Ingredient.fromItems(Items.SPIDER_EYE)
+                        Ingredient.fromStacks(new ItemStack(Items.ROTTEN_FLESH, 2)),
+                        StackedIngredient.fromTag(Tags.Items.GUNPOWDER, 2),
+                        Ingredient.fromStacks(new ItemStack(Items.SPIDER_EYE, 2))
                 ),
                 1.0F,
                 new ItemStack(ModItems.ETCHING_ACID_BUCKET)
@@ -98,9 +84,7 @@ public class ModPressureChamberRecipes {
                 RL("transistor"),
                 ImmutableList.of(
                         Ingredient.fromItems(ModItems.PLASTIC),
-                        Ingredient.fromTag(Tags.Items.NUGGETS_GOLD),
-                        Ingredient.fromTag(Tags.Items.NUGGETS_GOLD),
-                        Ingredient.fromTag(Tags.Items.NUGGETS_GOLD),
+                        StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 3),
                         Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE)
                 ),
                 1.0F,
@@ -111,8 +95,7 @@ public class ModPressureChamberRecipes {
                 RL("capacitor"),
                 ImmutableList.of(
                         Ingredient.fromItems(ModItems.PLASTIC),
-                        Ingredient.fromTag(Tags.Items.NUGGETS_GOLD),
-                        Ingredient.fromTag(Tags.Items.NUGGETS_GOLD),
+                        StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 2),
                         Ingredient.fromTag(Tags.Items.SLIMEBALLS)
                 ),
                 1.0F,

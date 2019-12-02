@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
@@ -21,10 +23,9 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
@@ -34,33 +35,31 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall implements ITickableTileEntity, IGUITextFieldSensitive, IRedstoneControlled, INamedContainerProvider {
+public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall implements ITickableTileEntity, IRedstoneControlled, INamedContainerProvider {
     public static final int MAX_PROGRESS = 40;
     public static final int INVENTORY_SIZE = 1;
     private static final int FILTER_SIZE = 9;
-    private static final int MIN_SOUND_INTERVAL = 500;  // ticks - the sound effect is ~2.5s long
+    private static final int MIN_SOUND_INTERVAL = 400;  // ticks - the sound effect is ~2.5s long
 
     @DescSynced
     private final PressureChamberInterfaceHandler inventory = new PressureChamberInterfaceHandler();
     private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventory);
     @DescSynced
-    @LazySynced
-    public int inputProgress;
-    public int oldInputProgress;
+    private float doorSpeed = 0f;
     @DescSynced
     @LazySynced
-    public int outputProgress;
-    public int oldOutputProgress;
+    public float inputProgress;
+    public float oldInputProgress;
+    @DescSynced
+    @LazySynced
+    public float outputProgress;
+    public float oldOutputProgress;
     @GuiSynced
     public InterfaceDirection interfaceMode = InterfaceDirection.NONE;
     @GuiSynced
     private boolean enoughAir = true;
-    @DescSynced
-    public FilterMode filterMode = FilterMode.ITEM;
-    @DescSynced
-    public String itemNameFilter = "";
-    private boolean isOpeningI; // used to determine sounds.
-    private boolean isOpeningO; // used to determine sounds.
+    private boolean isOpeningInput; // used to determine sounds.
+    private boolean isOpeningOutput; // used to determine sounds.
     private int soundTimer;
     @DescSynced
     private boolean shouldOpenInput, shouldOpenOutput;
@@ -68,19 +67,21 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     public int redstoneMode;
     private int inputTimeOut;
     private int oldItemCount;
-    private final PressureChamberFilterHandler filterHandler = new PressureChamberFilterHandler();
+    @GuiSynced
+    public boolean exportAny;
 
     public enum InterfaceDirection {
-        NONE, IMPORT, EXPORT
-    }
+        NONE, IMPORT, EXPORT;
 
-    public enum FilterMode {
-        ITEM, NAME_BEGINS, NAME_CONTAINS
+        public String getTranslationKey() {
+            return "gui.pressureChamberInterface.mode." + toString().toLowerCase();
+        }
     }
 
     public TileEntityPressureChamberInterface() {
         super(ModTileEntityTypes.PRESSURE_CHAMBER_INTERFACE, 4);
         addApplicableUpgrade(EnumUpgrade.SPEED);
+        addApplicableUpgrade(EnumUpgrade.DISPENSER);
     }
 
     @Override
@@ -98,13 +99,15 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     public void tick() {
         tickImpl();
 
-        boolean wasOpeningI = isOpeningI;
-        boolean wasOpeningO = isOpeningO;
+        boolean wasOpeningI = isOpeningInput;
+        boolean wasOpeningO = isOpeningOutput;
         oldInputProgress = inputProgress;
         oldOutputProgress = outputProgress;
         TileEntityPressureChamberValve core = getCore();
 
         if (!getWorld().isRemote) {
+            doorSpeed = getSpeedMultiplierFromUpgrades();
+
             int itemCount = inventory.getStackInSlot(0).getCount();
             if (oldItemCount != itemCount) {
                 oldItemCount = itemCount;
@@ -142,25 +145,24 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             }
         }
 
-        int speed = (int) getSpeedMultiplierFromUpgrades();
 
         if (shouldOpenInput) {
-            inputProgress = Math.min(inputProgress + speed, MAX_PROGRESS);
-            isOpeningI = true;
+            inputProgress = Math.min(inputProgress + doorSpeed, MAX_PROGRESS);
+            isOpeningInput = true;
         } else {
-            inputProgress = Math.max(inputProgress - speed, 0);
-            isOpeningI = false;
+            inputProgress = Math.max(inputProgress - doorSpeed, 0);
+            isOpeningInput = false;
         }
 
         if (shouldOpenOutput) {
-            outputProgress = Math.min(outputProgress + speed, MAX_PROGRESS);
-            isOpeningO = true;
+            outputProgress = Math.min(outputProgress + doorSpeed, MAX_PROGRESS);
+            isOpeningOutput = true;
         } else {
-            outputProgress = Math.max(outputProgress - speed, 0);
-            isOpeningO = false;
+            outputProgress = Math.max(outputProgress - doorSpeed, 0);
+            isOpeningOutput = false;
         }
 
-        if (getWorld().isRemote && soundTimer++ >= MIN_SOUND_INTERVAL && (wasOpeningI != isOpeningI || wasOpeningO != isOpeningO)) {
+        if (getWorld().isRemote && soundTimer++ >= MIN_SOUND_INTERVAL && (wasOpeningI != isOpeningInput || wasOpeningO != isOpeningOutput)) {
             getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, ModSounds.INTERFACE_DOOR, SoundCategory.BLOCKS, 0.5F, 1.0F, true);
             soundTimer = 0;
         }
@@ -173,11 +175,15 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     private void exportToInventory() {
         Direction facing = getRotation();
         TileEntity te = getCachedNeighbor(facing);
+        ItemStack stack = inventory.getStackInSlot(0);
         if (te != null) {
-            ItemStack stack = inventory.getStackInSlot(0);
             int count = stack.getCount();
             ItemStack leftoverStack = IOHelper.insert(te, stack.copy(), facing.getOpposite(), false);
             stack.shrink(count - leftoverStack.getCount());
+        } else if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+            BlockPos pos = getPos().offset(getRotation());
+            PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getWorld(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+            inventory.setStackInSlot(0, ItemStack.EMPTY);
         }
     }
 
@@ -188,13 +194,11 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             if (chamberStack.isEmpty()) {
                 continue;
             }
-            ItemStack inputStack = inventory.getStackInSlot(0);
-            if ((inputStack.isEmpty() || inputStack.isItemEqual(chamberStack)) && filterHandler.doesItemMatchFilter(chamberStack)) {
+            ItemStack stackInInterface = inventory.getStackInSlot(0);
+            if ((stackInInterface.isEmpty() || stackInInterface.isItemEqual(chamberStack)) && canPullItem(chamberStack)) {
                 int maxAllowedItems = Math.abs(core.getAirHandler(null).getAir()) / PneumaticValues.USAGE_CHAMBER_INTERFACE;
                 if (maxAllowedItems > 0) {
-                    if (!inputStack.isEmpty()) {
-                        maxAllowedItems = Math.min(maxAllowedItems, chamberStack.getMaxStackSize() - inputStack.getCount());
-                    }
+                    maxAllowedItems = Math.min(maxAllowedItems, chamberStack.getMaxStackSize() - stackInInterface.getCount());
                     int transferredItems = Math.min(chamberStack.getCount(), maxAllowedItems);
                     ItemStack toTransferStack = chamberStack.copy().split(transferredItems);
                     ItemStack excess = inventory.insertItem(0, toTransferStack, true);
@@ -209,6 +213,18 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                 }
             }
         }
+    }
+
+    private boolean canPullItem(ItemStack stack) {
+        if (exportAny) return true;
+
+        for (IPressureChamberRecipe recipe: PneumaticCraftRecipes.pressureChamberRecipes.values()) {
+            if (recipe.isOutputItem(stack)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void outputInChamber() {
@@ -274,12 +290,10 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         super.read(tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
-        filterHandler.deserializeNBT(tag.getCompound("filter"));
-        outputProgress = tag.getInt("outputProgress");
-        inputProgress = tag.getInt("inputProgress");
+        outputProgress = tag.getFloat("outputProgress");
+        inputProgress = tag.getFloat("inputProgress");
         interfaceMode = InterfaceDirection.values()[tag.getInt("interfaceMode")];
-        filterMode = FilterMode.values()[tag.getInt("filterMode")];
-        itemNameFilter = tag.getString("itemNameFilter");
+        exportAny = tag.getBoolean("exportAny");
         redstoneMode = tag.getInt("redstoneMode");
     }
 
@@ -287,12 +301,10 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
         tag.put("Items", inventory.serializeNBT());
-        tag.put("filter", filterHandler.serializeNBT());
-        tag.putInt("outputProgress", outputProgress);
-        tag.putInt("inputProgress", inputProgress);
+        tag.putFloat("outputProgress", outputProgress);
+        tag.putFloat("inputProgress", inputProgress);
         tag.putInt("interfaceMode", interfaceMode.ordinal());
-        tag.putInt("filterMode", filterMode.ordinal());
-        tag.putString("itemNameFilter", itemNameFilter);
+        tag.putBoolean("exportAny", exportAny);
         tag.putInt("redstoneMode", redstoneMode);
         return tag;
     }
@@ -313,20 +325,10 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
-        } else if (tag.equals("filter_mode")) {
-            int n = (filterMode.ordinal() + 1) % FilterMode.values().length;
-            filterMode = FilterMode.values()[n];
+        } else if (tag.equals("export_mode")) {
+            exportAny = !exportAny;
         }
-    }
-
-    @Override
-    public void setText(int textFieldID, String text) {
-        itemNameFilter = text;
-    }
-
-    @Override
-    public String getText(int textFieldID) {
-        return itemNameFilter;
+        markDirty();
     }
 
     @Override
@@ -337,44 +339,6 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     @Override
     public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return invCap;
-    }
-
-    public IItemHandler getFilterHandler() {
-        return filterHandler;
-    }
-
-    private class PressureChamberFilterHandler extends ItemStackHandler {
-        PressureChamberFilterHandler() {
-            super(FILTER_SIZE);
-        }
-
-        boolean doesItemMatchFilter(ItemStack itemStack) {
-            if (itemStack.isEmpty()) return true;
-
-            switch (filterMode) {
-                case ITEM:
-                    boolean filterEmpty = true;
-                    for (int i = 0; i < 9; i++) {
-                        ItemStack filterStack = getStackInSlot(i);
-                        if (!filterStack.isEmpty()) {
-                            filterEmpty = false;
-                            if (itemStack.isItemEqual(filterStack)) {
-                                return true;
-                            }
-                        }
-                    }
-                    return filterEmpty;
-                case NAME_BEGINS:
-                    return asPlainString(itemStack.getDisplayName()).startsWith(itemNameFilter.toLowerCase());
-                case NAME_CONTAINS:
-                    return asPlainString(itemStack.getDisplayName()).contains(itemNameFilter.toLowerCase());
-            }
-            return false;
-        }
-    }
-
-    private static String asPlainString(ITextComponent text) {
-        return TextFormatting.getTextWithoutFormattingCodes(text.getFormattedText()).toLowerCase();
     }
 
     private class PressureChamberInterfaceHandler extends BaseItemStackHandler {
@@ -396,7 +360,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
         @Override
         protected void onContentsChanged(int slot) {
-            if(!getWorld().isRemote && slot == 0) {
+            if (!getWorld().isRemote && slot == 0) {
                 sendDescriptionPacket();
             }
         }

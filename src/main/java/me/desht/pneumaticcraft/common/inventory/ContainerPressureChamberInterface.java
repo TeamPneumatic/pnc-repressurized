@@ -3,11 +3,8 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-
-import javax.annotation.Nonnull;
 
 public class ContainerPressureChamberInterface extends ContainerPneumaticBase<TileEntityPressureChamberInterface> {
 
@@ -27,15 +24,15 @@ public class ContainerPressureChamberInterface extends ContainerPneumaticBase<Ti
 
         // add the export filter slots
         //  - after the player slots so they won't be shift-clicked.
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                addSlot(new SlotPhantomUnstackable(te.getFilterHandler(), i * 3 + j, 115 + j * 18, 25 + i * 18) {
-                    @Override
-                    public boolean isItemValid(@Nonnull ItemStack stack) {
-                        return true;
-                    }
-                });
-            }
-        }
+//        for (int i = 0; i < 3; i++) {
+//            for (int j = 0; j < 3; j++) {
+//                addSlot(new SlotPhantomUnstackable(te.getFilterHandler(), i * 3 + j, 115 + j * 18, 25 + i * 18) {
+//                    @Override
+//                    public boolean isItemValid(@Nonnull ItemStack stack) {
+//                        return true;
+//                    }
+//                });
+//            }
+//        }
     }
 }
