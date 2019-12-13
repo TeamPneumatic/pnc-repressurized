@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationMain;
@@ -27,13 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GuiSecurityStationInventory extends GuiSecurityStationBase<ContainerSecurityStationMain> {
-    private GuiAnimatedStat statusStat;
-    private GuiAnimatedStat accessStat;
+    private WidgetAnimatedStat statusStat;
+    private WidgetAnimatedStat accessStat;
 
-    private GuiButtonSpecial addUserButton;
+    private WidgetButtonExtended addUserButton;
     private Button rebootButton;
     private WidgetTextField sharedUserTextField;
-    private List<GuiButtonSpecial> removeUserButtons;
+    private List<WidgetButtonExtended> removeUserButtons;
     private NetworkConnectionHandler nodeHandler;
 
     public GuiSecurityStationInventory(ContainerSecurityStationMain container, PlayerInventory inv, ITextComponent displayString) {
@@ -58,7 +58,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
                 NetworkHandler.sendToServer(new PacketSecurityStationAddUser(te, sharedUserTextField.getText()));
         });
 
-        rebootButton = new GuiButtonSpecial(xStart + 110, yStart + 20, 60, 20, "Reboot").withTag("reboot");
+        rebootButton = new WidgetButtonExtended(xStart + 110, yStart + 20, 60, 20, "Reboot").withTag("reboot");
         sharedUserTextField = getTextFieldFromRectangle(accessStat.getButtonScaledRectangle(20, 15, 120, 10));
         sharedUserTextField.setResponder(s -> {
             te.setText(0, sharedUserTextField.getText());
@@ -67,9 +67,9 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         accessStat.addSubWidget(sharedUserTextField);
         accessStat.addSubWidget(addUserButton);
 
-        addButton(new GuiButtonSpecial(guiLeft + 108, guiTop + 103, 64, 20, I18n.format("gui.securityStation.test"))).withTag("test");
+        addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 103, 64, 20, I18n.format("gui.securityStation.test"))).withTag("test");
         addButton(rebootButton);
-        addButton(new GuiButtonSpecial(guiLeft + 108, guiTop + 125, 64, 20, I18n.format("gui.universalSensor.button.showRange"), b -> te.showRangeLines()));
+        addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 125, 64, 20, I18n.format("gui.universalSensor.button.showRange"), b -> te.showRangeLines()));
 
         updateUserRemoveButtons();
 
@@ -203,14 +203,14 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
 
     private void updateUserRemoveButtons() {
         if (removeUserButtons != null) {
-            for (GuiButtonSpecial button : removeUserButtons) {
+            for (WidgetButtonExtended button : removeUserButtons) {
                 accessStat.removeSubWidget(button);
             }
         }
         removeUserButtons = new ArrayList<>();
         for (int i = 0; i < te.sharedUsers.size(); i++) {
             Rectangle2d rect = accessStat.getButtonScaledRectangle(24, 30 + i * 10, font.getStringWidth(te.sharedUsers.get(i).getName()), 8);
-            GuiButtonSpecial button = getInvisibleButtonFromRectangle("remove:" + i, rect, b -> {});
+            WidgetButtonExtended button = getInvisibleButtonFromRectangle("remove:" + i, rect, b -> {});
             button.setInvisibleHoverColor(0x44FF0000);
             button.setVisible(false);
             accessStat.addSubWidget(button);

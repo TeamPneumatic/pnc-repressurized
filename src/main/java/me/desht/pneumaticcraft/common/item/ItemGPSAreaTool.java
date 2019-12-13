@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.areatool.GuiGPSAreaTool;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -44,13 +45,13 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
     @Override
     public ActionResultType onItemUse(ItemUseContext ctx) {
         setGPSPosAndNotify(ctx.getPlayer(), ctx.getPos(), ctx.getHand(), 0);
+        ctx.getPlayer().playSound(ModSounds.CHIRP, 1.0f, 1.5f);
         return ActionResultType.SUCCESS; // we don't want to use the item.
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (handIn != Hand.MAIN_HAND) return ActionResult.newResult(ActionResultType.PASS, playerIn.getHeldItem(handIn));
-        ItemStack stack = playerIn.getHeldItemMainhand();
+        ItemStack stack = playerIn.getHeldItem(handIn);
         if (worldIn.isRemote) {
             GuiGPSAreaTool.showGUI(handIn, stack, 0);
         }
@@ -73,7 +74,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
         super.addInformation(stack, worldIn, infoList, par4);
         for(int index = 0; index < 2; index++){
             BlockPos pos = getGPSLocation(stack, index);
-            infoList.add(new StringTextComponent(String.format("\u00a72P%d: %d, %d, %d", index + 1, pos.getX(), pos.getY(), pos.getZ())));
+            infoList.add(new StringTextComponent(String.format("P%d: %d, %d, %d", index + 1, pos.getX(), pos.getY(), pos.getZ())).applyTextStyle(TextFormatting.GREEN));
             String varName = getVariable(stack, index);
             if (!varName.isEmpty()) {
                 infoList.add(xlate("gui.tooltip.gpsTool.variable", varName));
@@ -172,6 +173,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
         public static void onBlockLeftClick(PlayerInteractEvent.LeftClickBlock event) {
             if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL) {
                 if (!event.getPos().equals(getGPSLocation(event.getItemStack(), 1))) {
+                    event.getPlayer().playSound(ModSounds.CHIRP, 1.0f, 1.5f);
                     setGPSPosAndNotify(event.getPlayer(), event.getPos(), event.getHand(), 1);
                 }
                 event.setCanceled(true);

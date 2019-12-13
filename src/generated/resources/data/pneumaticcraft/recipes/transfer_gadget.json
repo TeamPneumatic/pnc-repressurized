@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:hopper"
+    },
+    {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:transfer_gadget"
+  }
+}

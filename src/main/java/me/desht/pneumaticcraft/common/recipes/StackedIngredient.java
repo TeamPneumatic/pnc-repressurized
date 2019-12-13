@@ -42,6 +42,11 @@ public class StackedIngredient extends Ingredient {
     }
 
     @Override
+    public IIngredientSerializer<? extends Ingredient> getSerializer() {
+        return Serializer.INSTANCE;
+    }
+
+    @Override
     public boolean test(@Nullable ItemStack checkingStack) {
         if (checkingStack == null || checkingStack.isEmpty()) {
             return super.test(checkingStack);

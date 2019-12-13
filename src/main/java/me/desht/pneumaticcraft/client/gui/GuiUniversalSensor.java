@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -37,7 +37,7 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.lib.GuiConstants.*;
 
 public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUniversalSensor,TileEntityUniversalSensor> {
-    private GuiAnimatedStat sensorInfoStat;
+    private WidgetAnimatedStat sensorInfoStat;
     private TextFieldWidget nameFilterField;
     private int page;
     private int maxPage;
@@ -146,9 +146,9 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         sensorButtons.clear();
 
         if (!te.getSensorSetting().equals("")) {
-            addButtonLocal(new GuiButtonSpecial(guiLeft + 70, guiTop + 18, 20, 20, ARROW_LEFT_SHORT).withTag("back"));
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 18, 20, 20, ARROW_LEFT_SHORT).withTag("back"));
         } else {
-            addButtonLocal(new GuiButtonSpecial(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.universalSensor.button.showRange"), b -> te.showRangeLines()));
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.universalSensor.button.showRange"), b -> te.showRangeLines()));
         }
 
         String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(te.getSensorSetting());
@@ -156,12 +156,12 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         if (page > maxPage) page = maxPage;
         if (page < 1) page = 1;
         if (maxPage > 1) {
-            addButtonLocal(new GuiButtonSpecial(guiLeft + 70, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, ARROW_LEFT, b -> {
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, ARROW_LEFT, b -> {
                 page--;
                 if (page <= 0) page = maxPage;
                 updateButtons();
             }));
-            addButtonLocal(new GuiButtonSpecial(guiLeft + 138, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, ARROW_RIGHT, b -> {
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 138, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, ARROW_RIGHT, b -> {
                 page++;
                 if (page > maxPage) page = 1;
                 updateButtons();
@@ -184,7 +184,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             int buttonHeight = 20;
             if (te.getSensorSetting().equals("")) {
                 Set<Item> requiredItems = SensorHandler.getInstance().getRequiredStacksFromText(buttonText);
-                GuiButtonSpecial button = new GuiButtonSpecial(buttonX, buttonY, buttonWidth, buttonHeight, "").withTag("set:" + buttonID);
+                WidgetButtonExtended button = new WidgetButtonExtended(buttonX, buttonY, buttonWidth, buttonHeight, "").withTag("set:" + buttonID);
                 ItemStack[] requiredStacks = new ItemStack[requiredItems.size()];
                 Iterator<Item> iterator = requiredItems.iterator();
                 for (int j = 0; j < requiredStacks.length; j++) {
@@ -194,7 +194,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
                 button.active = te.areGivenUpgradesInserted(requiredItems);
                 addButtonLocal(button);
             } else {
-                addButtonLocal(new GuiButtonSpecial(buttonX, buttonY, buttonWidth, buttonHeight, buttonText).withTag("set:" + buttonID));
+                addButtonLocal(new WidgetButtonExtended(buttonX, buttonY, buttonWidth, buttonHeight, buttonText).withTag("set:" + buttonID));
             }
         }
         sensorInfoStat.setText(getSensorInfo());

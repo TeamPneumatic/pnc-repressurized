@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -26,10 +26,10 @@ public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCr
         super.init();
         int y = height / 2 - 5;
         int x = width / 2;
-        addButton(new GuiButtonSpecial(x - 90, y, 30, 20, "-1").withTag("-1"));
-        addButton(new GuiButtonSpecial(x - 58, y, 30, 20, "-0.1").withTag("-0.1"));
-        addButton(new GuiButtonSpecial(x + 28, y, 30, 20, "+0.1").withTag("+0.1"));
-        addButton(new GuiButtonSpecial(x + 60, y, 30, 20, "+1").withTag("+1"));
+        addButton(new WidgetButtonExtended(x - 90, y, 30, 20, "-1").withTag("-1"));
+        addButton(new WidgetButtonExtended(x - 58, y, 30, 20, "-0.1").withTag("-0.1"));
+        addButton(new WidgetButtonExtended(x + 28, y, 30, 20, "+0.1").withTag("+0.1"));
+        addButton(new WidgetButtonExtended(x + 60, y, 30, 20, "+1").withTag("+1"));
     }
 
     @Override

@@ -9,5 +9,5 @@ public class NBTKeys {
     public static final String NBT_SAVED_TANKS = "SavedTanks";
     public static final String NBT_HEAT_EXCHANGER = "HeatExchanger";
     public static final String NBT_AIR_HANDLER = "AirHandler";
-    public static final String SIDE_CONFIGURATION = "SideConfiguration";
+    public static final String NBT_SIDE_CONFIG = "SideConfiguration";
 }

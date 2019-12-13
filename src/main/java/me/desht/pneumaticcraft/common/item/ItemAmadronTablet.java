@@ -49,7 +49,6 @@ import java.util.Map;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemAmadronTablet extends ItemPressurizable implements IPositionProvider {
-
     public ItemAmadronTablet() {
         super("amadron_tablet", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
@@ -122,7 +121,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
             TileEntity te = PneumaticCraftUtils.getTileEntity(pos);
             return IOHelper.getInventoryForTE(te);
         }
-        return null;
+        return LazyOptional.empty();
     }
 
     public static GlobalPos getItemProvidingLocation(ItemStack tablet) {
@@ -141,7 +140,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
             World world = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), pos.getDimension(), false, false);
             return world == null ? LazyOptional.empty() : FluidUtil.getFluidHandler(world, pos.getPos(), null);
         }
-        return null;
+        return LazyOptional.empty();
     }
 
     public static GlobalPos getFluidProvidingLocation(ItemStack tablet) {
@@ -180,7 +179,9 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
 
     @Override
     public List<BlockPos> getStoredPositions(@Nonnull ItemStack stack) {
-        return Arrays.asList(getItemProvidingLocation(stack).getPos(), getFluidProvidingLocation(stack).getPos());
+        GlobalPos gp1 = getItemProvidingLocation(stack);
+        GlobalPos gp2 = getFluidProvidingLocation(stack);
+        return Arrays.asList(gp1 == null ? null : gp1.getPos(), gp2 == null ? null : gp2.getPos());
     }
 
     @Override

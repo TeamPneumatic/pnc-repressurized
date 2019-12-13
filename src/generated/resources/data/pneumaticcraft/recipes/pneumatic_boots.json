@@ -1,0 +1,21 @@
+{
+  "type": "pneumaticcraft:crafting_shaped_pressurizable",
+  "pattern": [
+    "CPC",
+    "CAC"
+  ],
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:air_canister"
+    },
+    "P": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "A": {
+      "item": "minecraft:leather_boots"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:pneumatic_boots"
+  }
+}

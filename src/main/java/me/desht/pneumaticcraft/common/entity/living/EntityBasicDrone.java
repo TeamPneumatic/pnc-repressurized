@@ -34,7 +34,7 @@ public abstract class EntityBasicDrone extends EntityDrone {
     @Override
     protected ItemStack getDroppedStack() {
         CompoundNBT tag = new CompoundNBT();
-        tag.putFloat("currentAir", currentAir);
+        tag.putFloat("currentAir", getAirHandler().getAir());
         tag.putInt("color", getDroneColor());
         CompoundNBT invTag = new CompoundNBT();
         writeAdditional(invTag);

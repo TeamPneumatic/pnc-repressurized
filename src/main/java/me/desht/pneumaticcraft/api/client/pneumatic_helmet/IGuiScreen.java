@@ -17,7 +17,7 @@ public interface IGuiScreen {
     <T extends Widget> T addWidget(T w);
 
     /**
-     * Get a list of all widgets in this GUI.
+     * Get a list of all widgets in this GUI.  Don't use this to add subwidgets; use {@link #addWidget(Widget)} instead.
      *
      * @return a list of widgets
      */
@@ -29,4 +29,9 @@ public interface IGuiScreen {
      * @return a font renderer
      */
     FontRenderer getFontRenderer();
+
+    /**
+     * Set the focus on a particular subwidget (generally a text field)
+     */
+    void setFocusedWidget(Widget w);
 }

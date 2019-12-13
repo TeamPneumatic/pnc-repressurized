@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:logistics_frame_passive_provider"
+    ]
+  },
+  "criteria": {
+    "has_plastic": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:plastic"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:logistics_frame_passive_provider"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_plastic",
+      "has_the_recipe"
+    ]
+  ]
+}

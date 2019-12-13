@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "heat_sink",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_name",
+              "source": "block_entity"
+            },
+            {
+              "function": "pneumaticcraft:te_serializer"
+            }
+          ],
+          "name": "pneumaticcraft:heat_sink"
+        }
+      ]
+    }
+  ]
+}

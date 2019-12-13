@@ -1,0 +1,25 @@
+{
+  "type": "pneumaticcraft:crafting_shaped_pressurizable",
+  "pattern": [
+    "IDI",
+    "C  ",
+    "ILI"
+  ],
+  "key": {
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    },
+    "D": {
+      "tag": "forge:dyes/yellow"
+    },
+    "C": {
+      "item": "pneumaticcraft:air_canister"
+    },
+    "L": {
+      "item": "minecraft:lever"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:vortex_cannon"
+  }
+}

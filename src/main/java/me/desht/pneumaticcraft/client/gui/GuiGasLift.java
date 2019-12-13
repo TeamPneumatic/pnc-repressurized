@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileEntityGasLift> {
-    private GuiAnimatedStat statusStat;
-    private final GuiButtonSpecial[] modeButtons = new GuiButtonSpecial[PumpMode.values().length];
+    private WidgetAnimatedStat statusStat;
+    private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[PumpMode.values().length];
 
     public GuiGasLift(ContainerGasLift container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -33,22 +33,22 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
         addButton(new WidgetTank(guiLeft + 80, guiTop + 15, te.getTank()));
         statusStat = addAnimatedStat("gui.tab.status", new ItemStack(ModBlocks.GAS_LIFT), 0xFFFFAA00, false);
 
-        GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(ModBlocks.PRESSURE_TUBE), 0xFFFFCC00, false);
+        WidgetAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(ModBlocks.PRESSURE_TUBE), 0xFFFFCC00, false);
         optionStat.addPadding(4, 17);
 
-        GuiButtonSpecial button = new GuiButtonSpecial(5, 20, 20, 20, "").withTag(PumpMode.PUMP_EMPTY.toString());
+        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, "").withTag(PumpMode.PUMP_EMPTY.toString());
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(I18n.format("gui.tab.gasLift.mode.pumpEmpty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new GuiButtonSpecial(30, 20, 20, 20, "").withTag(PumpMode.PUMP_LEAVE_FLUID.toString());
+        button = new WidgetButtonExtended(30, 20, 20, 20, "").withTag(PumpMode.PUMP_LEAVE_FLUID.toString());
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(I18n.format("gui.tab.gasLift.mode.pumpLeave"));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
 
-        button = new GuiButtonSpecial(55, 20, 20, 20, "").withTag(PumpMode.RETRACT.toString());
+        button = new WidgetButtonExtended(55, 20, 20, 20, "").withTag(PumpMode.RETRACT.toString());
         button.setRenderStacks(new ItemStack(ModBlocks.PRESSURE_TUBE));
         button.setTooltipText(I18n.format("gui.tab.gasLift.mode.drawIn"));
         optionStat.addSubWidget(button);

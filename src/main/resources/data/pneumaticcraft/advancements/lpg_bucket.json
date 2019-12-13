@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "forge:bucketfilled",
-      "nbt": "{FluidName:\"lpg\",Amount:1000}"
+      "item": "pneumaticcraft:lpg_bucket"
     },
     "title": {
       "translate": "achievement.lpgBucket"
@@ -18,8 +17,7 @@
       "conditions": {
         "items": [
           {
-            "item": "forge:bucketfilled",
-            "nbt": "{FluidName:\"lpg\",Amount:1000}"
+            "item": "pneumaticcraft:lpg_bucket"
           }
         ]
       }

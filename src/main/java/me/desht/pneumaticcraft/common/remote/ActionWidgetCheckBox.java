@@ -1,22 +1,22 @@
 package me.desht.pneumaticcraft.common.remote;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import net.minecraft.nbt.CompoundNBT;
 
-public class ActionWidgetCheckBox extends ActionWidgetVariable<GuiCheckBox> implements IActionWidgetLabeled {
+public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> implements IActionWidgetLabeled {
     public ActionWidgetCheckBox() {
     }
 
-    public ActionWidgetCheckBox(GuiCheckBox widget) {
+    public ActionWidgetCheckBox(WidgetCheckBox widget) {
         super(widget);
     }
 
     @Override
     public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
-        widget = new GuiCheckBox(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, 0xFF404040, tag.getString("text"), b -> onActionPerformed());
+        widget = new WidgetCheckBox(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, 0xFF404040, tag.getString("text"), b -> onActionPerformed());
         setTooltip(tag.getString("tooltip"));
     }
 

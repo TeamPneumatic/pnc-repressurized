@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.SearchUpgradeHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
@@ -36,10 +36,10 @@ public class GuiSearchUpgradeOptions implements IOptionPage {
 
     @Override
     public void initGui(IGuiScreen gui) {
-        gui.getWidgetList().add(new GuiButtonSpecial(30, 40, 150, 20,
+        gui.addWidget(new WidgetButtonExtended(30, 40, 150, 20,
                 "Search for item...", b -> openSearchGui()));
 
-        gui.getWidgetList().add(new Button(30, 128, 150, 20, "Move Stat Screen...",
+        gui.addWidget(new Button(30, 128, 150, 20, "Move Stat Screen...",
                 b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.ITEM_SEARCH))));
 
         if (searchGui != null && !player.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()) {

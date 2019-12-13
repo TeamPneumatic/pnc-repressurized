@@ -337,7 +337,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return invCap;
     }
 

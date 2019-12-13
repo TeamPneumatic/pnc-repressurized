@@ -1,0 +1,22 @@
+{
+  "type": "pneumaticcraft:crafting_shaped_pressurizable",
+  "pattern": [
+    "CPC",
+    "CAC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:air_canister"
+    },
+    "P": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "A": {
+      "item": "minecraft:leather_chestplate"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:pneumatic_chestplate"
+  }
+}

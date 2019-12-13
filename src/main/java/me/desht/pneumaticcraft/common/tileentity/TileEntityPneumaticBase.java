@@ -67,7 +67,6 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
         tag.put(NBTKeys.NBT_AIR_HANDLER, airHandler.serializeNBT());
-        tag.putInt(NBTKeys.NBT_AIR_AMOUNT, airHandler.getAir());  // for copying to itemstack NBT
         return tag;
     }
 
@@ -75,6 +74,10 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
     public void read(CompoundNBT tag) {
         super.read(tag);
         airHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_AIR_HANDLER));
+        if (tag.contains(NBTKeys.NBT_AIR_AMOUNT)) {
+            // when restoring from item NBT
+            airHandler.addAir(tag.getInt(NBTKeys.NBT_AIR_AMOUNT));
+        }
     }
 
     @Override

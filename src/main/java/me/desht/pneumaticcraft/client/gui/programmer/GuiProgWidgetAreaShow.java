@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.AreaShowManager;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraft.client.gui.widget.button.Button;
@@ -18,18 +18,18 @@ public class GuiProgWidgetAreaShow<P extends IProgWidget> extends GuiProgWidgetO
     public void init() {
         super.init();
 
-        if (showShowAreaButtons() && progWidget instanceof IAreaProvider) {
-            addButton(new GuiButtonSpecial(guiLeft + xSize / 2 - 50, guiTop + 150, 100, 20,
+        if (displayShowAreaButtons() && progWidget instanceof IAreaProvider) {
+            addButton(new WidgetButtonExtended(guiLeft + xSize / 2 - 50, guiTop + 150, 100, 20,
                     I18n.format("gui.programmer.button.showArea"), this::previewArea));
             if (AreaShowManager.getInstance().isShowing(guiProgrammer.te))
-                addButton(new GuiButtonSpecial(guiLeft + xSize / 2 - 50, guiTop + 175, 100, 20,
+                addButton(new WidgetButtonExtended(guiLeft + xSize / 2 - 50, guiTop + 175, 100, 20,
                         I18n.format("gui.programmer.button.stopShowingArea"), this::stopPreviewing));
         }
     }
 
     protected void previewArea(Button button) {
         if (!AreaShowManager.getInstance().isShowing(guiProgrammer.te))
-            addButton(new GuiButtonSpecial(guiLeft + xSize / 2 - 50, guiTop + 175, 100, 20, I18n.format("gui.programmer.button.stopShowingArea"), this::stopPreviewing));
+            addButton(new WidgetButtonExtended(guiLeft + xSize / 2 - 50, guiTop + 175, 100, 20, I18n.format("gui.programmer.button.stopShowingArea"), this::stopPreviewing));
         guiProgrammer.te.previewArea(progWidget.getX(), progWidget.getY());
     }
 
@@ -38,7 +38,7 @@ public class GuiProgWidgetAreaShow<P extends IProgWidget> extends GuiProgWidgetO
         buttons.remove(button);
     }
 
-    public boolean showShowAreaButtons(){
+    public boolean displayShowAreaButtons() {
         return true;
     }
 }

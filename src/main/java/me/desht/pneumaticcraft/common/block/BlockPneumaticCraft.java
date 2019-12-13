@@ -27,6 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -67,7 +68,8 @@ import static net.minecraft.state.properties.BlockStateProperties.FACING;
 import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
 public abstract class BlockPneumaticCraft extends Block implements IPneumaticWrenchable, IUpgradeAcceptor {
-    public static final VoxelShape ALMOST_FULL_SHAPE = Block.makeCuboidShape(0.5, 0, 0.5, 15.5, 16, 15.5);
+    static final VoxelShape ALMOST_FULL_SHAPE = Block.makeCuboidShape(0.5, 0, 0.5, 15.5, 16, 15.5);
+
     public static final BooleanProperty UP = BooleanProperty.create("up");
     public static final BooleanProperty DOWN = BooleanProperty.create("down");
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
@@ -103,9 +105,6 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             TileEntity te = getTileEntityClass().newInstance();
             if (world instanceof World) {
                 te.setWorld((World) world);
-            }
-            if (te instanceof TileEntityBase) {
-                ((TileEntityBase) te).onTileEntityCreated();
             }
             return te;
         } catch (Exception e) {
@@ -170,6 +169,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+        super.onBlockPlacedBy(world, pos, state, entity, stack);
+
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof IHeatExchanger) {
             double ambient = HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature();
@@ -223,13 +224,16 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
         if (player != null && player.isSneaking()) {
             TileEntity te = world.getTileEntity(pos);
+            boolean preserve = false;
             if (te instanceof TileEntityBase) {
+                preserve = true;
                 ((TileEntityBase) te).setPreserveStateOnBreak(true);
             }
-            if (!player.isCreative()) {
-                spawnDrops(world.getBlockState(pos), world, pos);
+            if (!player.isCreative() || preserve) {
+                Block.spawnDrops(world.getBlockState(pos), world, pos, te);
             }
-            world.removeBlock(pos, false);
+            IFluidState ifluidstate = world.getFluidState(pos);
+            world.setBlockState(pos, ifluidstate.getBlockState(), Constants.BlockFlags.DEFAULT);
             return true;
         } else {
             if (isRotatable()) {
@@ -296,13 +300,11 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     private int getSavedAir(ItemStack stack) {
         CompoundNBT tag = stack.getChildTag("BlockEntityTag");
-        if (tag != null) {
-            CompoundNBT airTag = tag.getCompound(NBTKeys.NBT_AIR_HANDLER);
-            if (airTag != null && airTag.contains("air")) {
-                return airTag.getInt("air");
-            }
+        if (tag != null && tag.contains(NBTKeys.NBT_AIR_AMOUNT)) {
+            return tag.getInt(NBTKeys.NBT_AIR_AMOUNT);
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -313,7 +315,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (savedAir != 0) {
                 curInfo.add(new StringTextComponent("Stored Air: " + savedAir + "mL").applyTextStyle(TextFormatting.GREEN));
             }
-            if (stack.getItem() instanceof IUpgradeAcceptor) {
+            if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IUpgradeAcceptor) {
                 UpgradableItemUtils.addUpgradeInformation(stack, world, curInfo, flag);
             }
             if (stack.getTag().contains(NBTKeys.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
@@ -386,43 +388,30 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
 //    @Override
-//    public AxisAlignedBB getBoundingBox(BlockState state, IBlockReader source, BlockPos pos) {
-//        return bounds;
+//    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
+//        if (player.isCreative()) {
+//            if (!world.isRemote) {
+//                // Drop any contained items here (but don't drop the block itself as an item; this is creative mode)
+//                TileEntity te = world.getTileEntity(pos);
+//                if (te instanceof TileEntityBase) {
+//                    NonNullList<ItemStack> drops = NonNullList.create();
+//                    ((TileEntityBase) te).getContentsToDrop(drops);
+//                    drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos));
+//                }
+//            }
+//            return super.removedByPlayer(state, world, pos, player, false, fluid);
+//        } else {
+//            // This delays harvesting until after getDrops() is called, giving getDrops() a chance to serialize any TE
+//            // data onto the itemstack.  harvestBlock() must also be overridden to remove the block (see below)
+//            return willHarvest || super.removedByPlayer(state, world, pos, player, false, fluid);
+//        }
 //    }
-
-//    /**
-//     * Compatibility with 1.8 code...
-//     * @param bounds new bounding box
-//     */
-//    protected void setBlockBounds(AxisAlignedBB bounds) {
-//        this.bounds = bounds;
+//
+//    @Override
+//    public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, TileEntity te, ItemStack stack) {
+//        super.harvestBlock(world, player, pos, state, te, stack);
+//        world.removeBlock(pos, false);  // see removedByPlayer() above
 //    }
-
-    @Override
-    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
-        if (player.isCreative()) {
-            if (!world.isRemote) {
-                // Drop any contained items here (but don't drop the block itself as an item; this is creative mode)
-                TileEntity te = world.getTileEntity(pos);
-                if (te instanceof TileEntityBase) {
-                    NonNullList<ItemStack> drops = NonNullList.create();
-                    ((TileEntityBase) te).getContentsToDrop(drops);
-                    drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos));
-                }
-            }
-            return super.removedByPlayer(state, world, pos, player, false, fluid);
-        } else {
-            // This delays harvesting until after getDrops() is called, giving getDrops() a chance to serialize any TE
-            // data onto the itemstack.  harvestBlock() must also be overridden to remove the block (see below)
-            return willHarvest || super.removedByPlayer(state, world, pos, player, false, fluid);
-        }
-    }
-
-    @Override
-    public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, TileEntity te, ItemStack stack) {
-        super.harvestBlock(world, player, pos, state, te, stack);
-        world.removeBlock(pos, false);  // see removedByPlayer() above
-    }
 
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {

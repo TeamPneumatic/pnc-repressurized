@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PBP",
+    "LCL"
+  ],
+  "key": {
+    "P": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "B": {
+      "item": "minecraft:bucket"
+    },
+    "L": {
+      "tag": "forge:leather"
+    },
+    "C": {
+      "item": "pneumaticcraft:air_compressor"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:liquid_compressor"
+  }
+}

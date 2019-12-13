@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " G ",
+    "RTR"
+  ],
+  "key": {
+    "G": {
+      "item": "pneumaticcraft:pressure_gauge"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:pressure_gauge_module"
+  }
+}

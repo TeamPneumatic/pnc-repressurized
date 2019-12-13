@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client;
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -27,17 +27,17 @@ public class GuiRegistry implements IClientRegistry {
 
     @Override
     public IGuiAnimatedStat getAnimatedStat(Screen gui, int backgroundColor) {
-        return new GuiAnimatedStat(gui, backgroundColor);
+        return new WidgetAnimatedStat(gui, backgroundColor);
     }
 
     @Override
     public IGuiAnimatedStat getAnimatedStat(Screen gui, ItemStack iconStack, int backgroundColor) {
-        return new GuiAnimatedStat(gui, backgroundColor, iconStack);
+        return new WidgetAnimatedStat(gui, backgroundColor, iconStack);
     }
 
     @Override
     public IGuiAnimatedStat getAnimatedStat(Screen gui, String iconTexture, int backgroundColor) {
-        return new GuiAnimatedStat(gui, backgroundColor, iconTexture);
+        return new WidgetAnimatedStat(gui, backgroundColor, iconTexture);
     }
 
     @Override

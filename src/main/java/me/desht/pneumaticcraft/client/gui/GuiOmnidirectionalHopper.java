@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<ContainerOmnidirectionalHopper,TileEntityOmnidirectionalHopper> {
-    private GuiAnimatedStat statusStat;
-    private final GuiButtonSpecial[] modeButtons = new GuiButtonSpecial[2];
+    private WidgetAnimatedStat statusStat;
+    private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[2];
 
     public GuiOmnidirectionalHopper(ContainerOmnidirectionalHopper container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -32,16 +32,16 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
         super.init();
         statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER), 0xFFFFAA00, false);
 
-        GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
+        WidgetAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.addPadding(4, 14);
 
-        GuiButtonSpecial button = new GuiButtonSpecial(5, 20, 20, 20, "").withTag("empty");
+        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, "").withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(I18n.format("gui.tab.omnidirectionalHopper.mode.empty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new GuiButtonSpecial(30, 20, 20, 20, "").withTag("leave");
+        button = new WidgetButtonExtended(30, 20, 20, 20, "").withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(I18n.format("gui.tab.omnidirectionalHopper.mode.leaveItem"));
         optionStat.addSubWidget(button);

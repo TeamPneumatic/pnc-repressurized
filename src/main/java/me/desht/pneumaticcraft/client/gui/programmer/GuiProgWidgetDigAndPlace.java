@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetDigAndPlace;
@@ -24,9 +24,9 @@ public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> 
     public void init() {
         super.init();
 
-        List<GuiRadioButton> radioButtons = new ArrayList<>();
+        List<WidgetRadioButton> radioButtons = new ArrayList<>();
         for (EnumOrder order : EnumOrder.values()) {
-            GuiRadioButton radioButton = new GuiRadioButton(guiLeft + 4, guiTop + 30 + order.ordinal() * 12, 0xFF404040, order.getLocalizedName(),
+            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 4, guiTop + 30 + order.ordinal() * 12, 0xFF404040, order.getLocalizedName(),
                     b -> progWidget.setOrder(order));
             radioButton.checked = order == progWidget.getOrder();
             addButton(radioButton);
@@ -34,7 +34,7 @@ public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> 
             radioButton.otherChoices = radioButtons;
         }
 
-        GuiCheckBox useMaxActions = new GuiCheckBox(guiLeft + (moveActionsToSide() ? 54 : 4), guiTop + 115, 0xFF404040,
+        WidgetCheckBox useMaxActions = new WidgetCheckBox(guiLeft + (moveActionsToSide() ? 54 : 4), guiTop + 115, 0xFF404040,
                 I18n.format("gui.progWidget.digAndPlace.useMaxActions"), b -> {
             progWidget.setUseMaxActions(b.checked);
             textField.setVisible(progWidget.useMaxActions());

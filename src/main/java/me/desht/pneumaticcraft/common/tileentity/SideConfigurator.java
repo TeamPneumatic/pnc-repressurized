@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.Lists;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -176,7 +176,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void setupButton(GuiButtonSpecial button) {
+    public void setupButton(WidgetButtonExtended button) {
         try {
             RelativeFace relativeFace = RelativeFace.valueOf(button.getTag().split("\\.")[1]);
             ConnectionEntry c = entries.get(faces[relativeFace.ordinal()]);

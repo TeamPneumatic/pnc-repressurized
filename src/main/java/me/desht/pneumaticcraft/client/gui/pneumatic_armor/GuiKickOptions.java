@@ -19,7 +19,7 @@ public class GuiKickOptions implements IOptionPage {
     public void initGui(IGuiScreen gui) {
         changeKeybindingButton = new KeybindingButton(30, 128, 150, 20,
                 "Change Kick Key...", KeyHandler.getInstance().keybindKick, b -> changeKeybindingButton.toggleKeybindMode());
-        gui.getWidgetList().add(changeKeybindingButton);
+        gui.addWidget(changeKeybindingButton);
     }
 
     public void renderPre(int x, int y, float partialTicks) {

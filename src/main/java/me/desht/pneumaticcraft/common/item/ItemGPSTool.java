@@ -3,9 +3,9 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiGPSTool;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,21 +35,19 @@ public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
 
     @Override
     public ActionResultType onItemUse(ItemUseContext ctx) {
-        if (ctx.getHand() != Hand.MAIN_HAND) return ActionResultType.PASS;
         BlockPos pos = ctx.getPos();
-        setGPSLocation(ctx.getPlayer().getHeldItemMainhand(), pos);
+        setGPSLocation(ctx.getPlayer().getHeldItem(ctx.getHand()), pos);
         if (!ctx.getWorld().isRemote)
             ctx.getPlayer().sendStatusMessage(new TranslationTextComponent("message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).applyTextStyle(TextFormatting.GREEN), false);
+        ctx.getPlayer().playSound(ModSounds.CHIRP, 1.0f, 1.5f);
         return ActionResultType.SUCCESS; // we don't want to use the item.
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (handIn != Hand.MAIN_HAND) return ActionResult.newResult(ActionResultType.PASS, playerIn.getHeldItem(handIn));
-        ItemStack stack = playerIn.getHeldItemMainhand();
+        ItemStack stack = playerIn.getHeldItem(handIn);
         if (worldIn.isRemote) {
-            BlockPos pos = getGPSLocation(stack);
-            Minecraft.getInstance().displayGuiScreen(new GuiGPSTool(handIn, pos != null ? pos : BlockPos.ZERO, getVariable(stack)));
+            GuiGPSTool.showGUI(stack, handIn, getGPSLocation(stack));
         }
         return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }

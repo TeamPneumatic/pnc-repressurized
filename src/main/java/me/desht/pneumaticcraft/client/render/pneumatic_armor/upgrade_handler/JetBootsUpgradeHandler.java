@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiJetBootsOptions;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -30,7 +30,7 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
     private IGuiAnimatedStat jbStat;
 
     @Override
-    public String getUpgradeName() {
+    public String getUpgradeID() {
         return "jetBoots";
     }
 
@@ -57,9 +57,9 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
         String g2 = TextFormatting.GREEN.toString();
 
         if (jbStat.isClicked()) {
-            double mx = player.posX - player.lastTickPosX;
-            double my = player.posY - player.lastTickPosY;
-            double mz = player.posZ - player.lastTickPosZ;
+            double mx = player.posX - player.prevPosX;
+            double my = player.posY - player.prevPosY;
+            double mz = player.posZ - player.prevPosZ;
             double v = Math.sqrt(mx * mx + my * my + mz * mz);
             double vg = Math.sqrt(mx * mx + mz * mz);
             int heading = MathHelper.floor((double)(player.rotationYaw * 8.0F / 360.0F) + 0.5D) & 0x7;
@@ -103,8 +103,8 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (jbStat == null) {
-            jbStat = new GuiAnimatedStat(null, "Jet Boots",
-                    GuiAnimatedStat.StatIcon.of(EnumUpgrade.JET_BOOTS.getItem()),
+            jbStat = new WidgetAnimatedStat(null, "Jet Boots",
+                    WidgetAnimatedStat.StatIcon.of(EnumUpgrade.JET_BOOTS.getItem()),
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.jetBootsStat);
             jbStat.setMinDimensionsAndReset(0, 0);
             jbStat.addPadding(3, 32);

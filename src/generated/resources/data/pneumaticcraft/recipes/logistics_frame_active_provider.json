@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PDP",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "D": {
+      "tag": "forge:dyes/purple"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:logistics_frame_active_provider",
+    "count": 4
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "I I",
+    "ICI",
+    " I "
+  ],
+  "key": {
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    },
+    "C": {
+      "tag": "forge:chests"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:omnidirectional_hopper"
+  }
+}

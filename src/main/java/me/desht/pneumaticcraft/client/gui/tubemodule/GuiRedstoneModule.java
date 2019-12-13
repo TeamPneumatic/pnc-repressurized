@@ -22,11 +22,11 @@ public class GuiRedstoneModule extends GuiTubeModule {
     private WidgetLabel constLabel;
     private WidgetTextFieldNumber textField;
     private WidgetLabel otherColorLabel;
-    private GuiButtonSpecial ourColorButton;
-    private GuiButtonSpecial otherColorButton;
+    private WidgetButtonExtended ourColorButton;
+    private WidgetButtonExtended otherColorButton;
     private int ourColor;
     private int otherColor;
-    private GuiCheckBox invertCheckBox;
+    private WidgetCheckBox invertCheckBox;
 
     public GuiRedstoneModule(BlockPos modulePos) {
         super(modulePos);
@@ -61,11 +61,11 @@ public class GuiRedstoneModule extends GuiTubeModule {
 
         int w = 0;
         for (WidgetLabel label : ImmutableList.of(ourColorLabel, otherColorLabel, opLabel, constLabel)) {
-            w = Math.max(label.getBounds().width, w);
+            w = Math.max(label.getWidth(), w);
         }
         int xBase = guiLeft + w + 15;
 
-        ourColorButton = new GuiButtonSpecial(xBase, guiTop + 15, 20, 20, "") {
+        ourColorButton = new WidgetButtonExtended(xBase, guiTop + 15, 20, 20, "") {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (button == 0) {
@@ -90,7 +90,7 @@ public class GuiRedstoneModule extends GuiTubeModule {
         comboBox.selectElement(mr.getOperation().ordinal());
         addButton(comboBox);
 
-        otherColorButton = new GuiButtonSpecial(xBase, guiTop + 55, 20, 20, "") {
+        otherColorButton = new WidgetButtonExtended(xBase, guiTop + 55, 20, 20, "") {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (button == 0) {
@@ -112,7 +112,7 @@ public class GuiRedstoneModule extends GuiTubeModule {
         textField.setValue(mr.getConstantVal());
         addButton(textField);
 
-        invertCheckBox = new GuiCheckBox(guiLeft + 10, guiTop + 80, 0xFF404040, "Invert Output?") {
+        invertCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 80, 0xFF404040, "Invert Output?") {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (comboBox.isFocused()) return true;  // it hangs over the button

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " B ",
+    " I ",
+    "B B"
+  ],
+  "key": {
+    "B": {
+      "item": "pneumaticcraft:turbine_blade"
+    },
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:turbine_rotor"
+  }
+}

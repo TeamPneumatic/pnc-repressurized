@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DCC",
+    "  C",
+    "IBI"
+  ],
+  "key": {
+    "D": {
+      "tag": "forge:glass/red"
+    },
+    "C": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    },
+    "B": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:assembly_laser"
+  }
+}

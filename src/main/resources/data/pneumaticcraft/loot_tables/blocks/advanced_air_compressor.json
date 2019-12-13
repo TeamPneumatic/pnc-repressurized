@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "advanced_air_compressor",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_name",
+              "source": "block_entity"
+            },
+            {
+              "function": "pneumaticcraft:te_serializer"
+            }
+          ],
+          "name": "pneumaticcraft:advanced_air_compressor"
+        }
+      ]
+    }
+  ]
+}

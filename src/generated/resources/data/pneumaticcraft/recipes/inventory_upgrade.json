@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LWL",
+    "WCW",
+    "LWL"
+  ],
+  "key": {
+    "L": {
+      "tag": "forge:gems/lapis"
+    },
+    "W": {
+      "tag": "minecraft:planks"
+    },
+    "C": {
+      "tag": "forge:chests"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:inventory_upgrade"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BPB",
+    "PRP",
+    "BCB"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "P": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "R": {
+      "item": "pneumaticcraft:turbine_rotor"
+    },
+    "C": {
+      "item": "pneumaticcraft:air_compressor"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:electrostatic_compressor"
+  }
+}

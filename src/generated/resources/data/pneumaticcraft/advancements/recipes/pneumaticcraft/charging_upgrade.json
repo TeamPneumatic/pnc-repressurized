@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:charging_upgrade"
+    ]
+  },
+  "criteria": {
+    "has_charging_module": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:charging_module"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:charging_upgrade"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_charging_module",
+      "has_the_recipe"
+    ]
+  ]
+}

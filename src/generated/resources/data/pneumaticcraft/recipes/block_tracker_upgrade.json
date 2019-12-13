@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "X": {
+      "item": "pneumaticcraft:pressure_chamber_wall"
+    },
+    "C": {
+      "item": "minecraft:fermented_spider_eye"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:block_tracker_upgrade"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CEC",
+    "EXE",
+    "CEC"
+  ],
+  "key": {
+    "C": {
+      "tag": "forge:dyes/red"
+    },
+    "E": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "X": {
+      "tag": "forge:chests"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:diagnostic_subroutine"
+  }
+}

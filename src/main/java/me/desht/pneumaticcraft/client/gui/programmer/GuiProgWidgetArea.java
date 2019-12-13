@@ -45,6 +45,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
     public GuiProgWidgetArea(ProgWidgetArea widget, GuiProgrammer guiProgrammer) {
         super(widget, guiProgrammer);
+
         xSize = 256;
     }
 
@@ -57,8 +58,8 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         addLabel(I18n.format("gui.progWidget.area.type"), guiLeft + 4, guiTop + 50);
 
         boolean advancedMode = PNCConfig.Client.programmerDifficulty == IProgWidget.WidgetDifficulty.ADVANCED;
-        GuiButtonSpecial gpsButton1 = new GuiButtonSpecial(guiLeft + (advancedMode ? 6 : 55), guiTop + 20, 20, 20, "", b -> openInvSearchGUI(0));
-        GuiButtonSpecial gpsButton2 = new GuiButtonSpecial(guiLeft + (advancedMode ? 133 : 182), guiTop + 20, 20, 20, "", b -> openInvSearchGUI(1));
+        WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + (advancedMode ? 6 : 55), guiTop + 20, 20, 20, "", b -> openInvSearchGUI(0));
+        WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + (advancedMode ? 133 : 182), guiTop + 20, 20, 20, "", b -> openInvSearchGUI(1));
         gpsButton1.setRenderStacks(new ItemStack(ModItems.GPS_TOOL));
         gpsButton2.setRenderStacks(new ItemStack(ModItems.GPS_TOOL));
         addButton(gpsButton1);
@@ -78,10 +79,10 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         }
 
         final int widgetsPerColumn = 5;
-        List<GuiRadioButton> radioButtons = new ArrayList<>();
+        List<WidgetRadioButton> radioButtons = new ArrayList<>();
         for (int i = 0; i < allAreaTypes.size(); i++) {
             final AreaType areaType = allAreaTypes.get(i);
-            GuiRadioButton radioButton = new GuiRadioButton(guiLeft + widgetsPerColumn + i / widgetsPerColumn * 80, guiTop + 60 + i % widgetsPerColumn * 12, 0xFF404040, areaType.getName(), b -> {
+            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + widgetsPerColumn + i / widgetsPerColumn * 80, guiTop + 60 + i % widgetsPerColumn * 12, 0xFF404040, areaType.getName(), b -> {
                 progWidget.type = areaType;
                 switchToWidgets(areaType);
             });
@@ -239,11 +240,11 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
     @Override
     public void onClose() {
-        super.onClose();
-        
         progWidget.setCoord1Variable(variableField1.getText());
         progWidget.setCoord2Variable(variableField2.getText());
         saveWidgets();
+
+        super.onClose();
     }
 
 }

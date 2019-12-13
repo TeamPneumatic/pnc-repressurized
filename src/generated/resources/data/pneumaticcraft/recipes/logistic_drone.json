@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " B ",
+    "BCB",
+    " B "
+  ],
+  "key": {
+    "B": {
+      "item": "pneumaticcraft:turbine_rotor"
+    },
+    "C": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:logistic_drone"
+  }
+}

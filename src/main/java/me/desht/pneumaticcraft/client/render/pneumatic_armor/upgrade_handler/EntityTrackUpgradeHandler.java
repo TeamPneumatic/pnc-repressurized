@@ -5,8 +5,8 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiEntityTrackOptions;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
@@ -44,13 +44,13 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     private boolean shouldStopSpamOnEntityTracking = false;
 
     @OnlyIn(Dist.CLIENT)
-    private GuiAnimatedStat entityTrackInfo;
+    private WidgetAnimatedStat entityTrackInfo;
     @Nonnull
     private EntityFilter entityFilter = new EntityFilter("");
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public String getUpgradeName() {
+    public String getUpgradeID() {
         return UPGRADE_NAME;
     }
 
@@ -60,7 +60,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         SearchUpgradeHandler searchHandler = HUDHandler.instance().getSpecificRenderer(SearchUpgradeHandler.class);
 
         if (searchHandler != null && (Minecraft.getInstance().world.getGameTime() & 0xf) == 0) {
-            searchHandler.trackItemEntities(player, rangeUpgrades, GuiKeybindCheckBox.isHandlerEnabled(searchHandler));
+            searchHandler.trackItemEntities(player, rangeUpgrades, WidgetKeybindCheckBox.isHandlerEnabled(searchHandler));
         }
 
         ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
@@ -173,10 +173,10 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public GuiAnimatedStat getAnimatedStat() {
+    public WidgetAnimatedStat getAnimatedStat() {
         if (entityTrackInfo == null) {
-            GuiAnimatedStat.StatIcon icon = GuiAnimatedStat.StatIcon.of(EnumUpgrade.ENTITY_TRACKER.getItem());
-            entityTrackInfo = new GuiAnimatedStat(null, "Current tracked entities:", icon,
+            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.ENTITY_TRACKER.getItem());
+            entityTrackInfo = new WidgetAnimatedStat(null, "Current tracked entities:", icon,
                      0x3000AA00, null, ArmorHUDLayout.INSTANCE.entityTrackerStat);
             entityTrackInfo.setMinDimensionsAndReset(0, 0);
         }

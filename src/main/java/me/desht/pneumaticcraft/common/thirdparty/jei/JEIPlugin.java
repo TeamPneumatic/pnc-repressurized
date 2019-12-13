@@ -5,9 +5,11 @@ import me.desht.pneumaticcraft.client.gui.GuiAssemblyController;
 import me.desht.pneumaticcraft.client.gui.GuiPressureChamber;
 import me.desht.pneumaticcraft.client.gui.GuiRefineryController;
 import me.desht.pneumaticcraft.client.gui.GuiThermopneumaticProcessingPlant;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ItemPressurizable;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.thirdparty.jei.extension.HelmetOneProbeExtension;
@@ -15,6 +17,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.registration.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
@@ -31,6 +34,12 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB, itemStack -> String.valueOf(itemStack.getDamage()));
+
+        for (Item item : ModItems.Registration.ALL_ITEMS) {
+            if (item instanceof ItemPressurizable) {
+                registration.registerSubtypeInterpreter(item, s -> s.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h2 -> String.valueOf(h2.getPressure())).orElse(ISubtypeInterpreter.NONE));
+            }
+        }
     }
 
     @Override

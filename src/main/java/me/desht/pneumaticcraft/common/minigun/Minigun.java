@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.minigun;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -28,6 +28,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.LazyOptional;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -53,7 +54,7 @@ public abstract class Minigun {
 
     private boolean gunAimedAtTarget;
 
-    private IPressurizable pressurizable;
+    private LazyOptional<? extends IAirHandlerBase> airCapability = LazyOptional.empty();
     private int airUsage;
     protected ItemStack minigunStack = ItemStack.EMPTY;
     private ItemStack ammoStack = ItemStack.EMPTY;
@@ -65,8 +66,8 @@ public abstract class Minigun {
         this.requiresTarget = requiresTarget;
     }
 
-    public Minigun setPressurizable(IPressurizable pressurizable, int airUsage) {
-        this.pressurizable = pressurizable;
+    public Minigun setAirHandler(LazyOptional<? extends IAirHandlerBase> airHandler, int airUsage) {
+        this.airCapability = airHandler;
         this.airUsage = airUsage;
         return this;
     }
@@ -121,6 +122,10 @@ public abstract class Minigun {
 
     protected int getAmmoColor(@Nonnull ItemStack stack) {
         return stack.isEmpty() ? 0xFF313131 : Minecraft.getInstance().getItemColors().getColor(stack, 1);
+    }
+
+    public LazyOptional<? extends IAirHandlerBase> getAirCapability() {
+        return airCapability;
     }
 
     /**
@@ -187,7 +192,7 @@ public abstract class Minigun {
 
     public boolean tryFireMinigun(Entity target) {
         boolean lastShotOfAmmo = false;
-        if (!ammoStack.isEmpty() && (pressurizable == null || pressurizable.getPressure(minigunStack) > 0)) {
+        if (!ammoStack.isEmpty() && airCapability.map(h -> h.getPressure() > 0).orElse(true)) {
             setMinigunTriggerTimeOut(Math.max(10, getMinigunSoundCounter()));
             if (getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
                 RayTraceResult rtr = null;
@@ -196,14 +201,14 @@ public abstract class Minigun {
                     rtr = PneumaticCraftUtils.getMouseOverServer(player, getRange());
                     target = rtr instanceof EntityRayTraceResult ? ((EntityRayTraceResult) rtr).getEntity() : null;
                 }
-                if (pressurizable != null) {
+                airCapability.ifPresent(airHandler -> {
                     int usage = (int) Math.ceil(airUsage * ammoItem.getAirUsageMultiplier(this, ammoStack));
                     usage += getUpgrades(EnumUpgrade.RANGE);
                     if (getUpgrades(EnumUpgrade.SPEED) > 0) {
                         usage *= getUpgrades(EnumUpgrade.SPEED) + 1;
                     }
-                    pressurizable.addAir(minigunStack, -usage);
-                }
+                    airHandler.addAir(-usage);
+                });
                 int roundsUsed = 1;
                 if (target != null) {
                     if (getUpgrades(EnumUpgrade.SECURITY) == 0 || !securityProtectedTarget(target)) {

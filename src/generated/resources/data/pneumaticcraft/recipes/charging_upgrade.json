@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "X": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "C": {
+      "item": "pneumaticcraft:charging_module"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:charging_upgrade"
+  }
+}

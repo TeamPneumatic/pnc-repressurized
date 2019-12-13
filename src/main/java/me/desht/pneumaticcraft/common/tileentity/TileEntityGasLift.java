@@ -337,7 +337,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return inventoryCap;
     }
 

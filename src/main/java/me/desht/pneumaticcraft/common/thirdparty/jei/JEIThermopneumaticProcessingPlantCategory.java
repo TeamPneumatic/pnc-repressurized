@@ -71,9 +71,9 @@ public class JEIThermopneumaticProcessingPlantCategory extends JEIPneumaticCraft
             recipeLayout.getItemStacks().init(0, true, 41, 3);
             recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
         }
-        recipeLayout.getFluidStacks().init(0, true, 8, 4);
+        recipeLayout.getFluidStacks().init(0, true, 8, 4, 16, 64, recipe.getInputFluid().getAmount(), false, null);
         recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
-        recipeLayout.getFluidStacks().init(1, false, 75, 3);
+        recipeLayout.getFluidStacks().init(1, false, 74, 3, 16, 64, recipe.getInputFluid().getAmount(), false, null);
         recipeLayout.getFluidStacks().set(1, ingredients.getOutputs(VanillaTypes.FLUID).get(0));
 
         if (recipe.getRequiredPressure() > 0) {

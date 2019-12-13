@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ITI",
+    "PAP",
+    "ITI"
+  ],
+  "key": {
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "A": {
+      "item": "pneumaticcraft:air_compressor"
+    },
+    "P": {
+      "item": "minecraft:heavy_weighted_pressure_plate"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:thermal_compressor"
+  }
+}

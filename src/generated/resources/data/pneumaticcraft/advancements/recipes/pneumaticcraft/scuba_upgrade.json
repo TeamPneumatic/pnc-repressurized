@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:scuba_upgrade"
+    ]
+  },
+  "criteria": {
+    "has_pneumatic_helmet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:pneumatic_helmet"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:scuba_upgrade"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_pneumatic_helmet",
+      "has_the_recipe"
+    ]
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T ",
+    "TGT",
+    "III"
+  ],
+  "key": {
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "G": {
+      "tag": "forge:glass"
+    },
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:gas_lift"
+  }
+}

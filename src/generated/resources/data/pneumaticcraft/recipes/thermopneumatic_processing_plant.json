@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IGI",
+    "TRI",
+    "IGI"
+  ],
+  "key": {
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    },
+    "G": {
+      "tag": "forge:glass"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:thermopneumatic_processing_plant"
+  }
+}

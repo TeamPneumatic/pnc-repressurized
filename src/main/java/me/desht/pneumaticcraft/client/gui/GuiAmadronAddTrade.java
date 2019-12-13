@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsLiquidFilter;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetFluidFilter;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
@@ -96,8 +96,8 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         addButton(outputFluid);
 
         if (tradeType == TradeType.PLAYER) {
-            GuiButtonSpecial gpsButton1 = new GuiButtonSpecial(guiLeft + 10, guiTop + 115, 20, 20, "", b -> openGPSGui(true));
-            GuiButtonSpecial gpsButton2 = new GuiButtonSpecial(guiLeft + 99, guiTop + 115, 20, 20, "", b -> openGPSGui(false));
+            WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + 10, guiTop + 115, 20, 20, "", b -> openGPSGui(true));
+            WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + 99, guiTop + 115, 20, 20, "", b -> openGPSGui(false));
             gpsButton1.setTooltipText(Arrays.asList(WordUtils.wrap(I18n.format("gui.amadron.button.selectSellingBlock.tooltip"), 40).split(System.getProperty("line.separator"))));
             gpsButton2.setTooltipText(Arrays.asList(WordUtils.wrap(I18n.format("gui.amadron.button.selectPaymentBlock.tooltip"), 40).split(System.getProperty("line.separator"))));
             gpsButton1.setRenderStacks(new ItemStack(ModItems.GPS_TOOL));

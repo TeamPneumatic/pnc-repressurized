@@ -116,7 +116,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return inventoryCap;
     }
 

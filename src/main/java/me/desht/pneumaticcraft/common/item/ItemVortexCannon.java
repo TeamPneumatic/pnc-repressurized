@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -21,20 +22,22 @@ public class ItemVortexCannon extends ItemPressurizable {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity playerIn, Hand handIn) {
         ItemStack iStack = playerIn.getHeldItem(handIn);
-        if (getPressure(iStack) > 0.1f) {
-            double factor = 0.2D * getPressure(iStack);
-            world.playSound(playerIn.posX, playerIn.posY, playerIn.posZ, ModSounds.AIR_CANNON, SoundCategory.PLAYERS, 1.0F, 0.7F + (float) factor * 0.2F, false);
-            EntityVortex vortex = new EntityVortex(world, playerIn);
-            Vec3d directionVec = playerIn.getLookVec().normalize();
-            vortex.posX += directionVec.x;
-            vortex.posY += directionVec.y;
-            vortex.posZ += directionVec.z;
-            vortex.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, 1.5F, 0.0F);
-            vortex.setMotion(vortex.getMotion().scale(factor));
-            if (!world.isRemote) world.addEntity(vortex);
 
-            addAir(iStack, -PneumaticValues.USAGE_VORTEX_CANNON);
-        }
+        iStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
+            if (airHandler.getPressure() > 0.1f) {
+                double factor = 0.2D * airHandler.getPressure();
+                world.playSound(playerIn.posX, playerIn.posY, playerIn.posZ, ModSounds.AIR_CANNON, SoundCategory.PLAYERS, 1.0F, 0.7F + (float) factor * 0.2F, false);
+                EntityVortex vortex = new EntityVortex(world, playerIn);
+                Vec3d directionVec = playerIn.getLookVec().normalize();
+                vortex.posX += directionVec.x;
+                vortex.posY += directionVec.y;
+                vortex.posZ += directionVec.z;
+                vortex.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, 1.5F, 0.0F);
+                vortex.setMotion(vortex.getMotion().scale(factor));
+                if (!world.isRemote) world.addEntity(vortex);
+                airHandler.addAir(-PneumaticValues.USAGE_VORTEX_CANNON);
+            }
+        });
 
         return ActionResult.newResult(ActionResultType.SUCCESS, iStack);
     }

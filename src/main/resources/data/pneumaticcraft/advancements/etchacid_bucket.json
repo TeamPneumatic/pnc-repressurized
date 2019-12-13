@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "forge:bucketfilled",
-      "nbt": "{FluidName:\"etchacid\",Amount:1000}"
+      "item": "pneumaticcraft:etching_acid_bucket"
     },
     "title": {
       "translate": "achievement.etchacidBucket"
@@ -18,8 +17,7 @@
       "conditions": {
         "items": [
           {
-            "item": "forge:bucketfilled",
-            "nbt": "{FluidName:\"etchacid\",Amount:1000}"
+            "item": "pneumaticcraft:etching_acid_bucket"
           }
         ]
       }

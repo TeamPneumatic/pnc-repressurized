@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiAirConditionerOptions;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -23,10 +23,10 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
     private static int currentAC = 0; // cosmetic
 
     @OnlyIn(Dist.CLIENT)
-    private GuiAnimatedStat acStat;
+    private WidgetAnimatedStat acStat;
 
     @Override
-    public String getUpgradeName() {
+    public String getUpgradeID() {
         return "airConditioning";
     }
 
@@ -70,7 +70,7 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (acStat == null) {
-            acStat = new GuiAnimatedStat(null, "", GuiAnimatedStat.StatIcon.NONE,
+            acStat = new WidgetAnimatedStat(null, "", WidgetAnimatedStat.StatIcon.NONE,
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.airConStat);
             acStat.setMinDimensionsAndReset(0, 0);
         }

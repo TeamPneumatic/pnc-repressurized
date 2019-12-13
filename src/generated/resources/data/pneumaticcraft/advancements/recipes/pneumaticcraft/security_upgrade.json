@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:security_upgrade"
+    ]
+  },
+  "criteria": {
+    "has_safety_tube_module": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:safety_tube_module"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:security_upgrade"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_safety_tube_module",
+      "has_the_recipe"
+    ]
+  ]
+}

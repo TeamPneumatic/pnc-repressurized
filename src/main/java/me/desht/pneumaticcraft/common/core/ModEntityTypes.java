@@ -46,6 +46,7 @@ public class ModEntityTypes {
                     .size(0.7f, 0.35f)
                     .setTrackingRange(32)
                     .setUpdateInterval(3)
+                    .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.DRONE.create(world)))
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Names.MOD_ID + ":drone")
                     .setRegistryName("drone"));
@@ -54,6 +55,7 @@ public class ModEntityTypes {
                     .size(0.7f, 0.35f)
                     .setTrackingRange(32)
                     .setUpdateInterval(3)
+                    .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.LOGISTIC_DRONE.create(world)))
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Names.MOD_ID + ":logistic_drone")
                     .setRegistryName("logistic_drone"));
@@ -62,6 +64,7 @@ public class ModEntityTypes {
                     .size(0.7f, 0.35f)
                     .setTrackingRange(32)
                     .setUpdateInterval(3)
+                    .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.HARVESTING_DRONE.create(world)))
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Names.MOD_ID + ":harvesting_drone")
                     .setRegistryName("harvesting_drone"));

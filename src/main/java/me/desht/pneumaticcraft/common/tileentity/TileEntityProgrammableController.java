@@ -243,7 +243,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return invCap;
     }
 
@@ -425,25 +425,25 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         return INFINITE_EXTENT_AABB;
     }
 
-    @Override
-    public float getPressure(ItemStack iStack) {
-        return getPressure();
-    }
-
-    @Override
-    public void addAir(ItemStack iStack, int amount) {
-        addAir(amount);
-    }
-
-    @Override
-    public float maxPressure(ItemStack iStack) {
-        return 7;
-    }
-
-    @Override
-    public int getVolume(ItemStack itemStack) {
-        return getAirHandler(null).getVolume();
-    }
+//    @Override
+//    public float getPressure(ItemStack iStack) {
+//        return getPressure();
+//    }
+//
+//    @Override
+//    public void addAir(ItemStack iStack, int amount) {
+//        addAir(amount);
+//    }
+//
+//    @Override
+//    public float maxPressure(ItemStack iStack) {
+//        return 7;
+//    }
+//
+//    @Override
+//    public int getVolume(ItemStack itemStack) {
+//        return getAirHandler(null).getVolume();
+//    }
 
     @Override
     public World world() {

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetHarvest;
 import net.minecraft.client.resources.I18n;
 
@@ -15,7 +15,7 @@ public class GuiProgWidgetHarvest extends GuiProgWidgetDigAndPlace<ProgWidgetHar
     public void init() {
         super.init();
 
-        GuiCheckBox requiresHoe = new GuiCheckBox(guiLeft + 4, guiTop + 85, 0xFF404040,
+        WidgetCheckBox requiresHoe = new WidgetCheckBox(guiLeft + 4, guiTop + 85, 0xFF404040,
                 I18n.format("gui.progWidget.harvest.requiresHoe"), b -> progWidget.setRequiresTool(b.checked));
         requiresHoe.setTooltip("gui.progWidget.harvest.requiresHoe.tooltip");
         requiresHoe.checked = progWidget.requiresTool();

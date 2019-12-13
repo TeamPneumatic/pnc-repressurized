@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BPB",
+    "PRP",
+    "BPB"
+  ],
+  "key": {
+    "P": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "B": {
+      "item": "minecraft:stone_button"
+    },
+    "R": {
+      "tag": "forge:stone"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:elevator_caller"
+  }
+}

@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.progwidgets.ICondition.Operator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateCondition;
 import net.minecraft.util.Direction;
@@ -22,15 +22,15 @@ public class GuiProgWidgetCoordinateCondition extends GuiProgWidgetOptionBase<Pr
 
         for (Direction.Axis axis : Direction.Axis.values()) {
             final int idx = axis.ordinal();
-            GuiCheckBox checkBox = new GuiCheckBox(guiLeft + 10, guiTop + 30 + idx * 12, 0xFF404040,
+            WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 10, guiTop + 30 + idx * 12, 0xFF404040,
                     axis.getName(), b -> progWidget.checkingAxis[idx] = b.checked);
             addButton(checkBox);
             checkBox.setChecked(progWidget.checkingAxis[idx]);
         }
 
-        List<GuiRadioButton> radioButtons = new ArrayList<>();
+        List<WidgetRadioButton> radioButtons = new ArrayList<>();
         for (Operator op : Operator.values()) {
-            GuiRadioButton radioButton = new GuiRadioButton(guiLeft + 80, guiTop + 30 + op.ordinal() * 12, 0xFF404040,
+            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 80, guiTop + 30 + op.ordinal() * 12, 0xFF404040,
                     op.toString(), b -> progWidget.setOperator(op));
             radioButton.checked = progWidget.getOperator() == op;
             addButton(radioButton);

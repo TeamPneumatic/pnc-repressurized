@@ -5,11 +5,13 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
@@ -46,6 +48,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -65,7 +68,8 @@ public class CommonArmorHandler {
     private final boolean[][] upgradeRenderersInserted = new boolean[4][];
     private final boolean[][] upgradeRenderersEnabled = new boolean[4][];
     private final int[] ticksSinceEquip = new int[4];
-    public final float[] armorPressure = new float[4];
+//    public final float[] armorPressure = new float[4];
+    public final List<LazyOptional<IAirHandlerItem>> airHandlers = new ArrayList<>();
     private final int[][] upgradeMatrix = new int [4][];
     private final int[] startupTimes = new int[4];
 
@@ -103,6 +107,9 @@ public class CommonArmorHandler {
             upgradeMatrix[slot.getIndex()] = new int[EnumUpgrade.values().length];
         }
         Arrays.fill(startupTimes, 200);
+        for (int i = 0; i < 4; i++) {
+            airHandlers.add(LazyOptional.empty());
+        }
         isValid = true;
     }
 
@@ -120,7 +127,7 @@ public class CommonArmorHandler {
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
+        if (event.phase == TickEvent.Phase.END) {
             getHandlerForPlayer(event.player).tick();
         }
     }
@@ -167,12 +174,12 @@ public class CommonArmorHandler {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         boolean armorActive = false;
         if (armorStack.getItem() instanceof ItemPneumaticArmor) {
-            armorPressure[slot.getIndex()] = ((IPressurizable) armorStack.getItem()).getPressure(armorStack);
+            airHandlers.set(slot.getIndex(), armorStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY));
             if (ticksSinceEquip[slot.getIndex()] == 0) {
                 initArmorInventory(slot);
             }
             ticksSinceEquip[slot.getIndex()]++;
-            if (armorEnabled && armorPressure[slot.getIndex()] > 0F) {
+            if (armorEnabled && getArmorPressure(slot) > 0F) {
                 armorActive = true;
                 if (!player.world.isRemote) {
                     if (isArmorReady(slot) && !player.isCreative()) {
@@ -180,7 +187,7 @@ public class CommonArmorHandler {
                         float airUsage = UpgradeRenderHandlerList.instance().getAirUsage(player, slot, false);
                         if (airUsage != 0) {
                             float oldPressure = addAir(slot, (int) -airUsage);
-                            if (oldPressure > 0F && armorPressure[slot.getIndex()] == 0F) {
+                            if (oldPressure > 0F && getArmorPressure(slot) == 0F) {
                                 // out of air!
                                 NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (ServerPlayerEntity) player);
                             }
@@ -212,13 +219,9 @@ public class CommonArmorHandler {
         }
     }
 
-    public float addAir(EquipmentSlotType slot, int air) {
-        ItemStack armorStack = player.getItemStackFromSlot(slot);
-        float oldPressure = armorPressure[slot.getIndex()];
-        if (armorStack.getItem() instanceof IPressurizable) {
-            ((IPressurizable) armorStack.getItem()).addAir(armorStack, air);
-            armorPressure[slot.getIndex()] = ((IPressurizable) armorStack.getItem()).getPressure(armorStack);
-        }
+    public float addAir(EquipmentSlotType slot, int airAmount) {
+        float oldPressure = getArmorPressure(slot);
+        airHandlers.get(slot.getIndex()).ifPresent(h -> h.addAir(airAmount));
         return oldPressure;
     }
 
@@ -399,28 +402,27 @@ public class CommonArmorHandler {
 
         for (EquipmentSlotType slot : EquipmentSlotType.values()) {
             if (slot == EquipmentSlotType.CHEST) continue;
-            if (armorPressure[EquipmentSlotType.CHEST.getIndex()] < 0.1F) return;
+            if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) return;
             ItemStack stack = player.getItemStackFromSlot(slot);
             tryPressurize(airAmount, stack);
         }
         for (ItemStack stack : player.inventory.mainInventory) {
-            if (armorPressure[EquipmentSlotType.CHEST.getIndex()] < 0.1F) return;
+            if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) return;
             tryPressurize(airAmount, stack);
         }
     }
 
     private void tryPressurize(int airAmount, ItemStack destStack) {
-        if (destStack.getItem() instanceof IPressurizable) {
-            IPressurizable p = (IPressurizable) destStack.getItem();
-            float pressure = p.getPressure(destStack);
-            if (pressure < p.maxPressure(destStack) && pressure < armorPressure[EquipmentSlotType.CHEST.getIndex()]) {
-                float currentAir = pressure * p.getVolume(destStack);
-                float targetAir = armorPressure[EquipmentSlotType.CHEST.getIndex()] * p.getVolume(destStack);
+        destStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(destHandler -> {
+            float pressure = destHandler.getPressure();
+            if (pressure < destHandler.maxPressure() && pressure < getArmorPressure(EquipmentSlotType.CHEST)) {
+                float currentAir = pressure * destHandler.getVolume();
+                float targetAir = getArmorPressure(EquipmentSlotType.CHEST) * destHandler.getVolume();
                 int amountToMove = Math.min((int)(targetAir - currentAir), airAmount);
-                p.addAir(destStack, amountToMove);
+                destHandler.addAir(amountToMove);
                 addAir(EquipmentSlotType.CHEST, -amountToMove);
             }
-        }
+        });
     }
 
     private void handleItemRepair(EquipmentSlotType slot) {
@@ -430,7 +432,7 @@ public class CommonArmorHandler {
 
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         if (armorStack.getDamage() > 0
-                && armorPressure[slot.getIndex()] > 0.1F
+                && getArmorPressure(slot) > 0.1F
                 && ticksSinceEquip[slot.getIndex()] % interval == 0) {
             addAir(slot, -airUsage);
             armorStack.setDamage(armorStack.getDamage() - 1);
@@ -453,7 +455,7 @@ public class CommonArmorHandler {
             if (item.getPositionVector().squareDistanceTo(playerVec) <= magnetRadiusSq
                     && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
                     && !item.getPersistentData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
-                if (armorPressure[EquipmentSlotType.CHEST.getIndex()] < 0.1F) break;
+                if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) break;
                 item.setPosition(player.posX, player.posY, player.posZ);
                 if (item instanceof ItemEntity) ((ItemEntity) item).setPickupDelay(0);
                 addAir(EquipmentSlotType.CHEST, -PneumaticValues.MAGNET_AIR_USAGE);
@@ -642,7 +644,7 @@ public class CommonArmorHandler {
     }
 
     public float getArmorPressure(EquipmentSlotType slot) {
-        return armorPressure[slot.getIndex()];
+        return airHandlers.get(slot.getIndex()).map(IAirHandlerBase::getPressure).orElse(0F);
     }
 
     public void setJetBootsActive(boolean jetBootsActive) {

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T ",
+    "WPW",
+    "WFW"
+  ],
+  "key": {
+    "W": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "P": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "T": {
+      "item": "minecraft:tnt"
+    },
+    "F": {
+      "item": "minecraft:fire_charge"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:micromissiles"
+  }
+}

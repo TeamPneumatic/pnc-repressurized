@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -42,27 +42,29 @@ public class ModuleCharging extends TubeModule {
 
             for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
                 ItemStack chargedItem = itemHandler.getStackInSlot(slot);
-                if (chargedItem.getItem() instanceof IPressurizable) {
-                    IPressurizable chargingItem = (IPressurizable) chargedItem.getItem();
-                    float itemPressure = chargingItem.getPressure(chargedItem);
-                    float itemVolume = chargingItem.getVolume(chargedItem);
+                final int airInTube2 = airInTube;
+                int toAdd = chargedItem.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+                    float itemPressure = h.getPressure();
+                    float itemVolume = h.getVolume();
                     float delta = Math.abs(airHandler.getPressure() - itemPressure) / 2.0F;
                     int airInItem = (int) (itemPressure * itemVolume);
-                    if (chargingItem.getPressure(chargedItem) > airHandler.getPressure() + 0.01F && chargingItem.getPressure(chargedItem) > 0F) {
+                    if (h.getPressure() > airHandler.getPressure() + 0.01F && h.getPressure() > 0F) {
                         // move air from item to charger (tube)
                         int airToMove = Math.min(Math.min(airToTransfer, airInItem), (int) (delta * airHandler.getVolume()));
-                        chargingItem.addAir(chargedItem, -airToMove);
+                        h.addAir(-airToMove);
                         airHandler.addAir(airToMove);
-                        airInTube += airToMove;
-                    } else if (chargingItem.getPressure(chargedItem) < airHandler.getPressure() - 0.01F && chargingItem.getPressure(chargedItem) < chargingItem.maxPressure(chargedItem)) {
+                        return airToMove;
+                    } else if (h.getPressure() < airHandler.getPressure() - 0.01F && h.getPressure() < h.maxPressure()) {
                         // move air from charger (tube) to item
-                        int maxAirInItem = (int) (chargingItem.maxPressure(chargedItem) * itemVolume);
-                        int airToMove = Math.min(Math.min(airToTransfer, airInTube), maxAirInItem - airInItem);
+                        int maxAirInItem = (int) (h.maxPressure() * itemVolume);
+                        int airToMove = Math.min(Math.min(airToTransfer, airInTube2), maxAirInItem - airInItem);
                         airToMove = Math.min((int) (delta * itemVolume), airToMove);
-                        chargingItem.addAir(chargedItem, airToMove);
+                        h.addAir(airToMove);
                         airHandler.addAir(-airToMove);
                     }
-                }
+                    return 0;
+                }).orElse(0);
+                airInTube += toAdd;
             }
         });
     }

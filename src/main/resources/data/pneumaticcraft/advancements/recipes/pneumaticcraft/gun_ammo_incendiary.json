@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:gun_ammo_incendiary"
+    ]
+  },
+  "criteria": {
+    "has_gun_ammo": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:gun_ammo"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:gun_ammo_incendiary"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_gun_ammo",
+      "has_the_recipe"
+    ]
+  ]
+}

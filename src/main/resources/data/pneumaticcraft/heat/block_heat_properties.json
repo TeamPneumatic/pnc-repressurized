@@ -40,7 +40,11 @@
       "temperature": 253,
       "thermalResistance": 250
     },
-    "minecraft:magma": {
+    "minecraft:blue_ice": {
+      "temperature": 233,
+      "thermalResistance": 200
+    },
+    "minecraft:magma_block": {
       "temperature": 1300,
       "thermalResistance": 500,
       "transformCold": "minecraft:netherrack",

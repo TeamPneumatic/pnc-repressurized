@@ -2,9 +2,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
 import me.desht.pneumaticcraft.common.block.BlockChargingStation;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
@@ -17,6 +18,7 @@ import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -49,7 +51,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public static final int CHARGE_INVENTORY_INDEX = 0;
 
     @DescSynced
-    public ItemStack chargingStackSynced = ItemStack.EMPTY;  // the item being charged, minus any meta/nbt - for client display purposes
+    private ItemStack chargingStackSynced = ItemStack.EMPTY;  // the item being charged, minus any meta/nbt - for client display purposes
+    public ItemEntity chargingStackEntity;
 
     private ChargingStationHandler itemHandler;  // holds the item being charged
     private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> itemHandler);
@@ -78,6 +81,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     public void onDescUpdate() {
         camoState = ICamouflageableTE.getStateForStack(camoStack);
+        chargingStackEntity = new ItemEntity(EntityType.ITEM, world);
+        chargingStackEntity.setItem(chargingStackSynced);
 
         super.onDescUpdate();
     }
@@ -99,28 +104,27 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
             int airToTransfer = (int) (PneumaticValues.CHARGING_STATION_CHARGE_RATE * getSpeedMultiplierFromUpgrades());
 
-            List<Pair<IPressurizable, ItemStack>> l = findChargeableItems();
+            List<IAirHandlerBase> l = findChargeable();
             for (int i = 0; i < l.size() && airHandler.getAir() > 0; i++) {
-                IPressurizable p = l.get(i).getLeft();
-                ItemStack chargingStack = l.get(i).getRight();
+                IAirHandlerBase itemAirHandler = l.get(i);
 
-                float itemPressure = p.getPressure(chargingStack);
-                float itemVolume = p.getVolume(chargingStack);
+                float itemPressure = itemAirHandler.getPressure();
+                float itemVolume = itemAirHandler.getVolume();
                 float delta = Math.abs(getPressure() - itemPressure) / 2.0F;
                 int airInItem = (int) (itemPressure * itemVolume);
 
                 if (itemPressure > getPressure() + 0.01F && itemPressure > 0F) {
                     // move air from item to charger
                     int airToMove = Math.min(Math.min(airToTransfer, airInItem), (int) (delta * airHandler.getVolume()));
-                    p.addAir(chargingStack, -airToMove);
+                    itemAirHandler.addAir(-airToMove);
                     this.addAir(airToMove);
                     discharging = true;
-                } else if (itemPressure < getPressure() - 0.01F && itemPressure < p.maxPressure(chargingStack)) {
+                } else if (itemPressure < getPressure() - 0.01F && itemPressure < itemAirHandler.maxPressure()) {
                     // move air from charger to item
-                    int maxAirInItem = (int) (p.maxPressure(chargingStack) * itemVolume);
+                    int maxAirInItem = (int) (itemAirHandler.maxPressure() * itemVolume);
                     int airToMove = Math.min(Math.min(airToTransfer, airHandler.getAir()), maxAirInItem - airInItem);
                     airToMove = Math.min((int) (delta * itemVolume), airToMove);
-                    p.addAir(chargingStack, airToMove);
+                    itemAirHandler.addAir(airToMove);
                     this.addAir(-airToMove);
                     charging = true;
                 }
@@ -138,45 +142,27 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         }
     }
 
-    @Override
-    protected void onFirstServerUpdate() {
-        super.onFirstServerUpdate();
+    private List<IAirHandlerBase> findChargeable() {
+        List<IAirHandlerBase> res = new ArrayList<>();
 
-//        chargingStackSynced = new ItemStack(getChargingStack().getItem());
-    }
-
-    private List<Pair<IPressurizable, ItemStack>> findChargeableItems() {
-        List<Pair<IPressurizable, ItemStack>> res = new ArrayList<>();
-
-        IPressurizable p = IPressurizable.of(getChargingStack());
-        if (p != null) {
-            res.add(Pair.of(p, getChargingStack()));
-            chargingItemPressure = p.getPressure(getChargingStack());
-        }
+        getChargingStack().getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
 
         if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            // creating a new word, 'entities padding'!
-            List<Entity> entitiesPadding = getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(getPos().up()));
-            for (Entity entity : entitiesPadding) {
-                if (entity instanceof IPressurizable) {
-                    res.add(Pair.of((IPressurizable) entity, ItemStack.EMPTY));
-                } else if (entity instanceof ItemEntity) {
-                    ItemStack entityStack = ((ItemEntity) entity).getItem();
-                    if (entityStack.getItem() instanceof IPressurizable) {
-                        res.add(Pair.of(IPressurizable.of(entityStack), entityStack));
-                    }
+            List<Entity> entitiesOnPad = getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(getPos().up()));
+            for (Entity entity : entitiesOnPad) {
+                if (entity instanceof ItemEntity) {
+                    ((ItemEntity) entity).getItem().getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
                 } else if (entity instanceof PlayerEntity) {
                     PlayerInventory inv = ((PlayerEntity) entity).inventory;
                     for (int i = 0; i < inv.getSizeInventory(); i++) {
                         ItemStack stack = inv.getStackInSlot(i);
-                        if (stack.getItem() instanceof IPressurizable) {
-                            res.add(Pair.of(IPressurizable.of(stack), stack));
-                        }
+                        stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
                     }
+                } else {
+                    entity.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY).ifPresent(res::add);
                 }
             }
         }
-
         return res;
     }
 
@@ -213,7 +199,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             case 0:
                 return false;
             case 1:
-                return !charging && !discharging && getChargingStack().getItem() instanceof IPressurizable;
+                return !charging && !discharging && getChargingStack().getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).isPresent();
             case 2:
                 return charging;
             case 3:
@@ -233,7 +219,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return inventoryCap;
     }
 
@@ -346,7 +332,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return slot == CHARGE_INVENTORY_INDEX && (itemStack.isEmpty() || itemStack.getItem() instanceof IPressurizable);
+            return slot == CHARGE_INVENTORY_INDEX
+                    && (itemStack.isEmpty() || itemStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).isPresent());
         }
 
         @Override

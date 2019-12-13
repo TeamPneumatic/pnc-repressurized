@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetPlace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -81,7 +82,8 @@ public class DroneAIPlace extends DroneAIBlockInteraction<ProgWidgetPlace> {
                     BlockState state = placingBlock.getStateForPlacement(ctx);
                     ActionResultType res = blockItem.tryPlace(ctx);
                     if (res == ActionResultType.SUCCESS) {
-                        drone.addAir(null, -PneumaticValues.DRONE_USAGE_PLACE);
+                        drone.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY)
+                                .ifPresent(h -> h.addAir(-PneumaticValues.DRONE_USAGE_PLACE));
                         SoundType soundType = placingBlock.getSoundType(state, drone.world(), pos, drone.getFakePlayer());
                         drone.world().playSound(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, soundType.getPlaceSound(), SoundCategory.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F, false);
                         droneStack.shrink(1);

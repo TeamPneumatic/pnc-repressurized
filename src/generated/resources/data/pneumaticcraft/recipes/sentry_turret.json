@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " M ",
+    "PIP",
+    "I I"
+  ],
+  "key": {
+    "M": {
+      "item": "pneumaticcraft:minigun"
+    },
+    "P": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:sentry_turret"
+  }
+}

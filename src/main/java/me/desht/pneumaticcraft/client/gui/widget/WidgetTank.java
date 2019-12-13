@@ -7,6 +7,7 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
@@ -19,7 +20,7 @@ import java.util.List;
  * This class is derived from BluePower and edited by MineMaarten:
  * https://github.com/Qmunity/BluePower/blob/FluidCrafting/src/main/java/com/bluepowermod/client/gui/widget/WidgetTank.java
  */
-public class WidgetTank extends Widget implements ITooltipSupplier {
+public class WidgetTank extends Widget implements ITooltipProvider {
 
     private final IFluidTank tank;
 
@@ -65,21 +66,14 @@ public class WidgetTank extends Widget implements ITooltipSupplier {
 
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
-        Fluid fluid = null;
-        int amt = 0;
-        int capacity = 0;
+        Fluid fluid = tank.getFluid().getFluid();
+        int amt = tank.getFluidAmount();
+        int capacity = tank.getCapacity();
 
-        if (tank.getFluid() != null) {
-            fluid = tank.getFluid().getFluid();
-            amt = tank.getFluidAmount();
-        }
-        capacity = tank.getCapacity();
-
-        if (fluid == null || amt == 0 || capacity == 0) {
-            curTip.add(amt + "/" + capacity + " mb");
+        curTip.add(amt + "/" + capacity + " mb");
+        if (fluid == Fluids.EMPTY || amt == 0 || capacity == 0) {
             curTip.add(TextFormatting.GRAY + I18n.format("gui.liquid.empty"));
         } else {
-            curTip.add(amt + "/" + capacity + " mb");
             curTip.add(TextFormatting.GRAY + new FluidStack(fluid, amt).getDisplayName().getFormattedText());
         }
     }

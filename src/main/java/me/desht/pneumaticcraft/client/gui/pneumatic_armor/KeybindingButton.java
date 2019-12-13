@@ -1,14 +1,14 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.settings.KeyModifier;
 
-class KeybindingButton extends GuiButtonSpecial {
+class KeybindingButton extends WidgetButtonExtended {
     private final KeyBinding keyBinding;
     private final String origButtonText;
     private boolean bindingMode = false;
@@ -21,14 +21,14 @@ class KeybindingButton extends GuiButtonSpecial {
     }
 
     private void addTooltip() {
-        setTooltipText("Bound to: " + TextFormatting.GREEN + keyBinding.getKeyDescription());
+        setTooltipText(I18n.format("gui.keybindBoundKey", I18n.format(keyBinding.getKey().getTranslationKey())));
     }
 
     void toggleKeybindMode() {
         bindingMode = !bindingMode;
 
         if (bindingMode) {
-            setMessage(TextFormatting.YELLOW + "Press a key to set keybind");
+            setMessage(I18n.format("gui.setKeybind"));
             setTooltipText("");
         } else {
             setMessage(origButtonText);

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.semiblock;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 
 public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> {
-    private GuiCheckBox aeIntegration;
+    private WidgetCheckBox aeIntegration;
     private WidgetTextFieldNumber minItems;
     private WidgetTextFieldNumber minFluid;
     private int packetSendDelay = 0;
@@ -49,7 +49,7 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
     }
 
     private void addMinOrderSizeTab() {
-        GuiAnimatedStat minAmountStat = addAnimatedStat("gui.logistic_frame.min_amount", new ItemStack(Blocks.CHEST), 0xFFC0C080, false);
+        WidgetAnimatedStat minAmountStat = addAnimatedStat("gui.logistic_frame.min_amount", new ItemStack(Blocks.CHEST), 0xFFC0C080, false);
         minAmountStat.addPadding(7, 21);
 
         WidgetLabel minItemsLabel = new WidgetLabel(5, 20, I18n.format("gui.logistic_frame.min_items"));

@@ -5,9 +5,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -47,15 +47,15 @@ import java.util.stream.Collectors;
 public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer,TileEntityProgrammer> {
     private GuiPastebin pastebinGui;
 
-    private GuiButtonSpecial importButton;
-    private GuiButtonSpecial exportButton;
-    private GuiButtonSpecial allWidgetsButton;
-    private List<GuiRadioButton> difficultyButtons;
-    private GuiCheckBox showInfo, showFlow;
+    private WidgetButtonExtended importButton;
+    private WidgetButtonExtended exportButton;
+    private WidgetButtonExtended allWidgetsButton;
+    private List<WidgetRadioButton> difficultyButtons;
+    private WidgetCheckBox showInfo, showFlow;
     private WidgetTextField nameField;
     private WidgetTextField filterField;
-    private GuiButtonSpecial undoButton, redoButton;
-    private GuiButtonSpecial convertToRelativeButton;
+    private WidgetButtonExtended undoButton, redoButton;
+    private WidgetButtonExtended convertToRelativeButton;
 
     private final List<IProgWidget> visibleSpawnWidgets = new ArrayList<>();
     private BitSet filteredSpawnWidgets;
@@ -202,11 +202,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         int xRight = getProgrammerBounds().x + getProgrammerBounds().width; // 299 or 649
         int yBottom = getProgrammerBounds().y + getProgrammerBounds().height + 3; // 171 or 427
 
-        importButton = new GuiButtonSpecial(xStart + xRight + 2, yStart + 3, 20, 15, "\u27f5").withTag("import");
+        importButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 3, 20, 15, "\u27f5").withTag("import");
         importButton.setTooltipText("Import program");
         addButton(importButton);
 
-        exportButton = new GuiButtonSpecial(xStart + xRight + 2, yStart + 20, 20, 15, "\u27f6").withTag("export");
+        exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, "\u27f6").withTag("export");
         addButton(exportButton);
 
         addButton(new Button(xStart + xRight - 3, yStart + yBottom, 10, 10, "\u25c0",
@@ -214,7 +214,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         addButton(new Button(xStart + xRight + 38, yStart + yBottom, 10, 10, "\u25b6",
                 b -> adjustPage(1)));
 
-        allWidgetsButton = new GuiButtonSpecial(xStart + xRight + 22, yStart + yBottom - 16, 10, 10, "\u25e4",
+        allWidgetsButton = new WidgetButtonExtended(xStart + xRight + 22, yStart + yBottom - 16, 10, 10, "\u25e4",
                 b -> toggleShowWidgets());
         allWidgetsButton.setTooltipText(I18n.format("gui.programmer.button.openPanel.tooltip"));
         addButton(allWidgetsButton);
@@ -232,19 +232,19 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         addButton(new Button(xStart + 5, yStart + yBottom + 4, 87, 20, I18n.format("gui.programmer.button.showStart"), b -> gotoStart()));
         addButton(new Button(xStart + 5, yStart + yBottom + 26, 87, 20, I18n.format("gui.programmer.button.showLatest"), b -> gotoLatest()));
-        addButton(showInfo = new GuiCheckBox(xStart + 5, yStart + yBottom + 49, 0xFF404040, "gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
-        addButton(showFlow = new GuiCheckBox(xStart + 5, yStart + yBottom + 61, 0xFF404040, "gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
+        addButton(showInfo = new WidgetCheckBox(xStart + 5, yStart + yBottom + 49, 0xFF404040, "gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
+        addButton(showFlow = new WidgetCheckBox(xStart + 5, yStart + yBottom + 61, 0xFF404040, "gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
 
-        GuiButtonSpecial pastebinButton = new GuiButtonSpecial(guiLeft - 24, guiTop + 44, 20, 20, "",
+        WidgetButtonExtended pastebinButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 44, 20, 20, "",
                 b -> pastebin());
         pastebinButton.setTooltipText(I18n.format("gui.remote.button.pastebinButton"));
         pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
         addButton(pastebinButton);
 
-        undoButton = new GuiButtonSpecial(guiLeft - 24, guiTop + 2, 20, 20, "").withTag("undo");
-        redoButton = new GuiButtonSpecial(guiLeft - 24, guiTop + 23, 20, 20, "").withTag("redo");
-        GuiButtonSpecial clearAllButton = new GuiButtonSpecial(guiLeft - 24, guiTop + 65, 20, 20, "", b -> clear());
-        convertToRelativeButton = new GuiButtonSpecial(guiLeft - 24, guiTop + 86, 20, 20, "Rel", b -> convertToRelative());
+        undoButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 2, 20, 20, "").withTag("undo");
+        redoButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 23, 20, 20, "").withTag("redo");
+        WidgetButtonExtended clearAllButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 65, 20, 20, "", b -> clear());
+        convertToRelativeButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 86, 20, 20, "Rel", b -> convertToRelative());
 
         undoButton.setRenderedIcon(Textures.GUI_UNDO_ICON_LOCATION);
         redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);
@@ -1028,10 +1028,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
     }
 
-    private class DifficultyButton extends GuiRadioButton {
+    private class DifficultyButton extends WidgetRadioButton {
         final WidgetDifficulty difficulty;
 
-        public DifficultyButton(int x, int y, int color, WidgetDifficulty difficulty, Consumer<GuiRadioButton> pressable) {
+        public DifficultyButton(int x, int y, int color, WidgetDifficulty difficulty, Consumer<WidgetRadioButton> pressable) {
             super(x, y, color, difficulty.getTranslationKey(), pressable);
             this.difficulty = difficulty;
         }

@@ -4,13 +4,14 @@ import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
+import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.block.Block;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.text.TextFormatting;
 
 @WailaPlugin
@@ -25,7 +26,7 @@ public class Waila implements IWailaPlugin, IThirdParty {
         iRegistrar.registerBlockDataProvider(new SemiblockProvider.Data(), Block.class);
         iRegistrar.registerBlockDataProvider(new RedstoneControlProvider.Data(), IRedstoneControl.class);
         iRegistrar.registerBlockDataProvider(new TubeModuleProvider.Data(), TileEntityPressureTube.class);
-        iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), IPressurizable.class);
+        iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), LivingEntity.class);
 
         iRegistrar.registerComponentProvider(new PneumaticProvider.Component(), TooltipPosition.BODY, IPneumaticMachine.class);
         iRegistrar.registerComponentProvider(new PneumaticProvider.Component(), TooltipPosition.BODY, IInfoForwarder.class);
@@ -33,7 +34,7 @@ public class Waila implements IWailaPlugin, IThirdParty {
         iRegistrar.registerComponentProvider(new SemiblockProvider.Component(), TooltipPosition.BODY, Block.class);
         iRegistrar.registerComponentProvider(new RedstoneControlProvider.Component(), TooltipPosition.BODY, IRedstoneControl.class);
         iRegistrar.registerComponentProvider(new TubeModuleProvider.Component(), TooltipPosition.BODY, TileEntityPressureTube.class);
-        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, IPressurizable.class);
-        iRegistrar.registerComponentProvider(new CamoProvider.Component(), TooltipPosition.BODY, IPressurizable.class);
+        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, LivingEntity.class);
+        iRegistrar.registerComponentProvider(new CamoProvider.Component(), TooltipPosition.BODY, ICamouflageableTE.class);
     }
 }

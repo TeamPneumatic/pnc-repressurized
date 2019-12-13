@@ -245,7 +245,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return invCap;
     }
 

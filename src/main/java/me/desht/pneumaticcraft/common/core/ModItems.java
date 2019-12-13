@@ -132,8 +132,10 @@ public class ModItems {
             registerItem(registry, new ItemPneumatic("cannon_barrel"));
             registerItem(registry, new ItemPneumatic("turbine_blade"));
             registerItem(registry, new ItemPneumatic("plastic"));
-            registerItem(registry, new ItemPressurizable("air_canister", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));
-            registerItem(registry, new ItemReinforcedAirCanister());
+            registerItem(registry, new ItemPressurizable("air_canister",
+                    PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));
+            registerItem(registry, new ItemPressurizable("reinforced_air_canister",
+                    PneumaticValues.REINFORCED_AIR_CANISTER_MAX_AIR, PneumaticValues.REINFORCED_AIR_CANISTER_VOLUME));
             registerItem(registry, new ItemVortexCannon());
             registerItem(registry, new ItemPneumatic("pneumatic_cylinder"));
             registerItem(registry, new ItemPneumaticArmor("pneumatic_helmet", EquipmentSlotType.HEAD));

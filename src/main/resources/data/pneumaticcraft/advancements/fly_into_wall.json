@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:brick_block"
+      "item": "minecraft:bricks"
     },
     "title": {
       "translate": "achievement.flyIntoWall"

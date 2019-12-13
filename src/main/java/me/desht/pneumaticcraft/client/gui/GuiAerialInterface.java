@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerAerialInterface;
@@ -31,8 +31,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAerialInterface,TileEntityAerialInterface> {
-    private final GuiButtonSpecial[] modeButtons = new GuiButtonSpecial[3];
-    private GuiButtonSpecial xpButton;
+    private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[3];
+    private WidgetButtonExtended xpButton;
 
     public GuiAerialInterface(ContainerAerialInterface container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -50,10 +50,10 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
         if (te.dispenserUpgradeInserted) {
             // Experience Tab
             if (PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0) {
-                GuiAnimatedStat xpStat = addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title",
+                WidgetAnimatedStat xpStat = addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title",
                         new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false);
                 xpStat.setText(getLiquidXPText());
-                xpButton = new GuiButtonSpecial(20, 15, 20, 20, "", b -> {
+                xpButton = new WidgetButtonExtended(20, 15, 20, 20, "", b -> {
                     te.curXPFluidIndex++;
                     if (te.curXPFluidIndex >= PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.size()) {
                         te.curXPFluidIndex = -1;
@@ -65,25 +65,25 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
             }
 
             // Feeding Tab
-            GuiAnimatedStat optionStat = addAnimatedStat("gui.tab.aerialInterface.feedMode",
+            WidgetAnimatedStat optionStat = addAnimatedStat("gui.tab.aerialInterface.feedMode",
                     new ItemStack(Items.BEEF), 0xFFFFCC00, false);
             optionStat.addPadding(4, 16);
 
-            GuiButtonSpecial button = new GuiButtonSpecial(5, 20, 20, 20, "")
+            WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, "")
                     .withTag(FeedMode.FULLY_UTILIZE.toString());
             button.setRenderStacks(new ItemStack(Items.BEEF));
             button.setTooltipText(I18n.format("gui.tab.aerialInterface.feedMode.feedFullyUtilize"));
             optionStat.addSubWidget(button);
             modeButtons[0] = button;
 
-            button = new GuiButtonSpecial(30, 20, 20, 20, "")
+            button = new WidgetButtonExtended(30, 20, 20, 20, "")
                     .withTag(FeedMode.WHEN_POSSIBLE.toString());
             button.setRenderStacks(new ItemStack(Items.APPLE));
             button.setTooltipText(I18n.format("gui.tab.aerialInterface.feedMode.feedWhenPossible"));
             optionStat.addSubWidget(button);
             modeButtons[1] = button;
 
-            button = new GuiButtonSpecial(55, 20, 20, 20, "")
+            button = new WidgetButtonExtended(55, 20, 20, 20, "")
                     .withTag(FeedMode.FULLY_ELSE_WHEN_POSSIBLE.toString());
             button.setRenderStacks(new ItemStack(Items.GOLDEN_APPLE));
             button.setTooltipText(Arrays.asList(WordUtils.wrap(I18n.format("gui.tab.aerialInterface.feedMode.utilizeFullHealthElsePossible"), 40).split(System.getProperty("line.separator"))));

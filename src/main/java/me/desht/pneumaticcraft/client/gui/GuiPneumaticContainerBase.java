@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.gui.widget.*;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat.StatIcon;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -44,10 +44,10 @@ import java.util.stream.Collectors;
 public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase<T>, T extends TileEntityBase> extends ContainerScreen<C> {
     public final T te;
     private IGuiAnimatedStat lastLeftStat, lastRightStat;
-    private GuiAnimatedStat pressureStat;
-    private GuiAnimatedStat redstoneTab;
-    GuiAnimatedStat problemTab;
-    GuiButtonSpecial redstoneButton;
+    private WidgetAnimatedStat pressureStat;
+    private WidgetAnimatedStat redstoneTab;
+    WidgetAnimatedStat problemTab;
+    WidgetButtonExtended redstoneButton;
     protected boolean firstUpdate = true;
     private final List<IGuiAnimatedStat> statWidgets = new ArrayList<>();
     private int sendDelay = -1;
@@ -87,11 +87,11 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
     }
 
-    private GuiAnimatedStat addAnimatedStat(String title, StatIcon icon, int color, boolean leftSided) {
+    private WidgetAnimatedStat addAnimatedStat(String title, StatIcon icon, int color, boolean leftSided) {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        GuiAnimatedStat stat = new GuiAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : xSize + 1), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
+        WidgetAnimatedStat stat = new WidgetAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : xSize + 1), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
         stat.setBeveled(true);
         addButton(stat);
         if (leftSided) {
@@ -103,15 +103,15 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         return stat;
     }
 
-    protected GuiAnimatedStat addAnimatedStat(String title, @Nonnull ItemStack icon, int color, boolean leftSided) {
+    protected WidgetAnimatedStat addAnimatedStat(String title, @Nonnull ItemStack icon, int color, boolean leftSided) {
         return addAnimatedStat(title, StatIcon.of(icon), color, leftSided);
     }
 
-    protected GuiAnimatedStat addAnimatedStat(String title, ResourceLocation icon, int color, boolean leftSided) {
+    protected WidgetAnimatedStat addAnimatedStat(String title, ResourceLocation icon, int color, boolean leftSided) {
         return addAnimatedStat(title, StatIcon.of(icon), color, leftSided);
     }
 
-    protected GuiAnimatedStat addAnimatedStat(String title, int color, boolean leftSided) {
+    protected WidgetAnimatedStat addAnimatedStat(String title, int color, boolean leftSided) {
         return addAnimatedStat(title, StatIcon.NONE, color, leftSided);
     }
 
@@ -140,7 +140,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         int width = getWidestRedstoneLabel();
         redstoneTab.addPadding(curInfo,4, width / font.getStringWidth(" "));
         Rectangle2d buttonRect = redstoneTab.getButtonScaledRectangle(-width - 12, 24, width + 10, 20);
-        redstoneButton = new GuiButtonSpecial(buttonRect.getX(), buttonRect.getY(), buttonRect.getWidth(), buttonRect.getHeight(), "-", button -> { }).withTag(IGUIButtonSensitive.REDSTONE_TAG);
+        redstoneButton = new WidgetButtonExtended(buttonRect.getX(), buttonRect.getY(), buttonRect.getWidth(), buttonRect.getHeight(), "-", button -> { }).withTag(IGUIButtonSensitive.REDSTONE_TAG);
         redstoneTab.addSubWidget(redstoneButton);
     }
 
@@ -176,7 +176,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     private void addSideConfiguratorTabs() {
         for (SideConfigurator sc : ((ISideConfigurable) te).getSideConfigurators()) {
-            GuiAnimatedStat stat = addAnimatedStat(sc.getTranslationKey(), new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER), 0xFF90C0E0, false);
+            WidgetAnimatedStat stat = addAnimatedStat(sc.getTranslationKey(), new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER), 0xFF90C0E0, false);
             stat.addPadding(7, 16);
 
             int yTop = 15, xLeft = 25;
@@ -189,9 +189,9 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
     }
 
-    private GuiButtonSpecial makeSideConfButton(final SideConfigurator sideConfigurator, RelativeFace relativeFace, int x, int y) {
-        GuiButtonSpecial button = new GuiButtonSpecial(x, y, 20, 20, "", b -> {
-            GuiButtonSpecial gbs = (GuiButtonSpecial) b;
+    private WidgetButtonExtended makeSideConfButton(final SideConfigurator sideConfigurator, RelativeFace relativeFace, int x, int y) {
+        WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, "", b -> {
+            WidgetButtonExtended gbs = (WidgetButtonExtended) b;
             ((ISideConfigurable) te).getSideConfigurators().stream()
                     .filter(sc -> sc.handleButtonPress(gbs.getTag()))
                     .findFirst()
@@ -281,7 +281,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
         for (IGuiAnimatedStat w : statWidgets) {
-            if (((GuiAnimatedStat) w).mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY)) {
+            if (((WidgetAnimatedStat) w).mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY)) {
                 return true;
             }
         }
@@ -300,8 +300,8 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         GlStateManager.color4f(1, 1, 1, 1);
         GlStateManager.disableLighting();
         for (Widget widget : buttons) {
-            if (widget instanceof ITooltipSupplier && widget.isHovered()) {
-                ((ITooltipSupplier) widget).addTooltip(x, y, tooltip, PneumaticCraftRepressurized.proxy.isSneakingInGui());
+            if (widget instanceof ITooltipProvider && widget.isHovered() && widget.visible) {
+                ((ITooltipProvider) widget).addTooltip(x, y, tooltip, PneumaticCraftRepressurized.proxy.isSneakingInGui());
             }
         }
 
@@ -443,12 +443,12 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(text, x, y, width, height, -1, fontRenderer);
     }
 
-    GuiButtonSpecial getButtonFromRectangle(String tag, Rectangle2d buttonSize, String buttonText, Button.IPressable pressable) {
-        return new GuiButtonSpecial(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), buttonText, pressable).withTag(tag);
+    WidgetButtonExtended getButtonFromRectangle(String tag, Rectangle2d buttonSize, String buttonText, Button.IPressable pressable) {
+        return new WidgetButtonExtended(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), buttonText, pressable).withTag(tag);
     }
 
-    GuiButtonSpecial getInvisibleButtonFromRectangle(String tag, Rectangle2d buttonSize, Button.IPressable pressable) {
-        return new GuiButtonSpecial(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), "", pressable).withTag(tag);
+    WidgetButtonExtended getInvisibleButtonFromRectangle(String tag, Rectangle2d buttonSize, Button.IPressable pressable) {
+        return new WidgetButtonExtended(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), "", pressable).withTag(tag);
     }
 
     WidgetTextField getTextFieldFromRectangle(Rectangle2d textFieldSize) {

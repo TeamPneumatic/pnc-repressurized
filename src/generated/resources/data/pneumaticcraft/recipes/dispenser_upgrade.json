@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "X": {
+      "item": "minecraft:quartz"
+    },
+    "C": {
+      "item": "minecraft:dispenser"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:dispenser_upgrade"
+  }
+}

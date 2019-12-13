@@ -106,7 +106,7 @@ public interface IOptionPage {
         private final IUpgradeRenderHandler renderHandler;
 
         public SimpleToggleableOptions(IUpgradeRenderHandler renderHandler) {
-            this.name = I18n.format("pneumaticHelmet.upgrade." + renderHandler.getUpgradeName());
+            this.name = I18n.format("pneumaticHelmet.upgrade." + renderHandler.getUpgradeID());
             this.renderHandler = renderHandler;
         }
 

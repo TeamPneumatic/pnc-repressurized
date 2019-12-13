@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "forge:bucketfilled",
-      "nbt": "{FluidName:\"lubricant\",Amount:1000}"
+      "item": "pneumaticcraft:lubricant_bucket"
     },
     "title": {
       "translate": "achievement.lubricantBucket"
@@ -18,8 +17,7 @@
       "conditions": {
         "items": [
           {
-            "item": "forge:bucketfilled",
-            "nbt": "{FluidName:\"lubricant\",Amount:1000}"
+            "item": "pneumaticcraft:lubricant_bucket"
           }
         ]
       }

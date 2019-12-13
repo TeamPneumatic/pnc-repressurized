@@ -18,8 +18,8 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     public CompoundNBT toNBT(int guiLeft, int guiTop) {
         CompoundNBT tag = super.toNBT(guiLeft, guiTop);
         tag.putString("text", widget.getMessage());
-        tag.putInt("x", widget.getBounds().x - guiLeft);
-        tag.putInt("y", widget.getBounds().y - guiTop);
+        tag.putInt("x", widget.x - guiLeft);
+        tag.putInt("y", widget.y - guiTop);
 //        tag.putString("tooltip", widget.getTooltip());
         return tag;
     }

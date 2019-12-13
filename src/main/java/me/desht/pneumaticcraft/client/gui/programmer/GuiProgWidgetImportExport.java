@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
@@ -25,14 +25,14 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
         if (showSides()) {
             for (Direction dir : Direction.VALUES) {
                 String sideName = PneumaticCraftUtils.getOrientationName(dir);
-                GuiCheckBox checkBox = new GuiCheckBox(guiLeft + 4, guiTop + 30 + dir.getIndex() * 12, 0xFF404040,
+                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 4, guiTop + 30 + dir.getIndex() * 12, 0xFF404040,
                         sideName, b -> progWidget.getSides()[dir.getIndex()] = b.checked);
                 checkBox.checked = progWidget.getSides()[dir.getIndex()];
                 addButton(checkBox);
             }
         }
 
-        GuiCheckBox useItemCount = new GuiCheckBox(guiLeft + 4, guiTop + (showSides() ? 115 : 30), 0xFF404040,
+        WidgetCheckBox useItemCount = new WidgetCheckBox(guiLeft + 4, guiTop + (showSides() ? 115 : 30), 0xFF404040,
                 I18n.format("gui.progWidget.itemFilter.useItemCount"),
                 b -> progWidget.setUseCount(b.checked)
         );

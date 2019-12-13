@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:volume_upgrade"
+    ]
+  },
+  "criteria": {
+    "has_air_canister": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:air_canister"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:volume_upgrade"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_air_canister",
+      "has_the_recipe"
+    ]
+  ]
+}

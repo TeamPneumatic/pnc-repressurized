@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PC",
+    "CP"
+  ],
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    },
+    "P": {
+      "item": "pneumaticcraft:plastic"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:elevator_base"
+  }
+}

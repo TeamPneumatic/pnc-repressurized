@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LLL",
+    "IBT",
+    "III"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:redstone_lamp"
+    },
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    },
+    "B": {
+      "item": "pneumaticcraft:pcb_blueprint"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:uv_light_box"
+  }
+}

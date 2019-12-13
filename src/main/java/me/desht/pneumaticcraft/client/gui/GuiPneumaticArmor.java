@@ -2,10 +2,10 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
 
     private final String registryName;  // for translation purposes
-    private GuiAnimatedStat statusStat;
+    private WidgetAnimatedStat statusStat;
     private final EquipmentSlotType equipmentSlot;
 
     public GuiPneumaticArmor(ContainerChargingStationItemInventory container, PlayerInventory inv, ITextComponent displayString) {
@@ -94,7 +94,7 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
                     IUpgradeRenderHandler handler = renderHandlers.get(i);
                     float upgradeUsage = handler.getEnergyUsage(CommonArmorHandler.getHandlerForPlayer(player).getUpgradeCount(equipmentSlot, EnumUpgrade.RANGE), player);
                     if (upgradeUsage > 0F) {
-                        text.add(TextFormatting.BLACK.toString() + PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/tick (" + handler.getUpgradeName() + ")");
+                        text.add(TextFormatting.BLACK.toString() + PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/tick (" + handler.getUpgradeID() + ")");
                     }
                 }
             }
@@ -105,7 +105,9 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
         }
         text.add("\u00a77Estimated time remaining:");
         int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, itemStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getDefaultVolume();
-        int airLeft = (int) (((IPressurizable) itemStack.getItem()).getPressure(itemStack) * volume);
+        int airLeft = itemStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY)
+                .map(h -> (int)(h.getPressure() * volume))
+                .orElse(0);
         if (totalUsage == 0) {
             if (airLeft > 0) text.add("\u00a70infinite");
             else text.add("\u00a700s");

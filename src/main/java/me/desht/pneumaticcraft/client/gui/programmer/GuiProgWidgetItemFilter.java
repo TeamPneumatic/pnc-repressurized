@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
 import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -19,11 +19,11 @@ import java.util.Arrays;
 public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetItemFilter> {
     private GuiItemSearcher searchGui;
     private GuiInventorySearcher invSearchGui;
-    private GuiCheckBox checkBoxUseDamage;
-    private GuiCheckBox checkBoxUseNBT;
-    private GuiCheckBox checkBoxUseOreDict;
-    private GuiCheckBox checkBoxUseModSimilarity;
-    private GuiCheckBox checkBoxMatchBlock;
+    private WidgetCheckBox checkBoxUseDamage;
+    private WidgetCheckBox checkBoxUseNBT;
+    private WidgetCheckBox checkBoxUseOreDict;
+    private WidgetCheckBox checkBoxUseModSimilarity;
+    private WidgetCheckBox checkBoxMatchBlock;
     private WidgetComboBox variableField;
 
     public GuiProgWidgetItemFilter(ProgWidgetItemFilter widget, GuiProgrammer guiProgrammer) {
@@ -34,16 +34,16 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     public void init() {
         super.init();
 
-        addButton(new GuiButtonSpecial(guiLeft + 4, guiTop + 20, 70, 20, "Search item...", b -> openSearcher()));
-        addButton(new GuiButtonSpecial(guiLeft + 78, guiTop + 20, 100, 20, "Search inventory...", b -> openInventorySearcher()));
+        addButton(new WidgetButtonExtended(guiLeft + 4, guiTop + 20, 70, 20, "Search item...", b -> openSearcher()));
+        addButton(new WidgetButtonExtended(guiLeft + 78, guiTop + 20, 100, 20, "Search inventory...", b -> openInventorySearcher()));
 
-        checkBoxUseDamage = new GuiCheckBox(guiLeft + 4, guiTop + 72, 0xFF404040,
+        checkBoxUseDamage = new WidgetCheckBox(guiLeft + 4, guiTop + 72, 0xFF404040,
                 "Use damage values", b -> progWidget.useItemDamage = b.checked);
         checkBoxUseDamage.setTooltip(Arrays.asList("Check to handle differently damaged", "tools as different."));
         checkBoxUseDamage.checked = progWidget.useItemDamage;
         addButton(checkBoxUseDamage);
 
-        checkBoxUseNBT = new GuiCheckBox(guiLeft + 4, guiTop + 108, 0xFF404040, "Use NBT", b -> {
+        checkBoxUseNBT = new WidgetCheckBox(guiLeft + 4, guiTop + 108, 0xFF404040, "Use NBT", b -> {
             progWidget.useNBT = b.checked;
             checkBoxMatchBlock.enabled = !b.checked;
         });
@@ -51,7 +51,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         checkBoxUseNBT.checked = progWidget.useNBT;
         addButton(checkBoxUseNBT);
 
-        checkBoxUseOreDict = new GuiCheckBox(guiLeft + 4, guiTop + 120, 0xFF404040, "Use Item Tags", b -> {
+        checkBoxUseOreDict = new WidgetCheckBox(guiLeft + 4, guiTop + 120, 0xFF404040, "Use Item Tags", b -> {
             progWidget.useItemTags = b.checked;
             checkBoxUseDamage.enabled = !b.checked;
             checkBoxUseNBT.enabled = !b.checked;
@@ -62,7 +62,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         checkBoxUseOreDict.checked = progWidget.useItemTags;
         addButton(checkBoxUseOreDict);
 
-        checkBoxUseModSimilarity = new GuiCheckBox(guiLeft + 4, guiTop + 132, 0xFF404040, "Use Mod similarity", b -> {
+        checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 4, guiTop + 132, 0xFF404040, "Use Mod similarity", b -> {
             progWidget.useModSimilarity = b.checked;
             checkBoxUseDamage.enabled = !b.checked;
             checkBoxUseNBT.enabled = !b.checked;
@@ -73,7 +73,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         checkBoxUseModSimilarity.checked = progWidget.useModSimilarity;
         addButton(checkBoxUseModSimilarity);
 
-        checkBoxMatchBlock = new GuiCheckBox(guiLeft + 4, guiTop + 144, 0xFF404040, "Match by Block", b -> {
+        checkBoxMatchBlock = new WidgetCheckBox(guiLeft + 4, guiTop + 144, 0xFF404040, "Match by Block", b -> {
             progWidget.matchBlock = b.checked;
             checkBoxUseModSimilarity.enabled = !b.checked;
             checkBoxUseNBT.enabled = !b.checked;

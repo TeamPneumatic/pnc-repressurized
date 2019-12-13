@@ -78,14 +78,14 @@ public abstract class ShapedFluidCraftingRecipe extends ShapedRecipe {
         return true;
     }
 
-    public static class SpeedUpgradeCraftingRecipe extends ShapedFluidCraftingRecipe {
+    public static class SpeedUpgradeCrafting extends ShapedFluidCraftingRecipe {
         private static final NonNullList<Ingredient> INGREDIENTS = NonNullList.from(
                 Ingredient.fromItems(Items.LAPIS_LAZULI), Ingredient.fromItems(Items.SUGAR), Ingredient.fromItems(Items.LAPIS_LAZULI),
                 Ingredient.fromItems(Items.SUGAR), null, Ingredient.fromItems(Items.SUGAR),
                 Ingredient.fromItems(Items.LAPIS_LAZULI), Ingredient.fromItems(Items.SUGAR), Ingredient.fromItems(Items.LAPIS_LAZULI)
         );
 
-        public SpeedUpgradeCraftingRecipe(ResourceLocation id) {
+        public SpeedUpgradeCrafting(ResourceLocation id) {
             super(id, "", 3, 3, INGREDIENTS, EnumUpgrade.SPEED.getItemStack());
         }
 

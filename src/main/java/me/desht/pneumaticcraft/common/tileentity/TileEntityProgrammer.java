@@ -127,7 +127,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return invCap;
     }
 

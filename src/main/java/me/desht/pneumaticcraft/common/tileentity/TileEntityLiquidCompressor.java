@@ -179,7 +179,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
 
     @Nonnull
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return inventoryCap;
     }
 

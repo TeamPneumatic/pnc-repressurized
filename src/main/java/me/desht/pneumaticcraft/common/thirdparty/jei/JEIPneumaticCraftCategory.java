@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.recipe.TemperatureRange;
-import me.desht.pneumaticcraft.client.gui.widget.ITooltipSupplier;
+import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -98,8 +98,8 @@ public abstract class JEIPneumaticCraftCategory<T> implements IRecipeCategory<T>
         List<String> currenttip = new ArrayList<>();
 
         for (Widget widget : subWidgets) {
-            if (widget instanceof ITooltipSupplier && widget.isMouseOver(mouseX, mouseY)) {
-                ((ITooltipSupplier) widget).addTooltip((int)mouseX, (int)mouseY, currenttip, false);
+            if (widget instanceof ITooltipProvider && widget.isMouseOver(mouseX, mouseY)) {
+                ((ITooltipProvider) widget).addTooltip((int)mouseX, (int)mouseY, currenttip, false);
             }
         }
 

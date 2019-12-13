@@ -292,7 +292,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         return new AxisAlignedBB(minX, minY, minZ, maxX + 1, maxY + 1, maxZ + 1);
     }
 
-    public List<Entity> getEntitiesWithinArea(World world, Predicate<? super Entity> predicate) {
+    List<Entity> getEntitiesWithinArea(World world, Predicate<? super Entity> predicate) {
         AxisAlignedBB aabb = getAABB();
         return aabb != null ? world.getEntitiesInAABBexcluding(null, aabb, predicate::test) : new ArrayList<>();
     }

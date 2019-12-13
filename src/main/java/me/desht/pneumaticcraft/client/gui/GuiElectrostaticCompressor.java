@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompressor;
@@ -22,7 +22,7 @@ import java.util.Set;
 public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<ContainerElectrostaticCompressor,TileEntityElectrostaticCompressor> {
     private int connectedCompressors = 1;
     private int ticksExisted;
-    private GuiAnimatedStat electrostaticStat;
+    private WidgetAnimatedStat electrostaticStat;
 
     public GuiElectrostaticCompressor(ContainerElectrostaticCompressor container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);

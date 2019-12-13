@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:assembly_platform"
+    ]
+  },
+  "criteria": {
+    "has_printed_circuit_board": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:printed_circuit_board"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:assembly_platform"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_printed_circuit_board",
+      "has_the_recipe"
+    ]
+  ]
+}

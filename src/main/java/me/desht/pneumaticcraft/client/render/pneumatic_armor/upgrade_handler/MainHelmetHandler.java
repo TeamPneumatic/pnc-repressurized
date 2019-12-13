@@ -5,8 +5,8 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainOptions;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MainHelmetHandler implements IUpgradeRenderHandler {
-    private GuiAnimatedStat powerStat;
-    public GuiAnimatedStat testMessageStat;
+    private WidgetAnimatedStat powerStat;
+    public WidgetAnimatedStat testMessageStat;
 
     @Override
-    public String getUpgradeName() {
+    public String getUpgradeID() {
         return "coreComponents";
     }
 
@@ -43,7 +43,7 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     private String getPressureStr(PlayerEntity player, EquipmentSlotType slot) {
         if (!ItemPneumaticArmor.isPneumaticArmorPiece(player, slot))
             return "-";
-        float pressure = CommonArmorHandler.getHandlerForPlayer(player).armorPressure[slot.getIndex()];
+        float pressure = CommonArmorHandler.getHandlerForPlayer(player).getArmorPressure(slot);
         TextFormatting colour;
         if (pressure < 0.5F) {
             colour = TextFormatting.RED;
@@ -71,11 +71,11 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     @OnlyIn(Dist.CLIENT)
     public IGuiAnimatedStat getAnimatedStat() {
         if (powerStat == null) {
-            powerStat = new GuiAnimatedStat(null, "", GuiAnimatedStat.StatIcon.NONE,0x3000AA00, null, ArmorHUDLayout.INSTANCE.powerStat);
+            powerStat = new WidgetAnimatedStat(null, "", WidgetAnimatedStat.StatIcon.NONE,0x3000AA00, null, ArmorHUDLayout.INSTANCE.powerStat);
             powerStat.setLineSpacing(15);
             powerStat.setWidgetOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                GuiButtonSpecial pressureButton = new GuiButtonSpecial(0, 5 + (3 - slot.getIndex()) * 15, 18, 18, "") ;
+                WidgetButtonExtended pressureButton = new WidgetButtonExtended(0, 5 + (3 - slot.getIndex()) * 15, 18, 18, "") ;
                 ItemStack stack = GuiHelmetMainScreen.ARMOR_STACKS[slot.getIndex()];
                 pressureButton.setVisible(false);
                 pressureButton.setRenderStacks(stack);

@@ -58,6 +58,8 @@ public class ModPressureChamberRecipes {
                 new ItemStack(ModItems.TURBINE_BLADE)
         ));
 
+        ItemStack pcb = new ItemStack(ModItems.EMPTY_PCB);
+        pcb.setDamage(pcb.getMaxDamage());
         pc.accept(new BasicPressureChamberRecipe(
                 RL("empty_pcb"),
                 ImmutableList.of(
@@ -65,7 +67,7 @@ public class ModPressureChamberRecipes {
                         Ingredient.fromItems(ModItems.INGOT_IRON_COMPRESSED)
                 ),
                 1.5F,
-                new ItemStack(ModItems.EMPTY_PCB)
+                pcb
         ));
 
         pc.accept(new BasicPressureChamberRecipe(

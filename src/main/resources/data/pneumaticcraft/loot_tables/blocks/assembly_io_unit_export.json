@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "assembly_io_unit_export",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_name",
+              "source": "block_entity"
+            },
+            {
+              "function": "pneumaticcraft:te_serializer"
+            }
+          ],
+          "name": "pneumaticcraft:assembly_io_unit_export"
+        }
+      ]
+    }
+  ]
+}

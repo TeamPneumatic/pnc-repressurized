@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry.EntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackUpgradeHandler;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -141,13 +142,15 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryPressurizable extends EntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof IPressurizable;
+            return entity.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY).isPresent();
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            curInfo.add(I18n.format("gui.tooltip.pressure",
-                    PneumaticCraftUtils.roundNumberTo(((IPressurizable) entity).getPressure(null), 1)));
+            float pressure = entity.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY)
+                    .map(IAirHandlerBase::getPressure)
+                    .orElseThrow(IllegalStateException::new);
+            curInfo.add(I18n.format("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));
         }
     }
 

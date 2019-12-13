@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:network_component",
-      "data": 1
+      "item": "pneumaticcraft:network_api"
     },
     "title": {
       "translate": "achievement.programmingPuzzle"

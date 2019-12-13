@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "C1C",
+    "C2C"
+  ],
+  "key": {
+    "A": {
+      "item": "pneumaticcraft:gun_ammo"
+    },
+    "C": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    },
+    "1": {
+      "tag": "forge:gems/diamond"
+    },
+    "2": {
+      "tag": "forge:gems/diamond"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:gun_ammo_ap"
+  }
+}

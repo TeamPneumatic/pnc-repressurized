@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAssemblyController,TileEntityAssemblyController> {
 
-    private GuiAnimatedStat statusStat;
+    private WidgetAnimatedStat statusStat;
 
     public GuiAssemblyController(ContainerAssemblyController container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);

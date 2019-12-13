@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
@@ -527,9 +528,12 @@ public class ClientEventHandler {
                     float y = s.yPos;
                     if (s.getStack().getItem() instanceof ItemPneumaticArmor && ItemPressurizable.shouldShowPressureDurability(s.getStack())) {
                         // render secondary durability bar showing remaining air
-                        ItemPneumaticArmor a = (ItemPneumaticArmor) s.getStack().getItem();
-                        float val = a.getPressure(s.getStack()) / a.maxPressure(s.getStack());
-                        int c = ItemPressurizable.getDurabilityColor(s.getStack());
+//                        ItemPneumaticArmor a = (ItemPneumaticArmor) s.getStack().getItem();
+//                        float val = a.getPressure(s.getStack()) / a.maxPressure(s.getStack());
+                        float val = s.getStack().getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY)
+                                .map(h -> h.getPressure() / h.maxPressure())
+                                .orElse(0f);
+                        int c = ItemPressurizable.getPressureDurabilityColor(s.getStack());
                         float r = ((c & 0xFF0000) >> 16) / 256f;
                         float g = ((c & 0xFF00) >> 8) / 256f;
                         float b = ((c & 0xFF)) / 256f;

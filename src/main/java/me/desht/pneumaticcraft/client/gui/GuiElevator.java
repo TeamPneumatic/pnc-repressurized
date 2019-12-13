@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
@@ -24,8 +24,8 @@ import static me.desht.pneumaticcraft.lib.GuiConstants.ARROW_LEFT;
 import static me.desht.pneumaticcraft.lib.GuiConstants.ARROW_RIGHT;
 
 public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, TileEntityElevatorBase> {
-    private GuiAnimatedStat statusStat;
-    private GuiAnimatedStat floorNameStat;
+    private WidgetAnimatedStat statusStat;
+    private WidgetAnimatedStat floorNameStat;
     private WidgetTextField floorNameField;
     private int currentEditedFloor;
 

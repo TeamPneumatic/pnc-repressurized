@@ -7,8 +7,8 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiBlockTrackOptions;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
@@ -40,7 +40,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     private static final int HARD_MAX_BLOCKS_PER_TICK = 50000;
 
     private final Map<BlockPos, RenderBlockTarget> blockTargets = new HashMap<>();
-    private GuiAnimatedStat blockTrackInfo;
+    private WidgetAnimatedStat blockTrackInfo;
     private final Map<String,Integer> blockTypeCount = new HashMap<>();
     private final Map<String,Integer> blockTypeCountPartial = new HashMap<>();
     private int xOff = 0, yOff = 0, zOff = 0;
@@ -48,7 +48,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     private Direction focusedFace = null;
 
     @Override
-    public String getUpgradeName() {
+    public String getUpgradeID() {
         return "blockTracker";
     }
 
@@ -75,7 +75,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
 
             if (!MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(player.world, pos, te))) {
                 if (searchHandler != null && te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
-                    searchHandler.checkInventoryForItems(te, null, GuiKeybindCheckBox.isHandlerEnabled(searchHandler));
+                    searchHandler.checkInventoryForItems(te, null, WidgetKeybindCheckBox.isHandlerEnabled(searchHandler));
                 }
                 List<IBlockTrackEntry> entries = BlockTrackEntryList.instance.getEntriesForCoordinate(player.world, pos, te);
                 if (!entries.isEmpty()) {
@@ -261,7 +261,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
             blockTrackInfo.setTitle("Current tracked blocks:");
 
             blockTypeCount.forEach((k, v) -> {
-                if (v > 0 && GuiKeybindCheckBox.fromKeyBindingName(k).checked) textList.add(v + " " + I18n.format(k));
+                if (v > 0 && WidgetKeybindCheckBox.fromKeyBindingName(k).checked) textList.add(v + " " + I18n.format(k));
             });
 
             if (textList.size() == 0) textList.add("Tracking no blocks currently.");
@@ -334,10 +334,10 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public GuiAnimatedStat getAnimatedStat() {
+    public WidgetAnimatedStat getAnimatedStat() {
         if (blockTrackInfo == null) {
-            GuiAnimatedStat.StatIcon icon = GuiAnimatedStat.StatIcon.of(EnumUpgrade.BLOCK_TRACKER.getItem());
-            blockTrackInfo = new GuiAnimatedStat(null, "Current tracked blocks:",
+            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.BLOCK_TRACKER.getItem());
+            blockTrackInfo = new WidgetAnimatedStat(null, "Current tracked blocks:",
                     icon, 0x3000AA00, null, ArmorHUDLayout.INSTANCE.blockTrackerStat);
             blockTrackInfo.setMinDimensionsAndReset(0, 0);
         }

@@ -7,7 +7,7 @@ import net.minecraft.item.Item;
 
 public class ChargingUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRenderHandler {
     @Override
-    public String getUpgradeName() {
+    public String getUpgradeID() {
         return "charging";
     }
 

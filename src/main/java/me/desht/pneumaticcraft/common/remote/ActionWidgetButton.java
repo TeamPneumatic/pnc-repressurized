@@ -2,27 +2,27 @@ package me.desht.pneumaticcraft.common.remote;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteButton;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
-public class ActionWidgetButton extends ActionWidgetVariable<GuiButtonSpecial> implements IActionWidgetLabeled {
+public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtended> implements IActionWidgetLabeled {
     public BlockPos settingCoordinate = BlockPos.ZERO; // The coordinate the variable is set to when the button is pressed.
 
     public ActionWidgetButton() {
     }
 
-    public ActionWidgetButton(GuiButtonSpecial widget) {
+    public ActionWidgetButton(WidgetButtonExtended widget) {
         super(widget);
     }
 
     @Override
     public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
-        widget = new GuiButtonSpecial(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, tag.getInt("width"), tag.getInt("height"), tag.getString("text"), b -> onActionPerformed());
+        widget = new WidgetButtonExtended(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, tag.getInt("width"), tag.getInt("height"), tag.getString("text"), b -> onActionPerformed());
         settingCoordinate = new BlockPos(tag.getInt("settingX"), tag.getInt("settingY"), tag.getInt("settingZ"));
         widget.setTooltipText(tag.getString("tooltip"));
     }

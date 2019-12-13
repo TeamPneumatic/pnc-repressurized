@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 
-public class WidgetTemperature extends Widget implements ITooltipSupplier {
+public class WidgetTemperature extends Widget implements ITooltipProvider {
 
     private int[] scales;
     protected final IHeatExchangerLogic logic;

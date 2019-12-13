@@ -69,7 +69,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return inventoryCap;
     }
 

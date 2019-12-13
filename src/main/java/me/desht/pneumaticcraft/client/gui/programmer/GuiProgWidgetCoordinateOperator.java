@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 import net.minecraft.client.resources.I18n;
@@ -22,10 +22,10 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
     public void init() {
         super.init();
 
-        List<GuiRadioButton> radioButtons = new ArrayList<>();
+        List<WidgetRadioButton> radioButtons = new ArrayList<>();
         for (EnumOperator op : EnumOperator.values()) {
             String key = op.getTranslationKey();
-            GuiRadioButton radioButton = new GuiRadioButton(guiLeft + 7, guiTop + 42 + 12 * op.ordinal(), 0xFF404040,
+            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 7, guiTop + 42 + 12 * op.ordinal(), 0xFF404040,
                     I18n.format(op.getTranslationKey()), b -> progWidget.setOperator(op));
             radioButtons.add(radioButton);
             radioButton.checked = progWidget.getOperator() == op;

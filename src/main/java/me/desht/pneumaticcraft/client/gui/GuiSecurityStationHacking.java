@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -26,7 +26,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerSecurityStationHacking> {
-    private GuiAnimatedStat statusStat;
+    private WidgetAnimatedStat statusStat;
 
     private NetworkConnectionBackground playerBackgroundBridges;
     private NetworkConnectionBackground aiBackgroundBridges;

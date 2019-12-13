@@ -167,7 +167,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return invCap;
     }
 

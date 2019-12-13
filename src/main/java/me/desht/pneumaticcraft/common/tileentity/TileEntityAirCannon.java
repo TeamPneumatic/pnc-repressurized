@@ -791,7 +791,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return inventory;
     }
 

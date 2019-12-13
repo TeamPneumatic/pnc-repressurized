@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "SRS",
+    " S "
+  ],
+  "key": {
+    "S": {
+      "tag": "forge:crops"
+    },
+    "R": {
+      "item": "pneumaticcraft:turbine_rotor"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:harvesting_drone"
+  }
+}

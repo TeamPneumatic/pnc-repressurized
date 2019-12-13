@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.client.gui.*;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.*;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsDefaultStorage;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsProvider;
@@ -12,6 +13,7 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.GuiRedstoneModule;
 import me.desht.pneumaticcraft.client.model.module.*;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.render.entity.*;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModParticleTypes;
@@ -25,24 +27,42 @@ import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.util.DramaSplash;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.util.InputMappings;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientSetup {
+    public static final Map<String, Pair<Integer,KeyModifier>> keybindToKeyCodes = new HashMap<>();
+
     public static void init() {
         registerEntityRenderers();
         registerTESRs();
         registerScreenFactories();
         registerProgWidgetScreenFactories();
         registerTubeModuleFactories();
+
+        getAllKeybindsFromOptionsFile();
+        EntityTrackHandler.init();
+        GuiHelmetMainScreen.initHelmetMainScreen();
+        DramaSplash.getInstance();
     }
 
     @SubscribeEvent
@@ -196,4 +216,26 @@ public class ClientSetup {
         TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_FLOW_DETECTOR, ModelFlowDetector::new);
         TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_LOGISTICS, ModelLogistics::new);
     }
+
+    private static void getAllKeybindsFromOptionsFile() {
+        File optionsFile = new File(Minecraft.getInstance().gameDir, "options.txt");
+        if (optionsFile.exists()) {
+            try (BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile))) {
+                String s = "";
+                while ((s = bufferedreader.readLine()) != null) {
+                    String[] str = s.split(":");
+                    if (str[0].startsWith("key_")) {
+                        KeyModifier mod = str.length > 2 ? KeyModifier.valueFromString(str[2]) : KeyModifier.NONE;
+//                        keybindToKeyCodes.put(str[0].substring(4), Pair.of(Integer.parseInt(str[1]), mod));
+                        InputMappings.Input i = InputMappings.getInputByName(str[1]);
+                        keybindToKeyCodes.put(str[0].substring(4), Pair.of(i.getKeyCode(), mod));
+                    }
+                }
+            } catch (Exception exception1) {
+                Log.error("Failed to process options.txt:");
+                exception1.printStackTrace();
+            }
+        }
+    }
+
 }

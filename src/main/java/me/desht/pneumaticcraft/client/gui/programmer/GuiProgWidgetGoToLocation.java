@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
 
 import java.util.ArrayList;
@@ -17,15 +17,15 @@ public class GuiProgWidgetGoToLocation extends GuiProgWidgetAreaShow<ProgWidgetG
     public void init() {
         super.init();
 
-        List<GuiRadioButton> radioButtons = new ArrayList<>();
-        GuiRadioButton radioButton = new GuiRadioButton(guiLeft + 4, guiTop + 44, 0xFF404040,
+        List<WidgetRadioButton> radioButtons = new ArrayList<>();
+        WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 4, guiTop + 44, 0xFF404040,
                 "Done when arrived", b -> progWidget.doneWhenDeparting = false);
         radioButton.checked = !progWidget.doneWhenDeparting;
         addButton(radioButton);
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
 
-        GuiRadioButton radioButton2 = new GuiRadioButton(guiLeft + 4, guiTop + 58, 0xFF404040,
+        WidgetRadioButton radioButton2 = new WidgetRadioButton(guiLeft + 4, guiTop + 58, 0xFF404040,
                 "Done when departing", b -> progWidget.doneWhenDeparting = true);
         radioButton2.checked = progWidget.doneWhenDeparting;
         addButton(radioButton2);

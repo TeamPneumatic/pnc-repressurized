@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,TileEntityAirCannon> {
-    private GuiAnimatedStat statusStat;
-    private GuiAnimatedStat strengthTab;
+    private WidgetAnimatedStat statusStat;
+    private WidgetAnimatedStat strengthTab;
     private int gpsX;
     private int gpsY;
     private int gpsZ;
@@ -43,10 +43,10 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
 
         strengthTab = this.addAnimatedStat("Force", new ItemStack(ModItems.AIR_CANISTER), 0xFF2080FF, false);
         strengthTab.addPadding(3, 22);
-        strengthTab.addSubWidget(new GuiButtonSpecial(16, 16, 20, 20, "--").withTag("--"));
-        strengthTab.addSubWidget(new GuiButtonSpecial(38, 16, 20, 20, "-").withTag("-"));
-        strengthTab.addSubWidget(new GuiButtonSpecial(60, 16, 20, 20, "+").withTag("+"));
-        strengthTab.addSubWidget(new GuiButtonSpecial(82, 16, 20, 20, "++").withTag("++"));
+        strengthTab.addSubWidget(new WidgetButtonExtended(16, 16, 20, 20, "--").withTag("--"));
+        strengthTab.addSubWidget(new WidgetButtonExtended(38, 16, 20, 20, "-").withTag("-"));
+        strengthTab.addSubWidget(new WidgetButtonExtended(60, 16, 20, 20, "+").withTag("+"));
+        strengthTab.addSubWidget(new WidgetButtonExtended(82, 16, 20, 20, "++").withTag("++"));
     }
 
     @Override

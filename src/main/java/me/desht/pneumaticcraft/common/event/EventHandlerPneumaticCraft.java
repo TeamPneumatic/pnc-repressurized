@@ -13,7 +13,7 @@ import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
-import me.desht.pneumaticcraft.common.capabilities.Hacking;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.aux.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -164,7 +164,7 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void onEntityConstruction(AttachCapabilitiesEvent<Entity> event) {
-        event.addCapability(RL("hacking"), new Hacking.Provider());
+        event.addCapability(RL("hacking"), new CapabilityHacking.Provider());
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

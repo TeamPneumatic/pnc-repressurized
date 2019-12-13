@@ -260,7 +260,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     @Override
     public void writeToPacket(CompoundNBT tag) {
         if (this instanceof ISideConfigurable) {
-            tag.put(NBTKeys.SIDE_CONFIGURATION, SideConfigurator.writeToNBT((ISideConfigurable) this));
+            tag.put(NBTKeys.NBT_SIDE_CONFIG, SideConfigurator.writeToNBT((ISideConfigurable) this));
         }
     }
 
@@ -275,7 +275,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     @Override
     public void readFromPacket(CompoundNBT tag) {
         if (this instanceof ISideConfigurable) {
-            SideConfigurator.readFromNBT(tag.getCompound(NBTKeys.SIDE_CONFIGURATION), (ISideConfigurable) this);
+            SideConfigurator.readFromNBT(tag.getCompound(NBTKeys.NBT_SIDE_CONFIG), (ISideConfigurable) this);
         }
     }
 
@@ -571,13 +571,13 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     public abstract IItemHandlerModifiable getPrimaryInventory();
 
-    @Nonnull
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
-        return LazyOptional.empty();
-    }
-
     public UpgradeHandler getUpgradeHandler() {
         return upgradeHandler;
+    }
+
+    @Nonnull
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+        return LazyOptional.empty();
     }
 
     @Nonnull
@@ -599,7 +599,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
      * @param drops list in which to collect dropped items
      */
     public void getContentsToDrop(NonNullList<ItemStack> drops) {
-        getInventoryCap().ifPresent(h -> {
+        getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> {
             for (int i = 0; i < h.getSlots(); i++) {
                 if (!h.getStackInSlot(i).isEmpty()) {
                     drops.add(h.getStackInSlot(i));
@@ -622,12 +622,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
                 drops.add(ICamouflageableTE.getStackForState(camoState));
             }
         }
-    }
-
-    /**
-     * Carry out any tasks which need a world object (the world is null in the TE constructor)
-     */
-    public void onTileEntityCreated() {
     }
 
     public final String getRedstoneButtonText(int mode) {

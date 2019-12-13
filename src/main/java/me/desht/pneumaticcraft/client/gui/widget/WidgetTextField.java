@@ -23,14 +23,14 @@ public class WidgetTextField extends TextFieldWidget {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTick) {
+    public void renderButton(int mouseX, int mouseY, float partialTick) {
         String oldText = getText();
         int oldCursorPos = getCursorPosition();
         if (passwordBox) {
             setText(StringUtils.repeat('*', oldText.length()));
             setCursorPosition(oldCursorPos);
         }
-        super.render(mouseX, mouseY, partialTick);
+        super.renderButton(mouseX, mouseY, partialTick);
         if (passwordBox) {
             setText(oldText);
             setCursorPosition(oldCursorPos);
@@ -45,5 +45,4 @@ public class WidgetTextField extends TextFieldWidget {
         this.tooltip.clear();
         Collections.addAll(this.tooltip, tooltip);
     }
-
 }

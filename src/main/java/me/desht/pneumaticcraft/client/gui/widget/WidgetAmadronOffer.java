@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class WidgetAmadronOffer extends Widget implements ITooltipSupplier {
+public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
     private final AmadronOffer offer;
     private final List<Widget> subWidgets = new ArrayList<>();
     private int shoppingAmount;
@@ -74,8 +74,8 @@ public class WidgetAmadronOffer extends Widget implements ITooltipSupplier {
     @Override
     public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shiftPressed) {
         for (Widget widget : subWidgets) {
-            if (widget.isHovered() && widget instanceof ITooltipSupplier) {
-                ((ITooltipSupplier) widget).addTooltip(mouseX, mouseY, curTip, shiftPressed);
+            if (widget.isHovered() && widget instanceof ITooltipProvider) {
+                ((ITooltipProvider) widget).addTooltip(mouseX, mouseY, curTip, shiftPressed);
             }
         }
         boolean isInBounds = false;

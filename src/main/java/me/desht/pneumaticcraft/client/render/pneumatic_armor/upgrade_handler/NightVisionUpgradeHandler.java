@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 
 public class NightVisionUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRenderHandler {
     @Override
-    public String getUpgradeName() {
+    public String getUpgradeID() {
         return "nightVision";
     }
 

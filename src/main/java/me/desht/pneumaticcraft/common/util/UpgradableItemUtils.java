@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.util;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -21,6 +22,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Some helper methods to manage items which can store upgrades (Pneumatic Armor, Drones...)
  */
 public class UpgradableItemUtils {
+    public static final String NBT_CREATIVE = "CreativeUpgrade";
+
     /**
      * Add a standardized tooltip listing the installed upgrades in the given item.
      *
@@ -52,7 +55,16 @@ public class UpgradableItemUtils {
      * Retrieves the upgrades currently installed on the given itemstack.
      */
     public static ItemStack[] getUpgradeStacks(ItemStack iStack) {
-        CompoundNBT tag = NBTUtil.getCompoundTag(iStack, ChargeableItemHandler.NBT_UPGRADE_TAG);
+        CompoundNBT tag;
+        if (iStack.getItem() instanceof BlockItem) {
+            // tag will be in the serialized BlockEntityTag
+            tag = iStack.getChildTag("BlockEntityTag");
+            if (tag == null) return new ItemStack[0];
+            tag = tag.getCompound(ChargeableItemHandler.NBT_UPGRADE_TAG);
+        } else {
+            // TODO implement this as a capability
+            tag = NBTUtil.getCompoundTag(iStack, ChargeableItemHandler.NBT_UPGRADE_TAG);
+        }
         ItemStack[] inventoryStacks = new ItemStack[9];
         Arrays.fill(inventoryStacks, ItemStack.EMPTY);
         ListNBT itemList = tag.getList("Items", Constants.NBT.TAG_COMPOUND);

@@ -1,10 +1,13 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -31,8 +34,12 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         this.metadata = metadata;
     }
     
-    public GuiGPSTool(Hand hand, BlockPos gpsLoc, String oldVarName) {
+    private GuiGPSTool(Hand hand, BlockPos gpsLoc, String oldVarName) {
         this(hand, gpsLoc, oldVarName, -1);
+    }
+
+    public static void showGUI(ItemStack stack, Hand handIn, BlockPos pos) {
+        Minecraft.getInstance().displayGuiScreen(new GuiGPSTool(handIn, pos != null ? pos : BlockPos.ZERO, ItemGPSTool.getVariable(stack)));
     }
 
     @Override
@@ -75,9 +82,8 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         variableField.setText(oldVarName);
         addButton(variableField);
 
-        String var = I18n.format("gui.progWidget.coordinate.variable");
-        addLabel(var, xMiddle - 62 - font.getStringWidth(var), yMiddle + 61);
-        addLabel("#", xMiddle - 60, yMiddle + 61);
+        String var = I18n.format("gui.progWidget.coordinate.variable") + " #";
+        addButton(new WidgetLabel(xMiddle - 52 - font.getStringWidth(var), yMiddle + 61, var, 0xc0c0c0));
     }
 
     private void updateTextField(int idx, int amount) {
@@ -104,7 +110,8 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(
                 newPos.equals(oldGPSLoc) ? new BlockPos(-1, -1, -1) : newPos,
                 hand, variableField.getText(), metadata)
-        ); // TODO hand
+        );
+        super.onClose();
     }
 
     @Override

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LTL",
+    "PRP",
+    "LPL"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "P": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "R": {
+      "item": "pneumaticcraft:regulator_tube_module"
+    },
+    "T": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:scuba_upgrade"
+  }
+}

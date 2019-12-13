@@ -86,9 +86,12 @@ public class ItemEmptyPCB extends ItemNonDespawning {
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        super.fillItemGroup(group, items);
-        ItemStack stack = new ItemStack(this);
-        stack.setDamage(stack.getMaxDamage());
-        items.add(stack);
+        if (this.isInGroup(group)) {
+            ItemStack stack = new ItemStack(this);
+            stack.setDamage(stack.getMaxDamage());
+            items.add(stack);
+
+            items.add(new ItemStack(this));
+        }
     }
 }

@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
 import mcjty.theoneprobe.api.*;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -11,7 +11,6 @@ import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.InterModComms;
@@ -54,10 +53,10 @@ public class TheOneProbe implements IThirdParty {
 
                 @Override
                 public void addProbeEntityInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, Entity entity, IProbeHitEntityData data) {
-                    if (entity instanceof IPressurizable) {
-                        String p = PneumaticCraftUtils.roundNumberTo(((IPressurizable) entity).getPressure(ItemStack.EMPTY), 1);
+                    entity.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
+                        String p = PneumaticCraftUtils.roundNumberTo(h.getPressure(), 1);
                         probeInfo.text(COLOR + "Pressure: " + p + " bar");
-                    }
+                    });
                 }
             });
             return null;

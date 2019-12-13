@@ -50,6 +50,8 @@ public class ItemPneumatic extends Item {
 
     @OnlyIn(Dist.CLIENT)
     static void addStandardTooltip(ItemStack stack, World world, List<ITextComponent> curInfo, ITooltipFlag flagIn) {
+        if (world == null) return;
+
         ItemPressurizable.addPressureTooltip(stack, curInfo);
 
         if (stack.getItem() instanceof IUpgradeAcceptor) {

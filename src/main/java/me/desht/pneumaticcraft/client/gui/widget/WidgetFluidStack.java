@@ -26,9 +26,9 @@ public class WidgetFluidStack extends WidgetFluidFilter {
 
     @Override
     public void renderButton(int mouseX, int mouseY, float partialTick) {
-        fluid = tank.getFluid() != null ? tank.getFluid().getFluid() : null;
-        super.render(mouseX, mouseY, partialTick);
-        if (fluid != null) {
+        fluid = tank.getFluid().getFluid();
+        super.renderButton(mouseX, mouseY, partialTick);
+        if (!tank.getFluid().isEmpty()) {
             int fluidAmount = tank.getFluidAmount() / 1000;
             String s = fluidAmount + "B";
             if (fluidAmount > 1) {

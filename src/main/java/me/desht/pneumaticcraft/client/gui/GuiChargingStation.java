@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -23,7 +24,7 @@ import java.awt.*;
 import java.util.List;
 
 public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerChargingStation,TileEntityChargingStation> {
-    private GuiButtonSpecial guiSelectButton;
+    private WidgetButtonExtended guiSelectButton;
     private float renderAirProgress;
 
     public GuiChargingStation(ContainerChargingStation container, PlayerInventory inv, ITextComponent displayString) {
@@ -38,7 +39,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        guiSelectButton = new GuiButtonSpecial(xStart + 89, yStart + 15, 21, 20, "").withTag("open_upgrades");
+        guiSelectButton = new WidgetButtonExtended(xStart + 89, yStart + 15, 21, 20, "").withTag("open_upgrades");
         guiSelectButton.setRenderedIcon(Textures.GUI_UPGRADES_LOCATION);
         addButton(guiSelectButton);
     }
@@ -72,7 +73,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         ItemStack stack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         guiSelectButton.visible = stack.getItem() instanceof IChargeableContainerProvider;
         if (guiSelectButton.visible) {
-            guiSelectButton.setTooltipText("Manage upgrades for the " + stack.getDisplayName());
+            guiSelectButton.setTooltipText(I18n.format("gui.tooltip.charging_station.manageUpgrades", stack.getDisplayName().getFormattedText()));
         }
 
         // multiplier of 25 is about the max that looks good (higher values can make the animation look like
@@ -106,7 +107,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     protected void addProblems(List<String> textList) {
         super.addProblems(textList);
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
-        if (!chargeStack.isEmpty() && !(chargeStack.getItem() instanceof IPressurizable)) {
+        if (!chargeStack.isEmpty() && !chargeStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The inserted item can't be (dis)charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
             textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Put a pneumatic item in the charge slot.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
         }
@@ -119,19 +120,20 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         if (chargeStack.isEmpty()) {
             curInfo.add("\u00a7fNo items to (dis)charge");
             curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Put a pneumatic item in the charge slot.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-        } else if (chargeStack.getItem() instanceof IPressurizable) {
-            String name = chargeStack.getDisplayName().getFormattedText();
-            IPressurizable chargeItem = (IPressurizable) chargeStack.getItem();
-            if (chargeItem.getPressure(chargeStack) > te.getPressure() + 0.01F && chargeItem.getPressure(chargeStack) <= 0) {
-                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be discharged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-                curInfo.add("\u00a70The item is empty.");
-            } else if (chargeItem.getPressure(chargeStack) < te.getPressure() - 0.01F && chargeItem.getPressure(chargeStack) >= chargeItem.maxPressure(chargeStack)) {
-                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-                curInfo.add("\u00a70The item is full.");
-            } else if (!te.charging && !te.discharging) {
-                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be (dis)charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-                curInfo.add("\u00a70The pressures have equalized.");
-            }
+        } else {
+            chargeStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
+                String name = chargeStack.getDisplayName().getFormattedText();
+                if (h.getPressure() > te.getPressure() + 0.01F && h.getPressure() <= 0) {
+                    curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be discharged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+                    curInfo.add("\u00a70The item is empty.");
+                } else if (h.getPressure() < te.getPressure() - 0.01F && h.getPressure() >= h.maxPressure()) {
+                    curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+                    curInfo.add("\u00a70The item is full.");
+                } else if (!te.charging && !te.discharging) {
+                    curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a7fThe " + name + " can't be (dis)charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+                    curInfo.add("\u00a70The pressures have equalized.");
+                }
+            });
         }
     }
 

@@ -1,9 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberGlass;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -16,7 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     public BlockPressureChamberGlass() {
-        super(Block.Properties.create(Material.GLASS).hardnessAndResistance(3f, 20000f), "pressure_chamber_glass");
+        super(IBlockPressureChamber.getPressureChamberBlockProps().hardnessAndResistance(3f, 20000f), "pressure_chamber_glass");
     }
 
     @Override

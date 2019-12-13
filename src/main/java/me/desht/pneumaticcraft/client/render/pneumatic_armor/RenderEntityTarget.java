@@ -5,8 +5,8 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiDroneDebuggerOptions;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat.StatIcon;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -39,7 +39,7 @@ public class RenderEntityTarget {
     private final RenderTargetCircle circle2;
     public int ticksExisted = 0;
     private float oldSize;
-    private final GuiAnimatedStat stat;
+    private final WidgetAnimatedStat stat;
     private boolean didMakeLockSound;
     public boolean isLookingAtTarget;
     private List<String> textList = new ArrayList<>();
@@ -52,7 +52,7 @@ public class RenderEntityTarget {
         circle1 = new RenderTargetCircle();
         circle2 = new RenderTargetCircle();
 
-        stat = new GuiAnimatedStat(null, entity.getDisplayName().getFormattedText(), StatIcon.NONE,
+        stat = new WidgetAnimatedStat(null, entity.getDisplayName().getFormattedText(), StatIcon.NONE,
                 20, -20, 0x3000AA00, null, false);
         stat.setMinDimensionsAndReset(0, 0);
     }

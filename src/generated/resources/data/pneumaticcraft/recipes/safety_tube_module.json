@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " G ",
+    "LTL"
+  ],
+  "key": {
+    "G": {
+      "item": "pneumaticcraft:pressure_gauge"
+    },
+    "L": {
+      "item": "minecraft:lever"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:safety_tube_module"
+  }
+}

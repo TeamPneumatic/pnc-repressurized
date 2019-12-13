@@ -40,12 +40,12 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
     private GuiItemSearcher searchGui;
     private GuiLogisticsLiquidFilter fluidSearchGui;
     private int editingSlot; //either fluid or item search.
-    private GuiCheckBox invisible;
-    private GuiCheckBox fuzzyDamage;
-    private GuiCheckBox fuzzyNBT;
-    private GuiCheckBox whitelist;
-    private GuiButtonSpecial[] facingButtons = new GuiButtonSpecial[6];
-    private GuiAnimatedStat facingTab;
+    private WidgetCheckBox invisible;
+    private WidgetCheckBox fuzzyDamage;
+    private WidgetCheckBox fuzzyNBT;
+    private WidgetCheckBox whitelist;
+    private WidgetButtonExtended[] facingButtons = new WidgetButtonExtended[6];
+    private WidgetAnimatedStat facingTab;
 
     public GuiLogisticsBase(ContainerLogistics container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -72,7 +72,7 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
         }
 
         String invisibleText = I18n.format("gui.logistic_frame.invisible");
-        addButton(invisible = new GuiCheckBox(guiLeft + xSize - 15 - font.getStringWidth(invisibleText), guiTop + 6, 0xFF404040, invisibleText).withTag("invisible"));
+        addButton(invisible = new WidgetCheckBox(guiLeft + xSize - 15 - font.getStringWidth(invisibleText), guiTop + 6, 0xFF404040, invisibleText).withTag("invisible"));
         invisible.setTooltip(Arrays.asList(WordUtils.wrap(I18n.format("gui.logistic_frame.invisible.tooltip"), 40).split(System.getProperty("line.separator"))));
 
         addButton(new WidgetLabel(guiLeft + 8, guiTop + 18, I18n.format(String.format("gui.%s.filters", logistics.getId().getPath()))));
@@ -115,15 +115,15 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
 
 
     private void addFilterTab() {
-        GuiAnimatedStat filterTab = addAnimatedStat("gui.logistic_frame.filter_settings",
+        WidgetAnimatedStat filterTab = addAnimatedStat("gui.logistic_frame.filter_settings",
                 new ItemStack(Blocks.COBWEB), 0xFF106010, false);
         filterTab.addPadding(logistics.supportsBlacklisting() ? 6 : 4, 26);
-        fuzzyDamage = new GuiCheckBox(5, 20, 0xFFFFFFFF, I18n.format("gui.logistic_frame.fuzzyDamage")).withTag("fuzzyDamage");
+        fuzzyDamage = new WidgetCheckBox(5, 20, 0xFFFFFFFF, I18n.format("gui.logistic_frame.fuzzyDamage")).withTag("fuzzyDamage");
         filterTab.addSubWidget(fuzzyDamage);
-        fuzzyNBT = new GuiCheckBox(5, 36, 0xFFFFFFFF, I18n.format("gui.logistic_frame.fuzzyNBT")).withTag("fuzzyNBT");
+        fuzzyNBT = new WidgetCheckBox(5, 36, 0xFFFFFFFF, I18n.format("gui.logistic_frame.fuzzyNBT")).withTag("fuzzyNBT");
         filterTab.addSubWidget(fuzzyNBT);
         if (logistics.supportsBlacklisting()) {
-            whitelist = new GuiCheckBox(5, 52, 0xFFFFFFFF, I18n.format("gui.logistic_frame.whitelist")).withTag("whitelist");
+            whitelist = new WidgetCheckBox(5, 52, 0xFFFFFFFF, I18n.format("gui.logistic_frame.whitelist")).withTag("whitelist");
             filterTab.addSubWidget(whitelist);
         }
     }
@@ -131,13 +131,13 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
     private void addFacingTab() {
         facingTab = addAnimatedStat("", new ItemStack(Items.MAP), 0xFFC0C0C0, false);
         facingTab.addPadding(8, 18);
-        facingTab.addSubWidget(facingButtons[0] = new GuiButtonSpecial(15, 62, 20, 20,"D").withTag("side:0"));
-        facingTab.addSubWidget(facingButtons[1] = new GuiButtonSpecial(15, 20, 20, 20,"U").withTag("side:1"));
-        facingTab.addSubWidget(facingButtons[2] = new GuiButtonSpecial(36, 20, 20, 20,"N").withTag("side:2"));
-        facingTab.addSubWidget(facingButtons[3] = new GuiButtonSpecial(36, 62, 20, 20,"S").withTag("side:3"));
-        facingTab.addSubWidget(facingButtons[4] = new GuiButtonSpecial(15, 41, 20, 20,"W").withTag("side:4"));
-        facingTab.addSubWidget(facingButtons[5] = new GuiButtonSpecial(57, 41, 20, 20,"E").withTag("side:5"));
-        GuiButtonSpecial info = new GuiButtonSpecial(36, 41, 20, 20,"");
+        facingTab.addSubWidget(facingButtons[0] = new WidgetButtonExtended(15, 62, 20, 20,"D").withTag("side:0"));
+        facingTab.addSubWidget(facingButtons[1] = new WidgetButtonExtended(15, 20, 20, 20,"U").withTag("side:1"));
+        facingTab.addSubWidget(facingButtons[2] = new WidgetButtonExtended(36, 20, 20, 20,"N").withTag("side:2"));
+        facingTab.addSubWidget(facingButtons[3] = new WidgetButtonExtended(36, 62, 20, 20,"S").withTag("side:3"));
+        facingTab.addSubWidget(facingButtons[4] = new WidgetButtonExtended(15, 41, 20, 20,"W").withTag("side:4"));
+        facingTab.addSubWidget(facingButtons[5] = new WidgetButtonExtended(57, 41, 20, 20,"E").withTag("side:5"));
+        WidgetButtonExtended info = new WidgetButtonExtended(36, 41, 20, 20,"");
         info.setVisible(false);
         info.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.logistic_frame.facing.tooltip")));
         info.setRenderedIcon(Textures.GUI_INFO_LOCATION);

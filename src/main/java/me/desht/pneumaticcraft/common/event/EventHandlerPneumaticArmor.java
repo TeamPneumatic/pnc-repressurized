@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -104,9 +106,10 @@ public class EventHandlerPneumaticArmor {
                 return;  // thrusting into the ground hurts at hard difficulty!
             }
 
-            ItemPneumaticArmor boots = (ItemPneumaticArmor) stack.getItem();
+//            ItemPneumaticArmor boots = (ItemPneumaticArmor) stack.getItem();
             float airNeeded = event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
-            float airAvailable = boots.getVolume(stack) * handler.getArmorPressure(EquipmentSlotType.FEET);
+            int vol = stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandlerBase::getVolume).orElse(0);
+            float airAvailable = vol * handler.getArmorPressure(EquipmentSlotType.FEET);
             if (airAvailable < 1) {
                 return;
             } else if (airAvailable >= airNeeded) {

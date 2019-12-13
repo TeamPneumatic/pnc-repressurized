@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
@@ -14,7 +13,6 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.SpawnReason;
@@ -37,15 +35,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor {
+public class ItemDrone extends ItemPressurizable implements IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor {
 
     ItemDrone(String registryName) {
-        super(defaultProps().maxDamage(1), registryName);
+        super(registryName, (int)(PneumaticValues.DRONE_MAX_PRESSURE * PneumaticValues.DRONE_VOLUME), PneumaticValues.DRONE_VOLUME);
+//        super(defaultProps().maxDamage(1), registryName);
     }
 
-    ItemDrone(Item.Properties props, String registryName) {
-        super(props, registryName);
-    }
+//    ItemDrone(Item.Properties props, String registryName) {
+//        super(props, registryName);
+//    }
 
     public ItemDrone() {
         this("drone");
@@ -107,33 +106,33 @@ public class ItemDrone extends ItemPneumatic implements IPressurizable, IChargea
 //        }
 //    }
 
-    @Override
-    public float getPressure(ItemStack iStack) {
-        float volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.DRONE_VOLUME;
-        float oldVolume = NBTUtil.getFloat(iStack, "volume");
-        if (volume < oldVolume) {
-            float currentAir = NBTUtil.getFloat(iStack, "currentAir");
-            currentAir *= volume / oldVolume;
-            NBTUtil.setFloat(iStack, "currentAir", currentAir);
-        }
-        NBTUtil.setFloat(iStack, "volume", volume);
-        return NBTUtil.getFloat(iStack, "currentAir") / volume;
-    }
-
-    @Override
-    public void addAir(ItemStack iStack, int amount) {
-        NBTUtil.setFloat(iStack, "currentAir", NBTUtil.getFloat(iStack, "currentAir") + amount);
-    }
-
-    @Override
-    public int getVolume(ItemStack iStack) {
-        return UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.DRONE_VOLUME;
-    }
-
-    @Override
-    public float maxPressure(ItemStack iStack) {
-        return PneumaticValues.DRONE_MAX_PRESSURE;
-    }
+//    @Override
+//    public float getPressure(ItemStack iStack) {
+//        float volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.DRONE_VOLUME;
+//        float oldVolume = NBTUtil.getFloat(iStack, "volume");
+//        if (volume < oldVolume) {
+//            float currentAir = NBTUtil.getFloat(iStack, "currentAir");
+//            currentAir *= volume / oldVolume;
+//            NBTUtil.setFloat(iStack, "currentAir", currentAir);
+//        }
+//        NBTUtil.setFloat(iStack, "volume", volume);
+//        return NBTUtil.getFloat(iStack, "currentAir") / volume;
+//    }
+//
+//    @Override
+//    public void addAir(ItemStack iStack, int amount) {
+//        NBTUtil.setFloat(iStack, "currentAir", NBTUtil.getFloat(iStack, "currentAir") + amount);
+//    }
+//
+//    @Override
+//    public int getVolume(ItemStack iStack) {
+//        return UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.DRONE_VOLUME;
+//    }
+//
+//    @Override
+//    public float maxPressure(ItemStack iStack) {
+//        return PneumaticValues.DRONE_MAX_PRESSURE;
+//    }
 
     @Override
     public boolean canProgram(ItemStack stack) {

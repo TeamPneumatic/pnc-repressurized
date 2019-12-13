@@ -195,7 +195,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return invCap;
     }
 

@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModuleRedstoneReceiving;
@@ -73,12 +73,12 @@ public class GuiPressureModule extends GuiTubeModule {
         addButton(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY, "gui.redstone"));
         addButton(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25, "gui.threshold"));
 
-        GuiAnimatedStat stat = new GuiAnimatedStat(this, "gui.tab.info", GuiAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true);
+        WidgetAnimatedStat stat = new WidgetAnimatedStat(this, "gui.tab.info", WidgetAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true);
         stat.setText("gui.tab.info.tubeModule");
         stat.setBeveled(true);
         addButton(stat);
 
-        GuiCheckBox advancedMode = new GuiCheckBox(guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
+        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
             module.advancedConfig = b.checked;
             NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
         }).setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));

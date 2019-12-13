@@ -1,9 +1,0 @@
-{
-  "type": "pneumaticcraft:one_probe_helmet_crafting",
-  "conditions": [
-    {
-      "type": "forge:mod_loaded",
-      "modid": "theoneprobe"
-    }
-  ]
-}

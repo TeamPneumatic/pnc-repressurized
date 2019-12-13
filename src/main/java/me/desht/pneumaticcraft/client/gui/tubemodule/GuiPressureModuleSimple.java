@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModuleRedstoneReceiving;
@@ -15,7 +15,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class GuiPressureModuleSimple extends GuiTubeModule {
     private WidgetTextFieldNumber thresholdField;
-    private GuiButtonSpecial moreOrLessButton;
+    private WidgetButtonExtended moreOrLessButton;
 
     GuiPressureModuleSimple(BlockPos pos) {
         super(pos);
@@ -36,7 +36,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
         String titleText = title.getFormattedText();
         addLabel(titleText, width / 2 - font.getStringWidth(titleText) / 2, guiTop + 5);
 
-        GuiCheckBox advancedMode = new GuiCheckBox(guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
+        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
             module.advancedConfig = true;
             NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
         }).setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
@@ -54,7 +54,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
         } else {
             thresholdField.setValue(module.lowerBound);
             addLabel(I18n.format("gui.tubeModule.simpleConfig.turn"), guiLeft + 6, guiTop + 33);
-            moreOrLessButton = new GuiButtonSpecial(guiLeft + 85, guiTop + 28, 20, 20, module.lowerBound < module.higherBound ? ">" : "<", b -> flipThreshold());
+            moreOrLessButton = new WidgetButtonExtended(guiLeft + 85, guiTop + 28, 20, 20, module.lowerBound < module.higherBound ? ">" : "<", b -> flipThreshold());
             moreOrLessButton.setTooltipText(I18n.format(module.lowerBound < module.higherBound ? "gui.tubeModule.simpleConfig.higherThan" : "gui.tubeModule.simpleConfig.lowerThan"));
             addButton(moreOrLessButton);
         }

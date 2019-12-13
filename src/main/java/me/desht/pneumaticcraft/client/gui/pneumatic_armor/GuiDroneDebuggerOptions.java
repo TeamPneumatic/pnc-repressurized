@@ -8,8 +8,8 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.GuiUnitProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
 import me.desht.pneumaticcraft.common.entity.living.DebugEntry;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -49,7 +49,7 @@ public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
     private int screenWidth, screenHeight;
     private Button showActive;
     private Button showStart;
-    private GuiCheckBox followCheckbox;
+    private WidgetCheckBox followCheckbox;
 
     // Index of the widget whose area is being shown; static so it persists beyond this short-lived object,
     // which goes away when the GUI is closed.  Gets reset when a new drone is selected for debugging.
@@ -86,17 +86,17 @@ public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
             }
         }
 
-        showStart = new GuiButtonSpecial(30, 128, 150, 20,
+        showStart = new WidgetButtonExtended(30, 128, 150, 20,
                 I18n.format("gui.progWidget.debug.showStart"),
                 b -> programmerUnit.gotoPiece(GuiProgrammer.findWidget(selectedDrone.getProgWidgets(), ProgWidgetStart.class)));
-        gui.getWidgetList().add(showStart);
+        gui.addWidget(showStart);
 
-        showActive = new GuiButtonSpecial(30, 150, 150, 20,
+        showActive = new WidgetButtonExtended(30, 150, 150, 20,
                 I18n.format("gui.progWidget.debug.showActive"),
                 b -> programmerUnit.gotoPiece(selectedDrone.getActiveWidget()));
-        gui.getWidgetList().add(showActive);
+        gui.addWidget(showActive);
 
-        followCheckbox = new GuiCheckBox(30, 176, 0xFFFFFFFF, " " + I18n.format("gui.progWidget.debug.followActive"));
+        followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, " " + I18n.format("gui.progWidget.debug.followActive"));
         followCheckbox.x = 180 - followCheckbox.getWidth();
 
         programmingStartX = PROGAMMING_MARGIN;

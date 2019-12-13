@@ -17,7 +17,7 @@ import java.util.List;
 public class HackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
-    public String getUpgradeName() {
+    public String getUpgradeID() {
         return "hackingUpgrade";
     }
 

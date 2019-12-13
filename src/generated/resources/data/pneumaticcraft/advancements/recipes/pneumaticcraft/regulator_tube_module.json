@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:regulator_tube_module"
+    ]
+  },
+  "criteria": {
+    "has_ingot_iron_compressed": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:ingot_iron_compressed"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:regulator_tube_module"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_ingot_iron_compressed",
+      "has_the_recipe"
+    ]
+  ]
+}

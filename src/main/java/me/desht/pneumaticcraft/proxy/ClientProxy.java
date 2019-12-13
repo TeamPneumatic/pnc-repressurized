@@ -1,11 +1,8 @@
 package me.desht.pneumaticcraft.proxy;
 
 import me.desht.pneumaticcraft.client.ClientEventHandler;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.util.DramaSplash;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -15,20 +12,13 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ClientProxy implements IProxy {
 
 //    private final HackTickHandler clientHackTickHandler = new HackTickHandler();
-    public final Map<String, Pair<Integer,KeyModifier>> keybindToKeyCodes = new HashMap<>();
+//    public final Map<String, Pair<Integer,KeyModifier>> keybindToKeyCodes = new HashMap<>();
 
     @Override
     public void preInit() {
@@ -39,8 +29,6 @@ public class ClientProxy implements IProxy {
         ThirdPartyManager.instance().clientPreInit();
 
         EntityTrackHandler.registerDefaultEntries();
-
-        getAllKeybindsFromOptionsFile();
     }
 
     @Override
@@ -50,14 +38,16 @@ public class ClientProxy implements IProxy {
 //            ModelLoader.setBucketModelDefinition(Fluids.getBucket(fluid));
 //        }
 
+//        getAllKeybindsFromOptionsFile();
+
         ThirdPartyManager.instance().clientInit();
     }
 
     @Override
     public void postInit() {
-        EntityTrackHandler.init();
-        GuiHelmetMainScreen.initHelmetMainScreen();
-        DramaSplash.getInstance();
+//        EntityTrackHandler.init();
+//        GuiHelmetMainScreen.initHelmetMainScreen();
+//        DramaSplash.getInstance();
     }
 
     @Override
@@ -111,24 +101,26 @@ public class ClientProxy implements IProxy {
 //        return clientHackTickHandler;
 //    }
 
-    private void getAllKeybindsFromOptionsFile() {
-        File optionsFile = new File(Minecraft.getInstance().gameDir, "options.txt");
-        if (optionsFile.exists()) {
-            try (BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile))) {
-                String s = "";
-                while ((s = bufferedreader.readLine()) != null) {
-                    String[] str = s.split(":");
-                    if (str[0].startsWith("key_")) {
-                        KeyModifier mod = str.length > 2 ? KeyModifier.valueFromString(str[2]) : KeyModifier.NONE;
-                        keybindToKeyCodes.put(str[0].substring(4), Pair.of(Integer.parseInt(str[1]), mod));
-                    }
-                }
-            } catch (Exception exception1) {
-                Log.error("Failed to process options.txt:");
-                exception1.printStackTrace();
-            }
-        }
-    }
+//    private void getAllKeybindsFromOptionsFile() {
+//        File optionsFile = new File(Minecraft.getInstance().gameDir, "options.txt");
+//        if (optionsFile.exists()) {
+//            try (BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile))) {
+//                String s = "";
+//                while ((s = bufferedreader.readLine()) != null) {
+//                    String[] str = s.split(":");
+//                    if (str[0].startsWith("key_")) {
+//                        KeyModifier mod = str.length > 2 ? KeyModifier.valueFromString(str[2]) : KeyModifier.NONE;
+////                        keybindToKeyCodes.put(str[0].substring(4), Pair.of(Integer.parseInt(str[1]), mod));
+//                        InputMappings.Input i = InputMappings.getInputByName(str[1]);
+//                        keybindToKeyCodes.put(str[0].substring(4), Pair.of(i.getKeyCode(), mod));
+//                    }
+//                }
+//            } catch (Exception exception1) {
+//                Log.error("Failed to process options.txt:");
+//                exception1.printStackTrace();
+//            }
+//        }
+//    }
 
     @Override
     public int particleLevel() {

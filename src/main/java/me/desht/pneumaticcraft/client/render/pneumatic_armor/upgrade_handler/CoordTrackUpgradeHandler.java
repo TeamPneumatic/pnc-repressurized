@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiCoordinateTrackerOptions;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderCoordWireframe;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderNavigator;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -60,7 +60,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public String getUpgradeName() {
+    public String getUpgradeID() {
         return "coordinateTracker";
     }
 
@@ -143,7 +143,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
             Direction dir = event.getFace();
             if (dir == null) return false;
             reset();
-            ItemStack stack = event.getEntityPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD);
+            ItemStack stack = event.getPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD);
             if (!stack.isEmpty()) {
                 GlobalPos gPos = GlobalPos.of(event.getWorld().getDimension().getType(), event.getPos().offset(dir));
                 ItemPneumaticArmor.setCoordTrackerPos(stack, gPos);
@@ -206,7 +206,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public GuiAnimatedStat getAnimatedStat() {
+    public WidgetAnimatedStat getAnimatedStat() {
         return null;
     }
 

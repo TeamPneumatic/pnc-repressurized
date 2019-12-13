@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
@@ -18,7 +18,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class GuiAirGrateModule extends GuiTubeModule {
     private int sendTimer = 0;
-    private GuiButtonSpecial warningButton;
+    private WidgetButtonExtended warningButton;
 
     public GuiAirGrateModule(BlockPos pos) {
         super(pos);
@@ -37,7 +37,7 @@ public class GuiAirGrateModule extends GuiTubeModule {
                 ((ModuleAirGrate) module).getEntityFilterString());
         textfield.setResponder(s -> sendTimer = 5);
 
-        warningButton = new GuiButtonSpecial(guiLeft + 152, guiTop + 20, 20, 20, "");
+        warningButton = new WidgetButtonExtended(guiLeft + 152, guiTop + 20, 20, 20, "");
         warningButton.setVisible(false);
         warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         addButton(warningButton);

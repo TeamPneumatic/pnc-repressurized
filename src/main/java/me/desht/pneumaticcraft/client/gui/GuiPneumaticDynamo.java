@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDynamo;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<ContainerPneumaticDynamo,TileEntityPneumaticDynamo> {
-    private GuiAnimatedStat inputStat;
+    private WidgetAnimatedStat inputStat;
 
     public GuiPneumaticDynamo(ContainerPneumaticDynamo container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);

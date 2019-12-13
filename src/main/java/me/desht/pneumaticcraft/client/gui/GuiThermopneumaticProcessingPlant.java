@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -54,7 +54,7 @@ public class GuiThermopneumaticProcessingPlant extends
         };
         addButton(tempWidget);
 
-        GuiButtonSpecial dumpButton = new GuiButtonSpecial(guiLeft + 12, guiTop + 81, 18, 20, "").withTag("dump");
+        WidgetButtonExtended dumpButton = new WidgetButtonExtended(guiLeft + 12, guiTop + 81, 18, 20, "").withTag("dump");
         dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
         dumpButton.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.thermopneumatic.dumpInput")));
         addButton(dumpButton);

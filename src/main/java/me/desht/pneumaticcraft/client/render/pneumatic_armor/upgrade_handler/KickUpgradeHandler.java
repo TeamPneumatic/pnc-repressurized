@@ -9,7 +9,7 @@ import net.minecraft.item.Item;
 
 public class KickUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRenderHandler {
     @Override
-    public String getUpgradeName() {
+    public String getUpgradeID() {
         return "kick";
     }
 

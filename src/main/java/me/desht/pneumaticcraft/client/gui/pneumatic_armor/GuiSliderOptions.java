@@ -50,7 +50,7 @@ public abstract class GuiSliderOptions extends IOptionPage.SimpleToggleableOptio
         Point pos = getSliderPos();
         slider = new GuiSlider(pos.x, pos.y, 150, 20,  getPrefix(), getSuffix(),
                 range.getLeft(), range.getRight(), initVal, false, true, b -> { }, this);
-        gui.getWidgetList().add(slider);
+        gui.addWidget(slider);
     }
 
     @Override

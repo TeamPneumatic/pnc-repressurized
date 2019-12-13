@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:coordinate_tracker_upgrade"
+    ]
+  },
+  "criteria": {
+    "has_gps_tool": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:gps_tool"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:coordinate_tracker_upgrade"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_gps_tool",
+      "has_the_recipe"
+    ]
+  ]
+}

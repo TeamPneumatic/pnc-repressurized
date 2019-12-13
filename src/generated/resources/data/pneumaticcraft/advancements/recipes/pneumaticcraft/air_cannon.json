@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:air_cannon"
+    ]
+  },
+  "criteria": {
+    "has_pressure_tube": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:pressure_tube"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:air_cannon"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_pressure_tube",
+      "has_the_recipe"
+    ]
+  ]
+}

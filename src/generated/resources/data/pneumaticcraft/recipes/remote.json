@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " I ",
+    "TGT",
+    "TDT"
+  ],
+  "key": {
+    "I": {
+      "item": "pneumaticcraft:network_io_port"
+    },
+    "D": {
+      "item": "pneumaticcraft:network_data_storage"
+    },
+    "G": {
+      "item": "pneumaticcraft:gps_tool"
+    },
+    "T": {
+      "item": "pneumaticcraft:transistor"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:remote"
+  }
+}

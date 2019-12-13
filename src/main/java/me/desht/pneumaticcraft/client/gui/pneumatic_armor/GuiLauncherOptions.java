@@ -15,7 +15,7 @@ public class GuiLauncherOptions implements IOptionPage {
     @Override
     public void initGui(IGuiScreen gui) {
         changeKeybindingButton = new KeybindingButton(30, 128, 150, 20, "Change Launch Key...", KeyHandler.getInstance().keybindLauncher, b -> changeKeybindingButton.toggleKeybindMode());
-        gui.getWidgetList().add(changeKeybindingButton);
+        gui.addWidget(changeKeybindingButton);
     }
 
     public void renderPre(int x, int y, float partialTicks) {

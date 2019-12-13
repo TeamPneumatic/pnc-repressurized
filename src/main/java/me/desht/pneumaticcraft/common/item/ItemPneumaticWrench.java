@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -33,18 +34,20 @@ public class ItemPneumaticWrench extends ItemPressurizable {
             BlockState state = world.getBlockState(pos);
             Block block = state.getBlock();
 
-            boolean didWork = true;
-            float pressure = getPressure(stack);
-            IPneumaticWrenchable wrenchable = IPneumaticWrenchable.forBlock(block);
-            if (wrenchable != null && pressure > 0) {
-                if (wrenchable.onWrenched(world, ctx.getPlayer(), pos, ctx.getFace(), hand) && !ctx.getPlayer().isCreative()) {
-                    addAir(stack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+            boolean didWork = stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+                float pressure = h.getPressure();
+                IPneumaticWrenchable wrenchable = IPneumaticWrenchable.forBlock(block);
+                if (wrenchable != null && pressure > 0.1f) {
+                    if (wrenchable.onWrenched(world, ctx.getPlayer(), pos, ctx.getFace(), hand) && !ctx.getPlayer().isCreative()) {
+                        h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+                    }
+                    return true;
+                } else {
+                    // rotating normal blocks doesn't use pressure
+                    BlockState rotated = state.rotate(Rotation.CLOCKWISE_90);
+                    return state != rotated;
                 }
-            } else {
-                // rotating normal blocks doesn't use pressure
-                BlockState rotated = state.rotate(Rotation.CLOCKWISE_90);
-                didWork = state != rotated;
-            }
+            }).orElse(false);
             if (didWork) playWrenchSound(world, pos);
             return didWork ? ActionResultType.SUCCESS : ActionResultType.PASS;
         } else {
@@ -59,16 +62,15 @@ public class ItemPneumaticWrench extends ItemPressurizable {
 
     @Override
     public boolean itemInteractionForEntity(ItemStack iStack, PlayerEntity player, LivingEntity target, Hand hand) {
-        if (!player.world.isRemote) {
-            if (target.isAlive() && target instanceof IPneumaticWrenchable && getPressure(iStack) > 0) {
-                if (((IPneumaticWrenchable) target).onWrenched(target.world, player, null, null, hand)) {
-                    if (!player.isCreative()) {
-                        addAir(iStack, -PneumaticValues.USAGE_PNEUMATIC_WRENCH);
-                    }
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0F, 1.0F, false), target.world);
-                    return true;
+        if (!player.world.isRemote && target.isAlive() && target instanceof IPneumaticWrenchable) {
+            return iStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+                if (!player.isCreative()) {
+                    if (h.getPressure() < 0.1) return false;
+                    h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                 }
-            }
+                NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0F, 1.0F, false), target.world);
+                return true;
+            }).orElse(false);
         }
         return false;
     }

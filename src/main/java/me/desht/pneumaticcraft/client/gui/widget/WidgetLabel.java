@@ -4,15 +4,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 
-import java.awt.*;
-
 public class WidgetLabel extends Widget {
     public enum Alignment {
         LEFT, CENTRE, RIGHT
     }
     private int color;
     private Alignment alignment = Alignment.LEFT;
-    public boolean visible = true;
 
     public WidgetLabel(int x, int y, String text) {
         this(x, y, text, 0xFF404040);
@@ -21,6 +18,8 @@ public class WidgetLabel extends Widget {
     public WidgetLabel(int x, int y, String text, int color) {
         super(x, y, 0, 0, text);
         this.color = color;
+        this.width = Minecraft.getInstance().fontRenderer.getStringWidth(getMessage());
+        this.height = Minecraft.getInstance().fontRenderer.FONT_HEIGHT;
     }
 
     public WidgetLabel setAlignment(Alignment alignment) {
@@ -33,7 +32,14 @@ public class WidgetLabel extends Widget {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTick) {
+    public void setMessage(String p_setMessage_1_) {
+        super.setMessage(p_setMessage_1_);
+
+        width = Minecraft.getInstance().fontRenderer.getStringWidth(getMessage());
+    }
+
+    @Override
+    public void renderButton(int mouseX, int mouseY, float partialTick) {
         if (visible) {
             int drawX;
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
@@ -52,10 +58,4 @@ public class WidgetLabel extends Widget {
             fr.drawString(getMessage(), drawX, y, color);
         }
     }
-
-    public Rectangle getBounds() {
-        FontRenderer fr = Minecraft.getInstance().fontRenderer;
-        return new Rectangle(x, y, fr.getStringWidth(getMessage()), fr.FONT_HEIGHT);
-    }
-
 }

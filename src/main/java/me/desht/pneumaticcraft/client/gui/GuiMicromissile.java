@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
@@ -47,8 +47,8 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
 
     private WidgetTextField textField;
     private WidgetLabel filterLabel;
-    private GuiButtonSpecial modeButton;
-    private GuiButtonSpecial warningButton;
+    private WidgetButtonExtended modeButton;
+    private WidgetButtonExtended warningButton;
 
     public GuiMicromissile(ITextComponent title) {
         super(title);
@@ -98,13 +98,13 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         String saveLabel = I18n.format("gui.micromissile.saveDefault");
         int buttonWidth = font.getStringWidth(saveLabel) + 10;
         int buttonX = guiLeft + (xSize - buttonWidth) / 2;
-        addButton(new GuiButtonSpecial(buttonX, guiTop + 160, buttonWidth, 20, saveLabel, b -> sendSettingsToServer(true)));
+        addButton(new WidgetButtonExtended(buttonX, guiTop + 160, buttonWidth, 20, saveLabel, b -> sendSettingsToServer(true)));
 
-        modeButton = new GuiButtonSpecial(guiLeft + 123, guiTop + 20, 52, 20, "", b -> modeSwitch());
+        modeButton = new WidgetButtonExtended(guiLeft + 123, guiTop + 20, 52, 20, "", b -> modeSwitch());
         modeButton.setTooltipText("gui.micromissile.modeTooltip");
         addButton(modeButton);
 
-        warningButton = new GuiButtonSpecial(guiLeft + 162, guiTop + 123, 20, 20, "");
+        warningButton = new WidgetButtonExtended(guiLeft + 162, guiTop + 123, 20, 20, "");
         warningButton.setVisible(false);
         warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         addButton(warningButton);

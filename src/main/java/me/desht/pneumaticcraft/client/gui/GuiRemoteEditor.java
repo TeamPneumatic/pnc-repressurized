@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -80,16 +80,16 @@ public class GuiRemoteEditor extends GuiRemote {
         oldGuiLeft = guiLeft;
         oldGuiTop = guiTop;
         visibleSpawnWidgets.clear();
-        visibleSpawnWidgets.add(new ActionWidgetCheckBox(new GuiCheckBox(guiLeft + 200, guiTop + 20, 0xFF404040, I18n.format("remote.checkbox.name"))));
+        visibleSpawnWidgets.add(new ActionWidgetCheckBox(new WidgetCheckBox(guiLeft + 200, guiTop + 20, 0xFF404040, I18n.format("remote.checkbox.name"))));
         visibleSpawnWidgets.add(new ActionWidgetLabel(new WidgetLabelVariable(guiLeft + 200, guiTop + 35, I18n.format("remote.label.name"))));
-        visibleSpawnWidgets.add(new ActionWidgetButton(new GuiButtonSpecial(-guiLeft + 200, guiTop + 50, 50, 20, I18n.format("remote.button.name"))));
+        visibleSpawnWidgets.add(new ActionWidgetButton(new WidgetButtonExtended(-guiLeft + 200, guiTop + 50, 50, 20, I18n.format("remote.button.name"))));
         visibleSpawnWidgets.add(new ActionWidgetDropdown(new WidgetComboBox(font, guiLeft + 200, guiTop + 80, 70, font.FONT_HEIGHT + 1).setFixedOptions()));
 
         for (ActionWidget actionWidget : visibleSpawnWidgets) {
             addButton(actionWidget.getWidget());
         }
 
-        GuiButtonSpecial importRemoteButton = new GuiButtonSpecial(guiLeft - 24, guiTop, 20, 20, "", b -> {
+        WidgetButtonExtended importRemoteButton = new WidgetButtonExtended(guiLeft - 24, guiTop, 20, 20, "", b -> {
             ClientUtils.openContainerGui(ModContainerTypes.INVENTORY_SEARCHER, new StringTextComponent("Inventory Searcher (Remote)"));
             if (minecraft.currentScreen instanceof GuiInventorySearcher) invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
         });
@@ -97,7 +97,7 @@ public class GuiRemoteEditor extends GuiRemote {
         importRemoteButton.setRenderStacks(new ItemStack(ModItems.REMOTE));
         addButton(importRemoteButton);
 
-        GuiButtonSpecial pastebinButton = new GuiButtonSpecial(guiLeft - 24, guiTop + 22, 20, 20, "", b -> {
+        WidgetButtonExtended pastebinButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 22, 20, 20, "", b -> {
             CompoundNBT mainTag = new CompoundNBT();
             mainTag.put("main", remote.getTag() != null ? remote.getTag().getList("actionWidgets", 10) : new CompoundNBT());
             minecraft.displayGuiScreen(pastebinGui = new GuiPastebin(this, mainTag));
@@ -106,7 +106,7 @@ public class GuiRemoteEditor extends GuiRemote {
         pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
         addButton(pastebinButton);
 
-        GuiCheckBox snapCheck = new GuiCheckBox(guiLeft + 200, guiTop + 100, 0xFF404040, "Snap to Grid",
+        WidgetCheckBox snapCheck = new WidgetCheckBox(guiLeft + 200, guiTop + 100, 0xFF404040, "Snap to Grid",
                 b -> ConfigHelper.setGuiRemoteGridSnap(b.checked));
         snapCheck.checked = PNCConfig.Client.guiRemoteGridSnap;
         addButton(snapCheck);

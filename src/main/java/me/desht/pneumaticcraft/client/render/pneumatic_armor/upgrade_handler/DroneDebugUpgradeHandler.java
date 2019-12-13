@@ -28,7 +28,7 @@ public class DroneDebugUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public String getUpgradeName() {
+    public String getUpgradeID() {
         return "droneDebugger";
     }
 

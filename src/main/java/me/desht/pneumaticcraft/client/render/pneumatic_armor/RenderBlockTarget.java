@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
@@ -32,7 +32,7 @@ public class RenderBlockTarget {
     private final BlockPos pos;
     private final RenderBlockHighlight highlightRenderer = new RenderBlockHighlight();
     public int ticksExisted = 0;
-    public final GuiAnimatedStat stat;
+    public final WidgetAnimatedStat stat;
     private final PlayerEntity player;
     public List<String> textList = new ArrayList<>();
     private int hackTime;
@@ -53,7 +53,7 @@ public class RenderBlockTarget {
         if (!stack.isEmpty()) {
             title = stack.getDisplayName().getFormattedText();
         }
-        stat = new GuiAnimatedStat(null, title, GuiAnimatedStat.StatIcon.of(stack), 20, -20, 0x3000AA00, null, false);
+        stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, 0x3000AA00, null, false);
         stat.setMinDimensionsAndReset(0, 0);
     }
 

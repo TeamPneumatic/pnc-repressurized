@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -26,7 +26,7 @@ public class GuiEntityTrackOptions implements IOptionPage {
 
     private final EntityTrackUpgradeHandler renderHandler;
     private TextFieldWidget textField;
-    private GuiButtonSpecial warningButton;
+    private WidgetButtonExtended warningButton;
     private int sendTimer = 0;
 
     public GuiEntityTrackOptions(EntityTrackUpgradeHandler renderHandler) {
@@ -40,13 +40,13 @@ public class GuiEntityTrackOptions implements IOptionPage {
 
     @Override
     public void initGui(IGuiScreen gui) {
-        gui.getWidgetList().add(new GuiButtonSpecial(30, 128, 150, 20, "Move Stat Screen...", b -> {
+        gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20, "Move Stat Screen...", b -> {
             Minecraft.getInstance().player.closeScreen();
             Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.ENTITY_TRACKER));
         }));
 
         textField = new TextFieldWidget(gui.getFontRenderer(), 35, 60, 140, 10, "");
-        textField.setFocused2(true);
+//        textField.setFocused2(true);
         if (Minecraft.getInstance().player != null) {
             textField.setText(ItemPneumaticArmor.getEntityFilter(Minecraft.getInstance().player.getItemStackFromSlot(EquipmentSlotType.HEAD)));
         }
@@ -55,12 +55,14 @@ public class GuiEntityTrackOptions implements IOptionPage {
                 sendTimer = 5;
             }
         });
+        gui.addWidget(textField);
+        gui.setFocusedWidget(textField);
 
-        warningButton = new GuiButtonSpecial(175, 57, 20, 20, "");
+        warningButton = new WidgetButtonExtended(175, 57, 20, 20, "");
         warningButton.setVisible(false);
         warningButton.visible = false;
         warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
-        gui.getWidgetList().add(warningButton);
+        gui.addWidget(warningButton);
 
         validateEntityFilter(textField.getText());
     }
@@ -69,7 +71,7 @@ public class GuiEntityTrackOptions implements IOptionPage {
     }
 
     public void renderPost(int x, int y, float partialTicks) {
-        textField.render(x, y, partialTicks);
+//        textField.render(x, y, partialTicks);
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         fontRenderer.drawString(I18n.format("gui.entityFilter"), 35, 50, 0xFFFFFFFF);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
@@ -106,6 +108,7 @@ public class GuiEntityTrackOptions implements IOptionPage {
         }
     }
 
+    @Override
     public void tick() {
         if (sendTimer > 0 && --sendTimer == 0) {
             CompoundNBT tag = new CompoundNBT();
@@ -119,6 +122,7 @@ public class GuiEntityTrackOptions implements IOptionPage {
         return true;
     }
 
+    @Override
     public boolean displaySettingsHeader() {
         return true;
     }

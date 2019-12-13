@@ -5,7 +5,7 @@ import net.minecraft.client.gui.widget.Widget;
 import java.util.Collections;
 import java.util.List;
 
-public class WidgetTooltipArea extends Widget implements ITooltipSupplier {
+public class WidgetTooltipArea extends Widget implements ITooltipProvider {
     public final String[] tooltip;
 
     public WidgetTooltipArea(int x, int y, int width, int height, String... tooltip) {

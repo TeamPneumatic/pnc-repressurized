@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
@@ -53,7 +54,10 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInve
 //                                    break; //doing it for every side for no side sensitive inventories would be a waste.
                             }
                         }
-                        if (droneStack.isEmpty() && !simulate) drone.addAir(null, -PneumaticValues.DRONE_USAGE_INV);
+                        if (droneStack.isEmpty() && !simulate) {
+                            drone.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY)
+                                    .ifPresent(h -> h.addAir(-PneumaticValues.DRONE_USAGE_INV));
+                        }
                         else drone.addDebugEntry("gui.progWidget.inventoryExport.debug.filledToMax", pos);
                     } else {
                         drone.addDebugEntry("gui.progWidget.inventoryExport.debug.stackdoesntPassFilter", pos);

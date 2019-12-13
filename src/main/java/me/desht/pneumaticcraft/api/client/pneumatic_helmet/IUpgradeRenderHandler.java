@@ -18,7 +18,7 @@ public interface IUpgradeRenderHandler {
      *
      * @return a unique ID
      */
-    String getUpgradeName();
+    String getUpgradeID();
 
     /**
      * This is called from PneumaticCraft's config handler in the pre-init phase. You can use this method to read
@@ -50,7 +50,7 @@ public interface IUpgradeRenderHandler {
     void render3D(float partialTicks);
 
     /**
-     * Called in the 2D render stage (called from {@link net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent})
+     * Called in the 2D render stage (called from {@link net.minecraftforge.event.TickEvent.RenderTickEvent})
      *
      * @param partialTicks partial ticks since last world tick
      * @param helmetEnabled true when isEnabled() returned true earlier. Can be used to close AnimatedStats for instance.

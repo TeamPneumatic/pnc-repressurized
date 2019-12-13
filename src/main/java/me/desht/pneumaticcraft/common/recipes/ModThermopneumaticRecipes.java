@@ -43,7 +43,7 @@ public class ModThermopneumaticRecipes {
         tpp.accept(new BasicThermopneumaticProcessingPlantRecipe(
                 RL("kerosene"),
                 new FluidStack(ModFluids.DIESEL, 100),
-                null,
+                Ingredient.EMPTY,
                 new FluidStack(ModFluids.KEROSENE, 80),
                 TemperatureRange.min(573), 2.0f,
                 false
@@ -52,7 +52,7 @@ public class ModThermopneumaticRecipes {
         tpp.accept(new BasicThermopneumaticProcessingPlantRecipe(
                 RL("gasoline"),
                 new FluidStack(ModFluids.KEROSENE, 100),
-                null,
+                Ingredient.EMPTY,
                 new FluidStack(ModFluids.GASOLINE, 80),
                 TemperatureRange.min(573), 2.0f,
                 false
@@ -61,7 +61,7 @@ public class ModThermopneumaticRecipes {
         tpp.accept(new BasicThermopneumaticProcessingPlantRecipe(
                 RL("lpg"),
                 new FluidStack(ModFluids.GASOLINE, 100),
-                null,
+                Ingredient.EMPTY,
                 new FluidStack(ModFluids.LPG, 80),
                 TemperatureRange.min(573), 2.0f,
                 false

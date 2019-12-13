@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.event.SemiblockEvent;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.render.RenderDroneHeldItem;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
@@ -16,6 +17,8 @@ import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft.DamageSourceDro
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.ai.*;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
+import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
@@ -147,8 +150,12 @@ public class EntityDrone extends EntityDroneBase implements
     private final int[] emittingRedstoneValues = new int[6];
     private float propSpeed;
 
-    float currentAir; //the current held energy of the Drone;
-    private float volume;
+    private BasicAirHandler airHandler;
+    private final LazyOptional<IAirHandlerBase> airCap = LazyOptional.of(() -> airHandler);
+
+//    float currentAir; //the current held energy of the Drone;
+//    private float volume;
+
     private RenderProgressingLine targetLine;
     private RenderProgressingLine oldTargetLine;
     public List<IProgWidget> progWidgets = new ArrayList<>();
@@ -287,6 +294,8 @@ public class EntityDrone extends EntityDroneBase implements
             return fluidCap.cast();
         } else if (capability == CapabilityEnergy.ENERGY) {
             return energyCap.cast();
+        } else if (capability == CapabilityAirHandler.AIR_HANDLER_CAPABILITY) {
+            return airCap.cast();
         }
         return super.getCapability(capability, facing);
     }
@@ -330,7 +339,8 @@ public class EntityDrone extends EntityDroneBase implements
     public void tick() {
         if (firstTick) {
             firstTick = false;
-            volume = PneumaticValues.DRONE_VOLUME + getUpgrades(EnumUpgrade.VOLUME) * PneumaticValues.VOLUME_VOLUME_UPGRADE;
+
+//            volume = PneumaticValues.DRONE_VOLUME + getUpgrades(EnumUpgrade.VOLUME) * PneumaticValues.VOLUME_VOLUME_UPGRADE;
             securityUpgradeCount = getUpgrades(EnumUpgrade.SECURITY);
             if (securityUpgradeCount > 0) {
                 ((EntityPathNavigateDrone) getPathNavigator()).pathThroughLiquid = true;
@@ -345,7 +355,7 @@ public class EntityDrone extends EntityDroneBase implements
             }
             energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
         }
-        boolean enabled = !disabledByHacking && getPressure(null) > 0.01F;
+        boolean enabled = !disabledByHacking && getAirHandler().getPressure() > 0.01F;
         if (!world.isRemote) {
             inventory.updateHeldItem();
             setAccelerating(!standby && enabled);
@@ -428,7 +438,7 @@ public class EntityDrone extends EntityDroneBase implements
         if (isAccelerating()) {
             setMotion(getMotion().scale(0.3));
             propSpeed = Math.min(1, propSpeed + 0.04F);
-            addAir(null, -1);
+            getAirHandler().addAir(-1);
         } else {
             propSpeed = Math.max(0, propSpeed - 0.04F);
         }
@@ -807,34 +817,41 @@ public class EntityDrone extends EntityDroneBase implements
         }
     }
 
-    @Override
-    public float getPressure(ItemStack iStack) {
-        return dataManager.get(PRESSURE);
-    }
+//    @Override
+//    public float getPressure(ItemStack iStack) {
+//        return dataManager.get(PRESSURE);
+//    }
+//
+//    @Override
+//    public void addAir(ItemStack iStack, int amount) {
+//        if (!world().isRemote) {
+//            currentAir += amount;
+//            dataManager.set(PRESSURE, currentAir / volume);
+//        }
+//    }
+//
+//    @Override
+//    public float maxPressure(ItemStack iStack) {
+//        return PneumaticValues.DRONE_MAX_PRESSURE;
+//    }
+//
+//    @Override
+//    public int getVolume(ItemStack iStack) {
+//        return (int) volume;
+//    }
 
-    @Override
-    public void addAir(ItemStack iStack, int amount) {
-        if (!world().isRemote) {
-            currentAir += amount;
-            dataManager.set(PRESSURE, currentAir / volume);
+    protected BasicAirHandler getAirHandler() {
+        if (airHandler == null) {
+            airHandler = new BasicAirHandler(PneumaticValues.DRONE_VOLUME + getUpgrades(EnumUpgrade.VOLUME) * PneumaticValues.VOLUME_VOLUME_UPGRADE);
         }
-    }
-
-    @Override
-    public float maxPressure(ItemStack iStack) {
-        return PneumaticValues.DRONE_MAX_PRESSURE;
-    }
-
-    @Override
-    public int getVolume(ItemStack iStack) {
-        return (int) volume;
+        return airHandler;
     }
 
     @Override
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
         if (hasCustomName()) curInfo.add(getCustomName().applyTextStyle(TextFormatting.AQUA));
         curInfo.add(xlate("entityTracker.info.tamed", getFakePlayer().getName()));
-        curInfo.add(xlate("gui.tooltip.pressure",PneumaticCraftUtils.roundNumberTo(getPressure(null), 1) + " bar."));
+        curInfo.add(xlate("gui.tooltip.pressure",PneumaticCraftUtils.roundNumberTo(getAirHandler().getPressure(), 1) + " bar."));
     }
 
     @Override
@@ -842,13 +859,13 @@ public class EntityDrone extends EntityDroneBase implements
         super.writeAdditional(tag);
         TileEntityProgrammer.setWidgetsToNBT(progWidgets, tag);
         tag.putBoolean("naturallySpawned", naturallySpawned);
-        tag.putFloat("currentAir", currentAir);
+        tag.put("currentAir", getAirHandler().serializeNBT());
         tag.putFloat("propSpeed", propSpeed);
         tag.putBoolean("disabledByHacking", disabledByHacking);
         tag.putBoolean("hackedByOwner", gotoOwnerAI != null);
         tag.putInt("color", getDroneColor());
         tag.putBoolean("standby", standby);
-        tag.putFloat("volume", volume);
+//        tag.putFloat("volume", volume);
 
         CompoundNBT variableTag = new CompoundNBT();
         aiManager.writeToNBT(variableTag);
@@ -888,9 +905,10 @@ public class EntityDrone extends EntityDroneBase implements
         super.readAdditional(tag);
         progWidgets = TileEntityProgrammer.getWidgetsFromNBT(tag);
         naturallySpawned = tag.getBoolean("naturallySpawned");
-        currentAir = tag.getFloat("currentAir");
-        volume = tag.getFloat("volume");
-        dataManager.set(PRESSURE, currentAir / volume);
+        getAirHandler().deserializeNBT(tag.getCompound("Air"));
+//        currentAir = tag.getFloat("currentAir");
+//        volume = tag.getFloat("volume");
+        dataManager.set(PRESSURE, getAirHandler().getPressure());
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");
         setGoingToOwner(tag.getBoolean("hackedByOwner"));
@@ -1005,7 +1023,10 @@ public class EntityDrone extends EntityDroneBase implements
 
     public Minigun getMinigun() {
         if (minigun == null) {
-            minigun = new MinigunDrone(this).setPlayer(getFakePlayer()).setWorld(world).setPressurizable(this, PneumaticValues.DRONE_USAGE_ATTACK);
+            minigun = new MinigunDrone(this).setPlayer(getFakePlayer())
+                    .setWorld(world)
+//                    .setPressurizable(this, PneumaticValues.DRONE_USAGE_ATTACK);
+                    .setAirHandler(this.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY), PneumaticValues.DRONE_USAGE_ATTACK);
         }
         return minigun;
     }
@@ -1013,7 +1034,8 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public boolean attackEntityAsMob(Entity entity) {
         getFakePlayer().attackTargetEntityWithCurrentItem(entity);
-        addAir(null, -PneumaticValues.DRONE_USAGE_ATTACK);
+        getAirHandler().addAir(-PneumaticValues.DRONE_USAGE_ATTACK);
+//        addAir(null, -PneumaticValues.DRONE_USAGE_ATTACK);
         return true;
     }
 

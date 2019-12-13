@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.GuiRadioButton;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -25,7 +25,7 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
         if (isSidedWidget()) {
             for (Direction dir : Direction.VALUES) {
                 String sideName = PneumaticCraftUtils.getOrientationName(dir);
-                GuiCheckBox checkBox = new GuiCheckBox(guiLeft + 4, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
+                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 4, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
                         b -> ((ISidedWidget) progWidget).getSides()[dir.getIndex()] = b.checked);
                 checkBox.checked = ((ISidedWidget) progWidget).getSides()[dir.getIndex()];
                 addButton(checkBox);
@@ -35,18 +35,18 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
         int baseX = isSidedWidget() ? 90 : 4;
         int baseY = isUsingAndOr() ? 60 : 30;
 
-        List<GuiRadioButton> radioButtons;
-        GuiRadioButton radioButton;
+        List<WidgetRadioButton> radioButtons;
+        WidgetRadioButton radioButton;
         if (isUsingAndOr()) {
             radioButtons = new ArrayList<>();
-            radioButton = new GuiRadioButton(guiLeft + baseX, guiTop + 30, 0xFF404040, "Any block",
+            radioButton = new WidgetRadioButton(guiLeft + baseX, guiTop + 30, 0xFF404040, "Any block",
                     b -> progWidget.setAndFunction(false));
             radioButton.checked = !progWidget.isAndFunction();
             addButton(radioButton);
             radioButtons.add(radioButton);
             radioButton.otherChoices = radioButtons;
 
-            radioButton = new GuiRadioButton(guiLeft + baseX, guiTop + 42, 0xFF404040, "All blocks",
+            radioButton = new WidgetRadioButton(guiLeft + baseX, guiTop + 42, 0xFF404040, "All blocks",
                     b -> progWidget.setAndFunction(true));
             radioButton.checked = progWidget.isAndFunction();
             addButton(radioButton);
@@ -57,7 +57,7 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
         if (requiresNumber()) {
             radioButtons = new ArrayList<>();
             for (ICondition.Operator op : ICondition.Operator.values()) {
-                radioButton = new GuiRadioButton(guiLeft + baseX, guiTop + baseY + op.ordinal() * 12, 0xFF404040,
+                radioButton = new WidgetRadioButton(guiLeft + baseX, guiTop + baseY + op.ordinal() * 12, 0xFF404040,
                         op.toString(), b -> progWidget.setOperator(op));
                 radioButton.checked = progWidget.getOperator() == op;
                 addButton(radioButton);

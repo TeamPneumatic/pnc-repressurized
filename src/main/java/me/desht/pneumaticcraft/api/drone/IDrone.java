@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.api.drone;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.api.item.IPressurizable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.GoalSelector;
@@ -25,7 +24,7 @@ import java.util.List;
  * <p>
  * Do not implement this class yourself!
  */
-public interface IDrone extends IPressurizable, ICapabilityProvider {
+public interface IDrone extends ICapabilityProvider {
     /**
      * Get the number of installed upgrades of the given item type.
      *

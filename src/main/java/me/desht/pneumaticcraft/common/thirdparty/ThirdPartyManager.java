@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty;
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.config.aux.ThirdPartyConfig;
+import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
 import me.desht.pneumaticcraft.lib.Log;
@@ -47,7 +48,7 @@ public class ThirdPartyManager {
 //            thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
 //            thirdPartyClasses.put(ModIds.BOTANIA, Botania.class);
 //            thirdPartyClasses.put(ModIds.IMMERSIVE_PETROLEUM, ImmersivePetroleum.class);
-//            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli.class);
+            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli.class);
 //            thirdPartyClasses.put(ModIds.MEKANISM, Mekanism.class);
 //            thirdPartyClasses.put(ModIds.BAUBLES, Baubles.class);
 //            thirdPartyClasses.put(ModIds.TOUGH_AS_NAILS, ToughAsNails.class);

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " CI",
+    "IIT",
+    "III"
+  ],
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    },
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:pneumatic_door_base"
+  }
+}

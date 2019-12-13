@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLiquidExport;
 
 public class GuiProgWidgetLiquidExport extends GuiProgWidgetImportExport<ProgWidgetLiquidExport> {
@@ -14,7 +14,7 @@ public class GuiProgWidgetLiquidExport extends GuiProgWidgetImportExport<ProgWid
     public void init() {
         super.init();
 
-        GuiCheckBox checkbox = new GuiCheckBox(guiLeft + 70, guiTop + 70, 0xFF404040,
+        WidgetCheckBox checkbox = new WidgetCheckBox(guiLeft + 70, guiTop + 70, 0xFF404040,
                 "gui.progWidget.liquidExport.placeFluidInWorld", b -> progWidget.setPlaceFluidBlocks(b.checked));
         checkbox.setChecked(progWidget.isPlacingFluidBlocks());
         addButton(checkbox);

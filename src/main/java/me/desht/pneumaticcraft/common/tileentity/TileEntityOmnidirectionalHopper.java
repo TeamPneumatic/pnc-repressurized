@@ -42,7 +42,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return invCap;
     }
 

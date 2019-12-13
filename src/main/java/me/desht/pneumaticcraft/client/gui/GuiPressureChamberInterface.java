@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
@@ -21,8 +21,8 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface.MAX_PROGRESS;
 
 public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<ContainerPressureChamberInterface,TileEntityPressureChamberInterface> {
-    private GuiAnimatedStat statusStat;
-    private GuiButtonSpecial exportAnyButton;
+    private WidgetAnimatedStat statusStat;
+    private WidgetButtonExtended exportAnyButton;
     private WidgetLabel exportTypeLabel;
 
     private boolean hasEnoughPressure = true;
@@ -37,7 +37,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
 
         statusStat = addAnimatedStat("gui.pressureChamberInterface.status", new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE), 0xFFFFAA00, false);
 
-        exportAnyButton = addButton(new GuiButtonSpecial(guiLeft + 111, guiTop + 32, 60, 20, "")
+        exportAnyButton = addButton(new WidgetButtonExtended(guiLeft + 111, guiTop + 32, 60, 20, "")
                 .withTag("export_mode"));
         exportTypeLabel = addButton(new WidgetLabel(guiLeft + 111, guiTop + 20, I18n.format("gui.pressureChamberInterface.exportLabel")));
     }
@@ -69,8 +69,10 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
     public void tick() {
         super.tick();
 
-        exportAnyButton.setVisible(te.interfaceMode == TileEntityPressureChamberInterface.InterfaceDirection.EXPORT);
-        exportTypeLabel.visible = te.interfaceMode == TileEntityPressureChamberInterface.InterfaceDirection.EXPORT;
+        boolean exporting = te.interfaceMode == TileEntityPressureChamberInterface.InterfaceDirection.EXPORT;
+        exportAnyButton.setVisible(exporting);
+        exportAnyButton.visible = exporting;
+        exportTypeLabel.visible = exporting;
         if (exportAnyButton.visible) {
             String textKey = "gui.pressureChamberInterface.export." + (te.exportAny ? "any" : "valid");
             exportAnyButton.setMessage(I18n.format(textKey));

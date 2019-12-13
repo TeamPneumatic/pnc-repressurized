@@ -180,7 +180,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
     @Nonnull
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return inventory;
     }
 

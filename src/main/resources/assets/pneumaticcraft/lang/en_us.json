@@ -48,7 +48,7 @@
   "block.pneumaticcraft.etching_acid": "Etching Acid",
   "block.pneumaticcraft.programmable_controller": "Programmable Controller",
   "block.pneumaticcraft.gas_lift": "Gas Lift",
-  "block.pneumaticcraft.refinery": "Refinery",
+  "block.pneumaticcraft.refinery": "Refinery Controller",
   "block.pneumaticcraft.refinery_output": "Refinery Output",
   "block.pneumaticcraft.thermopneumatic_processing_plant": "Thermopneumatic Processing Plant",
   "block.pneumaticcraft.fuel": "Gasoline",
@@ -665,7 +665,7 @@
   "gui.keybindBoundKey": "Bound to: §a%s",
   "gui.keybindRightClickToSet": "§7Right click to bind key",
   "gui.keybindShiftRightClickToClear": "§7Shift + Right click to clear binding",
-  "gui.setKeybind": "Press key to bind",
+  "gui.setKeybind": "§ePress key to bind",
   "gui.enableModule": "Enable %s",
   "gui.pressureChamber": "Pressure Chamber",
   "gui.pressureChamberTitle": "%s Pressure Chamber",
@@ -898,6 +898,7 @@
   "gui.micromissile.mode.SMART": "Smart",
   "gui.micromissile.mode.DUMB": "Dumb",
   "gui.micromissile.modeTooltip": "§eSmart Mode: §fmissiles actively seek out and lock to the nearest target which matches the entity filter (if any). You can balance between Top Speed, Turn Speed and Damage. \\n§eDumb Mode: §fmissiles fly in a straight line only and accelerate fairly slowly, but deal high damage.",
+  "gui.gps_area_tool.changeAreaType": "Change Area Type",
 
   "key.pneumaticcraft.category": "PneumaticCraft",
   "_comment": "gui.enableModule.coreComponents=Enable Helmet",
@@ -932,6 +933,10 @@
   "pneumaticHelmet.message.coordinateTracker.harderRouteFound": "Found a non-ideal route (requires actions like nerd poling)",
   "pneumaticHelmet.message.coordinateTracker.noRouteFound": "Unable to find a route to the surface!",
   "pneumaticHelmet.message.targetWarning": "%s is targeting you!",
+  "pneumaticHelmet.message.initStarted": "Initializing %s ...",
+  "pneumaticHelmet.message.initComplete": "%s initialization complete!",
+  "pneumaticHelmet.message.almostOutOfAir": "Your %s is almost out of air!",
+  "pneumaticHelmet.message.outOfAir": "Your %s is out of air!",
 
   "jetboots.module.builderMode": "Builder Mode",
 
@@ -1001,6 +1006,7 @@
   "gui.tooltip.amadronTablet.selectFluidLocation": "Right click a tank to allow it to provide fluids to vendors.",
   "gui.tooltip.gpsTool.variable": "Linked variable: \"#%s\"",
   "gui.tooltip.aerial_interface.xpDisabled": "XP handling disabled",
+  "gui.tooltip.charging_station.manageUpgrades": "Manage Upgrades for the %s",
 
   "_comment": "Item tooltips",
   "gui.tooltip.item.plastic_bucket": "Place in a Plastic Mixer (along with some dyes) to solidify into solid Plastic.",
@@ -1143,7 +1149,7 @@
 
   "_comment": "Misc",
   "message.vacuum_pump.manometer": "Input Pressure: %s bar. Vacuum Pressure: %s bar.",
-  "itemGroup.tabPneumaticCraft": "PneumaticCraft",
+  "itemGroup.pneumaticcraft": "PneumaticCraft: Repressurized",
   "message.date.ironman": "Today an Iron Man movie went in premiere!",
   "message.securityStation.accessPrevented": "§cAccess is prevented by %s Security Station(s).",
   "message.securityStation.stationPlacementPrevented": "§cYou can't place a Security Station here: %s Security Station(s) are too close by!",

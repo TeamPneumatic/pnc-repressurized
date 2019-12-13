@@ -137,7 +137,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return invCap;
     }
 

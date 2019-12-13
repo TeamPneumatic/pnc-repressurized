@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " B ",
+    " ST",
+    "HHH"
+  ],
+  "key": {
+    "B": {
+      "item": "pneumaticcraft:cannon_barrel"
+    },
+    "S": {
+      "item": "pneumaticcraft:stone_base"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "H": {
+      "item": "minecraft:cobblestone_slab"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:air_cannon"
+  }
+}

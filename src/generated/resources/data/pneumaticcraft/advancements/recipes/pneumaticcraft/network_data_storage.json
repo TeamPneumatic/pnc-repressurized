@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:network_data_storage"
+    ]
+  },
+  "criteria": {
+    "has_capacitor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:capacitor"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:network_data_storage"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_capacitor",
+      "has_the_recipe"
+    ]
+  ]
+}

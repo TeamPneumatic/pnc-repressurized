@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "HCC",
+    "  C",
+    "IBI"
+  ],
+  "key": {
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "C": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    },
+    "B": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:assembly_io_unit_import"
+  }
+}

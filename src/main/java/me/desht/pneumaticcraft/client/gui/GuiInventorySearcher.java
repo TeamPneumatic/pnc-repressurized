@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.inventory.ContainerInventorySearcher;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -31,7 +32,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
         inv.player.openContainer = container;
         passEvents = true;
         ySize = 176; //TODO change
-        parentScreen = minecraft.currentScreen;
+        parentScreen = Minecraft.getInstance().currentScreen;
         container.init(inventory);
     }
 

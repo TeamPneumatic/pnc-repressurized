@@ -11,9 +11,9 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Coo
 import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
-import me.desht.pneumaticcraft.common.capabilities.Hacking;
-import me.desht.pneumaticcraft.common.capabilities.Heat;
-import me.desht.pneumaticcraft.common.capabilities.Pressure;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityHeat;
 import me.desht.pneumaticcraft.common.commands.ModCommands;
 import me.desht.pneumaticcraft.common.config.ConfigHolder;
 import me.desht.pneumaticcraft.common.config.aux.AuxConfigHandler;
@@ -38,21 +38,28 @@ import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.Reflections;
+import me.desht.pneumaticcraft.datagen.ModLootTablesProvider;
+import me.desht.pneumaticcraft.datagen.ModRecipeProvider;
+import me.desht.pneumaticcraft.datagen.loot.TileEntitySerializerFunction;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.proxy.ClientProxy;
 import me.desht.pneumaticcraft.proxy.IProxy;
 import me.desht.pneumaticcraft.proxy.ServerProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.item.Item;
+import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -101,6 +108,8 @@ public class PneumaticCraftRepressurized {
         SemiBlockInitializer.preInit();
         proxy.preInit();
         AdvancementTriggers.registerTriggers();
+
+        LootFunctionManager.registerFunction(new TileEntitySerializerFunction.Serializer());
 
         MinecraftForge.EVENT_BUS.register(new TickHandlerPneumaticCraft());
         MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticCraft());
@@ -176,9 +185,9 @@ public class PneumaticCraftRepressurized {
     }
 
     private void registerCapabilities() {
-        Hacking.register();
-        Pressure.register();
-        Heat.register();
+        CapabilityAirHandler.register();
+        CapabilityHeat.register();
+        CapabilityHacking.register();
     }
 
     private void serverAboutToStart(FMLServerAboutToStartEvent event) {
@@ -230,4 +239,16 @@ public class PneumaticCraftRepressurized {
         }
     }
 
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class DataGenerators {
+
+        @SubscribeEvent
+        public static void gatherData(GatherDataEvent event) {
+            DataGenerator generator = event.getGenerator();
+            if (event.includeServer()) {
+                generator.addProvider(new ModRecipeProvider(generator));
+                generator.addProvider(new ModLootTablesProvider(generator));
+            }
+        }
+    }
 }

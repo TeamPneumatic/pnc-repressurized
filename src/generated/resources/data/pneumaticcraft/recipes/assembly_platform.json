@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "C C",
+    "PPP",
+    "IBI"
+  ],
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    },
+    "P": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "B": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:assembly_platform"
+  }
+}

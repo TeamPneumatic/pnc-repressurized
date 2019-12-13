@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
@@ -31,22 +32,24 @@ public class DroneGoToChargingStation extends Goal {
     @Override
     public boolean shouldExecute() {
         List<TileEntityChargingStation> validChargingStations = new ArrayList<>();
-        if (drone.getPressure(null) < PneumaticValues.DRONE_LOW_PRESSURE) {
-            for (TileEntityChargingStation station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
-                if (station.getWorld() == drone.world) {
-                    BlockPos pos = new BlockPos(station.getPos().getX(), station.getPos().getY(), station.getPos().getZ());
-                    if (DroneClaimManager.getInstance(drone.world).isClaimed(pos)) {
-                        drone.addDebugEntry("gui.progWidget.chargingStation.debug.claimed", pos);
-                    } else if (station.getPressure() <= PneumaticValues.DRONE_LOW_PRESSURE) {
-                        drone.addDebugEntry("gui.progWidget.chargingStation.debug.notEnoughPressure", pos);
-                    } else if (station.getUpgrades(EnumUpgrade.DISPENSER) == 0) {
-                        drone.addDebugEntry("gui.progWidget.chargingStation.debug.noDispenserUpgrades", pos);
-                    } else {
-                        validChargingStations.add(station);
+        drone.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
+            if (h.getPressure() < PneumaticValues.DRONE_LOW_PRESSURE) {
+                for (TileEntityChargingStation station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
+                    if (station.getWorld() == drone.world) {
+                        BlockPos pos = new BlockPos(station.getPos().getX(), station.getPos().getY(), station.getPos().getZ());
+                        if (DroneClaimManager.getInstance(drone.world).isClaimed(pos)) {
+                            drone.addDebugEntry("gui.progWidget.chargingStation.debug.claimed", pos);
+                        } else if (station.getPressure() <= PneumaticValues.DRONE_LOW_PRESSURE) {
+                            drone.addDebugEntry("gui.progWidget.chargingStation.debug.notEnoughPressure", pos);
+                        } else if (station.getUpgrades(EnumUpgrade.DISPENSER) == 0) {
+                            drone.addDebugEntry("gui.progWidget.chargingStation.debug.noDispenserUpgrades", pos);
+                        } else {
+                            validChargingStations.add(station);
+                        }
                     }
                 }
             }
-        }
+        });
 
         validChargingStations.sort(Comparator.comparingDouble(arg -> PneumaticCraftUtils.distBetweenSq(arg.getPos().getX(), arg.getPos().getY(), arg.getPos().getZ(), drone.posX, drone.posY, drone.posZ)));
 
@@ -77,7 +80,9 @@ public class DroneGoToChargingStation extends Goal {
             isExecuting = false;
             return false;
         } else if (!drone.getPathNavigator().isGoingToTeleport() && (drone.getNavigator().getPath() == null || drone.getNavigator().getPath().isFinished())) {
-            isExecuting = drone.getPressure(null) < 9.9F && curCharger.getPressure() > drone.getPressure(null) + 0.1F;
+            isExecuting = drone.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY)
+                    .map(h -> h.getPressure() < 9.9F && curCharger.getPressure() > h.getPressure() + 0.1F)
+                    .orElseThrow(IllegalStateException::new);
             if (isExecuting) {
                 chargingTime++;
                 if (chargingTime > 20) {

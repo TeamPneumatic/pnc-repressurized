@@ -21,7 +21,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
     private GuiInventorySearcher invSearchGui;
     private WidgetTextFieldNumber[] coordFields;
     private WidgetComboBox variableField;
-    private GuiButtonSpecial gpsButton;
+    private WidgetButtonExtended gpsButton;
 
     public GuiProgWidgetCoordinate(ProgWidgetCoordinate widget, GuiProgrammer guiProgrammer) {
         super(widget, guiProgrammer);
@@ -36,23 +36,23 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
             progWidget.setCoordinate(pos);
         }
 
-        List<GuiRadioButton> radioButtons = new ArrayList<>();
+        List<WidgetRadioButton> radioButtons = new ArrayList<>();
 
-        GuiRadioButton radioButton = new GuiRadioButton(guiLeft + 7, guiTop + 51, 0xFF404040,
+        WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 7, guiTop + 51, 0xFF404040,
                 I18n.format("gui.progWidget.coordinate.constant"), b -> setUsingVariable(false));
         if (!progWidget.isUsingVariable()) radioButton.checked = true;
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
         addButton(radioButton);
 
-        radioButton = new GuiRadioButton(guiLeft + 7, guiTop + 100, 0xFF404040,
+        radioButton = new WidgetRadioButton(guiLeft + 7, guiTop + 100, 0xFF404040,
                 I18n.format("gui.progWidget.coordinate.variable"), b -> setUsingVariable(true));
         if (progWidget.isUsingVariable()) radioButton.checked = true;
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
         addButton(radioButton);
 
-        gpsButton = new GuiButtonSpecial(guiLeft + 100, guiTop + 20, 20, 20, "", b -> openGPSSearcher());
+        gpsButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 20, 20, 20, "", b -> openGPSSearcher());
         gpsButton.setRenderStacks(new ItemStack(ModItems.GPS_TOOL));
         gpsButton.setTooltipText(I18n.format("gui.progWidget.coordinate.selectFromGPS"));
         gpsButton.active = !progWidget.isUsingVariable();

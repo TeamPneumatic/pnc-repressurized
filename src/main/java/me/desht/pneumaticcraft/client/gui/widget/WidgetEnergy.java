@@ -10,7 +10,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-public class WidgetEnergy extends Widget implements ITooltipSupplier {
+public class WidgetEnergy extends Widget implements ITooltipProvider {
     private static final ResourceLocation DEFAULT_TEXTURE = RL("textures/gui/widget/energy.png");
     private static final int DEFAULT_SCALE = 42;
 

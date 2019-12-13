@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.api.item.IPressurizable;
 import me.desht.pneumaticcraft.common.DroneRegistry;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.aux.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
@@ -158,13 +158,15 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     @Override
     public boolean canInteractWith(PlayerEntity player) {
         if (player.getHeldItemMainhand().getItem() == ModItems.AMADRON_TABLET) {
-            IPressurizable pressurizable = (IPressurizable) ModItems.AMADRON_TABLET;
-            pressurizable.addAir(player.getHeldItemMainhand(), -1);
-            if (pressurizable.getPressure(player.getHeldItemMainhand()) > 0) {
-                return true;
-            } else {
-                player.sendStatusMessage(new TranslationTextComponent("gui.tab.problems.notEnoughPressure"), false);
-            }
+            return player.getHeldItemMainhand().getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+                h.addAir(-1);
+                if (h.getPressure() > 0) {
+                    return true;
+                } else {
+                    player.sendStatusMessage(new TranslationTextComponent("gui.tab.problems.notEnoughPressure"), false);
+                    return false;
+                }
+            }).orElse(false);
         }
         return false;
     }

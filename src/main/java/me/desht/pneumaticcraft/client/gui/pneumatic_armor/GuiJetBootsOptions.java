@@ -4,8 +4,8 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
-import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -18,7 +18,7 @@ import net.minecraft.nbt.CompoundNBT;
 
 public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions {
 
-    private GuiKeybindCheckBox checkBox;
+    private WidgetKeybindCheckBox checkBox;
 
     public GuiJetBootsOptions(IUpgradeRenderHandler handler) {
         super(handler);
@@ -28,10 +28,10 @@ public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions {
     public void initGui(IGuiScreen gui) {
         super.initGui(gui);
 
-        checkBox = new GuiKeybindCheckBox(5, 45, 0xFFFFFFFF, "jetboots.module.builderMode", b -> setBuilderMode(b.checked));
-        gui.getWidgetList().add(checkBox);
+        checkBox = new WidgetKeybindCheckBox(5, 45, 0xFFFFFFFF, "jetboots.module.builderMode", b -> setBuilderMode(b.checked));
+        gui.addWidget(checkBox);
 
-        gui.getWidgetList().add(new GuiButtonSpecial(30, 128, 150, 20, "Move Stat Screen...", b -> {
+        gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20, "Move Stat Screen...", b -> {
             Minecraft.getInstance().player.closeScreen();
             Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getRenderHandler(), ArmorHUDLayout.LayoutTypes.JET_BOOTS));
         }));
@@ -44,7 +44,7 @@ public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions {
             tag.putBoolean(ItemPneumaticArmor.NBT_BUILDER_MODE, enabled);
             NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.FEET, tag));
             CommonArmorHandler.getHandlerForPlayer().onDataFieldUpdated(EquipmentSlotType.FEET, ItemPneumaticArmor.NBT_BUILDER_MODE, tag.get(ItemPneumaticArmor.NBT_BUILDER_MODE));
-            HUDHandler.instance().addFeatureToggleMessage(getRenderHandler(), checkBox.getMessage(), enabled);
+            HUDHandler.instance().addFeatureToggleMessage(getRenderHandler(), "jetboots.module.builderMode", enabled);
         }
     }
 

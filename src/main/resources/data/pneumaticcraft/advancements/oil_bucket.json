@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "forge:bucketfilled",
-      "nbt": "{FluidName:\"oil\",Amount:1000}"
+      "item": "pneumaticcraft:oil_bucket"
     },
     "title": {
       "translate": "achievement.oilBucket"

@@ -12,7 +12,7 @@ public class AuxConfigHandler {
             AmadronOfferStaticConfig.INSTANCE,
             AmadronOfferPeriodicConfig.INSTANCE,
             ProgWidgetConfig.INSTANCE,
-            HelmetWidgetDefaults.INSTANCE,
+            ArmorFeatureStatus.INSTANCE,
             ThirdPartyConfig.INSTANCE,
             MicromissileDefaults.INSTANCE,
             BlockHeatPropertiesConfig.INSTANCE,

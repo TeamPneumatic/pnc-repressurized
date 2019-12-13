@@ -38,6 +38,7 @@ public class WidgetVerticalScrollbar extends Widget {
         if (listening) {
             double wheel = MathHelper.clamp(-dir, -1, 1);
             currentScroll = MathHelper.clamp(currentScroll + (float) wheel / states,0f, 1);
+            return true;
         }
         return false;
     }
@@ -77,7 +78,7 @@ public class WidgetVerticalScrollbar extends Widget {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTick) {
+    public void renderButton(int mouseX, int mouseY, float partialTick) {
         GlStateManager.color4f(1, 1, 1, 1);
         Minecraft.getInstance().getTextureManager().bindTexture(SCROLL_TEXTURE);
         blit(x, y, 12, 0, width, 1, 26, 15);

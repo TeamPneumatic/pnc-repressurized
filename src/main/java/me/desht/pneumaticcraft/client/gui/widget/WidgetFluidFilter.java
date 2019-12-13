@@ -4,12 +4,13 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-public class WidgetFluidFilter extends Widget implements ITooltipSupplier {
+public class WidgetFluidFilter extends Widget implements ITooltipProvider {
     private final Consumer<WidgetFluidFilter> onPressed;
     protected Fluid fluid;
 
@@ -24,7 +25,7 @@ public class WidgetFluidFilter extends Widget implements ITooltipSupplier {
 
     @Override
     public void renderButton(int mouseX, int mouseY, float partialTick) {
-        if (fluid != null) {
+        if (fluid != Fluids.EMPTY) {
             GuiUtils.drawFluid(new Rectangle2d(x, y, 16, 16), new FluidStack(fluid, 1000), null);
         }
     }

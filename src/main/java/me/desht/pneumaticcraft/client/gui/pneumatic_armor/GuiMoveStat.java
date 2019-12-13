@@ -3,9 +3,9 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
@@ -32,7 +32,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     private final List<String> helpText = new ArrayList<>();
     private final ArmorHUDLayout.LayoutTypes layoutItem;
 
-    private GuiCheckBox snapToGrid;
+    private WidgetCheckBox snapToGrid;
     private GuiSlider gridSlider;
 
     private static boolean snap = false;
@@ -67,8 +67,8 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
 
         MainHelmetHandler mainOptions = HUDHandler.instance().getSpecificRenderer(MainHelmetHandler.class);
         if (movedStat != mainOptions.testMessageStat) {
-            mainOptions.testMessageStat = new GuiAnimatedStat(null, "Test Message, keep in mind messages can be long!",
-                    GuiAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
+            mainOptions.testMessageStat = new WidgetAnimatedStat(null, "Test Message, keep in mind messages can be long!",
+                    WidgetAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
             mainOptions.testMessageStat.openWindow();
             otherStats.add(mainOptions.testMessageStat);
         }
@@ -78,7 +78,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     public void init() {
         super.init();
 
-        snapToGrid = new GuiCheckBox(10, (height * 3) / 5, 0xC0C0C0, "Snap To Grid");
+        snapToGrid = new WidgetCheckBox(10, (height * 3) / 5, 0xC0C0C0, "Snap To Grid");
         snapToGrid.x = (width - snapToGrid.getWidth()) / 2;
         snapToGrid.checked = snap;
         addButton(snapToGrid);
@@ -176,7 +176,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
 
         if (helpText.isEmpty()) {
             helpText.add(TextFormatting.GREEN + "" + TextFormatting.UNDERLINE + "Moving: "
-                    + I18n.format(GuiKeybindCheckBox.UPGRADE_PREFIX + renderHandler.getUpgradeName()));
+                    + I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + renderHandler.getUpgradeID()));
             helpText.add("");
             helpText.add("Left- or Right-Click: move the highlighted stat");
             helpText.add("...");

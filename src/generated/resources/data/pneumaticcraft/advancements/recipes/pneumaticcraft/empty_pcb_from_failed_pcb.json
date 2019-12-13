@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:empty_pcb_from_failed_pcb"
+    ]
+  },
+  "criteria": {
+    "has_empty_pcb": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:failed_pcb"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:empty_pcb_from_failed_pcb"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_empty_pcb",
+      "has_the_recipe"
+    ]
+  ]
+}

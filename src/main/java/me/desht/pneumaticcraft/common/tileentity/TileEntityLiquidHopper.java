@@ -196,7 +196,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
     }
 
     @Override
-    public LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
         return LazyOptional.empty();
     }
 

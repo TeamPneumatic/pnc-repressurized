@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
@@ -29,38 +29,38 @@ public class GuiCoordinateTrackerOptions implements IOptionPage {
 
     @Override
     public void initGui(IGuiScreen gui) {
-        gui.getWidgetList().add(new GuiButtonSpecial(30, 40, 150, 20,
+        gui.addWidget(new WidgetButtonExtended(30, 40, 150, 20,
                 "Select Target...", b -> selectTarget()));
-        gui.getWidgetList().add(new GuiButtonSpecial(30, 62, 150, 20,
+        gui.addWidget(new WidgetButtonExtended(30, 62, 150, 20,
                 "Navigate to Surface...", b -> navigateToSurface()));
-        pathEnabled = new GuiButtonSpecial(30, 128, 150, 20, "",
+        pathEnabled = new WidgetButtonExtended(30, 128, 150, 20, "",
                 b -> {
                     coordHandler.pathEnabled = !coordHandler.pathEnabled;
                     updateButtonTexts();
                     coordHandler.saveToConfig();
                 });
-        wirePath = new GuiButtonSpecial(30, 150, 150, 20, "",
+        wirePath = new WidgetButtonExtended(30, 150, 150, 20, "",
                 b -> {
                     coordHandler.wirePath = !coordHandler.wirePath;
                     updateButtonTexts();
                     coordHandler.saveToConfig();
                 });
-        xRayEnabled = new GuiButtonSpecial(30, 172, 150, 20, "",
+        xRayEnabled = new WidgetButtonExtended(30, 172, 150, 20, "",
                 b -> {
                     coordHandler.xRayEnabled = !coordHandler.xRayEnabled;
                     updateButtonTexts();
                     coordHandler.saveToConfig();
                 });
-        pathUpdateRate = new GuiButtonSpecial(30, 194, 150, 20, "",
+        pathUpdateRate = new WidgetButtonExtended(30, 194, 150, 20, "",
                 b -> {
                     coordHandler.pathUpdateSetting = coordHandler.pathUpdateSetting.cycle();
                     updateButtonTexts();
                     coordHandler.saveToConfig();
                 });
-        gui.getWidgetList().add(pathEnabled);
-        gui.getWidgetList().add(wirePath);
-        gui.getWidgetList().add(xRayEnabled);
-        gui.getWidgetList().add(pathUpdateRate);
+        gui.addWidget(pathEnabled);
+        gui.addWidget(wirePath);
+        gui.addWidget(xRayEnabled);
+        gui.addWidget(pathUpdateRate);
         updateButtonTexts();
     }
 

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "X": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    },
+    "C": {
+      "item": "pneumaticcraft:air_canister"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:volume_upgrade"
+  }
+}

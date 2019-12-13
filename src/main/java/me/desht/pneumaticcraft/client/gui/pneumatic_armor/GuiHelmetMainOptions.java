@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
-import me.desht.pneumaticcraft.client.gui.widget.GuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
@@ -25,15 +25,15 @@ public class GuiHelmetMainOptions implements IOptionPage {
 
     @Override
     public void initGui(IGuiScreen gui) {
-        gui.getWidgetList().add(new GuiButtonSpecial(30, 128, 150, 20,
+        gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
                 "Move Pressure Stat Screen...",
                 b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.POWER)))
         );
 
-        gui.getWidgetList().add(new GuiButtonSpecial(30, 150, 150, 20,
+        gui.addWidget(new WidgetButtonExtended(30, 150, 150, 20,
                 "Move Message Screen...", b -> {
-            renderHandler.testMessageStat = new GuiAnimatedStat(null, "Test Message, keep in mind messages can be long!",
-                    GuiAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
+            renderHandler.testMessageStat = new WidgetAnimatedStat(null, "Test Message, keep in mind messages can be long!",
+                    WidgetAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
             renderHandler.testMessageStat.openWindow();
             Minecraft.getInstance().displayGuiScreen(
                     new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.MESSAGE, renderHandler.testMessageStat));
@@ -43,7 +43,7 @@ public class GuiHelmetMainOptions implements IOptionPage {
                 "Change open menu key...", KeyHandler.getInstance().keybindOpenOptions,
                 b -> changeKeybindingButton.toggleKeybindMode()
         );
-        gui.getWidgetList().add(changeKeybindingButton);
+        gui.addWidget(changeKeybindingButton);
     }
 
     public void renderPre(int x, int y, float partialTicks) {
@@ -54,11 +54,7 @@ public class GuiHelmetMainOptions implements IOptionPage {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (changeKeybindingButton != null) {
-            changeKeybindingButton.receiveKey(keyCode);
-            return true;
-        }
-        return false;
+        return changeKeybindingButton != null && changeKeybindingButton.receiveKey(keyCode);
     }
 
     @Override

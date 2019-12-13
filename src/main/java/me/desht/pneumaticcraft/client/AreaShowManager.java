@@ -76,8 +76,18 @@ public class AreaShowManager {
         GlStateManager.popMatrix();
     }
 
+    private ItemStack getHeldPositionProvider(PlayerEntity player) {
+        if (player.getHeldItemMainhand().getItem() instanceof IPositionProvider) {
+            return player.getHeldItemMainhand();
+        } else if (player.getHeldItemOffhand().getItem() instanceof IPositionProvider) {
+            return player.getHeldItemOffhand();
+        } else {
+            return ItemStack.EMPTY;
+        }
+    }
+
     private void maybeRenderPositionProvider(PlayerEntity player) {
-        ItemStack curItem = player.getHeldItemMainhand();
+        ItemStack curItem = getHeldPositionProvider(player);
         if (curItem.getItem() instanceof IPositionProvider) {
             IPositionProvider positionProvider = (IPositionProvider) curItem.getItem();
             List<BlockPos> posList = positionProvider.getStoredPositions(curItem);

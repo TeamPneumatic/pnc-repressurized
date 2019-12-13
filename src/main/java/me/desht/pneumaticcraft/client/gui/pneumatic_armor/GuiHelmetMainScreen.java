@@ -4,8 +4,8 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
-import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -15,7 +15,6 @@ import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -76,22 +75,22 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
         addPages();
         for (int i = 0; i < upgradeOptions.size(); i++) {
             final int idx = i;
-            GuiButtonSpecial button = new GuiButtonSpecial(210, 20 + i * 22, 120, 20,
+            WidgetButtonExtended button = new WidgetButtonExtended(210, 20 + i * 22, 120, 20,
                     upgradeOptions.get(i).page.getPageName(), b -> setPage(idx));
             button.setRenderStacks(upgradeOptions.get(i).icons);
-            button.setIconPosition(GuiButtonSpecial.IconPosition.RIGHT);
+            button.setIconPosition(WidgetButtonExtended.IconPosition.RIGHT);
             if (pageNumber == i) button.active = false;
             addButton(button);
         }
         if (pageNumber > upgradeOptions.size() - 1) {
             pageNumber = upgradeOptions.size() - 1;
         }
+        String keybindName = upgradeOptions.get(pageNumber).upgradeName;
+        WidgetKeybindCheckBox checkBox = new WidgetKeybindCheckBox(40, 25, 0xFFFFFFFF,
+//                I18n.format("gui.enableModule", I18n.format(keybindName)),
+                keybindName,
+                null);
         if (upgradeOptions.get(pageNumber).page.canBeTurnedOff()) {
-            String keybindName = GuiKeybindCheckBox.UPGRADE_PREFIX + upgradeOptions.get(pageNumber).text;
-            GuiKeybindCheckBox checkBox = new GuiKeybindCheckBox(40, 25, 0xFFFFFFFF,
-                    I18n.format("gui.enableModule", I18n.format(keybindName)),
-                    keybindName,
-                    null);
             addButton(checkBox);
         }
         upgradeOptions.get(pageNumber).page.initGui(this);
@@ -121,7 +120,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
                             List<ItemStack> stacks = new ArrayList<>();
                             stacks.add(ARMOR_STACKS[upgradeRenderHandler.getEquipmentSlot().getIndex()]);
                             Arrays.stream(upgradeRenderHandler.getRequiredUpgrades()).map(ItemStack::new).forEach(stacks::add);
-                            upgradeOptions.add(new UpgradeOption(optionPage, upgradeRenderHandler.getUpgradeName(), stacks.toArray(new ItemStack[0])));
+                            upgradeOptions.add(new UpgradeOption(optionPage, upgradeRenderHandler.getUpgradeID(), stacks.toArray(new ItemStack[0])));
                         }
                     }
                 }
@@ -184,18 +183,23 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     }
 
     @Override
+    public void setFocusedWidget(Widget w) {
+        setFocused(w);
+    }
+
+    @Override
     public boolean isPauseScreen() {
         return false;
     }
 
     private static class UpgradeOption {
         private final IOptionPage page;
-        private final String text;
+        private final String upgradeName;
         private final ItemStack[] icons;
 
-        UpgradeOption(IOptionPage page, String text, ItemStack... icons) {
+        UpgradeOption(IOptionPage page, String upgradeName, ItemStack... icons) {
             this.page = page;
-            this.text = text;
+            this.upgradeName = upgradeName;
             this.icons = icons;
         }
     }

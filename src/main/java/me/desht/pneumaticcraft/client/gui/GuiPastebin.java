@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.GuiButtonSpecial;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.util.JsonToNBTConverter;
 import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
@@ -50,14 +50,14 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             passwordBox = new WidgetTextField(font, guiLeft + 10, guiTop + 56, 80, 10).setAsPasswordBox();
             addButton(passwordBox);
 
-            GuiButtonSpecial loginButton = new GuiButtonSpecial(guiLeft + 100, guiTop + 30, 60, 20, I18n.format("gui.pastebin.button.login"), b -> login());
+            WidgetButtonExtended loginButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 30, 60, 20, I18n.format("gui.pastebin.button.login"), b -> login());
             loginButton.setTooltipText("Pastebin login is optional");
             addButton(loginButton);
 
             addLabel(I18n.format("gui.pastebin.username"), guiLeft + 10, guiTop + 20);
             addLabel(I18n.format("gui.pastebin.password"), guiLeft + 10, guiTop + 46);
         } else {
-            GuiButtonSpecial logoutButton = new GuiButtonSpecial(guiLeft + 60, guiTop + 30, 60, 20, I18n.format("gui.pastebin.button.logout"), b -> logout());
+            WidgetButtonExtended logoutButton = new WidgetButtonExtended(guiLeft + 60, guiTop + 30, 60, 20, I18n.format("gui.pastebin.button.logout"), b -> logout());
             addButton(logoutButton);
         }
 
@@ -73,16 +73,16 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
         };
         addButton(pastebinBox);
 
-        GuiButtonSpecial pasteButton = new GuiButtonSpecial(guiLeft + 31, guiTop + 78, 120, 20, I18n.format("gui.pastebin.button.upload"), b -> sendToPastebin());
+        WidgetButtonExtended pasteButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 78, 120, 20, I18n.format("gui.pastebin.button.upload"), b -> sendToPastebin());
         addButton(pasteButton);
-        GuiButtonSpecial getButton = new GuiButtonSpecial(guiLeft + 31, guiTop + 167, 120, 20, I18n.format("gui.pastebin.button.get"), b -> getFromPastebin());
+        WidgetButtonExtended getButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 167, 120, 20, I18n.format("gui.pastebin.button.get"), b -> getFromPastebin());
         addButton(getButton);
 
-        GuiButtonSpecial putInClipBoard = new GuiButtonSpecial(guiLeft + 8, guiTop + 78, 20, 20, "", b -> putToClipboard());
+        WidgetButtonExtended putInClipBoard = new WidgetButtonExtended(guiLeft + 8, guiTop + 78, 20, 20, "", b -> putToClipboard());
         putInClipBoard.setRenderedIcon(Textures.GUI_COPY_ICON_LOCATION);
         putInClipBoard.setTooltipText(I18n.format("gui.pastebin.button.copyToClipboard"));
         addButton(putInClipBoard);
-        GuiButtonSpecial retrieveFromClipboard = new GuiButtonSpecial(guiLeft + 8, guiTop + 167, 20, 20, "", b -> getFromClipboard());
+        WidgetButtonExtended retrieveFromClipboard = new WidgetButtonExtended(guiLeft + 8, guiTop + 167, 20, 20, "", b -> getFromClipboard());
         retrieveFromClipboard.setRenderedIcon(Textures.GUI_PASTE_ICON_LOCATION);
         retrieveFromClipboard.setTooltipText(I18n.format("gui.pastebin.button.loadFromClipboard"));
         addButton(retrieveFromClipboard);
