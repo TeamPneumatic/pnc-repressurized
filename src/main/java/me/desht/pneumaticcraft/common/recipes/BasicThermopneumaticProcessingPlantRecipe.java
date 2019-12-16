@@ -69,7 +69,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
 
     @Override
     public void useResources(IFluidHandler fluidHandler, IItemHandler itemHandler) {
-        fluidHandler.drain(inputLiquid.amount, true);
+        if (inputLiquid != null) fluidHandler.drain(inputLiquid.amount, true);
         itemHandler.extractItem(0, inputItem.getCount(), false);
     }
 
