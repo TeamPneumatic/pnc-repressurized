@@ -3,30 +3,30 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.UVLightBoxRecipe;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.lib.Textures;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class JEIUVLightBoxCategory extends JEIPneumaticCraftCategory<UVLightBoxRecipe> {
+public class JEIUVLightBoxCategory extends PneumaticCraftCategory<JEIUVLightBoxCategory.UVLightBoxRecipeWrapper> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
 
-    static final List<UVLightBoxRecipe> UV_LIGHT_BOX_RECIPES;
+    private static final List<UVLightBoxRecipe> UV_LIGHT_BOX_RECIPES;
     static {
-        ItemStack in = new ItemStack(ModItems.EMPTY_PCB);
-        in.setDamage(in.getMaxDamage());
         ItemStack out = new ItemStack(ModItems.EMPTY_PCB);
-        UVLightBoxRecipe recipe = new UVLightBoxRecipe(in, out);
+        TileEntityUVLightBox.setExposureProgress(out, 100);
+        UVLightBoxRecipe recipe = new UVLightBoxRecipe(Ingredient.fromItems(ModItems.EMPTY_PCB), out);
         UV_LIGHT_BOX_RECIPES = Collections.singletonList(recipe);
     }
 
@@ -49,8 +49,8 @@ public class JEIUVLightBoxCategory extends JEIPneumaticCraftCategory<UVLightBoxR
     }
 
     @Override
-    public Class<? extends UVLightBoxRecipe> getRecipeClass() {
-        return UVLightBoxRecipe.class;
+    public Class<? extends UVLightBoxRecipeWrapper> getRecipeClass() {
+        return UVLightBoxRecipeWrapper.class;
     }
 
     @Override
@@ -69,28 +69,22 @@ public class JEIUVLightBoxCategory extends JEIPneumaticCraftCategory<UVLightBoxR
     }
 
     @Override
-    public void setIngredients(UVLightBoxRecipe recipe, IIngredients ingredients) {
-        ingredients.setInput(VanillaTypes.ITEM, recipe.getIn());
-        ingredients.setOutput(VanillaTypes.ITEM, recipe.getOut());
-    }
-
-    @Override
-    public void setRecipe(IRecipeLayout recipeLayout, UVLightBoxRecipe recipe, IIngredients ingredients) {
-        super.setRecipe(recipeLayout, recipe, ingredients);
-
-        recipeLayout.getItemStacks().init(0, true, 41, 0);
-        recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
-
-        recipeLayout.getItemStacks().init(1, false, 105, 0);
-        recipeLayout.getItemStacks().set(1, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
-    }
-
-    @Override
-    public void draw(UVLightBoxRecipe recipe, double mouseX, double mouseY) {
-        super.draw(recipe, mouseX, mouseY);
-
+    public void draw(UVLightBoxRecipeWrapper recipe, double mouseX, double mouseY) {
         drawIconAt(icon, 73, -2);
-
         drawTextAt("gui.nei.recipe.uvLightBox", 5, 24);
+    }
+
+    static Collection<UVLightBoxRecipeWrapper> getAllRecipes() {
+        return UV_LIGHT_BOX_RECIPES.stream()
+                .map(UVLightBoxRecipeWrapper::new)
+                .collect(Collectors.toList());
+    }
+
+    static class UVLightBoxRecipeWrapper extends PneumaticCraftCategory.AbstractCategoryExtension {
+        UVLightBoxRecipeWrapper(UVLightBoxRecipe recipe) {
+            this.addInputItem(PositionedStack.of(recipe.getIn().getMatchingStacks(), 41, 0));
+            this.addInputItem(PositionedStack.of(new ItemStack(ModBlocks.UV_LIGHT_BOX), 73, -2));
+            this.addOutputItem(PositionedStack.of(recipe.getOut(), 105, 0));
+        }
     }
 }

@@ -1,21 +1,22 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 
 /**
  * Not a true recipe, but mainly for JEI purposes.
  * Maybe one day...
  */
 public class UVLightBoxRecipe {
-    private final ItemStack in;
+    private final Ingredient in;
     private final ItemStack out;
 
-    public UVLightBoxRecipe(ItemStack in, ItemStack out) {
+    public UVLightBoxRecipe(Ingredient in, ItemStack out) {
         this.in = in;
         this.out = out;
     }
 
-    public ItemStack getIn() {
+    public Ingredient getIn() {
         return in;
     }
 

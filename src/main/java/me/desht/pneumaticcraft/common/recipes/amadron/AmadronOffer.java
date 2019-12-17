@@ -191,7 +191,7 @@ public class AmadronOffer {
         public int countTradesInInventory(IItemHandler inv) {
             int count = 0;
             for (int i = 0; i < inv.getSlots(); i++) {
-                if (ItemStack.areItemStacksEqual(inv.getStackInSlot(i), item)) {
+                if (ItemStack.areItemsEqual(inv.getStackInSlot(i), item)) {
                     count += inv.getStackInSlot(i).getCount();
                 }
             }

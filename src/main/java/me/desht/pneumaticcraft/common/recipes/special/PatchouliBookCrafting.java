@@ -15,7 +15,7 @@ import net.minecraftforge.registries.ObjectHolder;
 
 public class PatchouliBookCrafting extends SpecialRecipe {
     @ObjectHolder("patchouli:guide_book")
-    private static Item GUIDE_BOOK = null;
+    public static Item GUIDE_BOOK = null;
 
     private static final String NBT_KEY = "patchouli:book";
     private static final String NBT_VAL = "pneumaticcraft:book";
@@ -49,8 +49,7 @@ public class PatchouliBookCrafting extends SpecialRecipe {
         if (GUIDE_BOOK == null) return ItemStack.EMPTY;
 
         ItemStack guideBook = new ItemStack(GUIDE_BOOK);
-        CompoundNBT tag = guideBook.getOrCreateTag();
-        tag.putString(NBT_KEY, NBT_VAL);
+        setBookNBT(guideBook);
         return guideBook;
     }
 
@@ -62,5 +61,10 @@ public class PatchouliBookCrafting extends SpecialRecipe {
     @Override
     public IRecipeSerializer<?> getSerializer() {
         return ModRecipes.PATCHOULI_BOOK_CRAFTING;
+    }
+
+    public static void setBookNBT(ItemStack guideBook) {
+        CompoundNBT tag = guideBook.getOrCreateTag();
+        tag.putString(NBT_KEY, NBT_VAL);
     }
 }

@@ -133,7 +133,6 @@ public class PneumaticCraftRepressurized {
         registerCapabilities();
         NetworkHandler.init();
         FluidSetup.init();
-        AmadronOfferManager.getInstance().init();
         HackableHandler.addDefaultEntries();
         SensorHandler.getInstance().init();
 
@@ -203,8 +202,8 @@ public class PneumaticCraftRepressurized {
     }
 
     private void serverStarted(FMLServerStartedEvent event) {
-        AmadronOfferManager.getInstance().shufflePeriodicOffers();
-        AmadronOfferManager.getInstance().recompileOffers();
+//        AmadronOfferManager.getInstance().shufflePeriodicOffers();
+//        AmadronOfferManager.getInstance().recompileOffers();
 
         // TODO 1.14 fluids & worldgen
 //        if (ConfigHandler.general.oilGenerationChance > 0) {

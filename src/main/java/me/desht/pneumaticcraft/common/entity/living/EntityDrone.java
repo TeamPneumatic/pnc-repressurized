@@ -153,9 +153,6 @@ public class EntityDrone extends EntityDroneBase implements
     private BasicAirHandler airHandler;
     private final LazyOptional<IAirHandlerBase> airCap = LazyOptional.of(() -> airHandler);
 
-//    float currentAir; //the current held energy of the Drone;
-//    private float volume;
-
     private RenderProgressingLine targetLine;
     private RenderProgressingLine oldTargetLine;
     public List<IProgWidget> progWidgets = new ArrayList<>();
@@ -169,21 +166,22 @@ public class EntityDrone extends EntityDroneBase implements
     private final DroneAIManager aiManager = new DroneAIManager(this);
 
     private boolean firstTick = true;
-    public boolean naturallySpawned = true; //determines if it should drop a drone when it dies.
+    public boolean naturallySpawned = true; // determines if it should drop a drone when it dies.
     private double speed;
     private int lifeUpgrades;
-    private int suffocationCounter = 40; //Drones are invincible for suffocation for this time.
+    private int suffocationCounter = 40; // Drones are immune to suffocation for this time.
     private boolean isSuffocating;
     private boolean disabledByHacking;
-    private boolean standby; //If true, the drone's propellors stop, the drone will fall down, and won't use pressure.
+    private boolean standby; // If true, the drone's propellors stop, the drone will fall down, and won't use pressure.
     private Minigun minigun;
 
     private AmadronOffer handlingOffer;
     private int offerTimes;
-    private ItemStack usedTablet;//Tablet used to place the order.
+    private ItemStack usedTablet;  // Tablet used to place the order.
     private String buyingPlayer;
+
     private final DroneDebugList debugList = new DroneDebugList();
-    private final Set<ServerPlayerEntity> syncedPlayers = new HashSet<>();
+    private final Set<ServerPlayerEntity> syncedPlayers = new HashSet<>();  // players who receive debug data
 
     private int securityUpgradeCount; // for liquid immunity: 1 = breathe in water, 2 = temporary air bubble, 3+ = permanent water removal
     private final Map<BlockPos, BlockState> displacedLiquids = new HashMap<>();  // liquid blocks displaced by security upgrade
@@ -212,12 +210,13 @@ public class EntityDrone extends EntityDroneBase implements
             playerUUID = player.getGameProfile().getId().toString();
             playerName = player.getName().getFormattedText();
         } else {
-            playerUUID = getUniqueID().toString(); //Anonymous drone used for Amadron or spawned with a Dispenser
+            playerUUID = getUniqueID().toString(); // Anonymous drone used for Amadron or spawned with a Dispenser
         }
     }
 
     @SubscribeEvent
     public void onSemiblockEvent(SemiblockEvent event) {
+        // TODO be smarter: at least check if it's a logistics frame
         if (!event.getWorld().isRemote && event.getWorld() == getEntityWorld()) {
             logisticsManager = null;
         }

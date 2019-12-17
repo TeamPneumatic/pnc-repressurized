@@ -65,7 +65,7 @@ public class WidgetTank extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
+    public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
         Fluid fluid = tank.getFluid().getFluid();
         int amt = tank.getFluidAmount();
         int capacity = tank.getCapacity();

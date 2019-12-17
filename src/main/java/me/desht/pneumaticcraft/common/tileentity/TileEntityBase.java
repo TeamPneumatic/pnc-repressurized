@@ -110,7 +110,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         }
     }
 
-    private String getBlockTranslationKey() {
+    public String getBlockTranslationKey() {
         return "block.pneumaticcraft." + getType().getRegistryName().getPath();
     }
 

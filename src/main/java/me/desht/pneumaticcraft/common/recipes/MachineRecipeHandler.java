@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.recipe.*;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRecipes;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -52,6 +53,8 @@ public class MachineRecipeHandler {
             PneumaticCraftRecipes.explosionCraftingRecipes = ImmutableMap.copyOf(explosionCrafting);
             PneumaticCraftRecipes.refineryRecipes = ImmutableMap.copyOf(refinery);
             AssemblyRecipe.setupRecipeSubtypes(assembly.values());
+
+            AmadronOfferManager.getInstance().initOffers();
 
             NetworkHandler.sendToAll(syncPacket());
         }

@@ -100,7 +100,7 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<String> curTooltip, boolean shiftPressed) {
         curTooltip.addAll(tooltip);
     }
 }

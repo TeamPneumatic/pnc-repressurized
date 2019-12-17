@@ -1,21 +1,21 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class JEIPressureChamberRecipeCategory extends JEIPneumaticCraftCategory<IPressureChamberRecipe> {
+public class JEIPressureChamberRecipeCategory extends PneumaticCraftCategory<JEIPressureChamberRecipeCategory.PressureChamberRecipeWrapper> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
@@ -49,33 +49,34 @@ public class JEIPressureChamberRecipeCategory extends JEIPneumaticCraftCategory<
     }
 
     @Override
-    public void setIngredients(IPressureChamberRecipe recipe, IIngredients iIngredients) {
-        iIngredients.setInputLists(VanillaTypes.ITEM, recipe.getInputsForDisplay());
-        iIngredients.setOutputs(VanillaTypes.ITEM, recipe.getResultForDisplay());
-
-        setUsedPressure(120, 27, recipe.getCraftingPressure(), PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE);
+    public Class<? extends PressureChamberRecipeWrapper> getRecipeClass() {
+        return PressureChamberRecipeWrapper.class;
     }
 
-    @Override
-    public void setRecipe(IRecipeLayout layout, IPressureChamberRecipe recipe, IIngredients iIngredients) {
-        super.setRecipe(layout, recipe, iIngredients);
+    static Collection<PressureChamberRecipeWrapper> getAllRecipes() {
+        return PneumaticCraftRecipes.pressureChamberRecipes.values().stream()
+            .map(PressureChamberRecipeWrapper::new)
+            .collect(Collectors.toList());
+    }
 
-        List<List<ItemStack>> inputs = iIngredients.getInputs(VanillaTypes.ITEM);
-        for (int i = 0; i < inputs.size(); i++) {
-            layout.getItemStacks().init(i, true, 18 + i % 3 * 17, 92 - i / 3 * 17);
-            layout.getItemStacks().set(i, inputs.get(i));
+    static class PressureChamberRecipeWrapper extends PneumaticCraftCategory.AbstractCategoryExtension {
+        PressureChamberRecipeWrapper(IPressureChamberRecipe recipe) {
+            List<List<ItemStack>> inputs = recipe.getInputsForDisplay();
+            for (int i = 0; i < inputs.size(); i++) {
+                int posX = 19 + i % 3 * 17;
+                int posY = 93 - i / 3 * 17;
+                PositionedStack pStack = PositionedStack.of(inputs.get(i), posX, posY);
+                this.addInputItem(pStack);
+            }
+
+            for (int i = 0; i < recipe.getResultForDisplay().size(); i++) {
+                ItemStack stack = recipe.getResultForDisplay().get(i);
+                PositionedStack pStack = PositionedStack.of(stack, 101 + i % 3 * 18, 59 + i / 3 * 18)
+                        .setTooltipKey(IPressureChamberRecipe.getTooltipKey(stack));
+                this.addOutputItem(pStack);
+            }
+
+            setUsedPressure(120, 27, recipe.getCraftingPressure(), PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE);
         }
-
-        List<List<ItemStack>> outputs = iIngredients.getOutputs(VanillaTypes.ITEM);
-        for (int i = 0; i < outputs.size(); i++) {
-            layout.getItemStacks().init(inputs.size() + i, false, 100 + i % 3 * 18, 58 + i / 3 * 18);
-            layout.getItemStacks().set(inputs.size() + i, outputs.get(i));
-        }
     }
-
-    @Override
-    public Class<? extends IPressureChamberRecipe> getRecipeClass() {
-        return IPressureChamberRecipe.class;
-    }
-
 }

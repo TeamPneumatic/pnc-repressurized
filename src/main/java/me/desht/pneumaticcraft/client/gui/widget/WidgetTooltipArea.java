@@ -19,7 +19,7 @@ public class WidgetTooltipArea extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shiftPressed) {
         Collections.addAll(curTip, tooltip);
     }
 }

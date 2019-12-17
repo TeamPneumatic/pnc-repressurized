@@ -27,7 +27,7 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> {
     public ContainerLogistics(ContainerType<?> containerType, int i, PlayerInventory playerInventory, BlockPos pos) {
         super(containerType, i, playerInventory);
 
-        if (pos == BlockPos.ZERO) {
+        if (pos.equals(BlockPos.ZERO)) {
             this.logistics = getLogistics(playerInventory.player.world, getHeldLogisticsFrame(playerInventory.player));
             this.itemContainer = true;
         } else {

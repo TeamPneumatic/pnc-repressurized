@@ -1,22 +1,20 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
+import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
-public class JEIThermopneumaticProcessingPlantCategory extends JEIPneumaticCraftCategory<IThermopneumaticProcessingPlantRecipe> {
+public class JEIThermopneumaticProcessingPlantCategory extends PneumaticCraftCategory<JEIThermopneumaticProcessingPlantCategory.ThermopneumaticRecipeWrapper> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
@@ -35,8 +33,8 @@ public class JEIThermopneumaticProcessingPlantCategory extends JEIPneumaticCraft
     }
 
     @Override
-    public Class<? extends IThermopneumaticProcessingPlantRecipe> getRecipeClass() {
-        return IThermopneumaticProcessingPlantRecipe.class;
+    public Class<? extends ThermopneumaticRecipeWrapper> getRecipeClass() {
+        return ThermopneumaticRecipeWrapper.class;
     }
 
     @Override
@@ -54,31 +52,23 @@ public class JEIThermopneumaticProcessingPlantCategory extends JEIPneumaticCraft
         return icon;
     }
 
-    @Override
-    public void setIngredients(IThermopneumaticProcessingPlantRecipe recipe, IIngredients ingredients) {
-        ingredients.setInput(VanillaTypes.FLUID, recipe.getInputFluid());
-        if (recipe.getInputItem() != null) {
-            ingredients.setInputLists(VanillaTypes.ITEM, Collections.singletonList(Arrays.asList(recipe.getInputItem().getMatchingStacks())));
-        }
-        ingredients.setOutput(VanillaTypes.FLUID, recipe.getOutputFluid());
+    static Collection<ThermopneumaticRecipeWrapper> getAllRecipes() {
+        return PneumaticCraftRecipes.thermopneumaticProcessingPlantRecipes.values().stream()
+            .map(ThermopneumaticRecipeWrapper::new)
+            .collect(Collectors.toList());
     }
 
-    @Override
-    public void setRecipe(IRecipeLayout recipeLayout, IThermopneumaticProcessingPlantRecipe recipe, IIngredients ingredients) {
-        super.setRecipe(recipeLayout, recipe, ingredients);
-
-        if (recipe.getInputItem() != null) {
-            recipeLayout.getItemStacks().init(0, true, 41, 3);
-            recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
+    static class ThermopneumaticRecipeWrapper extends PneumaticCraftCategory.AbstractCategoryExtension {
+        ThermopneumaticRecipeWrapper(IThermopneumaticProcessingPlantRecipe recipe) {
+            addInputFluid(recipe.getInputFluid(), 8, 4);
+            addOutputFluid(recipe.getOutputFluid(), 74, 3);
+            if (!recipe.getInputItem().hasNoMatchingItems()) {
+                this.addInputItem(PositionedStack.of(recipe.getInputItem().getMatchingStacks(), 41, 3));
+            }
+            if (recipe.getRequiredPressure() > 0) {
+                setUsedPressure(136, 42, recipe.getRequiredPressure(), PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE);
+            }
+            setUsedTemperature(92, 12, recipe.getOperatingTemperature().getMin()); // TODO support max temperature
         }
-        recipeLayout.getFluidStacks().init(0, true, 8, 4, 16, 64, recipe.getInputFluid().getAmount(), false, null);
-        recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
-        recipeLayout.getFluidStacks().init(1, false, 74, 3, 16, 64, recipe.getInputFluid().getAmount(), false, null);
-        recipeLayout.getFluidStacks().set(1, ingredients.getOutputs(VanillaTypes.FLUID).get(0));
-
-        if (recipe.getRequiredPressure() > 0) {
-            setUsedPressure(136, 42, recipe.getRequiredPressure(), PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE);
-        }
-        setUsedTemperature(92, 12, recipe.getOperatingTemperature());
     }
 }

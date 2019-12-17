@@ -1,18 +1,19 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.api.recipe.IRefineryRecipe;
+import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.lib.Textures;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-public class JEIRefineryCategory extends JEIPneumaticCraftCategory<IRefineryRecipe> {
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+public class JEIRefineryCategory extends PneumaticCraftCategory<JEIRefineryCategory.RefineryRecipeWrapper> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
@@ -31,8 +32,8 @@ public class JEIRefineryCategory extends JEIPneumaticCraftCategory<IRefineryReci
     }
 
     @Override
-    public Class<? extends IRefineryRecipe> getRecipeClass() {
-        return IRefineryRecipe.class;
+    public Class<? extends RefineryRecipeWrapper> getRecipeClass() {
+        return RefineryRecipeWrapper.class;
     }
 
     @Override
@@ -50,24 +51,27 @@ public class JEIRefineryCategory extends JEIPneumaticCraftCategory<IRefineryReci
         return icon;
     }
 
-    @Override
-    public void setIngredients(IRefineryRecipe recipe, IIngredients ingredients) {
-        ingredients.setInput(VanillaTypes.FLUID, recipe.getInput());
-        ingredients.setOutputs(VanillaTypes.FLUID, recipe.getOutputs());
+    static Collection<RefineryRecipeWrapper> getAllRecipes() {
+        return PneumaticCraftRecipes.refineryRecipes.values().stream()
+                .map(RefineryRecipeWrapper::new)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public void setRecipe(IRecipeLayout recipeLayout, IRefineryRecipe recipe, IIngredients ingredients) {
-        super.setRecipe(recipeLayout, recipe, ingredients);
+    static class RefineryRecipeWrapper extends PneumaticCraftCategory.AbstractCategoryExtension {
+        final int refineries;
 
-        recipeLayout.getFluidStacks().init(0, true, 2, 10, 16, 64, recipe.getInput().getAmount(), false, null);
-        recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
-
-        for (int i = 0; i < recipe.getOutputs().size(); i++) {
-            recipeLayout.getFluidStacks().init(1 + i, false, 89 + i * 20, 14 - i * 4, 16, 64, recipe.getInput().getAmount(), false, null);
-            recipeLayout.getFluidStacks().set(1 + i, recipe.getOutputs().get(i));
+        private RefineryRecipeWrapper(IRefineryRecipe recipe) {
+            this.refineries = recipe.getOutputs().size();
+            addInputFluid(recipe.getInput(), 2, 10);
+            int x = 69;
+            int y = 18;
+            for (int i = 0; i < recipe.getOutputs().size(); i++) {
+                x += 20;
+                y -= 4;
+                addOutputFluid(recipe.getOutputs().get(i), x, y);
+            }
+            // TODO support for maximum temp
+            setUsedTemperature(26, 18, recipe.getOperatingTemp().getMin()); //getMinimumTemp());
         }
-
-        setUsedTemperature(26, 18, recipe.getOperatingTemp());
     }
 }

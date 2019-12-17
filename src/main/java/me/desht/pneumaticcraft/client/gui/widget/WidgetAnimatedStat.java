@@ -617,7 +617,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<String> curTooltip, boolean shiftPressed) {
         if (mouseIsHoveringOverIcon(mouseX, mouseY)) {
             curTooltip.add(title);
         }
@@ -628,7 +628,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             }
     }
 
-    private boolean mouseIsHoveringOverIcon(int x, int y) {
+    private boolean mouseIsHoveringOverIcon(double x, double y) {
         if (leftSided) {
             return x <= this.x && x >= this.x - 16 && y >= affectedY && y <= affectedY + 16;
         } else {

@@ -8,7 +8,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -16,7 +15,7 @@ import java.util.Random;
 public class ExplosionCraftingRecipe implements IExplosionCraftingRecipe {
     private static final NonNullList<ItemStack> EMPTY_RESULT = NonNullList.create();
 
-    public static final List<ExplosionCraftingRecipe> recipes = new ArrayList<>();
+//    public static final List<ExplosionCraftingRecipe> recipes = new ArrayList<>();
 
     private final ResourceLocation id;
     private final Ingredient input;

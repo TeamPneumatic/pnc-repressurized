@@ -114,15 +114,15 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
 
         PlayerEntity player = invPlayer.player;
         if (!player.world.isRemote) {
-            IItemHandler itemHandler = ItemAmadronTablet.getItemProvider(player.getHeldItemMainhand()).map(h -> h).orElse(null);
-            IFluidHandler fluidHandler = ItemAmadronTablet.getFluidProvider(player.getHeldItemMainhand()).map(h -> h).orElse(null);
+            IItemHandler itemHandler = ItemAmadronTablet.getItemProvider(player.getHeldItem(hand)).map(h -> h).orElse(null);
+            IFluidHandler fluidHandler = ItemAmadronTablet.getFluidProvider(player.getHeldItem(hand)).map(h -> h).orElse(null);
             for (int i = 0; i < offers.size(); i++) {
                 int amount = capShoppingAmount(offers.get(i), 1, itemHandler, fluidHandler, this);
                 buyableOffers[i] = amount > 0;
             }
             problemState = EnumProblemState.NO_PROBLEMS;
 
-            Map<AmadronOffer, Integer> shoppingCart = ItemAmadronTablet.getShoppingCart(player.getHeldItemMainhand());
+            Map<AmadronOffer, Integer> shoppingCart = ItemAmadronTablet.getShoppingCart(player.getHeldItem(hand));
             for (Map.Entry<AmadronOffer, Integer> cartItem : shoppingCart.entrySet()) {
                 int offerId = offers.indexOf(cartItem.getKey());
                 if (offerId >= 0) {
@@ -157,8 +157,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
 
     @Override
     public boolean canInteractWith(PlayerEntity player) {
-        if (player.getHeldItemMainhand().getItem() == ModItems.AMADRON_TABLET) {
-            return player.getHeldItemMainhand().getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+        if (player.getHeldItem(hand).getItem() == ModItems.AMADRON_TABLET) {
+            return player.getHeldItem(hand).getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 h.addAir(-1);
                 if (h.getPressure() > 0) {
                     return true;
@@ -243,11 +243,11 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             for (int i = 0; i < shoppingItems.length; i++) {
                 if (shoppingItems[i] >= 0) {
                     AmadronOffer offer = offers.get(shoppingItems[i]);
-                    GlobalPos itemGPos = ItemAmadronTablet.getItemProvidingLocation(player.getHeldItemMainhand());
-                    GlobalPos fluidGPos = ItemAmadronTablet.getFluidProvidingLocation(player.getHeldItemMainhand());
+                    GlobalPos itemGPos = ItemAmadronTablet.getItemProvidingLocation(player.getHeldItem(hand));
+                    GlobalPos fluidGPos = ItemAmadronTablet.getFluidProvidingLocation(player.getHeldItem(hand));
                     EntityDrone drone = retrieveOrderItems(offer, shoppingAmounts[i], itemGPos, fluidGPos);
                     if (drone != null) {
-                        drone.setHandlingOffer(offer, shoppingAmounts[i], player.getHeldItemMainhand(), player.getName().getFormattedText());
+                        drone.setHandlingOffer(offer, shoppingAmounts[i], player.getHeldItem(hand), player.getName().getFormattedText());
                         placed = true;
                     }
                 }
@@ -314,8 +314,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     private int capShoppingAmount(int offerId, int wantedAmount, PlayerEntity player) {
-        return ItemAmadronTablet.getItemProvider(player.getHeldItemMainhand()).map(itemHandler ->
-                ItemAmadronTablet.getFluidProvider(player.getHeldItemMainhand()).map(fluidHandler ->
+        return ItemAmadronTablet.getItemProvider(player.getHeldItem(hand)).map(itemHandler ->
+                ItemAmadronTablet.getFluidProvider(player.getHeldItem(hand)).map(fluidHandler ->
                         capShoppingAmount(offers.get(offerId), wantedAmount, itemHandler, fluidHandler, this)
                 ).orElse(0)).orElse(0);
     }
@@ -412,14 +412,14 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     @Override
     public void onContainerClosed(PlayerEntity player) {
         super.onContainerClosed(player);
-        if (!player.world.isRemote && player.getHeldItemMainhand().getItem() == ModItems.AMADRON_TABLET) {
+        if (!player.world.isRemote && player.getHeldItem(hand).getItem() == ModItems.AMADRON_TABLET) {
             Map<AmadronOffer, Integer> shoppingCart = new HashMap<>();
             for (int i = 0; i < shoppingItems.length; i++) {
                 if (shoppingItems[i] >= 0) {
                     shoppingCart.put(offers.get(shoppingItems[i]), shoppingAmounts[i]);
                 }
             }
-            ItemAmadronTablet.setShoppingCart(player.getHeldItemMainhand(), shoppingCart);
+            ItemAmadronTablet.setShoppingCart(player.getHeldItem(hand), shoppingCart);
         }
     }
 }

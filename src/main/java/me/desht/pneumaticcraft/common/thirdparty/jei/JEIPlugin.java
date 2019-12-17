@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.client.gui.GuiAssemblyController;
 import me.desht.pneumaticcraft.client.gui.GuiPressureChamber;
 import me.desht.pneumaticcraft.client.gui.GuiRefineryController;
@@ -10,9 +9,11 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemPressurizable;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
+import me.desht.pneumaticcraft.common.recipes.special.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.thirdparty.jei.extension.HelmetOneProbeExtension;
+import me.desht.pneumaticcraft.common.thirdparty.jei.extension.PatchouliBookExtension;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -40,6 +41,7 @@ public class JEIPlugin implements IModPlugin {
                 registration.registerSubtypeInterpreter(item, s -> s.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h2 -> String.valueOf(h2.getPressure())).orElse(ISubtypeInterpreter.NONE));
             }
         }
+        registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB, s -> String.valueOf(TileEntityUVLightBox.getExposureProgress(s)));
     }
 
     @Override
@@ -61,16 +63,14 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        registration.addRecipes(PneumaticCraftRecipes.assemblyLaserRecipes.values(), ModCategoryUid.ASSEMBLY_CONTROLLER);
-        registration.addRecipes(PneumaticCraftRecipes.assemblyDrillRecipes.values(), ModCategoryUid.ASSEMBLY_CONTROLLER);
-        registration.addRecipes(PneumaticCraftRecipes.assemblyLaserDrillRecipes.values(), ModCategoryUid.ASSEMBLY_CONTROLLER);
-        registration.addRecipes(PneumaticCraftRecipes.explosionCraftingRecipes.values(), ModCategoryUid.EXPLOSION_CRAFTING);
-        registration.addRecipes(PneumaticCraftRecipes.refineryRecipes.values(), ModCategoryUid.REFINERY);
-        registration.addRecipes(PneumaticCraftRecipes.thermopneumaticProcessingPlantRecipes.values(), ModCategoryUid.THERMO_PNEUMATIC);
-        registration.addRecipes(PneumaticCraftRecipes.heatFrameCoolingRecipes.values(), ModCategoryUid.HEAT_FRAME_COOLING);
-        registration.addRecipes(PneumaticCraftRecipes.pressureChamberRecipes.values(), ModCategoryUid.PRESSURE_CHAMBER);
-        registration.addRecipes(JEIUVLightBoxCategory.UV_LIGHT_BOX_RECIPES, ModCategoryUid.UV_LIGHT_BOX);
-        registration.addRecipes(AmadronOfferManager.getInstance().getAllOffers(), ModCategoryUid.AMADRON_TRADE);
+        registration.addRecipes(JEIAssemblyControllerCategory.getAllRecipes(), ModCategoryUid.ASSEMBLY_CONTROLLER);
+        registration.addRecipes(JEIExplosionCraftingCategory.getAllRecipes(), ModCategoryUid.EXPLOSION_CRAFTING);
+        registration.addRecipes(JEIHeatFrameCoolingCategory.getAllRecipes(), ModCategoryUid.HEAT_FRAME_COOLING);
+        registration.addRecipes(JEIRefineryCategory.getAllRecipes(), ModCategoryUid.REFINERY);
+        registration.addRecipes(JEIThermopneumaticProcessingPlantCategory.getAllRecipes(), ModCategoryUid.THERMO_PNEUMATIC);
+        registration.addRecipes(JEIPressureChamberRecipeCategory.getAllRecipes(), ModCategoryUid.PRESSURE_CHAMBER);
+        registration.addRecipes(JEIUVLightBoxCategory.getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
+        registration.addRecipes(JEIAmadronTradeCategory.getAllRecipes(), ModCategoryUid.AMADRON_TRADE);
 
         for (Item item : ModItems.Registration.ALL_ITEMS) {
             addStackInfo(registration, new ItemStack(item));
@@ -114,6 +114,7 @@ public class JEIPlugin implements IModPlugin {
         if (OneProbeCrafting.ONE_PROBE != null) {
             registration.getCraftingCategory().addCategoryExtension(OneProbeCrafting.class, HelmetOneProbeExtension::new);
         }
+        registration.getCraftingCategory().addCategoryExtension(PatchouliBookCrafting.class, PatchouliBookExtension::new);
     }
 
     @Override

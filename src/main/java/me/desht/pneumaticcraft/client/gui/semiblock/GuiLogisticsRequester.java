@@ -49,10 +49,10 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
     }
 
     private void addMinOrderSizeTab() {
-        WidgetAnimatedStat minAmountStat = addAnimatedStat("gui.logistic_frame.min_amount", new ItemStack(Blocks.CHEST), 0xFFC0C080, false);
+        WidgetAnimatedStat minAmountStat = addAnimatedStat("gui.logistics_frame.min_amount", new ItemStack(Blocks.CHEST), 0xFFC0C080, false);
         minAmountStat.addPadding(7, 21);
 
-        WidgetLabel minItemsLabel = new WidgetLabel(5, 20, I18n.format("gui.logistic_frame.min_items"));
+        WidgetLabel minItemsLabel = new WidgetLabel(5, 20, I18n.format("gui.logistics_frame.min_items"));
 //        minItemsLabel.setTooltipText("gui.logistic_frame.min_items.tooltip");
         minAmountStat.addSubWidget(minItemsLabel);
         minItems = new WidgetTextFieldNumber(font, 5, 30, 30, 12);
@@ -61,7 +61,7 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
         minItems.setResponder(s -> packetSendDelay = 8);
         minAmountStat.addSubWidget(minItems);
 
-        WidgetLabel minFluidLabel = new WidgetLabel(5, 47, I18n.format("gui.logistic_frame.min_fluid"));
+        WidgetLabel minFluidLabel = new WidgetLabel(5, 47, I18n.format("gui.logistics_frame.min_fluid"));
 //        minFluidLabel.setTooltipText("gui.logistic_frame.min_fluid.tooltip");
         minAmountStat.addSubWidget(minFluidLabel);
         minFluid = new WidgetTextFieldNumber(font, 5, 57, 50, 12);

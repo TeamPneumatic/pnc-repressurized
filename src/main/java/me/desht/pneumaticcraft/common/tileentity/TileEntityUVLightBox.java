@@ -22,6 +22,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,6 +33,7 @@ import java.util.List;
 
 //@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
 public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl, INamedContainerProvider /*,ILightProvider */ {
+    private static final String NBT_EXPOSURE = "pneumaticcraft:uv_exposure";
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.button.never",
@@ -86,26 +88,29 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         if (!getWorld().isRemote) {
             ticksExisted++;
             ItemStack stack = getLoadedPCB();
-            if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && stack.getItem() instanceof ItemEmptyPCB && stack.getDamage() > 0) {
-                addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
-                if (ticksExisted % ticksPerProgress(stack.getDamage()) == 0) {
-                    if (!areLightsOn) {
-                        setLightsOn(true);
-                        updateNeighbours();
+            if (!stack.isEmpty()) {
+                int progress = getExposureProgress(stack);
+                if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && progress < 100) {
+                    addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
+                    if (ticksExisted % ticksPerProgress(progress) == 0) {
+                        if (!areLightsOn) {
+                            setLightsOn(true);
+                            updateNeighbours();
+                        }
+                        setExposureProgress(stack, Math.min(progress + 1, 100));
                     }
-                    stack.setDamage(Math.max(0, stack.getDamage() - 1));
+                } else if (areLightsOn) {
+                    setLightsOn(false);
+                    updateNeighbours();
                 }
-            } else if (areLightsOn) {
-                setLightsOn(false);
-                updateNeighbours();
-            }
-            if (oldRedstoneStatus != shouldEmitRedstone()) {
-                oldRedstoneStatus = !oldRedstoneStatus;
-                updateNeighbours();
-            }
-            boolean loaded = getBlockState().get(BlockUVLightBox.LOADED);
-            if (loaded == stack.isEmpty()) {
-                world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LOADED, !stack.isEmpty()));
+                if (oldRedstoneStatus != shouldEmitRedstone()) {
+                    oldRedstoneStatus = !oldRedstoneStatus;
+                    updateNeighbours();
+                }
+                boolean loaded = getBlockState().get(BlockUVLightBox.LOADED);
+                if (loaded == stack.isEmpty()) {
+                    world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LOADED, !stack.isEmpty()));
+                }
             }
         }
     }
@@ -117,15 +122,24 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 //        hasLoadedPCB = !getLoadedPCB().isEmpty();
 //    }
 
-    private int ticksPerProgress(int damage) {
+    public static void setExposureProgress(ItemStack stack, int progress) {
+        Validate.isTrue(progress >= 0 && progress <= 100);
+        stack.getOrCreateTag().putInt(NBT_EXPOSURE, progress);
+    }
+
+    public static int getExposureProgress(ItemStack stack) {
+        return stack.hasTag() ? stack.getTag().getInt(NBT_EXPOSURE) : 0;
+    }
+
+    private int ticksPerProgress(int progress) {
         int ticks;
-        if (damage > 80) {
+        if (progress < 20) {
             ticks = 20;
-        } else if (damage > 60) {
+        } else if (progress < 40) {
             ticks = 40;
-        } else if (damage > 40) {
+        } else if (progress < 60) {
             ticks = 80;
-        } else if (damage > 20) {
+        } else if (progress < 80) {
             ticks = 160;
         } else {
             ticks = 300;
@@ -161,7 +175,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     @Override
     public boolean canConnectTo(Direction side) {
-        return side == getRotation().rotateYCCW();
+        return side == getRotation().rotateY();
     }
 
     @Override
@@ -181,15 +195,12 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     public boolean shouldEmitRedstone() {
         ItemStack stack = getLoadedPCB();
         if (redstoneMode == 0 || stack.getItem() != ModItems.EMPTY_PCB) return false;
+        int progress = getExposureProgress(stack);
         switch (redstoneMode) {
-            case 1:
-                return stack.getDamage() < 30;
-            case 2:
-                return stack.getDamage() < 20;
-            case 3:
-                return stack.getDamage() < 10;
-            case 4:
-                return stack.getDamage() == 0;
+            case 1: return progress > 70;
+            case 2: return progress > 80;
+            case 3: return progress > 90;
+            case 4: return progress == 100;
         }
         return false;
     }

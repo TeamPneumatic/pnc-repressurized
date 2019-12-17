@@ -178,7 +178,11 @@ public class AmadronOfferManager {
         }
     }
 
-    public void init() {
+    public void initOffers() {
+        staticOffers.clear();
+        periodicOffers.clear();
+
+        // TODO move to JSON
         addStaticOffer(new AmadronOffer(
                 TradeResource.of(new ItemStack(Items.EMERALD, 8)),
                 TradeResource.of(new ItemStack(ModItems.PCB_BLUEPRINT))
@@ -229,6 +233,8 @@ public class AmadronOfferManager {
         ));
 
         addVillagerTrades();
+
+        shufflePeriodicOffers();  // does a recompile
     }
 
     private void addVillagerTrades() {

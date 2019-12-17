@@ -31,7 +31,7 @@ public class WidgetEnergy extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void addTooltip(int mouseX, int mouseY, List<String> list, boolean shiftPressed){
+    public void addTooltip(double mouseX, double mouseY, List<String> list, boolean shiftPressed){
         list.add(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " RF");
     }
 

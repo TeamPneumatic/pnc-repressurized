@@ -1,10 +1,12 @@
 package me.desht.pneumaticcraft.common.recipes.assembly;
 
 import me.desht.pneumaticcraft.api.recipe.IAssemblyRecipe;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -27,6 +29,18 @@ public abstract class AssemblyProgram {
 
         public String getTranslationKey() {
             return "block.pneumaticcraft.assembly_" + this.toString().toLowerCase();
+        }
+
+        public Block getMachine() {
+            switch (this) {
+                case PLATFORM: return ModBlocks.ASSEMBLY_PLATFORM;
+                case DRILL: return ModBlocks.ASSEMBLY_DRILL;
+                case LASER: return ModBlocks.ASSEMBLY_LASER;
+                case IO_UNIT_EXPORT: return ModBlocks.ASSEMBLY_IO_UNIT_EXPORT;
+                case IO_UNIT_IMPORT: return ModBlocks.ASSEMBLY_IO_UNIT_IMPORT;
+                case CONTROLLER: return ModBlocks.ASSEMBLY_CONTROLLER;
+                default: throw new IllegalArgumentException("invalid type");
+            }
         }
     }
 

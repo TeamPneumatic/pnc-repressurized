@@ -22,6 +22,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -285,5 +286,11 @@ public class FluidUtils {
 
     public static boolean matchFluid(Fluid fluid, Fluid fluid2, boolean matchTags) {
         return fluid == fluid2 || matchTags && !Sets.intersection(fluid.getTags(), fluid2.getTags()).isEmpty();
+    }
+
+    public static FluidTank copyTank(IFluidTank tank) {
+        FluidTank res = new FluidTank(tank.getCapacity());
+        res.fill(tank.getFluid(), IFluidHandler.FluidAction.EXECUTE);
+        return res;
     }
 }

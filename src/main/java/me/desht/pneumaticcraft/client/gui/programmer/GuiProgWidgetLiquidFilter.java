@@ -7,10 +7,15 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLiquidFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidgetLiquidFilter> {
 
@@ -18,11 +23,13 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
     private static final int GRID_HEIGHT = 6;
     private WidgetFluidFilter mainFilter;
     private WidgetVerticalScrollbar scrollbar;
+    private WidgetTextField searchField;
     private int lastScroll;
     private final List<WidgetFluidFilter> visibleFluidWidgets = new ArrayList<>();
 
     public GuiProgWidgetLiquidFilter(ProgWidgetLiquidFilter widget, GuiProgrammer guiProgrammer) {
         super(widget, guiProgrammer);
+
         xSize = 176;
         ySize = 166;
     }
@@ -36,18 +43,24 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
     public void init() {
         super.init();
 
-        mainFilter = new WidgetFluidFilter(guiLeft + 124, guiTop + 25, b -> b.setFluid(null)).setFluid(progWidget.getFluid());
+        mainFilter = new WidgetFluidFilter(guiLeft + 124, guiTop + 25, b -> {
+            b.setFluid(Fluids.EMPTY);
+            progWidget.setFluid(Fluids.EMPTY);
+        }).setFluid(progWidget.getFluid());
         addButton(mainFilter);
 
-        for (int x = 0; x < GRID_WIDTH; x++) {
-            for (int y = 0; y < GRID_HEIGHT; y++) {
-                WidgetFluidFilter f = new WidgetFluidFilter(guiLeft + 8 + x * 18, guiTop + 52 + y * 18, b -> mainFilter.setFluid(b.getFluid()));
+        for (int y = 0; y < GRID_HEIGHT; y++) {
+            for (int x = 0; x < GRID_WIDTH; x++) {
+                WidgetFluidFilter f = new WidgetFluidFilter(guiLeft + 8 + x * 18, guiTop + 52 + y * 18, b -> {
+                    mainFilter.setFluid(b.getFluid());
+                    progWidget.setFluid(b.getFluid());
+                });
                 addButton(f);
                 visibleFluidWidgets.add(f);
             }
         }
 
-        WidgetTextField searchField = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 90, 10);
+        searchField = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 90, 10);
         addButton(searchField);
         searchField.setFocused2(true);
         searchField.setResponder(s -> addValidFluids());
@@ -60,17 +73,10 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
     }
 
     private void addValidFluids() {
-
-        List<Fluid> fluids = new ArrayList<>();
-
-        // todo 1.14 fluids
-//        String filter = searchField.getText();
-//        for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
-//            if (filter.isEmpty() || fluid.getLocalizedName(new FluidStack(fluid, 1)).toLowerCase().contains(filter)) {
-//                fluids.add(fluid);
-//            }
-//        }
-//        fluids.sort(Comparator.comparing(Fluid::getName));
+        List<Fluid> fluids = ForgeRegistries.FLUIDS.getValues().stream()
+                .filter(fluid -> matchSearch(searchField.getText(), fluid))
+                .sorted(Comparator.comparing(f -> new FluidStack(f, 1).getDisplayName().getFormattedText()))
+                .collect(Collectors.toList());
 
         scrollbar.setStates(Math.max(0, (fluids.size() - GRID_WIDTH * GRID_HEIGHT + GRID_WIDTH - 1) / GRID_WIDTH));
 
@@ -80,6 +86,11 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
                 visibleFluidWidgets.get(i).setFluid(fluids.get(i + offset));
             }
         }
+    }
+
+    private boolean matchSearch(String srch, Fluid fluid) {
+        if (fluid == Fluids.EMPTY || !fluid.isSource(fluid.getDefaultState())) return false;
+        return srch.isEmpty() || new FluidStack(fluid, 1).getDisplayName().getString().contains(srch);
     }
 
     @Override

@@ -97,7 +97,7 @@ public class WidgetButtonExtended extends GuiButtonExt implements ITaggedWidget,
     }
 
     @Override
-    public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
+    public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
         if (tooltipText != null) {
             curTip.addAll(tooltipText);
         }

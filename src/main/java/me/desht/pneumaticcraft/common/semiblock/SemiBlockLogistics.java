@@ -24,6 +24,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -226,7 +227,8 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> impl
     }
 
     public void setFilter(int filterIndex, FluidStack stack) {
-        fluidFilters[filterIndex].setFluid(stack);
+        fluidFilters[filterIndex].drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.EXECUTE);
+        fluidFilters[filterIndex].fill(stack, IFluidHandler.FluidAction.EXECUTE);
     }
 
     public IFluidTank getTankFilter(int filterIndex) {

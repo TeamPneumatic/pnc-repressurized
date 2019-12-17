@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron.EnumProblemState;
@@ -13,13 +12,16 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     private WidgetButtonExtended addTradeButton;
 
     public GuiAmadron(ContainerAmadron container, PlayerInventory inv, ITextComponent displayString) {
-        super(container, inv, displayString);
+        super(container, inv, new StringTextComponent(""));
         xSize = 176;
         ySize = 202;
     }
@@ -49,7 +51,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         addLabel(amadron, guiLeft + xSize / 2 - font.getStringWidth(amadron) / 2, guiTop + 5, 0xFFFFFF);
         addLabel(I18n.format("gui.search"), guiLeft + 76 - font.getStringWidth(I18n.format("gui.search")), guiTop + 41, 0xFFFFFF);
 
-        addInfoTab(I18n.format("gui.tooltip.item.amadron_tablet"));
+        addInfoTab(I18n.format("gui.tooltip.item.pneumaticcraft.amadron_tablet"));
         addAnimatedStat("gui.tab.info.ghostSlotInteraction.title", new ItemStack(Blocks.HOPPER), 0xFF00AAFF, true)
                 .setText("gui.tab.info.ghostSlotInteraction");
         addAnimatedStat("gui.tab.amadron.disclaimer.title", new ItemStack(Items.WRITABLE_BOOK), 0xFF0000FF, true)
@@ -90,6 +92,11 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         }
 
         needsRefreshing = true;
+    }
+
+    @Override
+    public boolean mouseScrolled(double p_mouseScrolled_1_, double p_mouseScrolled_3_, double p_mouseScrolled_5_) {
+        return scrollbar.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_);
     }
 
     @Override
@@ -135,17 +142,18 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         needsRefreshing = false;
         int invSize = ContainerAmadron.ROWS * 2;
         container.clearStacks();
-        List<AmadronOffer> offers = container.offers;
-        List<AmadronOffer> visibleOffers = new ArrayList<>();
+        List<Pair<Integer,AmadronOffer>> visibleOffers = new ArrayList<>();
         int skippedOffers = 0;
         int applicableOffers = 0;
-        for (AmadronOffer offer : offers) {
+
+        for (int i = 0; i < container.offers.size(); i++) {
+            AmadronOffer offer = container.offers.get(i);
             if (offer.passesQuery(searchBar.getText())) {
                 applicableOffers++;
                 if (skippedOffers < page * invSize) {
                     skippedOffers++;
                 } else if (visibleOffers.size() < invSize) {
-                    visibleOffers.add(offer);
+                    visibleOffers.add(Pair.of(i, offer));
                 }
             }
         }
@@ -155,7 +163,8 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         buttons.removeAll(widgetOffers);
         children.removeAll(widgetOffers);
         for (int i = 0; i < visibleOffers.size(); i++) {
-            AmadronOffer offer = visibleOffers.get(i);
+            int offerId = visibleOffers.get(i).getLeft();
+            AmadronOffer offer = visibleOffers.get(i).getRight();
             if (!offer.getInput().getItem().isEmpty()) {
                 container.getSlot(i * 2).putStack(offer.getInput().getItem());
                 ((SlotUntouchable) container.getSlot(i * 2)).setEnabled(true);
@@ -165,13 +174,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
                 ((SlotUntouchable) container.getSlot(i * 2 + 1)).setEnabled(true);
             }
 
-            WidgetAmadronOffer widget = new WidgetAmadronOffer(guiLeft + 6 + 73 * (i % 2), guiTop + 55 + 35 * (i / 2), offer) {
-                @Override
-                public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-                    NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(container.offers.indexOf(getOffer()), mouseButton, PneumaticCraftRepressurized.proxy.isSneakingInGui()));
-                    return true;
-                }
-            };
+            WidgetAmadronOffer widget = new WidgetAmadronOfferAdjustable(offerId,guiLeft + 6 + 73 * (i % 2), guiTop + 55 + 35 * (i / 2), offer);
             addButton(widget);
             widgetOffers.add(widget);
         }
@@ -196,6 +199,25 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         super.addProblems(curInfo);
         if (container.problemState != EnumProblemState.NO_PROBLEMS) {
             curInfo.add(container.problemState.getTranslationKey());
+        }
+    }
+
+    class WidgetAmadronOfferAdjustable extends WidgetAmadronOffer {
+        private final int offerId;
+
+        WidgetAmadronOfferAdjustable(int offerId, int x, int y, AmadronOffer offer) {
+            super(x, y, offer);
+            this.offerId = offerId;
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+            if (clicked(mouseX, mouseY)) {
+                NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(offerId, mouseButton, Screen.hasShiftDown()));
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }

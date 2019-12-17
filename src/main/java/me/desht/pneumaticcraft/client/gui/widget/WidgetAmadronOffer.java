@@ -72,7 +72,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shiftPressed) {
         for (Widget widget : subWidgets) {
             if (widget.isHovered() && widget instanceof ITooltipProvider) {
                 ((ITooltipProvider) widget).addTooltip(mouseX, mouseY, curTip, shiftPressed);

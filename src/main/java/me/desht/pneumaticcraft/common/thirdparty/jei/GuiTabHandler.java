@@ -13,7 +13,7 @@ public class GuiTabHandler implements IGlobalGuiHandler {
     @Override
     public Collection<Rectangle2d> getGuiExtraAreas() {
         if (Minecraft.getInstance().currentScreen instanceof GuiPneumaticContainerBase) {
-            return ((GuiPneumaticContainerBase) Minecraft.getInstance().currentScreen).getTabRectangles();
+            return ((GuiPneumaticContainerBase<?,?>) Minecraft.getInstance().currentScreen).getTabRectangles();
         }
         return Collections.emptyList();
     }

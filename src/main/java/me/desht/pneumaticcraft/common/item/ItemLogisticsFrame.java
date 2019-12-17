@@ -56,7 +56,7 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlockBase implements IC
                 public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
                     return new ContainerLogistics(getContainerType(), i, playerInventory, BlockPos.ZERO);
                 }
-            });
+            }, BlockPos.ZERO);
         }
         return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
@@ -73,24 +73,24 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlockBase implements IC
         if (stack.getTag() != null && stack.getItem() instanceof ItemSemiBlockBase) {
             SemiBlockLogistics logistics = ContainerLogistics.getLogistics(world, stack);
             if (logistics == null) return;
-            if (logistics.isInvisible()) {
-                curInfo.add(bullet().appendSibling(xlate("gui.logistic_frame.invisible")));
-            }
             if (sneaking) {
-                if (logistics.isFuzzyDamage()) curInfo.add(bullet().appendSibling(xlate("gui.logistic_frame.fuzzyDamage")));
-                if (logistics.isFuzzyNBT()) curInfo.add(bullet().appendSibling(xlate("gui.logistic_frame.fuzzyNBT")));
+                if (logistics.isInvisible()) {
+                    curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.invisible")));
+                }
+                if (logistics.isFuzzyDamage()) curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.fuzzyDamage")));
+                if (logistics.isFuzzyNBT()) curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.fuzzyNBT")));
                 ItemStack[] stacks = new ItemStack[logistics.getFilters().getSlots()];
                 for (int i = 0; i < logistics.getFilters().getSlots(); i++) {
                     stacks[i] = logistics.getFilters().getStackInSlot(i);
                 }
-                curInfo.add(xlate("gui.logistic_frame." + (logistics.isWhitelist() ? "whitelist" : "blacklist")).appendText(":").applyTextStyle(TextFormatting.WHITE));
+                curInfo.add(xlate("gui.logistics_frame." + (logistics.isWhitelist() ? "whitelist" : "blacklist")).appendText(":").applyTextStyle(TextFormatting.WHITE));
                 int l = curInfo.size();
                 PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks);
                 if (curInfo.size() == l) curInfo.add(xlate("gui.misc.no_items"));
                 l = curInfo.size();
                 for (int i = 0; i < 9; i++) {
                     FluidStack fluid = logistics.getTankFilter(i).getFluid();
-                    if (fluid != null) {
+                    if (!fluid.isEmpty()) {
                         curInfo.add(bullet().appendText(fluid.getAmount() + "mB ").appendSibling(fluid.getDisplayName()));
                     }
                 }

@@ -35,7 +35,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
 
         widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 20, 273, 673, te.getHeatExchangerLogic(null)) {
             @Override
-            public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
+            public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
                 if (te.minTemp > 0) {
                     TextFormatting tf = te.minTemp < te.getHeatExchangerLogic(null).getTemperatureAsInt() ? TextFormatting.GREEN : TextFormatting.GOLD;

@@ -223,7 +223,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     }
 
     @Override
-    public void addTooltip(int mouseX, int mouseY, List<String> curTooltip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<String> curTooltip, boolean shiftPressed) {
         if (keyBinding != null) {
             String s = keyBinding.getKeyModifier() != KeyModifier.NONE ? keyBinding.getKeyModifier() + " + " : "";
             curTooltip.add(I18n.format("gui.keybindBoundKey", s + I18n.format(keyBinding.getKey().getTranslationKey())));

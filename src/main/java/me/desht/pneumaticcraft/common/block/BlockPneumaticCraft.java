@@ -340,7 +340,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             }
         }
 
-        String info = "gui.tab.info." + stack.getTranslationKey();
+        String info = "gui.tooltip." + stack.getTranslationKey();
         if (I18n.hasKey(info)) {
             if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
                 String translatedInfo = TextFormatting.AQUA + I18n.format(info).substring(2);  // strip out the leading text formatting

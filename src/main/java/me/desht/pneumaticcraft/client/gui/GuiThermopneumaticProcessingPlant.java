@@ -44,7 +44,7 @@ public class GuiThermopneumaticProcessingPlant extends
 
         tempWidget = new WidgetTemperature(guiLeft + 98, guiTop + 15, 273, 673, te.getHeatExchangerLogic(null), (int) te.minTemperature) {
             @Override
-            public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
+            public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
                 if (te.minTemperature > 0) {
                     TextFormatting tf = te.minTemperature < te.getHeatExchangerLogic(null).getTemperatureAsInt() ? TextFormatting.GREEN : TextFormatting.GOLD;

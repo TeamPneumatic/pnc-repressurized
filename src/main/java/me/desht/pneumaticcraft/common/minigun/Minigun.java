@@ -192,7 +192,7 @@ public abstract class Minigun {
 
     public boolean tryFireMinigun(Entity target) {
         boolean lastShotOfAmmo = false;
-        if (!ammoStack.isEmpty() && airCapability.map(h -> h.getPressure() > 0).orElse(true)) {
+        if (!ammoStack.isEmpty() && ammoStack.getDamage() < ammoStack.getMaxDamage() && airCapability.map(h -> h.getPressure() > 0).orElse(true)) {
             setMinigunTriggerTimeOut(Math.max(10, getMinigunSoundCounter()));
             if (getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
                 RayTraceResult rtr = null;

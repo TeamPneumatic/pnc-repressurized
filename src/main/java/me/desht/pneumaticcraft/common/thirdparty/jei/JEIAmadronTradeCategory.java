@@ -1,19 +1,22 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAmadronOffer;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.lib.Textures;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 
-public class JEIAmadronTradeCategory extends JEIPneumaticCraftCategory<AmadronOffer> {
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+public class JEIAmadronTradeCategory extends PneumaticCraftCategory<JEIAmadronTradeCategory.AmadronOfferWrapper> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
@@ -32,8 +35,8 @@ public class JEIAmadronTradeCategory extends JEIPneumaticCraftCategory<AmadronOf
     }
 
     @Override
-    public Class<? extends AmadronOffer> getRecipeClass() {
-        return AmadronOffer.class;
+    public Class<? extends JEIAmadronTradeCategory.AmadronOfferWrapper> getRecipeClass() {
+        return AmadronOfferWrapper.class;
     }
 
     @Override
@@ -51,43 +54,36 @@ public class JEIAmadronTradeCategory extends JEIPneumaticCraftCategory<AmadronOf
         return icon;
     }
 
-    @Override
-    public void setIngredients(AmadronOffer recipe, IIngredients ingredients) {
-        AmadronOffer.TradeResource in = recipe.getInput();
-        if (!in.getItem().isEmpty()) {
-            ingredients.setInput(VanillaTypes.ITEM, in.getItem());
-        } else if (!in.getFluid().isEmpty()) {
-            ingredients.setInput(VanillaTypes.FLUID, in.getFluid());
-        }
-        AmadronOffer.TradeResource out = recipe.getOutput();
-        if (!out.getItem().isEmpty()) {
-            ingredients.setOutput(VanillaTypes.ITEM, out.getItem());
-        } else if (!out.getFluid().isEmpty()) {
-            ingredients.setOutput(VanillaTypes.FLUID, out.getFluid());
-        }
+    static Collection<AmadronOfferWrapper> getAllRecipes() {
+        return AmadronOfferManager.getInstance().getAllOffers().stream()
+                .map(AmadronOfferWrapper::new)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public void setRecipe(IRecipeLayout recipeLayout, AmadronOffer recipe, IIngredients ingredients) {
-        super.setRecipe(recipeLayout, recipe, ingredients);
-
-        AmadronOffer.TradeResource in = recipe.getInput();
-        if (!in.getItem().isEmpty()) {
-            recipeLayout.getItemStacks().init(0, true, 5, 14);
-            recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
-        } else if (!in.getFluid().isEmpty()) {
-            recipeLayout.getFluidStacks().init(0, true, 5, 14);
-            recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
-        }
-        AmadronOffer.TradeResource out = recipe.getOutput();
-        if (!out.getItem().isEmpty()) {
-            recipeLayout.getItemStacks().init(1, false, 50, 14);
-            recipeLayout.getItemStacks().set(1, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
-        } else if (!out.getFluid().isEmpty()) {
-            recipeLayout.getFluidStacks().init(1, false, 50, 14);
-            recipeLayout.getFluidStacks().set(1, ingredients.getOutputs(VanillaTypes.FLUID).get(0));
+    static class AmadronOfferWrapper extends PneumaticCraftCategory.AbstractCategoryExtension {
+        AmadronOfferWrapper(AmadronOffer offer) {
+            if (offer.getInput().getType() == AmadronOffer.TradeResource.Type.ITEM)
+                addInputItem(PositionedStack.of(offer.getInput().getItem(), 6, 15));
+            if (offer.getOutput().getType() == AmadronOffer.TradeResource.Type.ITEM)
+                addOutputItem(PositionedStack.of(offer.getOutput().getItem(), 51, 15));
+            if (offer.getInput().getType() == AmadronOffer.TradeResource.Type.FLUID)
+                addInputFluid(new WidgetCustomTank(6, 15, offer.getInput().getFluid()));
+            if (offer.getOutput().getType() == AmadronOffer.TradeResource.Type.FLUID)
+                addInputFluid(new WidgetCustomTank(51, 15, offer.getOutput().getFluid()));
+            WidgetAmadronOffer widget = new WidgetAmadronOffer(0, 0, offer).setDrawBackground(false);
+            widget.setCanBuy(true);
+            addWidget(widget);
         }
 
-        addWidget(new WidgetAmadronOffer(0, 0, recipe).setDrawBackground(false).setCanBuy(true));
+    }
+
+    private static class WidgetCustomTank extends WidgetTank {
+        WidgetCustomTank(int x, int y, FluidStack stack) {
+            super(x, y, 16, 16, stack);
+        }
+
+        @Override
+        public void renderButton(int mouseX, int mouseY, float partialTick) {
+        }
     }
 }

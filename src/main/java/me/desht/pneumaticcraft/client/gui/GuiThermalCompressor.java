@@ -86,7 +86,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         }
 
         @Override
-        public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
+        public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
             curTip.add(StringUtils.capitalize(side.getName()) + " Temperature: " + (logic.getTemperatureAsInt() - 273) + "\u00b0C");
         }
     }

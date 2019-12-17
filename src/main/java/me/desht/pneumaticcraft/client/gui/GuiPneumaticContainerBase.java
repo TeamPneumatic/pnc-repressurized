@@ -70,7 +70,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
         if (te != null) {
             if (shouldAddInfoTab()) {
-                addInfoTab("gui.tab.info.tile." + te.getType().getRegistryName().getPath());
+                addInfoTab("gui.tooltip." + te.getBlockTranslationKey());
             }
             if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
                 addRedstoneTab();

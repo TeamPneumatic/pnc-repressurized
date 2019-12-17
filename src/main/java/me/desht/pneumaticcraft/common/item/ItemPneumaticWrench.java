@@ -40,12 +40,19 @@ public class ItemPneumaticWrench extends ItemPressurizable {
                 if (wrenchable != null && pressure > 0.1f) {
                     if (wrenchable.onWrenched(world, ctx.getPlayer(), pos, ctx.getFace(), hand) && !ctx.getPlayer().isCreative()) {
                         h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+                        return true;
+                    } else {
+                        return false;
                     }
-                    return true;
                 } else {
                     // rotating normal blocks doesn't use pressure
                     BlockState rotated = state.rotate(Rotation.CLOCKWISE_90);
-                    return state != rotated;
+                    if (rotated != state) {
+                        world.setBlockState(pos, rotated);
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
             }).orElse(false);
             if (didWork) playWrenchSound(world, pos);

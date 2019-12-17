@@ -1,24 +1,27 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.api.recipe.IExplosionCraftingRecipe;
+import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 
-public class JEIExplosionCraftingCategory extends JEIPneumaticCraftCategory<IExplosionCraftingRecipe> {
+public class JEIExplosionCraftingCategory extends PneumaticCraftCategory<JEIExplosionCraftingCategory.ExplosionCraftingWrapper> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
+    private static IDrawable iconStatic;
 
     JEIExplosionCraftingCategory(IJeiHelpers jeiHelpers) {
         super(jeiHelpers);
@@ -34,6 +37,7 @@ public class JEIExplosionCraftingCategory extends JEIPneumaticCraftCategory<IExp
                 .drawableBuilder(Textures.JEI_EXPLOSION, 0, 0, 16, 16)
                 .setTextureSize(16, 16)
                 .build();
+        if (iconStatic == null) iconStatic = icon;
     }
 
     @Override
@@ -42,8 +46,8 @@ public class JEIExplosionCraftingCategory extends JEIPneumaticCraftCategory<IExp
     }
 
     @Override
-    public Class<? extends IExplosionCraftingRecipe> getRecipeClass() {
-        return IExplosionCraftingRecipe.class;
+    public Class<? extends JEIExplosionCraftingCategory.ExplosionCraftingWrapper> getRecipeClass() {
+        return ExplosionCraftingWrapper.class;
     }
 
     @Override
@@ -61,38 +65,45 @@ public class JEIExplosionCraftingCategory extends JEIPneumaticCraftCategory<IExp
         return icon;
     }
 
-    @Override
-    public void setIngredients(IExplosionCraftingRecipe recipe, IIngredients ingredients) {
-        ingredients.setInputLists(VanillaTypes.ITEM, Collections.singletonList(Arrays.asList(recipe.getInput().getMatchingStacks())));
-        ingredients.setOutputs(VanillaTypes.ITEM, recipe.getOutputs());
+    static Collection<ExplosionCraftingWrapper> getAllRecipes() {
+        List<ExplosionCraftingWrapper> recipes = new ArrayList<>();
+        PneumaticCraftRecipes.explosionCraftingRecipes.forEach((recipeName, ecr) -> {
+            try {
+                recipes.add(new ExplosionCraftingWrapper(ecr));
+            } catch (IllegalArgumentException e) {
+                Log.warning("can't add recipe " + recipeName + ": " + e.getMessage());
+            }
+        });
+        return recipes;
     }
 
-    @Override
-    public void setRecipe(IRecipeLayout recipeLayout, IExplosionCraftingRecipe recipe, IIngredients ingredients) {
-        super.setRecipe(recipeLayout, recipe, ingredients);
+    static class ExplosionCraftingWrapper extends PneumaticCraftCategory.AbstractCategoryExtension {
+        private final int lossRate;
 
-        recipeLayout.getItemStacks().init(0, true, 40, 0);
-        recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
-
-        for (int i = 0; i < ingredients.getOutputs(VanillaTypes.ITEM).size(); i++) {
-            recipeLayout.getItemStacks().init(1 + i , false, 104 + (i * 18), 0);
-            recipeLayout.getItemStacks().set(1 + i, ingredients.getOutputs(VanillaTypes.ITEM).get(i));
+        ExplosionCraftingWrapper(IExplosionCraftingRecipe recipe) {
+            this.lossRate = recipe.getLossRate();
+            List<ItemStack> inputList = new ArrayList<>(Arrays.asList(recipe.getInput().getMatchingStacks()));
+            if (!inputList.isEmpty()) {
+                this.addInputItem(PositionedStack.of(inputList, 41, 1));
+                this.addOutputItem(PositionedStack.of(recipe.getOutputs(), 105, 1));
+            } else {
+                throw new IllegalArgumentException("recipe has no valid input");
+            }
         }
-    }
 
-    @Override
-    public List<String> getTooltipStrings(IExplosionCraftingRecipe recipe, double mouseX, double mouseY) {
-        List<String> l = super.getTooltipStrings(recipe, mouseX, mouseY);
-        if (mouseX >= 63 && mouseX <= 100) {
-            l.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.nei.recipe.explosionCrafting", recipe.getLossRate()), 32));
+        @Override
+        public void drawInfo(int recipeWidth, int recipeHeight, double mouseX, double mouseY) {
+            drawIconAt(iconStatic,73, 0);
         }
-        return l;
-    }
 
-    @Override
-    public void draw(IExplosionCraftingRecipe recipe, double mouseX, double mouseY) {
-        super.draw(recipe, mouseX, mouseY);
-
-        drawIconAt(icon, 73, 0);
+        @Nonnull
+        @Override
+        public List<String> getTooltipStrings(double mouseX, double mouseY) {
+            List<String> res = super.getTooltipStrings(mouseX, mouseY);
+            if (mouseX >= 63 && mouseX <= 100) {
+                res.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.nei.recipe.explosionCrafting", lossRate), 32));
+            }
+            return res;
+        }
     }
 }

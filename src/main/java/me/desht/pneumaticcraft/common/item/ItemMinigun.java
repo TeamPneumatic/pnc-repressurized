@@ -160,9 +160,11 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
                 ItemStack ammo = magazineHandler.getAmmo();
                 if (!ammo.isEmpty()) {
                     int prevDamage = ammo.getDamage();
-                    boolean usedAmmo = getMinigun(stack, player, ammo).tryFireMinigun(null);
-                    if (usedAmmo) ammo.setCount(0);
-                    if (usedAmmo || ammo.getDamage() != prevDamage) {
+                    Minigun minigun = getMinigun(stack, player, ammo);
+                    // an item life upgrade will prevent the stack from being destroyed
+                    boolean usedUpAmmo = minigun.tryFireMinigun(null) && minigun.getUpgrades(EnumUpgrade.ITEM_LIFE) == 0;
+                    if (usedUpAmmo) ammo.setCount(0);
+                    if (usedUpAmmo || ammo.getDamage() != prevDamage) {
                         magazineHandler.save();
                     }
                 } else {
