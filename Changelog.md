@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.8-??? (unreleased)
+#### Fixes
+* Fixed NPE in custom (CraftTweaker) Thermopneumatic Processing Plant recipes which don't have a fluid, only an item.
+* Fixed Drones being unable to place fluids in a flowing fluid block (such blocks should be easily replaceable).
+* Performance improvement for Charging Module when charging Pneumatic Armor, e.g. via Aerial Interface.
+
 ### 0.11.7-375 (7 Nov 2019)
 #### Fixes
 * Fixed bug causing clientside lockup if Pressure Chamber pressure reaches 6.0 bar (generally doesn't happen since this in the danger zone, but...)
