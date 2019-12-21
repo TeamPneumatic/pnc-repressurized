@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
@@ -19,8 +20,8 @@ public class ChestplateLauncherHandler extends IUpgradeRenderHandler.SimpleToggl
     }
 
     @Override
-    public IOptionPage getGuiOptionsPage() {
-        return new GuiLauncherOptions();
+    public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
+        return new GuiLauncherOptions(screen, this);
     }
 
     @Override

@@ -1,12 +1,11 @@
 package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.client.util.TintColor;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
 
 public class RenderProgressBar {
 
@@ -27,10 +26,10 @@ public class RenderProgressBar {
         // draw the bar
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        float[] f1 = new Color(color1, true).getComponents(null);
+        float[] f1 = new TintColor(color1, true).getComponents(null);
         float[] f2;
         if (color1 != color2) {
-            f2 = new Color(color2, true).getComponents(null);
+            f2 = new TintColor(color2, true).getComponents(null);
             float p = progress / 100f;
             f2[0] = f1[0] + (f2[0] - f1[0]) * p;
             f2[1] = f1[1] + (f2[1] - f1[1]) * p;

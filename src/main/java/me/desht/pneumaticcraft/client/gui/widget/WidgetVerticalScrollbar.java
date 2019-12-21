@@ -15,8 +15,6 @@ public class WidgetVerticalScrollbar extends Widget {
     private int states;
     private boolean listening;
     private boolean dragging;
-    private boolean wasClicking;
-    private boolean enabled = true;
 
     public WidgetVerticalScrollbar(int x, int y, int height) {
         super(x, y, 14, height, "");
@@ -35,7 +33,7 @@ public class WidgetVerticalScrollbar extends Widget {
 
     @Override
     public boolean mouseScrolled(double x, double y, double dir) {
-        if (listening) {
+        if (active && listening) {
             double wheel = MathHelper.clamp(-dir, -1, 1);
             currentScroll = MathHelper.clamp(currentScroll + (float) wheel / states,0f, 1);
             return true;
@@ -71,24 +69,20 @@ public class WidgetVerticalScrollbar extends Widget {
         return MathHelper.clamp((int) (scroll * states), 0, states);
     }
 
-    public WidgetVerticalScrollbar setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        if (!enabled) wasClicking = false;
-        return this;
-    }
-
     @Override
     public void renderButton(int mouseX, int mouseY, float partialTick) {
-        GlStateManager.color4f(1, 1, 1, 1);
-        Minecraft.getInstance().getTextureManager().bindTexture(SCROLL_TEXTURE);
-        blit(x, y, 12, 0, width, 1, 26, 15);
-        for (int i = 0; i < height - 2; i++)
-            blit(x, y + 1 + i, 12, 1, width, 1, 26, 15);
-        blit(x, y + height - 1, 12, 14, width, 1, 26, 15);
+        if (visible) {
+            GlStateManager.color4f(1, 1, 1, 1);
+            Minecraft.getInstance().getTextureManager().bindTexture(SCROLL_TEXTURE);
+            blit(x, y, 12, 0, width, 1, 26, 15);
+            for (int i = 0; i < height - 2; i++)
+                blit(x, y + 1 + i, 12, 1, width, 1, 26, 15);
+            blit(x, y + height - 1, 12, 14, width, 1, 26, 15);
 
-        if (!enabled) GlStateManager.color4f(0.6F, 0.6F, 0.6F, 1);
-        blit(x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
-        GlStateManager.color4f(1, 1, 1, 1);
+            if (!active) GlStateManager.color4f(0.6F, 0.6F, 0.6F, 1);
+            blit(x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
+            GlStateManager.color4f(1, 1, 1, 1);
+        }
     }
 
     public boolean isDragging() {

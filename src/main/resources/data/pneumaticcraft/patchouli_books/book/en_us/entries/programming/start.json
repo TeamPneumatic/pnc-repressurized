@@ -1,6 +1,6 @@
 {
   "name": "Start Widget",
-  "icon": "pneumaticcraft:textures/items/progwidgets/start_piece.png",
+  "icon": "pneumaticcraft:textures/item/progwidgets/start_piece.png",
   "category": "widget_flow",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -11,7 +11,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/items/progwidgets/start_piece.png"
+        "pneumaticcraft:textures/item/progwidgets/start_piece.png"
       ],
       "text": "$(italic)Call me MacLeod/$"
     }

@@ -10,7 +10,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import org.lwjgl.glfw.GLFW;
 
 public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends GuiPneumaticScreenBase {
     protected final P progWidget;
@@ -39,15 +38,13 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            onClose();
-            if (guiProgrammer != null) {
-                NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
-                minecraft.displayGuiScreen(guiProgrammer);
-            }
+    public void onClose() {
+        if (guiProgrammer != null) {
+            NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
+            minecraft.displayGuiScreen(guiProgrammer);
+        } else {
+            super.onClose();
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override

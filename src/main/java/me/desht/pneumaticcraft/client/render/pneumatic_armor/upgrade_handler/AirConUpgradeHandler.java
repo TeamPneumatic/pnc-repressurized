@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.google.common.base.Strings;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
@@ -41,8 +42,8 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
     }
 
     @Override
-    public IOptionPage getGuiOptionsPage() {
-        return new GuiAirConditionerOptions(this);
+    public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
+        return new GuiAirConditionerOptions(screen, this);
     }
 
     @Override

@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.capabilities;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.item.ItemStack;
@@ -23,17 +22,11 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
     private final ItemStack container;
     private final int volume;
     private final float maxPressure;
-    private final int nVolumeUpgrades;
 
     public AirHandlerItemStack(ItemStack container, int volume, float maxPressure) {
         this.container = container;
         this.volume = volume;
         this.maxPressure = maxPressure;
-        if (container.hasTag() && container.getTag().contains(ChargeableItemHandler.NBT_UPGRADE_TAG)) {
-            this.nVolumeUpgrades = UpgradableItemUtils.getUpgrades(IItemRegistry.EnumUpgrade.VOLUME, container);
-        } else {
-            this.nVolumeUpgrades = 0;
-        }
     }
 
     @Nonnull
@@ -69,7 +62,8 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
 
     @Override
     public int getVolume() {
-        return getBaseVolume() + nVolumeUpgrades * PneumaticValues.VOLUME_VOLUME_UPGRADE;
+        int nUpgrades = UpgradableItemUtils.getUpgrades(container, IItemRegistry.EnumUpgrade.VOLUME);
+        return getBaseVolume() + nUpgrades * PneumaticValues.VOLUME_VOLUME_UPGRADE;
     }
 
     @Override

@@ -16,12 +16,24 @@ public class TintColor {
                 ((b & 0xFF) << 0);
     }
 
+    public TintColor(float r, float g, float b, float a) {
+        this((int) (r * 255 + 0.5), (int) (g * 255 + 0.5), (int) (b * 255 + 0.5), (int) (a * 255 + 0.5));
+    }
+
     public TintColor(int red, int green, int blue) {
         this(red, green, blue, 0xFF);
     }
 
     public TintColor(int rgb) {
         value = 0xff000000 | rgb;
+    }
+
+    public TintColor(int rgba, boolean hasalpha) {
+        if (hasalpha) {
+            value = rgba;
+        } else {
+            value = 0xff000000 | rgba;
+        }
     }
 
     public int getRGB() {
@@ -151,7 +163,23 @@ public class TintColor {
                 alpha);
     }
 
+    public TintColor darker() {
+        return new TintColor(Math.max((int)(getRed()  *FACTOR), 0),
+                Math.max((int)(getGreen()*FACTOR), 0),
+                Math.max((int)(getBlue() *FACTOR), 0),
+                getAlpha());
+    }
+
     public static TintColor getHSBColor(float h, float s, float b) {
         return new TintColor(HSBtoRGB(h, s, b));
+    }
+
+    public float[] getComponents(float[] compArray) {
+        float[] f = compArray == null ? new float[4] : compArray;
+        f[0] = getRed() / 255f;
+        f[1] = getGreen() / 255f;
+        f[2] = getBlue() / 255f;
+        f[3] = getAlpha() / 255f;
+        return f;
     }
 }

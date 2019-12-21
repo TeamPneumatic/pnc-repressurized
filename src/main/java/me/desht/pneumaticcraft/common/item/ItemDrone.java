@@ -3,16 +3,19 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.SpawnReason;
@@ -39,12 +42,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
 
     ItemDrone(String registryName) {
         super(registryName, (int)(PneumaticValues.DRONE_MAX_PRESSURE * PneumaticValues.DRONE_VOLUME), PneumaticValues.DRONE_VOLUME);
-//        super(defaultProps().maxDamage(1), registryName);
     }
-
-//    ItemDrone(Item.Properties props, String registryName) {
-//        super(props, registryName);
-//    }
 
     public ItemDrone() {
         this("drone");
@@ -77,11 +75,16 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
         CompoundNBT stackTag = iStack.getTag();
         CompoundNBT entityTag = new CompoundNBT();
         drone.writeAdditional(entityTag);
+
+        int air = iStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandlerBase::getAir).orElse(0);
+        BasicAirHandler h = new BasicAirHandler(air);
+        h.addAir(air);
+
         if (stackTag != null) {
-            entityTag.put("widgets", stackTag.getList("widgets", Constants.NBT.TAG_COMPOUND).copy());
-            entityTag.putFloat("currentAir", stackTag.getFloat("currentAir"));
+            entityTag.put(IProgrammable.NBT_WIDGETS, stackTag.getList(IProgrammable.NBT_WIDGETS, Constants.NBT.TAG_COMPOUND).copy());
+            entityTag.put("airHandler", h.serializeNBT());
             entityTag.putInt("color", stackTag.getInt("color"));
-            entityTag.put(ChargeableItemHandler.NBT_UPGRADE_TAG, stackTag.getCompound(ChargeableItemHandler.NBT_UPGRADE_TAG));
+            entityTag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, stackTag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
         }
         drone.readAdditional(entityTag);
         if (iStack.hasDisplayName()) drone.setCustomName(iStack.getDisplayName());
@@ -94,45 +97,6 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
         NBTUtil.initNBTTagCompound(iStack);
         TileEntityProgrammer.setWidgetsToNBT(widgets, iStack.getTag());
     }
-
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> subItems) {
-//        if (isInCreativeTab(tab)) {
-//            subItems.add(new ItemStack(this));
-//            ItemStack chargedStack = new ItemStack(this);
-//            addAir(chargedStack, (int) (PneumaticValues.DRONE_VOLUME * PneumaticValues.DRONE_MAX_PRESSURE));
-//            subItems.add(chargedStack);
-//        }
-//    }
-
-//    @Override
-//    public float getPressure(ItemStack iStack) {
-//        float volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.DRONE_VOLUME;
-//        float oldVolume = NBTUtil.getFloat(iStack, "volume");
-//        if (volume < oldVolume) {
-//            float currentAir = NBTUtil.getFloat(iStack, "currentAir");
-//            currentAir *= volume / oldVolume;
-//            NBTUtil.setFloat(iStack, "currentAir", currentAir);
-//        }
-//        NBTUtil.setFloat(iStack, "volume", volume);
-//        return NBTUtil.getFloat(iStack, "currentAir") / volume;
-//    }
-//
-//    @Override
-//    public void addAir(ItemStack iStack, int amount) {
-//        NBTUtil.setFloat(iStack, "currentAir", NBTUtil.getFloat(iStack, "currentAir") + amount);
-//    }
-//
-//    @Override
-//    public int getVolume(ItemStack iStack) {
-//        return UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, iStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + PneumaticValues.DRONE_VOLUME;
-//    }
-//
-//    @Override
-//    public float maxPressure(ItemStack iStack) {
-//        return PneumaticValues.DRONE_MAX_PRESSURE;
-//    }
 
     @Override
     public boolean canProgram(ItemStack stack) {

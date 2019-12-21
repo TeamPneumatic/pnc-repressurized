@@ -212,7 +212,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
     }
 
     @Override
-    protected void onUpgradesChanged() {
+    public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
         if (world != null && !world.isRemote && getUpgrades(EnumUpgrade.CREATIVE) > 0) {

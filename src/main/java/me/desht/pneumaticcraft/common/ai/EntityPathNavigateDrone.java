@@ -60,6 +60,10 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
                 pos = pos.up();
             }
         }
+
+        // So what is this mysterious p2 parameter which turned up in 1.14.4?  Don't know for sure, but it appears
+        // to shorten the path length when non-zero.  Hence it's ignored in getPathToPos() below, where 0 is always
+        // passed to super.getPathToPos() to get the full path.
         return getPathToPos(pos, p2);
     }
 
@@ -75,22 +79,22 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
             return null;
 
         // 0.75 is the squared dist from a block corner to its center (0.5^2 + 0.5^2 + 0.5^2)
-        if(pathfindingEntity.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 0.75) {
-            // TODO 1.14 what does this boolean do?  true or false here?  may be villager-related...
+        if (pathfindingEntity.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 0.75) {
+            // TODO 1.14 what does this boolean do?  true or false here?  appears to be villager-related...
             return new Path(Lists.newArrayList(new PathPoint(pos.getX(), pos.getY(), pos.getZ())), pos, true);
         }
 
-        //Store the potential teleport destination
+        // Store the potential teleport destination
         telPos = pos;        
         
-        //If we are forced to teleport, trigger right away
+        // If we are forced to teleport, trigger right away
         if (forceTeleport) {
             teleportCounter = 0;
             return null;
         }
         
         pathfindingEntity.setStandby(false);
-        Path path = super.getPathToPos(pos, p2);
+        Path path = super.getPathToPos(pos, 0);
         
         // Only paths that actually end up where we want to are valid, not just halfway.
         if(path != null){

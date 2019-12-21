@@ -3,11 +3,13 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.KickUpgradeHandler;
 
-public class GuiKickOptions implements IOptionPage {
+public class GuiKickOptions extends IOptionPage.SimpleToggleableOptions<KickUpgradeHandler> {
     private KeybindingButton changeKeybindingButton;
 
-    public GuiKickOptions() {
+    public GuiKickOptions(IGuiScreen screen, KickUpgradeHandler upgradeHandler) {
+        super(screen, upgradeHandler);
     }
 
     @Override
@@ -16,18 +18,10 @@ public class GuiKickOptions implements IOptionPage {
     }
 
     @Override
-    public void initGui(IGuiScreen gui) {
+    public void populateGui(IGuiScreen gui) {
         changeKeybindingButton = new KeybindingButton(30, 128, 150, 20,
                 "Change Kick Key...", KeyHandler.getInstance().keybindKick, b -> changeKeybindingButton.toggleKeybindMode());
         gui.addWidget(changeKeybindingButton);
-    }
-
-    public void renderPre(int x, int y, float partialTicks) {
-
-    }
-
-    public void renderPost(int x, int y, float partialTicks) {
-
     }
 
     @Override
@@ -40,21 +34,8 @@ public class GuiKickOptions implements IOptionPage {
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int button) {
+    public boolean isToggleable() {
         return false;
     }
 
-    @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
-        return false;
-    }
-
-    @Override
-    public boolean canBeTurnedOff() {
-        return false;
-    }
-
-    public boolean displaySettingsHeader() {
-        return false;
-    }
 }

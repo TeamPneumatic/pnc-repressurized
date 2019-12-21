@@ -34,8 +34,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 public class JEIPlugin implements IModPlugin {
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
-        registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB, itemStack -> String.valueOf(itemStack.getDamage()));
-
         for (Item item : ModItems.Registration.ALL_ITEMS) {
             if (item instanceof ItemPressurizable) {
                 registration.registerSubtypeInterpreter(item, s -> s.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h2 -> String.valueOf(h2.getPressure())).orElse(ISubtypeInterpreter.NONE));

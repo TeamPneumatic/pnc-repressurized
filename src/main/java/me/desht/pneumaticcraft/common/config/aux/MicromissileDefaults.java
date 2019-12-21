@@ -2,13 +2,13 @@ package me.desht.pneumaticcraft.common.config.aux;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -63,12 +63,12 @@ public class MicromissileDefaults extends AuxConfigJson {
         public final float topSpeed;
         public final float turnSpeed;
         public final float damage;
-        public final Point p;
+        public final PointXY p;
         public final String entityFilter;
         public final FireMode fireMode;
         String playerName = "";
 
-        public Entry(float topSpeed, float turnSpeed, float damage, Point p, String entityFilter, FireMode fireMode) {
+        public Entry(float topSpeed, float turnSpeed, float damage, PointXY p, String entityFilter, FireMode fireMode) {
             this.topSpeed = topSpeed;
             this.turnSpeed = turnSpeed;
             this.damage = damage;
@@ -82,7 +82,7 @@ public class MicromissileDefaults extends AuxConfigJson {
                     value.get("topSpeed").getAsFloat(),
                     value.get("turnSpeed").getAsFloat(),
                     value.get("damage").getAsFloat(),
-                    new Point(value.get("px").getAsInt(), value.get("py").getAsInt()),
+                    new PointXY(value.get("px").getAsInt(), value.get("py").getAsInt()),
                     value.get("entityFilter").getAsString(),
                     FireMode.fromString(value.get("fireMode").getAsString())
             );

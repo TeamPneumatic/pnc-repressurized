@@ -46,7 +46,7 @@ public interface IDrone extends ICapabilityProvider {
      *
      * @return a fluid tank
      */
-    IFluidTank getTank();
+    IFluidTank getFluidTank();
 
     /**
      * Get the drone's inventory.  Note that this is also accessible via the

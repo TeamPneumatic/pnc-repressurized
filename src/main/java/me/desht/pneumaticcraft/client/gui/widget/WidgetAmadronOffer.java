@@ -9,11 +9,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +23,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
     private final List<Widget> subWidgets = new ArrayList<>();
     private int shoppingAmount;
     private boolean canBuy;
-    private final Rectangle[] tooltipRectangles = new Rectangle[2];
+    private final Rectangle2d[] tooltipRectangles = new Rectangle2d[2];
     private boolean renderBackground = true;
 
     public WidgetAmadronOffer(int x, int y, AmadronOffer offer) {
@@ -35,29 +35,31 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
         if (offer.getOutput().getType() == TradeResource.Type.FLUID) {
             subWidgets.add(new WidgetFluidStack(x + 51, y + 15, offer.getOutput().getFluid(), null));
         }
-        tooltipRectangles[0] = new Rectangle(x + 6, y + 15, 16, 16);
-        tooltipRectangles[1] = new Rectangle(x + 51, y + 15, 16, 16);
+        tooltipRectangles[0] = new Rectangle2d(x + 6, y + 15, 16, 16);
+        tooltipRectangles[1] = new Rectangle2d(x + 51, y + 15, 16, 16);
     }
 
     @Override
     public void renderButton(int mouseX, int mouseY, float partialTick) {
-        FontRenderer fr = Minecraft.getInstance().fontRenderer;
-        if (renderBackground) {
-            Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
-            GlStateManager.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, canBuy ? 0.75f : 1f);
-            AbstractGui.blit(x, y, 0, 0, width, height, 256, 256);
-        }
-        for (Widget widget : subWidgets) {
-            widget.render(mouseX, mouseY, partialTick);
-        }
-        fr.drawString(offer.getVendor(), x + 2, y + 2, 0xFF000000);
-        boolean customOffer = offer instanceof AmadronOfferCustom;
-        if (shoppingAmount > 0) {
-            fr.drawString(TextFormatting.BLACK.toString() + shoppingAmount, x + 36 - fr.getStringWidth("" + shoppingAmount) / 2f, y + (customOffer ? 15 : 20), 0xFF000000);
-        }
-        if (customOffer) {
-            AmadronOfferCustom custom = (AmadronOfferCustom) offer;
-            fr.drawString(TextFormatting.DARK_BLUE.toString() + custom.getStock(), x + 36 - fr.getStringWidth("" + custom.getStock()) / 2f, y + 25, 0xFF000000);
+        if (visible) {
+            FontRenderer fr = Minecraft.getInstance().fontRenderer;
+            if (renderBackground) {
+                Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
+                GlStateManager.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, canBuy ? 0.75f : 1f);
+                AbstractGui.blit(x, y, 0, 0, width, height, 256, 256);
+            }
+            for (Widget widget : subWidgets) {
+                widget.render(mouseX, mouseY, partialTick);
+            }
+            fr.drawString(offer.getVendor(), x + 2, y + 2, 0xFF000000);
+            boolean customOffer = offer instanceof AmadronOfferCustom;
+            if (shoppingAmount > 0) {
+                fr.drawString(TextFormatting.BLACK.toString() + shoppingAmount, x + 36 - fr.getStringWidth("" + shoppingAmount) / 2f, y + (customOffer ? 15 : 20), 0xFF000000);
+            }
+            if (customOffer) {
+                AmadronOfferCustom custom = (AmadronOfferCustom) offer;
+                fr.drawString(TextFormatting.DARK_BLUE.toString() + custom.getStock(), x + 36 - fr.getStringWidth("" + custom.getStock()) / 2f, y + 25, 0xFF000000);
+            }
         }
     }
 
@@ -79,8 +81,8 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             }
         }
         boolean isInBounds = false;
-        for (Rectangle rect : tooltipRectangles) {
-            if (rect.contains(mouseX, mouseY)) {
+        for (Rectangle2d rect : tooltipRectangles) {
+            if (rect.contains((int)mouseX, (int)mouseY)) {
                 isInBounds = true;
             }
         }

@@ -53,6 +53,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
     protected boolean doExport(final int maxItems) {
         Direction outputDir = getRotation();
 
+        // TODO cache the capability
         LazyOptional<IItemHandler> cap = IOHelper.getInventoryForTE(getCachedNeighbor(outputDir), outputDir.getOpposite());
         if (cap.isPresent()) {
             return cap.map(otherHandler -> {

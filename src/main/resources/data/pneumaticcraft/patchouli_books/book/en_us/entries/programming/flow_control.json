@@ -1,6 +1,6 @@
 {
   "name": "Flow Control",
-  "icon": "pneumaticcraft:textures/items/progwidgets/jump_piece.png",
+  "icon": "pneumaticcraft:textures/item/progwidgets/jump_piece.png",
   "category": "programming",
   "advancement": "pneumaticcraft:programmer",
   "pages": [

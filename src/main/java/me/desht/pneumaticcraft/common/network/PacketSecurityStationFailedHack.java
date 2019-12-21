@@ -28,7 +28,7 @@ public class PacketSecurityStationFailedHack extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = getTileEntity(ctx);
+            TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
             if (te instanceof TileEntitySecurityStation) {
                 TileEntitySecurityStation station = (TileEntitySecurityStation) te;
                 if (!station.isPlayerOnWhiteList(ctx.get().getSender())) {

@@ -11,8 +11,8 @@ import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.util.ITooltipFlag;
@@ -262,7 +262,7 @@ public class ItemPneumaticArmor extends ArmorItem
     public static BlockPos getCoordTrackerPos(ItemStack helmetStack, World world) {
         if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, NBT_COORD_TRACKER)) return null;
         CompoundNBT tag = NBTUtil.getCompoundTag(helmetStack, NBT_COORD_TRACKER);
-        GlobalPos gPos = PneumaticCraftUtils.deserializeGlobalPos(tag);
+        GlobalPos gPos = GlobalPosUtils.deserializeGlobalPos(tag);
         if (gPos.getPos().getY() < 0 || !world.getDimension().getType().equals(gPos.getDimension())) {
             return null;
         }
@@ -270,7 +270,7 @@ public class ItemPneumaticArmor extends ArmorItem
     }
 
     public static void setCoordTrackerPos(ItemStack helmetStack, GlobalPos gPos) {
-        NBTUtil.setCompoundTag(helmetStack, ItemPneumaticArmor.NBT_COORD_TRACKER, PneumaticCraftUtils.serializeGlobalPos(gPos));
+        NBTUtil.setCompoundTag(helmetStack, ItemPneumaticArmor.NBT_COORD_TRACKER, GlobalPosUtils.serializeGlobalPos(gPos));
     }
 
     public static String getEntityFilter(ItemStack helmetStack) {

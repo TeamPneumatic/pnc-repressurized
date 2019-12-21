@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.AreaShowManager;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -44,9 +45,7 @@ public class PacketShowArea extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            AreaShowManager.getInstance().showArea(area, 0x9000FFFF, getTileEntity(ctx));
-        });
+        ctx.get().enqueueWork(() -> AreaShowManager.getInstance().showArea(area, 0x9000FFFF, ClientUtils.getClientTE(pos)));
         ctx.get().setPacketHandled(true);
     }
 }

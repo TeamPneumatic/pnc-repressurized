@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -30,7 +31,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -61,7 +61,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     private int minWidth = MIN_WIDTH_HEIGHT;
     private int minHeight = MIN_WIDTH_HEIGHT;
     private int backGroundColor;
-    private Color bgColorHi, bgColorLo;
+    private TintColor bgColorHi, bgColorLo;
     private String title;
     private boolean leftSided; // determines if the stat is going to expand to the left or right.
     private boolean doneExpanding;
@@ -237,7 +237,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             float fgG = (float) (color >> 8 & 255) / 255.0F;
             float fgB = (float) (color & 255) / 255.0F;
             float fgA = (float) (color >> 24 & 255) / 255.0F;
-            Color c = new Color(fgR, fgG, fgB, fgA);
+            TintColor c = new TintColor(fgR, fgG, fgB, fgA);
             if (bevel) {
                 bgColorHi = c.brighter();
                 bgColorLo = c.darker();
@@ -246,7 +246,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
                 bgColorLo = bgColorHi;
             }
         } else {
-            bgColorLo = bgColorHi = Color.BLACK;
+            bgColorLo = bgColorHi = TintColor.BLACK;
         }
     }
 

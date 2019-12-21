@@ -40,7 +40,7 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
      */
     @Override
     public boolean shouldExecute() {
-        if (drone.hasMinigun() && drone.getAmmo().isEmpty()) {
+        if (drone.hasMinigun() && drone.getSlotForAmmo() < 0) {
             return false;
         }
         List<Entity> list = ((IEntityProvider) widget).getValidEntities(drone.world);

@@ -135,7 +135,7 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase im
     }
 
     @Override
-    protected void onUpgradesChanged() {
+    public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
         if (world != null && !world.isRemote) {

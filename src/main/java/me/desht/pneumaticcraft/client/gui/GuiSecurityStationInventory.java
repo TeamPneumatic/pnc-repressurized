@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationMain;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -22,7 +23,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,13 +89,13 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
     }
 
     @Override
-    protected Point getInvTextOffset() {
-        return new Point(0, 2);
+    protected PointXY getInvTextOffset() {
+        return new PointXY(0, 2);
     }
 
     @Override
-    protected Point getInvNameOffset() {
-        return new Point(0, -2);
+    protected PointXY getInvNameOffset() {
+        return new PointXY(0, -2);
     }
 
     @Override

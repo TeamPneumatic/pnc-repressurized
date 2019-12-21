@@ -5,14 +5,14 @@ import net.minecraft.item.ItemStack;
 /**
  * Implement this for items that can get programmed in a Programmer.
  * <p>
- * For now the only thing you can do with this is make program storages, later more interaction with programming puzzles
- * is planned.  Puzzle pieces will be written onto the implementer's itemstack NBT, using the "progWidget" tag.
+ * For now the only thing you can do with this is make program storages; in future, there may be more applications.
+ * Puzzle pieces will be written onto the implementer's itemstack NBT, under the NBT tag "pneumaticcraft:progWidgets".
  */
 public interface IProgrammable {
+    String NBT_WIDGETS = "pneumaticcraft:progWidgets";
 
     /**
-     * When returned true, this stack is allowed to be programmed.
-     * Used to allow certain damage values to be programmed while others can't.
+     * When returned true, this stack may be programmed.  Can be used to limit programmability by NBT data, for example.
      *
      * @param stack the item stack to check
      * @return true if the item can be programmed, false otherwise

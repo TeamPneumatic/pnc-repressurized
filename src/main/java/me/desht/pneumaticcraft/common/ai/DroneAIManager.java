@@ -111,7 +111,7 @@ public class DroneAIManager implements IVariableProvider {
         return drone;
     }
 
-    public void writeToNBT(CompoundNBT tag) {
+    public CompoundNBT writeToNBT(CompoundNBT tag) {
         ListNBT tagList = new ListNBT();
         for (Map.Entry<String, BlockPos> entry : coordinateVariables.entrySet()) {
             CompoundNBT t = new CompoundNBT();
@@ -120,8 +120,9 @@ public class DroneAIManager implements IVariableProvider {
             tagList.add(t);
         }
         tag.put("coords", tagList);
-
         GlobalVariableManager.getInstance().writeItemVars(tag);
+
+        return tag;
     }
 
     public void readFromNBT(CompoundNBT tag) {

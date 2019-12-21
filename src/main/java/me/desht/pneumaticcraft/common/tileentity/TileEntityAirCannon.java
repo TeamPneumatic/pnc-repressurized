@@ -697,7 +697,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             }
         }
         if (fallingBlocks && item instanceof BlockItem) {
-            return new EntityTumblingBlock(world, 0, 0, 0, stack);
+            return new EntityTumblingBlock(world, player, 0, 0, 0, stack);
         } else {
             ItemEntity e = new ItemEntity(world, 0, 0, 0, stack);
             e.setPickupDelay(20);

@@ -101,6 +101,10 @@ public class ItemPressurizable extends ItemPneumatic {
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        return new AirHandlerItemStack(stack, volume, maxPressure);
+        if (this instanceof ItemPressurizable) {
+            return new AirHandlerItemStack(stack, volume, maxPressure);
+        } else {
+            return super.initCapabilities(stack, nbt);
+        }
     }
 }

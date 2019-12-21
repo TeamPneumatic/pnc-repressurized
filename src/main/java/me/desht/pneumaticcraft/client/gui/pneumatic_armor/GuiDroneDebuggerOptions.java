@@ -19,9 +19,12 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -37,16 +40,14 @@ import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
-    private static final int PROGAMMING_MARGIN = 20;
+public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<DroneDebugUpgradeHandler> {
+    private static final int PROGRAMMING_MARGIN = 20;
     private static final int PROGRAMMING_START_Y = 40;
 
-    private final DroneDebugUpgradeHandler upgradeHandler;
     private EntityDrone selectedDrone;
     private GuiUnitProgrammer programmerUnit;
     private int programmingStartX, programmingWidth, programmingHeight;
     private IProgWidget areaShowingWidget;
-    private int screenWidth, screenHeight;
     private Button showActive;
     private Button showStart;
     private WidgetCheckBox followCheckbox;
@@ -55,9 +56,8 @@ public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
     // which goes away when the GUI is closed.  Gets reset when a new drone is selected for debugging.
     private static int areaShowWidgetId = -1;
 
-    public GuiDroneDebuggerOptions(DroneDebugUpgradeHandler upgradeHandler) {
-        super(new StringTextComponent("Done Debugging"));
-        this.upgradeHandler = upgradeHandler;
+    public GuiDroneDebuggerOptions(IGuiScreen screen, DroneDebugUpgradeHandler upgradeHandler) {
+        super(screen, upgradeHandler);
     }
 
     public static void clearAreaShowWidgetId() {
@@ -65,16 +65,7 @@ public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
     }
 
     @Override
-    public String getPageName() {
-        return "Drone Debugging";
-    }
-
-    @Override
-    public void initGui(IGuiScreen gui) {
-        Screen guiScreen = (Screen) gui;
-        screenWidth = guiScreen.width;
-        screenHeight = guiScreen.height;
-
+    public void populateGui(IGuiScreen gui) {
         if (PneumaticCraftRepressurized.proxy.getClientPlayer() != null) {
             ItemStack helmet = PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD);
             if (!helmet.isEmpty()) {
@@ -99,14 +90,14 @@ public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
         followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, " " + I18n.format("gui.progWidget.debug.followActive"));
         followCheckbox.x = 180 - followCheckbox.getWidth();
 
-        programmingStartX = PROGAMMING_MARGIN;
-        programmingWidth = guiScreen.width - PROGAMMING_MARGIN * 2;
-        programmingHeight = guiScreen.height - PROGAMMING_MARGIN - PROGRAMMING_START_Y;
+        Screen guiScreen = getGuiScreen().getScreen();
+        programmingStartX = PROGRAMMING_MARGIN;
+        programmingWidth = guiScreen.width - PROGRAMMING_MARGIN * 2;
+        programmingHeight = guiScreen.height - PROGRAMMING_MARGIN - PROGRAMMING_START_Y;
         programmerUnit = new DebugInfoProgrammerUnit(selectedDrone != null ? selectedDrone.getProgWidgets() : new ArrayList<>(),
                 gui.getFontRenderer(),
                 0, 0, guiScreen.width, guiScreen.height,
-                programmingStartX, PROGRAMMING_START_Y,
-                programmingWidth, programmingHeight,
+                new Rectangle2d(programmingStartX, PROGRAMMING_START_Y, programmingWidth, programmingHeight),
                 0, 0, 0);
         if (selectedDrone != null) {
             programmerUnit.gotoPiece(GuiProgrammer.findWidget(selectedDrone.getProgWidgets(), ProgWidgetStart.class));
@@ -115,14 +106,19 @@ public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
 
     @Override
     public void renderPre(int x, int y, float partialTicks) {
-        fill(programmingStartX, PROGRAMMING_START_Y, programmingStartX + programmingWidth, PROGRAMMING_START_Y + programmingHeight, 0x55000000);
+        AbstractGui.fill(programmingStartX, PROGRAMMING_START_Y, programmingStartX + programmingWidth, PROGRAMMING_START_Y + programmingHeight, 0x55000000);
     }
 
     @Override
     public void renderPost(int x, int y, float partialTicks) {
+        Screen guiScreen = getGuiScreen().getScreen();
+
+        int screenWidth = guiScreen.width;
+        int screenHeight = guiScreen.height;
+
         if (selectedDrone != null) {
-            font.drawStringWithShadow("Drone name: " + selectedDrone.getName(), 20, screenHeight - 15, 0xFFFFFFFF);
-            font.drawStringWithShadow("Routine: " + selectedDrone.getLabel(), screenWidth / 2f, screenHeight - 15, 0xFFFFFFFF);
+            Minecraft.getInstance().fontRenderer.drawStringWithShadow("Drone name: " + selectedDrone.getName().getFormattedText(), 20, screenHeight - 15, 0xFFFFFFFF);
+            Minecraft.getInstance().fontRenderer.drawStringWithShadow("Routine: " + selectedDrone.getLabel(), screenWidth / 2f, screenHeight - 15, 0xFFFFFFFF);
         }
 
         GlStateManager.translated(0, 0, 300);
@@ -133,17 +129,17 @@ public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
         followCheckbox.render(x, y, partialTicks);
 
         if (selectedDrone == null) {
-            drawCenteredString(font, "Press '" + KeyHandler.getInstance().keybindDebuggingDrone.getKeyDescription() + "' on a Drone when tracked by an Entity Tracker to debug the Drone.", screenWidth / 2, screenHeight / 2, 0xFFFF0000);
+            guiScreen.drawCenteredString(Minecraft.getInstance().fontRenderer, "Press '" + KeyHandler.getInstance().keybindDebuggingDrone.getLocalizedName() + "' on a Drone when tracked by an Entity Tracker to debug the Drone.", screenWidth / 2, screenHeight / 2, 0xFFFF0000);
         }
 
         IProgWidget widget = programmerUnit.getHoveredWidget(x, y);
         if (widget == null) widget = areaShowingWidget;
-        upgradeHandler.getShowingPositions().clear();
+        getUpgradeHandler().getShowingPositions().clear();
         if (widget != null) {
             int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
             DebugEntry entry = selectedDrone.getDebugEntry(widgetId);
             if (entry != null && entry.hasCoords()) {
-                upgradeHandler.getShowingPositions().add(entry.getPos());
+                getUpgradeHandler().getShowingPositions().add(entry.getPos());
             }
         }
     }
@@ -164,12 +160,12 @@ public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
         } else if (mouseButton == 1) {
             IProgWidget widget = programmerUnit.getHoveredWidget((int)mouseX, (int)mouseY);
             if (widget instanceof IAreaProvider) {
-                upgradeHandler.getShownArea().clear();
+                getUpgradeHandler().getShownArea().clear();
                 int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
                 if (areaShowWidgetId != widgetId) {
                     Set<BlockPos> area = Sets.newHashSet();
                     ((IAreaProvider) widget).getArea(area);
-                    upgradeHandler.getShownArea().addAll(area);
+                    getUpgradeHandler().getShownArea().addAll(area);
                     areaShowWidgetId = widgetId;
                 } else {
                     clearAreaShowWidgetId();
@@ -187,9 +183,9 @@ public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
     private class DebugInfoProgrammerUnit extends GuiUnitProgrammer {
 
         DebugInfoProgrammerUnit(List<IProgWidget> progWidgets, FontRenderer fontRenderer, int guiLeft,
-                                int guiTop, int width, int height, int startX, int startY, int areaWidth, int areaHeight,
+                                int guiTop, int width, int height, Rectangle2d bounds,
                                 int translatedX, int translatedY, int lastZoom) {
-            super(progWidgets, fontRenderer, guiLeft, guiTop, width, height, startX, startY, areaWidth, areaHeight, translatedX, translatedY, lastZoom);
+            super(progWidgets, fontRenderer, guiLeft, guiTop, width, height, bounds, translatedX, translatedY, lastZoom);
         }
 
         @Override
@@ -238,7 +234,7 @@ public class GuiDroneDebuggerOptions extends Screen implements IOptionPage {
     }
 
     @Override
-    public boolean canBeTurnedOff() {
+    public boolean isToggleable() {
         return false;
     }
 

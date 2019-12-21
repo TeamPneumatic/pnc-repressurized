@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.GuiMicromissile;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.aux.MicromissileDefaults;
@@ -49,7 +48,12 @@ public class ItemMicromissiles extends ItemPneumatic {
     }
 
     public ItemMicromissiles() {
-        super(defaultProps().maxStackSize(1).maxDamage(PNCConfig.Common.Micromissiles.missilePodSize), "micromissiles");
+        super(defaultProps().maxStackSize(1), "micromissiles");
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return PNCConfig.Common.Micromissiles.missilePodSize;
     }
 
     @Override
@@ -57,9 +61,9 @@ public class ItemMicromissiles extends ItemPneumatic {
         ItemStack stack = playerIn.getHeldItem(handIn);
 
         if (playerIn.isSneaking()) {
-            PneumaticCraftRepressurized.proxy.openGui(new GuiMicromissile(stack.getDisplayName()));
-//            playerIn.openGui(PneumaticCraftRepressurized.instance, GuiHandler.EnumGuiId.MICROMISSILE.ordinal(),
-//                    worldIn, (int)playerIn.posX, (int)playerIn.posY, (int)playerIn.posZ);
+            if (worldIn.isRemote) {
+                GuiMicromissile.openGui(stack.getDisplayName());
+            }
             return ActionResult.newResult(ActionResultType.SUCCESS, stack);
         }
 

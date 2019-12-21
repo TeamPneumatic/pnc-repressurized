@@ -20,7 +20,7 @@ import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -467,7 +467,7 @@ public class CommonArmorHandler {
         if (hackedBlockPos != null) {
             IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(hackedBlockPos, player);
             if (hackableBlock != null) {
-                World world = PneumaticCraftUtils.getWorldForGlobalPos(hackedBlockPos);
+                World world = GlobalPosUtils.getWorldForGlobalPos(hackedBlockPos);
                 if (world != null && ++hackTime >= hackableBlock.getHackTime(world, hackedBlockPos.getPos(), player)) {
                     hackableBlock.onHackFinished(player.world, hackedBlockPos.getPos(), player);
                     HackTickHandler.instance().trackBlock(hackedBlockPos, hackableBlock);

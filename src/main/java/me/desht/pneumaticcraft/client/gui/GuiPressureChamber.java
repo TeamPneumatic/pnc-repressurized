@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
@@ -11,7 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-import java.awt.*;
 import java.util.List;
 
 public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPressureChamberValve,TileEntityPressureChamberValve> {
@@ -45,7 +45,7 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
     }
 
     @Override
-    protected Point getInvNameOffset() {
+    protected PointXY getInvNameOffset() {
         return null;
     }
 

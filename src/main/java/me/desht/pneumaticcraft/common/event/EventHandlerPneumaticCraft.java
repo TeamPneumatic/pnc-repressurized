@@ -297,7 +297,7 @@ public class EventHandlerPneumaticCraft {
                         }
                         break;
                     case FLUID:
-                        if (drone.getTank().getFluidAmount() >= requiredCount) {
+                        if (drone.getFluidTank().getFluidAmount() >= requiredCount) {
                             MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
                         }
                         break;

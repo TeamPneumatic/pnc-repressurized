@@ -363,20 +363,9 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
             NBTUtil.setDouble(minigunStack, "oldRotation", oldMinigunRotation);
         }
 
-        private void loadUpgrades() {
-            upgrades = new int[EnumUpgrade.values().length];
-            for (ItemStack stack : UpgradableItemUtils.getUpgradeStacks(minigunStack)) {
-                if (stack.getItem() instanceof ItemMachineUpgrade) {
-                    int idx = ((ItemMachineUpgrade) stack.getItem()).getUpgradeType().ordinal();
-                    upgrades[idx] += stack.getCount();
-                }
-            }
-        }
-
         @Override
         public int getUpgrades(EnumUpgrade upgrade) {
-            if (upgrades == null) loadUpgrades();
-            return Math.min(MAX_UPGRADES[upgrade.ordinal()], upgrades[upgrade.ordinal()]);
+            return Math.min(MAX_UPGRADES[upgrade.ordinal()], UpgradableItemUtils.getUpgrades(minigunStack, upgrade));
         }
     }
 }

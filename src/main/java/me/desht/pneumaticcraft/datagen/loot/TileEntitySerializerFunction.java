@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
-import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.tileentity.ISerializableTanks;
 import me.desht.pneumaticcraft.common.tileentity.ISideConfigurable;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator;
@@ -82,7 +81,7 @@ public class TileEntitySerializerFunction extends LootFunction {
                     } else {
                         NBTUtil.removeTag(teStack, UpgradableItemUtils.NBT_CREATIVE);
                     }
-                    subTag.put(ChargeableItemHandler.NBT_UPGRADE_TAG, upgradeHandler.serializeNBT());
+                    subTag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeHandler.serializeNBT());
                     break;
                 }
             }

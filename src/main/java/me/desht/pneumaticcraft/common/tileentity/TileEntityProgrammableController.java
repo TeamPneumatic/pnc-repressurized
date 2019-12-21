@@ -311,7 +311,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     @Override
-    protected void onUpgradesChanged() {
+    public void onUpgradesChanged() {
         super.onUpgradesChanged();
         if (getWorld() != null && !getWorld().isRemote) {
             calculateUpgrades();
@@ -451,7 +451,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     @Override
-    public IFluidTank getTank() {
+    public IFluidTank getFluidTank() {
         return tank;
     }
 

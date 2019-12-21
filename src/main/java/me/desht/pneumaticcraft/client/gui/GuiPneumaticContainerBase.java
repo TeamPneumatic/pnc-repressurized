@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
@@ -34,7 +35,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,7 +47,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     private WidgetAnimatedStat pressureStat;
     private WidgetAnimatedStat redstoneTab;
     WidgetAnimatedStat problemTab;
-    WidgetButtonExtended redstoneButton;
+    private WidgetButtonExtended redstoneButton;
     protected boolean firstUpdate = true;
     private final List<IGuiAnimatedStat> statWidgets = new ArrayList<>();
     private int sendDelay = -1;
@@ -260,7 +260,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
 
         if (pressureStat != null) {
-            Point gaugeLocation = getGaugeLocation();
+            PointXY gaugeLocation = getGaugeLocation();
             if (gaugeLocation != null) {
                 TileEntityPneumaticBase pneu = (TileEntityPneumaticBase) te;
                 GuiUtils.drawPressureGauge(font, -1, pneu.criticalPressure, pneu.dangerPressure, te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE, pneu.getPressure(), gaugeLocation.x - guiLeft, gaugeLocation.y - guiTop);
@@ -311,20 +311,20 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
     }
 
-    protected Point getGaugeLocation() {
+    protected PointXY getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new Point(xStart + xSize * 3 / 4, yStart + ySize / 4 + 4);
+        return new PointXY(xStart + xSize * 3 / 4, yStart + ySize / 4 + 4);
     }
 
     protected int getTitleColor() { return 0x404040; }
 
-    protected Point getInvNameOffset() {
-        return new Point(0, 0);
+    protected PointXY getInvNameOffset() {
+        return PointXY.ZERO;
     }
 
-    protected Point getInvTextOffset() {
-        return new Point(0, 0);
+    protected PointXY getInvTextOffset() {
+        return PointXY.ZERO;
     }
 
     @Override

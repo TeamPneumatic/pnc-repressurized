@@ -250,7 +250,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     @Override
-    protected void onUpgradesChanged() {
+    public void onUpgradesChanged() {
         super.onUpgradesChanged();
         if (getWorld() != null) {
             // this can get called when reading nbt on load when world = null

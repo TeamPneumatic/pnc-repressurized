@@ -1,14 +1,13 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-
-import java.awt.*;
 
 public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCreativeCompressor,TileEntityCreativeCompressor> {
 
@@ -33,7 +32,7 @@ public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCr
     }
 
     @Override
-    protected Point getGaugeLocation() {
+    protected PointXY getGaugeLocation() {
         return null;
     }
 
@@ -85,7 +84,7 @@ public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCr
     }
 
     @Override
-    protected Point getInvTextOffset() {
+    protected PointXY getInvTextOffset() {
         return null;
     }
 }

@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainOptions;
@@ -105,8 +106,8 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public IOptionPage getGuiOptionsPage() {
-        return new GuiHelmetMainOptions(this);
+    public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
+        return new GuiHelmetMainOptions(screen,this);
     }
 
     @Override

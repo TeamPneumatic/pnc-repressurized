@@ -9,5 +9,7 @@ public class GuiConstants {
     public static final String ARROW_RIGHT = "\u27f6";
     public static final String TRIANGLE_UP = "\u25b2";
     public static final String TRIANGLE_DOWN = "\u25bc";
+    public static final String TRIANGLE_LEFT = "\u25c0";
+    public static final String TRIANGLE_RIGHT = "\u25b6";
     public static final String DEGREES = "\u00b0";
 }

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.tileentity.IRangeLineShower;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -26,7 +27,7 @@ public class PacketRenderRangeLines extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = getTileEntity(ctx);
+            TileEntity te = ClientUtils.getClientTE(pos);
             if (te instanceof IRangeLineShower) {
                 ((IRangeLineShower) te).showRangeLines();
             }

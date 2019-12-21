@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
@@ -37,7 +38,7 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = getTileEntity(ctx);
+            TileEntity te = ClientUtils.getClientTE(pos);
             if (te instanceof TileEntityPneumaticBase) {
                 ((AirHandler) ((TileEntityPneumaticBase) te).getAirHandler(null)).setAir(currentAir);
             } else {

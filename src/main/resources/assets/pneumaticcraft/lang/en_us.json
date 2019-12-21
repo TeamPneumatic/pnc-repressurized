@@ -275,7 +275,7 @@
   "gui.remote.dropdown.sort.tooltip": "If checked, sort the list of elements in alphabetical order. If unchecked, elements are added in the order you provided.",
 
   "_comment": "entities",
-  "entity.Drone.name": "Drone",
+  "entity.pneumaticcraft.drone": "Drone",
   "entity.logisticDrone.name": "Logistic Drone",
   "entity.harvestingDrone.name": "Harvesting Drone",
   "entity.Villager.pneumaticcraft.mechanic": "Mechanic",
@@ -681,8 +681,8 @@
   "gui.pressureChamberInterface.export.any.tooltip": "Export ALL items from the Pressure Chamber. Use this for special recipes where the recipe result isn't always known (e.g. enchanting), or to extract items added by mistake.",
   "gui.thermopneumatic.dumpInput": "Dump Input Tank \\n§7Get rid of any unwanted / excess fluids from the input tank",
   "gui.universalSensor.button.showRange": "Show Range",
-  "gui.programmer.button.showArea": "Show Area",
-  "gui.programmer.button.stopShowingArea": "Stop Showing Area",
+  "gui.programmer.button.showArea": "Preview Area",
+  "gui.programmer.button.stopShowingArea": "Stop Previewing Area",
   "gui.programmer.button.showStart": "Show Start",
   "gui.programmer.button.showLatest": "Show Latest",
   "gui.programmer.checkbox.showInfo": "Show Info",
@@ -925,6 +925,7 @@
   "pneumaticHelmet.upgrade.kick": "Pneumatic Kick",
   "pneumaticHelmet.upgrade.stepAssist": "Step Assist",
   "pneumaticHelmet.upgrade.jetBoots": "Jet Boots",
+  "pneumaticHelmet.upgrade.jetboots.module.builderMode": "Builder Mode",
   "pneumaticHelmet.upgrade.scuba": "SCUBA",
 
   "pneumaticHelmet.message.enableSetting": "%s Enabled",
@@ -937,8 +938,6 @@
   "pneumaticHelmet.message.initComplete": "%s initialization complete!",
   "pneumaticHelmet.message.almostOutOfAir": "Your %s is almost out of air!",
   "pneumaticHelmet.message.outOfAir": "Your %s is out of air!",
-
-  "jetboots.module.builderMode": "Builder Mode",
 
   "entityTracker.info.health": "Health: %d%%%%",
   "entityTracker.info.drone.routine": "Routine: %s",

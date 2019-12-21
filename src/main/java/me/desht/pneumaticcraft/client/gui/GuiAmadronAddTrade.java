@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetFluidFilter;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade;
@@ -36,7 +37,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -248,7 +248,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     @Override
-    protected Point getInvTextOffset() {
+    protected PointXY getInvTextOffset() {
         return null;
     }
 

@@ -19,7 +19,9 @@ import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
 /**
- * Helper which allows querying TE's of specific (owned) types, like the universal sensor, Security Station and Charging Station
+ * Helper which allows querying TE's of specific types, like the Universal Sensor, Security Station and Charging Station
+ * This is very important for performance, especially in worlds with many tile entities.
+ *
  * @author MineMaarten
  */
 @EventBusSubscriber(modid = Names.MOD_ID)

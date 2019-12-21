@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -37,9 +36,12 @@ import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
+import me.desht.pneumaticcraft.common.util.upgrade.IUpgradeHolder;
+import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -61,7 +63,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -106,6 +107,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.FMLPlayMessages;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -118,7 +120,7 @@ import static net.minecraft.util.Direction.UP;
 
 public class EntityDrone extends EntityDroneBase implements
         IManoMeasurable, IPneumaticWrenchable, IEntityAdditionalSpawnData,
-        IHackableEntity, IDroneBase, IFlyingAnimal {
+        IHackableEntity, IDroneBase, IFlyingAnimal, IUpgradeHolder {
 
     private static final float LASER_EXTEND_SPEED = 0.05F;
 
@@ -131,27 +133,23 @@ public class EntityDrone extends EntityDroneBase implements
         colorMap.put("desht", 0xff6000);
     }
 
-    private EntityDroneItemHandler inventory = new EntityDroneItemHandler(this);
-    private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> inventory);
+    private EntityDroneItemHandler droneItemHandler; // = new EntityDroneItemHandler(this);
+    private final LazyOptional<IItemHandlerModifiable> droneItemHandlerCap = LazyOptional.of(this::getDroneItemHandler);
 
-    private final FluidTank tank = new FluidTank(Integer.MAX_VALUE);
-    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
+    private final FluidTank fluidTank = new FluidTank(Integer.MAX_VALUE);
+    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> fluidTank);
 
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
-    private final ItemStackHandler upgradeInventory = new ItemStackHandler(9) {
-        @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
-            energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
-        }
-    };
-    private final int[] emittingRedstoneValues = new int[6];
-    private float propSpeed;
+    private final ItemStackHandler upgradeInventory = new ItemStackHandler(9);
+    private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
     private BasicAirHandler airHandler;
-    private final LazyOptional<IAirHandlerBase> airCap = LazyOptional.of(() -> airHandler);
+    private final LazyOptional<IAirHandlerBase> airCap = LazyOptional.of(this::getAirHandler);
+
+    private final int[] emittingRedstoneValues = new int[6];
+    private float propSpeed;
 
     private RenderProgressingLine targetLine;
     private RenderProgressingLine oldTargetLine;
@@ -159,7 +157,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     private DroneFakePlayer fakePlayer;
     public String playerName = "Drone";
-    private String playerUUID;
+    private UUID playerUUID;
 
     private DroneGoToChargingStation chargeAI;
     private DroneGoToOwner gotoOwnerAI;
@@ -207,10 +205,10 @@ public class EntityDrone extends EntityDroneBase implements
     public EntityDrone(EntityType<? extends EntityDrone> type, World world, PlayerEntity player) {
         this(type, world);
         if (player != null) {
-            playerUUID = player.getGameProfile().getId().toString();
+            playerUUID = player.getGameProfile().getId();
             playerName = player.getName().getFormattedText();
         } else {
-            playerUUID = getUniqueID().toString(); // Anonymous drone used for Amadron or spawned with a Dispenser
+            playerUUID = getUniqueID(); // Anonymous drone used for Amadron or spawned with a Dispenser
         }
     }
 
@@ -232,7 +230,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     private void initializeFakePlayer() {
-        fakePlayer = new DroneFakePlayer((ServerWorld) world, new GameProfile(UUID.fromString(getOwnerUUID()), playerName), this);
+        fakePlayer = new DroneFakePlayer((ServerWorld) world, new GameProfile(getOwnerUUID(), playerName), this);
         fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
 //        fakePlayer.inventory = new InventoryFakePlayer(fakePlayer) {
 //            @Override
@@ -288,7 +286,7 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return inventoryCap.cast();
+            return droneItemHandlerCap.cast();
         } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return fluidCap.cast();
         } else if (capability == CapabilityEnergy.ENERGY) {
@@ -356,7 +354,7 @@ public class EntityDrone extends EntityDroneBase implements
         }
         boolean enabled = !disabledByHacking && getAirHandler().getPressure() > 0.01F;
         if (!world.isRemote) {
-            inventory.updateHeldItem();
+            getDroneItemHandler().updateHeldItem();
             setAccelerating(!standby && enabled);
             if (isAccelerating()) {
                 fallDistance = 0;
@@ -746,10 +744,11 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void onDeath(DamageSource par1DamageSource) {
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            if (!inventory.getStackInSlot(i).isEmpty()) {
-                entityDropItem(inventory.getStackInSlot(i), 0);
-                inventory.setStackInSlot(i, ItemStack.EMPTY);
+        DroneItemHandler dih = getDroneItemHandler();
+        for (int i = 0; i < dih.getSlots(); i++) {
+            if (!dih.getStackInSlot(i).isEmpty()) {
+                entityDropItem(dih.getStackInSlot(i), 0);
+                dih.setStackInSlot(i, ItemStack.EMPTY);
             }
         }
         restoreLiquids(false);
@@ -765,15 +764,15 @@ public class EntityDrone extends EntityDroneBase implements
                     int y = (int) Math.floor(posY);
                     int z = (int) Math.floor(posZ);
                     ITextComponent msg = hasCustomName() ?
-                            new TranslationTextComponent("death.drone.named", getCustomName().toString(), x, y, z) :
+                            new TranslationTextComponent("death.drone.named", getCustomName().getFormattedText(), x, y, z) :
                             new TranslationTextComponent("death.drone", x, y, z);
                     msg = msg.appendSibling(new StringTextComponent(" - ")).appendSibling(par1DamageSource.getDeathMessage(this));
                     owner.sendStatusMessage(msg, false);
                 }
             }
         }
-        if (!world.isRemote) {
-            // 3rd & 3th parameters are unimportant here
+        if (!world.isRemote && getDugBlock() != null) {
+            // 3rd & 4th parameters are unimportant here
             getFakePlayer().interactionManager.func_225416_a(getDugBlock(), CPlayerDiggingPacket.Action.ABORT_DESTROY_BLOCK, UP, 0);
         }
         setCustomName(new StringTextComponent(""));  // keep other mods (like CoFH Core) quiet about death message broadcasts
@@ -786,6 +785,7 @@ public class EntityDrone extends EntityDroneBase implements
         writeAdditional(tag);
         ItemStack drone = new ItemStack(ModItems.DRONE);
         drone.setTag(tag);
+        drone.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> h.addAir(getAirHandler().getAir()));
         return drone;
     }
 
@@ -816,28 +816,12 @@ public class EntityDrone extends EntityDroneBase implements
         }
     }
 
-//    @Override
-//    public float getPressure(ItemStack iStack) {
-//        return dataManager.get(PRESSURE);
-//    }
-//
-//    @Override
-//    public void addAir(ItemStack iStack, int amount) {
-//        if (!world().isRemote) {
-//            currentAir += amount;
-//            dataManager.set(PRESSURE, currentAir / volume);
-//        }
-//    }
-//
-//    @Override
-//    public float maxPressure(ItemStack iStack) {
-//        return PneumaticValues.DRONE_MAX_PRESSURE;
-//    }
-//
-//    @Override
-//    public int getVolume(ItemStack iStack) {
-//        return (int) volume;
-//    }
+    private EntityDroneItemHandler getDroneItemHandler() {
+        if (droneItemHandler == null) {
+            droneItemHandler = new EntityDroneItemHandler(this);
+        }
+        return droneItemHandler;
+    }
 
     protected BasicAirHandler getAirHandler() {
         if (airHandler == null) {
@@ -856,24 +840,20 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public void writeAdditional(CompoundNBT tag) {
         super.writeAdditional(tag);
+
         TileEntityProgrammer.setWidgetsToNBT(progWidgets, tag);
         tag.putBoolean("naturallySpawned", naturallySpawned);
-        tag.put("currentAir", getAirHandler().serializeNBT());
+        tag.put("airHandler", getAirHandler().serializeNBT());
         tag.putFloat("propSpeed", propSpeed);
         tag.putBoolean("disabledByHacking", disabledByHacking);
         tag.putBoolean("hackedByOwner", gotoOwnerAI != null);
         tag.putInt("color", getDroneColor());
         tag.putBoolean("standby", standby);
-//        tag.putFloat("volume", volume);
+        tag.put("variables", aiManager.writeToNBT(new CompoundNBT()));
+        tag.put("Inventory", getDroneItemHandler().serializeNBT());
+        tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeInventory.serializeNBT());
 
-        CompoundNBT variableTag = new CompoundNBT();
-        aiManager.writeToNBT(variableTag);
-        tag.put("variables", variableTag);
-
-        tag.put("Inventory", inventory.serializeNBT());
-        tag.put(ChargeableItemHandler.NBT_UPGRADE_TAG, upgradeInventory.serializeNBT());
-
-        tank.writeToNBT(tag);
+        fluidTank.writeToNBT(tag);
 
         if (handlingOffer != null) {
             CompoundNBT subTag = new CompoundNBT();
@@ -904,9 +884,7 @@ public class EntityDrone extends EntityDroneBase implements
         super.readAdditional(tag);
         progWidgets = TileEntityProgrammer.getWidgetsFromNBT(tag);
         naturallySpawned = tag.getBoolean("naturallySpawned");
-        getAirHandler().deserializeNBT(tag.getCompound("Air"));
-//        currentAir = tag.getFloat("currentAir");
-//        volume = tag.getFloat("volume");
+        getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
         dataManager.set(PRESSURE, getAirHandler().getPressure());
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");
@@ -914,21 +892,17 @@ public class EntityDrone extends EntityDroneBase implements
         setDroneColor(tag.getInt("color"));
         aiManager.readFromNBT(tag.getCompound("variables"));
         standby = tag.getBoolean("standby");
+        upgradeInventory.deserializeNBT(tag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
+        upgradeCache.invalidate();
 
-        upgradeInventory.deserializeNBT(tag.getCompound(ChargeableItemHandler.NBT_UPGRADE_TAG));
-
-        // we can't just deserialize the saved inv directly into the inventory, since that
-        // also affects its size, meaning any added dispenser upgrades wouldn't work
-        // TODO verify it's ok to create the fake player at this stage (may need to lazy-create it later)
-        inventory = new EntityDroneItemHandler(this);
+        // we can't just deserialize the saved inv directly into the real inventory, since that
+        // also affects its size, meaning any added inventory upgrades wouldn't work
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(tag.getCompound("Inventory"));
-        for (int i = 0; i < tmpInv.getSlots() && i < inventory.getSlots(); i++) {
-            inventory.setStackInSlot(i, tmpInv.getStackInSlot(i).copy());
-        }
+        PneumaticCraftUtils.copyItemHandler(tmpInv, getDroneItemHandler());
 
-        tank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.INVENTORY)));
-        tank.readFromNBT(tag);
+        fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.INVENTORY)));
+        fluidTank.readFromNBT(tag);
 
         energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
 
@@ -960,10 +934,10 @@ public class EntityDrone extends EntityDroneBase implements
         return playerName;
     }
 
-    public String getOwnerUUID(){
+    public UUID getOwnerUUID(){
         if(playerUUID == null){
             Log.warning(String.format("Drone with owner '%s' has no UUID! Substituting the Drone's UUID (%s).", playerName, getUniqueID().toString()));
-            playerUUID = getUniqueID().toString();
+            playerUUID = getUniqueID();
         }
         return playerUUID;
     }
@@ -979,7 +953,7 @@ public class EntityDrone extends EntityDroneBase implements
         if (!getEntityWorld().isRemote) {
             if (playerName != null) {
                 tag.putString("owner", playerName);
-                tag.putString("ownerUUID", getOwnerUUID());
+                tag.putString("ownerUUID", getOwnerUUID().toString());
             }
         }
         return tag;
@@ -992,25 +966,24 @@ public class EntityDrone extends EntityDroneBase implements
         if (!getEntityWorld().isRemote) {
             if (tag.contains("owner")) {
                 playerName = tag.getString("owner");
-                playerUUID = tag.contains("ownerUUID") ? tag.getString("ownerUUID") : null;
+                playerUUID = tag.contains("ownerUUID") ? UUID.fromString(tag.getString("ownerUUID")) : null;
             }
         }
     }
 
     public int getUpgrades(EnumUpgrade upgrade) {
-        return getUpgrades(upgrade.getItem());
+        return upgradeCache.getUpgrades(upgrade);
     }
 
-//    @Override
-    public int getUpgrades(Item upgrade) {
-        int upgrades = 0;
-        for (int i = 0; i < upgradeInventory.getSlots(); i++) {
-            if (upgradeInventory.getStackInSlot(i).getItem() == upgrade) {
-                upgrades += upgradeInventory.getStackInSlot(i).getCount();
-            }
-        }
-        return upgrades;
-    }
+//    public int getUpgrades(Item upgrade) {
+//        int upgrades = 0;
+//        for (int i = 0; i < upgradeInventory.getSlots(); i++) {
+//            if (upgradeInventory.getStackInSlot(i).getItem() == upgrade) {
+//                upgrades += upgradeInventory.getStackInSlot(i).getCount();
+//            }
+//        }
+//        return upgrades;
+//    }
 
     @Override
     public FakePlayer getFakePlayer() {
@@ -1024,7 +997,6 @@ public class EntityDrone extends EntityDroneBase implements
         if (minigun == null) {
             minigun = new MinigunDrone(this).setPlayer(getFakePlayer())
                     .setWorld(world)
-//                    .setPressurizable(this, PneumaticValues.DRONE_USAGE_ATTACK);
                     .setAirHandler(this.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY), PneumaticValues.DRONE_USAGE_ATTACK);
         }
         return minigun;
@@ -1034,7 +1006,6 @@ public class EntityDrone extends EntityDroneBase implements
     public boolean attackEntityAsMob(Entity entity) {
         getFakePlayer().attackTargetEntityWithCurrentItem(entity);
         getAirHandler().addAir(-PneumaticValues.DRONE_USAGE_ATTACK);
-//        addAir(null, -PneumaticValues.DRONE_USAGE_ATTACK);
         return true;
     }
 
@@ -1051,7 +1022,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public IItemHandlerModifiable getInv() {
-        return inventory;
+        return getDroneItemHandler();
     }
 
     public double getSpeed() {
@@ -1109,8 +1080,8 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
-    public void addInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        if (playerName.equals(player.getName())) {
+    public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
+        if (playerUUID.equals(player.getUniqueID())) {
             if (isGoingToOwner()) {
                 curInfo.add("pneumaticHelmet.hacking.result.resumeTasks");
             } else {
@@ -1123,7 +1094,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        if (playerName.equals(player.getName())) {
+        if (playerUUID.equals(player.getUniqueID())) {
             if (isGoingToOwner()) {
                 curInfo.add("pneumaticHelmet.hacking.finished.calledBack");
             } else {
@@ -1136,13 +1107,13 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public int getHackTime(Entity entity, PlayerEntity player) {
-        return playerName.equals(player.getName()) ? 20 : 100;
+        return playerUUID.equals(player.getUniqueID()) ? 20 : 100;
     }
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
         if (!world.isRemote && player.getGameProfile().equals(getFakePlayer().getGameProfile())) {
-            setGoingToOwner(gotoOwnerAI == null);//toggle the state
+            setGoingToOwner(gotoOwnerAI == null); //toggle the state
         } else {
             disabledByHacking = true;
         }
@@ -1173,8 +1144,8 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
-    public IFluidTank getTank() {
-        return tank;
+    public IFluidTank getFluidTank() {
+        return fluidTank;
     }
 
     /**
@@ -1266,25 +1237,40 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     public void tryFireMinigun(LivingEntity target) {
-        ItemStack ammo = getAmmo();
-        if (getMinigun().setAmmoStack(ammo).tryFireMinigun(target)) {
-            for (int i = 0; i < inventory.getSlots(); i++) {
-                if (inventory.getStackInSlot(i) == ammo) {
-                    inventory.setStackInSlot(i, ItemStack.EMPTY);
-                }
+        int slot = getSlotForAmmo();
+        DroneItemHandler dih = getDroneItemHandler();
+        if (slot >= 0) {
+            ItemStack ammo = dih.getStackInSlot(slot);
+            if (getMinigun().setAmmoStack(ammo).tryFireMinigun(target)) {
+                dih.setStackInSlot(slot, ItemStack.EMPTY);
             }
         }
     }
 
-    public ItemStack getAmmo() {
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
-            if (stack.getItem() instanceof ItemGunAmmo) {
-                return stack;
+    /**
+     * Get the first slot which has any ammo in it.
+     * @return a slot number, or -1 if no ammo
+     */
+    public int getSlotForAmmo() {
+        DroneItemHandler dih = getDroneItemHandler();
+        for (int i = 0; i < dih.getSlots(); i++) {
+            if (dih.getStackInSlot(i).getItem() instanceof ItemGunAmmo) {
+                return i;
             }
         }
-        return ItemStack.EMPTY;
+        return -1;
     }
+
+//    public ItemStack getAmmo() {
+//        DroneItemHandler dih = getDroneItemHandler();
+//        for (int i = 0; i < dih.getSlots(); i++) {
+//            ItemStack stack = dih.getStackInSlot(i);
+//            if (stack.getItem() instanceof ItemGunAmmo) {
+//                return stack;
+//            }
+//        }
+//        return ItemStack.EMPTY;
+//    }
 
     public void setHandlingOffer(AmadronOffer offer, int times, @Nonnull ItemStack usedTablet, String buyingPlayer) {
         handlingOffer = offer;
@@ -1383,6 +1369,16 @@ public class EntityDrone extends EntityDroneBase implements
         syncedPlayers.removeIf(player -> !player.isAlive()
                 || player.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()
                 || NBTUtil.getInteger(player.getItemStackFromSlot(EquipmentSlotType.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) != getEntityId());
+    }
+
+    @Override
+    public IItemHandler getUpgradeHandler() {
+        return upgradeInventory;
+    }
+
+    @Override
+    public void onUpgradesChanged() {
+        energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
     }
 
     private class MinigunDrone extends Minigun {

@@ -69,14 +69,19 @@ public class ItemPneumaticWrench extends ItemPressurizable {
 
     @Override
     public boolean itemInteractionForEntity(ItemStack iStack, PlayerEntity player, LivingEntity target, Hand hand) {
-        if (!player.world.isRemote && target.isAlive() && target instanceof IPneumaticWrenchable) {
+        if (player.world.isRemote) {
+            return true;
+        } else if (target.isAlive() && target instanceof IPneumaticWrenchable) {
             return iStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
-                if (!player.isCreative()) {
-                    if (h.getPressure() < 0.1) return false;
-                    h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+                boolean wrenched = ((IPneumaticWrenchable) target).onWrenched(target.world, player, null, null, hand);
+                if (wrenched) {
+                    if (!player.isCreative()) {
+                        if (h.getPressure() < 0.1) return false;
+                        h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+                    }
+                    NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0F, 1.0F, false), target.world);
                 }
-                NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0F, 1.0F, false), target.world);
-                return true;
+                return wrenched;
             }).orElse(false);
         }
         return false;

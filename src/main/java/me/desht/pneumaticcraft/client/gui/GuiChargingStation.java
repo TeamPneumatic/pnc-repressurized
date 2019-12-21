@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
@@ -20,7 +21,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.List;
 
 public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerChargingStation,TileEntityChargingStation> {
@@ -56,8 +56,8 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     }
 
     @Override
-    protected Point getInvTextOffset() {
-        return new Point(0, 3);
+    protected PointXY getInvTextOffset() {
+        return new PointXY(0, 3);
     }
 
     @Override
@@ -88,10 +88,10 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     }
 
     @Override
-    protected Point getGaugeLocation() {
+    protected PointXY getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new Point(xStart + xSize * 3 / 4 + 10, yStart + ySize / 4 + 4);
+        return new PointXY(xStart + xSize * 3 / 4 + 10, yStart + ySize / 4 + 4);
     }
 
     @Override

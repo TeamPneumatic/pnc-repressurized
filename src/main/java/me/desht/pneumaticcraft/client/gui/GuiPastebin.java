@@ -6,12 +6,12 @@ import me.desht.pneumaticcraft.common.util.JsonToNBTConverter;
 import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import me.desht.pneumaticcraft.common.util.PastebinHandler;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
-import org.lwjgl.glfw.GLFW;
 
 public class GuiPastebin extends GuiPneumaticScreenBase {
 
@@ -29,11 +29,12 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
 
     private GuiPastebin(Screen parentScreen, String pastingString) {
         super(new StringTextComponent("Pastebin"));
+
         xSize = 183;
         ySize = 202;
         this.pastingString = pastingString;
         this.parentScreen = parentScreen;
-        minecraft.keyboardListener.enableRepeatEvents(true);
+        Minecraft.getInstance().keyboardListener.enableRepeatEvents(true);
     }
 
     GuiPastebin(Screen parentScreen, CompoundNBT tag) {
@@ -43,6 +44,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     @Override
     public void init() {
         super.init();
+
         if (!PastebinHandler.isLoggedIn()) {
             usernameBox = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 80, 10);
             addButton(usernameBox);
@@ -126,9 +128,10 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     @Override
     public void tick() {
         super.tick();
+
         if (state == EnumState.LOGOUT) {
             state = EnumState.NONE;
-            init();
+            init(minecraft, this.width, this.height);
         }
         if (state != EnumState.NONE && PastebinHandler.isDone()) {
             statusMessage = "";
@@ -177,23 +180,18 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     @Override
     public void render(int x, int y, float partialTicks) {
         renderBackground();
+
         super.render(x, y, partialTicks);
-        if (statusMessage != null && !statusMessage.isEmpty()) font.drawString(statusMessage, guiLeft + 5, guiTop + 5, 0xFFFF0000);
+
+        if (statusMessage != null && !statusMessage.isEmpty()) {
+            font.drawString(statusMessage, guiLeft + 5, guiTop + 5, 0xFFFF0000);
+        }
     }
 
-    /**
-     * Fired when a key is typed. This is the equivalent of KeyListener.keyTyped(KeyEvent e).
-     */
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            minecraft.keyboardListener.enableRepeatEvents(false);
-            minecraft.displayGuiScreen(parentScreen);
-            onClose();
-            return true;
-        } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
-        }
+    public void onClose() {
+        minecraft.keyboardListener.enableRepeatEvents(false);
+        minecraft.displayGuiScreen(parentScreen);
     }
 
     @Override

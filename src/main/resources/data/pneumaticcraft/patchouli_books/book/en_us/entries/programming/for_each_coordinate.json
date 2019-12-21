@@ -1,6 +1,6 @@
 {
   "name": "For Each Coordinate Widget",
-  "icon": "pneumaticcraft:textures/items/progwidgets/for_each_coordinate.png",
+  "icon": "pneumaticcraft:textures/item/progwidgets/for_each_coordinate.png",
   "category": "widget_flow",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -16,7 +16,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/items/progwidgets/for_each_coordinate.png"
+        "pneumaticcraft:textures/item/progwidgets/for_each_coordinate.png"
       ],
       "text": "$(italic)For Each Coordinate Widget/$"
     }

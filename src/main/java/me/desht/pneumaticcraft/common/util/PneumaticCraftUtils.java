@@ -22,12 +22,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
 import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
@@ -36,11 +33,11 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -582,14 +579,6 @@ public class PneumaticCraftUtils {
         stack.setCount(0);
     }
 
-    public static TileEntity getTileEntity(GlobalPos globalPos) {
-        World world = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), globalPos.getDimension(), false, false);
-        if (world != null && world.isAreaLoaded(globalPos.getPos(), 1)) {
-            return world.getTileEntity(globalPos.getPos());
-        }
-        return null;
-    }
-
     public static PlayerEntity getPlayerFromId(String uuid) {
         return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(UUID.fromString(uuid));
     }
@@ -792,30 +781,6 @@ public class PneumaticCraftUtils {
         return TextFormatting.BOLD + DyeColor.byId(c).getTranslationKey() + TextFormatting.RESET;
     }
 
-    public static CompoundNBT serializeGlobalPos(GlobalPos globalPos) {
-        CompoundNBT tag = new CompoundNBT();
-        tag.put("pos", net.minecraft.nbt.NBTUtil.writeBlockPos(globalPos.getPos()));
-        tag.putString("dim", DimensionType.getKey(globalPos.getDimension()).toString());
-        return tag;
-    }
-
-    public static GlobalPos deserializeGlobalPos(CompoundNBT tag) {
-        return GlobalPos.of(
-                DimensionType.byName(new ResourceLocation(tag.getString("dim"))),
-                NBTUtil.readBlockPos(tag.getCompound("pos"))
-        );
-    }
-
-    /**
-     * Get a world object for the given global pos.  This will not reset the dimension unload delay and will not
-     * force-load the dimension.
-     * @param pos the global pos
-     * @return the world
-     */
-    public static World getWorldForGlobalPos(GlobalPos pos) {
-        return DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), pos.getDimension(), false, false);
-    }
-
     public static int getBurnTime(ItemStack stack) {
         int ret = stack.getBurnTime();
         return ForgeEventFactory.getItemBurnTime(stack, ret == -1 ? AbstractFurnaceTileEntity.getBurnTimes().getOrDefault(stack.getItem(), 0) : ret);
@@ -823,5 +788,12 @@ public class PneumaticCraftUtils {
 
     public static Vec3d getBlockCentre(BlockPos pos) {
         return new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+    }
+
+    public static void copyItemHandler(IItemHandler source, ItemStackHandler dest) {
+        dest.setSize(source.getSlots());
+        for (int i = 0; i < source.getSlots(); i++) {
+            dest.setStackInSlot(i, source.getStackInSlot(i).copy());
+        }
     }
 }

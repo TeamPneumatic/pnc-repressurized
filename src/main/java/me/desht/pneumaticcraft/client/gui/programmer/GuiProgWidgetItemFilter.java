@@ -37,21 +37,21 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         addButton(new WidgetButtonExtended(guiLeft + 4, guiTop + 20, 70, 20, "Search item...", b -> openSearcher()));
         addButton(new WidgetButtonExtended(guiLeft + 78, guiTop + 20, 100, 20, "Search inventory...", b -> openInventorySearcher()));
 
-        checkBoxUseDamage = new WidgetCheckBox(guiLeft + 4, guiTop + 72, 0xFF404040,
-                "Use damage values", b -> progWidget.useItemDamage = b.checked);
+        checkBoxUseDamage = new WidgetCheckBox(guiLeft + 4, guiTop + 96, 0xFF404040,
+                "Match Item durability", b -> progWidget.useItemDurability = b.checked);
         checkBoxUseDamage.setTooltip(Arrays.asList("Check to handle differently damaged", "tools as different."));
-        checkBoxUseDamage.checked = progWidget.useItemDamage;
+        checkBoxUseDamage.checked = progWidget.useItemDurability;
         addButton(checkBoxUseDamage);
 
-        checkBoxUseNBT = new WidgetCheckBox(guiLeft + 4, guiTop + 108, 0xFF404040, "Use NBT", b -> {
+        checkBoxUseNBT = new WidgetCheckBox(guiLeft + 4, guiTop + 108, 0xFF404040, "Match Item NBT", b -> {
             progWidget.useNBT = b.checked;
             checkBoxMatchBlock.enabled = !b.checked;
         });
-        checkBoxUseNBT.setTooltip(Arrays.asList("Check to handle items like Enchanted Books", "or Firework as different."));
+        checkBoxUseNBT.setTooltip(Arrays.asList("Check to handle items like Enchanted Books", "or Fireworks as different."));
         checkBoxUseNBT.checked = progWidget.useNBT;
         addButton(checkBoxUseNBT);
 
-        checkBoxUseOreDict = new WidgetCheckBox(guiLeft + 4, guiTop + 120, 0xFF404040, "Use Item Tags", b -> {
+        checkBoxUseOreDict = new WidgetCheckBox(guiLeft + 4, guiTop + 120, 0xFF404040, "Match Item Tags", b -> {
             progWidget.useItemTags = b.checked;
             checkBoxUseDamage.enabled = !b.checked;
             checkBoxUseNBT.enabled = !b.checked;
@@ -62,7 +62,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         checkBoxUseOreDict.checked = progWidget.useItemTags;
         addButton(checkBoxUseOreDict);
 
-        checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 4, guiTop + 132, 0xFF404040, "Use Mod similarity", b -> {
+        checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 4, guiTop + 132, 0xFF404040, "Match by Mod", b -> {
             progWidget.useModSimilarity = b.checked;
             checkBoxUseDamage.enabled = !b.checked;
             checkBoxUseNBT.enabled = !b.checked;
@@ -119,20 +119,19 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
     @Override
     public void onClose() {
-        super.onClose();
-        
         progWidget.setVariable(variableField.getText());
+
+        super.onClose();
     }
     
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
-        
+
         if (PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED) {
             font.drawString("Variable:", guiLeft + 90, guiTop + 45, 0xFF404040);
         }
         font.drawString("Filter:", guiLeft + 10, guiTop + 53, 0xFF404040);
-
         String oldVarName = progWidget.getVariable();
         progWidget.setVariable("");
         if (!progWidget.getFilter().isEmpty())

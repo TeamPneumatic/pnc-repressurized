@@ -60,6 +60,15 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     }
 
     @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            minecraft.player.closeScreen();
+        }
+        return !entityFilter.keyPressed(keyCode, scanCode, modifiers)
+                && entityFilter.func_212955_f() || super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
     protected void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
 

@@ -57,7 +57,9 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventory);
 
     // Client side variables that are used to prevent resetting.
-    public int translatedX, translatedY, zoomState;
+    public double translatedX;
+    public double translatedY;
+    public int zoomState;
     public boolean showInfo = true, showFlow = true;
     @GuiSynced
     public boolean canUndo, canRedo;
@@ -122,7 +124,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Nonnull
-    public ItemStack getIteminProgrammingSlot() {
+    public ItemStack getItemInProgrammingSlot() {
         return inventory.getStackInSlot(PROGRAM_SLOT);
     }
 
@@ -138,7 +140,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     private static void getWidgetsFromNBT(CompoundNBT tag, List<IProgWidget> progWidgets) {
-        ListNBT widgetTags = tag.getList("widgets", NBT.TAG_COMPOUND);
+        ListNBT widgetTags = tag.getList(IProgrammable.NBT_WIDGETS, NBT.TAG_COMPOUND);
         for (int i = 0; i < widgetTags.size(); i++) {
             CompoundNBT widgetTag = widgetTags.getCompound(i);
             String widgetName = widgetTag.getString("name");
@@ -161,7 +163,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             widget.writeToNBT(widgetTag);
             widgetTags.add(widgetTags.size(), widgetTag);
         }
-        tag.put("widgets", widgetTags);
+        tag.put(IProgrammable.NBT_WIDGETS, widgetTags);
         return tag;
     }
 
@@ -243,7 +245,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                     progWidgets.clear();
                 }
                 break;
-            case "program":
+            case "export":
                 tryProgramDrone(player);
                 break;
             case "undo":
@@ -320,7 +322,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     public static List<IProgWidget> getProgWidgets(ItemStack iStack) {
-        if (NBTUtil.hasTag(iStack, "widgets")) {
+        if (NBTUtil.hasTag(iStack, IProgrammable.NBT_WIDGETS)) {
             return TileEntityProgrammer.getWidgetsFromNBT(iStack.getTag());
         } else {
             return new ArrayList<>();
@@ -388,14 +390,21 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         super.tick();
     }
 
-    public void previewArea(int widgetX, int widgetY) {
-        for (IProgWidget w : progWidgets) {
-            if (w.getX() == widgetX && w.getY() == widgetY && w instanceof IAreaProvider) {
-                Set<BlockPos> area = new HashSet<>();
-                ((IAreaProvider) w).getArea(area);
-                AreaShowManager.getInstance().showArea(area, 0x9000FF00, this);
-            }
+    public void previewArea(IProgWidget progWidget) {
+        if (progWidget == null) {
+            AreaShowManager.getInstance().removeHandlers(this);
+        } else if (progWidget instanceof IAreaProvider) {
+            Set<BlockPos> area = new HashSet<>();
+            ((IAreaProvider) progWidget).getArea(area);
+            AreaShowManager.getInstance().showArea(area, 0x9000FF00, this);
         }
+//        for (IProgWidget w : progWidgets) {
+//            if (w.getX() == widgetX && w.getY() == widgetY && w instanceof IAreaProvider) {
+//                Set<BlockPos> area = new HashSet<>();
+//                ((IAreaProvider) w).getArea(area);
+//                AreaShowManager.getInstance().showArea(area, 0x9000FF00, this);
+//            }
+//        }
     }
 
     public void saveToHistory() {

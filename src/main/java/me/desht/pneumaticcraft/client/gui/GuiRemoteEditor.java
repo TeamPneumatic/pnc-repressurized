@@ -24,7 +24,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,8 +197,7 @@ public class GuiRemoteEditor extends GuiRemote {
 
     private boolean isOutsideProgrammingArea(ActionWidget actionWidget) {
         Widget w = actionWidget.getWidget();
-        Rectangle bounds = new Rectangle(w.x, w.y, w.getWidth(), w.getHeight());
-        return !new Rectangle(guiLeft, guiTop, 183, ySize).contains(bounds);
+        return w.x < guiLeft || w.y < guiTop || w.x + w.getWidth() > guiLeft + 183 || w.y + w.getHeight() > guiTop + ySize;
     }
 
     @Override

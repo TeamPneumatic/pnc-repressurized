@@ -260,7 +260,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    protected void onUpgradesChanged() {
+    public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
         if (world != null && !world.isRemote) {

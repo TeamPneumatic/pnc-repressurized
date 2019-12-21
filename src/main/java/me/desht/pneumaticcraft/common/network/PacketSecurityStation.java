@@ -30,7 +30,7 @@ public abstract class PacketSecurityStation extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = getTileEntity(ctx);
+            TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
             handle(te, username);
         });
         ctx.get().setPacketHandled(true);

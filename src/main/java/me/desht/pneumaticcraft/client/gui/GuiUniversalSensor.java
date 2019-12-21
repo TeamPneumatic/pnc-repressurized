@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -28,7 +29,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -115,8 +115,8 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     }
 
     @Override
-    protected Point getInvTextOffset() {
-        return new Point(0, 2);
+    protected PointXY getInvTextOffset() {
+        return new PointXY(0, 2);
     }
 
     @Override
@@ -132,10 +132,10 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     }
 
     @Override
-    protected Point getGaugeLocation() {
+    protected PointXY getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new Point(xStart + 34, yStart + ySize / 4);
+        return new PointXY(xStart + 34, yStart + ySize / 4);
     }
 
     public void updateButtons() {

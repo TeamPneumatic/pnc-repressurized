@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
@@ -16,7 +17,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,13 +122,13 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     }
 
     @Override
-    protected Point getInvNameOffset() {
-        return new Point(-36, 0);
+    protected PointXY getInvNameOffset() {
+        return new PointXY(-36, 0);
     }
 
     @Override
-    protected Point getInvTextOffset() {
-        return new Point(20, -1);
+    protected PointXY getInvTextOffset() {
+        return new PointXY(20, -1);
     }
 
     @Override

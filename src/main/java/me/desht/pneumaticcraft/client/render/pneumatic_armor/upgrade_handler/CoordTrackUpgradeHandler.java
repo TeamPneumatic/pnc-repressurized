@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
@@ -194,9 +195,8 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public IOptionPage getGuiOptionsPage() {
-        return new GuiCoordinateTrackerOptions();
+    public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
+        return new GuiCoordinateTrackerOptions(screen, this);
     }
 
     @Override
@@ -205,7 +205,6 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public WidgetAnimatedStat getAnimatedStat() {
         return null;
     }

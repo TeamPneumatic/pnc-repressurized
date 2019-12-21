@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.entity.living.EntityBasicDrone;
-import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -36,7 +36,7 @@ public class ItemBasicDrone extends ItemDrone {
         if (stackTag != null) {
             entityTag.putFloat("currentAir", stackTag.getFloat("currentAir"));
             entityTag.putInt("color", stackTag.getInt("color"));
-            entityTag.put(ChargeableItemHandler.NBT_UPGRADE_TAG, stackTag.getCompound(ChargeableItemHandler.NBT_UPGRADE_TAG));
+            entityTag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, stackTag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
         }
         drone.readAdditional(entityTag);
         drone.addProgram(clickPos, facing, placePos, drone.progWidgets);

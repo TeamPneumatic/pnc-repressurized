@@ -1,6 +1,6 @@
 {
   "name": "Condition: Block Widget",
-  "icon": "pneumaticcraft:textures/items/progwidgets/condition_block_piece.png",
+  "icon": "pneumaticcraft:textures/item/progwidgets/condition_block_piece.png",
   "category": "widget_cond",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -15,7 +15,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/items/progwidgets/condition_block_piece.png"
+        "pneumaticcraft:textures/item/progwidgets/condition_block_piece.png"
       ],
       "text": "$(italic)Condition: Block Widget/$"
     }

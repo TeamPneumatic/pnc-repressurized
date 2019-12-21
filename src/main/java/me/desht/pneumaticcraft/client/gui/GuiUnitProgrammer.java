@@ -11,6 +11,7 @@ import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -18,7 +19,6 @@ import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,32 +30,34 @@ public class GuiUnitProgrammer extends Screen {
     private final List<IProgWidget> progWidgets;
     private final int guiLeft, guiTop;
     private final int startX, startY, areaWidth, areaHeight;
-    private int translatedX, translatedY;
-    private int lastMouseX, lastMouseY;
+    private double translatedX, translatedY;
     private int lastZoom;
-    private boolean wasClicking;
 
     private final WidgetVerticalScrollbar scaleScroll;
     private static final float SCALE_PER_STEP = 0.2F;
+    private boolean allowDragging;
 
     public GuiUnitProgrammer(List<IProgWidget> progWidgets, FontRenderer fontRenderer, int guiLeft, int guiTop,
-                             int width, int height, int startX, int startY, int areaWidth, int areaHeight, int translatedX,
-                             int translatedY, int lastZoom) {
+                             int width, int height, Rectangle2d bounds, double translatedX,
+                             double translatedY, int lastZoom) {
         super(new StringTextComponent("Programmer"));
         this.fontRenderer = fontRenderer;
         this.progWidgets = progWidgets;
         this.guiLeft = guiLeft;
         this.guiTop = guiTop;
         init(Minecraft.getInstance(), width, height);
-        this.startX = startX;
-        this.startY = startY;
-        this.areaWidth = areaWidth;
-        this.areaHeight = areaHeight;
+        this.startX = bounds.getX();
+        this.startY = bounds.getY();
+        this.areaWidth = bounds.getWidth();
+        this.areaHeight = bounds.getHeight();
         this.translatedX = translatedX;
         this.translatedY = translatedY;
         this.lastZoom = lastZoom;
 
-        scaleScroll = new WidgetVerticalScrollbar(guiLeft + areaWidth + 8, guiTop + 40, areaHeight - 25).setStates(9).setCurrentState(lastZoom).setListening(true);
+        scaleScroll = new WidgetVerticalScrollbar(guiLeft + areaWidth + 8, guiTop + 40, areaHeight - 25)
+                .setStates(9)
+                .setCurrentState(lastZoom)
+                .setListening(true);
     }
 
     public WidgetVerticalScrollbar getScrollBar() {
@@ -66,11 +68,11 @@ public class GuiUnitProgrammer extends Screen {
         return lastZoom;
     }
 
-    int getTranslatedX() {
+    double getTranslatedX() {
         return translatedX;
     }
 
-    int getTranslatedY() {
+    double getTranslatedY() {
         return translatedY;
     }
 
@@ -133,7 +135,9 @@ public class GuiUnitProgrammer extends Screen {
         ThirdPartyManager.instance().docsProvider.addTooltip(tooltip, false);
     }
 
-    public void render(int x, int y, boolean showFlow, boolean showInfo, boolean translate) {
+    public void render(int x, int y, boolean showFlow, boolean showInfo, boolean allowDragging) {
+        this.allowDragging = allowDragging;
+
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         int origX = x;
@@ -146,12 +150,12 @@ public class GuiUnitProgrammer extends Screen {
 
         if (scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
-            if (new Rectangle(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(origX, origY) && !scaleScroll.isDragging()) {
+            if (new Rectangle2d(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(origX, origY) && !scaleScroll.isDragging()) {
                 translatedX += shift * x;
                 translatedY += shift * y;
             } else {
-                translatedX += areaWidth / 2 * shift;
-                translatedY += areaHeight / 2 * shift;
+                translatedX += areaWidth / 2d * shift;
+                translatedY += areaHeight / 2d * shift;
             }
         }
         lastZoom = scaleScroll.getState();
@@ -208,20 +212,25 @@ public class GuiUnitProgrammer extends Screen {
         GlStateManager.popMatrix();
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
+    }
 
-        boolean isLeftClicking = minecraft.gameSettings.keyBindAttack.isKeyDown();
-        if (translate && isLeftClicking && wasClicking && !scaleScroll.isDragging() && new Rectangle(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(origX, origY)) {
-            translatedX += origX - lastMouseX;
-            translatedY += origY - lastMouseY;
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dx, double dy) {
+        if (mouseButton == 0 && allowDragging && !scaleScroll.isDragging() && new Rectangle2d(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains((int)mouseX, (int)mouseY)) {
+            translatedX += dx;
+            translatedY += dy;
+            return true;
         }
+        return false;
+    }
 
-        wasClicking = isLeftClicking;
-        lastMouseX = origX;
-        lastMouseY = origY;
+    @Override
+    public boolean mouseScrolled(double p_mouseScrolled_1_, double p_mouseScrolled_3_, double p_mouseScrolled_5_) {
+        return scaleScroll.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_);
     }
 
     protected void renderAdditionally() {
-
+        // nothing; override this
     }
 
     protected void drawBorder(IProgWidget widget, int color) {
@@ -303,8 +312,8 @@ public class GuiUnitProgrammer extends Screen {
         if (widget != null) {
             scaleScroll.currentScroll = 0;
             lastZoom = 0;
-            translatedX = -widget.getX() * 2 + areaWidth / 2 - guiLeft;
-            translatedY = -widget.getY() * 2 + areaHeight / 2 - guiTop;
+            translatedX = -widget.getX() * 2d + areaWidth / 2d - guiLeft;
+            translatedY = -widget.getY() * 2d + areaHeight / 2d - guiTop;
         }
     }
 }

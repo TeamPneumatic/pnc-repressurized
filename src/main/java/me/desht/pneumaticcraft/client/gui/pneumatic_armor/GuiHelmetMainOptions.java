@@ -9,13 +9,11 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Mai
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
 
-public class GuiHelmetMainOptions implements IOptionPage {
-
-    private final MainHelmetHandler renderHandler;
+public class GuiHelmetMainOptions extends IOptionPage.SimpleToggleableOptions<MainHelmetHandler> {
     private KeybindingButton changeKeybindingButton;
 
-    public GuiHelmetMainOptions(MainHelmetHandler renderHandler) {
-        this.renderHandler = renderHandler;
+    public GuiHelmetMainOptions(IGuiScreen screen, MainHelmetHandler upgradeHandler) {
+        super(screen, upgradeHandler);
     }
 
     @Override
@@ -24,19 +22,19 @@ public class GuiHelmetMainOptions implements IOptionPage {
     }
 
     @Override
-    public void initGui(IGuiScreen gui) {
+    public void populateGui(IGuiScreen gui) {
         gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
                 "Move Pressure Stat Screen...",
-                b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.POWER)))
+                b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getUpgradeHandler(), ArmorHUDLayout.LayoutTypes.POWER)))
         );
 
         gui.addWidget(new WidgetButtonExtended(30, 150, 150, 20,
                 "Move Message Screen...", b -> {
-            renderHandler.testMessageStat = new WidgetAnimatedStat(null, "Test Message, keep in mind messages can be long!",
+            getUpgradeHandler().testMessageStat = new WidgetAnimatedStat(null, "Test Message, keep in mind messages can be long!",
                     WidgetAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
-            renderHandler.testMessageStat.openWindow();
+            getUpgradeHandler().testMessageStat.openWindow();
             Minecraft.getInstance().displayGuiScreen(
-                    new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.MESSAGE, renderHandler.testMessageStat));
+                    new GuiMoveStat(getUpgradeHandler(), ArmorHUDLayout.LayoutTypes.MESSAGE, getUpgradeHandler().testMessageStat));
         }));
 
         changeKeybindingButton = new KeybindingButton(30, 172, 150, 20,
@@ -46,30 +44,9 @@ public class GuiHelmetMainOptions implements IOptionPage {
         gui.addWidget(changeKeybindingButton);
     }
 
-    public void renderPre(int x, int y, float partialTicks) {
-    }
-
-    public void renderPost(int x, int y, float partialTicks) {
-    }
-
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return changeKeybindingButton != null && changeKeybindingButton.receiveKey(keyCode);
-    }
-
-    @Override
-    public boolean mouseClicked(double x, double y, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
-        return false;
-    }
-
-    @Override
-    public boolean canBeTurnedOff() {
-        return true;
     }
 
     @Override

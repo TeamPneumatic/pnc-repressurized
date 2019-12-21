@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
@@ -31,7 +32,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.awt.*;
 import java.util.Arrays;
 
 public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumaticContainerBase<ContainerLogistics,TileEntityBase> {
@@ -137,8 +137,8 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
 
         int c = logistics.getColor();
         // desaturate; this is a background colour...
-        float[] hsb = Color.RGBtoHSB((c & 0xFF0000) >> 16, (c & 0xFF00) >> 8, c & 0xFF, null);
-        Color color = Color.getHSBColor(hsb[0], hsb[1] * 0.2f, hsb[2]);
+        float[] hsb = TintColor.RGBtoHSB((c & 0xFF0000) >> 16, (c & 0xFF00) >> 8, c & 0xFF, null);
+        TintColor color = TintColor.getHSBColor(hsb[0], hsb[1] * 0.2f, hsb[2]);
         if (hsb[2] < 0.7) color = color.brighter();
         return color.getRGB();
     }

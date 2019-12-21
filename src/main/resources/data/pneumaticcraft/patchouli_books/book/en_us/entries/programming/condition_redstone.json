@@ -1,6 +1,6 @@
 {
   "name": "Condition: Redstone Widget",
-  "icon": "pneumaticcraft:textures/items/progwidgets/condition_redstone_piece.png",
+  "icon": "pneumaticcraft:textures/item/progwidgets/condition_redstone_piece.png",
   "category": "widget_cond",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -11,7 +11,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/items/progwidgets/condition_redstone_piece.png"
+        "pneumaticcraft:textures/item/progwidgets/condition_redstone_piece.png"
       ],
       "text": "$(italic)Condition: Redstone Widget/$"
     }

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.aux.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
@@ -13,15 +14,18 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.function.Supplier;
 
+/**
+ * Received on: SERVER
+ * Sent by client GUI to update (and maybe save as default) the configuration settings of a Micromissile item.
+ */
 public class PacketUpdateMicromissileSettings {
     private float topSpeed;
     private float accel;
     private float damage;
-    private Point point;
+    private PointXY point;
     private String entityFilter;
     private FireMode fireMode;
     private boolean saveDefault;
@@ -30,7 +34,7 @@ public class PacketUpdateMicromissileSettings {
         // empty
     }
 
-    public PacketUpdateMicromissileSettings(float topSpeed, float accel, float damage, Point point, String entityFilter, FireMode fireMode, boolean saveDefault) {
+    public PacketUpdateMicromissileSettings(float topSpeed, float accel, float damage, PointXY point, String entityFilter, FireMode fireMode, boolean saveDefault) {
         this.topSpeed = topSpeed;
         this.accel = accel;
         this.damage = damage;
@@ -44,7 +48,7 @@ public class PacketUpdateMicromissileSettings {
         topSpeed = buffer.readFloat();
         accel = buffer.readFloat();
         damage = buffer.readFloat();
-        point = new Point(buffer.readInt(), buffer.readInt());
+        point = new PointXY(buffer.readInt(), buffer.readInt());
         entityFilter = buffer.readString();
         fireMode = FireMode.values()[buffer.readByte()];
         saveDefault = buffer.readBoolean();

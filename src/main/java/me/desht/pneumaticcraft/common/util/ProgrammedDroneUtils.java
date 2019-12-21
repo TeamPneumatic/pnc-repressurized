@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.util;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.item.ItemStack;
@@ -36,7 +35,7 @@ public class ProgrammedDroneUtils {
         ItemStackHandler upgrades = new ItemStackHandler(9);
         upgrades.setStackInSlot(0, new ItemStack(EnumUpgrade.INVENTORY.getItem(), 64));
         upgrades.setStackInSlot(1, new ItemStack(EnumUpgrade.SPEED.getItem(), 10));
-        tag.put(ChargeableItemHandler.NBT_UPGRADE_TAG, upgrades.serializeNBT());
+        tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgrades.serializeNBT());
         tag.put("Inventory", new CompoundNBT());
         tag.putFloat("currentAir", 100000);
         drone.readAdditional(tag);
@@ -52,7 +51,7 @@ public class ProgrammedDroneUtils {
     }
 
     public static CreatureEntity deliverItemsAmazonStyle(GlobalPos gPos, ItemStack... deliveredStacks) {
-        World world = PneumaticCraftUtils.getWorldForGlobalPos(gPos);
+        World world = GlobalPosUtils.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.getPos();
 
         if (world == null || world.isRemote) return null;
@@ -90,7 +89,7 @@ public class ProgrammedDroneUtils {
     }
 
     public static CreatureEntity deliverFluidAmazonStyle(GlobalPos gPos, FluidStack deliveredFluid) {
-        World world = PneumaticCraftUtils.getWorldForGlobalPos(gPos);
+        World world = GlobalPosUtils.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.getPos();
 
         if (world == null || world.isRemote) return null;
@@ -107,13 +106,13 @@ public class ProgrammedDroneUtils {
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets.addAll(builder.build());
 
-        drone.getTank().fill(deliveredFluid, IFluidHandler.FluidAction.EXECUTE);
+        drone.getFluidTank().fill(deliveredFluid, IFluidHandler.FluidAction.EXECUTE);
         world.addEntity(drone);
         return drone;
     }
 
     public static CreatureEntity retrieveItemsAmazonStyle(GlobalPos gPos, ItemStack... queriedStacks) {
-        World world = PneumaticCraftUtils.getWorldForGlobalPos(gPos);
+        World world = GlobalPosUtils.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.getPos();
 
         if (world == null || world.isRemote) return null;
@@ -130,7 +129,7 @@ public class ProgrammedDroneUtils {
             widgetImport.setUseCount(true);
             widgetImport.setCount(stack.getCount());
             ProgWidgetItemFilter filter = ProgWidgetItemFilter.withFilter(stack);
-            filter.useItemDamage = true;
+            filter.useItemDurability = true;
             filter.useNBT = true;
             builder.add(widgetImport, ProgWidgetArea.fromPosition(pos), filter);
         }
@@ -143,7 +142,7 @@ public class ProgrammedDroneUtils {
     }
 
     public static CreatureEntity retrieveFluidAmazonStyle(GlobalPos gPos, FluidStack queriedFluid) {
-        World world = PneumaticCraftUtils.getWorldForGlobalPos(gPos);
+        World world = GlobalPosUtils.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.getPos();
 
         if (world == null || world.isRemote) return null;

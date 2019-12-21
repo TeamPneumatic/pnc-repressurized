@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Extension of GuiButton that allows a invisible clickable field. It can be added in Gui's like buttons (with the buttonList).
+ * Extension of GuiButtonExt that add: 1) a string tag which is sent to the server when clicked (PacketGuiButton),
+ * 2) ability to draw itemstack or textured icons & 3) can render its area when invisible
  */
 public class WidgetButtonExtended extends GuiButtonExt implements ITaggedWidget, ITooltipProvider {
     public enum IconPosition { MIDDLE, LEFT, RIGHT }

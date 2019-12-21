@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
@@ -17,7 +18,6 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,8 +52,8 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
     }
 
     @Override
-    protected Point getInvNameOffset() {
-        return new Point(0, -1);
+    protected PointXY getInvNameOffset() {
+        return new PointXY(0, -1);
     }
 
     @Override

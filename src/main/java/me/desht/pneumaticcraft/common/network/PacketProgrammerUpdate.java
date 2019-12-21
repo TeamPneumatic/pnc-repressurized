@@ -23,6 +23,8 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
     public PacketProgrammerUpdate() {
     }
 
+    // TODO: serializing to PacketBuffer would be way more efficient here
+
     public PacketProgrammerUpdate(TileEntityProgrammer te) {
         super(te.getPos());
         progWidgets = new CompoundNBT();
@@ -49,11 +51,12 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> updateTE(getTileEntity(ctx), ctx.get().getSender()));
+        ctx.get().enqueueWork(() -> updateTE(ctx.get().getSender()));
         ctx.get().setPacketHandled(true);
     }
 
-    private void updateTE(TileEntity te, PlayerEntity player) {
+    private void updateTE(PlayerEntity player) {
+        TileEntity te = player.world.getTileEntity(pos);
         if (te instanceof TileEntityProgrammer) {
             ((TileEntityProgrammer) te).readProgWidgetsFromNBT(progWidgets);
             ((TileEntityProgrammer) te).saveToHistory();
@@ -81,6 +84,6 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
 
     @Override
     public void handleLargePayload(PlayerEntity player) {
-        updateTE(player.world.getTileEntity(pos), player);
+        updateTE(player);
     }
 }

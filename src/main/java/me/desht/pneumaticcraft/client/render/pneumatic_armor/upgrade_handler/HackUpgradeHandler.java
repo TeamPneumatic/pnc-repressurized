@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
@@ -65,7 +66,7 @@ public class HackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public IOptionPage getGuiOptionsPage() {
+    public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
         return null;
     }
 

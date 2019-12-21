@@ -90,7 +90,7 @@ public class BlockSecurityStation extends BlockPneumaticCraftModeled {
 
     private int getPlayerHackLevel(PlayerEntity player) {
         ItemStack armorStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
-        return armorStack.getItem() == ModItems.PNEUMATIC_HELMET ? UpgradableItemUtils.getUpgrades(EnumUpgrade.SECURITY, armorStack) : 0;
+        return armorStack.getItem() == ModItems.PNEUMATIC_HELMET ? UpgradableItemUtils.getUpgrades(armorStack, EnumUpgrade.SECURITY) : 0;
     }
 
     @Override

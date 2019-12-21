@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
+import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -107,5 +108,12 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
         }
 
         return stack;
+    }
+
+    @Override
+    public void onContainerClosed(PlayerEntity playerIn) {
+        super.onContainerClosed(playerIn);
+
+        if (playerIn.world.isRemote) GuiProgrammer.onCloseFromContainer();
     }
 }

@@ -3,16 +3,14 @@ package me.desht.pneumaticcraft.common.inventory.handler;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.item.ItemStack;
 
 public class ChargeableItemHandler extends BaseItemStackHandler {
-    private static final int INVENTORY_SIZE = 9;
-    public static final String NBT_UPGRADE_TAG = "UpgradeInventory";
-
     public ChargeableItemHandler(TileEntityChargingStation te) {
-        super(te, INVENTORY_SIZE);
+        super(te, UpgradableItemUtils.UPGRADE_INV_SIZE);
 
-        if (!NBTUtil.hasTag(getChargingStack(), NBT_UPGRADE_TAG)) {
+        if (!NBTUtil.hasTag(getChargingStack(), UpgradableItemUtils.NBT_UPGRADE_TAG)) {
             writeToNBT();
         }
         readFromNBT();
@@ -29,11 +27,11 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
     }
 
     public void writeToNBT() {
-        NBTUtil.setCompoundTag(getChargingStack(), NBT_UPGRADE_TAG, serializeNBT());
+        UpgradableItemUtils.setUpgrades(getChargingStack(), this);
     }
 
     private void readFromNBT() {
-        deserializeNBT(NBTUtil.getCompoundTag(getChargingStack(), NBT_UPGRADE_TAG));
+        deserializeNBT(NBTUtil.getCompoundTag(getChargingStack(), UpgradableItemUtils.NBT_UPGRADE_TAG));
     }
 
     @Override

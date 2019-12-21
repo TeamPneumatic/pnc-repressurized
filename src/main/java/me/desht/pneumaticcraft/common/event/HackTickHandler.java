@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.GlobalPos;
@@ -34,7 +34,7 @@ public enum HackTickHandler {
                 Map.Entry<GlobalPos, IHackableBlock> entry = blockIterator.next();
                 IHackableBlock hackableBlock = entry.getValue();
                 GlobalPos gPos = entry.getKey();
-                World world = PneumaticCraftUtils.getWorldForGlobalPos(gPos);
+                World world = GlobalPosUtils.getWorldForGlobalPos(gPos);
 
                 boolean found = false;
                 for (Map.Entry<Block, Class<? extends IHackableBlock>> registeredEntry : PneumaticHelmetRegistry.getInstance().hackableBlocks.entrySet()) {

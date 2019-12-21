@@ -40,21 +40,6 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
         return true;
     }
 
-//    @Override
-//    public BlockState getExtendedState(BlockState state, IBlockAccess world, BlockPos pos) {
-//        TileEntity te = PneumaticCraftUtils.getTileEntitySafely(world, pos);
-//        if (te instanceof ICamouflageableTE) {
-//            BlockState camoState = ((ICamouflageableTE) te).getCamouflage();
-//            if (camoState != null) {
-//                return ((IExtendedBlockState) state)
-//                        .withProperty(BLOCK_ACCESS, world)
-//                        .withProperty(BLOCK_POS, pos)
-//                        .withProperty(CAMO_STATE, camoState);
-//            }
-//        }
-//        return state;
-//    }
-
     @Override
     public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, TileEntity te, ItemStack stack) {
         if (te instanceof ICamouflageableTE && !player.isCreative()) {

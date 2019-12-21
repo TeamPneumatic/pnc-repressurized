@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
 import me.desht.pneumaticcraft.common.remote.ActionWidget;
 import me.desht.pneumaticcraft.common.remote.ActionWidgetVariable;
@@ -12,8 +13,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-
-import java.awt.*;
 
 public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEntityBase> {
 
@@ -52,7 +51,7 @@ public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEnt
     }
 
     @Override
-    protected Point getInvTextOffset() {
+    protected PointXY getInvTextOffset() {
         return null;
     }
 

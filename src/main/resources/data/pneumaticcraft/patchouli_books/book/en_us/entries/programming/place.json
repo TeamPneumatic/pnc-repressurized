@@ -1,6 +1,6 @@
 {
   "name": "Place Widget",
-  "icon": "pneumaticcraft:textures/items/progwidgets/place_piece.png",
+  "icon": "pneumaticcraft:textures/item/progwidgets/place_piece.png",
   "category": "widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -21,7 +21,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/items/progwidgets/place_piece.png"
+        "pneumaticcraft:textures/item/progwidgets/place_piece.png"
       ],
       "text": "$(italic)Place Widget/$"
     }

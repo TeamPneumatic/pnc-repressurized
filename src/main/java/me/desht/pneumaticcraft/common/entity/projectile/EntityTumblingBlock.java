@@ -2,12 +2,11 @@ package me.desht.pneumaticcraft.common.entity.projectile;
 
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.item.BlockItem;
@@ -18,6 +17,7 @@ import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -28,8 +28,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.Validate;
@@ -49,10 +51,11 @@ public class EntityTumblingBlock extends ThrowableEntity {
         super(ModEntityTypes.TUMBLING_BLOCK, worldIn);
     }
 
-    public EntityTumblingBlock(World worldIn, double x, double y, double z, @Nonnull ItemStack stack) {
+    public EntityTumblingBlock(World worldIn, LivingEntity thrower, double x, double y, double z, @Nonnull ItemStack stack) {
         super(ModEntityTypes.TUMBLING_BLOCK, worldIn);
         Validate.isTrue(!stack.isEmpty() && stack.getItem() instanceof BlockItem);
 
+        owner = thrower;
         this.preventEntitySpawning = true;
         this.setPosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
         this.setMotion(0, 0, 0);
@@ -132,18 +135,23 @@ public class EntityTumblingBlock extends ThrowableEntity {
     }
 
     private boolean tryPlaceAsBlock(BlockRayTraceResult brtr) {
+        ItemStack stack = getStack();
+        if (!(stack.getItem() instanceof BlockItem)) {
+            return false;
+        }
         BlockPos pos0 = brtr.getPos();
         Direction face = brtr.getFace();
-        ItemStack stack = getStack();
         PlayerEntity placer = getThrower() instanceof PlayerEntity ? (PlayerEntity) getThrower() : getFakePlayer();
         BlockState state = world.getBlockState(pos0);
         BlockItemUseContext ctx = new BlockItemUseContext(new ItemUseContext(placer, Hand.MAIN_HAND, brtr));
         BlockPos pos = state.isReplaceable(ctx) ? pos0 : pos0.offset(face);
 
         if (world.getBlockState(pos).isReplaceable(ctx)) {
-            Block block = ((BlockItem)stack.getItem()).getBlock();
-            BlockState newState = block.getStateForPlacement(ctx);
-            return PneumaticCraftUtils.tryPlaceBlock(world, pos, placer, face, newState);
+            BlockSnapshot snapshot = BlockSnapshot.getBlockSnapshot(world, pos);
+            if (!ForgeEventFactory.onBlockPlace(placer, snapshot, face)) {
+                ActionResultType res = ((BlockItem) stack.getItem()).tryPlace(ctx);
+                return res == ActionResultType.SUCCESS;
+            }
         }
         return false;
     }

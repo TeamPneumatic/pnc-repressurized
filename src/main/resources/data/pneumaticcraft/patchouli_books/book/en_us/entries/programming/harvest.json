@@ -1,6 +1,6 @@
 {
   "name": "Harvest Widget",
-  "icon": "pneumaticcraft:textures/items/progwidgets/harvest_piece.png",
+  "icon": "pneumaticcraft:textures/item/progwidgets/harvest_piece.png",
   "category": "widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -21,7 +21,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/items/progwidgets/harvest_piece.png"
+        "pneumaticcraft:textures/item/progwidgets/harvest_piece.png"
       ],
       "text": "$(italic)Get off my land/$"
     }

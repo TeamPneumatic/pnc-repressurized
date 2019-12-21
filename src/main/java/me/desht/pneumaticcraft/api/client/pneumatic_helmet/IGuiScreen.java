@@ -1,13 +1,13 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 
 import java.util.List;
 
 /**
- * Just an interface to give access to GuiScreen#buttonList and GuiScreen#fontRenderer. An instance of this class may
- * safely be casted to {@link net.minecraft.client.gui.screen.Screen} if necessary.
+ * An interface wrapper for actual Screen objects.
  */
 public interface IGuiScreen {
     /**
@@ -34,4 +34,13 @@ public interface IGuiScreen {
      * Set the focus on a particular subwidget (generally a text field)
      */
     void setFocusedWidget(Widget w);
+
+    /**
+     * Get the actual Screen object represented by this wrapper.
+     *
+     * @return the screen
+     */
+    default Screen getScreen() {
+        return (Screen) this;
+    }
 }

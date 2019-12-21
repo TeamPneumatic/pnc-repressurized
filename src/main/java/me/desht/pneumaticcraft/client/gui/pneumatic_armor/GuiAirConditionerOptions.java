@@ -7,19 +7,19 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Air
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
 
-public class GuiAirConditionerOptions extends IOptionPage.SimpleToggleableOptions {
+public class GuiAirConditionerOptions extends IOptionPage.SimpleToggleableOptions<AirConUpgradeHandler> {
 
-    public GuiAirConditionerOptions(AirConUpgradeHandler airConUpgradeHandler) {
-        super(airConUpgradeHandler);
+    public GuiAirConditionerOptions(IGuiScreen screen, AirConUpgradeHandler airConUpgradeHandler) {
+        super(screen, airConUpgradeHandler);
     }
 
     @Override
-    public void initGui(IGuiScreen gui) {
-        super.initGui(gui);
+    public void populateGui(IGuiScreen gui) {
+        super.populateGui(gui);
 
         gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20, "Move Stat Screen...", b -> {
             Minecraft.getInstance().player.closeScreen();
-            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getRenderHandler(), ArmorHUDLayout.LayoutTypes.AIR_CON));
+            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getUpgradeHandler(), ArmorHUDLayout.LayoutTypes.AIR_CON));
         }));
     }
 }

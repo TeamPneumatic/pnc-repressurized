@@ -19,14 +19,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.StringTextComponent;
 
-public class GuiSearchUpgradeOptions implements IOptionPage {
-
-    private final SearchUpgradeHandler renderHandler;
+public class GuiSearchUpgradeOptions extends IOptionPage.SimpleToggleableOptions<SearchUpgradeHandler> {
     private static GuiItemSearcher searchGui;
+
     private final PlayerEntity player = Minecraft.getInstance().player;
 
-    public GuiSearchUpgradeOptions(SearchUpgradeHandler searchUpgradeHandler) {
-        renderHandler = searchUpgradeHandler;
+    public GuiSearchUpgradeOptions(IGuiScreen screen, SearchUpgradeHandler upgradeHandler) {
+        super(screen, upgradeHandler);
     }
 
     @Override
@@ -35,12 +34,12 @@ public class GuiSearchUpgradeOptions implements IOptionPage {
     }
 
     @Override
-    public void initGui(IGuiScreen gui) {
+    public void populateGui(IGuiScreen gui) {
         gui.addWidget(new WidgetButtonExtended(30, 40, 150, 20,
                 "Search for item...", b -> openSearchGui()));
 
         gui.addWidget(new Button(30, 128, 150, 20, "Move Stat Screen...",
-                b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.ITEM_SEARCH))));
+                b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getUpgradeHandler(), ArmorHUDLayout.LayoutTypes.ITEM_SEARCH))));
 
         if (searchGui != null && !player.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()) {
             ItemStack searchStack = searchGui.getSearchStack();
@@ -62,32 +61,6 @@ public class GuiSearchUpgradeOptions implements IOptionPage {
                 if (searchItem != null) searchGui.setSearchStack(new ItemStack(searchItem));
             }
         }
-    }
-
-    public void renderPre(int x, int y, float partialTicks) {
-    }
-
-    public void renderPost(int x, int y, float partialTicks) {
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseClicked(double x, double y, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
-        return false;
-    }
-
-    @Override
-    public boolean canBeTurnedOff() {
-        return true;
     }
 
     public boolean displaySettingsHeader() {

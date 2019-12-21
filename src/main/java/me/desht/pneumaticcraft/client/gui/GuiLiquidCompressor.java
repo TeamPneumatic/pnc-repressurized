@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
@@ -17,8 +18,6 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
 
-import java.awt.*;
-import java.util.List;
 import java.util.*;
 
 public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiquidCompressor,TileEntityLiquidCompressor> {
@@ -47,15 +46,15 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     }
 
     @Override
-    protected Point getInvNameOffset() {
-        return new Point(0, -2);
+    protected PointXY getInvNameOffset() {
+        return new PointXY(0, -2);
     }
 
     @Override
-    protected Point getGaugeLocation() {
+    protected PointXY getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new Point(xStart + xSize * 3 / 4 + 5, yStart + ySize / 4 + 4);
+        return new PointXY(xStart + xSize * 3 / 4 + 5, yStart + ySize / 4 + 4);
     }
 
     private List<String> getAllFuels() {

@@ -320,7 +320,7 @@ public class HUDHandler implements IKeyListener {
     }
 
     public void addFeatureToggleMessage(IUpgradeRenderHandler handler, String key, boolean enabled) {
-        String msg = I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + handler.getUpgradeID()) + ": " + I18n.format(key);
+        String msg = I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + handler.getUpgradeID()) + ": " + I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + key);
         HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (enabled ? "enable" : "disable") + "Setting", msg), Collections.emptyList(), 60, 0x7000AA00);
     }
 

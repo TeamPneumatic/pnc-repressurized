@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerSearcher;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -54,8 +55,13 @@ public class GuiItemSearcher extends DisplayEffectsScreen<ContainerSearcher> {
         playerInventory.player.openContainer = container;
         passEvents = true;
         ySize = 176;
-        parentScreen = minecraft.currentScreen;
+        parentScreen = Minecraft.getInstance().currentScreen;
         container.init(this);
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        return true;
     }
 
     @Nonnull
@@ -95,18 +101,19 @@ public class GuiItemSearcher extends DisplayEffectsScreen<ContainerSearcher> {
         searchField.setFocused2(true);
         searchField.setTextColor(16777215);
         searchField.setResponder(s -> updateCreativeSearch());
+        addButton(searchField);
 
         updateCreativeSearch();
     }
 
-    /**
-     * Called when the screen is unloaded. Used to disable keyboard repeat events
-     */
     @Override
     public void onClose() {
-        super.onClose();
-
         minecraft.keyboardListener.enableRepeatEvents(false);
+        if (parentScreen != null) {
+            minecraft.displayGuiScreen(parentScreen);
+        } else {
+            super.onClose();
+        }
     }
 
     @Override
@@ -124,11 +131,10 @@ public class GuiItemSearcher extends DisplayEffectsScreen<ContainerSearcher> {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            minecraft.displayGuiScreen(parentScreen);
-            onClose();
-            return true;
+            minecraft.player.closeScreen();
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return !searchField.keyPressed(keyCode, scanCode, modifiers)
+                && searchField.func_212955_f() || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void getAllEnchantedBooks(Enchantment enchantment, NonNullList<ItemStack> list) {

@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.GameSettings;
@@ -111,7 +112,7 @@ public class ClientEventHandler {
                         hasInvalidPrograms = true;
                     }
                 }
-                addedEntries.add(new StringTextComponent("\u2022 " + entry.getValue() + "x ")
+                addedEntries.add(new StringTextComponent(GuiConstants.BULLET + " " + entry.getValue() + "x ")
                         .appendSibling(xlate("programmingPuzzle." + entry.getKey() + ".name"))
                         .applyTextStyles(prefix));
             }
@@ -138,7 +139,7 @@ public class ClientEventHandler {
                     // fluid is owned by another mod; let's make it clear that this tooltip applies to PneumaticCraft
                     prefix = TextFormatting.DARK_AQUA + "" + TextFormatting.ITALIC + "[" + Names.MOD_NAME + "] ";
                 }
-                if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+                if (Screen.hasShiftDown()) {
                     String translatedInfo = TextFormatting.AQUA + I18n.format(key);
                     event.getToolTip().addAll(PneumaticCraftUtils.convertStringIntoList(prefix + translatedInfo, 40).stream().map(StringTextComponent::new).collect(Collectors.toList()));
                 } else {

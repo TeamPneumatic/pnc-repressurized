@@ -115,6 +115,8 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainerTypes.AERIAL_INTERFACE, GuiAerialInterface::new);
         ScreenManager.registerFactory(ModContainerTypes.AIR_CANNON, GuiAirCannon::new);
         ScreenManager.registerFactory(ModContainerTypes.AIR_COMPRESSOR, GuiAirCompressor::new);
+        ScreenManager.registerFactory(ModContainerTypes.AMADRON, GuiAmadron::new);
+        ScreenManager.registerFactory(ModContainerTypes.AMADRON_ADD_TRADE, GuiAmadronAddTrade::new);
         ScreenManager.registerFactory(ModContainerTypes.ASSEMBLY_CONTROLLER, GuiAssemblyController::new);
         ScreenManager.registerFactory(ModContainerTypes.CHARGING_STATION, GuiChargingStation::new);
         ScreenManager.registerFactory(ModContainerTypes.CHARGING_ARMOR, GuiPneumaticArmor::new);
@@ -140,6 +142,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainerTypes.REFINERY, GuiRefineryController::new);
         ScreenManager.registerFactory(ModContainerTypes.REMOTE, GuiRemote::new);
         ScreenManager.registerFactory(ModContainerTypes.REMOTE_EDITOR, GuiRemoteEditor::new);
+        ScreenManager.registerFactory(ModContainerTypes.SEARCHER, GuiItemSearcher::new);
         ScreenManager.registerFactory(ModContainerTypes.SECURITY_STATION_MAIN, GuiSecurityStationInventory::new);
         ScreenManager.registerFactory(ModContainerTypes.SECURITY_STATION_HACKING, GuiSecurityStationHacking::new);
         ScreenManager.registerFactory(ModContainerTypes.SENTRY_TURRET, GuiSentryTurret::new);
@@ -152,8 +155,6 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainerTypes.LOGISTICS_FRAME_PASSIVE_PROVIDER, GuiLogisticsProvider::new);
         ScreenManager.registerFactory(ModContainerTypes.LOGISTICS_FRAME_REQUESTER, GuiLogisticsRequester::new);
         ScreenManager.registerFactory(ModContainerTypes.LOGISTICS_FRAME_STORAGE, GuiLogisticsStorage::new);
-        ScreenManager.registerFactory(ModContainerTypes.AMADRON, GuiAmadron::new);
-        ScreenManager.registerFactory(ModContainerTypes.AMADRON_ADD_TRADE, GuiAmadronAddTrade::new);
     }
 
     private static void registerProgWidgetScreenFactories() {

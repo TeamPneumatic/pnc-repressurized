@@ -48,13 +48,13 @@ public class ModuleCharging extends TubeModule {
                     float itemVolume = h.getVolume();
                     float delta = Math.abs(airHandler.getPressure() - itemPressure) / 2.0F;
                     int airInItem = (int) (itemPressure * itemVolume);
-                    if (h.getPressure() > airHandler.getPressure() + 0.01F && h.getPressure() > 0F) {
+                    if (itemPressure > airHandler.getPressure() + 0.01F && itemPressure > 0F) {
                         // move air from item to charger (tube)
                         int airToMove = Math.min(Math.min(airToTransfer, airInItem), (int) (delta * airHandler.getVolume()));
                         h.addAir(-airToMove);
                         airHandler.addAir(airToMove);
                         return airToMove;
-                    } else if (h.getPressure() < airHandler.getPressure() - 0.01F && h.getPressure() < h.maxPressure()) {
+                    } else if (itemPressure < airHandler.getPressure() - 0.01F && itemPressure < h.maxPressure()) {
                         // move air from charger (tube) to item
                         int maxAirInItem = (int) (h.maxPressure() * itemVolume);
                         int airToMove = Math.min(Math.min(airToTransfer, airInTube2), maxAirInItem - airInItem);

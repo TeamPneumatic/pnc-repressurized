@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
@@ -17,6 +18,8 @@ import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -25,21 +28,19 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
-
 public class GuiMicromissile extends GuiPneumaticScreenBase {
-    private static final Rectangle SELECTOR_BOUNDS = new Rectangle(12, 21, 92, 81);
-    private static final int MAX_DIST = SELECTOR_BOUNDS.width;
+    private static final Rectangle2d SELECTOR_BOUNDS = new Rectangle2d(12, 21, 92, 81);
+    private static final int MAX_DIST = SELECTOR_BOUNDS.getWidth();
 
     // these points are relative to the SELECTOR_BOUNDS box defined above (note positive Y is downwards)
-    private static final Point TOP_SPEED_PT = new Point(46, 1);
-    private static final Point TURN_SPEED_PT = new Point(1, 80);
-    private static final Point DMG_PT = new Point(92, 80);
+    private static final PointXY TOP_SPEED_PT = new PointXY(46, 1);
+    private static final PointXY TURN_SPEED_PT = new PointXY(1, 80);
+    private static final PointXY DMG_PT = new PointXY(92, 80);
 
     private float turnSpeed;
     private float topSpeed;
     private float damage;
-    private Point point;
+    private PointXY point;
     private FireMode fireMode;
     private boolean dragging = false;
     private String entityFilter;
@@ -50,25 +51,29 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     private WidgetButtonExtended modeButton;
     private WidgetButtonExtended warningButton;
 
-    public GuiMicromissile(ITextComponent title) {
+    private GuiMicromissile(ITextComponent title) {
         super(title);
         xSize = 183;
         ySize = 191;
 
-        ItemStack stack = ItemMicromissiles.getHeldMicroMissile(minecraft.player);
+        ItemStack stack = ItemMicromissiles.getHeldMicroMissile(Minecraft.getInstance().player);
         if (stack.getItem() == ModItems.MICROMISSILES && stack.hasTag()) {
             topSpeed = NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED);
             turnSpeed = NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED);
             damage = NBTUtil.getFloat(stack, ItemMicromissiles.NBT_DAMAGE);
             entityFilter = NBTUtil.getString(stack, ItemMicromissiles.NBT_FILTER);
-            point = new Point(NBTUtil.getInteger(stack,ItemMicromissiles.NBT_PX), NBTUtil.getInteger(stack, ItemMicromissiles.NBT_PY));
+            point = new PointXY(NBTUtil.getInteger(stack,ItemMicromissiles.NBT_PX), NBTUtil.getInteger(stack, ItemMicromissiles.NBT_PY));
             fireMode = FireMode.fromString(NBTUtil.getString(stack, ItemMicromissiles.NBT_FIRE_MODE));
         } else {
             topSpeed = turnSpeed = damage = 1/3f;
-            point = new Point(MAX_DIST / 2, MAX_DIST / 4);
+            point = new PointXY(MAX_DIST / 2, MAX_DIST / 4);
             entityFilter = "";
             fireMode = FireMode.SMART;
         }
+    }
+
+    public static void openGui(ITextComponent title) {
+        Minecraft.getInstance().displayGuiScreen(new GuiMicromissile(title));
     }
 
     @Override
@@ -81,15 +86,15 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         int textBoxX = guiLeft + 12 + font.getStringWidth(labelStr) + 5;
         int textBoxWidth = xSize - (textBoxX - guiLeft) - 20;
         textField = new WidgetTextField(font, textBoxX, guiTop + 128, textBoxWidth, 10);
+        textField.setText(entityFilter);
+        textField.setFocused2(true);
         textField.setResponder(s -> {
             entityFilter = s;
             if (validateEntityFilter(entityFilter)) {
                 sendTimer = 5;  // delayed send to reduce packet spam while typing
             }
         });
-        textField.setText(entityFilter);
         addButton(textField);
-        textField.setFocused2(true);
 
         addButton(new WidgetTooltipArea(guiLeft + 42, guiTop + 9, 35, 9, "gui.micromissile.topSpeed"));
         addButton(new WidgetTooltipArea(guiLeft + 6, guiTop + 103, 25, 12, "gui.micromissile.turnSpeed"));
@@ -148,11 +153,11 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         GlStateManager.disableTexture();
         GlStateManager.disableLighting();
         if (point != null) {
-            double px = point.getX();
-            double py = point.getY();
+            double px = point.x;
+            double py = point.y;
             RenderUtils.glColorHex(0x2020A0, 255);
             GlStateManager.pushMatrix();
-            GlStateManager.translated(guiLeft + SELECTOR_BOUNDS.x, guiTop + SELECTOR_BOUNDS.y, 0);
+            GlStateManager.translated(guiLeft + SELECTOR_BOUNDS.getX(), guiTop + SELECTOR_BOUNDS.getY(), 0);
 
             // crosshairs
             int size = dragging ? 5 : 3;
@@ -171,17 +176,17 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
             // speed line
             GlStateManager.begin(GL11.GL_LINES);
             GL11.glVertex2d(px, py);
-            GL11.glVertex2d(SELECTOR_BOUNDS.width / 2.0, 0);
+            GL11.glVertex2d(SELECTOR_BOUNDS.getWidth() / 2.0, 0);
             GlStateManager.end();
             // turn speed line
             GlStateManager.begin(GL11.GL_LINES);
             GL11.glVertex2d(px, py);
-            GL11.glVertex2d(0, SELECTOR_BOUNDS.height);
+            GL11.glVertex2d(0, SELECTOR_BOUNDS.getHeight());
             GlStateManager.end();
             // damage line
             GlStateManager.begin(GL11.GL_LINES);
             GL11.glVertex2d(px, py);
-            GL11.glVertex2d(SELECTOR_BOUNDS.width, SELECTOR_BOUNDS.height);
+            GL11.glVertex2d(SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight());
             GlStateManager.end();
 
             GL11.glDisable(GL11.GL_LINE_STIPPLE);
@@ -281,7 +286,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     }
 
     private boolean trySetPoint(int mouseX, int mouseY) {
-        Point p = getPoint(mouseX, mouseY);
+        PointXY p = getPoint(mouseX, mouseY);
         if (p != null) {
             double dSpeed = MAX_DIST - p.distance(TOP_SPEED_PT);
             double dTurnSpd = MAX_DIST - p.distance(TURN_SPEED_PT);
@@ -300,19 +305,19 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         NetworkHandler.sendToServer(new PacketUpdateMicromissileSettings(topSpeed, turnSpeed, damage, point, entityFilter, fireMode, saveDefault));
     }
 
-    private Point getPoint(int mouseX, int mouseY) {
-        Rectangle r = new Rectangle(SELECTOR_BOUNDS.x + guiLeft, SELECTOR_BOUNDS.y + guiTop, SELECTOR_BOUNDS.width, SELECTOR_BOUNDS.height);
+    private PointXY getPoint(int mouseX, int mouseY) {
+        Rectangle2d r = new Rectangle2d(SELECTOR_BOUNDS.getX() + guiLeft, SELECTOR_BOUNDS.getY() + guiTop, SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight());
 
         if (!r.contains(mouseX, mouseY)) {
             return null;
         }
 
-        Point p = new Point(mouseX - r.x, mouseY - r.y);
+        PointXY p = new PointXY(mouseX - r.getX(), mouseY - r.getY());
         return isPointInTriangle(p, TOP_SPEED_PT, TURN_SPEED_PT, DMG_PT) ? p : null;
     }
 
     @SuppressWarnings("SameParameterValue")
-    private boolean isPointInTriangle(Point s, Point a, Point b, Point c) {
+    private boolean isPointInTriangle(PointXY s, PointXY a, PointXY b, PointXY c) {
         int as_x = s.x - a.x;
         int as_y = s.y - a.y;
 

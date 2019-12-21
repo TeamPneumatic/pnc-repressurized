@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleLogistics;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
@@ -49,7 +50,7 @@ public class PacketUpdateLogisticModule extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntityPressureTube te = TileEntityPressureTube.getTube(getTileEntity(ctx));
+            TileEntityPressureTube te = TileEntityPressureTube.getTube(ClientUtils.getClientTE(pos));
             if (te != null) {
                 TubeModule module = te.modules[side];
                 if (module instanceof ModuleLogistics) {

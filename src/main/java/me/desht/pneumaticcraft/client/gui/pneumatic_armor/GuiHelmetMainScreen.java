@@ -69,6 +69,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     @Override
     public void init() {
         super.init();
+
         buttons.clear();
         children.clear();
         upgradeOptions.clear();
@@ -86,14 +87,11 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
             pageNumber = upgradeOptions.size() - 1;
         }
         String keybindName = upgradeOptions.get(pageNumber).upgradeName;
-        WidgetKeybindCheckBox checkBox = new WidgetKeybindCheckBox(40, 25, 0xFFFFFFFF,
-//                I18n.format("gui.enableModule", I18n.format(keybindName)),
-                keybindName,
-                null);
-        if (upgradeOptions.get(pageNumber).page.canBeTurnedOff()) {
+        WidgetKeybindCheckBox checkBox = new WidgetKeybindCheckBox(40, 25, 0xFFFFFFFF, keybindName, null);
+        if (upgradeOptions.get(pageNumber).page.isToggleable()) {
             addButton(checkBox);
         }
-        upgradeOptions.get(pageNumber).page.initGui(this);
+        upgradeOptions.get(pageNumber).page.populateGui(this);
     }
 
     private void setPage(int newPage) {
@@ -115,7 +113,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
                     if (inInitPhase
                             || ItemPneumaticArmor.isPneumaticArmorPiece(Minecraft.getInstance().player, slot)
                             || upgradeRenderHandler instanceof MainHelmetHandler) {
-                        IOptionPage optionPage = upgradeRenderHandler.getGuiOptionsPage();
+                        IOptionPage optionPage = upgradeRenderHandler.getGuiOptionsPage(this);
                         if (optionPage != null) {
                             List<ItemStack> stacks = new ArrayList<>();
                             stacks.add(ARMOR_STACKS[upgradeRenderHandler.getEquipmentSlot().getIndex()]);

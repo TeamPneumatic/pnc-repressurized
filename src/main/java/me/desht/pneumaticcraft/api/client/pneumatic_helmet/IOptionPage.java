@@ -5,9 +5,16 @@ import net.minecraft.client.resources.I18n;
 
 /**
  * The Option Page is the page you see when you press 'F' (by default) with a Pneumatic Helmet equipped. You can
- * register this class by returning a new instance of this class at {@link IUpgradeRenderHandler#getGuiOptionsPage()}
+ * register this class by returning a new instance of this class at {@link IUpgradeRenderHandler#getGuiOptionsPage(IGuiScreen)}
  */
 public interface IOptionPage {
+
+    /**
+     * Get a reference to the IGuiScreen object.  You can use this to get the font renderer, for example.
+     *
+     * @return the screen
+     */
+    IGuiScreen getGuiScreen();
 
     /**
      * This string is used in the text of the button of this page.
@@ -21,7 +28,7 @@ public interface IOptionPage {
      *
      * @param gui the holding GUI
      */
-    void initGui(IGuiScreen gui);
+    void populateGui(IGuiScreen gui);
 
     /**
      * Called immediately before {@link Screen#render(int, int, float)}
@@ -76,7 +83,7 @@ public interface IOptionPage {
      *
      * @return true if the upgrade is toggleable, false otherwise
      */
-    boolean canBeTurnedOff();
+    boolean isToggleable();
 
     /**
      * Should the "Settings" header be displayed?
@@ -101,17 +108,24 @@ public interface IOptionPage {
     /**
      * Convenience class for simple toggleable armor features with no additional settings.
      */
-    class SimpleToggleableOptions implements IOptionPage {
+    class SimpleToggleableOptions<T extends IUpgradeRenderHandler> implements IOptionPage {
+        private final IGuiScreen screen;
         private final String name;
-        private final IUpgradeRenderHandler renderHandler;
+        private final T upgradeHandler;
 
-        public SimpleToggleableOptions(IUpgradeRenderHandler renderHandler) {
-            this.name = I18n.format("pneumaticHelmet.upgrade." + renderHandler.getUpgradeID());
-            this.renderHandler = renderHandler;
+        public SimpleToggleableOptions(IGuiScreen screen, T upgradeHandler) {
+            this.screen = screen;
+            this.name = I18n.format("pneumaticHelmet.upgrade." + upgradeHandler.getUpgradeID());
+            this.upgradeHandler = upgradeHandler;
         }
 
-        protected IUpgradeRenderHandler getRenderHandler() {
-            return renderHandler;
+        protected T getUpgradeHandler() {
+            return upgradeHandler;
+        }
+
+        @Override
+        public IGuiScreen getGuiScreen() {
+            return screen;
         }
 
         @Override
@@ -120,7 +134,7 @@ public interface IOptionPage {
         }
 
         @Override
-        public void initGui(IGuiScreen gui) {
+        public void populateGui(IGuiScreen gui) {
 
         }
 
@@ -151,7 +165,7 @@ public interface IOptionPage {
 
 
         @Override
-        public boolean canBeTurnedOff() {
+        public boolean isToggleable() {
             return true;
         }
 

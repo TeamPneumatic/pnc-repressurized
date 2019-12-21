@@ -46,6 +46,8 @@ public class DroneEntityAIPickupItems extends Goal {
                         curPickingUpEntity = (ItemEntity) ent;
                         return true;
                     }
+                } else {
+                    drone.addDebugEntry("gui.progWidget.inventoryImport.debug.filledToMax");
                 }
             } else {
                 drone.addDebugEntry("gui.progWidget.itemPickup.debug.itemNotValid");

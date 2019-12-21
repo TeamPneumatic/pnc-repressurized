@@ -28,7 +28,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget {
     private ItemStack filter = ItemStack.EMPTY;
-    public boolean useItemDamage = true, useNBT, useItemTags, useModSimilarity, matchBlock;
+    public boolean useItemDurability, useNBT, useItemTags, useModSimilarity, matchBlock;
     private DroneAIManager aiManager;
     private String variable = "";
 
@@ -104,7 +104,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
             } else if (useModSimilarity) {
                 curTooltip.add(new StringTextComponent("- Using Mod Similarity").applyTextStyle(TextFormatting.DARK_AQUA));
             } else {
-                curTooltip.add(new StringTextComponent((useItemDamage ? "Using" : "Ignoring") + " item damage").applyTextStyle(TextFormatting.DARK_AQUA));
+                curTooltip.add(new StringTextComponent((useItemDurability ? "Using" : "Ignoring") + " item damage").applyTextStyle(TextFormatting.DARK_AQUA));
                 if (matchBlock) {
                     curTooltip.add(new StringTextComponent("- Matching by block").applyTextStyle(TextFormatting.DARK_AQUA));
                 } else {
@@ -145,7 +145,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         if (filter != null) {
             filter.write(tag);
         }
-        tag.putBoolean("useMetadata", useItemDamage);
+        tag.putBoolean("useMetadata", useItemDurability);
         tag.putBoolean("useNBT", useNBT);
         tag.putBoolean("useOreDict", useItemTags);
         tag.putBoolean("useModSimilarity", useModSimilarity);
@@ -157,7 +157,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         filter = ItemStack.read(tag);
-        useItemDamage = tag.getBoolean("useMetadata");
+        useItemDurability = tag.getBoolean("useMetadata");
         useNBT = tag.getBoolean("useNBT");
         useItemTags = tag.getBoolean("useOreDict");
         useModSimilarity = tag.getBoolean("useModSimilarity");
@@ -187,8 +187,8 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
             return blockState.getBlock() == ((BlockItem) filter.getFilter().getItem()).getBlock();
         } else {
             // match by item
-            if (PneumaticCraftUtils.areStacksEquivalent(filter.getFilter(), stack, filter.useItemDamage && blockState == null, filter.useNBT, filter.useItemTags, filter.useModSimilarity)) {
-                return blockState == null || !filter.useItemDamage;
+            if (PneumaticCraftUtils.areStacksEquivalent(filter.getFilter(), stack, filter.useItemDurability && blockState == null, filter.useNBT, filter.useItemTags, filter.useModSimilarity)) {
+                return blockState == null || !filter.useItemDurability;
             }
         }
         return false;

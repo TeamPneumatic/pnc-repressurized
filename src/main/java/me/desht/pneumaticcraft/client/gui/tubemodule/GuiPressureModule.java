@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -19,8 +20,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
 
 public class GuiPressureModule extends GuiTubeModule {
 
@@ -30,7 +29,7 @@ public class GuiPressureModule extends GuiTubeModule {
     private int graphHighY;
     private int graphLeft;
     private int graphRight;
-    private Rectangle lowerBoundArea, higherBoundArea;
+    private Rectangle2d lowerBoundArea, higherBoundArea;
     private boolean grabLower, grabHigher;
 
     public GuiPressureModule(BlockPos pos) {
@@ -38,7 +37,7 @@ public class GuiPressureModule extends GuiTubeModule {
         ySize = 191;
     }
 
-    public GuiPressureModule(TubeModule module) {
+    GuiPressureModule(TubeModule module) {
         super(module);
         ySize = 191;
     }
@@ -85,8 +84,8 @@ public class GuiPressureModule extends GuiTubeModule {
         advancedMode.checked = true;
         addButton(advancedMode);
 
-        higherBoundArea = new Rectangle(guiLeft + 11, guiTop + 59, 158, 15);
-        lowerBoundArea = new Rectangle(guiLeft + 11, guiTop + 73, 158, 15);
+        higherBoundArea = new Rectangle2d(guiLeft + 11, guiTop + 59, 158, 15);
+        lowerBoundArea = new Rectangle2d(guiLeft + 11, guiTop + 73, 158, 15);
     }
 
     @Override
@@ -160,34 +159,6 @@ public class GuiPressureModule extends GuiTubeModule {
         }
     }
 
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-//        boolean wasFocused = lowerBoundField.isFocused();
-//        lowerBoundField.mouseClicked(mouseX, mouseY, mouseButton);
-//        if (wasFocused && !lowerBoundField.isFocused()) {
-//            updateBoundFromTextfield(0);
-//        }
-//
-//        wasFocused = higherBoundField.isFocused();
-//        higherBoundField.mouseClicked(mouseX, mouseY, mouseButton);
-//        if (wasFocused && !higherBoundField.isFocused()) {
-//            updateBoundFromTextfield(1);
-//        }
-
-        if (lowerBoundArea.contains(mouseX, mouseY)) {
-            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
-            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), TubeModule.MAX_VALUE);
-            grabLower = true;
-            return true;
-        } else if (higherBoundArea.contains(mouseX, mouseY)) {
-            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
-            module.higherBound = Math.min(Math.max(-1, module.higherBound), TubeModule.MAX_VALUE);
-            grabHigher = true;
-            return true;
-        }
-        return super.mouseClicked(mouseX, mouseY, mouseButton);
-    }
-
     private void updateBoundFromTextfield(int fieldId) {
         try {
             float prev;
@@ -211,6 +182,22 @@ public class GuiPressureModule extends GuiTubeModule {
             }
         } catch (NumberFormatException ignored) {
         }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+        if (lowerBoundArea.contains((int)mouseX, (int)mouseY)) {
+            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
+            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), TubeModule.MAX_VALUE);
+            grabLower = true;
+            return true;
+        } else if (higherBoundArea.contains((int)mouseX, (int)mouseY)) {
+            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
+            module.higherBound = Math.min(Math.max(-1, module.higherBound), TubeModule.MAX_VALUE);
+            grabHigher = true;
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override

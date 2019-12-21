@@ -28,7 +28,7 @@ public class DroneColorCrafting extends SpecialRecipe {
             } else if (stack.getItem() instanceof DyeItem) {
                 if (!hasDye) hasDye = true;
                 else return false;
-            } else {
+            } else if (!stack.isEmpty()) {
                 return false;
             }
         }

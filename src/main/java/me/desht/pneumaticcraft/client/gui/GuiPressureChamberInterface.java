@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
@@ -15,7 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
-import java.awt.*;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface.MAX_PROGRESS;
@@ -56,8 +56,8 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
     }
 
     @Override
-    protected Point getInvNameOffset() {
-        return new Point(0, -2);
+    protected PointXY getInvNameOffset() {
+        return new PointXY(0, -2);
     }
 
     @Override

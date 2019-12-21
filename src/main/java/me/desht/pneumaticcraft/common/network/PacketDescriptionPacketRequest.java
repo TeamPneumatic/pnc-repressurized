@@ -28,7 +28,7 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = getTileEntity(ctx);
+            TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
             if (te != null) {
                 forceLootGeneration(te);
                 NetworkHandler.sendToPlayer(new PacketSendNBTPacket(te), ctx.get().getSender());

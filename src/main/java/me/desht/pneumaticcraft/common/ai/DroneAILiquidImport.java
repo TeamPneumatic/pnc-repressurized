@@ -33,7 +33,7 @@ public class DroneAILiquidImport extends DroneAIImExBase<ProgWidgetInventoryBase
     }
 
     private boolean emptyTank(BlockPos pos, boolean simulate) {
-        if (drone.getTank().getFluidAmount() == drone.getTank().getCapacity()) {
+        if (drone.getFluidTank().getFluidAmount() == drone.getFluidTank().getCapacity()) {
             drone.addDebugEntry("gui.progWidget.liquidImport.debug.fullDroneTank");
             abort();
             return false;
@@ -58,7 +58,7 @@ public class DroneAILiquidImport extends DroneAIImExBase<ProgWidgetInventoryBase
                 FluidStack stack = FluidUtils.tryPickupFluid(cap, drone.world(), pos, false, FluidAction.SIMULATE);
                 if (!stack.isEmpty() && stack.getAmount() == BUCKET_VOLUME
                     && ((ILiquidFiltered) progWidget).isFluidValid(stack.getFluid())
-                    && drone.getTank().fill(stack, FluidAction.SIMULATE) == BUCKET_VOLUME) {
+                    && drone.getFluidTank().fill(stack, FluidAction.SIMULATE) == BUCKET_VOLUME) {
                     if (!simulate) {
                         decreaseCount(BUCKET_VOLUME);
                         FluidUtils.tryPickupFluid(cap, drone.world(), pos, false, FluidAction.EXECUTE);
@@ -74,12 +74,12 @@ public class DroneAILiquidImport extends DroneAIImExBase<ProgWidgetInventoryBase
     private boolean tryImportFluid(IFluidHandler sourceHandler, boolean simulate) {
         FluidStack importedFluid = sourceHandler.drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
         if (importedFluid != null && ((ILiquidFiltered) progWidget).isFluidValid(importedFluid.getFluid())) {
-            int filledAmount = drone.getTank().fill(importedFluid, FluidAction.SIMULATE);
+            int filledAmount = drone.getFluidTank().fill(importedFluid, FluidAction.SIMULATE);
             if (filledAmount > 0) {
                 if (((ICountWidget) progWidget).useCount())
                     filledAmount = Math.min(filledAmount, getRemainingCount());
                 if (!simulate) {
-                    decreaseCount(drone.getTank().fill(sourceHandler.drain(filledAmount, FluidAction.EXECUTE), FluidAction.EXECUTE));
+                    decreaseCount(drone.getFluidTank().fill(sourceHandler.drain(filledAmount, FluidAction.EXECUTE), FluidAction.EXECUTE));
                 }
                 return true;
             }

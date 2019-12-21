@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
@@ -19,8 +20,8 @@ public class RunSpeedUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
     }
 
     @Override
-    public IOptionPage getGuiOptionsPage() {
-        return new GuiSpeedBoostOptions(this);
+    public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
+        return new GuiSpeedBoostOptions(screen, this);
     }
 
     @Override

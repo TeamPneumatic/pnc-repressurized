@@ -14,7 +14,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Ent
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.block.*;
 import me.desht.pneumaticcraft.common.hacking.entity.*;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -134,7 +134,7 @@ public class HackableHandler {
         Iterator<Map.Entry<GlobalPos, IHackableBlock>> iterator = getInstance().trackedHackableBlocks.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<GlobalPos, IHackableBlock> entry = iterator.next();
-            World gWorld = PneumaticCraftUtils.getWorldForGlobalPos(entry.getKey());
+            World gWorld = GlobalPosUtils.getWorldForGlobalPos(entry.getKey());
             Block b = gWorld.getBlockState(entry.getKey().getPos()).getBlock();
             Class<? extends IHackableBlock> hackableBlockClazz = PneumaticHelmetRegistry.getInstance().hackableBlocks.get(b);
             if (hackableBlockClazz != entry.getValue().getClass()

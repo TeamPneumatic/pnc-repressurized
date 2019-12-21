@@ -42,7 +42,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = getTileEntity(ctx);
+            TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
             if (te instanceof TileEntityAphorismTile) {
                 ((TileEntityAphorismTile) te).setTextLines(text);
             }

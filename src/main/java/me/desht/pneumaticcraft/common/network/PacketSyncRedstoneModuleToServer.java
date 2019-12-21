@@ -59,7 +59,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = getTileEntity(ctx);
+            TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
             if (te instanceof TileEntityPressureTube) {
                 TubeModule m = ((TileEntityPressureTube) te).modules[side];
                 if (m instanceof ModuleRedstone) {

@@ -22,27 +22,21 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
 
-public class GuiEntityTrackOptions implements IOptionPage {
+public class GuiEntityTrackOptions extends IOptionPage.SimpleToggleableOptions<EntityTrackUpgradeHandler> {
 
-    private final EntityTrackUpgradeHandler renderHandler;
     private TextFieldWidget textField;
     private WidgetButtonExtended warningButton;
     private int sendTimer = 0;
 
-    public GuiEntityTrackOptions(EntityTrackUpgradeHandler renderHandler) {
-        this.renderHandler = renderHandler;
+    public GuiEntityTrackOptions(IGuiScreen screen, EntityTrackUpgradeHandler renderHandler) {
+        super(screen, renderHandler);
     }
 
     @Override
-    public String getPageName() {
-        return "Entity Tracker";
-    }
-
-    @Override
-    public void initGui(IGuiScreen gui) {
+    public void populateGui(IGuiScreen gui) {
         gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20, "Move Stat Screen...", b -> {
             Minecraft.getInstance().player.closeScreen();
-            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(renderHandler, ArmorHUDLayout.LayoutTypes.ENTITY_TRACKER));
+            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getUpgradeHandler(), ArmorHUDLayout.LayoutTypes.ENTITY_TRACKER));
         }));
 
         textField = new TextFieldWidget(gui.getFontRenderer(), 35, 60, 140, 10, "");
@@ -67,32 +61,13 @@ public class GuiEntityTrackOptions implements IOptionPage {
         validateEntityFilter(textField.getText());
     }
 
-    public void renderPre(int x, int y, float partialTicks) {
-    }
-
     public void renderPost(int x, int y, float partialTicks) {
-//        textField.render(x, y, partialTicks);
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         fontRenderer.drawString(I18n.format("gui.entityFilter"), 35, 50, 0xFFFFFFFF);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(Minecraft.getInstance().currentScreen, fontRenderer,
                     PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
         }
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseClicked(double x, double y, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
-        return false;
     }
 
     private boolean validateEntityFilter(String filter) {
@@ -115,11 +90,6 @@ public class GuiEntityTrackOptions implements IOptionPage {
             tag.putString(ItemPneumaticArmor.NBT_ENTITY_FILTER, textField.getText());
             NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.HEAD, tag));
         }
-    }
-
-    @Override
-    public boolean canBeTurnedOff() {
-        return true;
     }
 
     @Override

@@ -1,6 +1,6 @@
 {
   "name": "External Program Widget",
-  "icon": "pneumaticcraft:textures/items/progwidgets/external_program_piece.png",
+  "icon": "pneumaticcraft:textures/item/progwidgets/external_program_piece.png",
   "category": "widget_flow",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -15,7 +15,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/items/progwidgets/external_program_piece.png"
+        "pneumaticcraft:textures/item/progwidgets/external_program_piece.png"
       ],
       "text": "$(italic)Programception/$"
     }

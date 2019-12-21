@@ -46,7 +46,7 @@ public class ColorHandlers {
 //        );
 
         event.getItemColors().register((stack, tintIndex) -> {
-            int n = UpgradableItemUtils.getUpgrades(IItemRegistry.EnumUpgrade.CREATIVE, stack);
+            int n = UpgradableItemUtils.getUpgrades(stack, IItemRegistry.EnumUpgrade.CREATIVE);
             return n > 0 ? 0xFFFF60FF : 0xFFFFFFFF;
         }, ModBlocks.OMNIDIRECTIONAL_HOPPER.asItem(), ModBlocks.LIQUID_HOPPER.asItem());
 

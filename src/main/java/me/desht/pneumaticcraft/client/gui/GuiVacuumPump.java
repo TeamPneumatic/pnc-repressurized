@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -12,7 +13,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-import java.awt.*;
 import java.util.List;
 
 public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump,TileEntityVacuumPump> {
@@ -46,7 +46,7 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
     }
 
     @Override
-    protected Point getGaugeLocation() {
+    protected PointXY getGaugeLocation() {
         return null;
     }
 

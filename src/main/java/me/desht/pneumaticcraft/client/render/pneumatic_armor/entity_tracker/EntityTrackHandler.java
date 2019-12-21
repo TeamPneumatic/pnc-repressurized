@@ -130,10 +130,10 @@ public class EntityTrackHandler {
                 if (NBTUtil.getInteger(player.getItemStackFromSlot(EquipmentSlotType.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId()) {
                     curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.debugging"));
                     curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.debugging.key",
-                            KeyHandler.getInstance().keybindOpenOptions.getKeyDescription()));
+                            KeyHandler.getInstance().keybindOpenOptions.getLocalizedName()));
                 } else if (isLookingAtTarget) {
                     curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.pressDebugKey",
-                            KeyHandler.getInstance().keybindDebuggingDrone.getKeyDescription()));
+                            KeyHandler.getInstance().keybindDebuggingDrone.getLocalizedName()));
                 }
             }
         }
@@ -323,7 +323,7 @@ public class EntityTrackHandler {
                         .orElse(0);
                 if (hackTime == 0) {
                     if (isLookingAtTarget) {
-                        hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
+                        hackable.addHackInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
                         HackUpgradeHandler.addKeybindTooltip(curInfo);
                     }
                 } else {
@@ -334,7 +334,7 @@ public class EntityTrackHandler {
                     } else if (hackTime < requiredHackTime + 20) {
                         hackable.addPostHackInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
                     } else if (isLookingAtTarget) {
-                        hackable.addInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
+                        hackable.addHackInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
                         HackUpgradeHandler.addKeybindTooltip(curInfo);
                     }
                 }

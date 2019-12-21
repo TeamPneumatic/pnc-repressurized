@@ -60,7 +60,7 @@ public class DroneAILogistics extends Goal {
 
     private boolean doLogistics() {
         ItemStack item = drone.getInv().getStackInSlot(0);
-        FluidStack fluid = drone.getTank().getFluid();
+        FluidStack fluid = drone.getFluidTank().getFluid();
         PriorityQueue<LogisticsTask> tasks = getLogisticsManager().getTasks(item.isEmpty() ? fluid : item);
         if (tasks.size() > 0) {
             curTask = tasks.poll();
@@ -91,7 +91,7 @@ public class DroneAILogistics extends Goal {
 
     private boolean clearAIAndProvideAgain() {
         curAI = null;
-        if (curTask.isStillValid(drone.getInv().getStackInSlot(0).isEmpty() ? drone.getTank().getFluid() : drone.getInv().getStackInSlot(0)) && execute(curTask)) {
+        if (curTask.isStillValid(drone.getInv().getStackInSlot(0).isEmpty() ? drone.getFluidTank().getFluid() : drone.getInv().getStackInSlot(0)) && execute(curTask)) {
             return true;
         } else {
             curTask = null;
@@ -104,7 +104,7 @@ public class DroneAILogistics extends Goal {
             if (hasNoPathTo(task.requester.getPos())) return false;
             curAI = new DroneEntityAIInventoryExport(drone,
                     new FakeWidgetLogistics(task.requester.getPos(), task.requester.getSide(), task.transportingItem));
-        } else if (drone.getTank().getFluidAmount() > 0) {
+        } else if (drone.getFluidTank().getFluidAmount() > 0) {
             if (hasNoPathTo(task.requester.getPos())) return false;
             curAI = new DroneAILiquidExport(drone,
                     new FakeWidgetLogistics(task.requester.getPos(), task.requester.getSide(), task.transportingFluid.stack));

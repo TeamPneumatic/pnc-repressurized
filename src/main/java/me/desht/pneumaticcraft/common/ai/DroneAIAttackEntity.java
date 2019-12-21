@@ -35,7 +35,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
 
     @Override
     public boolean shouldExecute() {
-        if (isRanged && attacker.getAmmo().isEmpty()) {
+        if (isRanged && attacker.getSlotForAmmo() < 0) {
             attacker.addDebugEntry("gui.progWidget.entityAttack.debug.noAmmo");
             return false;
         }
@@ -89,7 +89,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
             LivingEntity entitylivingbase = attacker.getAttackTarget();
             if (entitylivingbase == null) return false;
             double dist = attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getBoundingBox().minY, entitylivingbase.posZ);
-            if (attacker.getAmmo().isEmpty()) return false;
+            if (attacker.getSlotForAmmo() < 0) return false;
             if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(entitylivingbase))
                 return true;
         }

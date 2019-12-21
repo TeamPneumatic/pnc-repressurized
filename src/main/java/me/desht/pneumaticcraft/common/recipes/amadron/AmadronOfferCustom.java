@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeNotifyDeal;
 import me.desht.pneumaticcraft.common.network.PacketUtil;
+import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -181,7 +182,7 @@ public class AmadronOfferCustom extends AmadronOffer {
     public TileEntity getProvidingTileEntity() {
         if (cachedInput == null || cachedInput.isRemoved()) {
             if (providingPos != null) {
-                cachedInput = PneumaticCraftUtils.getTileEntity(providingPos);
+                cachedInput = GlobalPosUtils.getTileEntity(providingPos);
             }
         }
         return cachedInput;
@@ -190,7 +191,7 @@ public class AmadronOfferCustom extends AmadronOffer {
     public TileEntity getReturningTileEntity() {
         if (cachedOutput == null || cachedOutput.isRemoved()) {
             if (returningPos != null) {
-                cachedOutput = PneumaticCraftUtils.getTileEntity(returningPos);
+                cachedOutput = GlobalPosUtils.getTileEntity(returningPos);
             }
         }
         return cachedOutput;
@@ -213,10 +214,10 @@ public class AmadronOfferCustom extends AmadronOffer {
         tag.putInt("maxTrades", maxTrades);
         tag.putInt("pendingPayments", pendingPayments);
         if (providingPos != null) {
-            tag.put("providingPos", PneumaticCraftUtils.serializeGlobalPos(providingPos));
+            tag.put("providingPos", GlobalPosUtils.serializeGlobalPos(providingPos));
         }
         if (returningPos != null) {
-            tag.put("returningPos", PneumaticCraftUtils.serializeGlobalPos(returningPos));
+            tag.put("returningPos", GlobalPosUtils.serializeGlobalPos(returningPos));
         }
     }
 
@@ -227,10 +228,10 @@ public class AmadronOfferCustom extends AmadronOffer {
         custom.maxTrades = tag.getInt("maxTrades");
         custom.pendingPayments = tag.getInt("pendingPayments");
         if (tag.contains("providingPos")) {
-            custom.setProvidingPosition(PneumaticCraftUtils.deserializeGlobalPos(tag.getCompound("providingPos")));
+            custom.setProvidingPosition(GlobalPosUtils.deserializeGlobalPos(tag.getCompound("providingPos")));
         }
         if (tag.contains("returningPos")) {
-            custom.setProvidingPosition(PneumaticCraftUtils.deserializeGlobalPos(tag.getCompound("returningPos")));
+            custom.setProvidingPosition(GlobalPosUtils.deserializeGlobalPos(tag.getCompound("returningPos")));
         }
         return custom;
     }

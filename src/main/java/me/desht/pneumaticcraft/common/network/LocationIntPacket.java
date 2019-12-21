@@ -1,16 +1,11 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.Block;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
-
-import java.util.function.Supplier;
 
 /**
  * MineChess
@@ -51,7 +46,7 @@ public abstract class LocationIntPacket {
         return world.getBlockState(pos).getBlock();
     }
 
-    protected TileEntity getTileEntity(Supplier<NetworkEvent.Context> ctx) {
-        return PneumaticCraftRepressurized.proxy.getWorldFor(ctx.get()).getTileEntity(pos);
-    }
+//    protected TileEntity getTileEntity(Supplier<NetworkEvent.Context> ctx) {
+//        return PneumaticCraftRepressurized.proxy.getWorldFor(ctx.get()).getTileEntity(pos);
+//    }
 }

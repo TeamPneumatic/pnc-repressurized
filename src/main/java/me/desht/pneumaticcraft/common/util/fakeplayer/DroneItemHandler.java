@@ -6,25 +6,20 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
-public class DroneItemHandler extends PlayerMainInvWrapper {
+public class DroneItemHandler extends ItemStackHandler {
     private final IDrone holder;
     protected boolean heldItemChanged = false;
 
     public DroneItemHandler(IDrone holder) {
-        super(holder.getFakePlayer().inventory);
+        super(holder.getUpgrades(EnumUpgrade.INVENTORY) + 1);
         this.holder = holder;
     }
 
     private ItemStack oldStack = ItemStack.EMPTY;
-
-    @Override
-    public int getSlots() {
-        return holder.getUpgrades(EnumUpgrade.INVENTORY) + 1;
-    }
 
     @Nonnull
     @Override
@@ -49,7 +44,7 @@ public class DroneItemHandler extends PlayerMainInvWrapper {
     }
 
     /**
-     * This should be called regularly, e.g. from the entity or tile entity update() method.  It ensures the fake
+     * This should be called regularly, e.g. from the entity or tile entity tick() method.  It ensures the fake
      * player has the appropriate attributes based on the held item, and can be overridden for extra functionality.
      */
     public void updateHeldItem() {

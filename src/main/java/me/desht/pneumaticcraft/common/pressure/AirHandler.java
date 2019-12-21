@@ -13,9 +13,9 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
+import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
@@ -53,7 +53,7 @@ public class AirHandler implements IAirHandler {
     private final Set<IAirHandler> specialConnectedHandlers = new HashSet<>();
     private TileEntityCache[] tileCache;
 
-    private TileEntityTickableBase.UpgradeCache upgradeCache;
+    private UpgradeCache upgradeCache;
     private IAirListener airListener;
     private IPneumaticMachine parentPneumatic;
     private World world;

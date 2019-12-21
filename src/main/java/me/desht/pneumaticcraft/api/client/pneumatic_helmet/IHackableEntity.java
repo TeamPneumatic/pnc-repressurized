@@ -32,18 +32,18 @@ public interface IHackableEntity {
     /**
      * Add info that is displayed on the tracker tooltip here. Text like "Hack to explode" can be added.
      * This method is only called when canHack(Entity) returned true.
-     * The added lines automatically will be tried to get localized.
+     * Any added text will be localized where applicable.
      *
      * @param entity the potential hacking target
      * @param curInfo a string list to append info to
      * @param player the player who is looking at the entity
      */
-    void addInfo(Entity entity, List<String> curInfo, PlayerEntity player);
+    void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player);
 
     /**
      * Add info that is being displayed after hacking, as long as 'afterHackTick' is returning true.
      * Things like "Neutralized".
-     * The added lines automatically will be tried to get localized.
+     * Any added text will be localized where applicable.
      *
      * @param entity the hacked entity
      * @param curInfo a string list to append info to

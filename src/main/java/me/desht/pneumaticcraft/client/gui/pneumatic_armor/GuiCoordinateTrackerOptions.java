@@ -14,7 +14,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class GuiCoordinateTrackerOptions implements IOptionPage {
+public class GuiCoordinateTrackerOptions extends IOptionPage.SimpleToggleableOptions<CoordTrackUpgradeHandler> {
     private Button wirePath;
     private Button pathEnabled;
     private Button xRayEnabled;
@@ -22,13 +22,12 @@ public class GuiCoordinateTrackerOptions implements IOptionPage {
     private final CoordTrackUpgradeHandler coordHandler = HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class);
     private final Minecraft mc = Minecraft.getInstance();
 
-    @Override
-    public String getPageName() {
-        return "Coordinate Tracker";
+    public GuiCoordinateTrackerOptions(IGuiScreen screen, CoordTrackUpgradeHandler renderHandler) {
+        super(screen, renderHandler);
     }
 
     @Override
-    public void initGui(IGuiScreen gui) {
+    public void populateGui(IGuiScreen gui) {
         gui.addWidget(new WidgetButtonExtended(30, 40, 150, 20,
                 "Select Target...", b -> selectTarget()));
         gui.addWidget(new WidgetButtonExtended(30, 62, 150, 20,
@@ -92,27 +91,6 @@ public class GuiCoordinateTrackerOptions implements IOptionPage {
         }
     }
 
-    public void renderPre(int x, int y, float partialTicks) {
-    }
-
-    public void renderPost(int x, int y, float partialTicks) {
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseClicked(double x, double y, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
-        return false;
-    }
-
     private void updateButtonTexts() {
         CoordTrackUpgradeHandler coordHandler = HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class);
         pathEnabled.setMessage(coordHandler.pathEnabled ? "Navigation Enabled" : "Navigation Disabled");
@@ -132,11 +110,6 @@ public class GuiCoordinateTrackerOptions implements IOptionPage {
         wirePath.active = coordHandler.pathEnabled;
         xRayEnabled.active = coordHandler.pathEnabled;
         pathUpdateRate.active = coordHandler.pathEnabled;
-    }
-
-    @Override
-    public boolean canBeTurnedOff() {
-        return true;
     }
 
     @Override

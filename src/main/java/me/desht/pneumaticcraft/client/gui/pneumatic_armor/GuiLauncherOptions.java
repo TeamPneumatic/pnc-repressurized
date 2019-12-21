@@ -3,27 +3,19 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.ChestplateLauncherHandler;
 
-public class GuiLauncherOptions implements IOptionPage {
+public class GuiLauncherOptions extends IOptionPage.SimpleToggleableOptions<ChestplateLauncherHandler> {
     private KeybindingButton changeKeybindingButton;
 
-    @Override
-    public String getPageName() {
-        return "Item Launcher";
+    public GuiLauncherOptions(IGuiScreen screen, ChestplateLauncherHandler renderHandler) {
+        super(screen, renderHandler);
     }
 
     @Override
-    public void initGui(IGuiScreen gui) {
+    public void populateGui(IGuiScreen gui) {
         changeKeybindingButton = new KeybindingButton(30, 128, 150, 20, "Change Launch Key...", KeyHandler.getInstance().keybindLauncher, b -> changeKeybindingButton.toggleKeybindMode());
         gui.addWidget(changeKeybindingButton);
-    }
-
-    public void renderPre(int x, int y, float partialTicks) {
-
-    }
-
-    public void renderPost(int x, int y, float partialTicks) {
-
     }
 
     @Override
@@ -36,22 +28,8 @@ public class GuiLauncherOptions implements IOptionPage {
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int button) {
+    public boolean isToggleable() {
         return false;
     }
 
-    @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
-        return false;
-    }
-
-    @Override
-    public boolean canBeTurnedOff() {
-        return false;
-    }
-
-    @Override
-    public boolean displaySettingsHeader() {
-        return false;
-    }
 }

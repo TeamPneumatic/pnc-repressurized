@@ -6,12 +6,14 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Ent
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.IParticleData;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -54,7 +56,45 @@ public class ClientUtils {
     }
 
     public static void openContainerGui(ContainerType<? extends Container> type, ITextComponent displayString) {
-        // TODO will this windowId = -1 hack work?
+        // This windowId = -1 hack is ugly but appears to work...
         ScreenManager.openScreen(type, Minecraft.getInstance(), -1, displayString);
+    }
+
+    /**
+     * For use where we can't reference Minecraft directly, e.g. packet handling code.
+     * @return the client world
+     */
+    public static World getClientWorld() {
+        return Minecraft.getInstance().world;
+    }
+
+    /**
+     * Get a TE client-side.  Convenience method for packet handling code, primarily.
+     * @return a tile entity or null
+     */
+    public static TileEntity getClientTE(BlockPos pos) {
+        return Minecraft.getInstance().world.getTileEntity(pos);
+    }
+
+    /**
+     * See AWT Rectangle's intersects() method
+     *
+     * @param rect
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     * @return
+     */
+    public static boolean intersects(Rectangle2d rect, double x, double y, double w, double h) {
+        if (rect.getWidth() <= 0 || rect.getHeight() <= 0 || w <= 0 || h <= 0) {
+            return false;
+        }
+        double x0 = rect.getX();
+        double y0 = rect.getY();
+        return (x + w > x0 &&
+                y + h > y0 &&
+                x < x0 + rect.getWidth() &&
+                y < y0 + rect.getHeight());
     }
 }

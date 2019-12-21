@@ -104,35 +104,6 @@ public class WidgetComboBox extends WidgetTextField {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-//    @Override
-//    protected boolean clicked(double mouseX, double mouseY) {
-//        // larger area when focused and drop-down is shown
-//        int h = baseHeight + (isFocused() ? getApplicableElements().size() * fontRenderer.FONT_HEIGHT : 0);
-//        return this.active && this.visible
-//                && mouseX >= (double)this.x && mouseY >= (double)this.y
-//                && mouseX < (double)(this.x + this.width) && mouseY < (double)(this.y + h);
-//    }
-//
-//    @Override
-//    public void onClick(double x, double y) {
-//        if (fixedOptions && enabled) {
-//            if (y < y + height && x > x + width - 8 && isFocused()) {
-//                setFocused(false);
-//            } else {
-//                setFocused(true);
-//                List<String> applicableElements = getApplicableElements();
-//                for (int i = 0; i < applicableElements.size(); i++) {
-//                    if (isHovered) {
-//                        setText(applicableElements.get(i));
-//                        selectedIndex = i;
-//                        setFocused(false);
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (fixedOptions) return false;

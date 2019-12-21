@@ -30,14 +30,14 @@ public class DroneAILiquidExport extends DroneAIImExBase<ProgWidgetInventoryBase
     }
 
     private boolean fillTank(BlockPos pos, boolean simulate) {
-        if (drone.getTank().getFluidAmount() == 0) {
+        if (drone.getFluidTank().getFluidAmount() == 0) {
             drone.addDebugEntry("gui.progWidget.liquidExport.debug.emptyDroneTank");
             abort();
             return false;
         } else {
             TileEntity te = drone.world().getTileEntity(pos);
             if (te != null) {
-                FluidStack exportedFluid = drone.getTank().drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
+                FluidStack exportedFluid = drone.getFluidTank().drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
                 if (!exportedFluid.isEmpty() && ((ILiquidFiltered) progWidget).isFluidValid(exportedFluid.getFluid())) {
                     for (Direction side : Direction.VALUES) {
                         if (ISidedWidget.checkSide(progWidget, side) && trySide(te, side, exportedFluid, simulate)) return true;
@@ -68,7 +68,7 @@ public class DroneAILiquidExport extends DroneAIImExBase<ProgWidgetInventoryBase
                     filledAmount = Math.min(filledAmount, getRemainingCount());
                 }
                 if (!simulate) {
-                    decreaseCount(fluidHandler.fill(drone.getTank().drain(filledAmount, FluidAction.EXECUTE), FluidAction.EXECUTE));
+                    decreaseCount(fluidHandler.fill(drone.getFluidTank().drain(filledAmount, FluidAction.EXECUTE), FluidAction.EXECUTE));
                 }
                 return true;
             }

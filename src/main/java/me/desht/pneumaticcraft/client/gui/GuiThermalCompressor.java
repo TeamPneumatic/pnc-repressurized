@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -12,7 +13,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.StringUtils;
 
-import java.awt.*;
 import java.util.List;
 
 public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThermalCompressor,TileEntityThermalCompressor> {
@@ -44,10 +44,10 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     }
 
     @Override
-    protected Point getGaugeLocation() {
+    protected PointXY getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new Point(xStart + (int)(xSize * 0.82), yStart + ySize / 4 + 4);
+        return new PointXY(xStart + (int)(xSize * 0.82), yStart + ySize / 4 + 4);
     }
 
     private int getTemperatureDifferential(Direction side) {

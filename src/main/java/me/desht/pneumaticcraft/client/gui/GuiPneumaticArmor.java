@@ -104,7 +104,7 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
             text.add(TextFormatting.BLACK + "0.0 mL/tick");
         }
         text.add("\u00a77Estimated time remaining:");
-        int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, itemStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getDefaultVolume();
+        int volume = UpgradableItemUtils.getUpgrades(itemStack, EnumUpgrade.VOLUME) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getDefaultVolume();
         int airLeft = itemStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(h -> (int)(h.getPressure() * volume))
                 .orElse(0);

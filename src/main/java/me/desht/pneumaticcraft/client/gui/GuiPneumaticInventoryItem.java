@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
@@ -17,7 +18,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.glfw.GLFW;
 
-import java.awt.*;
 import java.util.List;
 
 public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBase<ContainerChargingStationItemInventory,TileEntityChargingStation> {
@@ -48,7 +48,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
     protected void addPressureStatInfo(List<String> pressureStatText) {
         pressureStatText.add("\u00a77Current Pressure:");
         float curPressure = te.chargingItemPressure;
-        int volume = UpgradableItemUtils.getUpgrades(EnumUpgrade.VOLUME, itemStack) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getDefaultVolume();
+        int volume = UpgradableItemUtils.getUpgrades(itemStack, EnumUpgrade.VOLUME) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getDefaultVolume();
         pressureStatText.add("\u00a70" + (double) Math.round(curPressure * 10) / 10 + " bar.");
         pressureStatText.add("\u00a77Current Air:");
         pressureStatText.add("\u00a70" + (double) Math.round(curPressure * volume) + " mL.");
@@ -103,7 +103,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
     }
 
     @Override
-    protected Point getGaugeLocation() {
+    protected PointXY getGaugeLocation() {
         return null;
     }
 

@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketNotifyVariablesRemote;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
+import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -111,7 +111,7 @@ public class ItemRemote extends ItemPneumatic {
     private boolean isAllowedToEdit(PlayerEntity player, ItemStack remote) {
         GlobalPos gPos = getSecurityStationPos(remote);
         if (gPos != null) {
-            TileEntity te = PneumaticCraftUtils.getTileEntity(gPos);
+            TileEntity te = GlobalPosUtils.getTileEntity(gPos);
             if (te instanceof TileEntitySecurityStation) {
                 boolean canAccess = ((TileEntitySecurityStation) te).doesAllowPlayer(player);
                 if (!canAccess) {
@@ -125,11 +125,11 @@ public class ItemRemote extends ItemPneumatic {
 
     private static GlobalPos getSecurityStationPos(ItemStack stack) {
         return stack.hasTag() && stack.getTag().contains(NBT_SECURITY_POS) ?
-                PneumaticCraftUtils.deserializeGlobalPos(stack.getTag().getCompound(NBT_SECURITY_POS)) : null;
+                GlobalPosUtils.deserializeGlobalPos(stack.getTag().getCompound(NBT_SECURITY_POS)) : null;
     }
 
     private static void setSecurityStationPos(ItemStack stack, GlobalPos gPos) {
-        NBTUtil.setCompoundTag(stack, NBT_SECURITY_POS, PneumaticCraftUtils.serializeGlobalPos(gPos));
+        NBTUtil.setCompoundTag(stack, NBT_SECURITY_POS, GlobalPosUtils.serializeGlobalPos(gPos));
     }
 
     @Override
@@ -137,7 +137,7 @@ public class ItemRemote extends ItemPneumatic {
         if (!world.isRemote) {
             GlobalPos gPos = getSecurityStationPos(remote);
             if (gPos != null) {
-                TileEntity te = PneumaticCraftUtils.getTileEntity(gPos);
+                TileEntity te = GlobalPosUtils.getTileEntity(gPos);
                 if (!(te instanceof TileEntitySecurityStation) && remote.hasTag()) {
                     remote.getTag().remove(NBT_SECURITY_POS);
                 }

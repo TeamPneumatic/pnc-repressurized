@@ -7,9 +7,9 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
+import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -123,7 +123,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     public static LazyOptional<IItemHandler> getItemProvider(ItemStack tablet) {
         GlobalPos pos = getItemProvidingLocation(tablet);
         if (pos != null) {
-            TileEntity te = PneumaticCraftUtils.getTileEntity(pos);
+            TileEntity te = GlobalPosUtils.getTileEntity(pos);
             return IOHelper.getInventoryForTE(te);
         }
         return LazyOptional.empty();
@@ -131,12 +131,12 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
 
     public static GlobalPos getItemProvidingLocation(ItemStack tablet) {
         return tablet.hasTag() && tablet.getTag().contains("itemPos") ?
-                PneumaticCraftUtils.deserializeGlobalPos(tablet.getTag().getCompound("itemPos")) :
+                GlobalPosUtils.deserializeGlobalPos(tablet.getTag().getCompound("itemPos")) :
                 null;
     }
 
     private static void setItemProvidingLocation(ItemStack tablet, GlobalPos globalPos) {
-        NBTUtil.setCompoundTag(tablet, "itemPos", PneumaticCraftUtils.serializeGlobalPos(globalPos));
+        NBTUtil.setCompoundTag(tablet, "itemPos", GlobalPosUtils.serializeGlobalPos(globalPos));
     }
 
     public static LazyOptional<IFluidHandler> getFluidProvider(ItemStack tablet) {
@@ -150,12 +150,12 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
 
     public static GlobalPos getFluidProvidingLocation(ItemStack tablet) {
         return tablet.hasTag() && tablet.getTag().contains("liquidPos") ?
-                PneumaticCraftUtils.deserializeGlobalPos(tablet.getTag().getCompound("liquidPos")) :
+                GlobalPosUtils.deserializeGlobalPos(tablet.getTag().getCompound("liquidPos")) :
                 null;
     }
 
     private static void setFluidProvidingLocation(ItemStack tablet, GlobalPos globalPos) {
-        NBTUtil.setCompoundTag(tablet, "liquidPos", PneumaticCraftUtils.serializeGlobalPos(globalPos));
+        NBTUtil.setCompoundTag(tablet, "liquidPos", GlobalPosUtils.serializeGlobalPos(globalPos));
     }
 
     public static Map<AmadronOffer, Integer> getShoppingCart(ItemStack tablet) {

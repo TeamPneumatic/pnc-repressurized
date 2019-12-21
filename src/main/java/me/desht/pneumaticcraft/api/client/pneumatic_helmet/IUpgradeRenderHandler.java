@@ -92,11 +92,12 @@ public interface IUpgradeRenderHandler {
     /**
      * When you have some options for your upgrade handler you could return a new instance of an IOptionsPage.
      * When you do so, it will automatically get picked up by the options handler, and it will be added to the
-     * options GUI when this upgrade returns true when calling isEnabled(). Returning null is valid.
+     * options GUI when this upgrade returns true when calling isEnabled(). Returning null here is valid.
      *
-     * @return an options page
+     * @param screen an instance of the gui Screen object
+     * @return an options page, or null if the upgrade does not have an options page
      */
-    IOptionPage getGuiOptionsPage();
+    IOptionPage getGuiOptionsPage(IGuiScreen screen);
 
     /**
      * Get the minimum helmet pressure for this renderer to operate; the armor piece pressure must be <i>greater</i>
@@ -129,17 +130,14 @@ public interface IUpgradeRenderHandler {
     abstract class SimpleToggleableRenderHandler implements IUpgradeRenderHandler {
         @Override
         public void update(PlayerEntity player, int rangeUpgrades) {
-
         }
 
         @Override
         public void render3D(float partialTicks) {
-
         }
 
         @Override
         public void render2D(float partialTicks, boolean helmetEnabled) {
-
         }
 
         @Override
@@ -154,12 +152,11 @@ public interface IUpgradeRenderHandler {
 
         @Override
         public void reset() {
-
         }
 
         @Override
-        public IOptionPage getGuiOptionsPage() {
-            return new IOptionPage.SimpleToggleableOptions(this);
+        public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
+            return new IOptionPage.SimpleToggleableOptions<>(screen, this);
         }
 
         @Override

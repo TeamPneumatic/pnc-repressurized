@@ -18,7 +18,6 @@ import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidgetEn
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidgetInteger;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -227,7 +226,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     }
 
     @Override
-    protected void previewArea(Button button) {
+    protected void previewArea(WidgetCheckBox button) {
         super.previewArea(button);
 
         saveWidgets();

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
@@ -10,14 +9,14 @@ import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.IHeatDisperser;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
+import me.desht.pneumaticcraft.common.util.upgrade.IUpgradeHolder;
+import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
@@ -40,17 +39,19 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 //@Optional.InterfaceList({
 //        @Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)
 //})
-public abstract class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor /*, IPeripheral*/ {
+public abstract class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder /*, IPeripheral*/ {
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.button.anySignal",
             "gui.tab.redstoneBehaviour.button.highSignal",
@@ -74,7 +75,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
 //    private LuaMethodRegistry luaMethodRegistry = null;
-    BlockState pendingState = null;
 
     public TileEntityBase(TileEntityType type) {
         this(type, 0);
@@ -216,11 +216,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
             if (descriptionPacketScheduled) {
                 descriptionPacketScheduled = false;
                 sendDescriptionPacket();
-            }
-
-            if (pendingState != null) {
-                world.setBlockState(getPos(), pendingState);
-                pendingState = null;
             }
         }
     }
@@ -571,6 +566,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     public abstract IItemHandlerModifiable getPrimaryInventory();
 
+    @Override
     public UpgradeHandler getUpgradeHandler() {
         return upgradeHandler;
     }
@@ -663,7 +659,8 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
      * are deserialized, so it is not guaranteed that the world field is non-null - beware.  If you override this,
      * remember to call the super method!
      */
-    protected void onUpgradesChanged() {
+    @Override
+    public void onUpgradesChanged() {
         actualSpeedMult = (float) Math.pow(PNCConfig.Common.Machines.speedUpgradeSpeedMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
         actualUsageMult = (float) Math.pow(PNCConfig.Common.Machines.speedUpgradeUsageMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
     }
@@ -689,68 +686,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
             super.onContentsChanged(slot);
 
             upgradeCache.invalidate();
-        }
-    }
-
-    public class UpgradeCache {
-        private final int[] upgradeCount = new int[IItemRegistry.EnumUpgrade.values().length];
-        private Map<String,Integer> customUpgradeCount;
-        private final TileEntityBase te;
-        private boolean isValid = false;
-        private Direction ejectDirection;
-
-        UpgradeCache(TileEntityBase te) {
-            this.te = te;
-        }
-
-        void validate() {
-            if (isValid) return;
-
-            IItemHandler handler = getUpgradeHandler();
-
-            Arrays.fill(upgradeCount, 0);
-            customUpgradeCount = null;
-            ejectDirection = null;
-            for (int i = 0; i < handler.getSlots(); i++) {
-                ItemStack stack = handler.getStackInSlot(i);
-                if (stack.getItem() instanceof ItemMachineUpgrade) {
-                    // native upgrade
-                    IItemRegistry.EnumUpgrade type = ((ItemMachineUpgrade) stack.getItem()).getUpgradeType();
-                    upgradeCount[type.ordinal()] += handler.getStackInSlot(i).getCount();
-                    if (type == IItemRegistry.EnumUpgrade.DISPENSER && stack.hasTag()) {
-                        ejectDirection = Direction.byName(NBTUtil.getString(stack, ItemMachineUpgrade.NBT_DIRECTION));
-                    }
-                } else if (!handler.getStackInSlot(i).isEmpty()) {
-                    // custom upgrade from another mod
-                    if (customUpgradeCount == null)
-                        customUpgradeCount = Maps.newHashMap();
-                    String key = makeUpgradeKey(stack);
-                    customUpgradeCount.put(key, customUpgradeCount.getOrDefault(key, 0) + stack.getCount());
-                }
-            }
-            isValid = true;
-            te.onUpgradesChanged();
-        }
-
-        /**
-         * Mark the upgrade cache as invalid.  It will be revalidated at the start of the next update tick for the TE.
-         */
-        public void invalidate() {
-            isValid = false;
-        }
-
-        public int getUpgrades(IItemRegistry.EnumUpgrade type) {
-            validate();
-            return upgradeCount[type.ordinal()];
-        }
-
-        public int getUpgrades(ItemStack stack) {
-            validate();
-            return customUpgradeCount == null ? 0 : customUpgradeCount.getOrDefault(makeUpgradeKey(stack), 0);
-        }
-
-        Direction getEjectDirection() {
-            return ejectDirection;
         }
     }
 }

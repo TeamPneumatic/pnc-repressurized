@@ -1,6 +1,6 @@
 {
   "name": "Condition: Item Filter Widget",
-  "icon": "pneumaticcraft:textures/items/progwidgets/condition_item.png",
+  "icon": "pneumaticcraft:textures/item/progwidgets/condition_item.png",
   "category": "widget_cond",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -19,7 +19,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/items/progwidgets/condition_item.png"
+        "pneumaticcraft:textures/item/progwidgets/condition_item.png"
       ],
       "text": "$(italic)Condition: Item Filter Widget/$"
     }

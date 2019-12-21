@@ -1,10 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.BlockTrackEvent;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiBlockTrackOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -324,8 +321,8 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public IOptionPage getGuiOptionsPage() {
-        return new GuiBlockTrackOptions(this);
+    public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
+        return new GuiBlockTrackOptions(screen,this);
     }
 
     @Override

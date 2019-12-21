@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
@@ -14,18 +15,17 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fml.client.config.GuiSlider;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.awt.*;
-
-public abstract class GuiSliderOptions extends IOptionPage.SimpleToggleableOptions implements GuiSlider.ISlider {
+public abstract class GuiSliderOptions<T extends IUpgradeRenderHandler> extends IOptionPage.SimpleToggleableOptions<T>
+        implements GuiSlider.ISlider {
     private GuiSlider slider;
     private Integer pendingVal = null;
 
-    GuiSliderOptions(IUpgradeRenderHandler handler) {
-        super(handler);
+    GuiSliderOptions(IGuiScreen screen, T handler) {
+        super(screen, handler);
     }
 
-    protected Point getSliderPos() {
-        return new Point(30, 60);
+    protected PointXY getSliderPos() {
+        return new PointXY(30, 60);
     }
 
     protected Pair<Integer, Integer> getRange() {
@@ -40,14 +40,14 @@ public abstract class GuiSliderOptions extends IOptionPage.SimpleToggleableOptio
 
     protected abstract String getSuffix();
 
-    public void initGui(IGuiScreen gui) {
+    public void populateGui(IGuiScreen gui) {
         Pair<Integer,Integer> range = getRange();
         int initVal = range.getRight();
         if (Minecraft.getInstance().player != null) {
             ItemStack leggings = Minecraft.getInstance().player.getItemStackFromSlot(getSlot());
             initVal = ItemPneumaticArmor.getIntData(leggings, getTagName(), range.getRight());
         }
-        Point pos = getSliderPos();
+        PointXY pos = getSliderPos();
         slider = new GuiSlider(pos.x, pos.y, 150, 20,  getPrefix(), getSuffix(),
                 range.getLeft(), range.getRight(), initVal, false, true, b -> { }, this);
         gui.addWidget(slider);

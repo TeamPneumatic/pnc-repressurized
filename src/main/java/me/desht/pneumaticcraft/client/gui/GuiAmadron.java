@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron.EnumProblemState;
 import me.desht.pneumaticcraft.common.inventory.SlotUntouchable;
@@ -23,7 +24,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -190,7 +190,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     }
 
     @Override
-    protected Point getInvTextOffset() {
+    protected PointXY getInvTextOffset() {
         return null;
     }
 

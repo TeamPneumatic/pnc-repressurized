@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
@@ -19,7 +20,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,12 +92,12 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
     }
 
     @Override
-    protected Point getInvNameOffset() {
+    protected PointXY getInvNameOffset() {
         return null;
     }
 
     @Override
-    protected Point getInvTextOffset() {
+    protected PointXY getInvTextOffset() {
         return null;
     }
 
