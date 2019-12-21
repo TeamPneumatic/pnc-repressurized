@@ -354,7 +354,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                 world.notifyNeighborsOfStateChange(pos, this);
             } else {
                 // drop the pressure tube as an item
-                if (!player.isCreative()) spawnDrops(world.getBlockState(pos), world, pos); //dropBlockAsItem(world, pos, world.getBlockState(pos), 0);
+                if (!player.isCreative()) spawnDrops(world.getBlockState(pos), world, pos, tube);
                 world.removeBlock(pos, false);
             }
         } else {

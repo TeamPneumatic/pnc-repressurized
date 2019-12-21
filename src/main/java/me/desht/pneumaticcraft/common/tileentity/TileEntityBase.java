@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -32,6 +33,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -318,6 +321,21 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     public void onDescUpdate() {
         if (shouldRerenderChunkOnDescUpdate()) {
             rerenderTileEntity();
+            if (this instanceof ICamouflageableTE) requestModelDataUpdate();
+        }
+    }
+
+    @Nonnull
+    @Override
+    public IModelData getModelData() {
+        if (this instanceof ICamouflageableTE) {
+            return new ModelDataMap.Builder()
+                    .withInitial(BlockPneumaticCraftCamo.BLOCK_ACCESS, world)
+                    .withInitial(BlockPneumaticCraftCamo.BLOCK_POS, pos)
+                    .withInitial(BlockPneumaticCraftCamo.CAMO_STATE, ((ICamouflageableTE) this).getCamouflage())
+                    .build();
+        } else {
+            return super.getModelData();
         }
     }
 

@@ -17,7 +17,9 @@ import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -42,16 +44,6 @@ public class ItemCamoApplicator extends ItemPressurizable {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        // right-click air: clear any camo
-        ItemStack stack = playerIn.getHeldItem(handIn);
-        if (!worldIn.isRemote && playerIn.isSneaking() && getCamoState(stack) != null) {
-//            setCamoState(stack, null);
-        }
-        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
-    }
-
-    @Override
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext ctx) {
         World world = ctx.getWorld();
         BlockPos pos = ctx.getPos();
@@ -65,7 +57,12 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, pos, 1.0F, 2.0F, false), world);
                     player.sendStatusMessage(new TranslationTextComponent("message.camo.invalidBlock", getCamoStateDisplayName(state)), true);
                 } else {
-                    setCamoState(stack, state);
+                    BlockState toolState = getCamoState(stack);
+                    if (toolState != null && toolState.getBlock() == state.getBlock()) {
+                        setCamoState(stack, null);
+                    } else {
+                        setCamoState(stack, state);
+                    }
                 }
             } else{
                 // either apply saved camo, or remove current camo from block
@@ -116,12 +113,8 @@ public class ItemCamoApplicator extends ItemPressurizable {
                 }
                 NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.SHORT_HISS, SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
             }
-//            return ActionResultType.SUCCESS;
-        } else {
         }
         return ActionResultType.SUCCESS;
-
-//        return super.onItemUseFirst(stack, ctx);
     }
 
     private static void setCamoState(ItemStack stack, BlockState state) {

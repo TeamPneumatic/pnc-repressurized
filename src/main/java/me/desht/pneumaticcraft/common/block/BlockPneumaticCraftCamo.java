@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -15,10 +16,11 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.ModelProperty;
+import net.minecraftforge.common.util.Constants;
 
 /**
  * Base class for blocks which may be camouflaged, storing the camouflaged block state in the
- * CAMO_STATE unlisted property
+ * CAMO_STATE model property.
  */
 //@Optional.Interface (iface = "team.chisel.ctm.api.IFacade", modid = "ctm-api")
 public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*implements IFacade*/ {
@@ -41,47 +43,25 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
     }
 
     @Override
-    public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, TileEntity te, ItemStack stack) {
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
+        TileEntity te = world.getTileEntity(pos);
         if (te instanceof ICamouflageableTE && !player.isCreative()) {
-            // if the block is camo'd, break off the camo, but don't break the block itself
             BlockState camoState = ((ICamouflageableTE) te).getCamouflage();
             if (camoState != null) {
                 ItemStack camoStack = ICamouflageableTE.getStackForState(camoState);
+                ((ICamouflageableTE) te).setCamouflage(null);
+                world.playEvent(player, Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, getStateId(camoState));
                 ItemEntity entity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, camoStack);
                 world.addEntity(entity);
-                ((ICamouflageableTE) te).setCamouflage(null);
-                return;
+                return false;
             }
         }
-        super.harvestBlock(world, player, pos, state, te, stack);
+        return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
-        BlockState camo = getCamoState(reader, pos);
-        return camo != null ? camo.getCollisionShape(reader, pos) : super.getCollisionShape(state, reader, pos, ctx);
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
-        BlockState camo = getCamoState(reader, pos);
-        return camo != null && doesCamoOverrideBounds() ? camo.getShape(reader, pos) : super.getShape(state, reader, pos, ctx);
-    }
-
-    @Override
-    public boolean doesSideBlockRendering(BlockState state, IEnviromentBlockReader world, BlockPos pos, Direction face) {
-        BlockState camo = getCamoState(world, pos);
-        return camo == null ? super.doesSideBlockRendering(state, world, pos, face) : camo.doesSideBlockRendering(world, pos, face);
-    }
-
-    protected BlockState getCamoState(IBlockReader blockAccess, BlockPos pos) {
-        TileEntity te = blockAccess.getTileEntity(pos);
-        if (!(te instanceof ICamouflageableTE))
-            return null;
-
-        // must not use a camouflageable block as camouflage!
-        BlockState camoState = ((ICamouflageableTE) te).getCamouflage();
-        return camoState == null || camoState.getBlock() instanceof BlockPneumaticCraftCamo ? null : camoState;
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
     @Override
@@ -89,16 +69,35 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
         return true;
     }
 
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//
-//        BlockState camo = getCamoState(world, data.getPos());
-//        if (camo != null) {
-//            TOPCallback.handleCamo(mode, probeInfo, camo);
-//        }
-//    }
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
+        ICamouflageableTE camo = getCamoState(reader, pos);
+        return camo != null ? camo.getCamouflage().getCollisionShape(reader, pos) : super.getCollisionShape(state, reader, pos, ctx);
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
+        ICamouflageableTE camo = getCamoState(reader, pos);
+        return camo != null ? camo.getCamouflage().getShape(reader, pos) : super.getShape(state, reader, pos, ctx);
+    }
+
+    @Override
+    public boolean doesSideBlockRendering(BlockState state, IEnviromentBlockReader world, BlockPos pos, Direction face) {
+        ICamouflageableTE camo = getCamoState(world, pos);
+        return camo == null || camo.getCamouflage().doesSideBlockRendering(world, pos, face);
+    }
+
+    @Override
+    public int getOpacity(BlockState state, IBlockReader world, BlockPos pos) {
+        ICamouflageableTE camo = getCamoState(world, pos);
+        return camo == null ? super.getOpacity(state, world, pos) : camo.getCamouflage().getOpacity(world, pos);
+    }
+
+    private ICamouflageableTE getCamoState(IBlockReader blockAccess, BlockPos pos) {
+        TileEntity te = blockAccess.getTileEntity(pos);
+        return te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null ? (ICamouflageableTE) te : null;
+    }
+
 //
 //    @Nonnull
 //    @Override
