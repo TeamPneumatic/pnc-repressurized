@@ -159,7 +159,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
         World world = player.world;
         BlockPos navigatingPos = world.getHeight(Heightmap.Type.WORLD_SURFACE, new BlockPos(player));
         MobEntity e = PneumaticCraftUtils.createDummyEntity(player);
-        Path path = e.getNavigator().getPathToPos(navigatingPos, SEARCH_RANGE);
+        Path path = e.getNavigator().getPathToPos(navigatingPos, 0);
 //        Path path = PneumaticCraftUtils.getPathFinder().findPath(world, PneumaticCraftUtils.createDummyEntity(player), navigatingPos.getX(), navigatingPos.getY(), navigatingPos.getZ(), (float)SEARCH_RANGE);
         if (path != null) {
             for (int i = 0; i < path.getCurrentPathLength(); i++) {
@@ -191,7 +191,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
         World world = player.world;
         EntityDrone drone = new EntityDrone(ModEntityTypes.DRONE, world);
         drone.setPosition(player.posX, player.posY, player.posZ);
-        return new EntityPathNavigateDrone(drone, world).getPathToPos(pos, SEARCH_RANGE);
+        return new EntityPathNavigateDrone(drone, world).getPathToPos(pos, 0);
     }
 
     @Override
