@@ -55,8 +55,8 @@ public class ItemSeismicSensor extends ItemPneumatic {
 
     }
 
-    // todo 1.14 fluids
     private boolean isOil(World world, BlockPos pos) {
-        return false;
+        // TODO 1.14 make more tag-friendly
+        return world.getFluidState(pos).getFluid() == ModFluids.OIL;
     }
 }

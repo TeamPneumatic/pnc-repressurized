@@ -5,9 +5,11 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandle
 import me.desht.pneumaticcraft.common.config.ClientConfig.PathUpdateSetting;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ConfigHelper {
@@ -50,7 +52,8 @@ public class ConfigHelper {
         PNCConfig.Common.General.maxProgrammingArea = common.general.maxProgrammingArea.get();
         PNCConfig.Common.General.minFluidFuelTemperature = common.general.minFluidFuelTemperature.get();
         PNCConfig.Common.General.oilGenerationChance = common.general.oilGenerationChance.get();
-        PNCConfig.Common.General.oilWorldGenBlacklist = common.general.oilWorldGenBlacklist.get();
+        PNCConfig.Common.General.oilWorldGenBlacklist = common.general.oilWorldGenBlacklist.get()
+                .stream().map(ResourceLocation::new).collect(Collectors.toSet());
         PNCConfig.Common.General.useUpDyesWhenColoring = common.general.useUpDyesWhenColoring.get();
 
         PNCConfig.Common.Machines.aerialInterfaceArmorCompat = common.machines.aerialInterfaceArmorCompat.get();

@@ -1,8 +1,9 @@
 package me.desht.pneumaticcraft.common.config;
 
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
+import net.minecraft.util.ResourceLocation;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Holds "baked" config values which can be freely accessed, but any modifications will not be persisted.
@@ -33,12 +34,12 @@ public class PNCConfig {
 
     public static class Common {
         public static class General {
-            public static double oilGenerationChance;
+            public static int oilGenerationChance;
             public static boolean enableDungeonLoot;
             public static boolean enableDroneSuffocation;
             public static double fuelBucketEfficiency;
             public static int maxProgrammingArea;
-            public static List<Integer> oilWorldGenBlacklist;
+            public static Set<ResourceLocation> oilWorldGenBlacklist;
             public static int minFluidFuelTemperature;
             public static boolean useUpDyesWhenColoring;
         }

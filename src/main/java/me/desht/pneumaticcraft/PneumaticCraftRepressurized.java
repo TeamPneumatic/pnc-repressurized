@@ -38,6 +38,8 @@ import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.Reflections;
+import me.desht.pneumaticcraft.common.worldgen.ModDecorators;
+import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import me.desht.pneumaticcraft.datagen.ModLootTablesProvider;
 import me.desht.pneumaticcraft.datagen.ModRecipeProvider;
 import me.desht.pneumaticcraft.datagen.loot.TileEntitySerializerFunction;
@@ -53,6 +55,7 @@ import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.DistExecutor;
@@ -83,6 +86,8 @@ public class PneumaticCraftRepressurized {
 //    }
 
     public PneumaticCraftRepressurized() {
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+
         ConfigHolder.init();
         AuxConfigHandler.preInit();
 
@@ -91,7 +96,7 @@ public class PneumaticCraftRepressurized {
         // things that can be init'ed right away (not dependent on item/block/etc. registration)
 
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientHandler::clientSetup);
+            modBus.addListener(ClientHandler::clientSetup);
             MinecraftForge.EVENT_BUS.addListener(ClientHandler::registerRenders);
         });
 
@@ -101,12 +106,14 @@ public class PneumaticCraftRepressurized {
         MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
         MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
 
+        ModDecorators.DECORATORS.register(modBus);
+
         Reflections.init();
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
-        WidgetRegistrator.init();
+        WidgetRegistrator.init();  // TODO forge registry?
         ThirdPartyManager.instance().preInit();
-        SemiBlockInitializer.preInit();
-        proxy.preInit();
+        SemiBlockInitializer.preInit();  // TODO replace semiblocks with entity implementation
+        proxy.preInit();  // TODO get rid of proxy entirely if possible
         AdvancementTriggers.registerTriggers();
 
         LootFunctionManager.registerFunction(new TileEntitySerializerFunction.Serializer());
@@ -119,11 +126,6 @@ public class PneumaticCraftRepressurized {
         MinecraftForge.EVENT_BUS.register(ItemGPSAreaTool.EventHandler.class);
         MinecraftForge.EVENT_BUS.register(CommonArmorHandler.class);
         MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
-
-        // TODO 1.14 oil lake gen
-//        if (ConfigHandler.general.oilGenerationChance > 0) {
-//            GameRegistry.registerWorldGenerator(new WorldGeneratorPneumaticCraft(), 0);
-//        }
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -135,6 +137,7 @@ public class PneumaticCraftRepressurized {
         FluidSetup.init();
         HackableHandler.addDefaultEntries();
         SensorHandler.getInstance().init();
+        ModWorldGen.init();
 
         PermissionAPI.registerNode(Names.AMADRON_ADD_PERIODIC_TRADE, DefaultPermissionLevel.OP,
                 "Allow player to add a custom periodic offer via the Amadron Tablet");

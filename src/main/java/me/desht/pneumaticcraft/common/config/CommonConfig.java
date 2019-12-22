@@ -8,12 +8,12 @@ import java.util.List;
 
 public class CommonConfig {
     public class General {
-        ForgeConfigSpec.DoubleValue oilGenerationChance;
+        ForgeConfigSpec.IntValue oilGenerationChance;
         ForgeConfigSpec.BooleanValue enableDungeonLoot;
         ForgeConfigSpec.BooleanValue enableDroneSuffocation;
         ForgeConfigSpec.DoubleValue fuelBucketEfficiency;
         ForgeConfigSpec.IntValue maxProgrammingArea;
-        ForgeConfigSpec.ConfigValue<List<Integer>> oilWorldGenBlacklist;
+        ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenBlacklist;
         ForgeConfigSpec.IntValue minFluidFuelTemperature;
         ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
     }
@@ -124,9 +124,9 @@ public class CommonConfig {
         builder.push("General");
         general.oilGenerationChance = builder
                 .worldRestart()
-                .comment("Chance per chunk in percentage to generate an Oil Lake. Set to 0 for no spawns")
+                .comment("Chance per chunk in percentage to generate an Oil Lake. Set to 0 for no oil lakes.")
                 .translation("pneumaticcraft.config.server.general.oilGenerationChance")
-                .defineInRange("oil_generation_chance", 15.0, 0.0, 100.0);
+                .defineInRange("oil_generation_chance", 15, 0, 100);
         general.enableDungeonLoot = builder
                 .comment("Enable mod dungeon loot generation")
                 .translation("pneumaticcraft.config.server.general.enable_dungeon_loot")
@@ -147,7 +147,7 @@ public class CommonConfig {
                 .worldRestart()
                 .comment("Oil worldgen blacklist: add dimension IDs to this list if you don't want oil worldgen to happen there.")
                 .translation("pneumaticcraft.config.server.general.oil_world_gen_blacklist")
-                .define("oil_world_gen_blacklist", Lists.newArrayList(-1, 1));
+                .define("oil_world_gen_blacklist", Lists.newArrayList("minecraft:the_nether", "minecraft:the_end"));
         general.minFluidFuelTemperature = builder
                 .worldRestart()
                 .comment("Fluids at least as hot as this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")
