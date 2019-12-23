@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:drill_pipe"
+    ]
+  },
+  "criteria": {
+    "has_gas_lift": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:gas_lift"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:drill_pipe"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_gas_lift",
+      "has_the_recipe"
+    ]
+  ]
+}
