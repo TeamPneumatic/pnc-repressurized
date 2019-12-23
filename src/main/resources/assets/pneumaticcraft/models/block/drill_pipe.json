@@ -1,0 +1,56 @@
+{
+  "textures": {
+    "pipe": "minecraft:block/gray_concrete",
+    "particle": "minecraft:block/gray_concrete"
+  },
+  "elements": [
+    {
+      "from": [ 6,  0, 7 ],
+      "to":   [ 7, 16, 9 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "west":  { "texture": "#pipe" },
+        "east":  { "texture": "#pipe" },
+        "up":  { "texture": "#pipe", "cullface": "up" },
+        "down":  { "texture": "#pipe", "cullface": "down" }
+      }
+    },
+    {
+      "from": [  9,  0, 7 ],
+      "to":   [ 10, 16, 9 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "west":  { "texture": "#pipe" },
+        "east":  { "texture": "#pipe" },
+        "up":  { "texture": "#pipe", "cullface": "up" },
+        "down":  { "texture": "#pipe", "cullface": "down" }
+      }
+    },
+    {
+      "from": [ 7,  0, 6 ],
+      "to":   [ 9, 16, 7 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "west":  { "texture": "#pipe" },
+        "east":  { "texture": "#pipe" },
+        "up":  { "texture": "#pipe", "cullface": "up" },
+        "down":  { "texture": "#pipe", "cullface": "down" }
+      }
+    },
+    {
+      "from": [ 7,  0,  9 ],
+      "to":   [ 9, 16, 10 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "west":  { "texture": "#pipe" },
+        "east":  { "texture": "#pipe" },
+        "up":  { "texture": "#pipe", "cullface": "up" },
+        "down":  { "texture": "#pipe", "cullface": "down" }
+      }
+    }
+  ]
+}

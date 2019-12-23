@@ -364,7 +364,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
      */
     @Override
     public boolean hasComparatorInputOverride(BlockState state) {
-        return IComparatorSupport.class.isAssignableFrom(getTileEntityClass());
+        Class<? extends TileEntity> teClass = getTileEntityClass();
+        return teClass != null && IComparatorSupport.class.isAssignableFrom(teClass);
     }
 
     /**

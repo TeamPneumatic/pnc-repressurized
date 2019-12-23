@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.ai.ChunkPositionSorter;
-import me.desht.pneumaticcraft.common.block.BlockPressureTube;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -12,7 +12,6 @@ import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -67,8 +66,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty()
-                    || itemStack.getItem() instanceof BlockItem && ((BlockItem) itemStack.getItem()).getBlock() instanceof BlockPressureTube;
+            return itemStack.isEmpty() || itemStack.getItem() == ModBlocks.DRILL_PIPE.asItem();
         }
     };
     private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> inventory);
@@ -187,12 +185,12 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
             BlockPos pos1 = getPos().offset(Direction.DOWN, currentDepth);
             if (!isPipe(world, pos1)) {
                 ItemStack extracted = inventory.extractItem(0, 1, true);
-                if (extracted.getItem() instanceof BlockItem) {
+                if (extracted.getItem() == ModBlocks.DRILL_PIPE.asItem()) {
                     BlockState currentState = world.getBlockState(pos1);
                     BlockState newState = ((BlockItem) extracted.getItem()).getBlock().getDefaultState();
 
                     int airRequired = Math.round(66.66f * currentState.getBlockHardness(world, pos1));
-                    if (getPipeTier(newState) > 1) airRequired /= 2;
+//                    if (getPipeTier(newState) > 1) airRequired /= 2;
 
                     if (getAirHandler(null).getAir() > airRequired) {
                         inventory.extractItem(0, 1, false);
@@ -218,13 +216,14 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     private boolean isPipe(World world, BlockPos pos) {
-        return getPipeTier(world.getBlockState(pos)) >= 1;
+        return world.getBlockState(pos).getBlock() == ModBlocks.DRILL_PIPE;
+//        return getPipeTier(world.getBlockState(pos)) >= 1;
     }
 
-    private int getPipeTier(BlockState state) {
-        Block b = state.getBlock();
-        return b instanceof BlockPressureTube ? ((BlockPressureTube) b).getTier() : 0;
-    }
+//    private int getPipeTier(BlockState state) {
+//        Block b = state.getBlock();
+//        return b instanceof BlockPressureTube ? ((BlockPressureTube) b).getTier() : 0;
+//    }
 
     private boolean isUnbreakable(BlockPos pos) {
         return world().getBlockState(pos).getBlockHardness(world, pos) < 0;

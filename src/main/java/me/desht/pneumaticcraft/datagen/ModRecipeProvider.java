@@ -203,6 +203,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', ModItems.INGOT_IRON_COMPRESSED
         ).build(consumer);
 
+        shaped(ModBlocks.DRILL_PIPE, 3, ModBlocks.GAS_LIFT,
+                "T/T/T",
+                'T', ModBlocks.PRESSURE_TUBE
+        ).build(consumer);
+
         shaped(ModItems.DRONE, ModItems.PRINTED_CIRCUIT_BOARD,
                 " B /BPB/ B ",
                 'B', ModItems.TURBINE_ROTOR,

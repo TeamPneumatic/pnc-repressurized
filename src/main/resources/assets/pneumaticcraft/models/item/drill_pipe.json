@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/drill_pipe",
+  "transform": "forge:default-block"
+}

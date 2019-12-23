@@ -26,6 +26,7 @@ public class ModBlocks {
     public static final Block PRESSURE_CHAMBER_VALVE = null;
     public static final Block PRESSURE_CHAMBER_INTERFACE = null;
     public static final Block CHARGING_STATION = null;
+    public static final Block DRILL_PIPE = null;
     public static final Block ELEVATOR_BASE = null;
     public static final Block ELEVATOR_FRAME = null;
     public static final Block VACUUM_PUMP = null;
@@ -94,6 +95,7 @@ public class ModBlocks {
             registerBlock(r, new BlockPressureChamberGlass());
             registerBlock(r, new BlockPressureChamberValve());
             registerBlock(r, new BlockChargingStation());
+            registerBlock(r, new BlockDrillPipe());
             registerBlock(r, new BlockElevatorBase());
             registerBlock(r, new BlockElevatorFrame());
             registerBlock(r, new BlockPressureChamberInterface());

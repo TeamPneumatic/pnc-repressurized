@@ -46,6 +46,7 @@ public class ModLootTablesProvider extends LootTableProvider {
                 }
             }
 
+            registerDropSelfLootTable(ModBlocks.DRILL_PIPE);
 //            registerDropping(ModBlocks.FAKE_ICE, Blocks.AIR);
 //            registerDropping(ModBlocks.KEROSENE_LAMP_LIGHT, Blocks.AIR);
 //            registerDropping(ModBlocks.DRONE_REDSTONE_EMITTER, Blocks.AIR);
