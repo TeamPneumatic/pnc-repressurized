@@ -318,8 +318,9 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IUpgradeAcceptor) {
                 UpgradableItemUtils.addUpgradeInformation(stack, world, curInfo, flag);
             }
-            if (stack.getTag().contains(NBTKeys.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-                CompoundNBT tag = stack.getTag().getCompound(NBTKeys.NBT_SAVED_TANKS);
+            CompoundNBT subTag = stack.getChildTag("BlockEntityTag");
+            if (subTag != null && subTag.contains(NBTKeys.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
+                CompoundNBT tag = subTag.getCompound(NBTKeys.NBT_SAVED_TANKS);
                 for (String s : tag.keySet()) {
                     CompoundNBT tankTag = tag.getCompound(s);
                     FluidTank tank = new FluidTank(tankTag.getInt("Amount"));
