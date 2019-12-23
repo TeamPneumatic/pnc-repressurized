@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.minigun;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -54,7 +54,7 @@ public abstract class Minigun {
 
     private boolean gunAimedAtTarget;
 
-    private LazyOptional<? extends IAirHandlerBase> airCapability = LazyOptional.empty();
+    private LazyOptional<? extends IAirHandler> airCapability = LazyOptional.empty();
     private int airUsage;
     protected ItemStack minigunStack = ItemStack.EMPTY;
     private ItemStack ammoStack = ItemStack.EMPTY;
@@ -66,7 +66,7 @@ public abstract class Minigun {
         this.requiresTarget = requiresTarget;
     }
 
-    public Minigun setAirHandler(LazyOptional<? extends IAirHandlerBase> airHandler, int airUsage) {
+    public Minigun setAirHandler(LazyOptional<? extends IAirHandler> airHandler, int airUsage) {
         this.airCapability = airHandler;
         this.airUsage = airUsage;
         return this;
@@ -124,7 +124,7 @@ public abstract class Minigun {
         return stack.isEmpty() ? 0xFF313131 : Minecraft.getInstance().getItemColors().getColor(stack, 1);
     }
 
-    public LazyOptional<? extends IAirHandlerBase> getAirCapability() {
+    public LazyOptional<? extends IAirHandler> getAirCapability() {
         return airCapability;
     }
 

@@ -9,7 +9,7 @@ import java.util.Set;
  */
 public interface IUpgradeAcceptor {
     /**
-     * This method is called right when an instance of this interfaced is registered, be aware.
+     * This method is called right when an instance of this interface is registered, be aware.
      * It should return an set of all upgrades that are applicable for this machine/item/...
      *
      * @return a set of the items which will be accepted as upgrades

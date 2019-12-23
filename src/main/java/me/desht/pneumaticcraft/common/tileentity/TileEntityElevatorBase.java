@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
@@ -12,7 +12,6 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -360,9 +359,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     private void updateConnections() {
-        BlockState newState = AirHandler.getBlockConnectionState(getBlockState(), getAirHandler(null));
-        world.setBlockState(pos, newState);
-
         if (getWorld().getBlockState(getPos().offset(Direction.UP)).getBlock() != ModBlocks.ELEVATOR_BASE) {
             coreElevator = this;
             int i = -1;
@@ -531,7 +527,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public IAirHandler getAirHandler(Direction sideRequested) {
+    public IAirHandlerMachine getAirHandler(Direction sideRequested) {
         if (isCoreElevator()) {
             return super.getAirHandler(sideRequested);
         } else {
@@ -540,7 +536,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public void addConnectedPneumatics(List<Pair<Direction, IAirHandler>> connectedMachines) {
+    public void addConnectedPneumatics(List<Pair<Direction, IAirHandlerMachine>> connectedMachines) {
         TileEntity te = getTileCache()[Direction.DOWN.ordinal()].getTileEntity();
         if (te instanceof TileEntityElevatorBase) {
             connectedMachines.addAll(((TileEntityElevatorBase) te).airHandler.getConnectedPneumatics());
@@ -548,11 +544,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public void onAirDispersion(IAirHandler handler, Direction dir, int airAdded) {
+    public void onAirDispersion(IAirHandlerMachine handler, Direction dir, int airAdded) {
     }
 
     @Override
-    public int getMaxDispersion(IAirHandler handler, Direction dir) {
+    public int getMaxDispersion(IAirHandlerMachine handler, Direction dir) {
         return Integer.MAX_VALUE;
     }
 

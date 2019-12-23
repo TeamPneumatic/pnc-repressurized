@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.tubes.IPneumaticPosProvider;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
@@ -22,10 +22,11 @@ import javax.annotation.Nullable;
 
 public abstract class TileEntityPneumaticBase extends TileEntityTickableBase implements IPneumaticPosProvider {
     @GuiSynced
-    final IAirHandler airHandler;
-    public final float dangerPressure, criticalPressure;
+    final IAirHandlerMachine airHandler;
+    private final LazyOptional<IAirHandlerMachine> airHandlerCap;
+    public final float dangerPressure;
+    public final float criticalPressure;
     private final int defaultVolume;
-    private final LazyOptional<IAirHandler> airHandlerCap;
 
     public TileEntityPneumaticBase(TileEntityType type, float dangerPressure, float criticalPressure, int volume, int upgradeSlots) {
         super(type, upgradeSlots);
@@ -38,7 +39,6 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
 
         addApplicableUpgrade(IItemRegistry.EnumUpgrade.VOLUME);
         addApplicableUpgrade(IItemRegistry.EnumUpgrade.SECURITY);
-
     }
 
     @Override
@@ -114,7 +114,7 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
                 if (args.length == 0) {
                     return new Object[]{airHandler.getPressure()};
                 } else {
-                    IAirHandler handler = getAirHandler(getDirForString((String) args[0]));
+                    IAirHandlerMachine handler = getAirHandler(getDirForString((String) args[0]));
                     return new Object[]{handler != null ? handler.getPressure() : 0};
                 }
             }
@@ -151,7 +151,7 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
     }
 
     @Override
-    public IAirHandler getAirHandler(Direction side) {
+    public IAirHandlerMachine getAirHandler(Direction side) {
         return side == null || canConnectTo(side) ? airHandler : null;
     }
 

@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public interface IAirHandlerItem extends IAirHandlerBase {
+public interface IAirHandlerItem extends IAirHandler {
     /**
      * Get the container currently acted on by this air handler.
      */

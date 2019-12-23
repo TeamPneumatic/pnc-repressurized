@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.BlockChargingStation;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
@@ -104,9 +104,9 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
             int airToTransfer = (int) (PneumaticValues.CHARGING_STATION_CHARGE_RATE * getSpeedMultiplierFromUpgrades());
 
-            List<IAirHandlerBase> l = findChargeable();
+            List<IAirHandler> l = findChargeable();
             for (int i = 0; i < l.size() && airHandler.getAir() > 0; i++) {
-                IAirHandlerBase itemAirHandler = l.get(i);
+                IAirHandler itemAirHandler = l.get(i);
 
                 float itemPressure = itemAirHandler.getPressure();
                 float itemVolume = itemAirHandler.getVolume();
@@ -135,15 +135,15 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 updateNeighbours();
             }
 
-            List<Pair<Direction, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
+            List<Pair<Direction, IAirHandlerMachine>> teList = getAirHandler(null).getConnectedPneumatics();
             if (teList.size() == 0) {
                 getAirHandler(null).airLeak(getRotation());
             }
         }
     }
 
-    private List<IAirHandlerBase> findChargeable() {
-        List<IAirHandlerBase> res = new ArrayList<>();
+    private List<IAirHandler> findChargeable() {
+        List<IAirHandler> res = new ArrayList<>();
 
         getChargingStack().getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
 

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
@@ -33,7 +33,7 @@ public class ProgWidgetPressureCondition extends ProgWidgetCondition {
                     float pressure = Float.MIN_VALUE;
                     for (Direction d : Direction.VALUES) {
                         if (getSides()[d.ordinal()]) {
-                            IAirHandler airHandler = ((IPneumaticMachine) te).getAirHandler(d);
+                            IAirHandlerMachine airHandler = ((IPneumaticMachine) te).getAirHandler(d);
                             if (airHandler != null) pressure = Math.max(airHandler.getPressure(), pressure);
                         }
                     }

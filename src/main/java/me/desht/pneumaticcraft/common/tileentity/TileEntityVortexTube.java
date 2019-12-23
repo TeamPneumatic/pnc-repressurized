@@ -6,8 +6,6 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import me.desht.pneumaticcraft.common.pressure.AirHandler;
-import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -109,17 +107,6 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     @Override
     public void onBlockRotated() {
         visualizationTimer = 60;
-    }
-
-    @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
-        updateConnections();
-    }
-
-    private void updateConnections() {
-        BlockState newState = AirHandler.getBlockConnectionState(getBlockState(), getAirHandler(null));
-        world.setBlockState(pos, newState);
     }
 
     @Override

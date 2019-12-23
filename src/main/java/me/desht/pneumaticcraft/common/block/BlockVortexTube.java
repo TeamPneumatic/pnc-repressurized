@@ -36,7 +36,7 @@ public class BlockVortexTube extends BlockPneumaticCraftModeled {
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
-        builder.add(DOWN, UP, NORTH, SOUTH, WEST, EAST);
+        builder.add(CONNECTION_PROPERTIES);
     }
 
     @Override

@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
@@ -107,14 +107,14 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
         if (itemLife > 0) {
             MagazineHandler handler = getMagazine(stack);
             boolean repaired = false;
-            float pressure = minigun.getAirCapability().map(IAirHandlerBase::getPressure).orElse(0f);
+            float pressure = minigun.getAirCapability().map(IAirHandler::getPressure).orElse(0f);
             for (int i = 0; i < handler.getSlots() && pressure > 0.1f; i++) {
                 ItemStack ammo = handler.getStackInSlot(i);
                 if (ammo.getItem() instanceof ItemGunAmmo && ammo.getDamage() > 0) {
                     if (world.getGameTime() % (475 - itemLife * 75) == 0) {
                         ammo.setDamage(ammo.getDamage() - 1);
                         minigun.getAirCapability().ifPresent(h -> h.addAir(-(2 << itemLife)));
-                        pressure = minigun.getAirCapability().map(IAirHandlerBase::getPressure).orElse(0f);
+                        pressure = minigun.getAirCapability().map(IAirHandler::getPressure).orElse(0f);
                         repaired = true;
                     }
                 }

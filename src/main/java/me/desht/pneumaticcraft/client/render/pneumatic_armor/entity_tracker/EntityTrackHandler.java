@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry.EntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
@@ -148,7 +148,7 @@ public class EntityTrackHandler {
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             float pressure = entity.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY)
-                    .map(IAirHandlerBase::getPressure)
+                    .map(IAirHandler::getPressure)
                     .orElseThrow(IllegalStateException::new);
             curInfo.add(I18n.format("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));
         }

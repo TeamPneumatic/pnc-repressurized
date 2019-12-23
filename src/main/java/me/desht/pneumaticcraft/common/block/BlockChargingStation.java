@@ -25,6 +25,8 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
 
     public BlockChargingStation() {
         super("charging_station");
+
+        setDefaultState(getStateContainer().getBaseState().with(CHARGE_PAD, false));
     }
 
     @Override

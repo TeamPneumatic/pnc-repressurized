@@ -4,7 +4,7 @@ import com.google.common.math.IntMath;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberGlass;
@@ -100,7 +100,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     }
 
     @Override
-    public void addConnectedPneumatics(List<Pair<Direction, IAirHandler>> teList) {
+    public void addConnectedPneumatics(List<Pair<Direction, IAirHandlerMachine>> teList) {
         if (accessoryValves != null) {
             for (TileEntityPressureChamberValve valve : accessoryValves) {
                 if (valve != this) teList.add(new ImmutablePair<>(null, valve.getAirHandler(null)));
@@ -109,11 +109,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     }
 
     @Override
-    public void onAirDispersion(IAirHandler handler, Direction dir, int airAdded) {
+    public void onAirDispersion(IAirHandlerMachine handler, Direction dir, int airAdded) {
     }
 
     @Override
-    public int getMaxDispersion(IAirHandler handler, Direction dir) {
+    public int getMaxDispersion(IAirHandlerMachine handler, Direction dir) {
         return Integer.MAX_VALUE;
     }
 
@@ -207,8 +207,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 break;
         }
 
-        List<Pair<Direction, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
-        for (Pair<Direction, IAirHandler> entry : teList) {
+        List<Pair<Direction, IAirHandlerMachine>> teList = getAirHandler(null).getConnectedPneumatics();
+        for (Pair<Direction, IAirHandlerMachine> entry : teList) {
             if (entry.getKey() != null) connected[entry.getKey().ordinal()] = true;
         }
 

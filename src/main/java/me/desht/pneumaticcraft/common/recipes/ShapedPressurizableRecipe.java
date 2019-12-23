@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
@@ -27,7 +27,7 @@ public class ShapedPressurizableRecipe extends ShapedRecipe {
         int totalAir = 0;
         for (int i = 0; i < inv.getSizeInventory(); ++i) {
             ItemStack stack = inv.getStackInSlot(i);
-            totalAir += stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandlerBase::getAir).orElse(0);
+            totalAir += stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandler::getAir).orElse(0);
         }
 
         final int toAdd = totalAir;

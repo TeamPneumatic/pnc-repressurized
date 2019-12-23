@@ -4,7 +4,7 @@ import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
 import mcjty.theoneprobe.apiimpl.styles.LayoutStyle;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
@@ -69,7 +69,7 @@ public class TOPInfoProvider {
     }
 
     private static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, IPneumaticMachine pneumaticMachine) {
-        IAirHandler airHandler = pneumaticMachine.getAirHandler(null);
+        IAirHandlerMachine airHandler = pneumaticMachine.getAirHandler(null);
         probeInfo.text(COLOR + "Max Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(airHandler.getDangerPressure(), 1) + " bar");
         if (mode == ProbeMode.EXTENDED) {
             probeInfo.text(COLOR + "Pressure:");

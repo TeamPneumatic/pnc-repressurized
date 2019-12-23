@@ -1,15 +1,15 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
 /**
  * A reference implementation.  Subclass this or implement your own.
  */
-public class BasicAirHandler implements IAirHandlerBase, INBTSerializable<CompoundNBT> {
+public class BasicAirHandler implements IAirHandler, INBTSerializable<CompoundNBT> {
     private final int baseVolume;
-    private int airAmount;
+    protected int airAmount;
 
     public BasicAirHandler(int volume) {
         this.baseVolume = volume;
@@ -28,7 +28,8 @@ public class BasicAirHandler implements IAirHandlerBase, INBTSerializable<Compou
 
     @Override
     public void addAir(int amount) {
-        airAmount += amount;
+        // floor at -1 bar, which is a hard vacuum
+        airAmount = Math.max(airAmount + amount, -baseVolume);
     }
 
     @Override

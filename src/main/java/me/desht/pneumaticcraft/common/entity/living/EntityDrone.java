@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.event.SemiblockEvent;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.render.RenderDroneHeldItem;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
@@ -146,7 +146,7 @@ public class EntityDrone extends EntityDroneBase implements
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
     private BasicAirHandler airHandler;
-    private final LazyOptional<IAirHandlerBase> airCap = LazyOptional.of(this::getAirHandler);
+    private final LazyOptional<IAirHandler> airCap = LazyOptional.of(this::getAirHandler);
 
     private final int[] emittingRedstoneValues = new int[6];
     private float propSpeed;

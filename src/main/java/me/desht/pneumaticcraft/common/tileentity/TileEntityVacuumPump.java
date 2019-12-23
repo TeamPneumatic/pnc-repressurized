@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
@@ -29,7 +29,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRedstoneControlled, IManoMeasurable, INamedContainerProvider {
     @GuiSynced
-    private final IAirHandler vacuumHandler;
+    private final IAirHandlerMachine vacuumHandler;
     public int rotation;
     public int oldRotation;
     private int turnTimer = -1;
@@ -47,7 +47,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     }
 
     @Override
-    public IAirHandler getAirHandler(Direction side) {
+    public IAirHandlerMachine getAirHandler(Direction side) {
         if (side == null || side == getInputSide()) {
             return super.getAirHandler(side);
         } else if (side == getVacuumSide()) {
@@ -114,8 +114,8 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
         super.tick();
         vacuumHandler.tick();
 
-        IAirHandler inputHandler = getAirHandler(getInputSide());
-        List<Pair<Direction, IAirHandler>> teList = inputHandler.getConnectedPneumatics();
+        IAirHandlerMachine inputHandler = getAirHandler(getInputSide());
+        List<Pair<Direction, IAirHandlerMachine>> teList = inputHandler.getConnectedPneumatics();
         if (teList.size() == 0) inputHandler.airLeak(getInputSide());
         teList = vacuumHandler.getConnectedPneumatics();
         if (teList.size() == 0) vacuumHandler.airLeak(getVacuumSide());

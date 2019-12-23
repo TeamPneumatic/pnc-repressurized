@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.pressure.AirHandler;
+import me.desht.pneumaticcraft.common.pressure.AirHandlerMachine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.network.PacketBuffer;
@@ -40,10 +40,10 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             TileEntity te = ClientUtils.getClientTE(pos);
             if (te instanceof TileEntityPneumaticBase) {
-                ((AirHandler) ((TileEntityPneumaticBase) te).getAirHandler(null)).setAir(currentAir);
+                ((AirHandlerMachine) ((TileEntityPneumaticBase) te).getAirHandler(null)).setAir(currentAir);
             } else {
                 TileEntityPressureTube tube = TileEntityPressureTube.getTube(te);
-                if (tube != null) ((AirHandler) tube.getAirHandler(null)).setAir(currentAir);
+                if (tube != null) ((AirHandlerMachine) tube.getAirHandler(null)).setAir(currentAir);
             }
         });
         ctx.get().setPacketHandled(true);

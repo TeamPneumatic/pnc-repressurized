@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -68,7 +68,7 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
             textList.add("\u00a77No fuel!");
             textList.add("\u00a70Insert any burnable item.");
         }
-        List<Pair<Direction, IAirHandler>> teSurrounding = te.getAirHandler(null).getConnectedPneumatics();
+        List<Pair<Direction, IAirHandlerMachine>> teSurrounding = te.getAirHandler(null).getConnectedPneumatics();
         if (teSurrounding.isEmpty()) {
             textList.add("\u00a77Air leaking!");
             textList.add("\u00a70Add pipes / machines");

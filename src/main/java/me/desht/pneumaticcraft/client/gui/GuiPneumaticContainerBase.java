@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
@@ -380,7 +380,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     protected void addPressureStatInfo(List<String> pressureStatText) {
         TileEntityPneumaticBase pneumaticTile = (TileEntityPneumaticBase) te;
-        IAirHandler airHandler = pneumaticTile.getAirHandler(null);
+        IAirHandlerMachine airHandler = pneumaticTile.getAirHandler(null);
         pressureStatText.add("\u00a77Current Pressure:");
         pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(pneumaticTile.getPressure(), 1) + " bar.");
         pressureStatText.add("\u00a77Current Air:");

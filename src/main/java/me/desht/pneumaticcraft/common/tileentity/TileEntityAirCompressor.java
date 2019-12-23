@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.BlockAirCompressor;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
@@ -106,7 +106,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         super.tick();
 
         if (!getWorld().isRemote) {
-            List<Pair<Direction, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
+            List<Pair<Direction, IAirHandlerMachine>> teList = getAirHandler(null).getConnectedPneumatics();
             if (teList.size() == 0) getAirHandler(null).airLeak(getRotation());
         }
     }

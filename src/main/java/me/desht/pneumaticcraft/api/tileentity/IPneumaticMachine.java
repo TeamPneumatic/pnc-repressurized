@@ -23,11 +23,11 @@ public interface IPneumaticMachine {
      * to also call the corresponding IAirHandler methods.
      * <p>
      * In addition, you must override {@link net.minecraft.block.Block#onNeighborChange(BlockState, IWorldReader, BlockPos, BlockPos)}
-     * in the tile entity's block to call {@link IAirHandler#onNeighborChange()}.
+     * in the tile entity's block to call {@link IAirHandlerMachine#onNeighborChange()}.
      *
      * @return a valid IAirHandler when connectable on this side, null otherwise
      */
-    IAirHandler getAirHandler(Direction side);
+    IAirHandlerMachine getAirHandler(Direction side);
 
     /**
      * Convenience method to cast a TE to a IPneumaticMachine

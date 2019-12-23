@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
@@ -73,7 +73,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
         }
 
         if (!getWorld().isRemote) {
-            List<Pair<Direction, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
+            List<Pair<Direction, IAirHandlerMachine>> teList = getAirHandler(null).getConnectedPneumatics();
             if (teList.size() == 0) getAirHandler(null).airLeak(getRotation().getOpposite());
         }
     }

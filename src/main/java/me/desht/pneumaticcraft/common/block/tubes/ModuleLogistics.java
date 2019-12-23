@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -199,7 +199,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         ItemStack extractedStack = IOHelper.extract(providingHandler, toTransfer, IOHelper.ExtractCount.UP_TO, true, false);
         if (!extractedStack.isEmpty()) {
             int airUsed = (int) (ITEM_TRANSPORT_COST * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().pos(), requestingModule.getTube().pos()));
-            IAirHandler receiverAirHandler = requestingModule.getTube().getAirHandler(null);
+            IAirHandlerMachine receiverAirHandler = requestingModule.getTube().getAirHandler(null);
             if (airUsed > receiverAirHandler.getAir()) {
                 // not enough air to move all the items - scale back the number to be moved
                 double scale = receiverAirHandler.getAir() / (double) airUsed;
@@ -235,7 +235,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     private void tryFluidTransfer(ModuleLogistics providingModule, IFluidHandler providingHandler, ModuleLogistics requestingModule, IFluidHandler requestingHandler, FluidStack toTransfer) {
         FluidStack extractedFluid = providingHandler.drain(toTransfer, IFluidHandler.FluidAction.SIMULATE);
         if (extractedFluid != null) {
-            IAirHandler receiverAirHandler = requestingModule.getTube().getAirHandler(null);
+            IAirHandlerMachine receiverAirHandler = requestingModule.getTube().getAirHandler(null);
             double airUsed = (FLUID_TRANSPORT_COST * extractedFluid.getAmount() * PneumaticCraftUtils.distBetween(providingModule.getTube().pos(), requestingModule.getTube().pos()));
             if (airUsed > receiverAirHandler.getAir()) {
                 // not enough air to move it all - scale back the amount of fluid to be moved

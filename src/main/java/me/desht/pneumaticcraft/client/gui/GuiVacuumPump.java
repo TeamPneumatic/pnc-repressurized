@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
@@ -52,8 +52,8 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
 
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
-        IAirHandler inputHandler = te.getAirHandler(te.getInputSide());
-        IAirHandler vacuumHandler = te.getAirHandler(te.getVacuumSide());
+        IAirHandlerMachine inputHandler = te.getAirHandler(te.getInputSide());
+        IAirHandlerMachine vacuumHandler = te.getAirHandler(te.getVacuumSide());
         pressureStatText.add("\u00a77Current Input Pressure:");
         pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(inputHandler.getPressure(), 1) + " bar.");
         pressureStatText.add("\u00a77Current Input Air:");

@@ -7,12 +7,10 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -196,14 +194,8 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     @Override
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
-        updateConnections();
-        invalidateAssemblySystem();
-    }
 
-    private void updateConnections() {
-        BlockState newState = AirHandler.getBlockConnectionState(getBlockState(), getAirHandler(null));
-//        newState = newState.with(BlockPneumaticCraft.UP, false);  // never connects from above
-        world.setBlockState(pos, newState);
+        invalidateAssemblySystem();
     }
 
     @Override

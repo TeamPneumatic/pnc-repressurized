@@ -15,14 +15,12 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
-import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -157,23 +155,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
                 }
             }
         }
-    }
-
-    @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
-        updateConnections();
-    }
-
-    @Override
-    public void onNeighborTileUpdate() {
-        super.onNeighborTileUpdate();
-        updateConnections();
-    }
-
-    private void updateConnections() {
-        BlockState newState = AirHandler.getBlockConnectionState(getBlockState(), getAirHandler(null));
-        world.setBlockState(pos, newState);
     }
 
     @Override

@@ -2,11 +2,10 @@ package me.desht.pneumaticcraft.common.pressure;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -18,7 +17,6 @@ import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -40,7 +38,7 @@ import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class AirHandler implements IAirHandler {
+public class AirHandlerMachine implements IAirHandlerMachine {
     private float maxPressure;
     @GuiSynced
     private int volume;
@@ -50,7 +48,7 @@ public class AirHandler implements IAirHandler {
     @GuiSynced
     private int air; // Pressure = air / volume
     private int soundCounter;
-    private final Set<IAirHandler> specialConnectedHandlers = new HashSet<>();
+    private final Set<IAirHandlerMachine> specialConnectedHandlers = new HashSet<>();
     private TileEntityCache[] tileCache;
 
     private UpgradeCache upgradeCache;
@@ -59,11 +57,11 @@ public class AirHandler implements IAirHandler {
     private World world;
     private BlockPos pos;
 
-    public AirHandler() {
+    public AirHandlerMachine() {
         this(PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, 3000);
     }
 
-    AirHandler(float dangerPressure, float criticalPressure, int volume) {
+    AirHandlerMachine(float dangerPressure, float criticalPressure, int volume) {
         Validate.isTrue(volume > 0, "Volume can't be lower than or equal to 0!");
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
@@ -78,14 +76,14 @@ public class AirHandler implements IAirHandler {
 //    }
 
     @Override
-    public void createConnection(@Nonnull IAirHandler otherHandler) {
+    public void createConnection(@Nonnull IAirHandlerMachine otherHandler) {
         if (specialConnectedHandlers.add(otherHandler)) {
             otherHandler.createConnection(this);
         }
     }
 
     @Override
-    public void removeConnection(@Nonnull IAirHandler otherHandler) {
+    public void removeConnection(@Nonnull IAirHandlerMachine otherHandler) {
         if (specialConnectedHandlers.remove(otherHandler)) {
             otherHandler.removeConnection(this);
         }
@@ -112,7 +110,8 @@ public class AirHandler implements IAirHandler {
             }
         }
 
-        if (soundCounter > 0) soundCounter--;
+        if (soundCounter > 0) soundCounter--;if (soundCounter > 0) soundCounter--;
+        if (soundCounter > 0) soundCounter--;if (soundCounter > 0) soundCounter--;
     }
 
     private void updateVolume() {
@@ -173,7 +172,7 @@ public class AirHandler implements IAirHandler {
         disperseAir(getConnectedPneumatics());
     }
 
-    private void disperseAir(List<Pair<Direction, IAirHandler>> teList) {
+    private void disperseAir(List<Pair<Direction, IAirHandlerMachine>> teList) {
 
         boolean shouldRepeat;
         List<Pair<Integer, Integer>> dispersion = new ArrayList<>();
@@ -182,16 +181,16 @@ public class AirHandler implements IAirHandler {
             //Add up every volume and air.
             int totalVolume = getVolume();
             int totalAir = air;
-            for (Pair<Direction, IAirHandler> entry : teList) {
-                IAirHandler airHandler = entry.getValue();
+            for (Pair<Direction, IAirHandlerMachine> entry : teList) {
+                IAirHandlerMachine airHandler = entry.getValue();
                 totalVolume += airHandler.getVolume();
                 totalAir += airHandler.getAir();
             }
             //Only go push based, ignore any machines that have a higher pressure than this block.
-            Iterator<Pair<Direction, IAirHandler>> iterator = teList.iterator();
+            Iterator<Pair<Direction, IAirHandlerMachine>> iterator = teList.iterator();
             while (iterator.hasNext()) {
-                Pair<Direction, IAirHandler> entry = iterator.next();
-                IAirHandler airHandler = entry.getValue();
+                Pair<Direction, IAirHandlerMachine> entry = iterator.next();
+                IAirHandlerMachine airHandler = entry.getValue();
                 int totalMachineAir = (int) ((long) totalAir * airHandler.getVolume() / totalVolume);//Calculate the total air the machine is going to get.
                 int airDispersed = totalMachineAir - airHandler.getAir();
                 if (airDispersed < 0) {
@@ -233,7 +232,7 @@ public class AirHandler implements IAirHandler {
         }
 
         for (int i = 0; i < teList.size(); i++) {
-            IAirHandler neighbor = teList.get(i).getValue();
+            IAirHandlerMachine neighbor = teList.get(i).getValue();
             int transferedAir = dispersion.get(i).getValue();
 
             onAirDispersion(teList.get(i).getKey(), transferedAir);
@@ -337,9 +336,9 @@ public class AirHandler implements IAirHandler {
      * @return a list of face->air-handler pairs
      */
     @Override
-    public List<Pair<Direction, IAirHandler>> getConnectedPneumatics() {
-        List<Pair<Direction, IAirHandler>> teList = new ArrayList<>();
-        for (IAirHandler specialConnection : specialConnectedHandlers) {
+    public List<Pair<Direction, IAirHandlerMachine>> getConnectedPneumatics() {
+        List<Pair<Direction, IAirHandlerMachine>> teList = new ArrayList<>();
+        for (IAirHandlerMachine specialConnection : specialConnectedHandlers) {
             teList.add(new ImmutablePair<>(null, specialConnection));
         }
         for (Direction direction : Direction.VALUES) {
@@ -421,18 +420,5 @@ public class AirHandler implements IAirHandler {
     @Override
     public void setPos(BlockPos pos) {
         this.pos = pos;
-    }
-
-    public static BlockState getBlockConnectionState(BlockState state, IAirHandler handler) {
-        boolean[] conn = new boolean[6];
-        for (Pair<Direction, IAirHandler> entry : handler.getConnectedPneumatics()) {
-            conn[entry.getKey().ordinal()] = true;
-        }
-        for (int i = 0; i < 6; i++) {
-            if (state.has(BlockPneumaticCraft.CONNECTION_PROPERTIES[i])) {
-                state = state.with(BlockPneumaticCraft.CONNECTION_PROPERTIES[i], conn[i]);
-            }
-        }
-        return state;
     }
 }

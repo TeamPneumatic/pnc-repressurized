@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -94,7 +94,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
 
     @Override
     protected void addProblems(List<String> textList) {
-        List<Pair<Direction, IAirHandler>> teSurrounding = te.getAirHandler(null).getConnectedPneumatics();
+        List<Pair<Direction, IAirHandlerMachine>> teSurrounding = te.getAirHandler(null).getConnectedPneumatics();
         super.addProblems(textList);
 
         if (teSurrounding.isEmpty()) {

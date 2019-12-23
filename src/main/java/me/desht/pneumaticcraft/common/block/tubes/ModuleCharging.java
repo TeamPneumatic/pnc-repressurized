@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.lib.Names;
@@ -37,7 +37,7 @@ public class ModuleCharging extends TubeModule {
         cachedHandler.ifPresent(itemHandler -> {
             // times 8 because we only run every 8 ticks
             int airToTransfer = 8 * PneumaticValues.CHARGING_STATION_CHARGE_RATE * (upgraded ? 10 : 1);
-            IAirHandler airHandler = pressureTube.getAirHandler(null);
+            IAirHandlerMachine airHandler = pressureTube.getAirHandler(null);
             int airInTube = (int) (airHandler.getPressure() * airHandler.getVolume());
 
             for (int slot = 0; slot < itemHandler.getSlots(); slot++) {

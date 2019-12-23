@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.pressure.AirHandler;
+import me.desht.pneumaticcraft.common.pressure.AirHandlerMachine;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -39,7 +39,7 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
     public void tick() {
         super.tick();
         if (!world.isRemote) {
-            ((AirHandler) getAirHandler(null)).setPressure(pressureSetpoint);
+            ((AirHandlerMachine) getAirHandler(null)).setPressure(pressureSetpoint);
         }
     }
 

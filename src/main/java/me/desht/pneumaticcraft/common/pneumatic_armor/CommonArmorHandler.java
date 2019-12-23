@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
@@ -644,7 +644,7 @@ public class CommonArmorHandler {
     }
 
     public float getArmorPressure(EquipmentSlotType slot) {
-        return airHandlers.get(slot.getIndex()).map(IAirHandlerBase::getPressure).orElse(0F);
+        return airHandlers.get(slot.getIndex()).map(IAirHandler::getPressure).orElse(0F);
     }
 
     public void setJetBootsActive(boolean jetBootsActive) {

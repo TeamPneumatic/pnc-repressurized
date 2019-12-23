@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.pressure.AirHandler;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -94,27 +93,27 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
         return d != Direction.DOWN;
     }
 
-    private void updateConnectionState() {
-        BlockState newState = AirHandler.getBlockConnectionState(getBlockState(), getAirHandler(null));
-        world.setBlockState(pos, newState);
-    }
+//    private void updateConnectionState() {
+//        BlockState newState = AirHandlerMachine.getBlockConnectionState(getBlockState(), getAirHandler(null));
+//        world.setBlockState(pos, newState);
+//    }
 
-    @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
-        updateConnectionState();
-    }
+//    @Override
+//    public void onNeighborBlockUpdate() {
+//        super.onNeighborBlockUpdate();
+////        updateConnectionState();
+//    }
 
     @Override
     public IItemHandlerModifiable getPrimaryInventory() {
         return inventory;
     }
 
-    @Override
-    public void onNeighborTileUpdate() {
-        super.onNeighborTileUpdate();
-//        updateConnectionState();
-    }
+//    @Override
+//    public void onNeighborTileUpdate() {
+//        super.onNeighborTileUpdate();
+////        updateConnectionState();
+//    }
 
     @Override
     protected boolean shouldRerenderChunkOnDescUpdate() {

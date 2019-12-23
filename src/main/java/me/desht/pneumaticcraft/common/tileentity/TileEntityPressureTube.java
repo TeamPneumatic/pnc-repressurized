@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
@@ -140,10 +140,10 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             }
         }
 
-        List<Pair<Direction, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
+        List<Pair<Direction, IAirHandlerMachine>> teList = getAirHandler(null).getConnectedPneumatics();
 
         if (!hasModules && teList.size() == 1 && !getWorld().isRemote) {
-            for (Pair<Direction, IAirHandler> entry : teList) {
+            for (Pair<Direction, IAirHandlerMachine> entry : teList) {
                 if (entry.getKey() != null && modules[entry.getKey().getOpposite().ordinal()] == null && canConnectTo(entry.getKey().getOpposite()))
                     getAirHandler(null).airLeak(entry.getKey().getOpposite());
             }
@@ -151,7 +151,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public void onAirDispersion(IAirHandler handler, Direction side, int amount) {
+    public void onAirDispersion(IAirHandlerMachine handler, Direction side, int amount) {
         if (side != null) {
             int intSide = side.ordinal();
             if (modules[intSide] instanceof IInfluenceDispersing) {
@@ -161,7 +161,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public int getMaxDispersion(IAirHandler handler, Direction side) {
+    public int getMaxDispersion(IAirHandlerMachine handler, Direction side) {
         if (side != null) {
             int intSide = side.ordinal();
             if (modules[intSide] instanceof IInfluenceDispersing) {
@@ -172,7 +172,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public void addConnectedPneumatics(List<Pair<Direction, IAirHandler>> pneumatics) {
+    public void addConnectedPneumatics(List<Pair<Direction, IAirHandlerMachine>> pneumatics) {
     }
 
     public void setModule(TubeModule module, Direction side) {
@@ -217,11 +217,11 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     private void updateConnections() {
-        IAirHandler h = getAirHandler(null);
+        IAirHandlerMachine h = getAirHandler(null);
         if (h.getPos() == null) return;
-        List<Pair<Direction, IAirHandler>> connections = getAirHandler(null).getConnectedPneumatics();
+        List<Pair<Direction, IAirHandlerMachine>> connections = getAirHandler(null).getConnectedPneumatics();
         Arrays.fill(sidesConnected, false);
-        for (Pair<Direction, IAirHandler> entry : connections) {
+        for (Pair<Direction, IAirHandlerMachine> entry : connections) {
             sidesConnected[entry.getKey().ordinal()] = true;
         }
 

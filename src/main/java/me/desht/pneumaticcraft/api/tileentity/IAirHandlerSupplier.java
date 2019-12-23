@@ -6,9 +6,9 @@ import net.minecraft.nbt.CompoundNBT;
  * Get an instance of this with {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getAirHandlerSupplier()}.
  */
 public interface IAirHandlerSupplier {
-    IAirHandler createTierOneAirHandler(int volume);
+    IAirHandlerMachine createTierOneAirHandler(int volume);
 
-    IAirHandler createTierTwoAirHandler(int volume);
+    IAirHandlerMachine createTierTwoAirHandler(int volume);
 
     /**
      * Returns a new instance of an IAirHandler. This handler handles everything pressurized air related: Air dispersion,
@@ -26,5 +26,5 @@ public interface IAirHandlerSupplier {
      * @param volume           volume of the machine's internal storage; the pressure (in bar) is the actual amount of air in the machine divided by its volume
      * @return the air handler object
      */
-    IAirHandler createAirHandler(float dangerPressure, float criticalPressure, int volume);
+    IAirHandlerMachine createAirHandler(float dangerPressure, float criticalPressure, int volume);
 }

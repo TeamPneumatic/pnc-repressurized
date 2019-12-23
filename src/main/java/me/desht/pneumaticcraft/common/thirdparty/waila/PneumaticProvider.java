@@ -4,7 +4,7 @@ import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -60,7 +60,7 @@ public class PneumaticProvider {
 
             values.put("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1));
 
-            IAirHandler base = machine.getAirHandler(null);
+            IAirHandlerMachine base = machine.getAirHandler(null);
             values.put("gui.tooltip.maxPressure", PneumaticCraftUtils.roundNumberTo(base.getDangerPressure(), 1));
 
             for (Map.Entry<String, String> entry : values.entrySet()) {

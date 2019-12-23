@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerBase;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
@@ -76,7 +76,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
         CompoundNBT entityTag = new CompoundNBT();
         drone.writeAdditional(entityTag);
 
-        int air = iStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandlerBase::getAir).orElse(0);
+        int air = iStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandler::getAir).orElse(0);
         BasicAirHandler h = new BasicAirHandler(air);
         h.addAir(air);
 

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -30,7 +30,7 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
             TileEntity neighbor = tile.getWorld().getTileEntity(tile.getPos().offset(dir));
             inLine = neighbor instanceof IPneumaticMachine;
             if (inLine) {
-                IAirHandler neighborHandler = ((IPneumaticMachine) neighbor).getAirHandler(dir);
+                IAirHandlerMachine neighborHandler = ((IPneumaticMachine) neighbor).getAirHandler(dir);
                 inverted = neighborHandler != null && neighborHandler.getPressure() > tile.getAirHandler(null).getPressure();
                 NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(neighbor.getPos()));
             }
@@ -61,8 +61,8 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
 
     @Override
     public int getMaxDispersion() {
-        IAirHandler connectedHandler = null;
-        for (Pair<Direction, IAirHandler> entry : pressureTube.getAirHandler(null).getConnectedPneumatics()) {
+        IAirHandlerMachine connectedHandler = null;
+        for (Pair<Direction, IAirHandlerMachine> entry : pressureTube.getAirHandler(null).getConnectedPneumatics()) {
             if (entry.getKey().equals(dir)) {
                 connectedHandler = entry.getValue();
                 break;

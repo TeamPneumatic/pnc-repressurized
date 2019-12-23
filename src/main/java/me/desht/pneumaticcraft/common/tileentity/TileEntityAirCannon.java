@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
@@ -148,7 +148,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         super.tick();
 
         if (!getWorld().isRemote) {
-            List<Pair<Direction, IAirHandler>> teList = getAirHandler(null).getConnectedPneumatics();
+            List<Pair<Direction, IAirHandlerMachine>> teList = getAirHandler(null).getConnectedPneumatics();
             if (teList.size() == 0) getAirHandler(null).airLeak(getRotation());
         }
     }

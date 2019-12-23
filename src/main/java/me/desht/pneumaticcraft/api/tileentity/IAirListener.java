@@ -19,7 +19,7 @@ public interface IAirListener extends IPneumaticMachine {
      * @param dir
      * @param airTransfered The amount transfered to a connecting handler (so decreased from this block). Negative when adding air.
      */
-    void onAirDispersion(IAirHandler handler, @Nullable Direction dir, int airTransfered);
+    void onAirDispersion(IAirHandlerMachine handler, @Nullable Direction dir, int airTransfered);
 
     /**
      * Method fired to get the maximum amount of air allowed to disperse to the given direction. Used in the regulator tube to prevent air from travelling.
@@ -29,7 +29,7 @@ public interface IAirListener extends IPneumaticMachine {
      * @param dir
      * @return
      */
-    int getMaxDispersion(IAirHandler handler, @Nullable Direction dir);
+    int getMaxDispersion(IAirHandlerMachine handler, @Nullable Direction dir);
 
     /**
      * In here you can add pneumatic machines that aren't directly connected, but should be considered connected (for the dispersion logic).
@@ -37,5 +37,5 @@ public interface IAirListener extends IPneumaticMachine {
      *
      * @param pneumatics, EnumFacing has a direction for the default pneumatics, but often is null for custom ones.
      */
-    void addConnectedPneumatics(List<Pair<Direction, IAirHandler>> pneumatics);
+    void addConnectedPneumatics(List<Pair<Direction, IAirHandlerMachine>> pneumatics);
 }
