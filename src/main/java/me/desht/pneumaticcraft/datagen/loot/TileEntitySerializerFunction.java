@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.datagen.loot;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.tileentity.ISerializableTanks;
 import me.desht.pneumaticcraft.common.tileentity.ISideConfigurable;
@@ -39,18 +39,14 @@ public class TileEntitySerializerFunction extends LootFunction {
 
     @Override
     protected ItemStack doApply(ItemStack stack, LootContext context) {
-        return getDroppedStack(context.get(LootParameters.BLOCK_ENTITY));
+        return applyTEdata(stack, context.get(LootParameters.BLOCK_ENTITY));
     }
 
     public static LootFunction.Builder<?> builder() {
         return builder(TileEntitySerializerFunction::new);
     }
 
-    private ItemStack getDroppedStack(TileEntity te) {
-        if (te == null) return ItemStack.EMPTY;
-
-        ItemStack teStack = new ItemStack(te.getBlockState().getBlock());
-
+    private ItemStack applyTEdata(ItemStack teStack, TileEntity te) {
         CompoundNBT subTag = teStack.getChildTag("BlockEntityTag");
         if (subTag == null) subTag = new CompoundNBT();
 
@@ -88,7 +84,7 @@ public class TileEntitySerializerFunction extends LootFunction {
 
             // saved air (only when wrenched)
             if (te instanceof IPneumaticMachine) {
-                IAirHandler airHandler = ((IPneumaticMachine) te).getAirHandler(null);
+                IAirHandlerMachine airHandler = ((IPneumaticMachine) te).getAirHandler(null);
                 if (airHandler != null && airHandler.getPressure() != 0f) {
                     subTag.putInt(NBT_AIR_AMOUNT, airHandler.getAir());
                 }
