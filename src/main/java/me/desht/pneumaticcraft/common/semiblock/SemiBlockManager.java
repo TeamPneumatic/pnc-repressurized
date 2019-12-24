@@ -293,6 +293,7 @@ public class SemiBlockManager {
         List<EntityPlayer> players = world.playerEntities;
         for (Map.Entry<Chunk, Set<EntityPlayer>> entry : syncList.entrySet()) {
             Chunk chunk = entry.getKey();
+            if (chunk == null) continue; // shouldn't happen, but https://github.com/TeamPneumatic/pnc-repressurized/issues/410
             Set<EntityPlayer> syncedPlayers = entry.getValue();
             int chunkX = chunk.x * 16 - 8;
             int chunkZ = chunk.z * 16 - 8;
