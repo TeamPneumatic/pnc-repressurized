@@ -22,10 +22,11 @@ public class GuiProgWidgetAreaTool extends GuiProgWidgetArea {
 
     @Override
     public void onClose() {
+        super.onClose();
+
         NetworkHandler.sendToServer(new PacketUpdateGPSAreaTool(progWidget, hand));
         returnAction.run();
 
-        super.onClose();
     }
 
     @Override
