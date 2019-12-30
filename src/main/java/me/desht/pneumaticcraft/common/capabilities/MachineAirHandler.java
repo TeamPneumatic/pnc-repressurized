@@ -112,12 +112,19 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                 doSecurityAirChecks(ownerTE);
             }
 
-            if (getPressure() > maxPressure) {
+            float p = getPressure();
+            if (p > maxPressure) {
                 world.createExplosion(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Explosion.Mode.BREAK);
                 world.destroyBlock(pos, false);
-            } else {
-                disperseAir(ownerTE);
+                return;
+            } else if (p > dangerPressure) {
+                float r = criticalPressure - dangerPressure;
+                float d = p - dangerPressure;
+                if (world.rand.nextFloat() * r < d / 50.0f) {
+                    world.playSound(null, ownerTE.getPos(), ModSounds.CREAK, SoundCategory.BLOCKS, 0.7f, 0.6f + world.rand.nextFloat() * 0.8f);
+                }
             }
+            disperseAir(ownerTE);
         }
         if (soundCounter > 0) soundCounter--;
     }

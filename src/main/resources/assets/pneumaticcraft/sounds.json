@@ -1,6 +1,6 @@
 {
   "air_cannon":{
-    "category":"ambient",
+    "category":"block",
     "sounds":[
       "pneumaticcraft:air_cannon",
       "pneumaticcraft:air_cannon2",
@@ -8,80 +8,86 @@
       "pneumaticcraft:air_cannon4"
     ]
   },
+  "creak": {
+    "category": "block",
+    "sounds": [
+      "pneumaticcraft:creak"
+    ]
+  },
   "elevator_lowering":{
-    "category":"ambient",
+    "category":"block",
     "sounds":[
       "pneumaticcraft:elevator_lowering"
     ]
   },
   "elevator_lowering_start":{
-    "category":"ambient",
+    "category":"block",
     "sounds":[
       "pneumaticcraft:elevator_lowering_start"
     ]
   },
   "elevator_rising":{
-    "category":"ambient",
+    "category":"block",
     "sounds":[
       "pneumaticcraft:elevator_rising"
     ]
   },
   "elevator_rising_start":{
-    "category":"ambient",
+    "category":"block",
     "sounds":[
       "pneumaticcraft:elevator_rising_start"
     ]
   },
   "elevator_rising_stop":{
-    "category":"ambient",
+    "category":"block",
     "sounds":[
       "pneumaticcraft:elevator_rising_stop"
     ]
   },
   "hud_entity_lock":{
-    "category":"ambient",
+    "category":"player",
     "sounds":[
       "pneumaticcraft:hud_entity_lock"
     ]
   },
   "hud_init":{
-    "category":"ambient",
+    "category":"player",
     "sounds":[
       "pneumaticcraft:hud_init"
     ]
   },
   "hud_init_complete":{
-    "category":"ambient",
+    "category":"player",
     "sounds":[
       "pneumaticcraft:hud_init_complete"
     ]
   },
   "interface_door":{
-    "category":"ambient",
+    "category":"block",
     "sounds":[
       "pneumaticcraft:interface_door"
     ]
   },
   "leaking_gas":{
-    "category":"ambient",
+    "category":"block",
     "sounds":[
       "pneumaticcraft:leaking_gas"
     ]
   },
   "pneumatic_crusher":{
-    "category":"ambient",
+    "category":"block",
     "sounds":[
       "pneumaticcraft:pneumatic_crusher"
     ]
   },
   "pneumatic_wrench":{
-    "category":"ambient",
+    "category":"player",
     "sounds":[
       "pneumaticcraft:pneumatic_wrench"
     ]
   },
   "sci_fi":{
-    "category":"ambient",
+    "category":"player",
     "sounds":[
       "pneumaticcraft:sci_fi_a",
       "pneumaticcraft:sci_fi_b",
@@ -89,19 +95,19 @@
     ]
   },
   "helmet_hack_finish":{
-    "category":"ambient",
+    "category":"player",
     "sounds":[
       "pneumaticcraft:helmet_hack_finish"
     ]
   },
   "minigun":{
-    "category":"hostile",
+    "category":"player",
     "sounds":[
       "pneumaticcraft:minigun"
     ]
   },
   "minigun_stop":{
-    "category":"hostile",
+    "category":"player",
     "sounds":[
       "pneumaticcraft:minigun_stop"
     ]
@@ -119,7 +125,7 @@
     ]
   },
   "short_hiss": {
-    "category":"ambient",
+    "category":"player",
     "sounds":[
       "pneumaticcraft:short_hiss"
     ]
@@ -137,19 +143,19 @@
     ]
   },
   "chirp": {
-    "category":"ambient",
+    "category":"player",
     "sounds":[
       "pneumaticcraft:chirp"
     ]
   },
   "scuba": {
-    "category":"ambient",
+    "category":"player",
     "sounds":[
       "pneumaticcraft:scuba"
     ]
   },
   "leaking_gas_low": {
-    "category":"ambient",
+    "category":"block",
     "sounds":[
       "pneumaticcraft:leaking_gas_low"
     ]

@@ -12,6 +12,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 @ObjectHolder(Names.MOD_ID)
 public class ModSounds {
     public static final SoundEvent AIR_CANNON = null;
+    public static final SoundEvent CREAK = null;
     public static final SoundEvent LEAKING_GAS = null;
     public static final SoundEvent PNEUMATIC_CRUSHER = null;
     public static final SoundEvent INTERFACE_DOOR = null;
@@ -41,6 +42,7 @@ public class ModSounds {
         public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
             event.getRegistry().registerAll(
                     buildSound("air_cannon"),
+                    buildSound("creak"),
                     buildSound("leaking_gas"),
                     buildSound("pneumatic_crusher"),
                     buildSound("interface_door"),
