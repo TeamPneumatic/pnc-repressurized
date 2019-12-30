@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.api.tileentity;
 
 /**
- * Base functionality for all air handlers.
+ * Base functionality for all air handlers.  This is also used by entities which can be pressurized, e.g. drones.
  */
 public interface IAirHandler {
     /**
@@ -33,6 +33,14 @@ public interface IAirHandler {
      * @return the base volume
      */
     int getBaseVolume();
+
+    /**
+     * Set the base volume of this air handler. May be useful if the base volume depends on factors other than the
+     * number of volume upgrades.
+     *
+     * @param newBaseVolume the new base volume
+     */
+    void setBaseVolume(int newBaseVolume);
 
     /**
      * Get the effective volume of this air handler. This may have been increased by Volume Upgrades.

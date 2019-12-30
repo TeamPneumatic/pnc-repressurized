@@ -21,12 +21,13 @@ public abstract class LuaMethod implements ILuaMethod {
     }
 
     protected Direction getDirForString(String luaParm) {
-        for (Direction dir : Direction.VALUES) {
-            if (dir.toString().toLowerCase().equals(luaParm.toLowerCase())) {
-                return dir;
-            }
-        }
-        throw new IllegalArgumentException("Side must be one of: up, down, north, east, south or west!");
+        return Direction.valueOf(luaParm.toUpperCase());
+//        for (Direction dir : Direction.VALUES) {
+//            if (dir.toString().toLowerCase().equals(luaParm.toLowerCase())) {
+//                return dir;
+//            }
+//        }
+//        throw new IllegalArgumentException("Side must be one of: up, down, north, east, south or west!");
     }
 
     LinkedHashMap<Integer, String> getStringTable(List<String> list) {

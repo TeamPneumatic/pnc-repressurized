@@ -1,172 +1,149 @@
 package me.desht.pneumaticcraft.api.tileentity;
 
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.INBTSerializable;
-import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * A way for you to access about everything you need from a pneumatic machine.
- * DO NOT IMPLEMENT THIS YOURSELF! Use {@link IAirHandlerSupplier} to get an instance for your TileEntity,
- * and implement {@link IPneumaticMachine} instead.
+ * An extended air handler which is used by tile entities.  It supports the concept of connected neighbouring
+ * air handlers, and will push air to neighbouring air handlers with lower pressure.  It will also explode if
+ * over-pressurized.
+ * <p>
+ * Don't implement this class yourself!  Use one of the methods in {@link IAirHandlerMachineFactory} to obtain
+ * a suitable implementation for your tile entity.
  */
-public interface IAirHandlerMachine extends IManoMeasurable, INBTSerializable<CompoundNBT> {
-
+public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     /**
-     * Must be forwarded by the implementing TileEntity's tick() method.  Updates the pneumatic machine's logic: air
-     * dispersion to adjacent air handlers, and checking for potential explosions.
-     */
-    void tick();
-
-    @Override
-    CompoundNBT serializeNBT();
-
-    @Override
-    void deserializeNBT(CompoundNBT nbt);
-
-    /**
-     * Must be forwarded by the implementing TileEntity with itself as parameter.
-     *
-     * @param parent TileEntity that is referencing this air handler.
-     */
-    void validate(TileEntity parent);
-
-    /**
-     * Must be forwarded from the implementing _Block_! Forward the Block's "onNeighborChange" method to this handler.
-     */
-    void onNeighborChange();
-
-    /**
-     * Method to release air into the atmosphere. It takes air from a specific side, plays a sound effect, and spawns
-     * smoke particles.  It automatically detects if it needs to release air (when under pressure), suck air (when in
-     * vacuum) or do nothing.
-     *
-     * @param side this only affects the direction the steam is pointing.
-     */
-    void airLeak(Direction side);
-
-    /**
-     * Returns a list of all the connecting pneumatics. It takes sides in account.
-     */
-    List<Pair<Direction, IAirHandlerMachine>> getConnectedPneumatics();
-
-    /**
-     * Adds air to the tank of the given side of this TE.
-     * @param amount amount of air to add in mL, may be negative
-     */
-    void addAir(int amount);
-
-    /**
-     * Sets the volume of this TE's air tank. When the volume decreases the pressure will remain the same, meaning
-     * air will be lost. When the volume increases, the air remains the same, meaning the pressure will drop.
-     * Used in the Volume Upgrade calculations.
-     * <p>
-     * By default volume we mean the base volume. Volume added due to Volume Upgrades are added to this.
-     *
-     * @param defaultVolume the base volume of this air handler, without upgrades
-     */
-    void setDefaultVolume(int defaultVolume);
-
-    /**
-     * Get the effective volume of this air handler. This may have been increased by Volume Upgrades.
-     * @return the effective volume, in mL
-     */
-    int getVolume();
-
-    /**
-     * Returns the actual pressure at which this TE will explode. This is a random value between the danger and critical
-     * pressure, and should generally not be reported to players!
-     *
-     * @return the explosion pressure for the TE
-     */
-    float getMaxPressure();
-    
-    /**
-     * Returns the minimal pressure this machine could explode at.
-     * @return the danger pressure
+     * Get the "danger" pressure level.  If air is added to the handler and the pressure level is above the danger
+     * level, there is a chance of explosion, which increases as the pressure increases.
+     * @return the danger pressure level, in bar
      */
     float getDangerPressure();
-    
+
     /**
-     * Returns the maximum pressure this machine could explode at.
-     * @return the critical pressure
+     * Get the "critical" pressure level, which is the hard maximum pressure for this handler.  If air is added and
+     * the pressure is at or above this level, an explosion is inevitable!
+     * @return the critical pressure level, in bar
      */
     float getCriticalPressure();
 
     /**
-     * Get the current pressure for the machine.
+     * Set the pressure of this handler directly.  This is generally used for creative-type tile entities, to
+     * maintain a constant pressure.
+     * @param newPressure the new pressure, in bar
+     */
+    void setPressure(float newPressure);
+
+    /**
+     * Should be called by the owning tile entity when its volume upgrades change.  This will cause the air handler
+     * to recalculate its current volume.  A decrease in volume will cause air to be lost, keeping the pressure
+     * constant.  An increase in volume will keep the air constant, causing a pressure drop.
      *
-     * @return the current pressure
+     * @param newVolumeUpgrades new number of volume upgrades
      */
-    float getPressure();
+    void setVolumeUpgrades(int newVolumeUpgrades);
 
     /**
-     * Returns the amount of air in the machine.  Note: amount of air = pressure * volume.
+     * Should be called by the owning tile entity when its security upgrades change. A Security Upgrade will cause
+     * the air handler to leak air instead of exploding.
      *
-     * @return the air in this air handler
+     * @param hasSecurityUpgrade true if the holder has one or more security upgrades
      */
-    int getAir();
+    void setHasSecurityUpgrade(boolean hasSecurityUpgrade);
 
     /**
-     * Get this Air Handler's world
-     * @return the world
+     * Invalidates any cached air handler neighbour data.  Cached neighbours are automatically invalidated if their
+     * owning tile entity is removed, but this should be called by the owning tile entity when a neighbour block changes
+     * state, to force rediscovery of neighbouring air handlers, or if the owning block has been rotated.
      */
-    World getWorld();
+    void invalidateNeighbours();
 
     /**
-     * Get this Air Handler's blockpos
-     * @return the blockpos
-     */
-    BlockPos getPos();
-
-    /**
-     * Sets the Air Handler's world. Not necessary if you use validate().
+     * Must be called every tick by the owning tile entity.
      *
-     * @param world the world
+     * @param ownerTE the owning tile entity
      */
-    void setWorld(World world);
+    void tick(TileEntity ownerTE);
 
     /**
-     * Sets the Air Handler's blockpos. Not necessary if you use validate().
+     * Leak air in the given direction.  The amount of air lost is dependent on the handler's current pressure;
+     * the exact amount is 20 + abs(pressure * 40) mL.
      *
-     * @param pos the blockpos
+     * @param ownerTE the owning tile entity
+     * @param dir the direction to leak in
      */
-    void setPos(BlockPos pos);
+    void airLeak(TileEntity ownerTE, Direction dir);
 
     /**
-     * Not necessary if you use validate()
+     * Get a list of all air handlers connected to this one.
      *
-     * @param machine the pneumatic machine
+     * @param ownerTE the owning tile entity
+     * @return a list of all connected air handlers
      */
-    void setPneumaticMachine(IPneumaticMachine machine);
+    List<IAirHandlerMachine.Connection> getConnectedAirHandlers(TileEntity ownerTE);
 
     /**
-     * Not necessary if you use validate(), or when the parent doesn't implement IAirListener.
+     * Override this air handler's base volume (the volume with no upgrades installed).  Used for example by the
+     * Pressure Chamber, where the base volume is dependent on the multiblock size.
      *
-     * @param airListener the air listener
+     * @param baseVolume the new base volume
      */
-    void setAirListener(IAirListener airListener);
+    void setBaseVolume(int baseVolume);
+
+    INBT serializeNBT();
+
+    void deserializeNBT(CompoundNBT compound);
 
     /**
-     * Creates an air connection with another handler. Can be used to connect up pneumatic machines that aren't
-     * directly adjacent. An example is the auxiliary valves in a pressure chamber multiblock.
-     *
-     * @param otherHandler the other air handler object
+     * Represents a connection to a neighbouring air handler.
      */
-    void createConnection(@Nonnull IAirHandlerMachine otherHandler);
+    interface Connection {
+        /**
+         * Get the neighbouring air handler
+         *
+         * @return a machine air handler
+         */
+        IAirHandlerMachine getAirHandler();
 
-    /**
-     * Remove a connection created with {@link #createConnection(IAirHandlerMachine)}. You must call this when one of the
-     * hosts of the two {@link IAirHandlerMachine air handlers} is invalidated.
-     *
-     * @param otherHandler the other air handler object
-     */
-    void removeConnection(@Nonnull IAirHandlerMachine otherHandler);
+        /**
+         * Get the direction of this connection. This may be null if this is a "special" connection, created by
+         * {@link IAirListener#addConnectedPneumatics(List)}
+         * @return the direction of this connection if it's physically adjacent, otherwise null
+         */
+        @Nullable
+        Direction getDirection();
 
+        /**
+         * Get the maximum air which may be dispersed along this connection in this tick. This can be controlled with
+         * {@link IAirListener#getMaxDispersion(IAirHandlerMachine, Direction)}.
+         * @return the maximum dispersal allowed
+         */
+        int getMaxDispersion();
+
+        /**
+         * Set the max air which may be dispersed along this connection. You should not normally call this directly;
+         * it is handled by {@link IAirHandlerMachine#tick(TileEntity)}
+         * @param maxDispersion the maximum dispersal allowed
+         */
+        void setMaxDispersion(int maxDispersion);
+
+        /**
+         * Get the amount of air has been dispersed along this connection in this tick.  Note that this will be 0 until
+         * calculated during {@link IAirHandlerMachine#tick(TileEntity)}.
+         *
+         * @return the air which has been dispersed this tick.
+         */
+        int getDispersedAir();
+
+        /**
+         * Set the air which will be dispersed along this connection in this tick. You should not normally call this directly;
+         * it is handled by {@link IAirHandlerMachine#tick(TileEntity)}.
+         * @param toDisperse the air which will be dispersed this tick
+         */
+        void setAirToDisperse(int toDisperse);
+    }
 }

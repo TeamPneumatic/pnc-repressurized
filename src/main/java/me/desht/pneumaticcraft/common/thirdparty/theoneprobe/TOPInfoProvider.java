@@ -4,11 +4,11 @@ import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
 import mcjty.theoneprobe.apiimpl.styles.LayoutStyle;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -47,8 +47,8 @@ public class TOPInfoProvider {
             te = ((IInfoForwarder)te).getInfoTileEntity();
         }
 
-        if (te instanceof IPneumaticMachine) {
-            TOPInfoProvider.handlePneumatic(mode, probeInfo, (IPneumaticMachine)te);
+        if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
+            TOPInfoProvider.handlePneumatic(mode, probeInfo, te);
         }
         if (te instanceof IHeatExchanger) {
             TOPInfoProvider.handleHeat(mode, probeInfo, (IHeatExchanger) te);
@@ -68,19 +68,23 @@ public class TOPInfoProvider {
         }
     }
 
-    private static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, IPneumaticMachine pneumaticMachine) {
-        IAirHandlerMachine airHandler = pneumaticMachine.getAirHandler(null);
-        probeInfo.text(COLOR + "Max Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(airHandler.getDangerPressure(), 1) + " bar");
-        if (mode == ProbeMode.EXTENDED) {
-            probeInfo.text(COLOR + "Pressure:");
-            probeInfo.horizontal()
-                    .element(new ElementPressure(pneumaticMachine))
-                    .vertical()
-                    .text("")
-                    .text("  \u2b05 " + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");
-        } else {
-            probeInfo.text(COLOR + "Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");
-        }
+    private static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, TileEntity pneumaticMachine) {
+        pneumaticMachine.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
+            if (airHandler instanceof MachineAirHandler) {
+                MachineAirHandler airHandler1 = (MachineAirHandler) airHandler;
+                probeInfo.text(COLOR + "Max Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(airHandler1.getDangerPressure(), 1) + " bar");
+                if (mode == ProbeMode.EXTENDED) {
+                    probeInfo.text(COLOR + "Pressure:");
+                    probeInfo.horizontal()
+                            .element(new ElementPressure(pneumaticMachine, airHandler1))
+                            .vertical()
+                            .text("")
+                            .text("  \u2b05 " + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");
+                } else {
+                    probeInfo.text(COLOR + "Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");
+                }
+            }
+        });
     }
 
     private static void handleHeat(ProbeMode mode, IProbeInfo probeInfo, IHeatExchanger heatExchanger) {

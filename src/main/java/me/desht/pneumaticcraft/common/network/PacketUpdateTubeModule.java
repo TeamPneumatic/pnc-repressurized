@@ -22,7 +22,7 @@ public abstract class PacketUpdateTubeModule extends LocationIntPacket {
     }
 
     public PacketUpdateTubeModule(TubeModule module) {
-        super(module.getTube().pos());
+        super(module.getTube().getPos());
         this.moduleSide = module.getDirection();
     }
 

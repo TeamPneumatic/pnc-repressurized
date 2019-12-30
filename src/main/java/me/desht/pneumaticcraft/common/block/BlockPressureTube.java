@@ -1,8 +1,10 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -17,7 +19,9 @@ import net.minecraft.block.SoundType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -28,6 +32,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,8 +40,12 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+
+import static me.desht.pneumaticcraft.common.block.BlockPressureTube.ConnectionType.CONNECTED;
 
 public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
@@ -44,10 +53,10 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     public static final int CORE_MIN = 8 - TUBE_WIDTH;
     public static final int CORE_MAX = 8 + TUBE_WIDTH;
     private static final double PLUG_SIZE = 2.5;
-    private static VoxelShape CORE = Block.makeCuboidShape(
+    private static final VoxelShape CORE = Block.makeCuboidShape(
             8 - TUBE_WIDTH, 8 - TUBE_WIDTH, 8 - TUBE_WIDTH, 8 + TUBE_WIDTH, 8 + TUBE_WIDTH, 8 + TUBE_WIDTH
     );
-    private static VoxelShape[] ARM_CONNECTED = {  // DUNSWE order
+    private static final VoxelShape[] ARM_CONNECTED = {  // DUNSWE order
             Block.makeCuboidShape(CORE_MIN, 0, CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX),
             Block.makeCuboidShape(CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX, 16, CORE_MAX),
             Block.makeCuboidShape(CORE_MIN, CORE_MIN, 0, CORE_MAX, CORE_MAX, CORE_MIN),
@@ -55,7 +64,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
             Block.makeCuboidShape(0, CORE_MIN, CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX),
             Block.makeCuboidShape(CORE_MAX, CORE_MIN, CORE_MIN, 16, CORE_MAX, CORE_MAX)
     };
-    private static VoxelShape[] ARM_CLOSED = {  // DUNSWE order
+    private static final VoxelShape[] ARM_CLOSED = {  // DUNSWE order
             Block.makeCuboidShape(CORE_MIN, CORE_MIN - PLUG_SIZE, CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX),
             Block.makeCuboidShape(CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX, CORE_MAX + PLUG_SIZE, CORE_MAX),
             Block.makeCuboidShape(CORE_MIN, CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX, CORE_MIN - PLUG_SIZE),
@@ -63,31 +72,36 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
             Block.makeCuboidShape(CORE_MIN - PLUG_SIZE, CORE_MIN, CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX),
             Block.makeCuboidShape(CORE_MAX, CORE_MIN, CORE_MIN, CORE_MAX + PLUG_SIZE, CORE_MAX, CORE_MAX)
     };
+    private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[729];  // 3 ^ 6
 
-    private static final EnumProperty<ConnectionType> UP = EnumProperty.create("up", ConnectionType.class);
-    private static final EnumProperty<ConnectionType> DOWN = EnumProperty.create("down", ConnectionType.class);
-    private static final EnumProperty<ConnectionType> NORTH = EnumProperty.create("north", ConnectionType.class);
-    private static final EnumProperty<ConnectionType> EAST = EnumProperty.create("east", ConnectionType.class);
-    private static final EnumProperty<ConnectionType> SOUTH = EnumProperty.create("south", ConnectionType.class);
-    private static final EnumProperty<ConnectionType> WEST = EnumProperty.create("west", ConnectionType.class);
-    public static final EnumProperty<ConnectionType>[] CONNECTION_PROPERTIES_3 = new EnumProperty[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
+    private static final EnumProperty<ConnectionType> UP_3 = EnumProperty.create("up", ConnectionType.class);
+    private static final EnumProperty<ConnectionType> DOWN_3 = EnumProperty.create("down", ConnectionType.class);
+    private static final EnumProperty<ConnectionType> NORTH_3 = EnumProperty.create("north", ConnectionType.class);
+    private static final EnumProperty<ConnectionType> EAST_3 = EnumProperty.create("east", ConnectionType.class);
+    private static final EnumProperty<ConnectionType> SOUTH_3 = EnumProperty.create("south", ConnectionType.class);
+    private static final EnumProperty<ConnectionType> WEST_3 = EnumProperty.create("west", ConnectionType.class);
+    private static final EnumProperty<ConnectionType>[] CONNECTION_PROPERTIES_3 = new EnumProperty[]{
+            DOWN_3, UP_3, NORTH_3, SOUTH_3, WEST_3, EAST_3
+    };
 
     private final Tier tier;
 
     public enum Tier {
-        ONE(1, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE),
-        TWO(2, PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE);
+        ONE(1, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, TileEntityPressureTube.class),
+        TWO(2, PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE, TileEntityAdvancedPressureTube.class);
 
         private final int tier;
         final float dangerPressure;
         final float criticalPressure;
         final int volume;
+        private final Class<? extends TileEntityPressureTube> teClass;
 
-        Tier(int tier, float dangerPressure, float criticalPressure, int volume) {
+        Tier(int tier, float dangerPressure, float criticalPressure, int volume, Class<? extends TileEntityPressureTube> teClass) {
             this.tier = tier;
             this.dangerPressure = dangerPressure;
             this.criticalPressure = criticalPressure;
             this.volume = volume;
+            this.teClass = teClass;
         }
     }
 
@@ -95,43 +109,98 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         super(registryName);
 
         this.tier = tier;
+
+        BlockState state = getStateContainer().getBaseState();
+        for (EnumProperty<ConnectionType> p : CONNECTION_PROPERTIES_3) {
+            state = state.with(p, ConnectionType.UNCONNECTED);
+        }
+        setDefaultState(state);
     }
 
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityPressureTube.class;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        switch (tier) {
-            case ONE: return new TileEntityPressureTube();
-            case TWO: return new TileEntityAdvancedPressureTube();
-        }
-        return null;
+        return tier.teClass;
     }
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        for (EnumProperty p : CONNECTION_PROPERTIES_3) {
-            builder.add(p);
+        super.fillStateContainer(builder);
+
+        builder.add(CONNECTION_PROPERTIES_3);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+        BlockState state = super.getStateForPlacement(ctx);
+        List<Direction> l = new ArrayList<>();
+        for (Direction dir : Direction.VALUES) {
+            TileEntity te = ctx.getWorld().getTileEntity(ctx.getPos().offset(dir));
+            if (te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
+                state = setSide(state, dir, CONNECTED);
+                l.add(dir);
+            }
         }
+        if (l.size() == 1) state = setSide(state, l.get(0).getOpposite(), CONNECTED);
+        return state;
+    }
+
+    @Override
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        BlockState newState = recalculateState(worldIn, currentPos, stateIn);
+        return newState == null ?
+                super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos) :
+                newState;
+    }
+
+    public static BlockState recalculateState(IWorld worldIn, BlockPos currentPos, BlockState stateIn) {
+        TileEntityPressureTube tePT = getPressureTube(worldIn, currentPos);
+        if (tePT != null) {
+            BlockState state = stateIn.getBlock().getDefaultState();
+            for (Direction dir : Direction.VALUES) {
+                ConnectionType type = ConnectionType.UNCONNECTED;
+                if (tePT.sidesClosed[dir.getIndex()]) {
+                    type = ConnectionType.CLOSED;
+                } else if (tePT.canConnectPneumatic(dir)) {
+                    TileEntity neighbourTE = worldIn.getTileEntity(currentPos.offset(dir));
+                    if (neighbourTE != null && neighbourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
+                        type = CONNECTED;
+                    }
+                }
+                state = setSide(state, dir, type);
+            }
+            return checkForSingleConnection(tePT, state);
+        }
+        return stateIn;
+    }
+
+    private static BlockState checkForSingleConnection(TileEntityPressureTube te, BlockState state) {
+        List<Direction> connected = new ArrayList<>();
+        int nUnconnected = 0;
+        for (Direction dir : Direction.VALUES) {
+            if (te.getModule(dir) != null) {
+                return state;
+            }
+            switch (state.get(CONNECTION_PROPERTIES_3[dir.getIndex()])) {
+                case CONNECTED: connected.add(dir); break;
+                case UNCONNECTED: nUnconnected++; break;
+                case CLOSED: return state;
+            }
+            if (connected.size() > 1) break;
+        }
+        // tube has no modules and only a single connected side; make the opposite side "connected" too so it appears open
+        if (nUnconnected == 5 && connected.size() == 1) {
+            state = setSide(state, connected.get(0).getOpposite(), CONNECTED);
+        }
+        return state;
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
-        VoxelShape res = CORE;
-
-        for (Direction d : Direction.values()) {
-            switch (state.get(CONNECTION_PROPERTIES_3[d.getIndex()])) {
-                case CONNECTED: res = VoxelShapes.combineAndSimplify(res, ARM_CONNECTED[d.getIndex()], IBooleanFunction.OR); break;
-                case CLOSED: res = VoxelShapes.combineAndSimplify(res, ARM_CLOSED[d.getIndex()], IBooleanFunction.OR); break;
-            }
-        }
-        TileEntityPressureTube te = getTE(reader, pos);
+        VoxelShape res = getCachedShape(state);
+        TileEntityPressureTube te = getPressureTube(reader, pos);
         if (te != null) {
-            for (TubeModule module : getTE(reader, pos).modules) {
+            for (TubeModule module : te.modules) {
                 if (module != null) {
                     res = VoxelShapes.combineAndSimplify(res, module.getShape(), IBooleanFunction.OR);
                 }
@@ -140,6 +209,28 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
         return res;
     }
+
+    private VoxelShape getCachedShape(BlockState state) {
+        int idx = 0;
+        int mul = 1;
+        for (Direction d : Direction.values()) {
+            idx += state.get(CONNECTION_PROPERTIES_3[d.getIndex()]).ordinal() * mul;
+            mul *= 3;
+        }
+        if (SHAPE_CACHE[idx] == null) {
+            VoxelShape res = CORE;
+            for (Direction d : Direction.values()) {
+                switch (state.get(CONNECTION_PROPERTIES_3[d.getIndex()])) {
+                    case CONNECTED: res = VoxelShapes.combineAndSimplify(res, ARM_CONNECTED[d.getIndex()], IBooleanFunction.OR); break;
+                    case CLOSED: res = VoxelShapes.combineAndSimplify(res, ARM_CLOSED[d.getIndex()], IBooleanFunction.OR); break;
+                }
+            }
+            SHAPE_CACHE[idx] = res;
+        }
+
+        return SHAPE_CACHE[idx];
+    }
+
 
     @Override
     public BlockRenderLayer getRenderLayer() {
@@ -164,31 +255,26 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         return tier.tier;
     }
 
-    private static TileEntityPressureTube getTE(IBlockReader world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
-        return te instanceof TileEntityPressureTube ? (TileEntityPressureTube) te : null;
-    }
-
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.onBlockPlacedBy(world, pos, state, entity, stack);
 
         ModuleNetworkManager.getInstance(world).invalidateCache();
         // force TE to calculate its connections immediately so network manager rescanning works
-        TileEntityPressureTube te = getTE(world, pos);
+        TileEntityPressureTube te = getPressureTube(world, pos);
         if (te != null) {
             te.onNeighborTileUpdate();
         }
     }
 
     public boolean tryPlaceModule(PlayerEntity player, World world, BlockPos pos, Direction side, Hand hand, boolean simulate) {
-        TileEntityPressureTube tePT = getTE(world, pos);
+        TileEntityPressureTube tePT = getPressureTube(world, pos);
         if (tePT == null) return false;
 
         ItemStack heldStack = player.getHeldItem(hand);
         if (heldStack.getItem() instanceof ItemTubeModule) {
-            if (tePT.modules[side.ordinal()] == null && !tePT.sidesClosed[side.ordinal()]) {
-                TubeModule module = ModuleRegistrator.createModule(heldStack.getItem().getRegistryName());
+            TubeModule module = ModuleRegistrator.createModule(heldStack.getItem().getRegistryName());
+            if (tePT.mayPlaceModule(side)) {
                 if (module == null) return false;
                 if (simulate) module.markFake();
                 tePT.setModule(module, side);
@@ -232,10 +318,19 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         BlockRayTraceResult rayTraceResult = doTrace(state, world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
         if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
-            TileEntityPressureTube tube = getTE(world, pos);
+            TileEntityPressureTube tube = getPressureTube(world, pos);
             return tube == null ? null : tube.modules[tubeHitInfo.dir.ordinal()];
         }
         return null;
+    }
+
+    private static BlockState setSide(BlockState state, Direction side, ConnectionType type) {
+        return state.with(CONNECTION_PROPERTIES_3[side.getIndex()], type);
+    }
+
+    private static TileEntityPressureTube getPressureTube(IBlockReader world, BlockPos pos) {
+        TileEntity te = world.getTileEntity(pos);
+        return te instanceof TileEntityPressureTube ? (TileEntityPressureTube) te : null;
     }
 
     /**
@@ -269,7 +364,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         }
 
         // now check each arm of the tube
-        TileEntityPressureTube tube = getTE(world, pos);
+        TileEntityPressureTube tube = getPressureTube(world, pos);
         if (tube == null) return null;
         for (int i = 0; i < 6; i++) {
             AxisAlignedBB arm;
@@ -310,7 +405,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     private static boolean isCloserIntersection(Vec3d origin, RayTraceResult oldRTR, RayTraceResult newRTR) {
         return newRTR != null &&
-                (oldRTR == null || origin.squareDistanceTo(newRTR.getHitVec()) < origin.squareDistanceTo(oldRTR.getHitVec()));
+                (oldRTR == null || origin.squareDistanceTo(newRTR.getHitVec()) <= origin.squareDistanceTo(oldRTR.getHitVec()));
     }
 
     @Override
@@ -321,7 +416,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {
             return super.getPickBlock(state, target, world, pos, player);
         } else if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
-            TileEntityPressureTube tube = getTE(world, pos);
+            TileEntityPressureTube tube = getPressureTube(world, pos);
             if (tube != null) {
                 TubeModule module = tube.modules[tubeHitInfo.dir.ordinal()];
                 if (module != null) {
@@ -335,7 +430,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
         if (player == null) return false;
-        TileEntityPressureTube tube = getTE(world, pos);
+        TileEntityPressureTube tube = getPressureTube(world, pos);
         if (tube == null) return false;
         TubeModule module = getFocusedModule(world, pos, player);
         if (player.isSneaking()) {
@@ -366,8 +461,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                 if (lookData != null) {
                     Direction sideHit = lookData.getRight();
                     tube.sidesClosed[sideHit.ordinal()] = !tube.sidesClosed[sideHit.ordinal()];
-                    neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side), false);
-                    world.notifyNeighborsOfStateChange(pos, this);
+                    world.setBlockState(pos, recalculateState(world, pos, world.getBlockState(pos)));
                 }
             }
         }
@@ -378,11 +472,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (newState.getBlock() != state.getBlock()) {
-            for (ItemStack drop : getModuleDrops(getTE(world, pos))) {
-                ItemEntity entity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-                entity.setItem(drop);
-                world.addEntity(entity);
-            }
+            getModuleDrops(getPressureTube(world, pos))
+                    .forEach(drop -> world.addEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop)));
             ModuleNetworkManager.getInstance(world).invalidateCache();
         }
         super.onReplaced(state, world, pos, newState, isMoving);
@@ -403,36 +494,34 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState state, World par1World, BlockPos pos, Random rand) {
-        // TODO figure out how best to sync tube module's redstone level to client
-//        if (!PNCConfig.Client.tubeModuleRedstoneParticles || PneumaticCraftRepressurized.proxy.particleLevel() == 2) return;
-//
-//        TileEntityPressureTube tePt = getTE(par1World, pos);
-//        if (tePt != null) {
-//            int l = 0;
-//            Direction side = null;
-//            for (TubeModule module : tePt.modules) {
-//                if (module != null && module.getRedstoneLevel() > l) {
-//                    l = module.getRedstoneLevel();
-//                    side = module.getDirection();
-//                }
-//            }
-//            if (l > 0) {
-//                double x = pos.getX() + 0.5D + side.getXOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
-//                double y = pos.getY() + 0.5D + side.getYOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
-//                double z = pos.getZ() + 0.5D + side.getZOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
-//                float f = l / 15.0F;
-//                float dx = f * 0.6F + 0.4F;
-//                float dy = Math.max(0f, f * f * 0.7F - 0.5F);
-//                float dz = Math.max(0f, f * f * 0.6F - 0.7F);
-//                par1World.addParticle(RedstoneParticleData.REDSTONE_DUST, x, y, z, dx, dy, dz);
-//            }
-//        }
+        if (!PNCConfig.Client.tubeModuleRedstoneParticles) return;
 
+        TileEntityPressureTube tePt = TileEntityPressureTube.getTube(par1World.getTileEntity(pos));
+        if (tePt != null) {
+            int l = 0;
+            Direction side = null;
+            for (TubeModule module : tePt.modules) {
+                if (module != null && module.getRedstoneLevel() > l) {
+                    l = module.getRedstoneLevel();
+                    side = module.getDirection();
+                }
+            }
+            if (l > 0) {
+                double x = pos.getX() + 0.5D + side.getXOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
+                double y = pos.getY() + 0.5D + side.getYOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
+                double z = pos.getZ() + 0.5D + side.getZOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
+                float f = l / 15.0F;
+                float dx = f * 0.6F + 0.4F;
+                float dy = Math.max(0f, f * f * 0.7F - 0.5F);
+                float dz = Math.max(0f, f * f * 0.6F - 0.7F);
+                par1World.addParticle(RedstoneParticleData.REDSTONE_DUST, x, y, z, dx, dy, dz);
+            }
+        }
     }
 
     @Override
     public int getWeakPower(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {
-        TileEntityPressureTube tePt = getTE(par1IBlockAccess, pos);
+        TileEntityPressureTube tePt = getPressureTube(par1IBlockAccess, pos);
         if (tePt != null) {
             int redstoneLevel = 0;
             for (Direction face : Direction.VALUES) {

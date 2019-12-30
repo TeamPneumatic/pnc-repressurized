@@ -64,9 +64,8 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
                     GlStateManager.color4f(1, 1, 1, 0.5f);
                 }
 
-                // FIXME: map lookup isn't good for perfomance here: need a cached index-based lookup of module->model
+                // FIXME: map lookup isn't good for performance here: need a cached index-based lookup of module->model
                 getModel(module).render(0.0625f, module, partialTicks);
-                module.doExtraRendering();
 
                 if (module.isFake()) {
                     tile.modules[i] = null;

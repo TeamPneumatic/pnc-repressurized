@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -20,7 +21,7 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
     private final LazyOptional<IAirHandlerItem> holder = LazyOptional.of(() -> this);
 
     private final ItemStack container;
-    private final int volume;
+    private int volume;
     private final float maxPressure;
 
     public AirHandlerItemStack(ItemStack container, int volume, float maxPressure) {
@@ -61,6 +62,11 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
     }
 
     @Override
+    public void setBaseVolume(int newBaseVolume) {
+        this.volume = newBaseVolume;
+    }
+
+    @Override
     public int getVolume() {
         int nUpgrades = UpgradableItemUtils.getUpgrades(container, IItemRegistry.EnumUpgrade.VOLUME);
         return getBaseVolume() + nUpgrades * PneumaticValues.VOLUME_VOLUME_UPGRADE;
@@ -74,6 +80,6 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY.orEmpty(cap, holder);
+        return PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY.orEmpty(cap, holder);
     }
 }

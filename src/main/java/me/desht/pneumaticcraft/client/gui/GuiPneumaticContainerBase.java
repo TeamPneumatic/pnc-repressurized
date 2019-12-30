@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
@@ -379,20 +379,20 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     protected void addPressureStatInfo(List<String> pressureStatText) {
-        TileEntityPneumaticBase pneumaticTile = (TileEntityPneumaticBase) te;
-        IAirHandlerMachine airHandler = pneumaticTile.getAirHandler(null);
-        pressureStatText.add("\u00a77Current Pressure:");
-        pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(pneumaticTile.getPressure(), 1) + " bar.");
-        pressureStatText.add("\u00a77Current Air:");
-        pressureStatText.add("\u00a70" + (airHandler.getAir() + airHandler.getVolume()) + " mL.");
-        pressureStatText.add("\u00a77Volume:");
-        pressureStatText.add("\u00a70" + pneumaticTile.getDefaultVolume() + " mL.");
-        int volumeLeft = airHandler.getVolume() - pneumaticTile.getDefaultVolume();
-        if (volumeLeft > 0) {
-            pressureStatText.add("\u00a70" + volumeLeft + " mL. (Volume Upgrades)");
-            pressureStatText.add("\u00a70--------+");
-            pressureStatText.add("\u00a70" + airHandler.getVolume() + " mL.");
-        }
+        te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
+            pressureStatText.add("\u00a77Current Pressure:");
+            pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1) + " bar.");
+            pressureStatText.add("\u00a77Current Air:");
+            pressureStatText.add("\u00a70" + (airHandler.getAir() + airHandler.getVolume()) + " mL.");
+            pressureStatText.add("\u00a77Volume:");
+            pressureStatText.add("\u00a70" + airHandler.getBaseVolume() + " mL.");
+            int volumeLeft = airHandler.getVolume() - airHandler.getBaseVolume();
+            if (volumeLeft > 0) {
+                pressureStatText.add("\u00a70" + volumeLeft + " mL. (Volume Upgrades)");
+                pressureStatText.add("\u00a70--------+");
+                pressureStatText.add("\u00a70" + airHandler.getVolume() + " mL.");
+            }
+        });
     }
 
     /**

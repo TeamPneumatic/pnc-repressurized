@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -105,7 +105,7 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
         }
         text.add("\u00a77Estimated time remaining:");
         int volume = UpgradableItemUtils.getUpgrades(itemStack, EnumUpgrade.VOLUME) * PneumaticValues.VOLUME_VOLUME_UPGRADE + getDefaultVolume();
-        int airLeft = itemStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY)
+        int airLeft = itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(h -> (int)(h.getPressure() * volume))
                 .orElse(0);
         if (totalUsage == 0) {

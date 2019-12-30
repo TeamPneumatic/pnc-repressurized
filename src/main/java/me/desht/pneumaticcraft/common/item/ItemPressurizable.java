@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.item.Item;
@@ -50,13 +50,13 @@ public class ItemPressurizable extends ItemPneumatic {
 
     @Override
     public double getDurabilityForDisplay(ItemStack stack) {
-        return stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY)
+        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(h -> 1 - (h.getPressure() / h.maxPressure()))
                 .orElse(1f);
     }
 
     static void addPressureTooltip(ItemStack stack, List<ITextComponent> textList) {
-        stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
+        stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
             float f = airHandler.getPressure() / airHandler.maxPressure();
             TextFormatting color;
             if (f < 0.1f) {
@@ -71,7 +71,7 @@ public class ItemPressurizable extends ItemPneumatic {
     }
 
     public static int getPressureDurabilityColor(ItemStack stack) {
-        return stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(airHandler -> {
+        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(airHandler -> {
             float f = airHandler.getPressure() / airHandler.maxPressure();
             int c = (int) (64 + 191 * f);
             return 0x40 << 16 | c << 8 | 0xFF;
@@ -81,7 +81,7 @@ public class ItemPressurizable extends ItemPneumatic {
     public static boolean shouldShowPressureDurability(ItemStack stack) {
         if (PNCConfig.Client.alwaysShowPressureDurabilityBar) return true;
 
-        return stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY)
+        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(airHandler -> airHandler.getPressure() < airHandler.maxPressure())
                 .orElse(false);
     }

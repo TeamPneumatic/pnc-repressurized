@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
@@ -11,7 +12,6 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandle
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
@@ -174,7 +174,7 @@ public class CommonArmorHandler {
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         boolean armorActive = false;
         if (armorStack.getItem() instanceof ItemPneumaticArmor) {
-            airHandlers.set(slot.getIndex(), armorStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY));
+            airHandlers.set(slot.getIndex(), armorStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY));
             if (ticksSinceEquip[slot.getIndex()] == 0) {
                 initArmorInventory(slot);
             }
@@ -313,7 +313,7 @@ public class CommonArmorHandler {
             Vec3d prev = moveMap.get(player.getUniqueID());
             boolean moved = prev != null && (Math.abs(player.posX - prev.x) > 0.0001 || Math.abs(player.posZ - prev.z) > 0.0001);
             if (moved && player.onGround && !player.isInWater()) {
-                int airUsage = (int) Math.ceil(PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedBoost * 4);
+                int airUsage = (int) Math.ceil(PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedBoost * 8);
                 addAir(EquipmentSlotType.LEGS, -airUsage);
             }
             moveMap.put(player.getUniqueID(), new Vec3d(player.posX, player.posY, player.posZ));
@@ -413,7 +413,7 @@ public class CommonArmorHandler {
     }
 
     private void tryPressurize(int airAmount, ItemStack destStack) {
-        destStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(destHandler -> {
+        destStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(destHandler -> {
             float pressure = destHandler.getPressure();
             if (pressure < destHandler.maxPressure() && pressure < getArmorPressure(EquipmentSlotType.CHEST)) {
                 float currentAir = pressure * destHandler.getVolume();

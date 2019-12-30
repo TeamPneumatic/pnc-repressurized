@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,7 +52,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
             if (!mergeItemStack(srcStack, 5, 9, false)
                     && !mergeItemStack(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
                 return ItemStack.EMPTY;
-        } else if (slot >= 5 && slot < 9 && srcStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
+        } else if (slot >= 5 && slot < 9 && srcStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
             // armor slots - try to move to the charging slot if possible
             if (!mergeItemStack(srcStack, 0, 1, false)
                     && !mergeItemStack(srcStack, playerSlotsStart, playerSlotsStart + 36, false))

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
@@ -24,11 +23,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, IHeatExchanger, INamedContainerProvider {
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
@@ -72,14 +69,13 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
             }
         }
 
-        if (!getWorld().isRemote) {
-            List<Pair<Direction, IAirHandlerMachine>> teList = getAirHandler(null).getConnectedPneumatics();
-            if (teList.size() == 0) getAirHandler(null).airLeak(getRotation().getOpposite());
+        if (!getWorld().isRemote && isLeaking()) {
+            airHandler.airLeak(this, getRotation().getOpposite());
         }
     }
 
     @Override
-    public boolean canConnectTo(Direction side) {
+    public boolean canConnectPneumatic(Direction side) {
         return side == getRotation().getOpposite();
     }
 

@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.entity.living;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.drone.IDrone;
@@ -18,7 +19,6 @@ import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.ai.*;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
@@ -291,7 +291,7 @@ public class EntityDrone extends EntityDroneBase implements
             return fluidCap.cast();
         } else if (capability == CapabilityEnergy.ENERGY) {
             return energyCap.cast();
-        } else if (capability == CapabilityAirHandler.AIR_HANDLER_CAPABILITY) {
+        } else if (capability == PNCCapabilities.AIR_HANDLER_CAPABILITY) {
             return airCap.cast();
         }
         return super.getCapability(capability, facing);
@@ -785,7 +785,7 @@ public class EntityDrone extends EntityDroneBase implements
         writeAdditional(tag);
         ItemStack drone = new ItemStack(ModItems.DRONE);
         drone.setTag(tag);
-        drone.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> h.addAir(getAirHandler().getAir()));
+        drone.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> h.addAir(getAirHandler().getAir()));
         return drone;
     }
 
@@ -997,7 +997,7 @@ public class EntityDrone extends EntityDroneBase implements
         if (minigun == null) {
             minigun = new MinigunDrone(this).setPlayer(getFakePlayer())
                     .setWorld(world)
-                    .setAirHandler(this.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY), PneumaticValues.DRONE_USAGE_ATTACK);
+                    .setAirHandler(this.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY), PneumaticValues.DRONE_USAGE_ATTACK);
         }
         return minigun;
     }

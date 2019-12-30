@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
@@ -33,16 +34,19 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class TileEntityElevatorBase extends TileEntityPneumaticBase
         implements IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure, IAirListener, ICamouflageableTE, INamedContainerProvider {
@@ -522,34 +526,28 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public boolean canConnectTo(Direction side) {
+    public boolean canConnectPneumatic(Direction side) {
         return side != Direction.UP && side != Direction.DOWN || getWorld().getBlockState(getPos().offset(side)).getBlock() != ModBlocks.ELEVATOR_BASE;
     }
 
+    @Nonnull
     @Override
-    public IAirHandlerMachine getAirHandler(Direction sideRequested) {
-        if (isCoreElevator()) {
-            return super.getAirHandler(sideRequested);
-        } else {
-            return getCoreElevator().getAirHandler(sideRequested);
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY && !isCoreElevator()) {
+            return getCoreElevator().getCapability(cap, side);
         }
+        return super.getCapability(cap, side);
     }
 
     @Override
-    public void addConnectedPneumatics(List<Pair<Direction, IAirHandlerMachine>> connectedMachines) {
+    public List<IAirHandlerMachine> addConnectedPneumatics(List<IAirHandlerMachine> airHandlers) {
         TileEntity te = getTileCache()[Direction.DOWN.ordinal()].getTileEntity();
         if (te instanceof TileEntityElevatorBase) {
-            connectedMachines.addAll(((TileEntityElevatorBase) te).airHandler.getConnectedPneumatics());
+            TileEntityElevatorBase te1 = (TileEntityElevatorBase) te;
+            List<IAirHandlerMachine.Connection> l = te1.airHandler.getConnectedAirHandlers(te1);
+            airHandlers.addAll(l.stream().map(IAirHandlerMachine.Connection::getAirHandler).collect(Collectors.toList()));
         }
-    }
-
-    @Override
-    public void onAirDispersion(IAirHandlerMachine handler, Direction dir, int airAdded) {
-    }
-
-    @Override
-    public int getMaxDispersion(IAirHandlerMachine handler, Direction dir) {
-        return Integer.MAX_VALUE;
+        return airHandlers;
     }
 
     @Override

@@ -45,7 +45,7 @@ public class UpgradeCache {
         return ejectDirection;
     }
 
-    private void validate() {
+    public void validate() {
         if (isValid) return;
 
         IItemHandler handler = holder.getUpgradeHandler();

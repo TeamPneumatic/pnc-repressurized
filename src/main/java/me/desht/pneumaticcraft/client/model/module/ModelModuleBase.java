@@ -25,6 +25,12 @@ public abstract class ModelModuleBase<T extends TubeModule> extends Model {
         renderDynamic(module, scale, partialTicks);
 
         GlStateManager.popMatrix();
+
+        renderExtras(module);
+    }
+
+    protected void renderExtras(T module) {
+        // nothing; override in subclasses
     }
 
     protected abstract void renderDynamic(T module, float scale, float partialTicks);

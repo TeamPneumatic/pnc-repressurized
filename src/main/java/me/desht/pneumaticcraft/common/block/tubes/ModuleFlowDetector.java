@@ -16,10 +16,11 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
     @Override
     public void update() {
         super.update();
+
         oldRotation = rotation;
         rotation += getRedstoneLevel() / 100F;
 
-        if (!pressureTube.world().isRemote) {
+        if (!pressureTube.getWorld().isRemote) {
             if (setRedstone(flow / 5)) {
                 sendDescriptionPacket();
             }
@@ -72,9 +73,4 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
     public boolean canUpgrade() {
         return false;
     }
-
-//    @Override
-//    public Class<? extends ModelModuleBase> getModelClass() {
-//        return ModelFlowDetector.class;
-//    }
 }

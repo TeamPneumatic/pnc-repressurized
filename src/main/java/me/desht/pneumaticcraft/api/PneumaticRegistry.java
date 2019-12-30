@@ -7,8 +7,7 @@ import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerSupplier;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import me.desht.pneumaticcraft.lib.Names;
@@ -53,7 +52,7 @@ public final class PneumaticRegistry {
 
         IPneumaticRecipeRegistry getRecipeRegistry();
 
-        IAirHandlerSupplier getAirHandlerSupplier();
+        IAirHandlerMachineFactory getAirHandlerMachineFactory();
 
         IPneumaticHelmetRegistry getHelmetRegistry();
 
@@ -106,8 +105,8 @@ public final class PneumaticRegistry {
     @CapabilityInject(IHacking.class)
     public static final Capability<IHacking> HACKING_CAPABILITY = null;
 
-    @CapabilityInject(IAirHandlerMachine.class)
-    public static final Capability<IAirHandlerMachine> AIR_HANDLER_CAPABILITY = null;
+//    @CapabilityInject(IAirHandlerMachine.class)
+//    public static final Capability<IAirHandlerMachine> AIR_HANDLER_CAPABILITY = null;
 
     @CapabilityInject(IHeatExchangerLogic.class)
     public static final Capability<IHeatExchangerLogic> HEAT_EXCHANGER_CAPABILITY = null;

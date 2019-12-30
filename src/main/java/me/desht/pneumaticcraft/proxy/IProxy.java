@@ -32,8 +32,6 @@ public interface IProxy {
 
     void suppressItemEquipAnimation();
 
-    int particleLevel();
-
     Pair<Integer,Integer> getScaledScreenSize();
 
     Iterable<? extends Entity> getAllEntities(World world);

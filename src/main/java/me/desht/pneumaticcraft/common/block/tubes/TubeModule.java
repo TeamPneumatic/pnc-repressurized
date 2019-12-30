@@ -18,10 +18,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
@@ -33,7 +31,7 @@ import static me.desht.pneumaticcraft.common.block.BlockPressureTube.CORE_MIN;
 public abstract class TubeModule {
     public static final float MAX_VALUE = 30;
 
-    protected IPneumaticPosProvider pressureTube;
+    protected TileEntityPressureTube pressureTube;
     protected Direction dir = Direction.UP;
     private final VoxelShape[] boundingBoxes;
     protected boolean upgraded;
@@ -65,11 +63,11 @@ public abstract class TubeModule {
         return fake;
     }
 
-    public void setTube(IPneumaticPosProvider pressureTube) {
+    public void setTube(TileEntityPressureTube pressureTube) {
         this.pressureTube = pressureTube;
     }
 
-    public IPneumaticPosProvider getTube() {
+    public TileEntityPressureTube getTube() {
         return pressureTube;
     }
 
@@ -161,7 +159,7 @@ public abstract class TubeModule {
     }
 
     void updateNeighbors() {
-        pressureTube.world().notifyNeighborsOfStateChange(pressureTube.pos(), pressureTube.world().getBlockState(pressureTube.pos()).getBlock());
+        pressureTube.getWorld().notifyNeighborsOfStateChange(pressureTube.getPos(), pressureTube.getWorld().getBlockState(pressureTube.getPos()).getBlock());
     }
 
     public boolean isInline() {
@@ -169,7 +167,7 @@ public abstract class TubeModule {
     }
 
     public void sendDescriptionPacket() {
-        if (pressureTube instanceof TileEntityPressureTube) ((TileEntityPressureTube) pressureTube).sendDescriptionPacket();
+        pressureTube.sendDescriptionPacket();
     }
 
     public void addInfo(List<ITextComponent> curInfo) {
@@ -180,8 +178,8 @@ public abstract class TubeModule {
         if (this instanceof INetworkedModule) {
             int colorChannel = ((INetworkedModule) this).getColorChannel();
             String key = "color.minecraft." + DyeColor.byId(colorChannel);
-            curInfo.add(new StringTextComponent("waila.logisticsModule.channel").appendText(" ")
-                    .appendSibling(new StringTextComponent(key).applyTextStyle(TextFormatting.YELLOW)));
+            curInfo.add(new TranslationTextComponent("waila.logisticsModule.channel").appendText(" ")
+                    .appendSibling(new TranslationTextComponent(key).applyTextStyle(TextFormatting.YELLOW)));
         }
     }
 
@@ -199,7 +197,7 @@ public abstract class TubeModule {
 
     public boolean onActivated(PlayerEntity player, Hand hand) {
         if (!player.world.isRemote && upgraded && hasGui()) {
-            NetworkHandler.sendToPlayer(new PacketOpenTubeModuleGui(getType(), pressureTube.pos()), (ServerPlayerEntity) player);
+            NetworkHandler.sendToPlayer(new PacketOpenTubeModuleGui(getType(), pressureTube.getPos()), (ServerPlayerEntity) player);
         }
         return true;
     }
@@ -212,11 +210,6 @@ public abstract class TubeModule {
      */
     public boolean hasGui() {
         return false;
-    }
-
-    // FIXME should be in renderer
-    @OnlyIn(Dist.CLIENT)
-    public void doExtraRendering() {
     }
 
     public VoxelShape getShape() {
@@ -232,11 +225,11 @@ public abstract class TubeModule {
         if (this == o) return true;
         if (!(o instanceof TubeModule)) return false;
         TubeModule that = (TubeModule) o;
-        return Objects.equals(pressureTube.pos(), that.pressureTube.pos()) && dir == that.dir;
+        return Objects.equals(pressureTube.getPos(), that.pressureTube.getPos()) && dir == that.dir;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pressureTube.pos(), dir);
+        return Objects.hash(pressureTube.getPos(), dir);
     }
 }

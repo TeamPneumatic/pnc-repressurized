@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
@@ -408,10 +408,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
         if (stateIn.has(CONNECTION_PROPERTIES[facing.getIndex()])) {
             TileEntity ourTE = worldIn.getTileEntity(currentPos);
-            if (ourTE instanceof IPneumaticMachine && ((IPneumaticMachine) ourTE).getAirHandler(facing) != null) {
+            if (ourTE != null && ourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing).isPresent()) {
                 // handle pneumatic connections to neighbouring air handlers
                 TileEntity te = worldIn.getTileEntity(currentPos.offset(facing));
-                boolean b = (te instanceof IPneumaticMachine && ((IPneumaticMachine) te).getAirHandler(facing.getOpposite()) != null);
+                boolean b = te != null && te.getCapability (PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY, facing.getOpposite()).isPresent();
                 stateIn = stateIn.with(CONNECTION_PROPERTIES[facing.getIndex()], b);
                 return stateIn;
             }

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
@@ -19,7 +19,7 @@ public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneCondition {
 
     @Override
     protected int getCount(IDroneBase drone, IProgWidget widget) {
-        return drone.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY)
+        return drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
                 .map(h -> (int) h.getPressure())
                 .orElseThrow(IllegalStateException::new);
     }

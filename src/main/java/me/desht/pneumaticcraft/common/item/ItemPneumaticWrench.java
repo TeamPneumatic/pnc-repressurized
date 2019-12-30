@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -34,7 +34,7 @@ public class ItemPneumaticWrench extends ItemPressurizable {
             BlockState state = world.getBlockState(pos);
             Block block = state.getBlock();
 
-            boolean didWork = stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+            boolean didWork = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 float pressure = h.getPressure();
                 IPneumaticWrenchable wrenchable = IPneumaticWrenchable.forBlock(block);
                 if (wrenchable != null && pressure > 0.1f) {
@@ -72,7 +72,7 @@ public class ItemPneumaticWrench extends ItemPressurizable {
         if (player.world.isRemote) {
             return true;
         } else if (target.isAlive() && target instanceof IPneumaticWrenchable) {
-            return iStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+            return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 boolean wrenched = ((IPneumaticWrenchable) target).onWrenched(target.world, player, null, null, hand);
                 if (wrenched) {
                     if (!player.isCreative()) {

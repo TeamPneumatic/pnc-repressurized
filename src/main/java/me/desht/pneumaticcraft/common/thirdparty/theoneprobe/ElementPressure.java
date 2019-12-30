@@ -3,11 +3,11 @@ package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.netty.buffer.ByteBuf;
 import mcjty.theoneprobe.api.IElement;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
 import me.desht.pneumaticcraft.common.tileentity.IMinWorkingPressure;
 import net.minecraft.client.Minecraft;
+import net.minecraft.tileentity.TileEntity;
 
 public class ElementPressure implements IElement {
     private final float min;
@@ -17,9 +17,8 @@ public class ElementPressure implements IElement {
 
     private static final float SCALE = 0.7f;
 
-    ElementPressure(IPneumaticMachine te) {
+    ElementPressure(TileEntity te, MachineAirHandler airHandler) {
         min = te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : 0;
-        IAirHandlerMachine airHandler = te.getAirHandler(null);
         pressure = airHandler.getPressure();
         danger = airHandler.getDangerPressure();
         crit = airHandler.getCriticalPressure();

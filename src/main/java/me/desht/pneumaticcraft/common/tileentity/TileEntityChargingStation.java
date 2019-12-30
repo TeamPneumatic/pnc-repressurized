@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.BlockChargingStation;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
@@ -33,7 +33,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -135,9 +134,9 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 updateNeighbours();
             }
 
-            List<Pair<Direction, IAirHandlerMachine>> teList = getAirHandler(null).getConnectedPneumatics();
-            if (teList.size() == 0) {
-                getAirHandler(null).airLeak(getRotation());
+            List<IAirHandlerMachine.Connection> teList = airHandler.getConnectedAirHandlers(this);
+            if (teList.isEmpty()) {
+                airHandler.airLeak(this, getRotation());
             }
         }
     }
@@ -145,21 +144,24 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     private List<IAirHandler> findChargeable() {
         List<IAirHandler> res = new ArrayList<>();
 
-        getChargingStack().getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
+        getChargingStack().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
+            res.add(h);
+            chargingItemPressure = h.getPressure();
+        });
 
         if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             List<Entity> entitiesOnPad = getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(getPos().up()));
             for (Entity entity : entitiesOnPad) {
                 if (entity instanceof ItemEntity) {
-                    ((ItemEntity) entity).getItem().getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
+                    ((ItemEntity) entity).getItem().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
                 } else if (entity instanceof PlayerEntity) {
                     PlayerInventory inv = ((PlayerEntity) entity).inventory;
                     for (int i = 0; i < inv.getSizeInventory(); i++) {
                         ItemStack stack = inv.getStackInSlot(i);
-                        stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
+                        stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
                     }
                 } else {
-                    entity.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY).ifPresent(res::add);
+                    entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(res::add);
                 }
             }
         }
@@ -167,7 +169,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public boolean canConnectTo(Direction side) {
+    public boolean canConnectPneumatic(Direction side) {
         return getRotation() == side;
     }
 
@@ -199,7 +201,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             case 0:
                 return false;
             case 1:
-                return !charging && !discharging && getChargingStack().getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).isPresent();
+                return !charging && !discharging && getChargingStack().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent();
             case 2:
                 return charging;
             case 3:
@@ -333,7 +335,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return slot == CHARGE_INVENTORY_INDEX
-                    && (itemStack.isEmpty() || itemStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).isPresent());
+                    && (itemStack.isEmpty() || itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent());
         }
 
         @Override

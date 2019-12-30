@@ -118,7 +118,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase impleme
     }
 
     @Override
-    public boolean canConnectTo(Direction side) {
+    public boolean canConnectPneumatic(Direction side) {
         return side.getAxis() == Direction.Axis.Y;
     }
 

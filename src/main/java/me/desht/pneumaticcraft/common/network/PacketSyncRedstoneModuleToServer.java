@@ -26,7 +26,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
     }
 
     public PacketSyncRedstoneModuleToServer(ModuleRedstone module) {
-        super(module.getTube().pos());
+        super(module.getTube().getPos());
 
         this.side = (byte) module.getDirection().ordinal();
         this.op = (byte) module.getOperation().ordinal();

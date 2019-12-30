@@ -4,8 +4,8 @@ import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -35,9 +35,8 @@ public class PneumaticProvider {
                 teInfo = te;
             }
 
-            if (teInfo instanceof IPneumaticMachine) {
-                compoundNBT.putFloat("pressure", ((IPneumaticMachine) teInfo).getAirHandler(null).getPressure());
-            }
+            teInfo.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
+                    .ifPresent(h -> compoundNBT.putFloat("pressure", h.getPressure()));
         }
     }
 
@@ -50,18 +49,20 @@ public class PneumaticProvider {
                 BlockPos infoPos = new BlockPos(tag.getInt("infoX"), tag.getInt("infoY"), tag.getInt("infoZ"));
                 te = accessor.getWorld().getTileEntity(infoPos);
             }
-            if (te instanceof IPneumaticMachine) {
-                addTipToMachine(tooltip, (IPneumaticMachine) te, tag.getFloat("pressure"));
+            if (te != null) {
+                te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
+                    if (h instanceof MachineAirHandler) {
+                        addTipToMachine(tooltip, (MachineAirHandler) h, tag.getFloat("pressure"));
+                    }
+                });
             }
         }
 
-        private static void addTipToMachine(List<ITextComponent> tooltip, IPneumaticMachine machine, float pressure) {
+        private static void addTipToMachine(List<ITextComponent> tooltip, MachineAirHandler airHandler, float pressure) {
             Map<String, String> values = new HashMap<>();
 
             values.put("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1));
-
-            IAirHandlerMachine base = machine.getAirHandler(null);
-            values.put("gui.tooltip.maxPressure", PneumaticCraftUtils.roundNumberTo(base.getDangerPressure(), 1));
+            values.put("gui.tooltip.maxPressure", PneumaticCraftUtils.roundNumberTo(airHandler.getDangerPressure(), 1));
 
             for (Map.Entry<String, String> entry : values.entrySet()) {
                 tooltip.add(new TranslationTextComponent(entry.getKey(), entry.getValue()));

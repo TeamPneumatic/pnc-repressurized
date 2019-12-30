@@ -58,7 +58,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public boolean canConnectTo(Direction side) {
+    public boolean canConnectPneumatic(Direction side) {
         return side != getRotation() && side != getRotation().getOpposite();
     }
 

@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.util.ResourceLocation;
 
@@ -16,10 +16,12 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     public void update() {
         super.update();
 
-        if (!pressureTube.world().isRemote) {
-            if (pressureTube.world().getGameTime() % 20 == 0)
-                NetworkHandler.sendToAllAround(new PacketUpdatePressureBlock((TileEntityPneumaticBase) getTube()), getTube().world());
-            setRedstone(getRedstone(pressureTube.getAirHandler(null).getPressure()));
+        if (!pressureTube.getWorld().isRemote) {
+            pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
+                if (pressureTube.getWorld().getGameTime() % 20 == 0)
+                    NetworkHandler.sendToAllAround(new PacketUpdatePressureBlock(getTube()), getTube().getWorld());
+                setRedstone(getRedstone(h.getPressure()));
+            });
         }
     }
 

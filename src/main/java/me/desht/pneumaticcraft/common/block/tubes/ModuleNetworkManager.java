@@ -1,7 +1,8 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
-import me.desht.pneumaticcraft.common.util.TileEntityCache;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -31,9 +32,9 @@ public class ModuleNetworkManager {
 
     private Set<TubeModule> computeConnections(TubeModule module) {
         Set<TubeModule> modules = new HashSet<>();
-        Set<TileEntityPressureTube> traversedTubes = new HashSet<>();
+        Set<TileEntity> traversedTubes = new HashSet<>();
         Stack<TileEntityPressureTube> pendingTubes = new Stack<>();
-        pendingTubes.push((TileEntityPressureTube) module.getTube());
+        pendingTubes.push(module.getTube());
         while (!pendingTubes.isEmpty()) {
             TileEntityPressureTube tube = pendingTubes.pop();
             for (TubeModule m : tube.modules) {
@@ -41,22 +42,14 @@ public class ModuleNetworkManager {
                     modules.add(m);
                 }
             }
-            TileEntityCache[] cache = tube.getTileCache();//((AirHandler) tube.getAirHandler(null)).getTileCache();
-            for (int dir = 0; dir < 6; dir++) {
-                if (isTubeConnected(tube, dir)) {
-                    TileEntityPressureTube newTube = TileEntityPressureTube.getTube(cache[dir].getTileEntity());
-                    if (newTube != null && !traversedTubes.contains(newTube)) {
-                        pendingTubes.add(newTube);
-                        traversedTubes.add(newTube);
-                    }
+            for (Direction dir : Direction.VALUES) {
+                TileEntity newTube = tube.getConnectedNeighbor(dir);
+                if (newTube instanceof TileEntityPressureTube && !traversedTubes.contains(newTube)) {
+                    pendingTubes.add((TileEntityPressureTube) newTube);
+                    traversedTubes.add(newTube);
                 }
             }
         }
         return modules;
-    }
-
-    private boolean isTubeConnected(TileEntityPressureTube tube, int dir) {
-        return !tube.sidesClosed[dir] &&
-                (tube.sidesConnected[dir] || (tube.modules[dir] != null && tube.modules[dir].isInline()));
     }
 }

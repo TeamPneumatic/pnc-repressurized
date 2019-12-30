@@ -23,7 +23,7 @@ public class PacketUpdateLogisticModule extends LocationIntPacket {
     }
 
     public PacketUpdateLogisticModule(ModuleLogistics logisticsModule, int action) {
-        super(logisticsModule.getTube().pos());
+        super(logisticsModule.getTube().getPos());
         side = logisticsModule.getDirection().ordinal();
         colorIndex = logisticsModule.getColorChannel();
         if (action > 0) {

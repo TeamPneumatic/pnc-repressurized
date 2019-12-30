@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry.EntityTrackEntry;
@@ -15,7 +16,6 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackUpgradeHandler;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -142,12 +142,12 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryPressurizable extends EntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY).isPresent();
+            return entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).isPresent();
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            float pressure = entity.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY)
+            float pressure = entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
                     .map(IAirHandler::getPressure)
                     .orElseThrow(IllegalStateException::new);
             curInfo.add(I18n.format("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));

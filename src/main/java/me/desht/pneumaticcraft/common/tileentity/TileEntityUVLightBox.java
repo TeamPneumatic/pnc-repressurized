@@ -8,10 +8,8 @@ import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
-import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -48,12 +46,8 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
 //    private Object light = null;
 
-    @DescSynced
-    public boolean areLightsOn;
     @GuiSynced
     public int redstoneMode;
-//    @DescSynced
-//    public boolean hasLoadedPCB;
 
     public final LightBoxItemHandlerInternal inventory = new LightBoxItemHandlerInternal();
     private final LightBoxItemHandlerExternal inventoryExt = new LightBoxItemHandlerExternal(inventory);
@@ -88,39 +82,30 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         if (!getWorld().isRemote) {
             ticksExisted++;
             ItemStack stack = getLoadedPCB();
+            boolean didWork = false;
             if (!stack.isEmpty()) {
                 int progress = getExposureProgress(stack);
                 if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && progress < 100) {
                     addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
                     if (ticksExisted % ticksPerProgress(progress) == 0) {
-                        if (!areLightsOn) {
-                            setLightsOn(true);
-                            updateNeighbours();
-                        }
                         setExposureProgress(stack, Math.min(progress + 1, 100));
                     }
-                } else if (areLightsOn) {
-                    setLightsOn(false);
-                    updateNeighbours();
+                    didWork = true;
                 }
                 if (oldRedstoneStatus != shouldEmitRedstone()) {
                     oldRedstoneStatus = !oldRedstoneStatus;
                     updateNeighbours();
                 }
-                boolean loaded = getBlockState().get(BlockUVLightBox.LOADED);
-                if (loaded == stack.isEmpty()) {
-                    world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LOADED, !stack.isEmpty()));
-                }
+            }
+            boolean loaded = getBlockState().get(BlockUVLightBox.LOADED);
+            if (loaded == stack.isEmpty()) {
+                world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LOADED, !stack.isEmpty()));
+            }
+            if (didWork != getBlockState().get(BlockUVLightBox.LIT)) {
+                world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LIT, didWork));
             }
         }
     }
-
-//    @Override
-//    protected void onFirstServerUpdate() {
-//        super.onFirstServerUpdate();
-//
-//        hasLoadedPCB = !getLoadedPCB().isEmpty();
-//    }
 
     public static void setExposureProgress(ItemStack stack, int progress) {
         Validate.isTrue(progress >= 0 && progress <= 100);
@@ -152,16 +137,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         return true;
     }
 
-    private void setLightsOn(boolean lightsOn) {
-        boolean check = areLightsOn != lightsOn;
-        areLightsOn = lightsOn;
-        if (check) {
-            world.getChunkProvider().getLightManager().checkBlock(getPos());
-            BlockState state = world.getBlockState(pos).with(BlockUVLightBox.LIT, areLightsOn);
-            world.setBlockState(pos, state);
-        }
-    }
-
     @Override
     public void onDescUpdate() {
         getWorld().getChunkProvider().getLightManager().checkBlock(getPos());
@@ -169,12 +144,8 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         super.onDescUpdate();
     }
 
-    public int getLightLevel() {
-        return areLightsOn ? Math.max(15, getUpgrades(EnumUpgrade.SPEED)) + 11 : 0;
-    }
-
     @Override
-    public boolean canConnectTo(Direction side) {
+    public boolean canConnectPneumatic(Direction side) {
         return side == getRotation().rotateY();
     }
 

@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
 import mcjty.theoneprobe.api.*;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -53,7 +53,7 @@ public class TheOneProbe implements IThirdParty {
 
                 @Override
                 public void addProbeEntityInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, Entity entity, IProbeHitEntityData data) {
-                    entity.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
+                    entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
                         String p = PneumaticCraftUtils.roundNumberTo(h.getPressure(), 1);
                         probeInfo.text(COLOR + "Pressure: " + p + " bar");
                     });

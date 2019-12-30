@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
@@ -15,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
 import net.minecraft.util.text.ITextComponent;
@@ -33,7 +35,7 @@ public class ModuleAirGrate extends TubeModule {
     private boolean vacuum;
     private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x5500FF00);
-    private boolean resetRendering = true;
+    private boolean resetRendering = false;
     private EntityFilter entityFilter = null;
     private TileEntity adjacentInsertionTE = null;
     private Direction adjacentInsertionSide;
@@ -42,9 +44,12 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     private int getRange() {
-        float range = pressureTube.getAirHandler(null).getPressure() * 4;
+        float range = pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
+                .map(h -> h.getPressure() * 4f)
+                .orElseThrow(RuntimeException::new);
+
         vacuum = range < 0;
-        if (vacuum) range = -range * 4;
+        if (vacuum) range *= -4f;
         return (int) range;
     }
 
@@ -53,17 +58,21 @@ public class ModuleAirGrate extends TubeModule {
         return 16D;
     }
 
+    public RenderRangeLines getRangeLineRenderer() {
+        return rangeLineRenderer;
+    }
+
     @Override
     public void update() {
         super.update();
 
-        World world = pressureTube.world();
-        BlockPos pos = pressureTube.pos();
+        World world = pressureTube.getWorld();
+        BlockPos pos = pressureTube.getPos();
 
         if (!world.isRemote) {
             int oldGrateRange = grateRange;
             grateRange = getRange();
-            pressureTube.getAirHandler(null).addAir((vacuum ? 1 : -1) * grateRange * PneumaticValues.USAGE_AIR_GRATE);
+            pressureTube.addAir((vacuum ? 1 : -1) * grateRange * PneumaticValues.USAGE_AIR_GRATE);
             if (oldGrateRange != grateRange) sendDescriptionPacket();
 
             coolHeatSinks();
@@ -79,7 +88,7 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     private AxisAlignedBB getAffectedAABB() {
-        return new AxisAlignedBB(pressureTube.pos()).grow(grateRange);
+        return new AxisAlignedBB(pressureTube.getPos()).grow(grateRange);
     }
 
     private void pushEntities(World world, BlockPos pos, Vec3d tileVec) {
@@ -138,7 +147,7 @@ public class ModuleAirGrate extends TubeModule {
 
         adjacentInsertionTE = null;
         for (Direction dir : Direction.VALUES) {
-            TileEntity inv = pressureTube.world().getTileEntity(pressureTube.pos().offset(dir));
+            TileEntity inv = pressureTube.getWorld().getTileEntity(pressureTube.getPos().offset(dir));
             if (inv != null && inv.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).isPresent()) {
                 adjacentInsertionTE = inv;
                 adjacentInsertionSide = dir.getOpposite();
@@ -150,9 +159,9 @@ public class ModuleAirGrate extends TubeModule {
 
     private void coolHeatSinks() {
         if (grateRange > 2) {
-            int curTeIndex = (int) (pressureTube.world().getGameTime() % 27);
-            BlockPos curPos = pressureTube.pos().offset(dir, 2).add(-1 + curTeIndex % 3, -1 + curTeIndex / 3 % 3, -1 + curTeIndex / 9 % 3);
-            TileEntity te = pressureTube.world().getTileEntity(curPos);
+            int curTeIndex = (int) (pressureTube.getWorld().getGameTime() % 27);
+            BlockPos curPos = pressureTube.getPos().offset(dir, 2).add(-1 + curTeIndex % 3, -1 + curTeIndex / 3 % 3, -1 + curTeIndex / 9 % 3);
+            TileEntity te = pressureTube.getWorld().getTileEntity(curPos);
             if (te instanceof TileEntityHeatSink) heatSinks.add((TileEntityHeatSink) te);
 
             Iterator<TileEntityHeatSink> iterator = heatSinks.iterator();
@@ -206,11 +215,6 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     @Override
-    public void doExtraRendering() {
-        rangeLineRenderer.render();
-    }
-
-    @Override
     public AxisAlignedBB getRenderBoundingBox() {
         return getAffectedAABB();
     }
@@ -223,4 +227,11 @@ public class ModuleAirGrate extends TubeModule {
         entityFilter = EntityFilter.fromString(filter);
     }
 
+    @Override
+    public boolean onActivated(PlayerEntity player, Hand hand) {
+        if (player.world.isRemote && !rangeLineRenderer.isCurrentlyRendering()) {
+            resetRendering = true;
+        }
+        return super.onActivated(player, hand);
+    }
 }

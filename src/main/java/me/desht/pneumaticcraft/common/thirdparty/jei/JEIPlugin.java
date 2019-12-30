@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.GuiAssemblyController;
 import me.desht.pneumaticcraft.client.gui.GuiPressureChamber;
 import me.desht.pneumaticcraft.client.gui.GuiRefineryController;
 import me.desht.pneumaticcraft.client.gui.GuiThermopneumaticProcessingPlant;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -36,7 +36,7 @@ public class JEIPlugin implements IModPlugin {
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         for (Item item : ModItems.Registration.ALL_ITEMS) {
             if (item instanceof ItemPressurizable) {
-                registration.registerSubtypeInterpreter(item, s -> s.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h2 -> String.valueOf(h2.getPressure())).orElse(ISubtypeInterpreter.NONE));
+                registration.registerSubtypeInterpreter(item, s -> s.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h2 -> String.valueOf(h2.getPressure())).orElse(ISubtypeInterpreter.NONE));
             }
         }
         registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB, s -> String.valueOf(TileEntityUVLightBox.getExposureProgress(s)));

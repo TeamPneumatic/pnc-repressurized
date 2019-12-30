@@ -222,12 +222,11 @@ public class ClientSetup {
         File optionsFile = new File(Minecraft.getInstance().gameDir, "options.txt");
         if (optionsFile.exists()) {
             try (BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile))) {
-                String s = "";
+                String s;
                 while ((s = bufferedreader.readLine()) != null) {
                     String[] str = s.split(":");
                     if (str[0].startsWith("key_")) {
                         KeyModifier mod = str.length > 2 ? KeyModifier.valueFromString(str[2]) : KeyModifier.NONE;
-//                        keybindToKeyCodes.put(str[0].substring(4), Pair.of(Integer.parseInt(str[1]), mod));
                         InputMappings.Input i = InputMappings.getInputByName(str[1]);
                         keybindToKeyCodes.put(str[0].substring(4), Pair.of(i.getKeyCode(), mod));
                     }

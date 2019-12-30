@@ -68,11 +68,6 @@ public class ServerProxy implements IProxy {
     }
 
     @Override
-    public int particleLevel() {
-        return 0;
-    }
-
-    @Override
     public Pair<Integer, Integer> getScaledScreenSize() {
         return Pair.of(0, 0);
     }

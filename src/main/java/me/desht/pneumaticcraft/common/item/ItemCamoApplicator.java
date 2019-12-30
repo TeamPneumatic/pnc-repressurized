@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -73,7 +73,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
 
                 BlockState camoState = getCamoState(stack);
 
-                if (!player.isCreative() && !stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> h.getPressure() > 0.1).orElse(false)) {
+                if (!player.isCreative() && !stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> h.getPressure() > 0.1).orElse(false)) {
                     // not enough pressure
                     return ActionResultType.FAIL;
                 }
@@ -105,7 +105,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
                 }
 
                 // and apply the new camouflage
-                stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> h.addAir(-PneumaticValues.USAGE_CAMO_APPLICATOR));
+                stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> h.addAir(-PneumaticValues.USAGE_CAMO_APPLICATOR));
                 ((ICamouflageableTE) te).setCamouflage(camoState);
                 BlockState particleState = camoState == null ? existingCamo : camoState;
                 if (particleState != null) {

@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.pressure.AirHandlerMachine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -22,7 +22,9 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
 
     public PacketUpdatePressureBlock(TileEntityPneumaticBase te) {
         super(te.getPos());
-        currentAir = te.getAirHandler(null).getAir();
+        currentAir = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
+                .map(IAirHandlerMachine::getAir)
+                .orElseThrow(RuntimeException::new);
     }
 
     public PacketUpdatePressureBlock(PacketBuffer buffer) {
@@ -39,12 +41,8 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             TileEntity te = ClientUtils.getClientTE(pos);
-            if (te instanceof TileEntityPneumaticBase) {
-                ((AirHandlerMachine) ((TileEntityPneumaticBase) te).getAirHandler(null)).setAir(currentAir);
-            } else {
-                TileEntityPressureTube tube = TileEntityPressureTube.getTube(te);
-                if (tube != null) ((AirHandlerMachine) tube.getAirHandler(null)).setAir(currentAir);
-            }
+            te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
+                    .ifPresent(h -> h.addAir(currentAir - h.getAir()));
         });
         ctx.get().setPacketHandled(true);
     }

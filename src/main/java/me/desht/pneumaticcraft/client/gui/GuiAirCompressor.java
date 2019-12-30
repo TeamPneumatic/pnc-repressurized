@@ -1,16 +1,13 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.tileentity.FurnaceTileEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
@@ -68,8 +65,9 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
             textList.add("\u00a77No fuel!");
             textList.add("\u00a70Insert any burnable item.");
         }
-        List<Pair<Direction, IAirHandlerMachine>> teSurrounding = te.getAirHandler(null).getConnectedPneumatics();
-        if (teSurrounding.isEmpty()) {
+
+//        List<Pair<Direction, IAirHandlerMachine>> teSurrounding = te.getAirHandler(null).getConnectedPneumatics();
+        if (te.isLeaking()) {
             textList.add("\u00a77Air leaking!");
             textList.add("\u00a70Add pipes / machines");
             textList.add("\u00a70to the output.");

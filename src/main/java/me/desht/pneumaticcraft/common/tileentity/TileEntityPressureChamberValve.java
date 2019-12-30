@@ -39,8 +39,6 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -95,26 +93,20 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     }
 
     @Override
-    public boolean canConnectTo(Direction side) {
+    public boolean canConnectPneumatic(Direction side) {
         return side.getAxis() == getRotation().getAxis();
     }
 
     @Override
-    public void addConnectedPneumatics(List<Pair<Direction, IAirHandlerMachine>> teList) {
+    public List<IAirHandlerMachine> addConnectedPneumatics(List<IAirHandlerMachine> airHandlers) {
         if (accessoryValves != null) {
             for (TileEntityPressureChamberValve valve : accessoryValves) {
-                if (valve != this) teList.add(new ImmutablePair<>(null, valve.getAirHandler(null)));
+                if (valve != this) {
+                    airHandlers.add(valve.airHandler);
+                }
             }
         }
-    }
-
-    @Override
-    public void onAirDispersion(IAirHandlerMachine handler, Direction dir, int airAdded) {
-    }
-
-    @Override
-    public int getMaxDispersion(IAirHandlerMachine handler, Direction dir) {
-        return Integer.MAX_VALUE;
+        return airHandlers;
     }
 
     @Override
@@ -207,9 +199,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 break;
         }
 
-        List<Pair<Direction, IAirHandlerMachine>> teList = getAirHandler(null).getConnectedPneumatics();
-        for (Pair<Direction, IAirHandlerMachine> entry : teList) {
-            if (entry.getKey() != null) connected[entry.getKey().ordinal()] = true;
+        List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
+        for (IAirHandlerMachine.Connection c : l) {
+            if (c.getDirection() != null) connected[c.getDirection().ordinal()] = true;
         }
 
         // retrieve the valve that is controlling the (potential) chamber
@@ -241,7 +233,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             }
         }
         for (int i = 0; i < 6; i++) {
-            if (!connected[i]) getAirHandler(null).airLeak(Direction.byIndex(i));
+            if (!connected[i]) airHandler.airLeak(this, Direction.byIndex(i));
         }
     }
 
@@ -318,7 +310,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
-        setMultiBlockCoords(tag.getInt("multiBlockSize"), tag.getInt("multiBlockX"), tag.getInt("multiBlockY"), tag.getInt("multiBlockZ"));
+
+        setupMultiBlock(tag.getInt("multiBlockSize"), tag.getInt("multiBlockX"), tag.getInt("multiBlockY"), tag.getInt("multiBlockZ"));
         isSufficientPressureInChamber = tag.getBoolean("sufPressure");
         isValidRecipeInChamber = tag.getBoolean("validRecipe");
         recipePressure = tag.getFloat("recipePressure");
@@ -402,7 +395,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         }
         if (accessoryValves != null) {
             for (TileEntityPressureChamberValve valve : accessoryValves) {
-                valve.setMultiBlockCoords(0, 0, 0, 0);
+                valve.setupMultiBlock(0, 0, 0, 0);
                 if (valve != this) {
                     valve.accessoryValves.clear();
                     if (!getWorld().isRemote) valve.sendDescriptionPacket();
@@ -413,12 +406,12 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         if (!getWorld().isRemote) sendDescriptionPacket();
     }
 
-    private void setMultiBlockCoords(int size, int baseX, int baseY, int baseZ) {
+    private void setupMultiBlock(int size, int baseX, int baseY, int baseZ) {
         multiBlockSize = size;
         multiBlockX = baseX;
         multiBlockY = baseY;
         multiBlockZ = baseZ;
-        getAirHandler(null).setDefaultVolume(getDefaultVolume());
+        airHandler.setBaseVolume(getDefaultVolume());
     }
 
     @Override
@@ -513,7 +506,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         valveList.forEach(valve -> valve.accessoryValves = new ArrayList<>(valveList));
 
         // set the multi-block coords in the primary valve only
-        primaryValve.setMultiBlockCoords(size, baseX, baseY, baseZ);
+        primaryValve.setupMultiBlock(size, baseX, baseY, baseZ);
 
         // note the core valve in every wall & interface so right clicking & block break work as expected
         primaryValve.hasGlass = false;

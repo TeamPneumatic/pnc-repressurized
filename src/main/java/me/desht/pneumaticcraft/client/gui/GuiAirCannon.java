@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -11,11 +10,9 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,10 +91,9 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
 
     @Override
     protected void addProblems(List<String> textList) {
-        List<Pair<Direction, IAirHandlerMachine>> teSurrounding = te.getAirHandler(null).getConnectedPneumatics();
         super.addProblems(textList);
 
-        if (teSurrounding.isEmpty()) {
+        if (te.isLeaking()) {
             textList.add("\u00a77No air input connected.");
             textList.add("\u00a70Add pipes / machines");
             textList.add("\u00a70to the input.");

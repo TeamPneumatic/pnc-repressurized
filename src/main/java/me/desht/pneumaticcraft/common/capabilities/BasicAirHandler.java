@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -8,8 +9,10 @@ import net.minecraftforge.common.util.INBTSerializable;
  * A reference implementation.  Subclass this or implement your own.
  */
 public class BasicAirHandler implements IAirHandler, INBTSerializable<CompoundNBT> {
-    private final int baseVolume;
-    protected int airAmount;
+    @GuiSynced
+    private int baseVolume;
+    @GuiSynced
+    private int airAmount;
 
     public BasicAirHandler(int volume) {
         this.baseVolume = volume;
@@ -18,7 +21,7 @@ public class BasicAirHandler implements IAirHandler, INBTSerializable<CompoundNB
 
     @Override
     public float getPressure() {
-        return (float) airAmount / baseVolume;
+        return (float) airAmount / getVolume();
     }
 
     @Override
@@ -35,6 +38,11 @@ public class BasicAirHandler implements IAirHandler, INBTSerializable<CompoundNB
     @Override
     public int getBaseVolume() {
         return baseVolume;
+    }
+
+    @Override
+    public void setBaseVolume(int baseVolume) {
+        this.baseVolume = baseVolume;
     }
 
     @Override

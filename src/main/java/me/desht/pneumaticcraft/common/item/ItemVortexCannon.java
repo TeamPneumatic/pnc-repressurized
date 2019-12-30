@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -23,7 +23,7 @@ public class ItemVortexCannon extends ItemPressurizable {
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity playerIn, Hand handIn) {
         ItemStack iStack = playerIn.getHeldItem(handIn);
 
-        iStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
+        iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
             if (airHandler.getPressure() > 0.1f) {
                 double factor = 0.2D * airHandler.getPressure();
                 world.playSound(playerIn.posX, playerIn.posY, playerIn.posZ, ModSounds.AIR_CANNON, SoundCategory.PLAYERS, 1.0F, 0.7F + (float) factor * 0.2F, false);

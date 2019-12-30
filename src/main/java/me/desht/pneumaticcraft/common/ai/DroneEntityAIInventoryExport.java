@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
@@ -55,7 +55,7 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInve
                             }
                         }
                         if (droneStack.isEmpty() && !simulate) {
-                            drone.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY)
+                            drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
                                     .ifPresent(h -> h.addAir(-PneumaticValues.DRONE_USAGE_INV));
                         }
                         else drone.addDebugEntry("gui.progWidget.inventoryExport.debug.filledToMax", pos);

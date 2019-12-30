@@ -88,4 +88,8 @@ public class ModelAirGrate extends ModelModuleBase<ModuleAirGrate> {
         return Textures.MODEL_AIR_GRATE;
     }
 
+    @Override
+    protected void renderExtras(ModuleAirGrate module) {
+        module.getRangeLineRenderer().render();
+    }
 }

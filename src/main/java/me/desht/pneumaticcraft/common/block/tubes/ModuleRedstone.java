@@ -67,11 +67,11 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     public void update() {
         super.update();
 
-        if (!pressureTube.world().isRemote) {
+        if (!pressureTube.getWorld().isRemote) {
             byte[] levels = new byte[16];
 
             if (redstoneDirection == EnumRedstoneDirection.OUTPUT) {
-                for (TubeModule module : ModuleNetworkManager.getInstance(getTube().world()).getConnectedModules(this)) {
+                for (TubeModule module : ModuleNetworkManager.getInstance(getTube().getWorld()).getConnectedModules(this)) {
                     if (module instanceof ModuleRedstone) {
                         ModuleRedstone mr = (ModuleRedstone) module;
                         if (mr.getRedstoneDirection() == EnumRedstoneDirection.INPUT && mr.getInputLevel() > levels[mr.getColorChannel()])
@@ -82,7 +82,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
                 int out = computeOutputSignal(outputLevel, levels);
                 if (invert) out = out > 0 ? 0 : 15;
                 if (setOutputLevel(out)) {
-                    NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().world());
+                    NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().getWorld());
                 }
             } else {
                 if (inputLevel < 0) updateInputLevel();  // first update
@@ -118,7 +118,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             case COMPARE:
                 return s1 > constantVal ? 15 : 0;
             case CLOCK:
-                return s1 == 0 && getTube().world().getGameTime() % constantVal < 2 ? 15 : 0;
+                return s1 == 0 && getTube().getWorld().getGameTime() % constantVal < 2 ? 15 : 0;
             case TOGGLE:
                 if (s1 > prevLevels[getColorChannel()]) {
                     return lastOutput > 0 ? 0 : 15;
@@ -273,11 +273,11 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             redstoneDirection = redstoneDirection == EnumRedstoneDirection.INPUT ? EnumRedstoneDirection.OUTPUT : EnumRedstoneDirection.INPUT;
             updateNeighbors();
             if (!updateInputLevel()) {
-                NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().world());
+                NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().getWorld());
             }
             return true;
-        } else if (!getTube().world().isRemote && upgraded && getRedstoneDirection() == EnumRedstoneDirection.OUTPUT) {
-            NetworkHandler.sendToPlayer(new PacketOpenTubeModuleGui(getType(), pressureTube.pos()), (ServerPlayerEntity) player);
+        } else if (!getTube().getWorld().isRemote && upgraded && getRedstoneDirection() == EnumRedstoneDirection.OUTPUT) {
+            NetworkHandler.sendToPlayer(new PacketOpenTubeModuleGui(getType(), pressureTube.getPos()), (ServerPlayerEntity) player);
             return true;
         }
         return false;
@@ -285,10 +285,10 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
 
     private boolean updateInputLevel() {
         int newInputLevel = redstoneDirection == EnumRedstoneDirection.INPUT ?
-                pressureTube.world().getRedstonePower(pressureTube.pos().offset(getDirection()), getDirection()) : 0;
+                pressureTube.getWorld().getRedstonePower(pressureTube.getPos().offset(getDirection()), getDirection()) : 0;
         if (newInputLevel != inputLevel) {
             inputLevel = newInputLevel;
-            NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().world());
+            NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().getWorld());
             return true;
         }
         return false;

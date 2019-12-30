@@ -2,9 +2,8 @@ package me.desht.pneumaticcraft.datagen.loot;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.tileentity.ISerializableTanks;
 import me.desht.pneumaticcraft.common.tileentity.ISideConfigurable;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator;
@@ -47,8 +46,8 @@ public class TileEntitySerializerFunction extends LootFunction {
     }
 
     private ItemStack applyTEdata(ItemStack teStack, TileEntity te) {
-        CompoundNBT subTag = teStack.getChildTag("BlockEntityTag");
-        if (subTag == null) subTag = new CompoundNBT();
+        CompoundNBT nbt = teStack.getChildTag("BlockEntityTag");
+        final CompoundNBT subTag = nbt == null ? new CompoundNBT() : nbt;
 
         // fluid tanks
         if (te instanceof ISerializableTanks) {
@@ -83,12 +82,11 @@ public class TileEntitySerializerFunction extends LootFunction {
             }
 
             // saved air (only when wrenched)
-            if (te instanceof IPneumaticMachine) {
-                IAirHandlerMachine airHandler = ((IPneumaticMachine) te).getAirHandler(null);
-                if (airHandler != null && airHandler.getPressure() != 0f) {
-                    subTag.putInt(NBT_AIR_AMOUNT, airHandler.getAir());
+            te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
+                if (h.getPressure() != 0f) {
+                    subTag.putInt(NBT_AIR_AMOUNT, h.getAir());
                 }
-            }
+            });
         }
 
         if (!subTag.isEmpty()) {

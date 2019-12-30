@@ -1,18 +1,25 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
+import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
@@ -26,16 +33,15 @@ import java.util.stream.Collectors;
  * A ticking air handler owned by a tile entity, which disperses air to those neighbouring air handlers
  * which have lower pressure than it does.
  */
-public class MachineAirHandler extends BasicAirHandler {
+public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMachine, IManoMeasurable {
     private final float dangerPressure;
     private final float criticalPressure;
-    private final float maxPressure;
-
+    private float maxPressure;
     private int volumeUpgrades = 0;
     private boolean hasSecurityUpgrade = false;
     private int soundCounter;
 
-    private final List<LazyOptional<IAirHandler>> neighbourAirHandlers = new ArrayList<>();
+    private final List<LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new ArrayList<>();
 
     public MachineAirHandler(float dangerPressure, float criticalPressure, int volume) {
         super(volume);
@@ -44,7 +50,7 @@ public class MachineAirHandler extends BasicAirHandler {
         this.maxPressure = dangerPressure + (criticalPressure - dangerPressure) * (float) Math.random();
 
         for (Direction ignored : Direction.VALUES) {
-            this.neighbourAirHandlers.add(null); // null indicates unknown state, needs querying
+            this.neighbourAirHandlers.add(LazyOptional.empty());
         }
     }
 
@@ -53,10 +59,12 @@ public class MachineAirHandler extends BasicAirHandler {
         return getBaseVolume() + volumeUpgrades * PneumaticValues.VOLUME_VOLUME_UPGRADE;
     }
 
+    @Override
     public float getDangerPressure() {
         return dangerPressure;
     }
 
+    @Override
     public float getCriticalPressure() {
         return criticalPressure;
     }
@@ -65,44 +73,37 @@ public class MachineAirHandler extends BasicAirHandler {
         return maxPressure;
     }
 
-    /**
-     * Should be called by the owning tile entity when its volume upgrades change.
-     *
-     * @param newVolumeUpgrades new number of volume upgrades
-     */
+    @Override
+    public void setPressure(float pressure) {
+        addAir(((int) (pressure * getVolume())) - getAir());
+    }
+
+    @Override
     public void setVolumeUpgrades(int newVolumeUpgrades) {
         int newVolume = getBaseVolume() + newVolumeUpgrades * PneumaticValues.VOLUME_VOLUME_UPGRADE;
         if (newVolume < getVolume()) {
             // a decrease in volume causes a proportionate decrease in air amount to keep the pressure constant
-            airAmount = (int) (airAmount * (float) newVolume / getVolume());
+            int newAir = (int) (getAir() * (float) newVolume / getVolume());
+            addAir(newAir - getAir());
         }
         this.volumeUpgrades = newVolumeUpgrades;
     }
 
-    /**
-     * Should be called by the owning tile entity when its security upgrades change.
-     *
-     * @param hasSecurityUpgrade true if the holder has one or more security upgrades
-     */
+    @Override
     public void setHasSecurityUpgrade(boolean hasSecurityUpgrade) {
         this.hasSecurityUpgrade = hasSecurityUpgrade;
     }
 
-    /**
-     * Should be called by the owning tile entity when a neighbour block changes state, to force a recache of the
-     * neighbouring air handler.
-     *
-     * @param side side of the owning TE that has noticed a neighbour block change
-     */
-    public void onNeighborChange(Direction side) {
-        neighbourAirHandlers.set(side.getIndex(), null);
+    @Override
+    public void invalidateNeighbours() {
+        // TODO need to get the side passed in here too
+        for (int i = 0; i < neighbourAirHandlers.size(); i++) {
+            neighbourAirHandlers.set(i, LazyOptional.empty());
+        }
+//        neighbourAirHandlers.set(side.getIndex(), null);
     }
 
-    /**
-     * Should be called every tick by the owner.
-     *
-     * @param ownerTE the owning tile entity
-     */
+    @Override
     public void tick(TileEntity ownerTE) {
         World world = ownerTE.getWorld();
         if (!world.isRemote) {
@@ -113,7 +114,7 @@ public class MachineAirHandler extends BasicAirHandler {
 
             if (getPressure() > maxPressure) {
                 world.createExplosion(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Explosion.Mode.BREAK);
-                world.removeBlock(pos, false);
+                world.destroyBlock(pos, false);
             } else {
                 disperseAir(ownerTE);
             }
@@ -134,6 +135,7 @@ public class MachineAirHandler extends BasicAirHandler {
         }
     }
 
+    @Override
     public void airLeak(TileEntity ownerTE, Direction dir) {
         World world = ownerTE.getWorld();
         BlockPos pos = ownerTE.getPos();
@@ -165,13 +167,13 @@ public class MachineAirHandler extends BasicAirHandler {
         }
     }
 
-    private LazyOptional<IAirHandler> getNeighbourAirHandler(TileEntity ownerTE, Direction dir) {
+    private LazyOptional<IAirHandlerMachine> getNeighbourAirHandler(TileEntity ownerTE, Direction dir) {
         final int idx = dir.getIndex();
-        if (neighbourAirHandlers.get(idx) == null) {
+        if (!neighbourAirHandlers.get(idx).isPresent()) {
             TileEntity te1 = ownerTE.getWorld().getTileEntity(ownerTE.getPos().offset(dir));
             if (te1 != null) {
-                neighbourAirHandlers.set(idx, te1.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY));
-                neighbourAirHandlers.get(idx).addListener(l -> neighbourAirHandlers.set(idx, null));
+                neighbourAirHandlers.set(idx, te1.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()));
+                neighbourAirHandlers.get(idx).addListener(l -> neighbourAirHandlers.set(idx, LazyOptional.empty()));
             } else {
                 neighbourAirHandlers.set(idx, LazyOptional.empty());
             }
@@ -181,110 +183,135 @@ public class MachineAirHandler extends BasicAirHandler {
 
     private void disperseAir(TileEntity ownerTE) {
         // 1. build a list of all neighbouring and otherwise connected air handlers with a lower pressure than us
-        List<ConnectedAirHandler> neighbours = new ArrayList<>();
-        for (Direction d : Direction.VALUES) {
-            getNeighbourAirHandler(ownerTE, d).ifPresent(h -> {
-                if (h.getPressure() < this.getPressure()) neighbours.add(new ConnectedAirHandler(d, h));
-            });
-        }
-        neighbours.addAll(addExtraConnectedHandlers(ownerTE).stream()
-                .filter(airHandler -> getPressure() < airHandler.getPressure())
-                .map(ConnectedAirHandler::new)
-                .collect(Collectors.toList()));
-
+        List<IAirHandlerMachine.Connection> neighbours = getConnectedAirHandlers(ownerTE, true);
 
         // 2. get the total volume and air amount in this and all connected handlers
         int totalVolume = this.getVolume();
         int totalAir = this.getAir();
-        for (ConnectedAirHandler neighbour : neighbours) {
-            totalVolume += neighbour.airHandler.getVolume();
-            totalAir += neighbour.airHandler.getAir();
+        for (IAirHandlerMachine.Connection neighbour : neighbours) {
+            totalVolume += neighbour.getAirHandler().getVolume();
+            totalAir += neighbour.getAirHandler().getAir();
         }
 
         // 3. figure out how much air will be dispersed to each neighbour
-        for (ConnectedAirHandler neighbour: neighbours) {
-            int totalMachineAir = (int) ((long) totalAir * neighbour.airHandler.getVolume() / totalVolume);
-            neighbour.maxDispersion = getMaxDispersion(ownerTE, neighbour.direction);
-            neighbour.toDisperse = totalMachineAir - neighbour.airHandler.getAir();
+        for (IAirHandlerMachine.Connection neighbour: neighbours) {
+            int totalMachineAir = (int) ((long) totalAir * neighbour.getAirHandler().getVolume() / totalVolume);
+            neighbour.setMaxDispersion(getMaxDispersion(ownerTE, neighbour.getDirection()));
+            neighbour.setAirToDisperse(totalMachineAir - neighbour.getAirHandler().getAir());
         }
 
-        // 4. Any air that wants to go to a neighbour, but can't (because of regulator module etc.) has to return the
-        //    excess, which will be divided amongst all the other neighbours
-        adjustForDispersionLimits(neighbours);
-
-        // 5. finally, actually disperse the air
-        for (ConnectedAirHandler neighbour : neighbours) {
-            onAirDispersion(ownerTE, neighbour.direction, neighbour.toDisperse);
-            neighbour.airHandler.addAir(neighbour.toDisperse);
-            addAir(-neighbour.toDisperse);
+        // 4. finally, actually disperse the air
+        for (IAirHandlerMachine.Connection neighbour : neighbours) {
+            int air = Math.min(neighbour.getMaxDispersion(), neighbour.getDispersedAir());
+            onAirDispersion(ownerTE, neighbour.getDirection(), air);
+            neighbour.getAirHandler().addAir(air);
+            addAir(-air);
         }
     }
 
-    private void adjustForDispersionLimits(List<ConnectedAirHandler> neighbours) {
-        int excessAir = 0;
-        int receivers = neighbours.size();
-        for (ConnectedAirHandler c : neighbours) {
-            if (c.toDisperse > c.maxDispersion) {
-                excessAir += c.toDisperse - c.maxDispersion;
-                c.toDisperse = c.maxDispersion;
-                receivers--;
-            }
-        }
-
-        while (excessAir >= receivers && receivers > 0) {
-            // try to give every receiver an equal part of the to-be-divided air.
-            int dividedValue = excessAir / receivers;
-            for (ConnectedAirHandler c : neighbours) {
-                int maxTransfer = c.maxDispersion - c.toDisperse;
-                if (maxTransfer > 0) {
-                    if (maxTransfer <= dividedValue) {
-                        receivers--; //next step this receiver won't be able to receive any air.
-                    }
-                    int transferred = Math.min(dividedValue, maxTransfer); //cap it at the max it can have.
-                    c.toDisperse += transferred;
-                    excessAir -= transferred;
-                } else {
-                    receivers--;
+    private List<Connection> getConnectedAirHandlers(TileEntity ownerTE, boolean onlyLowerPressure) {
+        List<IAirHandlerMachine.Connection> neighbours = new ArrayList<>();
+        for (Direction d : Direction.VALUES) {
+            getNeighbourAirHandler(ownerTE, d).ifPresent(h -> {
+                if (ownerTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, d).isPresent()
+                        && (!onlyLowerPressure || h.getPressure() < getPressure())) {
+                    neighbours.add(new ConnectedAirHandler(d, h));
                 }
-            }
+            });
         }
+        neighbours.addAll(addExtraConnectedHandlers(ownerTE).stream()
+                .filter(h -> !onlyLowerPressure || h.getPressure() < getPressure())
+                .map(ConnectedAirHandler::new)
+                .collect(Collectors.toList()));
+        return neighbours;
     }
 
-    private List<IAirHandler> addExtraConnectedHandlers(TileEntity ownerTE) {
-//        if (ownerTE instanceof IAirListener) {
-//            return ((IAirListener) ownerTE).addConnectedPneumatics(new ArrayList<IAirHandler>());
-//        }
+    @Override
+    public List<IAirHandlerMachine.Connection> getConnectedAirHandlers(TileEntity ownerTE) {
+        return getConnectedAirHandlers(ownerTE, false);
+    }
+
+    private List<IAirHandlerMachine> addExtraConnectedHandlers(TileEntity ownerTE) {
+        if (ownerTE instanceof IAirListener) {
+            return ((IAirListener) ownerTE).addConnectedPneumatics(new ArrayList<>());
+        }
         return Collections.emptyList();
     }
 
     private void onAirDispersion(TileEntity ownerTE, Direction dir, int airDispersed) {
-//        if (ownerTE instanceof IAirListener) {
-//            ((IAirListener) ownerTE).onAirDispersion(this, dir, airDispersed);
-//        }
+        if (ownerTE instanceof IAirListener) {
+            ((IAirListener) ownerTE).onAirDispersion(this, dir, airDispersed);
+        }
     }
 
     private int getMaxDispersion(TileEntity ownerTE, Direction dir) {
         if (ownerTE instanceof IAirListener) {
-//            return ((IAirListener) ownerTE).getMaxDispersion(this, dir);
-            return Integer.MAX_VALUE;
+            return ((IAirListener) ownerTE).getMaxDispersion(this, dir);
         } else {
             return Integer.MAX_VALUE;
         }
     }
 
-    private class ConnectedAirHandler {
+    @Override
+    public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
+        curInfo.add(new TranslationTextComponent("gui.tooltip.pressure",
+                PneumaticCraftUtils.roundNumberTo(getPressure(), 1)));
+    }
+
+    @Override
+    public CompoundNBT serializeNBT() {
+        CompoundNBT tag = super.serializeNBT();
+        tag.putFloat("maxPressure", maxPressure);
+        return tag;
+    }
+
+    @Override
+    public void deserializeNBT(CompoundNBT nbt) {
+        maxPressure = nbt.getFloat("maxPressure");
+        super.deserializeNBT(nbt);
+    }
+
+    private static class ConnectedAirHandler implements IAirHandlerMachine.Connection {
         final Direction direction; // may be null
-        final IAirHandler airHandler;
+        final IAirHandlerMachine airHandler;
         int maxDispersion;
         int toDisperse;
 
-        ConnectedAirHandler(Direction direction, IAirHandler airHandler) {
+        ConnectedAirHandler(Direction direction, IAirHandlerMachine airHandler) {
             this.direction = direction;
             this.airHandler = airHandler;
         }
 
-        ConnectedAirHandler(IAirHandler airHandler) {
+        ConnectedAirHandler(IAirHandlerMachine airHandler) {
             this(null, airHandler);
+        }
+
+        @Override
+        public Direction getDirection() {
+            return direction;
+        }
+
+        @Override
+        public int getMaxDispersion() {
+            return maxDispersion;
+        }
+
+        public void setMaxDispersion(int maxDispersion) {
+            this.maxDispersion = maxDispersion;
+        }
+
+        @Override
+        public int getDispersedAir() {
+            return toDisperse;
+        }
+
+        public void setAirToDisperse(int toDisperse) {
+            this.toDisperse = toDisperse;
+        }
+
+        @Override
+        public IAirHandlerMachine getAirHandler() {
+            return airHandler;
         }
     }
 }

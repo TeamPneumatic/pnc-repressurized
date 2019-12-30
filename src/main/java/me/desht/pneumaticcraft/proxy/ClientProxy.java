@@ -123,11 +123,6 @@ public class ClientProxy implements IProxy {
 //    }
 
     @Override
-    public int particleLevel() {
-        return Minecraft.getInstance().gameSettings.particles.func_216832_b(); // id : 0..2
-    }
-
-    @Override
     public Pair<Integer, Integer> getScaledScreenSize() {
         return ClientEventHandler.getScaledScreenSize();
     }

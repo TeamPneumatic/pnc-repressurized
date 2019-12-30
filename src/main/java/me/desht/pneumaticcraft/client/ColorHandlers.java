@@ -4,12 +4,16 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
+import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.item.IColorableItem;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
-import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
+import me.desht.pneumaticcraft.common.tileentity.IHeatTinted;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
@@ -76,10 +80,8 @@ public class ColorHandlers {
 
         event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
             if (blockAccess != null && pos != null) {
-                TileEntity te = blockAccess.getTileEntity(pos);
-                if (te instanceof TileEntityUVLightBox) {
-                    return ((TileEntityUVLightBox) te).areLightsOn ? 0xFF4000FF : 0xFFAFAFE4;
-                }
+                boolean lightsOn = blockAccess.getBlockState(pos).get(BlockUVLightBox.LIT);
+                return lightsOn ? 0xFF4000FF : 0xFFAFAFE4;
             }
             return 0xFFAFAFE4;
         }, ModBlocks.UV_LIGHT_BOX);

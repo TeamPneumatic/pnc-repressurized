@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.common.block.tubes.IPneumaticPosProvider;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
@@ -12,15 +13,13 @@ import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class TileEntityPneumaticBase extends TileEntityTickableBase implements IPneumaticPosProvider {
+public abstract class TileEntityPneumaticBase extends TileEntityTickableBase /*implements IPneumaticPosProvider*/ {
     @GuiSynced
     final IAirHandlerMachine airHandler;
     private final LazyOptional<IAirHandlerMachine> airHandlerCap;
@@ -31,7 +30,8 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
     public TileEntityPneumaticBase(TileEntityType type, float dangerPressure, float criticalPressure, int volume, int upgradeSlots) {
         super(type, upgradeSlots);
 
-        this.airHandler = PneumaticRegistry.getInstance().getAirHandlerSupplier().createAirHandler(dangerPressure, criticalPressure, volume);
+        this.airHandler = PneumaticRegistry.getInstance().getAirHandlerMachineFactory()
+                .createAirHandler(dangerPressure, criticalPressure, volume);
         this.airHandlerCap = LazyOptional.of(() -> airHandler);
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
@@ -44,20 +44,30 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
     @Override
     public void tick() {
         super.tick();
-        airHandler.tick();
+        airHandler.tick(this);
     }
 
     @Override
-    public void validate() {
-        super.validate();
-        airHandler.validate(this);
+    public void remove() {
+        super.remove();
+        airHandlerCap.invalidate();
+    }
+
+    @Override
+    public void onUpgradesChanged() {
+        super.onUpgradesChanged();
+
+        airHandler.setVolumeUpgrades(getUpgrades(IItemRegistry.EnumUpgrade.VOLUME));
+        airHandler.setHasSecurityUpgrade(getUpgrades(IItemRegistry.EnumUpgrade.SECURITY) > 0);
     }
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == PneumaticRegistry.AIR_HANDLER_CAPABILITY) {
-            return side == null || canConnectTo(side) ? airHandlerCap.cast() : LazyOptional.empty();
+        if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY) {
+            return side == null || canConnectPneumatic(side) ?
+                    PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY.orEmpty(cap, airHandlerCap) :
+                    LazyOptional.empty();
         } else {
             return super.getCapability(cap, side);
         }
@@ -73,6 +83,7 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
+
         airHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_AIR_HANDLER));
         if (tag.contains(NBTKeys.NBT_AIR_AMOUNT)) {
             // when restoring from item NBT
@@ -81,15 +92,15 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
     }
 
     @Override
-    public void onNeighborTileUpdate() {
-        super.onNeighborTileUpdate();
-        airHandler.onNeighborChange();
+    public void onBlockRotated() {
+        super.onBlockRotated();
+        airHandler.invalidateNeighbours();
     }
 
     @Override
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
-        airHandler.onNeighborChange();
+        airHandler.invalidateNeighbours();
     }
 
     @Override
@@ -114,8 +125,8 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
                 if (args.length == 0) {
                     return new Object[]{airHandler.getPressure()};
                 } else {
-                    IAirHandlerMachine handler = getAirHandler(getDirForString((String) args[0]));
-                    return new Object[]{handler != null ? handler.getPressure() : 0};
+                    LazyOptional<IAirHandlerMachine> cap = getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, getDirForString((String) args[0]));
+                    return new Object[]{ cap.map(IAirHandler::getPressure).orElse(0f) };
                 }
             }
         });
@@ -140,27 +151,12 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
      * End ComputerCraft API 
      */
 
-    @Override
-    public World world() {
-        return getWorld();
-    }
-
-    @Override
-    public BlockPos pos() {
-        return getPos();
-    }
-
-    @Override
-    public IAirHandlerMachine getAirHandler(Direction side) {
-        return side == null || canConnectTo(side) ? airHandler : null;
-    }
-
     public float getPressure() {
-        return getAirHandler(null).getPressure();
+        return airHandler.getPressure();
     }
 
     public void addAir(int air) {
-        getAirHandler(null).addAir(air);
+        airHandler.addAir(air);
     }
 
     /**
@@ -169,11 +165,19 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase imp
      * @param side the side to check
      * @return true if connected, false otherwise
      */
-    public boolean canConnectTo(Direction side) {
+    public boolean canConnectPneumatic(Direction side) {
         return true;
     }
 
     public int getDefaultVolume() {
         return defaultVolume;
+    }
+
+    public void forceLeak(Direction dir) {
+        airHandler.airLeak(this, dir);
+    }
+
+    public boolean isLeaking() {
+        return airHandler.getConnectedAirHandlers(this).isEmpty();
     }
 }

@@ -3,9 +3,9 @@ package me.desht.pneumaticcraft.api.tileentity;
 import net.minecraft.nbt.CompoundNBT;
 
 /**
- * Get an instance of this with {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getAirHandlerSupplier()}.
+ * Get an instance of this with {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getAirHandlerMachineFactory()}.
  */
-public interface IAirHandlerSupplier {
+public interface IAirHandlerMachineFactory {
     IAirHandlerMachine createTierOneAirHandler(int volume);
 
     IAirHandlerMachine createTierTwoAirHandler(int volume);

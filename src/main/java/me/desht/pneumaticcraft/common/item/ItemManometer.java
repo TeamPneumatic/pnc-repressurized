@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
+import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,14 +37,14 @@ public class ItemManometer extends ItemPressurizable {
 
         if (world.isRemote) return ActionResultType.PASS;
 
-        return stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
             if (h.getPressure() > 0.1F) {
                 TileEntity te = world.getTileEntity(context.getPos());
-                IPneumaticMachine machine = IPneumaticMachine.getMachine(te);
+
                 List<ITextComponent> curInfo = new ArrayList<>();
-                if (machine != null && machine.getAirHandler(side) != null) {
-                    machine.getAirHandler(side).printManometerMessage(player, curInfo);
-                }
+                te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, side).ifPresent(h2 -> {
+                    if (h2 instanceof MachineAirHandler) ((MachineAirHandler) h2).printManometerMessage(player, curInfo);
+                });
                 if (te instanceof IManoMeasurable) {
                     ((IManoMeasurable) te).printManometerMessage(player, curInfo);
                 }
@@ -79,7 +79,7 @@ public class ItemManometer extends ItemPressurizable {
     public boolean itemInteractionForEntity(ItemStack iStack, PlayerEntity player, LivingEntity entity, Hand hand) {
         if (!player.world.isRemote) {
             if (entity instanceof IManoMeasurable) {
-                return iStack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+                return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                     if (h.getPressure() > 0.1F) {
                         List<ITextComponent> curInfo = new ArrayList<>();
                         ((IManoMeasurable) entity).printManometerMessage(player, curInfo);

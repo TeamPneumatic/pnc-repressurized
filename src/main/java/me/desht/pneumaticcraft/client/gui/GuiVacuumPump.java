@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -41,8 +43,16 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        GuiUtils.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, te.getAirHandler(te.getInputSide()).getPressure(), xStart + xSize / 5, yStart + ySize / 5 + 4);
-        GuiUtils.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, te.getAirHandler(te.getVacuumSide()).getPressure(), xStart + xSize * 4 / 5, yStart + ySize / 5 + 4);
+
+        float pressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
+                .map(IAirHandlerMachine::getPressure)
+                .orElseThrow(RuntimeException::new);
+        GuiUtils.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, pressure, xStart + xSize / 5, yStart + ySize / 5 + 4);
+
+        float vacPressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide())
+                .map(IAirHandlerMachine::getPressure)
+                .orElseThrow(RuntimeException::new);
+        GuiUtils.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, vacPressure, xStart + xSize * 4 / 5, yStart + ySize / 5 + 4);
     }
 
     @Override
@@ -52,23 +62,32 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
 
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
-        IAirHandlerMachine inputHandler = te.getAirHandler(te.getInputSide());
-        IAirHandlerMachine vacuumHandler = te.getAirHandler(te.getVacuumSide());
-        pressureStatText.add("\u00a77Current Input Pressure:");
-        pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(inputHandler.getPressure(), 1) + " bar.");
-        pressureStatText.add("\u00a77Current Input Air:");
-        pressureStatText.add("\u00a70" + (inputHandler.getAir() + inputHandler.getVolume()) + " mL.");
-        pressureStatText.add("\u00a77Current Vacuum Pressure:");
-        pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(vacuumHandler.getPressure(), 1) + " bar.");
-        pressureStatText.add("\u00a77Current Vacuum Air:");
-        pressureStatText.add("\u00a70" + (vacuumHandler.getAir() + vacuumHandler.getVolume()) + " mL.");
+//        IAirHandlerMachine inputHandler = te.getAirHandler(te.getInputSide());
+//        IAirHandlerMachine vacuumHandler = te.getAirHandler(te.getVacuumSide());
+
+        te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide()).ifPresent(h -> {
+            pressureStatText.add("\u00a77Current Input Pressure:");
+            pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(h.getPressure(), 1) + " bar.");
+            pressureStatText.add("\u00a77Current Input Air:");
+            pressureStatText.add("\u00a70" + (h.getAir() + h.getVolume()) + " mL.");
+        });
+
+        te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide()).ifPresent(h -> {
+            pressureStatText.add("\u00a77Current Vacuum Pressure:");
+            pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(h.getPressure(), 1) + " bar.");
+            pressureStatText.add("\u00a77Current Vacuum Air:");
+            pressureStatText.add("\u00a70" + (h.getAir() + h.getVolume()) + " mL.");
+        });
+
         pressureStatText.add("\u00a77Volume:");
         pressureStatText.add("\u00a70" + (double) Math.round(PneumaticValues.VOLUME_VACUUM_PUMP) + " mL.");
-        int volumeLeft = inputHandler.getVolume() - PneumaticValues.VOLUME_VACUUM_PUMP;
+        int vol = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
+                .map(IAirHandler::getVolume).orElseThrow(RuntimeException::new);
+        int volumeLeft = vol - PneumaticValues.VOLUME_VACUUM_PUMP;
         if (volumeLeft > 0) {
             pressureStatText.add("\u00a70" + volumeLeft + " mL. (Volume Upgrades)");
             pressureStatText.add("\u00a70--------+");
-            pressureStatText.add("\u00a70" + inputHandler.getVolume() + " mL.");
+            pressureStatText.add("\u00a70" + vol + " mL.");
         }
 
         if (te.turning) {
@@ -80,7 +99,9 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
     @Override
     protected void addProblems(List<String> textList) {
         super.addProblems(textList);
-        if (te.getAirHandler(te.getInputSide()).getPressure() < PneumaticValues.MIN_PRESSURE_VACUUM_PUMP) {
+        float pressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
+                .map(IAirHandlerMachine::getPressure).orElseThrow(RuntimeException::new);
+        if (pressure < PneumaticValues.MIN_PRESSURE_VACUUM_PUMP) {
             textList.add("gui.tab.problems.notEnoughPressure");
             textList.add(I18n.format("gui.tab.problems.applyPressure", PneumaticValues.MIN_PRESSURE_VACUUM_PUMP));
         }

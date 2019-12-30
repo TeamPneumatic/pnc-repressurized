@@ -1,41 +1,46 @@
 package me.desht.pneumaticcraft.api.tileentity;
 
 import net.minecraft.util.Direction;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 /**
  * Optionally implement this in your TileEntity to gain extra control over pneumatic behaviour.
- * This will be called by any IAirHandler that is validated through 'validate' with the implementing object as parameter.
+ * These methods will be called by the {@link IAirHandlerMachine} implementation when it is ticked.  Note that all
+ * of these methods have default "no-op" implementations, so override the ones you need to.
  */
-public interface IAirListener extends IPneumaticMachine {
+public interface IAirListener {
+    /**
+     * Called when air is added to, or removed from a handler, dispersed into/from a certain direction.  Used by the
+     * Flow Detector Module, for example.
+     *
+     * @param handler the air handler in question
+     * @param dir the direction of air dispersal
+     * @param airDispersed the amount of air dispersed to the neighbouring handler (negative when air is being added to this handler)
+     */
+    default void onAirDispersion(IAirHandlerMachine handler, @Nullable Direction dir, int airDispersed) {
+    }
 
     /**
-     * Called when air is added to, or removed from a handler, dispersed into/from a certain direction.
+     * Method fired to get the maximum amount of air allowed to disperse to the given direction. Used in the Regulator
+     * Tube Module, for example, to limit air flow.
      *
-     * @param handler       The handler it is about, could be used to distinguish when having multiple handlers.
-     * @param dir
-     * @param airTransfered The amount transfered to a connecting handler (so decreased from this block). Negative when adding air.
+     * @param handler the air handler in question
+     * @param dir the direction of dispersal
+     * @return the max amount of air which may be dispersed this tick (return Integer.MAX_VALUE to have no limit)
      */
-    void onAirDispersion(IAirHandlerMachine handler, @Nullable Direction dir, int airTransfered);
+    default int getMaxDispersion(IAirHandlerMachine handler, @Nullable Direction dir) { return Integer.MAX_VALUE; }
 
     /**
-     * Method fired to get the maximum amount of air allowed to disperse to the given direction. Used in the regulator tube to prevent air from travelling.
-     * return Integer.MAX_VALUE to have no limit.
+     * With this method, you can add neighbouring air handlers that aren't physically adjacent, but should be considered
+     * connected for air dispersion logic. Used in Pressure Chamber Valves, for example, to make them connect when they
+     * are part of the same Pressure Chamber.
      *
-     * @param handler The handler it is about, could be used to distinguish when having multiple handlers.
-     * @param dir
-     * @return
+     * @param airHandlers add extra connected air handlers to this list
+     * @return the supplied list, for convenience
      */
-    int getMaxDispersion(IAirHandlerMachine handler, @Nullable Direction dir);
-
-    /**
-     * In here you can add pneumatic machines that aren't directly connected, but should be considered connected (for the dispersion logic).
-     * Used in Pressure Chamber Valves to make them connect when they are part of the same Pressure Chamber for example.
-     *
-     * @param pneumatics, EnumFacing has a direction for the default pneumatics, but often is null for custom ones.
-     */
-    void addConnectedPneumatics(List<Pair<Direction, IAirHandlerMachine>> pneumatics);
+    default List<IAirHandlerMachine> addConnectedPneumatics(List<IAirHandlerMachine> airHandlers) {
+        return airHandlers;
+    }
 }

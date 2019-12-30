@@ -106,7 +106,7 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
     @Override
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
         if (getCore() != null) {
-            teValve.getAirHandler(null).printManometerMessage(player, curInfo);
+            teValve.airHandler.printManometerMessage(player, curInfo);
         }
     }
 

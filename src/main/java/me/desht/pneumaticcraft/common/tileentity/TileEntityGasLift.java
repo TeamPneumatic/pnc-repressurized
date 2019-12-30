@@ -89,31 +89,14 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     @Override
-    public boolean canConnectTo(Direction d) {
+    public boolean canConnectPneumatic(Direction d) {
         return d != Direction.DOWN;
     }
-
-//    private void updateConnectionState() {
-//        BlockState newState = AirHandlerMachine.getBlockConnectionState(getBlockState(), getAirHandler(null));
-//        world.setBlockState(pos, newState);
-//    }
-
-//    @Override
-//    public void onNeighborBlockUpdate() {
-//        super.onNeighborBlockUpdate();
-////        updateConnectionState();
-//    }
 
     @Override
     public IItemHandlerModifiable getPrimaryInventory() {
         return inventory;
     }
-
-//    @Override
-//    public void onNeighborTileUpdate() {
-//        super.onNeighborTileUpdate();
-////        updateConnectionState();
-//    }
 
     @Override
     protected boolean shouldRerenderChunkOnDescUpdate() {
@@ -189,9 +172,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
                     BlockState newState = ((BlockItem) extracted.getItem()).getBlock().getDefaultState();
 
                     int airRequired = Math.round(66.66f * currentState.getBlockHardness(world, pos1));
-//                    if (getPipeTier(newState) > 1) airRequired /= 2;
-
-                    if (getAirHandler(null).getAir() > airRequired) {
+                    if (airHandler.getAir() > airRequired) {
                         inventory.extractItem(0, 1, false);
                         world.destroyBlock(pos1, false);
                         world.setBlockState(pos1, newState);
@@ -216,18 +197,11 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
 
     private boolean isPipe(World world, BlockPos pos) {
         return world.getBlockState(pos).getBlock() == ModBlocks.DRILL_PIPE;
-//        return getPipeTier(world.getBlockState(pos)) >= 1;
     }
-
-//    private int getPipeTier(BlockState state) {
-//        Block b = state.getBlock();
-//        return b instanceof BlockPressureTube ? ((BlockPressureTube) b).getTier() : 0;
-//    }
 
     private boolean isUnbreakable(BlockPos pos) {
-        return world().getBlockState(pos).getBlockHardness(world, pos) < 0;
+        return getWorld().getBlockState(pos).getBlockHardness(world, pos) < 0;
     }
-
 
     private boolean suckLiquid() {
         BlockPos pos = getPos().offset(Direction.DOWN, currentDepth + 1);
@@ -343,7 +317,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction facing) {
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return fluidCap.cast();
+            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(cap, fluidCap);
         } else {
             return super.getCapability(cap, facing);
         }

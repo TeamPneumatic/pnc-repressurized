@@ -4,9 +4,12 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
+/**
+ * An air handler for items.
+ */
 public interface IAirHandlerItem extends IAirHandler {
     /**
-     * Get the container currently acted on by this air handler.
+     * Get the itemstack container currently acted on by this air handler.
      */
     @Nonnull
     ItemStack getContainer();

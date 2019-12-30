@@ -4,7 +4,7 @@ import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -19,7 +19,8 @@ public class EntityProvider {
     public static class Data implements IServerDataProvider<Entity> {
         @Override
         public void appendServerData(CompoundNBT compoundNBT, ServerPlayerEntity serverPlayerEntity, World world, Entity entity) {
-            entity.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY).ifPresent(h -> compoundNBT.putFloat("Pressure", h.getPressure()));
+            entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
+                    .ifPresent(h -> compoundNBT.putFloat("Pressure", h.getPressure()));
         }
     }
 

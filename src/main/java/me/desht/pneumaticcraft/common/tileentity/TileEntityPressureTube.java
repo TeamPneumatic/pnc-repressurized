@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
-import me.desht.pneumaticcraft.common.block.BlockPressureTube.ConnectionType;
 import me.desht.pneumaticcraft.common.block.tubes.IInfluenceDispersing;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
@@ -24,15 +24,13 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Arrays;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, ICamouflageableTE {
-    @DescSynced
-    public final boolean[] sidesConnected = new boolean[6];
     @DescSynced
     public final boolean[] sidesClosed = new boolean[6];
     public TubeModule[] modules = new TubeModule[6];
@@ -40,6 +38,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     private ItemStack camoStack = ItemStack.EMPTY;
     private BlockState camoState;
     private AxisAlignedBB renderBoundingBox = null;
+    private Direction inLineModuleDir = null;  // only one inline module allowed
 
     public TileEntityPressureTube() {
         this(ModTileEntityTypes.PRESSURE_TUBE, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
@@ -53,10 +52,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public void read(CompoundNBT nbt) {
         super.read(nbt);
 
-        byte connected = nbt.getByte("sidesConnected");
         byte closed = nbt.getByte("sidesClosed");
         for (int i = 0; i < 6; i++) {
-            sidesConnected[i] = ((connected & 1 << i) != 0);
             sidesClosed[i] = ((closed & 1 << i) != 0);
         }
         camoStack = ICamouflageableTE.readCamoStackFromNBT(nbt);
@@ -69,7 +66,6 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
 
         byte connected = 0, closed = 0;
         for (int i = 0; i < 6; i++) {
-            if (sidesConnected[i]) connected |= 1 << i;
             if (sidesClosed[i]) closed |= 1 << i;
         }
         nbt.putByte("sidesConnected", connected);
@@ -140,28 +136,30 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             }
         }
 
-        List<Pair<Direction, IAirHandlerMachine>> teList = getAirHandler(null).getConnectedPneumatics();
-
-        if (!hasModules && teList.size() == 1 && !getWorld().isRemote) {
-            for (Pair<Direction, IAirHandlerMachine> entry : teList) {
-                if (entry.getKey() != null && modules[entry.getKey().getOpposite().ordinal()] == null && canConnectTo(entry.getKey().getOpposite()))
-                    getAirHandler(null).airLeak(entry.getKey().getOpposite());
+        if (!getWorld().isRemote && !hasModules) {
+            List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
+            if (l.size() == 1) {
+                IAirHandlerMachine.Connection c = l.get(0);
+                Direction d = c.getDirection();
+                if (d != null && modules[d.getOpposite().ordinal()] == null && canConnectPneumatic(d.getOpposite())) {
+                    airHandler.airLeak(this, d.getOpposite());
+                }
             }
         }
     }
 
     @Override
-    public void onAirDispersion(IAirHandlerMachine handler, Direction side, int amount) {
+    public void onAirDispersion(IAirHandlerMachine handler, @Nullable Direction side, int airDispersed) {
         if (side != null) {
             int intSide = side.ordinal();
             if (modules[intSide] instanceof IInfluenceDispersing) {
-                ((IInfluenceDispersing) modules[intSide]).onAirDispersion(amount);
+                ((IInfluenceDispersing) modules[intSide]).onAirDispersion(airDispersed);
             }
         }
     }
 
     @Override
-    public int getMaxDispersion(IAirHandlerMachine handler, Direction side) {
+    public int getMaxDispersion(IAirHandlerMachine handler, @Nullable Direction side) {
         if (side != null) {
             int intSide = side.ordinal();
             if (modules[intSide] instanceof IInfluenceDispersing) {
@@ -171,32 +169,44 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         return Integer.MAX_VALUE;
     }
 
-    @Override
-    public void addConnectedPneumatics(List<Pair<Direction, IAirHandlerMachine>> pneumatics) {
+    public TubeModule getModule(Direction side) {
+        return modules[side.getIndex()];
+    }
+
+    public boolean mayPlaceModule(Direction side) {
+        return inLineModuleDir == null && modules[side.ordinal()] == null && !sidesClosed[side.ordinal()];
     }
 
     public void setModule(TubeModule module, Direction side) {
         if (module != null) {
             module.setDirection(side);
             module.setTube(this);
+            if (module.isInline()) {
+                inLineModuleDir = side;
+            }
+        } else {
+            if (inLineModuleDir == side) {
+                inLineModuleDir = null;
+            }
         }
         modules[side.getIndex()] = module;
         if (getWorld() != null && !getWorld().isRemote) {
+            world.setBlockState(getPos(), BlockPressureTube.recalculateState(world, pos, getBlockState()), Constants.BlockFlags.DEFAULT);
             sendDescriptionPacket();
             markDirty();
         }
     }
 
     @Override
-    public boolean canConnectTo(Direction side) {
-        return !sidesClosed[side.ordinal()]
+    public boolean canConnectPneumatic(Direction side) {
+        return (inLineModuleDir == null || inLineModuleDir.getAxis() == side.getAxis())
+                && !sidesClosed[side.ordinal()]
                 && (modules[side.ordinal()] == null || modules[side.ordinal()].isInline());
     }
 
     @Override
     public void onNeighborTileUpdate() {
         super.onNeighborTileUpdate();
-        updateConnections();
         for (TubeModule module : modules) {
             if (module != null) module.onNeighborTileUpdate();
         }
@@ -205,7 +215,6 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
-        updateConnections();
         for (TubeModule module : modules) {
             if (module != null) module.onNeighborBlockUpdate();
         }
@@ -216,48 +225,15 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         return null;
     }
 
-    private void updateConnections() {
-        IAirHandlerMachine h = getAirHandler(null);
-        if (h.getPos() == null) return;
-        List<Pair<Direction, IAirHandlerMachine>> connections = getAirHandler(null).getConnectedPneumatics();
-        Arrays.fill(sidesConnected, false);
-        for (Pair<Direction, IAirHandlerMachine> entry : connections) {
-            sidesConnected[entry.getKey().ordinal()] = true;
-        }
-
-        boolean hasModule = false;
-        for (int i = 0; i < 6; i++) {
-            if (modules[i] != null) {
-                hasModule = true;
-                break;
+    public TileEntity getConnectedNeighbor(Direction dir) {
+        int idx = dir.getIndex();
+        if (!sidesClosed[idx] && (modules[idx] == null || modules[idx].isInline() && dir.getAxis() == modules[idx].getDirection().getAxis())) {
+            TileEntity te = getCachedNeighbor(dir);
+            if (te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
+                return te;
             }
         }
-
-        int sidesCount = 0;
-        for (boolean bool : sidesConnected) {
-            if (bool) sidesCount++;
-        }
-        if (sidesCount == 1 && !hasModule) {
-            for (int i = 0; i < 6; i++) {
-                if (sidesConnected[i]) {
-                    Direction opposite = Direction.byIndex(i).getOpposite();
-                    if (canConnectTo(opposite)) sidesConnected[opposite.ordinal()] = true;
-                    break;
-                }
-            }
-        }
-        for (int i = 0; i < 6; i++) {
-            if (modules[i] != null && modules[i].isInline()) sidesConnected[i] = false;
-        }
-
-        // update the blockstate
-        BlockState state = getBlockState();
-        for (int i = 0; i < 6; i++)  {
-            ConnectionType val = sidesClosed[i] ? ConnectionType.CLOSED : (sidesConnected[i] ? ConnectionType.CONNECTED : ConnectionType.UNCONNECTED);
-            state = state.with(BlockPressureTube.CONNECTION_PROPERTIES_3[i], val);
-        }
-
-        world.setBlockState(pos, state);
+        return null;
     }
 
     @Override

@@ -102,7 +102,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     @Override
-    public boolean canConnectTo(Direction dir) {
+    public boolean canConnectPneumatic(Direction dir) {
         return getRotation().getOpposite() != dir && dir != Direction.UP;
     }
 

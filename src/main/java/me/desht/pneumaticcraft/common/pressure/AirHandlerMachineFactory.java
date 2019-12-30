@@ -1,13 +1,14 @@
 package me.desht.pneumaticcraft.common.pressure;
 
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerSupplier;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
+import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 
-public class AirHandlerSupplier implements IAirHandlerSupplier {
-    private static final AirHandlerSupplier INSTANCE = new AirHandlerSupplier();
+public class AirHandlerMachineFactory implements IAirHandlerMachineFactory {
+    private static final AirHandlerMachineFactory INSTANCE = new AirHandlerMachineFactory();
 
-    public static AirHandlerSupplier getInstance() {
+    public static AirHandlerMachineFactory getInstance() {
         return INSTANCE;
     }
 
@@ -23,6 +24,6 @@ public class AirHandlerSupplier implements IAirHandlerSupplier {
 
     @Override
     public IAirHandlerMachine createAirHandler(float dangerPressure, float criticalPressure, int volume) {
-        return new AirHandlerMachine(dangerPressure, criticalPressure, volume);
+        return new MachineAirHandler(dangerPressure, criticalPressure, volume);
     }
 }

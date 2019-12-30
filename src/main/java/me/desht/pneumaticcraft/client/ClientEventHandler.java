@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
@@ -12,7 +13,6 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
@@ -531,7 +531,7 @@ public class ClientEventHandler {
                         // render secondary durability bar showing remaining air
 //                        ItemPneumaticArmor a = (ItemPneumaticArmor) s.getStack().getItem();
 //                        float val = a.getPressure(s.getStack()) / a.maxPressure(s.getStack());
-                        float val = s.getStack().getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY)
+                        float val = s.getStack().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                                 .map(h -> h.getPressure() / h.maxPressure())
                                 .orElse(0f);
                         int c = ItemPressurizable.getPressureDurabilityColor(s.getStack());

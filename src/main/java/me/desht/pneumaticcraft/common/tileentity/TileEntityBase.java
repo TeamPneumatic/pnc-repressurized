@@ -197,6 +197,8 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         }
         firstRun = false;
 
+        upgradeCache.validate();
+
         if (!world.isRemote) {
             if (this instanceof IHeatExchanger) {
                 ((IHeatExchanger) this).getHeatExchangerLogic(null).tick();
@@ -221,6 +223,13 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
                 sendDescriptionPacket();
             }
         }
+    }
+
+    @Override
+    public void remove() {
+        super.remove();
+
+        if (getInventoryCap().isPresent()) getInventoryCap().invalidate();
     }
 
     protected void onFirstServerUpdate() {
@@ -591,6 +600,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     @Nonnull
     protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+        // for internal use only!
         return LazyOptional.empty();
     }
 

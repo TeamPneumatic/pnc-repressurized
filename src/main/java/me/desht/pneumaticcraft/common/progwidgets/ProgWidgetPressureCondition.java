@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.api.tileentity.IPneumaticMachine;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -29,12 +29,14 @@ public class ProgWidgetPressureCondition extends ProgWidgetCondition {
             @Override
             protected boolean evaluate(BlockPos pos) {
                 TileEntity te = drone.world().getTileEntity(pos);
-                if (te instanceof IPneumaticMachine) {
+                if (te != null) {
                     float pressure = Float.MIN_VALUE;
                     for (Direction d : Direction.VALUES) {
                         if (getSides()[d.ordinal()]) {
-                            IAirHandlerMachine airHandler = ((IPneumaticMachine) te).getAirHandler(d);
-                            if (airHandler != null) pressure = Math.max(airHandler.getPressure(), pressure);
+                            float p = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, d)
+                                    .map(IAirHandlerMachine::getPressure)
+                                    .orElse(0f);
+                            pressure = Math.max(pressure, p);
                         }
                     }
                     return ((ICondition) progWidget).getOperator().evaluate(pressure, ((ICondition) progWidget).getRequiredCount());

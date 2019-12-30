@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
@@ -32,7 +32,7 @@ public class DroneGoToChargingStation extends Goal {
     @Override
     public boolean shouldExecute() {
         List<TileEntityChargingStation> validChargingStations = new ArrayList<>();
-        drone.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
+        drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
             if (h.getPressure() < PneumaticValues.DRONE_LOW_PRESSURE) {
                 for (TileEntityChargingStation station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
                     if (station.getWorld() == drone.world) {
@@ -80,7 +80,7 @@ public class DroneGoToChargingStation extends Goal {
             isExecuting = false;
             return false;
         } else if (!drone.getPathNavigator().isGoingToTeleport() && (drone.getNavigator().getPath() == null || drone.getNavigator().getPath().isFinished())) {
-            isExecuting = drone.getCapability(CapabilityAirHandler.AIR_HANDLER_CAPABILITY)
+            isExecuting = drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
                     .map(h -> h.getPressure() < 9.9F && curCharger.getPressure() > h.getPressure() + 0.1F)
                     .orElseThrow(IllegalStateException::new);
             if (isExecuting) {

@@ -136,7 +136,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     }
 
     @Override
-    public boolean canConnectTo(Direction dir) {
+    public boolean canConnectPneumatic(Direction dir) {
         return dir != Direction.UP;
     }
 
@@ -154,7 +154,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
         struckByLightningCooldown = 10;
         if (getPressure() > PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR) {
             int maxRedirection = PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * ironBarsBeneath;
-            int tooMuchAir = (int) ((getPressure() - PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR) * getAirHandler(null).getVolume());
+            int tooMuchAir = (int) ((getPressure() - PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR) * airHandler.getVolume());
             addAir(-Math.min(maxRedirection, tooMuchAir));
         }
     }

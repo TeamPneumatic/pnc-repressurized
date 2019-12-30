@@ -124,7 +124,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     @Override
-    public boolean canConnectTo(Direction dir) {
+    public boolean canConnectPneumatic(Direction dir) {
         Direction orientation = getRotation();
         return orientation == dir || orientation == dir.getOpposite() || dir == Direction.UP;
     }

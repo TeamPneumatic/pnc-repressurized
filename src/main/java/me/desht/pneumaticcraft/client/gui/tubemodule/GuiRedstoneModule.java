@@ -8,9 +8,14 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToServer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +35,8 @@ public class GuiRedstoneModule extends GuiTubeModule {
 
     public GuiRedstoneModule(BlockPos modulePos) {
         super(modulePos);
+
+        ySize = 202;
     }
 
     @Override
@@ -65,20 +72,14 @@ public class GuiRedstoneModule extends GuiTubeModule {
         }
         int xBase = guiLeft + w + 15;
 
-        ourColorButton = new WidgetButtonExtended(xBase, guiTop + 15, 20, 20, "") {
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (button == 0) {
-                    if (--ourColor < 0) ourColor = 15;
-                    return true;
-                } else if (button == 1) {
-                    if (++ourColor > 15) ourColor = 0;
-                    return true;
-                } else {
-                    return super.mouseClicked(mouseX, mouseX, button);
-                }
+        // TODO add a proper colour selector widget
+        ourColorButton = new WidgetButtonExtended(xBase, guiTop + 15, 20, 20, "*", b -> {
+            if (Screen.hasShiftDown()) {
+                if (--ourColor < 0) ourColor = 15;
+            } else {
+                if (++ourColor > 15) ourColor = 0;
             }
-        };
+        }).setRenderStacks(getColourItem(ourColor));
         addButton(ourColorButton);
 
         List<String> ops = new ArrayList<>();
@@ -90,20 +91,13 @@ public class GuiRedstoneModule extends GuiTubeModule {
         comboBox.selectElement(mr.getOperation().ordinal());
         addButton(comboBox);
 
-        otherColorButton = new WidgetButtonExtended(xBase, guiTop + 55, 20, 20, "") {
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (button == 0) {
-                    if (--otherColor < 0) otherColor = 15;
-                    return true;
-                } else if (button == 1) {
-                    if (++otherColor > 15) otherColor = 0;
-                    return true;
-                } else {
-                    return super.mouseClicked(mouseX, mouseX, button);
-                }
+        otherColorButton = new WidgetButtonExtended(xBase, guiTop + 55, 20, 20, "*", b -> {
+            if (Screen.hasShiftDown()) {
+                if (--otherColor < 0) otherColor = 15;
+            } else {
+                if (++otherColor > 15) otherColor = 0;
             }
-        };
+        }).setRenderStacks(getColourItem(otherColor));
         addButton(otherColorButton);
 
         textField = new WidgetTextFieldNumber(font, xBase, guiTop + 58, 30, 12);
@@ -126,6 +120,11 @@ public class GuiRedstoneModule extends GuiTubeModule {
         updateWidgetVisibility();
     }
 
+    private ItemStack getColourItem(int colour) {
+        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation("minecraft", DyeColor.byId(colour).getName() + "_concrete"));
+        return new ItemStack(item);
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -140,14 +139,15 @@ public class GuiRedstoneModule extends GuiTubeModule {
         otherColorLabel.visible = op.useOtherColor();
         otherColorButton.visible = op.useOtherColor();
         otherColorButton.setVisible(op.useOtherColor());
-        // TODO create a color cycler widget
-//        ourColorButton.setRenderStacks(new ItemStack(Blocks.CONCRETE, 1, DyeColor.byDyeDamage(ourColor).getMetadata()));
-//        otherColorButton.setRenderStacks(new ItemStack(Blocks.CONCRETE, 1, DyeColor.byDyeDamage(otherColor).getMetadata()));
+        ourColorButton.setRenderStacks(getColourItem(ourColor));
+        otherColorButton.setRenderStacks(getColourItem(otherColor));
     }
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
+
+        minecraft.getTextureManager().bindTexture(getTexture());
 
         Operation op = getSelectedOp();
         String key = op.getTranslationKey() + ".tooltip";

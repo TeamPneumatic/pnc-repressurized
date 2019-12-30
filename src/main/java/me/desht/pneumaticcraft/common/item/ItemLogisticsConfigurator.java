@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
@@ -46,7 +46,7 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
                 } else {
                     //TODO raytrace?
                     if (semiBlocks.stream().anyMatch(s -> s.onRightClickWithConfigurator(player, side))) {
-                        stack.getCapability(CapabilityAirHandler.AIR_HANDLER_ITEM_CAPABILITY)
+                        stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                                 .ifPresent(h -> h.addAir(-PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR));
                         return ActionResultType.SUCCESS;
                     }

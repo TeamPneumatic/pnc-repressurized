@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
@@ -53,7 +52,6 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -147,9 +145,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
         super.tick();
 
-        if (!getWorld().isRemote) {
-            List<Pair<Direction, IAirHandlerMachine>> teList = getAirHandler(null).getConnectedPneumatics();
-            if (teList.size() == 0) getAirHandler(null).airLeak(getRotation());
+        if (!getWorld().isRemote && isLeaking()) {
+            airHandler.airLeak(this, getRotation());
         }
     }
 
@@ -392,7 +389,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     // PNEUMATIC METHODS -----------------------------------------
 
     @Override
-    public boolean canConnectTo(Direction side) {
+    public boolean canConnectPneumatic(Direction side) {
         return getRotation() == side;
     }
 
