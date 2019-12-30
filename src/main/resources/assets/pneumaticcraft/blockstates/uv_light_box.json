@@ -1,12 +1,12 @@
 {
   "multipart": [
-    { "when": { "facing":  "north" }, "apply": { "model":  "pneumaticcraft:block/uv_light_box", "y": 180 } },
-    { "when": { "facing":  "south" }, "apply": { "model":  "pneumaticcraft:block/uv_light_box" } },
-    { "when": { "facing":  "west" }, "apply": { "model":  "pneumaticcraft:block/uv_light_box", "y": 270 } },
-    { "when": { "facing":  "east" }, "apply": { "model":  "pneumaticcraft:block/uv_light_box", "y": 90 } },
-    { "when":  { "loaded":  true, "facing": "north" }, "apply": { "model": "pneumaticcraft:block/pcb", "y": 180 } },
-    { "when":  { "loaded":  true, "facing": "south" }, "apply": { "model": "pneumaticcraft:block/pcb" } },
-    { "when":  { "loaded":  true, "facing": "west" }, "apply": { "model": "pneumaticcraft:block/pcb", "y": 270 } },
-    { "when":  { "loaded":  true, "facing": "east" }, "apply": { "model": "pneumaticcraft:block/pcb", "y": 90 } }
+    { "when": { "facing":  "north" }, "apply": { "model":  "pneumaticcraft:block/uv_light_box", "y": 270 } },
+    { "when": { "facing":  "south" }, "apply": { "model":  "pneumaticcraft:block/uv_light_box", "y": 90 } },
+    { "when": { "facing":  "west" }, "apply": { "model":  "pneumaticcraft:block/uv_light_box" , "y": 180} },
+    { "when": { "facing":  "east" }, "apply": { "model":  "pneumaticcraft:block/uv_light_box" } },
+    { "when":  { "loaded":  true, "facing": "north" }, "apply": { "model": "pneumaticcraft:block/pcb", "y": 270 } },
+    { "when":  { "loaded":  true, "facing": "south" }, "apply": { "model": "pneumaticcraft:block/pcb", "y":  90} },
+    { "when":  { "loaded":  true, "facing": "west" }, "apply": { "model": "pneumaticcraft:block/pcb", "y": 180 } },
+    { "when":  { "loaded":  true, "facing": "east" }, "apply": { "model": "pneumaticcraft:block/pcb" } }
   ]
 }

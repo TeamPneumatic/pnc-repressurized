@@ -18,8 +18,8 @@ public class BlockUVLightBox extends BlockPneumaticCraft {
     public static final BooleanProperty LOADED = BooleanProperty.create("loaded");
     public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
-    private static final VoxelShape SHAPE_NS = Block.makeCuboidShape(1, 0, 4.5, 15, 7, 11.5);
-    private static final VoxelShape SHAPE_EW = Block.makeCuboidShape(4.5, 0, 1, 11.5, 7, 15);
+    private static final VoxelShape SHAPE_EW = Block.makeCuboidShape(1, 0, 4.5, 15, 7, 11.5);
+    private static final VoxelShape SHAPE_NS = Block.makeCuboidShape(4.5, 0, 1, 11.5, 7, 15);
 
     public BlockUVLightBox() {
         super("uv_light_box");

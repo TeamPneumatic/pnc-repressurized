@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
@@ -97,12 +98,14 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
                     updateNeighbours();
                 }
             }
-            boolean loaded = getBlockState().get(BlockUVLightBox.LOADED);
-            if (loaded == stack.isEmpty()) {
-                world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LOADED, !stack.isEmpty()));
-            }
-            if (didWork != getBlockState().get(BlockUVLightBox.LIT)) {
-                world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LIT, didWork));
+            if (getBlockState().getBlock() == ModBlocks.UV_LIGHT_BOX) {
+                boolean loaded = getBlockState().get(BlockUVLightBox.LOADED);
+                if (loaded == stack.isEmpty()) {
+                    world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LOADED, !stack.isEmpty()));
+                }
+                if (didWork != getBlockState().get(BlockUVLightBox.LIT)) {
+                    world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LIT, didWork));
+                }
             }
         }
     }
@@ -146,7 +149,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     @Override
     public boolean canConnectPneumatic(Direction side) {
-        return side == getRotation().rotateY();
+        return side == getRotation();
     }
 
     @Override

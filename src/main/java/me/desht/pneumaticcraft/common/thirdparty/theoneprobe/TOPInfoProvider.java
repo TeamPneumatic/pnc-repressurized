@@ -43,7 +43,9 @@ public class TOPInfoProvider {
 
     public static void handle(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         TileEntity te = world.getTileEntity(data.getPos());
-        if(te instanceof IInfoForwarder){
+        if (te == null) return;
+
+        if (te instanceof IInfoForwarder){
             te = ((IInfoForwarder)te).getInfoTileEntity();
         }
 
