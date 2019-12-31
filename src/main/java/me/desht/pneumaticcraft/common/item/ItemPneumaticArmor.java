@@ -321,10 +321,11 @@ public class ItemPneumaticArmor extends ArmorItem
 
     private static class CompressedArmorMaterial implements IArmorMaterial {
         static final int[] DMG_REDUCTION = new int[]{2, 5, 6, 2};
+        private static final int[] MAX_DAMAGE_ARRAY = new int[]{13, 15, 16, 11};
 
         @Override
         public int getDurability(EquipmentSlotType equipmentSlotType) {
-            return PneumaticValues.PNEUMATIC_ARMOR_DURABILITY_BASE;
+            return PneumaticValues.PNEUMATIC_ARMOR_DURABILITY_BASE * MAX_DAMAGE_ARRAY[equipmentSlotType.getIndex()];
         }
 
         @Override
