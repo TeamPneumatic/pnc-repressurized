@@ -168,7 +168,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:1.14.4-28.1.126-model-system-rework"
+    minecraft "net.minecraftforge:forge:1.14.4-28.1.113-model-system-rework"
 //    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     compile fg.deobf (project.dependencies.create("mcjty.theoneprobe:TheOneProbe-1.14:${top_version}") {
         transitive = false

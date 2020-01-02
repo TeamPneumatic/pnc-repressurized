@@ -26,10 +26,10 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketModWrenchBlock;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.recipes.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -50,7 +50,10 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.*;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.*;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -106,26 +109,16 @@ public class EventHandlerPneumaticCraft {
             if (entity instanceof ItemEntity && entity.isAlive()) {
                 ItemStack stack = ((ItemEntity) entity).getItem();
                 if (!stack.isEmpty()) {
-                    NonNullList<ItemStack> l = ExplosionCraftingRecipe.tryToCraft(stack);
-                    for (int i = 0; i < l.size(); i++) {
-                        ItemStack result = l.get(i);
-                        if (!result.isEmpty()) {
-                            if (i == 0) {
-                                // first item in result: just replace the existing entity
-                                ((ItemEntity) entity).setItem(result);
-                                iterator.remove();
-                            } else {
-                                // subsequent items: add a new item entity
-                                PneumaticCraftUtils.dropItemOnGround(result, event.getWorld(), entity.getPosition());
-                            }
-                            checkForAdvancement(event, result);
-                        }
-                    }
+                    boolean firstItem = true;
                     for (ItemStack result : ExplosionCraftingRecipe.tryToCraft(stack)) {
-                        if (!result.isEmpty()) {
+                        if (firstItem) {
+                            // first item in result: just replace the existing entity
                             ((ItemEntity) entity).setItem(result);
                             iterator.remove();
-                            checkForAdvancement(event, result);
+                            firstItem = false;
+                        } else {
+                            // subsequent items: add a new item entity
+                            PneumaticCraftUtils.dropItemOnGround(result, event.getWorld(), entity.getPosition());
                         }
                     }
                 }

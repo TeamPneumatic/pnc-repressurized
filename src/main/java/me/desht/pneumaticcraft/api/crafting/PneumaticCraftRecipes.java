@@ -1,11 +1,15 @@
-package me.desht.pneumaticcraft.api.recipe;
+package me.desht.pneumaticcraft.api.crafting;
 
+import me.desht.pneumaticcraft.api.crafting.recipe.*;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Map;
 
 /**
- * Do not modify these directly!  Use {@link RegisterMachineRecipesEvent} to register new machine recipes.
+ * Public list of all current PneumaticCraft machine recipes.
+ * <p>
+ * <strong>Do not modify these directly!</strong>  Use {@link RegisterMachineRecipesEvent} to register new machine
+ * recipes in code.
  */
 public class PneumaticCraftRecipes {
     public static Map<ResourceLocation, IPressureChamberRecipe> pressureChamberRecipes;

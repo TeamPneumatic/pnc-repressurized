@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
@@ -58,7 +58,7 @@ public enum HackTickHandler {
         if (event.phase == TickEvent.Phase.END) {
             try {
                 for (Entity entity : PneumaticCraftRepressurized.proxy.getAllEntities(event.world)) {
-                    entity.getCapability(PneumaticRegistry.HACKING_CAPABILITY, null).ifPresent(h -> {
+                    entity.getCapability(PNCCapabilities.HACKING_CAPABILITY, null).ifPresent(h -> {
                         if (!h.getCurrentHacks().isEmpty()) h.update(entity);
                     });
                 }
@@ -74,7 +74,7 @@ public enum HackTickHandler {
 
     public void trackEntity(Entity entity, IHackableEntity iHackable) {
         if (iHackable.getId() != null) {
-            entity.getCapability(PneumaticRegistry.HACKING_CAPABILITY, null).ifPresent(h -> h.addHackable(iHackable));
+            entity.getCapability(PNCCapabilities.HACKING_CAPABILITY, null).ifPresent(h -> h.addHackable(iHackable));
         }
     }
 }

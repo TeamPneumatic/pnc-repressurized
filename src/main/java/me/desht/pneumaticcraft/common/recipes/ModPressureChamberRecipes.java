@@ -1,11 +1,15 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
-import me.desht.pneumaticcraft.api.recipe.RegisterMachineRecipesEvent;
+import me.desht.pneumaticcraft.api.crafting.RegisterMachineRecipesEvent;
+import me.desht.pneumaticcraft.api.crafting.StackedIngredient;
+import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.recipes.machine.BasicPressureChamberRecipe;
+import me.desht.pneumaticcraft.common.recipes.machine.PressureChamberDisenchantingRecipe;
+import me.desht.pneumaticcraft.common.recipes.machine.PressureChamberEnchantingRecipe;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -104,8 +108,8 @@ public class ModPressureChamberRecipes {
                 new ItemStack(ModItems.CAPACITOR)
         ));
 
-        pc.accept(new PressureChamberPressureEnchantHandler());
+        pc.accept(new PressureChamberEnchantingRecipe());
 
-        pc.accept(new PressureChamberVacuumDisenchantHandler());
+        pc.accept(new PressureChamberDisenchantingRecipe());
     }
 }

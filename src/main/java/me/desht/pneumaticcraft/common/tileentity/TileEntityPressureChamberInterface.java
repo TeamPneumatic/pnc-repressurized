@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
-import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;

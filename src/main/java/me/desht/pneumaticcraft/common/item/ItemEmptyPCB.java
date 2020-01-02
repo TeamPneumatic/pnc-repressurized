@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
@@ -9,7 +10,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -71,7 +71,7 @@ public class ItemEmptyPCB extends ItemNonDespawning {
         super.onEntityItemUpdate(stack, entityItem);
 
         // TODO 1.14 fluids : replace WATER with ETCHING_ACID
-        if (entityItem.world.getFluidState(new BlockPos(entityItem)).isTagged(FluidTags.WATER)) {
+        if (entityItem.world.getFluidState(new BlockPos(entityItem)).getFluid() == ModFluids.ETCHING_ACID) {
             if (!stack.hasTag()) {
                 stack.setTag(new CompoundNBT());
             }
@@ -85,7 +85,7 @@ public class ItemEmptyPCB extends ItemNonDespawning {
                     double x = entityItem.posX + world.rand.nextDouble() * 0.3 - 0.15;
                     double y = entityItem.posY - 0.15;
                     double z = entityItem.posZ + world.rand.nextDouble() * 0.3 - 0.15;
-                    world.addParticle(ParticleTypes.BUBBLE, x, y, z, 0.0, 0.05, 0.0);
+                    world.addParticle(ParticleTypes.CLOUD, x, y, z, 0.0, 0.05, 0.0);
                 }
             } else if (!entityItem.world.isRemote) {
                 int successCount = 0;

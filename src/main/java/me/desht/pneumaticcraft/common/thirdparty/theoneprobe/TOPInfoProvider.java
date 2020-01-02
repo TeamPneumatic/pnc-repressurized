@@ -47,6 +47,7 @@ public class TOPInfoProvider {
 
         if (te instanceof IInfoForwarder){
             te = ((IInfoForwarder)te).getInfoTileEntity();
+            if (te == null) return;
         }
 
         if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {

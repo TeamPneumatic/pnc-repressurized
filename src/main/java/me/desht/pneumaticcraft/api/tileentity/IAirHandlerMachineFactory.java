@@ -3,15 +3,31 @@ package me.desht.pneumaticcraft.api.tileentity;
 import net.minecraft.nbt.CompoundNBT;
 
 /**
- * Get an instance of this with {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getAirHandlerMachineFactory()}.
+ * Use this interface to get instances of air handlers for your tile entities.  You can then expose those air handler
+ * instances via the {@link IAirHandlerMachine} capability interface; {@link me.desht.pneumaticcraft.api.PNCCapabilities#AIR_HANDLER_MACHINE_CAPABILITY} can be used for this.
+ * <p>
+ * Get an instance of this factory with
+ * {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getAirHandlerMachineFactory()}.
  */
 public interface IAirHandlerMachineFactory {
+    /**
+     * Create a standard tier one air handler.
+     *
+     * @param volume the air handler volume, in mL.
+     * @return a new tier one air handler
+     */
     IAirHandlerMachine createTierOneAirHandler(int volume);
 
+    /**
+     * Create a standard tier two air handler.
+     *
+     * @param volume the air handler volume, in mL.
+     * @return a new tier two air handler
+     */
     IAirHandlerMachine createTierTwoAirHandler(int volume);
 
     /**
-     * Returns a new instance of an IAirHandler. This handler handles everything pressurized air related: Air dispersion,
+     * Returns a new instance of an IAirHandler. This handler handles everything pressurized air related: air dispersion,
      * blowing up when the pressure gets too high, providing a method for releasing air into the atmosphere...
      * <strong>provided that the following methods are forwarded to the IAirHandler object:</strong>
      * <ul>

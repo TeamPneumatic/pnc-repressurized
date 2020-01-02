@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
+import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource.Type;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeResource.Type;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;

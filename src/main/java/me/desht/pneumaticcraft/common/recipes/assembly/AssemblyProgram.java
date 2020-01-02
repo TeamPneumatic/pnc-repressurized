@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.recipes.assembly;
 
-import me.desht.pneumaticcraft.api.recipe.IAssemblyRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;

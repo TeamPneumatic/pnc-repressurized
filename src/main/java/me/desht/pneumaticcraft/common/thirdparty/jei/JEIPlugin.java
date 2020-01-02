@@ -32,6 +32,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
+    static IJeiHelpers jeiHelpers;
+
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         for (Item item : ModItems.Registration.ALL_ITEMS) {
@@ -44,18 +46,18 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registry) {
-        IJeiHelpers helpers = registry.getJeiHelpers();
+        jeiHelpers = registry.getJeiHelpers();
         registry.addRecipeCategories(
-                new JEIPressureChamberRecipeCategory(helpers),
-                new JEIAssemblyControllerCategory(helpers),
-                new JEIThermopneumaticProcessingPlantCategory(helpers),
-                new JEIRefineryCategory(helpers),
-                new JEIUVLightBoxCategory(helpers),
-                new JEIAmadronTradeCategory(helpers),
-                new JEIHeatFrameCoolingCategory(helpers)
+                new JEIPressureChamberRecipeCategory(),
+                new JEIAssemblyControllerCategory(),
+                new JEIThermopneumaticProcessingPlantCategory(),
+                new JEIRefineryCategory(),
+                new JEIUVLightBoxCategory(),
+                new JEIAmadronTradeCategory(),
+                new JEIHeatFrameCoolingCategory()
         );
         if (PNCConfig.Common.Recipes.explosionCrafting) {
-            registry.addRecipeCategories(new JEIExplosionCraftingCategory(helpers));
+            registry.addRecipeCategories(new JEIExplosionCraftingCategory());
         }
     }
 
@@ -100,7 +102,7 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(GuiAssemblyController.class, 110, 10, 50, 50, ModCategoryUid.ASSEMBLY_CONTROLLER);
-        registration.addRecipeClickArea(GuiPressureChamber.class, 100, 7, 40, 40, ModCategoryUid.PRESSURE_CHAMBER);
+        registration.addRecipeClickArea(GuiPressureChamber.class, 100, 7, 60, 60, ModCategoryUid.PRESSURE_CHAMBER);
         registration.addRecipeClickArea(GuiRefineryController.class, 47, 21, 27, 47, ModCategoryUid.REFINERY);
         registration.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 31, 48, 20, ModCategoryUid.THERMO_PNEUMATIC);
 

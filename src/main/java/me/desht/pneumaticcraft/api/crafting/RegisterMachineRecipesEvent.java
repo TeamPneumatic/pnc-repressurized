@@ -1,13 +1,15 @@
-package me.desht.pneumaticcraft.api.recipe;
+package me.desht.pneumaticcraft.api.crafting;
 
+import me.desht.pneumaticcraft.api.crafting.recipe.*;
 import net.minecraftforge.eventbus.api.Event;
 
 import java.util.function.Consumer;
 
 /**
- * This event is fired when PneumaticCraft machine recipes should be registered.  There are consumers for each
- * machine type; use <code>getType().accept(recipe)</code> to register a recipe.  Each recipe type has one or more
- * convenience methods to create a default recipe implementation, so you can say e.g.
+ * This event is fired when PneumaticCraft machine recipes should be registered, which is when the server starts up
+ * or is reloaded with the /reload command.  There are consumers for each machine type; use
+ * <code>getType().accept(recipe)</code> to register a recipe.  Each recipe type has one or more convenience methods to
+ * create a default recipe implementation, so you can say e.g.
  * <p>
  *     <code>event.getPressureChamber().accept(IPressureChamberRecipe.basicRecipe(...))</code>
  * </p>

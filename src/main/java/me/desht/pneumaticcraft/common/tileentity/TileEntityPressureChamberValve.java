@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.math.IntMath;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
-import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
-import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;

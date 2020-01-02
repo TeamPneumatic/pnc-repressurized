@@ -1,10 +1,12 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 
-import me.desht.pneumaticcraft.api.recipe.IAssemblyRecipe;
-import me.desht.pneumaticcraft.api.recipe.RegisterMachineRecipesEvent;
+import me.desht.pneumaticcraft.api.crafting.RegisterMachineRecipesEvent;
+import me.desht.pneumaticcraft.api.crafting.StackedIngredient;
+import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipe;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -32,7 +34,7 @@ public class ModAssemblyRecipes {
 
         assembly.accept(new AssemblyRecipe(
                 RL("advanced_pressure_tube"),
-                Ingredient.fromItems(ModBlocks.PRESSURE_CHAMBER_VALVE), 20,
+                StackedIngredient.fromItems(20, ModBlocks.PRESSURE_CHAMBER_VALVE),
                 new ItemStack(ModBlocks.ADVANCED_PRESSURE_TUBE, 8),
                 ModItems.ASSEMBLY_PROGRAM_LASER
         ));

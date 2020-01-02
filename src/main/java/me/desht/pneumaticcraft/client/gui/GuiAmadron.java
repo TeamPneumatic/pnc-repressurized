@@ -37,7 +37,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     private WidgetButtonExtended orderButton;
     private WidgetButtonExtended addTradeButton;
 
-    public GuiAmadron(ContainerAmadron container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiAmadron(ContainerAmadron container, PlayerInventory inv, @SuppressWarnings("unused") ITextComponent displayString) {
         super(container, inv, new StringTextComponent(""));
         xSize = 176;
         ySize = 202;
@@ -79,13 +79,13 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
                 .setRenderStacks(new ItemStack(Items.GOLD_INGOT)).withTag("addPlayerTrade");
         customTrades.addSubWidget(addTradeButton);
         int startX = 40;
-        if (ContainerAmadron.mayAddPeriodicOffers) {
+        if (container.mayAddPeriodicTrades()) {
             WidgetButtonExtended addPeriodicButton = new WidgetButtonExtended(startX, 16, 20, 20, "")
                     .setRenderStacks(new ItemStack(Items.CLOCK)).setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addPeriodicTrade"), 40)).withTag("addPeriodicTrade");
             customTrades.addSubWidget(addPeriodicButton);
             startX += 24;
         }
-        if (ContainerAmadron.mayAddStaticOffers) {
+        if (container.mayAddStaticTrades()) {
             WidgetButtonExtended addStaticButton = new WidgetButtonExtended(startX, 16, 20, 20, "")
                     .setRenderStacks(new ItemStack(Items.EMERALD)).setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addStaticTrade"), 40)).withTag("addStaticTrade");
             customTrades.addSubWidget(addStaticButton);

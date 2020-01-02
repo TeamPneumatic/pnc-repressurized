@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeResource;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -29,10 +29,10 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
     public WidgetAmadronOffer(int x, int y, AmadronOffer offer) {
         super(x, y, 73, 35, "");
         this.offer = offer;
-        if (offer.getInput().getType() == TradeResource.Type.FLUID) {
+        if (offer.getInput().getType() == AmadronTradeResource.Type.FLUID) {
             subWidgets.add(new WidgetFluidStack(x + 6, y + 15, offer.getInput().getFluid(), null));
         }
-        if (offer.getOutput().getType() == TradeResource.Type.FLUID) {
+        if (offer.getOutput().getType() == AmadronTradeResource.Type.FLUID) {
             subWidgets.add(new WidgetFluidStack(x + 51, y + 15, offer.getOutput().getFluid(), null));
         }
         tooltipRectangles[0] = new Rectangle2d(x + 6, y + 15, 16, 16);

@@ -32,6 +32,10 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         return scales;
     }
 
+    public IHeatExchangerLogic getHeatExchanger() {
+        return logic;
+    }
+
     @Override
     public void renderButton(int mouseX, int mouseY, float partialTick) {
         if (this.visible) {
@@ -45,8 +49,10 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
             AbstractGui.blit(x + 7, y + 1 + 48 - barLength, 13, 48 - barLength, 5, barLength, 18, 50);
 
             for (int scale : scales) {
-                int scaleY = 48 - (scale - minTemp) * 48 / maxTemp;
-                AbstractGui.blit(x, y - 1 + scaleY, 0, 0, 6, 5, 18, 50);
+                if (scale != 0) {
+                    int scaleY = 48 - (scale - minTemp) * 48 / maxTemp;
+                    AbstractGui.blit(x, y - 1 + scaleY, 0, 0, 6, 5, 18, 50);
+                }
             }
         }
     }

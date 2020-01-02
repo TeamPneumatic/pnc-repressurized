@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.aux.AmadronOfferStaticConfig;
@@ -14,7 +15,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeRemoved;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeResource;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeType;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
@@ -29,6 +29,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Hand;
+import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.GlobalPos;
@@ -54,8 +55,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     // Set client-side when a PacketSyncAmadronOffers is received.  Only controls button visibility; actual control
     // is done server-side via permissions API.  So make button available unless server tells us no.  Worst that
     // can happen is button does nothing.
-    public static boolean mayAddPeriodicOffers = true;
-    public static boolean mayAddStaticOffers = true;
+//    public static boolean mayAddPeriodicOffers = true;
+//    public static boolean mayAddStaticOffers = true;
 
     public final List<AmadronOffer> offers = new ArrayList<>(AmadronOfferManager.getInstance().getAllOffers());
 
@@ -76,6 +77,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     public int currentOffers = 0;
     @GuiSynced
     private boolean basketEmpty = true;
+
+    private final IntReferenceHolder permsHolder = IntReferenceHolder.single();
 
     public enum EnumProblemState {
         NO_PROBLEMS("noProblems"),
@@ -112,10 +115,13 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         addSyncedFields(this);
         Arrays.fill(shoppingItems, -1);
 
+        trackInt(permsHolder);
+
+
         PlayerEntity player = invPlayer.player;
         if (!player.world.isRemote) {
-            IItemHandler itemHandler = ItemAmadronTablet.getItemProvider(player.getHeldItem(hand)).map(h -> h).orElse(null);
-            IFluidHandler fluidHandler = ItemAmadronTablet.getFluidProvider(player.getHeldItem(hand)).map(h -> h).orElse(null);
+            IItemHandler itemHandler = ItemAmadronTablet.getItemCapability(player.getHeldItem(hand)).map(h -> h).orElse(null);
+            IFluidHandler fluidHandler = ItemAmadronTablet.getFluidCapability(player.getHeldItem(hand)).map(h -> h).orElse(null);
             for (int i = 0; i < offers.size(); i++) {
                 int amount = capShoppingAmount(offers.get(i), 1, itemHandler, fluidHandler, this);
                 buyableOffers[i] = amount > 0;
@@ -136,6 +142,10 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             basketEmpty = Arrays.stream(shoppingAmounts).noneMatch(shoppingAmount -> shoppingAmount > 0);
             currentOffers = AmadronOfferManager.getInstance().countOffers(player.getGameProfile().getId().toString());
             maxOffers = PneumaticCraftUtils.isPlayerOp(player) ? Integer.MAX_VALUE : PNCConfig.Common.Amadron.maxTradesPerPlayer;
+
+            int n = (PermissionAPI.hasPermission(player, Names.AMADRON_ADD_PERIODIC_TRADE) ? 0x1 : 0)
+                    | (PermissionAPI.hasPermission(player, Names.AMADRON_ADD_STATIC_TRADE) ? 0x2 : 0);
+            permsHolder.set(n);
         }
     }
 
@@ -149,6 +159,14 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
 
     public Hand getHand() {
         return hand;
+    }
+
+    public boolean mayAddPeriodicTrades() {
+        return (permsHolder.get() & 0x1) != 0;
+    }
+
+    public boolean mayAddStaticTrades() {
+        return (permsHolder.get() & 0x2) != 0;
     }
 
     @Override
@@ -291,7 +309,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     public static EntityDrone retrieveOrderItems(AmadronOffer offer, int times, GlobalPos itemGPos, GlobalPos liquidGPos) {
-        if (offer.getInput().getType() == TradeResource.Type.ITEM) {
+        if (offer.getInput().getType() == AmadronTradeResource.Type.ITEM) {
             if (itemGPos == null) return null;
             ItemStack queryingItems = offer.getInput().getItem();
             int amount = queryingItems.getCount() * times;
@@ -303,7 +321,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 amount -= stack.getCount();
             }
             return (EntityDrone) DroneRegistry.getInstance().retrieveItemsAmazonStyle(itemGPos, stacks.toArray(new ItemStack[0]));
-        } else if (offer.getInput().getType() == TradeResource.Type.FLUID) {
+        } else if (offer.getInput().getType() == AmadronTradeResource.Type.FLUID) {
             if (liquidGPos == null) return null;
             FluidStack queryingFluid = offer.getInput().getFluid().copy();
             queryingFluid.setAmount(queryingFluid.getAmount() * times);
@@ -314,10 +332,12 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     private int capShoppingAmount(int offerId, int wantedAmount, PlayerEntity player) {
-        return ItemAmadronTablet.getItemProvider(player.getHeldItem(hand)).map(itemHandler ->
-                ItemAmadronTablet.getFluidProvider(player.getHeldItem(hand)).map(fluidHandler ->
-                        capShoppingAmount(offers.get(offerId), wantedAmount, itemHandler, fluidHandler, this)
-                ).orElse(0)).orElse(0);
+        // this is a bit of an abuse of lazy optionals, but try doing it another way...
+        ItemStack tablet = player.getHeldItem(hand);
+        IItemHandler itemHandler = ItemAmadronTablet.getItemCapability(tablet).map(h -> h).orElse(null);
+        IFluidHandler fluidHandler = ItemAmadronTablet.getFluidCapability(tablet).map(h -> h).orElse(null);
+
+        return capShoppingAmount(offers.get(offerId), wantedAmount, itemHandler, fluidHandler, this);
     }
 
     private static int capShoppingAmount(AmadronOffer offer, int wantedAmount, IItemHandler inv, IFluidHandler fluidHandler, ContainerAmadron container) {
@@ -334,7 +354,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         EnumProblemState problem = null;
 
         // check there's enough of the required item/fluid in the input inventory/tank
-        if (offer.getInput().getType() == TradeResource.Type.ITEM) {
+        if (offer.getInput().getType() == AmadronTradeResource.Type.ITEM) {
             if (inputInv != null) {
                 int availableTrades = offer.getInput().countTradesInInventory(inputInv);
                 if (wantedTradeCount > availableTrades) {
@@ -345,7 +365,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 wantedTradeCount = 0;
                 problem = EnumProblemState.NO_ITEM_PROVIDER;
             }
-        } else if (offer.getInput().getType() == TradeResource.Type.FLUID) {
+        } else if (offer.getInput().getType() == AmadronTradeResource.Type.FLUID) {
             if (inputFluidHandler != null) {
                 int availableTrades = offer.getInput().countTradesInTank(inputFluidHandler);
                 if (wantedTradeCount > availableTrades) {
@@ -359,7 +379,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         }
 
         // check there's enough space for the returned item/fluid in the output inventory/tank
-        if (offer.getOutput().getType() == TradeResource.Type.ITEM) {
+        if (offer.getOutput().getType() == AmadronTradeResource.Type.ITEM) {
             if (outputInv != null) {
                 int availableTrades = offer.getOutput().findSpaceInOutput(outputInv, wantedTradeCount);
                 if (wantedTradeCount > availableTrades) {
@@ -370,7 +390,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 wantedTradeCount = 0;
                 problem = EnumProblemState.NO_ITEM_PROVIDER;
             }
-        } else if (offer.getOutput().getType() == TradeResource.Type.FLUID) {
+        } else if (offer.getOutput().getType() == AmadronTradeResource.Type.FLUID) {
             if (outputFluidHandler != null) {
                 int availableTrades = offer.getOutput().findSpaceInOutput(outputFluidHandler, wantedTradeCount);
                 if (wantedTradeCount > availableTrades) {

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -8,10 +9,11 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
- * Use this interface to specify any hackable block. When it's your block, you can simply implement this interface in the
- * block's class. If you don't have access to the class (vanilla blocks), you can implement this interface in a separate class
- * and register it using PneumaticRegistry.registry.addHackable(blockClass, IHackableBlockClass). With the former way there will be one instance only per type. In the latter, there will
- * be an IHackableBlock instance for every block.
+ * Use this interface to specify any hackable block. When it's your block, you can simply implement this interface in
+ * your block's class. If you don't have access to the class (vanilla blocks or blocks from other mods), you can
+ * implement this interface in a separate class and register it using
+ * {@link IPneumaticHelmetRegistry#addHackable(Block, Class)} . With the former way there will be one
+ * instance only per type. In the latter, there will be an IHackableBlock instance for every block.
  */
 public interface IHackableBlock {
     /**

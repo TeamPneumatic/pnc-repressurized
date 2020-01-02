@@ -1,10 +1,10 @@
-package me.desht.pneumaticcraft.api.recipe;
+package me.desht.pneumaticcraft.api.crafting.recipe;
 
+import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
-import me.desht.pneumaticcraft.common.recipes.BasicThermopneumaticProcessingPlantRecipe;
+import me.desht.pneumaticcraft.common.recipes.machine.BasicThermopneumaticProcessingPlantRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -120,22 +120,6 @@ public interface IThermopneumaticProcessingPlantRecipe extends IModRecipe {
     static IThermopneumaticProcessingPlantRecipe basicExothermicRecipe(ResourceLocation id, @Nonnull FluidStack inputFluid, @Nullable Ingredient inputItem,
                                                              FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure) {
         return new BasicThermopneumaticProcessingPlantRecipe(id, inputFluid, inputItem, outputFluid, operatingTemperature, requiredPressure, true);
-    }
-
-    /**
-     * Used for client-side sync'ing of recipes: do not call directly!
-     * @param buf a packet buffer
-     * @return a deserialised recipe
-     */
-    static IThermopneumaticProcessingPlantRecipe read(PacketBuffer buf) {
-        ResourceLocation id = buf.readResourceLocation();
-        TemperatureRange range = TemperatureRange.of(buf.readVarInt(), buf.readVarInt());
-        float pressure = buf.readFloat();
-        Ingredient input = Ingredient.read(buf);
-        FluidStack fluidIn = FluidStack.readFromPacket(buf);
-        FluidStack fluidOut = FluidStack.readFromPacket(buf);
-        boolean exothermic = buf.readBoolean();
-        return new BasicThermopneumaticProcessingPlantRecipe(id, fluidIn, input, fluidOut, range, pressure, exothermic);
     }
 
 }

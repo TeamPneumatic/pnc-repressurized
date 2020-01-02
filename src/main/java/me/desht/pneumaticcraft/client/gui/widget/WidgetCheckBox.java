@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -16,8 +17,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipProvider {
-    public boolean checked, enabled = true, visible = true;
-    public int color;
+    public boolean checked;
+    private final int color;
     private List<String> tooltip = new ArrayList<>();
     private final Consumer<WidgetCheckBox> pressable;
 
@@ -45,11 +46,11 @@ public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipPro
     @Override
     public void renderButton(int mouseX, int mouseY, float partialTick) {
         if (visible) {
-            fill(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, enabled ? 0xFFA0A0A0 : 0xFF999999);
-            fill(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, enabled ? 0xFF202020 : 0xFFAAAAAA);
+            fill(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, active ? 0xFFA0A0A0 : 0xFF999999);
+            fill(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, active ? 0xFF202020 : 0xFFAAAAAA);
             if (checked) {
                 GlStateManager.disableTexture();
-                if (enabled) {
+                if (active) {
                     GlStateManager.color4f(0.5f, 1, 0.5f, 1);
                 } else {
                     GlStateManager.color4f(0.8f, 0.8f, 0.8f, 1);
@@ -64,13 +65,14 @@ public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipPro
                 GlStateManager.enableTexture();
                 GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1);
             }
-            Minecraft.getInstance().fontRenderer.drawString(I18n.format(getMessage()), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2f - Minecraft.getInstance().fontRenderer.FONT_HEIGHT / 2f, enabled ? color : 0xFF888888);
+            FontRenderer fr = Minecraft.getInstance().fontRenderer;
+            fr.drawString(I18n.format(getMessage()), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2f - fr.FONT_HEIGHT / 2f, active ? color : 0xFF888888);
         }
     }
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-        if (enabled) {
+        if (active) {
             checked = !checked;
             if (pressable != null) pressable.accept(this);
             if (tag != null) NetworkHandler.sendToServer(new PacketGuiButton(tag));

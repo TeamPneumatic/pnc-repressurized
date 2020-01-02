@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
-import me.desht.pneumaticcraft.api.recipe.IAssemblyRecipe;
-import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import vazkii.patchouli.api.IComponentProcessor;

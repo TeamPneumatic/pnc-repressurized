@@ -3,8 +3,6 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
@@ -57,7 +55,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (!worldIn.isRemote) {
-            NetworkHandler.sendToPlayer(new PacketSyncAmadronOffers(playerIn), (ServerPlayerEntity) playerIn);
+//            NetworkHandler.sendToPlayer(new PacketSyncAmadronOffers(playerIn), (ServerPlayerEntity) playerIn);
             NetworkHooks.openGui((ServerPlayerEntity) playerIn, new INamedContainerProvider() {
                 @Override
                 public ITextComponent getDisplayName() {
@@ -120,7 +118,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         }
     }
 
-    public static LazyOptional<IItemHandler> getItemProvider(ItemStack tablet) {
+    public static LazyOptional<IItemHandler> getItemCapability(ItemStack tablet) {
         GlobalPos pos = getItemProvidingLocation(tablet);
         if (pos != null) {
             TileEntity te = GlobalPosUtils.getTileEntity(pos);
@@ -139,7 +137,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         NBTUtil.setCompoundTag(tablet, "itemPos", GlobalPosUtils.serializeGlobalPos(globalPos));
     }
 
-    public static LazyOptional<IFluidHandler> getFluidProvider(ItemStack tablet) {
+    public static LazyOptional<IFluidHandler> getFluidCapability(ItemStack tablet) {
         GlobalPos pos = getFluidProvidingLocation(tablet);
         if (pos != null) {
             World world = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), pos.getDimension(), false, false);

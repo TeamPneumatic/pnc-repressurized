@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes.assembly;
 
-import me.desht.pneumaticcraft.api.recipe.IAssemblyRecipe;
-import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import net.minecraft.item.Item;

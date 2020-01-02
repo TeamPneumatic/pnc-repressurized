@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
-import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
-import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
 import net.minecraft.item.ItemStack;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariableProvider;
@@ -31,7 +31,7 @@ public class ProcessorPressureChamber implements IComponentProcessor {
         if (s.startsWith("input")) {
             int index = Integer.parseInt(s.substring(5)) - 1;
             if (index >= 0 && index < recipe.getInputsForDisplay().size()) {
-                return ItemStackUtil.serializeStack(recipe.getInputsForDisplay().get(index).get(0));
+                return ItemStackUtil.serializeIngredient(recipe.getInputsForDisplay().get(index));
             }
         } else if (s.startsWith("output")) {
             int index = Integer.parseInt(s.substring(6)) - 1;

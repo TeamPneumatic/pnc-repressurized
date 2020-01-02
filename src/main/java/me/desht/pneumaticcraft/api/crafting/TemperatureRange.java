@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.api.recipe;
+package me.desht.pneumaticcraft.api.crafting;
 
 import org.apache.commons.lang3.Validate;
 

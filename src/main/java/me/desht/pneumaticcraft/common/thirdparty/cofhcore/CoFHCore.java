@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
-import me.desht.pneumaticcraft.api.recipe.RegisterMachineRecipesEvent;
+import me.desht.pneumaticcraft.api.crafting.RegisterMachineRecipesEvent;
 import me.desht.pneumaticcraft.common.recipes.ModRefineryRecipes;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Log;

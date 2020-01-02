@@ -3,21 +3,24 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
  * Use this interface to specify any hackable entity. When it's your entity, you can simply implement this interface in
- * the entity's class. If you don't have access to the class (vanilla entities), you can implement this interface in a
- * separate class and register it using {@link IPneumaticHelmetRegistry#addHackable(Class, Class)}.
+ * the entity's class. If you don't have access to the entity (i.e. vanilla entities or entities from other mods), you
+ * can implement this interface in a separate class and register it using
+ * {@link IPneumaticHelmetRegistry#addHackable(Class, Class)}.
  * Either way, there will be an IHackableEntity instance for every entity.
  */
 public interface IHackableEntity {
     /**
-     * Should return a unique id to represent this hackable. Used in NBT saving to be able to trigger the afterHackTime after a server restart.
-     * Null is a valid return: afterHackTick will not be triggered at all in that case.
+     * Should return a unique id to represent this hackable. Used in NBT saving to be able to trigger the afterHackTime
+     * after a server restart. Null is a valid return: afterHackTick will not be triggered at all in that case.
      *
      * @return a unique String id
      */
+    @Nullable
     String getId();
 
     /**

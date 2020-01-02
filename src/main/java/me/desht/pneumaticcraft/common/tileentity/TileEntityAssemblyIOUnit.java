@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.api.recipe.IAssemblyRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.handler.RenderedItemStackHandler;

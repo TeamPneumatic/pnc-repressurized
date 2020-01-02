@@ -2,25 +2,32 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.recipes.UVLightBoxRecipe;
+import me.desht.pneumaticcraft.common.recipes.machine.UVLightBoxRecipe;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class JEIUVLightBoxCategory extends PneumaticCraftCategory<JEIUVLightBoxCategory.UVLightBoxRecipeWrapper> {
+public class JEIUVLightBoxCategory implements IRecipeCategory<UVLightBoxRecipe> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
+    private final IDrawableAnimated progressBar;
 
     private static final List<UVLightBoxRecipe> UV_LIGHT_BOX_RECIPES;
     static {
@@ -30,17 +37,12 @@ public class JEIUVLightBoxCategory extends PneumaticCraftCategory<JEIUVLightBoxC
         UV_LIGHT_BOX_RECIPES = Collections.singletonList(recipe);
     }
 
-    JEIUVLightBoxCategory(IJeiHelpers jeiHelpers) {
-        super(jeiHelpers);
-
+    JEIUVLightBoxCategory() {
         localizedName = I18n.format(ModBlocks.UV_LIGHT_BOX.getTranslationKey());
-        background = new ResourceDrawable(Textures.GUI_JEI_MISC_RECIPES, 40, 0, 0, 0, 82, 18) {
-            @Override
-            public int getWidth() {
-                return 160;
-            }
-        };
-        icon = jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.UV_LIGHT_BOX));
+        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
+        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.UV_LIGHT_BOX));
+        IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
+        progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }
 
     @Override
@@ -49,8 +51,8 @@ public class JEIUVLightBoxCategory extends PneumaticCraftCategory<JEIUVLightBoxC
     }
 
     @Override
-    public Class<? extends UVLightBoxRecipeWrapper> getRecipeClass() {
-        return UVLightBoxRecipeWrapper.class;
+    public Class<? extends UVLightBoxRecipe> getRecipeClass() {
+        return UVLightBoxRecipe.class;
     }
 
     @Override
@@ -69,22 +71,36 @@ public class JEIUVLightBoxCategory extends PneumaticCraftCategory<JEIUVLightBoxC
     }
 
     @Override
-    public void draw(UVLightBoxRecipeWrapper recipe, double mouseX, double mouseY) {
-        drawIconAt(icon, 73, -2);
-        drawTextAt("gui.nei.recipe.uvLightBox", 5, 24);
+    public void setIngredients(UVLightBoxRecipe recipe, IIngredients ingredients) {
+        ingredients.setInputIngredients(Collections.singletonList(recipe.getIn()));
+        ingredients.setOutput(VanillaTypes.ITEM, recipe.getOut());
     }
 
-    static Collection<UVLightBoxRecipeWrapper> getAllRecipes() {
-        return UV_LIGHT_BOX_RECIPES.stream()
-                .map(UVLightBoxRecipeWrapper::new)
-                .collect(Collectors.toList());
+    @Override
+    public void setRecipe(IRecipeLayout recipeLayout, UVLightBoxRecipe recipe, IIngredients ingredients) {
+        recipeLayout.getItemStacks().init(0, true, 0, 0);
+        recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
+
+        recipeLayout.getItemStacks().init(1, false, 64, 0);
+        recipeLayout.getItemStacks().set(1, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
     }
 
-    static class UVLightBoxRecipeWrapper extends PneumaticCraftCategory.AbstractCategoryExtension {
-        UVLightBoxRecipeWrapper(UVLightBoxRecipe recipe) {
-            this.addInputItem(PositionedStack.of(recipe.getIn().getMatchingStacks(), 41, 0));
-            this.addInputItem(PositionedStack.of(new ItemStack(ModBlocks.UV_LIGHT_BOX), 73, -2));
-            this.addOutputItem(PositionedStack.of(recipe.getOut(), 105, 0));
+    @Override
+    public void draw(UVLightBoxRecipe recipe, double mouseX, double mouseY) {
+        progressBar.draw(22, 0);
+        Helpers.drawIconAt(icon, 30, -2);
+    }
+
+    @Override
+    public List<String> getTooltipStrings(UVLightBoxRecipe recipe, double mouseX, double mouseY) {
+        List<String> res = new ArrayList<>();
+        if (mouseX >= 23 && mouseX <= 60) {
+            res.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.nei.recipe.uvLightBox"), 32));
         }
+        return res;
+    }
+
+    static Collection<UVLightBoxRecipe> getAllRecipes() {
+        return UV_LIGHT_BOX_RECIPES;
     }
 }

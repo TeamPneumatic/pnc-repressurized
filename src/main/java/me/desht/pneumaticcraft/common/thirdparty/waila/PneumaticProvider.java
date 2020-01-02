@@ -34,9 +34,10 @@ public class PneumaticProvider {
             } else {
                 teInfo = te;
             }
-
-            teInfo.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
-                    .ifPresent(h -> compoundNBT.putFloat("pressure", h.getPressure()));
+            if (teInfo != null) {
+                teInfo.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
+                        .ifPresent(h -> compoundNBT.putFloat("pressure", h.getPressure()));
+            }
         }
     }
 

@@ -1,34 +1,33 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.api.recipe.IHeatFrameCoolingRecipe;
-import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.recipe.IHeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class JEIHeatFrameCoolingCategory extends PneumaticCraftCategory<JEIHeatFrameCoolingCategory.HeatFrameCoolingRecipeWrapper> {
+public class JEIHeatFrameCoolingCategory implements IRecipeCategory<IHeatFrameCoolingRecipe> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
 
-    JEIHeatFrameCoolingCategory(IJeiHelpers jeiHelpers) {
-        super(jeiHelpers);
-
+    JEIHeatFrameCoolingCategory() {
         localizedName = I18n.format("gui.nei.title.heatFrameCooling");
-        background = new ResourceDrawable(Textures.GUI_JEI_MISC_RECIPES, 40, 0, 0, 0, 82, 18) {
-            @Override
-            public int getWidth() {
-                return 160;
-            }
-        };
-        icon = jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.HEAT_FRAME));
+        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
+        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.HEAT_FRAME));
     }
 
     @Override
@@ -37,8 +36,8 @@ public class JEIHeatFrameCoolingCategory extends PneumaticCraftCategory<JEIHeatF
     }
 
     @Override
-    public Class<? extends JEIHeatFrameCoolingCategory.HeatFrameCoolingRecipeWrapper> getRecipeClass() {
-        return HeatFrameCoolingRecipeWrapper.class;
+    public Class<? extends IHeatFrameCoolingRecipe> getRecipeClass() {
+        return IHeatFrameCoolingRecipe.class;
     }
 
     @Override
@@ -56,23 +55,31 @@ public class JEIHeatFrameCoolingCategory extends PneumaticCraftCategory<JEIHeatF
         return icon;
     }
 
-    static List<HeatFrameCoolingRecipeWrapper> getAllRecipes() {
-        return PneumaticCraftRecipes.heatFrameCoolingRecipes.values().stream()
-                .map(HeatFrameCoolingRecipeWrapper::new)
-                .collect(Collectors.toList());
+    @Override
+    public void setIngredients(IHeatFrameCoolingRecipe recipe, IIngredients ingredients) {
+        ingredients.setInputIngredients(Collections.singletonList(recipe.getInput()));
+        ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutput());
     }
 
-    static class HeatFrameCoolingRecipeWrapper extends PneumaticCraftCategory.AbstractCategoryExtension {
-        HeatFrameCoolingRecipeWrapper(IHeatFrameCoolingRecipe recipe) {
-            this.addInputItem(PositionedStack.of(recipe.getInput().getMatchingStacks(), 41, 1));
-            this.addOutputItem(PositionedStack.of(recipe.getOutput(), 105, 1));
-        }
+    @Override
+    public void setRecipe(IRecipeLayout recipeLayout, IHeatFrameCoolingRecipe recipe, IIngredients ingredients) {
+        recipeLayout.getItemStacks().init(0, true, 0, 0);
+        recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
 
-        @Override
-        public void drawInfo(int recipeWidth, int recipeHeight, double mouseX, double mouseY) {
-            super.drawInfo(recipeWidth, recipeHeight, mouseX, mouseY);
+        recipeLayout.getItemStacks().init(1, false, 64, 0);
+        recipeLayout.getItemStacks().set(1, recipe.getOutput());
+    }
 
-            drawTextAt("gui.nei.recipe.heatFrameCooling", 5, 24);
+    @Override
+    public List<String> getTooltipStrings(IHeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
+        List<String> res = new ArrayList<>();
+        if (mouseX >= 23 && mouseX <= 60) {
+            res.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.nei.recipe.heatFrameCooling", recipe.getTemperature() - 273), 32));
         }
+        return res;
+    }
+
+    static Collection<IHeatFrameCoolingRecipe> getAllRecipes() {
+        return PneumaticCraftRecipes.heatFrameCoolingRecipes.values();
     }
 }

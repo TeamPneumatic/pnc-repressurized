@@ -1,23 +1,20 @@
-package me.desht.pneumaticcraft.api.recipe;
+package me.desht.pneumaticcraft.api.crafting.recipe;
 
-import me.desht.pneumaticcraft.common.recipes.BasicPressureChamberRecipe;
+import me.desht.pneumaticcraft.api.crafting.RegisterMachineRecipesEvent;
+import me.desht.pneumaticcraft.api.crafting.StackedIngredient;
+import me.desht.pneumaticcraft.common.recipes.machine.BasicPressureChamberRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public interface IPressureChamberRecipe extends IModRecipe {
     NonNullList<ItemStack> EMPTY_LIST = NonNullList.create();
-    String NBT_TOOLTIP_KEY = "pnc:tooltip_key";
 
     /**
      * Returns the minimum pressure required to craft the recipe. Negative pressures are also acceptable; in this
@@ -37,10 +34,9 @@ public interface IPressureChamberRecipe extends IModRecipe {
 
     /**
      * Get the input items for this recipe. This is primarily intended for recipe display purposes by
-     * JEI or any other recipe display mod.  This is a list of lists so that alternates can be displayed where
-     * multiple items match a tag, for example.
+     * JEI or any other recipe display mod.
      */
-    default List<List<ItemStack>> getInputsForDisplay() {
+    default List<Ingredient> getInputsForDisplay() {
         return Collections.emptyList();
     }
 
@@ -66,36 +62,26 @@ public interface IPressureChamberRecipe extends IModRecipe {
      * implementation is responsible for removing the items that have been used from the {@code chamberHandler}. The
      * implementation must also return the list of crafted items, for the Pressure Chamber to insert.
      *
-     * @param chamberHandler  items in the pressure chamber; should be modified to remove recipe input items.
+     * @param chamberHandler items in the pressure chamber; should be modified to remove recipe input items.
      * @return the resulting items; these do not have to be copies - the Pressure Chamber itself will make sure they are copied
      */
     @Nonnull NonNullList<ItemStack> craftRecipe(@Nonnull ItemStackHandler chamberHandler);
 
     /**
-     * Store a translation key to be displayed as an item tooltip by JEI (or in theory any other recipe display system)
+     * Return a translation key for a supplementary tooltip to be displayed on the ingredient or resulting item.  For
+     * use in recipe display systems such as JEI.
      *
-     * @param stack the stack to modify
-     * @param key the translation key
+     * @param input true if this is an input item, false if an output item
+     * @param slot the slot number
+     * @return a tooltip translation key, or "" for no tooltip
      */
-    static void setTooltipKey(ItemStack stack, String key) {
-        if (!stack.hasTag()) stack.setTag(new CompoundNBT());
-        stack.getTag().putString(NBT_TOOLTIP_KEY, key);
+    default String getTooltipKey(boolean input, int slot) {
+        return "";
     }
 
     /**
-     * Retrieve a translation key from the item for recipe display purposes.
-     *
-     * @param stack the stack to query
-     * @return the translation key, or null if no key has been set
-     */
-    static String getTooltipKey(ItemStack stack) {
-        if (!stack.hasTag() || !stack.getTag().contains(NBT_TOOLTIP_KEY, Constants.NBT.TAG_STRING)) return null;
-        return stack.getTag().getString(NBT_TOOLTIP_KEY);
-    }
-
-    /**
-     * Create a standard Pressure Chamber recipe.  Note that each input ingredient represents a
-     * single item, but the same item can appear in the input list more than once.
+     * Create a standard Pressure Chamber recipe. See also {@link StackedIngredient}, which may be helpful if you
+     * want to add a recipe taking multiples of the same input item.
      *
      * @param id unique recipe ID
      * @param inputs a list of input ingredients
@@ -105,26 +91,5 @@ public interface IPressureChamberRecipe extends IModRecipe {
      */
     static IPressureChamberRecipe basicRecipe(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs) {
         return new BasicPressureChamberRecipe(id, inputs, pressureRequired, outputs);
-    }
-
-    /**
-     * Used for client-side sync'ing of recipes: do not call directly!
-     * @param buf a packet buffer
-     * @return a deserialised recipe
-     */
-    static IPressureChamberRecipe read(PacketBuffer buf) {
-        ResourceLocation id = buf.readResourceLocation();
-        float pressure = buf.readFloat();
-        int nInputs = buf.readVarInt();
-        List<Ingredient> in = new ArrayList<>();
-        for (int i = 0; i < nInputs; i++) {
-            in.add(Ingredient.read(buf));
-        }
-        int nOutputs = buf.readVarInt();
-        ItemStack[] out = new ItemStack[nOutputs];
-        for (int i = 0; i < nOutputs; i++) {
-            out[i] = buf.readItemStack();
-        }
-        return new BasicPressureChamberRecipe(id, in, pressure, out);
     }
 }

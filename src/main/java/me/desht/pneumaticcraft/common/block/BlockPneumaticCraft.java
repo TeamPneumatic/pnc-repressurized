@@ -411,7 +411,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (ourTE != null && ourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing).isPresent()) {
                 // handle pneumatic connections to neighbouring air handlers
                 TileEntity te = worldIn.getTileEntity(currentPos.offset(facing));
-                boolean b = te != null && te.getCapability (PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY, facing.getOpposite()).isPresent();
+                boolean b = te != null && te.getCapability (PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing.getOpposite()).isPresent();
                 stateIn = stateIn.with(CONNECTION_PROPERTIES[facing.getIndex()], b);
                 return stateIn;
             }

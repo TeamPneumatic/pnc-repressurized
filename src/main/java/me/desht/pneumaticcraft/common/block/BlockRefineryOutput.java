@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.recipe.IRefineryRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.IRefineryRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryOutput;

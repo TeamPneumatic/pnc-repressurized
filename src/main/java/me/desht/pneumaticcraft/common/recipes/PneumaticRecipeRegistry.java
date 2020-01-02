@@ -1,27 +1,34 @@
 package me.desht.pneumaticcraft.common.recipes;
 
-import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
+import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
+import me.desht.pneumaticcraft.api.crafting.IModRecipeSerializer;
+import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
+import me.desht.pneumaticcraft.api.crafting.recipe.IModRecipe;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeResource;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
+import net.minecraft.util.ResourceLocation;
 
-public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
+import java.util.function.Supplier;
 
-    private static final PneumaticRecipeRegistry INSTANCE = new PneumaticRecipeRegistry();
+public enum PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
+    INSTANCE;
 
     public static PneumaticRecipeRegistry getInstance() {
         return INSTANCE;
     }
 
     @Override
-    public void registerDefaultStaticAmadronOffer(TradeResource input, TradeResource output) {
-        AmadronOffer offer = new AmadronOffer(input, output);
-        AmadronOfferManager.getInstance().addStaticOffer(offer);
+    public void registerDefaultStaticAmadronOffer(AmadronTradeResource input, AmadronTradeResource output) {
+        AmadronOfferManager.getInstance().addStaticOffer(new AmadronOffer(input, output));
     }
 
     @Override
-    public void registerDefaultPeriodicAmadronOffer(TradeResource input, TradeResource output) {
-        AmadronOffer offer = new AmadronOffer(input, output);
-        AmadronOfferManager.getInstance().addPeriodicOffer(offer);
+    public void registerDefaultPeriodicAmadronOffer(AmadronTradeResource input, AmadronTradeResource output) {
+        AmadronOfferManager.getInstance().addPeriodicOffer(new AmadronOffer(input, output));
+    }
+
+    @Override
+    public void registerSerializer(ResourceLocation recipeType, Supplier<IModRecipeSerializer<? extends IModRecipe>> serializer) {
+        ModCraftingHelper.registerSerializer(recipeType, serializer);
     }
 }

@@ -64,8 +64,10 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             minecraft.player.closeScreen();
         }
-        return !entityFilter.keyPressed(keyCode, scanCode, modifiers)
-                && entityFilter.func_212955_f() || super.keyPressed(keyCode, scanCode, modifiers);
+
+        return entityFilter.keyPressed(keyCode, scanCode, modifiers)
+                || entityFilter.func_212955_f()
+                || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -81,5 +83,4 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
         }
         if (!hasAmmo) curInfo.add("gui.tab.problems.sentryTurret.noAmmo");
     }
-
 }

@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.HACKING_CAPABILITY;
+import static me.desht.pneumaticcraft.api.PNCCapabilities.HACKING_CAPABILITY;
 
 public class CapabilityHacking {
     public static void register() {

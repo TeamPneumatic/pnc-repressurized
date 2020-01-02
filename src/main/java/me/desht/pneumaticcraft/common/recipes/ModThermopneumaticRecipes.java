@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.common.recipes;
 
-import me.desht.pneumaticcraft.api.recipe.IThermopneumaticProcessingPlantRecipe;
-import me.desht.pneumaticcraft.api.recipe.RegisterMachineRecipesEvent;
-import me.desht.pneumaticcraft.api.recipe.TemperatureRange;
+import me.desht.pneumaticcraft.api.crafting.RegisterMachineRecipesEvent;
+import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
+import me.desht.pneumaticcraft.api.crafting.recipe.IThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.common.core.ModFluids;
+import me.desht.pneumaticcraft.common.recipes.machine.BasicThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tags.ItemTags;

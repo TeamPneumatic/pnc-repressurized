@@ -49,6 +49,6 @@ public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions<JetB
 
     public void tick() {
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-        checkBox.enabled = handler.getUpgradeCount(EquipmentSlotType.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) >= 8;
+        checkBox.active = handler.getUpgradeCount(EquipmentSlotType.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) >= 8;
     }
 }

@@ -52,7 +52,6 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
 
         // "te" always refers to the master refinery; the bottom block of the stack
         outputs = new ArrayList<>();
-//        refineries.add(te);
         TileEntity te1 = te.findAdjacentOutput();
         if (te1 instanceof TileEntityRefineryOutput) {
             int i = 0;
@@ -64,17 +63,6 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
                 outputs.add(teRO);
                 te1 = te1.getWorld().getTileEntity(te1.getPos().up());
             } while (te1 instanceof TileEntityRefineryOutput);
-
-//            addButton(new WidgetTank(x, y, te1.getOutputTank()));
-//            outputs.add(te1);
-//            TileEntity te1 = te.getWorld().getTileEntity(te1.getPos().up();
-//            while (te1.getTileCache()[Direction.UP.ordinal()].getTileEntity() instanceof TileEntityRefineryOutput) {
-//                te1 = (TileEntityRefineryOutput) te1.getTileCache()[Direction.UP.ordinal()].getTileEntity();
-//                x += 20;
-//                y -= 4;
-//                if (outputs.size() < 4) addButton(new WidgetTank(x, y, te1.getOutputTank()));
-//                outputs.add(te1);
-//            }
         }
 
         if (outputs.size() < 2 || outputs.size() > 4) {

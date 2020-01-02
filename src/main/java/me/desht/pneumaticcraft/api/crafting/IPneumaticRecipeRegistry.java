@@ -1,10 +1,15 @@
-package me.desht.pneumaticcraft.api.recipe;
+package me.desht.pneumaticcraft.api.crafting;
 
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeResource;
+import me.desht.pneumaticcraft.api.crafting.recipe.IModRecipe;
+import net.minecraft.util.ResourceLocation;
+
+import java.util.function.Supplier;
 
 /**
  * Get an instance of this via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getRecipeRegistry()}.
  * Note that all recipe types may also be manipulated via CraftTweaker.
+ * <p>
+ * Note that machine recipe registration is now event-based; see {@link RegisterMachineRecipesEvent}.
  *
  * @author MineMaarten
  */
@@ -19,7 +24,7 @@ public interface IPneumaticRecipeRegistry {
      * @param output an ItemStack or FluidStack
      * @throws IllegalArgumentException if the input and output are not both either an ItemStack or FluidStack
      */
-    void registerDefaultStaticAmadronOffer(TradeResource input, TradeResource output);
+    void registerDefaultStaticAmadronOffer(AmadronTradeResource input, AmadronTradeResource output);
 
     /**
      * Adds an Amadron offer. Both the input and output can either be ItemStack or FluidStack.
@@ -31,5 +36,15 @@ public interface IPneumaticRecipeRegistry {
      * @param output an ItemStack or FluidStack
      * @throws IllegalArgumentException if the input and output are not both either an ItemStack or FluidStack
      */
-    void registerDefaultPeriodicAmadronOffer(TradeResource input, TradeResource output);
+    void registerDefaultPeriodicAmadronOffer(AmadronTradeResource input, AmadronTradeResource output);
+
+    /**
+     * Register a recipe serializer for the given recipe type, which is the value of {@link IModRecipe#getRecipeType()}.
+     * The serializer will be used for loading recipes from JSON data packs, as well as sync'ing recipes from server
+     * to client.
+     *
+     * @param recipeType a recipe type resource location
+     * @param serializer a serializer for this recipe type
+     */
+    void registerSerializer(ResourceLocation recipeType, Supplier<IModRecipeSerializer<? extends IModRecipe>> serializer);
 }

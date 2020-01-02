@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.recipe.IHeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.recipe.IHeatFrameCoolingRecipe;
-import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;

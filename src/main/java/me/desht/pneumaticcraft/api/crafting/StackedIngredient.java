@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.recipes;
+package me.desht.pneumaticcraft.api.crafting;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
@@ -10,12 +10,14 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
@@ -23,17 +25,26 @@ import java.util.stream.Stream;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 /**
- * Like a vanilla ingredient, but also checks the size of the input ingredient
+ * Like a vanilla Ingredient, but also compares the size of the input ingredient.  Useful for machine recipes which
+ * can take multiples of an input item.
  */
 public class StackedIngredient extends Ingredient {
     public static final StackedIngredient EMPTY = new StackedIngredient(Stream.empty());
 
-    protected StackedIngredient(Stream<? extends IItemList> itemLists) {
+    private StackedIngredient(Stream<? extends IItemList> itemLists) {
         super(itemLists);
     }
 
     public static Ingredient fromTag(Tag<Item> tag, int count) {
         return StackedIngredient.fromItemListStream(Stream.of(new TagListStacked(tag, count)));
+    }
+
+    public static Ingredient fromStacks(ItemStack... stacks) {
+        return fromItemListStream(Arrays.stream(stacks).map(SingleItemList::new));
+    }
+
+    public static Ingredient fromItems(int count, IItemProvider... itemsIn) {
+        return fromItemListStream(Arrays.stream(itemsIn).map((itemProvider) -> new SingleItemList(new ItemStack(itemProvider, count))));
     }
 
     public static StackedIngredient fromItemListStream(Stream<? extends Ingredient.IItemList> stream) {

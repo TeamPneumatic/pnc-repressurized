@@ -45,7 +45,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
         checkBoxUseNBT = new WidgetCheckBox(guiLeft + 4, guiTop + 108, 0xFF404040, "Match Item NBT", b -> {
             progWidget.useNBT = b.checked;
-            checkBoxMatchBlock.enabled = !b.checked;
+            checkBoxMatchBlock.active = !b.checked;
         });
         checkBoxUseNBT.setTooltip(Arrays.asList("Check to handle items like Enchanted Books", "or Fireworks as different."));
         checkBoxUseNBT.checked = progWidget.useNBT;
@@ -53,10 +53,10 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
         checkBoxUseOreDict = new WidgetCheckBox(guiLeft + 4, guiTop + 120, 0xFF404040, "Match Item Tags", b -> {
             progWidget.useItemTags = b.checked;
-            checkBoxUseDamage.enabled = !b.checked;
-            checkBoxUseNBT.enabled = !b.checked;
-            checkBoxUseModSimilarity.enabled = !b.checked;
-            checkBoxMatchBlock.enabled = !b.checked;
+            checkBoxUseDamage.active = !b.checked;
+            checkBoxUseNBT.active = !b.checked;
+            checkBoxUseModSimilarity.active = !b.checked;
+            checkBoxMatchBlock.active = !b.checked;
         });
         checkBoxUseOreDict.setTooltip(Arrays.asList("Check to handle items with", "common Item Tags as the same."));
         checkBoxUseOreDict.checked = progWidget.useItemTags;
@@ -64,10 +64,10 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
         checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 4, guiTop + 132, 0xFF404040, "Match by Mod", b -> {
             progWidget.useModSimilarity = b.checked;
-            checkBoxUseDamage.enabled = !b.checked;
-            checkBoxUseNBT.enabled = !b.checked;
-            checkBoxUseOreDict.enabled = !b.checked;
-            checkBoxMatchBlock.enabled = !b.checked;
+            checkBoxUseDamage.active = !b.checked;
+            checkBoxUseNBT.active = !b.checked;
+            checkBoxUseOreDict.active = !b.checked;
+            checkBoxMatchBlock.active = !b.checked;
         });
         checkBoxUseModSimilarity.setTooltip(Arrays.asList("Check to handle items from the", "same mod as the same."));
         checkBoxUseModSimilarity.checked = progWidget.useModSimilarity;
@@ -75,9 +75,9 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
         checkBoxMatchBlock = new WidgetCheckBox(guiLeft + 4, guiTop + 144, 0xFF404040, "Match by Block", b -> {
             progWidget.matchBlock = b.checked;
-            checkBoxUseModSimilarity.enabled = !b.checked;
-            checkBoxUseNBT.enabled = !b.checked;
-            checkBoxUseOreDict.enabled = !b.checked;
+            checkBoxUseModSimilarity.active = !b.checked;
+            checkBoxUseNBT.active = !b.checked;
+            checkBoxUseOreDict.active = !b.checked;
         });
         checkBoxMatchBlock.setTooltip(Arrays.asList("Check to match by block instead of", "dropped item. Useful for blocks", "which don't drop an item.", TextFormatting.GRAY.toString() + TextFormatting.ITALIC + "Only used by the 'Dig' programming piece."));
         checkBoxMatchBlock.checked = progWidget.matchBlock;
@@ -91,14 +91,16 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
             addButton(variableField);
         }
 
-        checkBoxUseDamage.enabled = !checkBoxUseOreDict.checked && !checkBoxUseModSimilarity.checked;
-        checkBoxUseNBT.enabled = !checkBoxUseOreDict.checked && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
-        checkBoxUseOreDict.enabled = !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
-        checkBoxUseModSimilarity.enabled = !checkBoxUseOreDict.checked && !checkBoxMatchBlock.checked;
-        checkBoxMatchBlock.enabled = !checkBoxUseNBT.checked && !checkBoxUseModSimilarity.checked && !checkBoxUseOreDict.checked;
+        checkBoxUseDamage.active = !checkBoxUseOreDict.checked && !checkBoxUseModSimilarity.checked;
+        checkBoxUseNBT.active = !checkBoxUseOreDict.checked && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
+        checkBoxUseOreDict.active = !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
+        checkBoxUseModSimilarity.active = !checkBoxUseOreDict.checked && !checkBoxMatchBlock.checked;
+        checkBoxMatchBlock.active = !checkBoxUseNBT.checked && !checkBoxUseModSimilarity.checked && !checkBoxUseOreDict.checked;
 
         if (searchGui != null) progWidget.setFilter(searchGui.getSearchStack());
         if (invSearchGui != null) progWidget.setFilter(invSearchGui.getSearchStack());
+
+        checkBoxUseDamage.active = progWidget.getFilter().getMaxDamage() > 0;
     }
 
     private void openSearcher() {

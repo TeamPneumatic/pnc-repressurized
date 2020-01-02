@@ -1,7 +1,10 @@
-package me.desht.pneumaticcraft.common.recipes;
+package me.desht.pneumaticcraft.common.recipes.machine;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.common.recipes.AbstractRecipeSerializer;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -14,6 +17,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +25,8 @@ import java.util.Random;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-public class PressureChamberVacuumDisenchantHandler implements IPressureChamberRecipe {
-    private static final ResourceLocation ID = RL("pressure_chamber_disenchanting");
+public class PressureChamberDisenchantingRecipe implements IPressureChamberRecipe {
+    public static final ResourceLocation ID = RL("pressure_chamber_disenchanting");
 
     @Override
     public float getCraftingPressure() {
@@ -71,28 +75,29 @@ public class PressureChamberVacuumDisenchantHandler implements IPressureChamberR
     }
 
     @Override
-    public List<List<ItemStack>> getInputsForDisplay() {
-        List<List<ItemStack>> res = new ArrayList<>();
-
+    public List<Ingredient> getInputsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         pick.addEnchantment(Enchantments.FORTUNE, 1);
-        IPressureChamberRecipe.setTooltipKey(pick, "gui.nei.tooltip.vacuumEnchantItem");
-        res.add(NonNullList.from(ItemStack.EMPTY, pick));
 
-        ItemStack book = new ItemStack(Items.BOOK);
-        res.add(NonNullList.from(ItemStack.EMPTY, book));
-
-        return res;
+        return ImmutableList.of(Ingredient.fromStacks(pick), Ingredient.fromItems(Items.BOOK));
     }
 
     @Override
     public NonNullList<ItemStack> getResultForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
-        IPressureChamberRecipe.setTooltipKey(pick, "gui.nei.tooltip.vacuumEnchantItemOut");
         ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
         book.addEnchantment(Enchantments.FORTUNE, 1);
-        IPressureChamberRecipe.setTooltipKey(book, "gui.nei.tooltip.vacuumEnchantBookOut");
         return NonNullList.from(ItemStack.EMPTY, pick, book);
+    }
+
+    @Override
+    public String getTooltipKey(boolean input, int slot) {
+        switch (slot) {
+            case 0: return "gui.nei.tooltip.vacuumEnchantItem";
+            case 2: return "gui.nei.tooltip.vacuumEnchantItemOut";
+            case 3: return "gui.nei.tooltip.vacuumEnchantBookOut";
+            default: return "";
+        }
     }
 
     @Override
@@ -106,12 +111,25 @@ public class PressureChamberVacuumDisenchantHandler implements IPressureChamberR
     }
 
     @Override
-    public void write(PacketBuffer buf) {
-        buf.writeResourceLocation(ID);
-        buf.writeFloat(getCraftingPressure());
-        buf.writeVarInt(2);
-        getInputsForDisplay().get(0).forEach(s -> Ingredient.fromStacks(s).write(buf));
-        buf.writeVarInt(2);
-        getResultForDisplay().forEach(buf::writeItemStack);
+    public ResourceLocation getRecipeType() {
+        return ID;
+    }
+
+    public static class Serializer extends AbstractRecipeSerializer<PressureChamberDisenchantingRecipe> {
+        @Override
+        public PressureChamberDisenchantingRecipe read(ResourceLocation recipeId, JsonObject json) {
+            return new PressureChamberDisenchantingRecipe();
+        }
+
+        @Nullable
+        @Override
+        public PressureChamberDisenchantingRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
+            return new PressureChamberDisenchantingRecipe();
+        }
+
+        @Override
+        public void write(PacketBuffer buffer, PressureChamberDisenchantingRecipe recipe) {
+            super.write(buffer, recipe);
+        }
     }
 }

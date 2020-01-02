@@ -1,7 +1,9 @@
-package me.desht.pneumaticcraft.common.recipes;
+package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.recipe.IPressureChamberRecipe;
+import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.common.recipes.AbstractRecipeSerializer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
@@ -10,11 +12,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
+    public static final ResourceLocation RECIPE_TYPE = RL("basic_pressure_chamber");
+
     private final ResourceLocation id;
     private final float pressureRequired;
     private final List<Ingredient> inputs;
@@ -55,14 +61,8 @@ public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
     }
 
     @Override
-    public List<List<ItemStack>> getInputsForDisplay() {
-        List<List<ItemStack>> res = new ArrayList<>();
-        inputs.forEach(ingr -> {
-            NonNullList<ItemStack> l = NonNullList.create();
-            l.addAll(Arrays.asList(ingr.getMatchingStacks()));
-            res.add(l);
-        });
-        return res;
+    public List<Ingredient> getInputsForDisplay() {
+        return new ArrayList<>(inputs);
     }
 
     @Override
@@ -84,13 +84,8 @@ public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
     }
 
     @Override
-    public void write(PacketBuffer buf) {
-        buf.writeResourceLocation(getId());
-        buf.writeFloat(getCraftingPressure());
-        buf.writeVarInt(inputs.size());
-        inputs.forEach(i -> i.write(buf));
-        buf.writeVarInt(outputs.size());
-        outputs.forEach(buf::writeItemStack);
+    public ResourceLocation getRecipeType() {
+        return RECIPE_TYPE;
     }
 
     @Nonnull
@@ -109,5 +104,41 @@ public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
         }
 
         return outputs;
+    }
+
+    public static class Serializer extends AbstractRecipeSerializer<BasicPressureChamberRecipe> {
+        @Override
+        public BasicPressureChamberRecipe read(ResourceLocation recipeId, JsonObject json) {
+            // TODO when we add support for data pack machine recipes
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public BasicPressureChamberRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
+            float pressure = buffer.readFloat();
+            int nInputs = buffer.readVarInt();
+            List<Ingredient> in = new ArrayList<>();
+            for (int i = 0; i < nInputs; i++) {
+                in.add(Ingredient.read(buffer));
+            }
+            int nOutputs = buffer.readVarInt();
+            ItemStack[] out = new ItemStack[nOutputs];
+            for (int i = 0; i < nOutputs; i++) {
+                out[i] = buffer.readItemStack();
+            }
+            return new BasicPressureChamberRecipe(recipeId, in, pressure, out);
+        }
+
+        @Override
+        public void write(PacketBuffer buffer, BasicPressureChamberRecipe recipe) {
+            super.write(buffer, recipe);
+
+            buffer.writeFloat(recipe.getCraftingPressure());
+            buffer.writeVarInt(recipe.inputs.size());
+            recipe.inputs.forEach(i -> i.write(buffer));
+            buffer.writeVarInt(recipe.outputs.size());
+            recipe.outputs.forEach(buffer::writeItemStack);
+        }
     }
 }

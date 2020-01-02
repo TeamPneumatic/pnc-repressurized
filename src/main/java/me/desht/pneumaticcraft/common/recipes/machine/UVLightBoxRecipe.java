@@ -1,10 +1,10 @@
-package me.desht.pneumaticcraft.common.recipes;
+package me.desht.pneumaticcraft.common.recipes.machine;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 
 /**
- * Not a true recipe, but mainly for JEI purposes.
+ * Not a true recipe; mainly for JEI purposes.
  * Maybe one day...
  */
 public class UVLightBoxRecipe {

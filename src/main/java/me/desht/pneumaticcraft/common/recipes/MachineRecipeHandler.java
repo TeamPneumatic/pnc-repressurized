@@ -1,10 +1,15 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.api.recipe.*;
+import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.RegisterMachineRecipesEvent;
+import me.desht.pneumaticcraft.api.crafting.StackedIngredient;
+import me.desht.pneumaticcraft.api.crafting.recipe.*;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.network.PacketSyncRecipes;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.recipes.machine.*;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -93,6 +98,7 @@ public class MachineRecipeHandler {
         @SubscribeEvent
         public static void serverLogin(PlayerEvent.PlayerLoggedInEvent evt) {
             NetworkHandler.sendNonLocal((ServerPlayerEntity) evt.getPlayer(), syncPacket());
+            NetworkHandler.sendNonLocal((ServerPlayerEntity) evt.getPlayer(), new PacketSyncAmadronOffers());
         }
     }
 
@@ -101,6 +107,15 @@ public class MachineRecipeHandler {
         @SubscribeEvent
         public static void onRegister(RegistryEvent.Register<IRecipeSerializer<?>> event) {
             CraftingHelper.register(StackedIngredient.Serializer.ID, StackedIngredient.Serializer.INSTANCE);
+
+            ModCraftingHelper.registerSerializer(AssemblyRecipe.RECIPE_TYPE, AssemblyRecipe.Serializer::new);
+            ModCraftingHelper.registerSerializer(BasicPressureChamberRecipe.RECIPE_TYPE, BasicPressureChamberRecipe.Serializer::new);
+            ModCraftingHelper.registerSerializer(PressureChamberEnchantingRecipe.ID, PressureChamberEnchantingRecipe.Serializer::new);
+            ModCraftingHelper.registerSerializer(PressureChamberDisenchantingRecipe.ID, PressureChamberDisenchantingRecipe.Serializer::new);
+            ModCraftingHelper.registerSerializer(BasicThermopneumaticProcessingPlantRecipe.RECIPE_TYPE, BasicThermopneumaticProcessingPlantRecipe.Serializer::new);
+            ModCraftingHelper.registerSerializer(ExplosionCraftingRecipe.RECIPE_TYPE, ExplosionCraftingRecipe.Serializer::new);
+            ModCraftingHelper.registerSerializer(HeatFrameCoolingRecipe.RECIPE_TYPE, HeatFrameCoolingRecipe.Serializer::new);
+            ModCraftingHelper.registerSerializer(RefineryRecipe.RECIPE_TYPE, RefineryRecipe.Serializer::new);
         }
     }
 }

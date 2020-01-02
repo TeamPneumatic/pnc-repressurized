@@ -1,13 +1,16 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
+import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.config.aux.AmadronOfferPeriodicConfig;
 import me.desht.pneumaticcraft.common.config.aux.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeResource;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.merchant.villager.VillagerTrades;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -16,16 +19,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.items.IItemHandler;
 
 import java.io.IOException;
 import java.util.*;
 
-public class AmadronOfferManager {
-    private static final AmadronOfferManager CLIENT_INSTANCE = new AmadronOfferManager();
-    private static final AmadronOfferManager SERVER_INSTANCE = new AmadronOfferManager();
+public enum AmadronOfferManager {
+    INSTANCE;
+//    private static final AmadronOfferManager CLIENT_INSTANCE = new AmadronOfferManager();
+//    private static final AmadronOfferManager SERVER_INSTANCE = new AmadronOfferManager();
 
     private final LinkedHashSet<AmadronOffer> staticOffers = new LinkedHashSet<>();
     private final List<AmadronOffer> periodicOffers = new ArrayList<>();  // a list due to random access needs
@@ -33,7 +35,8 @@ public class AmadronOfferManager {
     private final LinkedHashSet<AmadronOffer> allOffers = new LinkedHashSet<>();
 
     public static AmadronOfferManager getInstance() {
-        return EffectiveSide.get() == LogicalSide.SERVER ? SERVER_INSTANCE : CLIENT_INSTANCE;
+        return INSTANCE;
+//        return EffectiveSide.get() == LogicalSide.SERVER ? SERVER_INSTANCE : CLIENT_INSTANCE;
     }
 
     public Collection<AmadronOffer> getStaticOffers() {
@@ -86,7 +89,7 @@ public class AmadronOfferManager {
     }
 
     /**
-     * Call client-side to sync up the offer list.  It is important that the offer references in allOffers point to
+     * Called client-side to sync up the offer list.  It is important that the offer references in allOffers point to
      * the same objects in staticOffers after syncing, otherwise custom offer stock levels etc. will not be properly
      * serialized in single-player instance.  While custom offers may seem pointless in a single-player world, this
      * also applies to 'open to lan' worlds.
@@ -97,6 +100,7 @@ public class AmadronOfferManager {
         selectedPeriodicOffers.clear();
         selectedPeriodicOffers.addAll(newSelectedPeriodicOffers);
         recompileOffers();
+        Log.info("Received " + allOffers.size() + " Amadron offers from server");
     }
 
     /**
@@ -143,11 +147,11 @@ public class AmadronOfferManager {
         }
     }
 
-    static IItemHandler getItemHandler(TileEntity te) {
+    public static IItemHandler getItemHandler(TileEntity te) {
         return IOHelper.getInventoryForTE(te).map(handler -> handler).orElse(null);
     }
 
-    static IFluidHandler getFluidHandler(TileEntity te) {
+    public static IFluidHandler getFluidHandler(TileEntity te) {
         return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).map(handler -> handler).orElse(null);
     }
 
@@ -160,6 +164,9 @@ public class AmadronOfferManager {
         }
 
         recompileOffers();
+
+        // send the new trade list to all connected clients
+        NetworkHandler.sendToAll(new PacketSyncAmadronOffers());
     }
 
     /**
@@ -184,52 +191,52 @@ public class AmadronOfferManager {
 
         // TODO move to JSON
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new ItemStack(Items.EMERALD, 8)),
-                TradeResource.of(new ItemStack(ModItems.PCB_BLUEPRINT))
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
+                AmadronTradeResource.of(new ItemStack(ModItems.PCB_BLUEPRINT))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new ItemStack(Items.EMERALD, 8)),
-                TradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL))
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
+                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new ItemStack(Items.EMERALD, 8)),
-                TradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_LASER))
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
+                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_LASER))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new ItemStack(Items.EMERALD, 14)),
-                TradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL_LASER))
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 14)),
+                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL_LASER))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.OIL, 5000)),
-                TradeResource.of(new ItemStack(Items.EMERALD, 1))
+                AmadronTradeResource.of(new FluidStack(ModFluids.OIL, 5000)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 1))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.OIL, 5000)),
-                TradeResource.of(new ItemStack(Items.EMERALD))
+                AmadronTradeResource.of(new FluidStack(ModFluids.OIL, 5000)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.DIESEL, 4000)),
-                TradeResource.of(new ItemStack(Items.EMERALD))
+                AmadronTradeResource.of(new FluidStack(ModFluids.DIESEL, 4000)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.KEROSENE, 3000)),
-                TradeResource.of(new ItemStack(Items.EMERALD))
+                AmadronTradeResource.of(new FluidStack(ModFluids.KEROSENE, 3000)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.GASOLINE, 2000)),
-                TradeResource.of(new ItemStack(Items.EMERALD))
+                AmadronTradeResource.of(new FluidStack(ModFluids.GASOLINE, 2000)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new FluidStack(ModFluids.LPG, 1000)),
-                TradeResource.of(new ItemStack(Items.EMERALD))
+                AmadronTradeResource.of(new FluidStack(ModFluids.LPG, 1000)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new ItemStack(Items.EMERALD)),
-                TradeResource.of(new FluidStack(ModFluids.OIL, 1000))
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD)),
+                AmadronTradeResource.of(new FluidStack(ModFluids.OIL, 1000))
         ));
         addStaticOffer(new AmadronOffer(
-                TradeResource.of(new ItemStack(Items.EMERALD, 5)),
-                TradeResource.of(new FluidStack(ModFluids.LUBRICANT, 1000))
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 5)),
+                AmadronTradeResource.of(new FluidStack(ModFluids.LUBRICANT, 1000))
         ));
 
         addVillagerTrades();
@@ -244,8 +251,8 @@ public class AmadronOfferManager {
                 try {
                     MerchantOffer offer = trade.getOffer(null, rand);
                     addPeriodicOffer(new AmadronOffer(
-                            TradeResource.of(offer.getBuyingStackFirst()),
-                            TradeResource.of(offer.getSellingStack())
+                            AmadronTradeResource.of(offer.getBuyingStackFirst()),
+                            AmadronTradeResource.of(offer.getSellingStack())
                     ));
                 } catch (NullPointerException ignored) {
                     // some offers need a non-null entity; all we can do is ignore those

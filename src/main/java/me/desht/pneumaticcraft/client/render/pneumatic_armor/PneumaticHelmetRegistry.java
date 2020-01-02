@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
@@ -83,7 +83,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
 
     @Override
     public List<IHackableEntity> getCurrentEntityHacks(Entity entity) {
-        return entity.getCapability(PneumaticRegistry.HACKING_CAPABILITY).map(IHacking::getCurrentHacks).orElse(Collections.emptyList());
+        return entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).map(IHacking::getCurrentHacks).orElse(Collections.emptyList());
     }
 
     @Override

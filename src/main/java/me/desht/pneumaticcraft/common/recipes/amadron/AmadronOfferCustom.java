@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
@@ -35,11 +36,11 @@ public class AmadronOfferCustom extends AmadronOffer {
     private int pendingPayments;
     private TileEntity cachedInput, cachedOutput;
 
-    public AmadronOfferCustom(TradeResource input, TradeResource output, PlayerEntity offeringPlayer) {
+    public AmadronOfferCustom(AmadronTradeResource input, AmadronTradeResource output, PlayerEntity offeringPlayer) {
         this(input, output, offeringPlayer.getGameProfile().getName(), offeringPlayer.getGameProfile().getId().toString());
     }
 
-    public AmadronOfferCustom(TradeResource input, TradeResource output, String playerName, String playerId) {
+    public AmadronOfferCustom(AmadronTradeResource input, AmadronTradeResource output, String playerName, String playerId) {
         super(input, output);
         offeringPlayerName = playerName;
         offeringPlayerId = playerId;
@@ -58,7 +59,7 @@ public class AmadronOfferCustom extends AmadronOffer {
     }
 
     public AmadronOfferCustom invert() {
-        TradeResource temp = input;
+        AmadronTradeResource temp = input;
         input = output;
         output = temp;
         return this;
@@ -122,7 +123,7 @@ public class AmadronOfferCustom extends AmadronOffer {
                 pendingPayments -= paying;
                 switch (getInput().getType()) {
                     case ITEM:
-                        ItemStack deliveringItems = getInput().item;
+                        ItemStack deliveringItems = getInput().getItem();
                         int amount = deliveringItems.getCount() * paying;
                         List<ItemStack> stacks = new ArrayList<>();
                         while (amount > 0) {
@@ -133,7 +134,7 @@ public class AmadronOfferCustom extends AmadronOffer {
                         DroneRegistry.getInstance().deliverItemsAmazonStyle(returningPos, stacks.toArray(new ItemStack[0]));
                         break;
                     case FLUID:
-                        FluidStack deliveringFluid = getInput().fluid.copy();
+                        FluidStack deliveringFluid = getInput().getFluid().copy();
                         deliveringFluid.setAmount(deliveringFluid.getAmount() * paying);
                         DroneRegistry.getInstance().deliverFluidAmazonStyle(returningPos, deliveringFluid);
                         break;
@@ -156,7 +157,7 @@ public class AmadronOfferCustom extends AmadronOffer {
                 inStock -= stock;
                 switch (getInput().getType()) {
                     case ITEM:
-                        ItemStack deliveringItems = getInput().item;
+                        ItemStack deliveringItems = getInput().getItem();
                         int amount = deliveringItems.getCount() * stock;
                         List<ItemStack> stacks = new ArrayList<>();
                         while (amount > 0) {
@@ -168,7 +169,7 @@ public class AmadronOfferCustom extends AmadronOffer {
                         DroneRegistry.getInstance().deliverItemsAmazonStyle(providingPos, stacks.toArray(new ItemStack[0]));
                         break;
                     case FLUID:
-                        FluidStack deliveringFluid = getInput().fluid.copy();
+                        FluidStack deliveringFluid = getInput().getFluid().copy();
                         deliveringFluid.setAmount(deliveringFluid.getAmount() * stock);
                         DroneRegistry.getInstance().deliverFluidAmazonStyle(providingPos, deliveringFluid);
                         break;
@@ -255,7 +256,7 @@ public class AmadronOfferCustom extends AmadronOffer {
 
     public static AmadronOfferCustom loadFromBuf(PacketBuffer buf) {
         AmadronOfferCustom offer = new AmadronOfferCustom(
-                TradeResource.fromPacketBuf(buf), TradeResource.fromPacketBuf(buf),
+                AmadronTradeResource.fromPacketBuf(buf), AmadronTradeResource.fromPacketBuf(buf),
                 buf.readString(), buf.readString()
         );
         if (buf.readBoolean()) {

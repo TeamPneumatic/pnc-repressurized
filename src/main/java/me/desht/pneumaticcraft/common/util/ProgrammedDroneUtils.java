@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -37,8 +38,8 @@ public class ProgrammedDroneUtils {
         upgrades.setStackInSlot(1, new ItemStack(EnumUpgrade.SPEED.getItem(), 10));
         tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgrades.serializeNBT());
         tag.put("Inventory", new CompoundNBT());
-        tag.putFloat("currentAir", 100000);
         drone.readAdditional(tag);
+        drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> h.addAir(100000));
 
         drone.setCustomName(new TranslationTextComponent("drone.amadronDeliveryDrone"));
 
@@ -129,7 +130,6 @@ public class ProgrammedDroneUtils {
             widgetImport.setUseCount(true);
             widgetImport.setCount(stack.getCount());
             ProgWidgetItemFilter filter = ProgWidgetItemFilter.withFilter(stack);
-            filter.useItemDurability = true;
             filter.useNBT = true;
             builder.add(widgetImport, ProgWidgetArea.fromPosition(pos), filter);
         }

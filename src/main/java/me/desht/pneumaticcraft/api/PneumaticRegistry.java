@@ -2,11 +2,10 @@ package me.desht.pneumaticcraft.api;
 
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
-import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.api.recipe.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
@@ -101,12 +100,6 @@ public final class PneumaticRegistry {
          */
         void registerXPFluid(Fluid fluid, int liquidToPointRatio);
     }
-
-    @CapabilityInject(IHacking.class)
-    public static final Capability<IHacking> HACKING_CAPABILITY = null;
-
-//    @CapabilityInject(IAirHandlerMachine.class)
-//    public static final Capability<IAirHandlerMachine> AIR_HANDLER_CAPABILITY = null;
 
     @CapabilityInject(IHeatExchangerLogic.class)
     public static final Capability<IHeatExchangerLogic> HEAT_EXCHANGER_CAPABILITY = null;

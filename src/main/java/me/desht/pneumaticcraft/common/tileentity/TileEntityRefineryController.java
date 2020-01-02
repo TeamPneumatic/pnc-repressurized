@@ -2,10 +2,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
+import me.desht.pneumaticcraft.api.crafting.recipe.IRefineryRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.recipe.IRefineryRecipe;
-import me.desht.pneumaticcraft.api.recipe.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.recipe.TemperatureRange;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;

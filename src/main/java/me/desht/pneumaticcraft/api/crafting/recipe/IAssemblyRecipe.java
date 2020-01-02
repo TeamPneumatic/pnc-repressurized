@@ -1,11 +1,10 @@
-package me.desht.pneumaticcraft.api.recipe;
+package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.recipes.AssemblyRecipe;
+import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipe;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
@@ -43,42 +42,28 @@ public interface IAssemblyRecipe extends IModRecipe {
     boolean matches(ItemStack stack);
 
     /**
-     * Used for client-side sync'ing of recipes: do not call directly!
-     * @param buf a packet buffer
-     * @return a deserialised recipe
-     */
-    static IAssemblyRecipe read(PacketBuffer buf) {
-        ResourceLocation id = buf.readResourceLocation();
-        Ingredient input = Ingredient.read(buf);
-        int amount = buf.readVarInt();
-        ItemStack out = buf.readItemStack();
-        Item program = buf.readItemStack().getItem();
-        return new AssemblyRecipe(id, input, amount, out, program);
-    }
-
-    /**
-     * Create a standard item lasering recipe.
+     * Create a standard item lasering recipe.  See {@link me.desht.pneumaticcraft.api.crafting.StackedIngredient} if
+     * you need a recipe taking multiples of an input item.
      *
      * @param id a unique recipe ID
      * @param input the input ingredient
-     * @param inputAmount the number of ingredients
      * @param output the output item
      * @return a lasering recipe
      */
-    static AssemblyRecipe basicLaserRecipe(ResourceLocation id, @Nonnull Ingredient input, int inputAmount, @Nonnull ItemStack output) {
-        return new AssemblyRecipe(id, input, inputAmount, output, ModItems.ASSEMBLY_PROGRAM_LASER);
+    static AssemblyRecipe basicLaserRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
+        return new AssemblyRecipe(id, input, output, ModItems.ASSEMBLY_PROGRAM_LASER);
     }
 
     /**
-     * Create a standard item drilling recipe.
+     * Create a standard item drilling recipe.  See {@link me.desht.pneumaticcraft.api.crafting.StackedIngredient} if
+     * you need a recipe taking multiples of an input item.
      *
      * @param id a unique recipe ID
      * @param input the input ingredient
-     * @param inputAmount the number of ingredients
      * @param output the output item
      * @return a drilling recipe
      */
-    static AssemblyRecipe basicDrillRecipe(ResourceLocation id, @Nonnull Ingredient input, int inputAmount, @Nonnull ItemStack output) {
-        return new AssemblyRecipe(id, input, inputAmount, output, ModItems.ASSEMBLY_PROGRAM_DRILL);
+    static AssemblyRecipe basicDrillRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
+        return new AssemblyRecipe(id, input, output, ModItems.ASSEMBLY_PROGRAM_DRILL);
     }
 }
