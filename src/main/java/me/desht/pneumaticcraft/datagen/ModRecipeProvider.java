@@ -1,8 +1,10 @@
 package me.desht.pneumaticcraft.datagen;
 
+import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.tubes.*;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.datagen.recipe.ShapedPressurizableRecipeBuilder;
@@ -727,13 +729,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE
         ).build(consumer);
 
+        shaped(EnumUpgrade.SPEED.getItem(), ModItems.LUBRICANT_BUCKET,
+                "LSL/SFS/LSL",
+                'L', Items.LAPIS_LAZULI,
+                'S', Items.SUGAR,
+                'F', new FluidIngredient(ModFluids.LUBRICANT, 1000)
+        ).build(consumer);
+
         // TODO jetboots (tiered?)
 
         specialRecipe(ModRecipes.DRONE_COLOR_CRAFTING).build(consumer, getId("color_drone"));
         specialRecipe(ModRecipes.DRONE_UPGRADE_CRAFTING).build(consumer, getId("drone_upgrade"));
+        specialRecipe(ModRecipes.GUN_AMMO_POTION_CRAFTING).build(consumer, getId("gun_ammo_potion_crafting"));
         specialRecipe(ModRecipes.ONE_PROBE_HELMET_CRAFTING).build(consumer, getId("one_probe_crafting"));
         specialRecipe(ModRecipes.PATCHOULI_BOOK_CRAFTING).build(consumer, getId("patchouli_book_crafting"));
-        specialRecipe(ModRecipes.SPEED_UPGRADE_CRAFTING).build(consumer, getId("speed_upgrade"));
 
         CookingRecipeBuilder.blastingRecipe(Ingredient.fromItems(ModItems.FAILED_PCB), ModItems.EMPTY_PCB, 0.5f, 100)
                 .addCriterion("has_empty_pcb", this.hasItem(ModItems.FAILED_PCB))
@@ -864,6 +873,7 @@ public class ModRecipeProvider extends RecipeProvider {
         return registryName.getPath().replace('/', '_');
     }
 
+    // this wrapper is due to lack of any public constructor method for IngredientNBT
     private static class IngredientNBTWrapper extends IngredientNBT {
         IngredientNBTWrapper(ItemStack stack) {
             super(stack);

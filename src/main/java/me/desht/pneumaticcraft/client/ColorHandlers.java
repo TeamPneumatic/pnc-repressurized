@@ -12,8 +12,8 @@ import me.desht.pneumaticcraft.common.item.IColorableItem;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.tileentity.IHeatTinted;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAbstractHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
@@ -89,8 +89,8 @@ public class ColorHandlers {
         event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
             if (blockAccess != null && pos != null) {
                 TileEntity te = blockAccess.getTileEntity(pos);
-                if (te instanceof TileEntityOmnidirectionalHopper) {
-                    return ((TileEntityOmnidirectionalHopper) te).isCreative ? 0xFFFF60FF : 0xFFFFFFFF;
+                if (te instanceof TileEntityAbstractHopper) {
+                    return ((TileEntityAbstractHopper) te).isCreative ? 0xFFFF80FF : 0xFFFFFFFF;
                 }
             }
             return 0xFFFFFFFF;

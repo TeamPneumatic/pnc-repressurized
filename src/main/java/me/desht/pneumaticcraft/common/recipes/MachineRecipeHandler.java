@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.common.collect.ImmutableMap;
+import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.RegisterMachineRecipesEvent;
 import me.desht.pneumaticcraft.api.crafting.StackedIngredient;
@@ -107,6 +108,7 @@ public class MachineRecipeHandler {
         @SubscribeEvent
         public static void onRegister(RegistryEvent.Register<IRecipeSerializer<?>> event) {
             CraftingHelper.register(StackedIngredient.Serializer.ID, StackedIngredient.Serializer.INSTANCE);
+            CraftingHelper.register(FluidIngredient.Serializer.ID, FluidIngredient.Serializer.INSTANCE);
 
             ModCraftingHelper.registerSerializer(AssemblyRecipe.RECIPE_TYPE, AssemblyRecipe.Serializer::new);
             ModCraftingHelper.registerSerializer(BasicPressureChamberRecipe.RECIPE_TYPE, BasicPressureChamberRecipe.Serializer::new);

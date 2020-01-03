@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  T",
+    "PPP",
+    "SSS"
+  ],
+  "key": {
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "P": {
+      "item": "minecraft:brick"
+    },
+    "S": {
+      "item": "minecraft:cobblestone_slab"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:charging_station"
+  }
+}
