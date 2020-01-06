@@ -37,7 +37,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private ItemStack searchedItemStack = ItemStack.EMPTY;
     private byte state = 0;
     private byte tickCounter = 0;
-    private boolean hasSwitchedThisTick;
 
     private final static byte SLEEP_TICKS = 50;
 
@@ -55,7 +54,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     @Override
     public void tick() {
         super.tick();
-        hasSwitchedThisTick = false;
         if (getWorld().isRemote) {
             if (!isClawDone()) moveClaw();
         } else {
@@ -217,7 +215,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
             if (searchedItemStack.isEmpty()) { // we don't know what we're supposed to pick up
                 reset();
             } else {
-                extracted = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).map(otherInv -> {
+                extracted = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).map(otherInv -> {
                     ItemStack currentStack = itemHandler.getStackInSlot(0);
                     int oldStackSize = currentStack.getCount();
 
@@ -291,14 +289,11 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
             else {
                 ItemStack currentStack = itemHandler.getStackInSlot(0);
                 int startSize = currentStack.getCount();
-                for (int i = 0; i < 6; i++) {
-                    ItemStack excess = IOHelper.insert(te, currentStack, Direction.byIndex(i), false);
-                    itemHandler.setStackInSlot(0, excess);
-                    if (excess.isEmpty()) break;
-                }
+                ItemStack excess = IOHelper.insert(te, currentStack, Direction.UP, false);
+                itemHandler.setStackInSlot(0, excess);
                 currentStack = itemHandler.getStackInSlot(0);
-                if (currentStack.isEmpty() || startSize != currentStack.getCount())
-                    sendDescriptionPacket(); // TODO - is this still needed? Shouldn't @DescSynced on inventory take care of this?
+//                if (currentStack.isEmpty() || startSize != currentStack.getCount())
+//                    sendDescriptionPacket(); // TODO - is this still needed? Shouldn't @DescSynced on inventory take care of this?
 
                 if (!currentStack.isEmpty() && startSize == currentStack.getCount())
                     repeatDropOffSearch(); // target-inventory full or unavailable
@@ -345,16 +340,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         return getBlockState().getBlock() == ModBlocks.ASSEMBLY_IO_UNIT_IMPORT;
     }
 
-    public void switchMode() {
-        if (state <= STATE_SEARCH_SRC) {
-            if (!hasSwitchedThisTick) {
-                hasSwitchedThisTick = true;
-                markDirty();
-                invalidateSystem();
-            }
-        }
-    }
-
     @Override
     public void gotoHomePosition() {
         super.gotoHomePosition();
@@ -399,7 +384,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
             if (stack.getCount() >= recipe.getInputAmount() && recipe.getInput().test(stack)) {
-                return stack;
+                return ItemHandlerHelper.copyStackWithSize(stack, recipe.getInputAmount());
             }
         }
         return ItemStack.EMPTY;
@@ -446,7 +431,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private static int getPlacementSlot(ItemStack exportedItem, TileEntity te) {
         if (te == null || te instanceof TileEntityAssemblyRobot) return -1;
 
-        return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).map(handler -> {
+        return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).map(handler -> {
             for (int slot = 0; slot < handler.getSlots(); slot++) {
                 ItemStack excess = handler.insertItem(slot, exportedItem, true);
                 if (excess.getCount() < exportedItem.getCount()) {
