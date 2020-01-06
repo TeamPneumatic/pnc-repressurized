@@ -4,15 +4,16 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiJetBootsOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
@@ -21,6 +22,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRenderHandler {
+    public static final int BUILDER_MODE_LEVEL = 3;  // tier needed for builder mode
 
     private static final String[] HEADINGS = new String[] { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
 
@@ -36,8 +38,8 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
     }
 
     @Override
-    public Item[] getRequiredUpgrades() {
-        return new Item[] { EnumUpgrade.JET_BOOTS.getItem() };
+    public EnumUpgrade[] getRequiredUpgrades() {
+        return new EnumUpgrade[] { EnumUpgrade.JET_BOOTS };
     }
 
     @Override
@@ -104,8 +106,11 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (jbStat == null) {
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
+            int n = Math.max(1, handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS));
+            ItemStack stack = new ItemStack(EnumUpgrade.JET_BOOTS.getItem(n));
             jbStat = new WidgetAnimatedStat(null, "Jet Boots",
-                    WidgetAnimatedStat.StatIcon.of(EnumUpgrade.JET_BOOTS.getItem()),
+                    WidgetAnimatedStat.StatIcon.of(stack),
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.jetBootsStat);
             jbStat.setMinDimensionsAndReset(0, 0);
             jbStat.addPadding(3, 32);

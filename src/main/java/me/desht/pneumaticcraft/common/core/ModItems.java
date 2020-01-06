@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.core;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.ICustomItemBlock;
 import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
@@ -110,15 +110,15 @@ public class ModItems {
         };
     }
 
-    public static Item getUpgradeItem(EnumUpgrade upgrade) {
-        return Registration.UPGRADES.get(upgrade);
-    }
+//    public static Item getUpgradeItem(EnumUpgrade upgrade) {
+//        return Registration.UPGRADES.get(upgrade);
+//    }
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class Registration {
         public static final List<Item> ALL_ITEMS = new ArrayList<>();
         private static List<BlockItem> all_itemblocks = new ArrayList<>();
-        public static final UpgradeList UPGRADES = new UpgradeList();
+//        public static final UpgradeList UPGRADES = new UpgradeList();
 
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event) {
@@ -191,7 +191,7 @@ public class ModItems {
 
             registerUpgrades(registry);
 
-            ItemPneumaticArmor.initApplicableUpgrades();
+//            ItemPneumaticArmor.initApplicableUpgrades();
 
             ModBlocks.Registration.ALL_BLOCKS.stream()
                     .filter(b -> !(b instanceof AirBlock || b instanceof FlowingFluidBlock))
@@ -207,13 +207,9 @@ public class ModItems {
 
         private static void registerUpgrades(IForgeRegistry<Item> registry) {
             for (EnumUpgrade upgrade : EnumUpgrade.values()) {
-                if (upgrade.isDepLoaded()) {
-                    String upgradeName = upgrade.toString().toLowerCase() + "_upgrade";
-                    Item upgradeItem = new ItemMachineUpgrade(upgradeName, upgrade);
-                    registerItem(registry, upgradeItem);
-                    UPGRADES.add(upgradeItem);
-                } else {
-                    UPGRADES.add(null);
+                for (int tier = 1; tier <= upgrade.getMaxTier(); tier++) {
+                    registerItem(registry, new ItemMachineUpgrade(upgrade, tier));
+//                    UPGRADES.add(upgradeItem);
                 }
             }
         }

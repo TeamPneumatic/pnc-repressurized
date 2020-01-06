@@ -4,13 +4,12 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiDroneDebuggerOptions;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.HashSet;
@@ -54,8 +53,8 @@ public class DroneDebugUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public Item[] getRequiredUpgrades() {
-        return new Item[]{ EnumUpgrade.DISPENSER.getItem() };
+    public EnumUpgrade[] getRequiredUpgrades() {
+        return new EnumUpgrade[]{ EnumUpgrade.DISPENSER };
     }
 
     public static boolean enabledForPlayer(PlayerEntity player) {

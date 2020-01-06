@@ -1,20 +1,18 @@
 package me.desht.pneumaticcraft.common.util.upgrade;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.IntArrayNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class UpgradeCache {
     private final int[] upgradeCount = new int[EnumUpgrade.values().length];
-    private final Map<String,Integer> customUpgradeCount = new HashMap<>();
     private final IUpgradeHolder holder;
     private boolean isValid = false;
     private Direction ejectDirection;
@@ -36,11 +34,6 @@ public class UpgradeCache {
         return upgradeCount[type.ordinal()];
     }
 
-    public int getUpgrades(ItemStack stack) {
-        validate();
-        return customUpgradeCount.getOrDefault(makeUpgradeKey(stack), 0);
-    }
-
     public Direction getEjectDirection() {
         return ejectDirection;
     }
@@ -51,33 +44,34 @@ public class UpgradeCache {
         IItemHandler handler = holder.getUpgradeHandler();
 
         Arrays.fill(upgradeCount, 0);
-        customUpgradeCount.clear();
         ejectDirection = null;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
             if (stack.getItem() instanceof ItemMachineUpgrade) {
-                // native upgrade
-                EnumUpgrade type = ((ItemMachineUpgrade) stack.getItem()).getUpgradeType();
-                upgradeCount[type.ordinal()] += handler.getStackInSlot(i).getCount();
-                if (type == EnumUpgrade.DISPENSER && stack.hasTag()) {
-                    ejectDirection = Direction.byName(NBTUtil.getString(stack, ItemMachineUpgrade.NBT_DIRECTION));
+                ItemMachineUpgrade upgrade = ItemMachineUpgrade.of(stack);
+                EnumUpgrade type = upgrade.getUpgradeType();
+                if (upgradeCount[type.ordinal()] != 0) {
+                    Log.warning("found upgrade " + type + " in multiple slots! Ignoring.");
+                    continue;
                 }
-            } else if (!handler.getStackInSlot(i).isEmpty()) {
-                // custom upgrade, maybe from another mod
-                String key = makeUpgradeKey(stack);
-                customUpgradeCount.put(key, customUpgradeCount.getOrDefault(key, 0) + stack.getCount());
+                upgradeCount[type.ordinal()] = stack.getCount() * upgrade.getTier();
+                handleExtraData(stack, type);
+            } else if (!stack.isEmpty()) {
+                throw new IllegalStateException("found non-upgrade item in an upgrade handler! " + stack);
             }
         }
         isValid = true;
         holder.onUpgradesChanged();
     }
 
+    private void handleExtraData(ItemStack stack, EnumUpgrade type) {
+        if (type == EnumUpgrade.DISPENSER && stack.hasTag()) {
+            ejectDirection = Direction.byName(NBTUtil.getString(stack, ItemMachineUpgrade.NBT_DIRECTION));
+        }
+    }
+
     public IntArrayNBT toNBT() {
         validate();
         return new IntArrayNBT(upgradeCount);
-    }
-
-    private static String makeUpgradeKey(ItemStack stack) {
-        return stack.getItem().getRegistryName().toString();
     }
 }

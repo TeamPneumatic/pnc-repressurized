@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.item.IColorableItem;
-import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.tileentity.IHeatTinted;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAbstractHopper;
@@ -17,17 +16,13 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import javax.annotation.Nonnull;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ColorHandlers {
@@ -40,17 +35,8 @@ public class ColorHandlers {
             }
         }
 
-//        event.getItemColors().register((stack, tintIndex) -> tintIndex == 1 ? getAmmoColor(stack) : 0xFFFFFFFF,
-//                ModItems.GUN_AMMO,
-//                ModItems.GUN_AMMO_INCENDIARY,
-//                ModItems.GUN_AMMO_AP,
-//                ModItems.GUN_AMMO_EXPLOSIVE,
-//                ModItems.GUN_AMMO_WEIGHTED,
-//                ModItems.GUN_AMMO_FREEZING
-//        );
-
         event.getItemColors().register((stack, tintIndex) -> {
-            int n = UpgradableItemUtils.getUpgrades(stack, IItemRegistry.EnumUpgrade.CREATIVE);
+            int n = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.CREATIVE);
             return n > 0 ? 0xFFFF60FF : 0xFFFFFFFF;
         }, ModBlocks.OMNIDIRECTIONAL_HOPPER.asItem(), ModBlocks.LIQUID_HOPPER.asItem());
 
@@ -98,14 +84,14 @@ public class ColorHandlers {
 
         for (Block b : ModBlocks.Registration.ALL_BLOCKS) {
             if (b instanceof BlockPneumaticCraftCamo) {
-                event.getBlockColors().register((state, worldIn, pos, tintIndex) -> {
-                    if (pos == null || worldIn == null) return 0xffffff;
-                    TileEntity te = worldIn.getTileEntity(pos);
-                    if (te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null) {
-                        return Minecraft.getInstance().getBlockColors().getColor(((ICamouflageableTE) te).getCamouflage(), te.getWorld(), pos, tintIndex);
-                    } else {
-                        return 0xffffff;
+                event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
+                    if (blockAccess != null && pos != null) {
+                        TileEntity te = blockAccess.getTileEntity(pos);
+                        if (te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null) {
+                            return event.getBlockColors().getColor(((ICamouflageableTE) te).getCamouflage(), te.getWorld(), pos, tintIndex);
+                        }
                     }
+                    return 0xFFFFFFFF;
                 }, b);
             }
         }
@@ -114,29 +100,16 @@ public class ColorHandlers {
             if (worldIn != null && pos != null) {
                 TileEntity te = worldIn.getTileEntity(pos);
                 if (te instanceof TileEntityAphorismTile) {
-                    int dmg;
                     switch (tintIndex) {
                         case 0: // border
-                            dmg = ((TileEntityAphorismTile) te).getBorderColor();
-                            return DyeColor.byId(dmg).getColorValue();
+                            return DyeColor.byId(((TileEntityAphorismTile) te).getBorderColor()).getColorValue();
                         case 1: // background
-                            dmg = ((TileEntityAphorismTile) te).getBackgroundColor();
-                            return desaturate(DyeColor.byId(dmg).getColorValue());
-                        default:
-                            return 0xFFFFFF;
+                            return desaturate(DyeColor.byId(((TileEntityAphorismTile) te).getBackgroundColor()).getColorValue());
                     }
                 }
             }
-            return 0xFFFFFF;
+            return 0xFFFFFFFF;
         }, ModBlocks.APHORISM_TILE);
-    }
-
-    private static int getAmmoColor(@Nonnull ItemStack stack) {
-        if (stack.getItem() instanceof ItemGunAmmo) {
-            return ((ItemGunAmmo) stack.getItem()).getAmmoColor(stack);
-        } else {
-            return 0x00FFFF00;
-        }
     }
 
     private static int desaturate(int c) {

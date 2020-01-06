@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
@@ -63,9 +62,8 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
         this(ModTileEntityTypes.LIQUID_COMPRESSOR, 5, 7, 5000);
     }
 
-    public TileEntityLiquidCompressor(TileEntityType type, float dangerPressure, float criticalPressure, int volume) {
+    TileEntityLiquidCompressor(TileEntityType type, float dangerPressure, float criticalPressure, int volume) {
         super(type, dangerPressure, criticalPressure, volume, 4);
-        addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
     public FluidTank getTank() {

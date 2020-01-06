@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -63,7 +62,6 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
     public TileEntityAssemblyController() {
         super(ModTileEntityTypes.ASSEMBLY_CONTROLLER,  PneumaticValues.DANGER_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.MAX_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.VOLUME_ASSEMBLY_CONTROLLER, 4);
-        addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
     @Override

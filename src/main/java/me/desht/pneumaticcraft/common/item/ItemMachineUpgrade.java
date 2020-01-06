@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +14,7 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,14 +27,20 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ItemMachineUpgrade extends ItemPneumatic {
     public static final String NBT_DIRECTION = "Facing";
     private final EnumUpgrade upgrade;
+    private final int tier;
 
-    public ItemMachineUpgrade(String registryName, EnumUpgrade upgrade) {
-        super(registryName);
+    public ItemMachineUpgrade(EnumUpgrade upgrade, int tier) {
+        super(upgrade.getItemName(tier));
         this.upgrade = upgrade;
+        this.tier = tier;
     }
 
     public EnumUpgrade getUpgradeType() {
         return upgrade;
+    }
+
+    public int getTier() {
+        return tier;
     }
 
     @Override
@@ -41,9 +48,9 @@ public class ItemMachineUpgrade extends ItemPneumatic {
     public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag par4) {
         if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
             infoList.add(xlate("gui.tooltip.item.upgrade.usedIn"));
-            PneumaticRegistry.getInstance().getItemRegistry().addTooltip(this, infoList);
+            PneumaticRegistry.getInstance().getItemRegistry().addTooltip(upgrade, infoList);
         } else {
-            infoList.add(xlate("gui.tooltip.item.upgrade.shiftMessage"));
+            infoList.add(xlate("gui.tooltip.item.upgrade.shiftMessage").applyTextStyle(TextFormatting.AQUA));
         }
         if (getUpgradeType() == EnumUpgrade.DISPENSER) {
             Direction dir = stack.hasTag() ? Direction.byName(NBTUtil.getString(stack, NBT_DIRECTION)) : null;
@@ -89,5 +96,9 @@ public class ItemMachineUpgrade extends ItemPneumatic {
     @Override
     public Rarity getRarity(ItemStack stack) {
         return getUpgradeType() == EnumUpgrade.CREATIVE ? Rarity.EPIC : Rarity.COMMON;
+    }
+
+    public static ItemMachineUpgrade of(ItemStack stack) {
+        return (ItemMachineUpgrade) stack.getItem();
     }
 }

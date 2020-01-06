@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
@@ -71,8 +71,6 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     public TileEntitySecurityStation() {
         super(ModTileEntityTypes.SECURITY_STATION, 4);
-
-        addApplicableUpgrade(EnumUpgrade.ENTITY_TRACKER, EnumUpgrade.SECURITY, EnumUpgrade.RANGE);
     }
     
     @Override

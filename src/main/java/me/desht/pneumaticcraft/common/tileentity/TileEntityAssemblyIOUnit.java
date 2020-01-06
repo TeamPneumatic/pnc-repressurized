@@ -23,8 +23,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import java.util.Collection;
 
 public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
-    private static final int INVENTORY_SIZE = 1;
-
     @DescSynced
     private boolean shouldClawClose;
     @DescSynced
@@ -40,8 +38,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private byte state = 0;
     private byte tickCounter = 0;
     private boolean hasSwitchedThisTick;
-//    @DescSynced
-//    private boolean exporting;
 
     private final static byte SLEEP_TICKS = 50;
 

@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiSearchUpgradeOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -116,8 +116,8 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public Item[] getRequiredUpgrades() {
-        return new Item[]{ EnumUpgrade.SEARCH.getItem() };
+    public EnumUpgrade[] getRequiredUpgrades() {
+        return new EnumUpgrade[]{ EnumUpgrade.SEARCH };
     }
 
     private int trackInventoryCounts(int rangeUpgrades) {
@@ -242,7 +242,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     @OnlyIn(Dist.CLIENT)
     public WidgetAnimatedStat getAnimatedStat() {
         if (searchInfo == null) {
-            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.SEARCH.getItem());
+            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.SEARCH.getItemStack());
             searchInfo = new WidgetAnimatedStat(null, "Currently searching for:", icon,
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.itemSearchStat);
             searchInfo.setMinDimensionsAndReset(0, 0);

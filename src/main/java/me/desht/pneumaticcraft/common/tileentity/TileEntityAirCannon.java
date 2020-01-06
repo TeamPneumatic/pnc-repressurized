@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -111,7 +111,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
     public TileEntityAirCannon() {
         super(ModTileEntityTypes.AIR_CANNON, PneumaticValues.DANGER_PRESSURE_AIR_CANNON, PneumaticValues.MAX_PRESSURE_AIR_CANNON, PneumaticValues.VOLUME_AIR_CANNON, 4);
-        addApplicableUpgrade(EnumUpgrade.RANGE, EnumUpgrade.SPEED, EnumUpgrade.DISPENSER, EnumUpgrade.ENTITY_TRACKER, EnumUpgrade.BLOCK_TRACKER, EnumUpgrade.ITEM_LIFE);
     }
 
     @Override
@@ -258,6 +257,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
     // ANGLE METHODS -------------------------------------------------
 
+    @SuppressWarnings("SuspiciousNameCombination")
     private void updateDestination() {
         doneTurning = false;
         // take dispenser upgrade in account
@@ -698,6 +698,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         } else {
             ItemEntity e = new ItemEntity(world, 0, 0, 0, stack);
             e.setPickupDelay(20);
+            e.lifespan = 1200;
             return e;
         }
     }

@@ -1,7 +1,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -18,7 +19,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBase<ContainerChargingStationItemInventory,TileEntityChargingStation> {
 
@@ -115,5 +119,12 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
         } else {
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
+    }
+
+    List<EnumUpgrade> getApplicableUpgrades() {
+        Map<EnumUpgrade, Integer> map = ((IUpgradeAcceptor)itemStack.getItem()).getApplicableUpgrades();
+        return map.keySet().stream()
+                .sorted(Comparator.comparing(upgrade -> I18n.format(upgrade.getItem().getTranslationKey())))
+                .collect(Collectors.toList());
     }
 }

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.block.BlockState;
@@ -120,7 +120,7 @@ public abstract class ItemGunAmmo extends ItemPneumatic implements IColorableIte
      */
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         int times = 1;
-        int nSpeed = minigun.getUpgrades(IItemRegistry.EnumUpgrade.SPEED);
+        int nSpeed = minigun.getUpgrades(EnumUpgrade.SPEED);
         for (int i = 0; i < nSpeed; i++) {
             if (minigun.getWorld().rand.nextInt(100) < 20) times++;
         }

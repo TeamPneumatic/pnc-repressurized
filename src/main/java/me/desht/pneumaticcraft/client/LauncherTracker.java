@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChestplateLauncher;
@@ -26,7 +26,7 @@ public enum LauncherTracker {
         if (launcherProgress > 0) return false;
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
         return handler.isArmorReady(EquipmentSlotType.CHEST)
-                && handler.getUpgradeCount(EquipmentSlotType.CHEST, IItemRegistry.EnumUpgrade.DISPENSER) > 0
+                && handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.DISPENSER) > 0
                 && handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1f;
     }
 

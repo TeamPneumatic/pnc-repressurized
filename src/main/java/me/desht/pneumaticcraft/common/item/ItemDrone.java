@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
@@ -9,20 +9,16 @@ import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
@@ -33,10 +29,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 public class ItemDrone extends ItemPressurizable implements IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor {
 
@@ -93,11 +86,6 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
         drone.onInitialSpawn(world, world.getDifficultyForLocation(placePos), SpawnReason.TRIGGERED, new ILivingEntityData() {}, null);
     }
 
-    public static void setProgWidgets(List<IProgWidget> widgets, ItemStack iStack) {
-        NBTUtil.initNBTTagCompound(iStack);
-        TileEntityProgrammer.setWidgetsToNBT(widgets, iStack.getTag());
-    }
-
     @Override
     public boolean canProgram(ItemStack stack) {
         return true;
@@ -114,34 +102,13 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     }
 
     @Override
-    public Set<Item> getApplicableUpgrades() {
-        Set<Item> set = new HashSet<>();
-        for (EnumUpgrade upgrade : EnumUpgrade.values()) {
-            if (upgradeApplies(upgrade)) {
-                set.add(ModItems.Registration.UPGRADES.get(upgrade));
-            }
-        }
-        return Collections.unmodifiableSet(set);
+    public Map<EnumUpgrade,Integer> getApplicableUpgrades() {
+        return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
     }
 
     @Override
     public String getUpgradeAcceptorTranslationKey() {
         return getTranslationKey();
-    }
-
-    public boolean upgradeApplies(EnumUpgrade upgrade) {
-        switch (upgrade) {
-            case VOLUME:
-            case INVENTORY:
-            case ITEM_LIFE:
-            case SECURITY:
-            case SPEED:
-            case ENTITY_TRACKER:
-            case MAGNET:
-            case RANGE:
-                return true;
-        }
-        return false;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import net.minecraft.enchantment.EnchantmentHelper;

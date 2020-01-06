@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.tubes.*;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
@@ -41,6 +41,13 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
+        shaped(ModItems.AIR_CANISTER, ModItems.INGOT_IRON_COMPRESSED,
+                " T /IRI/IRI",
+                'T', ModBlocks.PRESSURE_TUBE,
+                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'R', Tags.Items.DUSTS_REDSTONE
+        ).build(consumer);
+
         shaped(ModBlocks.ADVANCED_AIR_COMPRESSOR, ModBlocks.ADVANCED_PRESSURE_TUBE,
                 "III/I T/ICI",
                 'I', ModItems.INGOT_IRON_COMPRESSED,
@@ -271,9 +278,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', ModItems.INGOT_IRON_COMPRESSED
         ).build(consumer);
 
-        shapeless(ModItems.GPS_AREA_TOOL, ModItems.GPS_TOOL,
-                ModItems.GPS_TOOL, ModItems.GPS_TOOL);
-
         shaped(ModItems.GPS_TOOL, ModItems.PLASTIC,
                 " R /PGP/PDP",
                 'R', Blocks.REDSTONE_TORCH,
@@ -281,6 +285,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 'G', Tags.Items.GLASS_PANES,
                 'D', Tags.Items.GEMS_DIAMOND
         ).build(consumer);
+
+        shapeless(ModItems.GPS_AREA_TOOL, ModItems.PLASTIC,
+                ModItems.GPS_TOOL, ModItems.GPS_TOOL).build(consumer);
 
         shapeless(ModItems.GUN_AMMO, ModItems.MINIGUN,
                 Tags.Items.GUNPOWDER, ModItems.INGOT_IRON_COMPRESSED, Tags.Items.INGOTS_GOLD
@@ -703,6 +710,7 @@ public class ModRecipeProvider extends RecipeProvider {
         standardUpgrade(EnumUpgrade.SEARCH, Items.GOLDEN_CARROT, Items.ENDER_EYE).build(consumer);
         standardUpgrade(EnumUpgrade.SECURITY, new ModuleSafetyValve().getItem(), Blocks.OBSIDIAN).build(consumer);
         standardUpgrade(EnumUpgrade.VOLUME, ModItems.AIR_CANISTER, ModItems.INGOT_IRON_COMPRESSED).build(consumer);
+        standardUpgrade(EnumUpgrade.FLIPPERS, Items.BLACK_WOOL, ModItems.PLASTIC).build(consumer);
 
         // non-standard upgrades
         ItemStack nightVisionPotion = new ItemStack(Items.POTION);
@@ -736,7 +744,78 @@ public class ModRecipeProvider extends RecipeProvider {
                 'F', new FluidIngredient(ModFluids.LUBRICANT, 1000)
         ).build(consumer);
 
-        // TODO jetboots (tiered?)
+        shaped(EnumUpgrade.JET_BOOTS.getItem(1), ModItems.PNEUMATIC_BOOTS,
+                "LTL/VCV/LTL",
+                'L', Items.LAPIS_LAZULI,
+                'V', ModItems.VORTEX_CANNON,
+                'C', ModBlocks.ADVANCED_AIR_COMPRESSOR,
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE
+        ).build(consumer);
+        shaped(EnumUpgrade.JET_BOOTS.getItem(2), ModItems.PNEUMATIC_BOOTS,
+                "FFF/VUV/CFC",
+                'F', Items.FEATHER,
+                'V', ModItems.VORTEX_CANNON,
+                'C', ModItems.PNEUMATIC_CYLINDER,
+                'U', EnumUpgrade.JET_BOOTS.getItem(1)
+        ).build(consumer);
+        shaped(EnumUpgrade.JET_BOOTS.getItem(3), ModItems.PNEUMATIC_BOOTS,
+                "TBT/VUV/TBT",
+                'T', Items.GHAST_TEAR,
+                'B', Items.BLAZE_ROD,
+                'V', ModItems.VORTEX_CANNON,
+                'U', EnumUpgrade.JET_BOOTS.getItem(2)
+        ).build(consumer);
+        ItemStack slowFallPotion = new ItemStack(Items.POTION);
+        PotionUtils.addPotionToItemStack(slowFallPotion, Potions.LONG_SLOW_FALLING);
+        shaped(EnumUpgrade.JET_BOOTS.getItem(4), ModItems.PNEUMATIC_BOOTS,
+                "MNM/VUV/P P",
+                'N', Items.NETHER_STAR,
+                'M', Items.PHANTOM_MEMBRANE,
+                'V', ModItems.VORTEX_CANNON,
+                'P', IngredientNBTWrapper.fromItemStack(slowFallPotion),
+                'U', EnumUpgrade.JET_BOOTS.getItem(3)
+        ).build(consumer);
+        shaped(EnumUpgrade.JET_BOOTS.getItem(5), ModItems.PNEUMATIC_BOOTS,
+                "RER/VUV/RDR",
+                'R', Items.END_ROD,
+                'E', Items.ELYTRA,
+                'V', ModItems.VORTEX_CANNON,
+                'D', Items.DRAGON_BREATH,
+                'U', EnumUpgrade.JET_BOOTS.getItem(4)
+        ).build(consumer);
+
+        shaped(EnumUpgrade.JUMPING.getItem(1), ModItems.PNEUMATIC_LEGGINGS,
+                "PCP/VTV",
+                'P', Blocks.PISTON,
+                'V', ModItems.VORTEX_CANNON,
+                'T', ModBlocks.PRESSURE_TUBE,
+                'C', ModItems.PNEUMATIC_CYLINDER
+        ).build(consumer);
+        shaped(EnumUpgrade.JUMPING.getItem(2), ModItems.PNEUMATIC_LEGGINGS,
+                "PCP/SUS",
+                'U', EnumUpgrade.JUMPING.getItem(1),
+                'S', Blocks.SLIME_BLOCK,
+                'P', Blocks.PISTON,
+                'C', ModItems.PNEUMATIC_CYLINDER
+        ).build(consumer);
+        ItemStack jumpBoostPotion1 = new ItemStack(Items.POTION);
+        PotionUtils.addPotionToItemStack(jumpBoostPotion1, Potions.LEAPING);
+        shaped(EnumUpgrade.JUMPING.getItem(3), ModItems.PNEUMATIC_LEGGINGS,
+                "PCP/JUJ/ J ",
+                'U', EnumUpgrade.JUMPING.getItem(2),
+                'J', IngredientNBTWrapper.fromItemStack(jumpBoostPotion1),
+                'P', Blocks.PISTON,
+                'C', ModItems.PNEUMATIC_CYLINDER
+        ).build(consumer);
+        ItemStack jumpBoostPotion2 = new ItemStack(Items.POTION);
+        PotionUtils.addPotionToItemStack(jumpBoostPotion2, Potions.STRONG_LEAPING);
+        shaped(EnumUpgrade.JUMPING.getItem(4), ModItems.PNEUMATIC_LEGGINGS,
+                "PCP/JUJ/ J ",
+                'U', EnumUpgrade.JUMPING.getItem(3),
+                'J', IngredientNBTWrapper.fromItemStack(jumpBoostPotion2),
+                'P', Blocks.PISTON,
+                'C', ModItems.PNEUMATIC_CYLINDER
+        ).build(consumer);
 
         specialRecipe(ModRecipes.DRONE_COLOR_CRAFTING).build(consumer, getId("color_drone"));
         specialRecipe(ModRecipes.DRONE_UPGRADE_CRAFTING).build(consumer, getId("drone_upgrade"));

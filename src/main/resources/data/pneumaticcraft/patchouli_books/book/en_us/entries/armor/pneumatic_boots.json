@@ -15,8 +15,8 @@
     },
     {
       "type": "spotlight",
-      "item": "pneumaticcraft:jet_boots_upgrade",
-      "text": "If you've ever wanted to soar through the air without a care in the world (except how much pressure you have left), the $(l:base_concepts/upgrades#jet_boots)Jet Boots Upgrade/$ is for you.  You can add up to 10 upgrades for progressively faster flight, and greater air usage.$(p)"
+      "item": "pneumaticcraft:jet_boots_upgrade_1",
+      "text": "If you've ever wanted to soar through the air without a care in the world (except how much pressure you have left), the $(l:base_concepts/upgrades#jet_boots_1)Jet Boots Upgrade/$ is for you.  There are 5 tiers of Jet Boots Upgrade for progressively faster flight, and greater air usage.$(p)"
     },
     {
       "type": "text",
@@ -26,12 +26,17 @@
     {
       "type": "text",
       "title": "Jet Boots (cont.)",
-      "text": "With 8 or more $(l:base_concepts/upgrades#jet_boots)Jet Boots Upgrades/$ installed, you will also have access to $(thing)Builder Mode/$, which allows for more creative-style (but slower) flight control and improved airborne digging speed. This can be toggled on & off via the armor GUI (and bound to a toggle key)."
+      "text": "$(l:base_concepts/upgrades#jet_boots_3)Jet Boots Upgrades: Tier III/$ or better, you will also have access to $(thing)Builder Mode/$, which allows for more creative-style (but slower) flight control and improved airborne digging speed. This can be toggled on & off via the armor GUI (and bound to a toggle key)."
     },
     {
       "type": "spotlight",
       "item": "pneumaticcraft:dispenser_upgrade",
       "text":  "By adding up to 4 $(l:base_concepts/upgrades#dispenser)Dispenser Upgrades/$ to the boots, you gain the ability to execute a $(bold)pneumatic kick/$.  This will do moderate damage to entities (and not just living entities!), but also inflict heavy knockback, at a modest air cost.$(p)Press $(thing)$(k:pneumaticcraft.boots.kick)/$ to kick."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:flippers_upgrade",
+      "text":  "With a Flippers Upgrade installed, you will enjoy a moderate benefit to your swim speed. This has no extra air cost, so is a much cheaper alternative to the Jet Boots when in the water."
     }
   ]
 }

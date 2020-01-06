@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -134,7 +134,7 @@ public class EventHandlerPneumaticArmor {
 
             if (isPneumaticArmorPiece(player, EquipmentSlotType.CHEST) && event.getSource().isFireDamage()) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                if (handler.isArmorEnabled() && handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1F && handler.getUpgradeCount(EquipmentSlotType.CHEST, IItemRegistry.EnumUpgrade.SECURITY) > 0) {
+                if (handler.isArmorEnabled() && handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1F && handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.SECURITY) > 0) {
                     event.setCanceled(true);
                     player.extinguish();
                     if (!player.world.isRemote) {
@@ -196,10 +196,10 @@ public class EventHandlerPneumaticArmor {
             if (!handler.isJetBootsEnabled() && handler.isArmorReady(EquipmentSlotType.LEGS)
                     && handler.isJumpBoostEnabled() && handler.getArmorPressure(EquipmentSlotType.LEGS) > 0.01F) {
                 float power = ItemPneumaticArmor.getIntData(stack, ItemPneumaticArmor.NBT_JUMP_BOOST, 100) / 100.0f;
-                int rangeUpgrades = handler.getUpgradeCount(EquipmentSlotType.LEGS, IItemRegistry.EnumUpgrade.RANGE,
+                int rangeUpgrades = handler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.JUMPING,
                         player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
                 float actualBoost = Math.max(1.0f, rangeUpgrades * power);
-                float scale = player.isSprinting() ? 0.25f * actualBoost : 0.15f * actualBoost;
+                float scale = player.isSprinting() ? 0.3f * actualBoost : 0.225f * actualBoost;
                 float rotRad = player.rotationYaw * 0.017453292f;  // deg2rad
                 Vec3d m = player.getMotion();
                 double addX = m.x == 0 ? 0 : - (double)(MathHelper.sin(rotRad) * scale);
@@ -224,7 +224,7 @@ public class EventHandlerPneumaticArmor {
         if (isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getEntityPlayer());
             if (handler.isJetBootsEnabled() && !player.onGround && handler.isJetBootsBuilderMode()) {
-                int n = (max + 1) - handler.getUpgradeCount(EquipmentSlotType.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS, max);
+                int n = (max + 1) - handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS, max);
                 if (n < 4) {
                     float mult = 5.0f / n;   // default dig speed when not on ground is 1/5 of normal
                     float oldSpeed = event.getOriginalSpeed();

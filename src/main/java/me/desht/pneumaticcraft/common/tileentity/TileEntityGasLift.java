@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.ai.ChunkPositionSorter;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
@@ -84,8 +83,6 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
 
     public TileEntityGasLift() {
         super(ModTileEntityTypes.GAS_LIFT, 5, 7, 3000, 4);
-
-        addApplicableUpgrade(IItemRegistry.EnumUpgrade.SPEED, IItemRegistry.EnumUpgrade.DISPENSER);
     }
 
     @Override

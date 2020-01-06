@@ -1,8 +1,9 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
@@ -48,7 +49,7 @@ public class PacketChestplateLauncher {
     private void handleLaunch(ServerPlayerEntity player) {
         ItemStack stack = player.getHeldItemOffhand();
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-        int upgrades = handler.getUpgradeCount(EquipmentSlotType.CHEST, IItemRegistry.EnumUpgrade.DISPENSER, 4);
+        int upgrades = handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.DISPENSER, PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
 
         if (handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1f && handler.isArmorReady(EquipmentSlotType.CHEST) && upgrades > 0 && !stack.isEmpty()) {
             ItemStack toFire = player.isCreative() ? ItemHandlerHelper.copyStackWithSize(stack, 1) : stack.split(1);

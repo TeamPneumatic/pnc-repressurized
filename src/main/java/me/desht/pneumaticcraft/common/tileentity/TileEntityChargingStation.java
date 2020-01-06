@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.BlockChargingStation;
@@ -50,7 +50,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public static final int CHARGE_INVENTORY_INDEX = 0;
 
     @DescSynced
-    private ItemStack chargingStackSynced = ItemStack.EMPTY;  // the item being charged, minus any meta/nbt - for client display purposes
+    private ItemStack chargingStackSynced = ItemStack.EMPTY;  // the item being charged, minus any nbt - for client display purposes
     public ItemEntity chargingStackEntity;
 
     private ChargingStationHandler itemHandler;  // holds the item being charged
@@ -74,7 +74,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public TileEntityChargingStation() {
         super(ModTileEntityTypes.CHARGING_STATION, PneumaticValues.DANGER_PRESSURE_CHARGING_STATION, PneumaticValues.MAX_PRESSURE_CHARGING_STATION, PneumaticValues.VOLUME_CHARGING_STATION, 4);
         itemHandler = new ChargingStationHandler();
-        addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.DISPENSER);
     }
 
     @Override

@@ -5,13 +5,12 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiAirConditionerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
@@ -32,8 +31,13 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
     }
 
     @Override
-    public Item[] getRequiredUpgrades() {
-        return new Item[] { EnumUpgrade.AIR_CONDITIONING.getItem() };
+    public EnumUpgrade[] getRequiredUpgrades() {
+        return new EnumUpgrade[] { EnumUpgrade.AIR_CONDITIONING };
+    }
+
+    @Override
+    public int getMaxInstallableUpgrades(EnumUpgrade upgrade) {
+        return 4;
     }
 
     @Override

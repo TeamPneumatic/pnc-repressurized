@@ -169,7 +169,6 @@ public class PneumaticValues {
     public static final int DRONE_TANK_SIZE = 16000;
 
     public static final int MAGNET_AIR_USAGE = 20; // mL per stack pulled
-    public static final int MAGNET_INTERVAL = 20; // ticks
     public static final int MAGNET_BASE_RANGE = 4;
     public static final int MAGNET_MAX_UPGRADES = 6;
     public static final int PNEUMATIC_ARMOR_DURABILITY_BASE = 24; // halfway between iron and diamond
@@ -181,13 +180,14 @@ public class PneumaticValues {
     public static final int PNEUMATIC_LEGS_SPEED_USAGE = 1; // every tick the player is moving and on ground
     public static final int PNEUMATIC_LEGS_MAX_SPEED = 4;
     public static final float PNEUMATIC_LEGS_BOOST_PER_UPGRADE = 0.035f;
-    public static final int PNEUMATIC_ARMOR_JUMP_USAGE = 20;
+    public static final int PNEUMATIC_ARMOR_JUMP_USAGE = 25;
     public static final int PNEUMATIC_ARMOR_FIRE_USAGE = 50;
     public static final int PNEUMATIC_KICK_AIR_USAGE = 100;
     public static final int PNEUMATIC_KICK_MAX_UPGRADES = 4;
-    public static final int PNEUMATIC_LEGS_MAX_JUMP = 6;
-    public static final int PNEUMATIC_JET_BOOTS_USAGE = 6;  // every tick the boots are firing, per upgrade
-    public static final int PNEUMATIC_JET_BOOTS_MAX_UPGRADES = 10;
+    public static final int PNEUMATIC_LEGS_MAX_JUMP = 4;
+    public static final int PNEUMATIC_JET_BOOTS_USAGE = 12;  // every tick the boots are firing, per upgrade
+    public static final int PNEUMATIC_JET_BOOTS_MAX_UPGRADES = 5;
+    public static final int PNEUMATIC_LAUNCHER_MAX_UPGRADES = 4;
     public static final int PNEUMATIC_NIGHT_VISION_USAGE = 1;
     public static final int PNEUMATIC_HELMET_SCUBA_MULTIPLIER = 8;
 }

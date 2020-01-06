@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.datagen.loot;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.tileentity.ISerializableTanks;
 import me.desht.pneumaticcraft.common.tileentity.ISideConfigurable;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator;
@@ -71,7 +71,7 @@ public class TileEntitySerializerFunction extends LootFunction {
             for (int i = 0; i < upgradeHandler.getSlots(); i++) {
                 if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
                     // store creative status directly since it's queried for item model rendering (performance)
-                    if (((TileEntityBase) te).getUpgrades(IItemRegistry.EnumUpgrade.CREATIVE) > 0) {
+                    if (((TileEntityBase) te).getUpgrades(EnumUpgrade.CREATIVE) > 0) {
                         NBTUtil.setBoolean(teStack, UpgradableItemUtils.NBT_CREATIVE, true);
                     } else {
                         NBTUtil.removeTag(teStack, UpgradableItemUtils.NBT_CREATIVE);

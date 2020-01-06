@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -68,7 +68,7 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
 
     @Override
     public int getVolume() {
-        int nUpgrades = UpgradableItemUtils.getUpgrades(container, IItemRegistry.EnumUpgrade.VOLUME);
+        int nUpgrades = UpgradableItemUtils.getUpgrades(container, EnumUpgrade.VOLUME);
         return getBaseVolume() + nUpgrades * PneumaticValues.VOLUME_VOLUME_UPGRADE;
     }
 

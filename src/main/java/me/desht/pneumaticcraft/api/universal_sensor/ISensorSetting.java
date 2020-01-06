@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -23,7 +23,7 @@ public interface ISensorSetting {
      *
      * @return
      */
-    Set<Item> getRequiredUpgrades();
+    Set<EnumUpgrade> getRequiredUpgrades();
 
     /**
      * When returned true, the GUI will enable the textbox writing, otherwise not.
@@ -59,5 +59,13 @@ public interface ISensorSetting {
      * Notify the sensor that the textbox has changed, so it can carry out any necessary recalculation.
      */
     default void notifyTextChange(String newText) {
+    }
+
+    /**
+     * Check if this sensor type needs a GPS (or GPS Area) Tool
+     * @return true if a GPS Tool is required
+     */
+    default boolean needsGPSTool() {
+        return false;
     }
 }

@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.EntityTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiEntityTrackOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
@@ -23,7 +23,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.HangingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextFormatting;
@@ -146,8 +145,8 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public Item[] getRequiredUpgrades() {
-        return new Item[]{ EnumUpgrade.ENTITY_TRACKER.getItem() };
+    public EnumUpgrade[] getRequiredUpgrades() {
+        return new EnumUpgrade[]{ EnumUpgrade.ENTITY_TRACKER };
     }
 
     @Override
@@ -176,7 +175,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     @OnlyIn(Dist.CLIENT)
     public WidgetAnimatedStat getAnimatedStat() {
         if (entityTrackInfo == null) {
-            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.ENTITY_TRACKER.getItem());
+            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.ENTITY_TRACKER.getItemStack());
             entityTrackInfo = new WidgetAnimatedStat(null, "Current tracked entities:", icon,
                      0x3000AA00, null, ArmorHUDLayout.INSTANCE.entityTrackerStat);
             entityTrackInfo.setMinDimensionsAndReset(0, 0);

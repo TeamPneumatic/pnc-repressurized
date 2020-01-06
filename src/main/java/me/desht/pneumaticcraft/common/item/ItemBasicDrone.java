@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.common.entity.living.EntityBasicDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -52,19 +51,19 @@ public class ItemBasicDrone extends ItemDrone {
         return false;
     }
 
-    @Override
-    public boolean upgradeApplies(IItemRegistry.EnumUpgrade upgrade) {
-        // Currently the only "basic" drones are Logistics & Harvesting, neither of which can take
-        // advantage of a larger inventory.  If future basic drones are added which can do so, we can
-        // subclass ItemBasicDrone and override this to allow dispenser upgrades.
-        switch (upgrade) {
-            case VOLUME:
-            case ITEM_LIFE:
-            case SECURITY:
-            case SPEED:
-            case MAGNET:
-                return true;
-        }
-        return false;
-    }
+//    @Override
+//    public int getMaxUpgrades(EnumUpgrade upgrade) {
+//        // Currently the only "basic" drones are Logistics & Harvesting, neither of which can take
+//        // advantage of a larger inventory.  If future basic drones are added which can do so, we can
+//        // subclass ItemBasicDrone and override this to allow inventory upgrades.
+//        switch (upgrade) {
+//            case VOLUME:
+//            case ITEM_LIFE:
+//            case SECURITY:
+//            case SPEED:
+//            case MAGNET:
+//                return super.getMaxUpgrades(upgrade);
+//        }
+//        return 0;
+//    }
 }

@@ -2,13 +2,12 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.IHeatDisperser;
@@ -16,6 +15,7 @@ import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.util.upgrade.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.NBTKeys;
@@ -47,9 +47,8 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 //@Optional.InterfaceList({
 //        @Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)
@@ -63,8 +62,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     private static final List<IHeatDisperser> moddedDispersers = new ArrayList<>();
 
-    private final Set<Item> applicableUpgrades = new HashSet<>();
-    private final Set<String> applicableCustomUpgrades = new HashSet<>();
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
     @GuiSynced
@@ -92,25 +89,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     @Override
     public String getUpgradeAcceptorTranslationKey() {
         return getBlockTranslationKey();
-    }
-
-    private static String makeUpgradeKey(ItemStack stack) {
-        return stack.getItem().getRegistryName().toString();
-    }
-
-    protected void addApplicableUpgrade(IItemRegistry.EnumUpgrade... upgrades) {
-        for (IItemRegistry.EnumUpgrade upgrade : upgrades)
-            addApplicableUpgrade(ModItems.Registration.UPGRADES.get(upgrade));
-    }
-
-    protected void addApplicableUpgrade(Item upgrade) {
-        applicableUpgrades.add(upgrade);
-    }
-
-    protected void addApplicableCustomUpgrade(ItemStack... upgrades) {
-        for (ItemStack upgrade : upgrades) {
-            applicableCustomUpgrades.add(makeUpgradeKey(upgrade));
-        }
     }
 
     public String getBlockTranslationKey() {
@@ -207,7 +185,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
                 }
             }
 
-            if (this instanceof IAutoFluidEjecting && getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) > 0) {
+            if (this instanceof IAutoFluidEjecting && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
                 ((IAutoFluidEjecting) this).autoExportFluid(this);
             }
 
@@ -375,12 +353,8 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         return upgrades;
     }
 
-    public int getUpgrades(IItemRegistry.EnumUpgrade upgrade) {
+    public int getUpgrades(EnumUpgrade upgrade) {
         return upgradeCache.getUpgrades(upgrade);
-    }
-
-    protected int getCustomUpgrades(ItemStack upgradeStack) {
-        return upgradeCache.getUpgrades(upgradeStack);
     }
 
     public float getSpeedMultiplierFromUpgrades() {
@@ -504,14 +478,9 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     @Override
-    public Set<Item> getApplicableUpgrades() {
-        return applicableUpgrades;
+    public Map<EnumUpgrade, Integer> getApplicableUpgrades() {
+        return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
     }
-
-//    @Override
-//    public boolean shouldRefresh(World world, BlockPos pos, BlockState oldState, BlockState newSate) {
-//        return oldState.getBlock() != newSate.getBlock();
-//    }
 
     protected void addLuaMethods(LuaMethodRegistry registry) {
         if (this instanceof IHeatExchanger) {
@@ -689,8 +658,8 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
      */
     @Override
     public void onUpgradesChanged() {
-        actualSpeedMult = (float) Math.pow(PNCConfig.Common.Machines.speedUpgradeSpeedMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
-        actualUsageMult = (float) Math.pow(PNCConfig.Common.Machines.speedUpgradeUsageMultiplier, Math.min(10, getUpgrades(IItemRegistry.EnumUpgrade.SPEED)));
+        actualSpeedMult = (float) Math.pow(PNCConfig.Common.Machines.speedUpgradeSpeedMultiplier, Math.min(10, getUpgrades(EnumUpgrade.SPEED)));
+        actualUsageMult = (float) Math.pow(PNCConfig.Common.Machines.speedUpgradeUsageMultiplier, Math.min(10, getUpgrades(EnumUpgrade.SPEED)));
     }
 
     public UpgradeCache getUpgradeCache() {
@@ -704,9 +673,26 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty()
-                    || applicableUpgrades.contains(itemStack.getItem())
-                    || applicableCustomUpgrades.contains(makeUpgradeKey(itemStack));
+            return itemStack.isEmpty() || isApplicable(itemStack) && isUnique(slot, itemStack);
+        }
+
+        @Override
+        protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
+            EnumUpgrade upgrade = EnumUpgrade.from(stack);
+            if (upgrade == null) return 0;
+            return ApplicableUpgradesDB.getInstance().getMaxUpgrades(te, upgrade);
+        }
+
+        private boolean isUnique(int slot, ItemStack stack) {
+            for (int i = 0; i < getSlots(); i++) {
+                if (i != slot && EnumUpgrade.from(stack) == EnumUpgrade.from(getStackInSlot(i))) return false;
+            }
+            return true;
+        }
+
+        private boolean isApplicable(ItemStack stack) {
+            EnumUpgrade upgrade = EnumUpgrade.from(stack);
+            return ApplicableUpgradesDB.getInstance().getMaxUpgrades(TileEntityBase.this, upgrade) > 0;
         }
 
         @Override

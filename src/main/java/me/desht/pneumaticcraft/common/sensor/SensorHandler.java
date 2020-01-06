@@ -1,8 +1,9 @@
 package me.desht.pneumaticcraft.common.sensor;
 
+import com.google.common.collect.ImmutableSet;
 import joptsimple.internal.Strings;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.*;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.BlockInteractSensor;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerAttackSensor;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerItemPickupSensor;
@@ -12,7 +13,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
@@ -31,6 +31,7 @@ public class SensorHandler implements ISensorRegistry {
         return INSTANCE;
     }
 
+    // TODO forge registry for these
     public void init() {
         registerSensor(new EntityInRangeSensor());
         registerSensor(new PlayerAttackSensor());
@@ -103,24 +104,26 @@ public class SensorHandler implements ISensorRegistry {
         text.add("");
         text.add(I18n.format("gui.universalSensor.upgradeHeader"));
 
-        Set<Set<Item>> upgrades = new HashSet<>();
+        Set<Set<EnumUpgrade>> upgrades = new HashSet<>();
         for (ISensorSetting sensor : sensors.values()) {
             upgrades.add(sensor.getRequiredUpgrades());
         }
 
-        for (Set<Item> requiredStacks : upgrades) {
-            String s = Strings.join(requiredStacks.stream().map(item -> I18n.format(item.getTranslationKey())).collect(Collectors.toList()), " & ");
+        for (Set<EnumUpgrade> requiredStacks : upgrades) {
+            String s = Strings.join(requiredStacks.stream()
+                    .map(upgrade -> I18n.format(upgrade.getItem().getTranslationKey()))
+                    .collect(Collectors.toList()), " & ");
             text.add(TextFormatting.BLACK + GuiConstants.BULLET + " " + s);
         }
         return text;
     }
 
-    public Set<Item> getUniversalSensorUpgrades() {
-        Set<Item> items = new HashSet<>();
+    public Set<EnumUpgrade> getUniversalSensorUpgrades() {
+        Set<EnumUpgrade> upgrades = new HashSet<>();
         for (ISensorSetting sensor : sensors.values()) {
-            items.addAll(sensor.getRequiredUpgrades());
+            upgrades.addAll(sensor.getRequiredUpgrades());
         }
-        return items;
+        return upgrades;
     }
 
     public String[] getDirectoriesAtLocation(String path) {
@@ -144,21 +147,26 @@ public class SensorHandler implements ISensorRegistry {
     }
 
     private String getUpgradePrefix(ISensorSetting sensor) {
-        List<Item> upgrades = new ArrayList<>(sensor.getRequiredUpgrades());
+        List<EnumUpgrade> upgrades = new ArrayList<>(sensor.getRequiredUpgrades());
 
-        upgrades.sort(Comparator.comparing(Item::getTranslationKey));
+        upgrades.sort(Comparator.comparing(upgrade -> I18n.format(upgrade.getName())));
 
         StringBuilder ret = new StringBuilder();
         for (int i = 0; i < upgrades.size(); i++) {
-            ret.append(upgrades.get(i).getTranslationKey()).append(i < upgrades.size() - 1 ? "_" : "/");
+            ret.append(upgrades.get(i).getName()).append(i < upgrades.size() - 1 ? "_" : "/");
         }
 
         return ret.toString();
     }
 
-    public Set<Item> getRequiredStacksFromText(String text) {
-        List<ISensorSetting> sensors = getSensorsFromPath(text);
-        return sensors.isEmpty() ? new HashSet<>() : sensors.get(0).getRequiredUpgrades();
+    public Set<EnumUpgrade> getRequiredStacksFromText(String path) {
+        List<ISensorSetting> sensors = getSensorsFromPath(path);
+        return sensors.isEmpty() ? Collections.emptySet() : sensors.get(0).getRequiredUpgrades();
+    }
+
+    public boolean needsGPSTool(String path) {
+        List<ISensorSetting> sensors = getSensorsFromPath(path);
+        return !sensors.isEmpty() && sensors.get(0).needsGPSTool();
     }
 
     @Override
@@ -218,10 +226,13 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        public Set<Item> getRequiredUpgrades() {
-            Set<Item> upgrades = new HashSet<>(coordinateSensor.getRequiredUpgrades());
-            upgrades.add(ModItems.GPS_TOOL);
-            return upgrades;
+        public Set<EnumUpgrade> getRequiredUpgrades() {
+            return ImmutableSet.copyOf(coordinateSensor.getRequiredUpgrades());
+        }
+
+        @Override
+        public boolean needsGPSTool() {
+            return true;
         }
     }
 
@@ -273,10 +284,13 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        public Set<Item> getRequiredUpgrades() {
-            Set<Item> upgrades = new HashSet<>(coordinateSensor.getRequiredUpgrades());
-            upgrades.add(ModItems.GPS_TOOL);
-            return upgrades;
+        public Set<EnumUpgrade> getRequiredUpgrades() {
+            return ImmutableSet.copyOf(coordinateSensor.getRequiredUpgrades());
+        }
+
+        @Override
+        public boolean needsGPSTool() {
+            return true;
         }
     }
 

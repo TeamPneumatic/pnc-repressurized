@@ -1,25 +1,22 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import com.google.common.collect.ImmutableSet;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 abstract class EntityPollSensor implements IPollSensorSetting {
 
     @Override
-    public Set<Item> getRequiredUpgrades() {
-        Set<Item> upgrades = new HashSet<>();
-        upgrades.add(EnumUpgrade.ENTITY_TRACKER.getItem());
-        return upgrades;
+    public Set<EnumUpgrade> getRequiredUpgrades() {
+        return ImmutableSet.of(EnumUpgrade.ENTITY_TRACKER);
     }
 
     @Override

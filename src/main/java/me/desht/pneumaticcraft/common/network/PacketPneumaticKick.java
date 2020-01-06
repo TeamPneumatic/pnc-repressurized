@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -41,7 +41,7 @@ public class PacketPneumaticKick {
             if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.isArmorEnabled() && handler.isArmorReady(EquipmentSlotType.FEET) && handler.getArmorPressure(EquipmentSlotType.FEET) > 0.1f) {
-                    int upgrades = handler.getUpgradeCount(EquipmentSlotType.FEET, IItemRegistry.EnumUpgrade.DISPENSER);
+                    int upgrades = handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.DISPENSER);
                     if (upgrades > 0) {
                         handleKick(player, Math.min(PneumaticValues.PNEUMATIC_KICK_MAX_UPGRADES, upgrades));
                     }

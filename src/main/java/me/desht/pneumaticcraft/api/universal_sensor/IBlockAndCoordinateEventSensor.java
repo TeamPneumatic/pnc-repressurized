@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.eventbus.api.Event;
@@ -22,7 +22,7 @@ public interface IBlockAndCoordinateEventSensor {
      *
      * @return
      */
-    Set<Item> getRequiredUpgrades();
+    Set<EnumUpgrade> getRequiredUpgrades();
 
     /**
      * Extended version of the normal emitRedstoneOnEvent. This method will only invoke with a valid GPS tool, and when all the coordinates are within range.

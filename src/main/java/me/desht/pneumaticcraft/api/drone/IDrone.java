@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.api.drone;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.GoalSelector;
@@ -30,7 +30,7 @@ public interface IDrone extends ICapabilityProvider {
      *
      * @return amount of installed upgrades in the drone
      */
-    int getUpgrades(IItemRegistry.EnumUpgrade upgrade);
+    int getUpgrades(EnumUpgrade upgrade);
 
     /**
      * Get the drone's world.

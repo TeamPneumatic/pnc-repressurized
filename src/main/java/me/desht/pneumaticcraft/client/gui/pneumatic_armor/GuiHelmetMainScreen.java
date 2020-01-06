@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
@@ -117,7 +118,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
                         if (optionPage != null) {
                             List<ItemStack> stacks = new ArrayList<>();
                             stacks.add(ARMOR_STACKS[upgradeRenderHandler.getEquipmentSlot().getIndex()]);
-                            Arrays.stream(upgradeRenderHandler.getRequiredUpgrades()).map(ItemStack::new).forEach(stacks::add);
+                            Arrays.stream(upgradeRenderHandler.getRequiredUpgrades()).map(EnumUpgrade::getItemStack).forEach(stacks::add);
                             upgradeOptions.add(new UpgradeOption(optionPage, upgradeRenderHandler.getUpgradeID(), stacks.toArray(new ItemStack[0])));
                         }
                     }

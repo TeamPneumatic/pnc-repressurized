@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
@@ -97,7 +96,6 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     public TileEntityThermopneumaticProcessingPlant() {
         super(ModTileEntityTypes.THERMOPNEUMATIC_PROCESSING_PLANT, 5, 7, 3000, 4);
-        addApplicableUpgrade(EnumUpgrade.DISPENSER);
         heatExchanger.setThermalResistance(10);
     }
 

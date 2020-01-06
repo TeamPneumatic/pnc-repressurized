@@ -38,6 +38,7 @@ import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.Reflections;
+import me.desht.pneumaticcraft.common.util.upgrade.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.worldgen.ModDecorators;
 import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import me.desht.pneumaticcraft.datagen.ModLootTablesProvider;
@@ -80,10 +81,6 @@ public class PneumaticCraftRepressurized {
     public static IProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     public static final Logger LOGGER = LogManager.getLogger();
-
-//    static {
-//        FluidRegistry.enableUniversalBucket();
-//    }
 
     public PneumaticCraftRepressurized() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -137,6 +134,7 @@ public class PneumaticCraftRepressurized {
         FluidSetup.init();
         HackableHandler.addDefaultEntries();
         SensorHandler.getInstance().init();
+        UpgradesDBSetup.init();
         ModWorldGen.init();
 
         PermissionAPI.registerNode(Names.AMADRON_ADD_PERIODIC_TRADE, DefaultPermissionLevel.OP,

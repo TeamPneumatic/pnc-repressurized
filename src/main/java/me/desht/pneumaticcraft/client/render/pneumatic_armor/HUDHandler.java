@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.IKeyListener;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.LauncherTracker;
@@ -280,7 +280,7 @@ public class HUDHandler implements IKeyListener {
                         }
                         stat.tick();
                     }
-                    upgradeRenderHandler.update(player, comHudHandler.getUpgradeCount(slot, IItemRegistry.EnumUpgrade.RANGE));
+                    upgradeRenderHandler.update(player, comHudHandler.getUpgradeCount(slot, EnumUpgrade.RANGE));
                 }
             }
         }
@@ -350,7 +350,7 @@ public class HUDHandler implements IKeyListener {
                     && DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer())) {
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).selectAsDebuggingTarget();
             } else if (key == KeyHandler.getInstance().keybindKick
-                    && CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlotType.FEET, IItemRegistry.EnumUpgrade.DISPENSER) > 0) {
+                    && CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.DISPENSER) > 0) {
                 NetworkHandler.sendToServer(new PacketPneumaticKick());
             } else if (key == KeyHandler.getInstance().keybindLauncher
                     && !mc.player.getHeldItemOffhand().isEmpty()

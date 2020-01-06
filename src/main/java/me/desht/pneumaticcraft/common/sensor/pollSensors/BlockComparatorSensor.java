@@ -1,12 +1,10 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSensor;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -25,8 +23,8 @@ public class BlockComparatorSensor implements IBlockAndCoordinatePollSensor {
     }
 
     @Override
-    public Set<Item> getRequiredUpgrades() {
-        return ImmutableSet.of(EnumUpgrade.BLOCK_TRACKER.getItem(), ModItems.GPS_TOOL);
+    public Set<EnumUpgrade> getRequiredUpgrades() {
+        return ImmutableSet.of(EnumUpgrade.BLOCK_TRACKER);
     }
 
     @Override

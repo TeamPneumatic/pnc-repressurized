@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
@@ -54,10 +54,6 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
 
     public TileEntityLiquidHopper() {
         super(ModTileEntityTypes.LIQUID_HOPPER);
-
-        if (PNCConfig.Common.Machines.liquidHopperDispenser) {
-            addApplicableUpgrade(EnumUpgrade.DISPENSER);
-        }
     }
 
     @Override

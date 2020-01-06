@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerSentryTurret;
@@ -68,7 +68,6 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
 
     public TileEntitySentryTurret() {
         super(ModTileEntityTypes.SENTRY_TURRET, 4);
-        addApplicableUpgrade(EnumUpgrade.RANGE);
     }
 
     @Override

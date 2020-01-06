@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:jumping_upgrade_4"
+    ]
+  },
+  "criteria": {
+    "has_pneumatic_leggings": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:pneumatic_leggings"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:jumping_upgrade_4"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_pneumatic_leggings",
+      "has_the_recipe"
+    ]
+  ]
+}

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiBlockTrackOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
@@ -18,7 +18,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
@@ -302,8 +301,8 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public Item[] getRequiredUpgrades() {
-        return new Item[]{ EnumUpgrade.BLOCK_TRACKER.getItem() };
+    public EnumUpgrade[] getRequiredUpgrades() {
+        return new EnumUpgrade[]{ EnumUpgrade.BLOCK_TRACKER };
     }
 
     @Override
@@ -333,7 +332,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     public WidgetAnimatedStat getAnimatedStat() {
         if (blockTrackInfo == null) {
-            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.BLOCK_TRACKER.getItem());
+            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.BLOCK_TRACKER.getItemStack());
             blockTrackInfo = new WidgetAnimatedStat(null, "Current tracked blocks:",
                     icon, 0x3000AA00, null, ArmorHUDLayout.INSTANCE.blockTrackerStat);
             blockTrackInfo.setMinDimensionsAndReset(0, 0);

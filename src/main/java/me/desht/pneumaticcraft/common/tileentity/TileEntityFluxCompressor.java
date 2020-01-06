@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
@@ -45,7 +44,6 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
                 PneumaticValues.MAX_PRESSURE_FLUX_COMPRESSOR,
                 PneumaticValues.VOLUME_FLUX_COMPRESSOR, 4);
 
-        addApplicableUpgrade(EnumUpgrade.SPEED);
         heatExchanger.setThermalCapacity(100);
     }
 

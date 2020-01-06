@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.core.ModContainerTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -52,8 +52,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade.DISPENSER;
-
 public class TileEntityAerialInterface extends TileEntityPneumaticBase
         implements IMinWorkingPressure, IRedstoneControl, IComparatorSupport, ISideConfigurable, INamedContainerProvider {
 
@@ -99,7 +97,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
     public TileEntityAerialInterface() {
         super(ModTileEntityTypes.AERIAL_INTERFACE, PneumaticValues.DANGER_PRESSURE_AERIAL_INTERFACE, PneumaticValues.MAX_PRESSURE_AERIAL_INTERFACE, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
-        addApplicableUpgrade(DISPENSER);
 
         PlayerMainInvHandler playerMainInvHandler = new PlayerMainInvHandler();
         PlayerArmorInvHandler playerArmorInvHandler = new PlayerArmorInvHandler();

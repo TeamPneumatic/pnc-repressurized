@@ -94,9 +94,57 @@
         },
         {
             "type": "crafting",
-            "anchor": "jet_boots",
-            "recipe": "pneumaticcraft:jet_boots_upgrade",
-            "text": "Creating a Jet Boots Upgrade"
+            "anchor": "jet_boots_1",
+            "recipe": "pneumaticcraft:jet_boots_upgrade_1",
+            "text": "Creating a Jet Boots Upgrade: Tier I"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jet_boots_2",
+            "recipe": "pneumaticcraft:jet_boots_upgrade_2",
+            "text": "Creating a Jet Boots Upgrade: Tier II"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jet_boots_3",
+            "recipe": "pneumaticcraft:jet_boots_upgrade_3",
+            "text": "Creating a Jet Boots Upgrade: Tier III"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jet_boots_4",
+            "recipe": "pneumaticcraft:jet_boots_upgrade_4",
+            "text": "Creating a Jet Boots Upgrade: Tier IV"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jet_boots_5",
+            "recipe": "pneumaticcraft:jet_boots_upgrade_5",
+            "text": "Creating a Jet Boots Upgrade: Tier V"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jumping_1",
+            "recipe": "pneumaticcraft:jumping_upgrade_1",
+            "text": "Creating a Jumping Upgrade: Tier I"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jumping_2",
+            "recipe": "pneumaticcraft:jumping_upgrade_2",
+            "text": "Creating a Jumping Upgrade: Tier II"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jumping_3",
+            "recipe": "pneumaticcraft:jumping_upgrade_3",
+            "text": "Creating a Jumping Upgrade: Tier III"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jumping_4",
+            "recipe": "pneumaticcraft:jumping_upgrade_4",
+            "text": "Creating a Jumping Upgrade: Tier IV"
         },
         {
             "type": "crafting",
@@ -109,6 +157,12 @@
             "anchor": "scuba",
             "recipe": "pneumaticcraft:scuba_upgrade",
             "text": "Creating a Scuba Upgrade"
+        },
+        {
+            "type": "crafting",
+            "anchor": "flippers",
+            "recipe": "pneumaticcraft:flippers_upgrade",
+            "text": "Creating a Flippers Upgrade"
         },
         {
             "type": "crafting",

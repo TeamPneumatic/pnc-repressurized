@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -97,8 +97,8 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
 
     @Override
     public float getAirUsageMultiplier(Minigun minigun, ItemStack ammoStack) {
-        if (minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) > 0 && !getPotion(ammoStack).isEmpty()) {
-            return minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) + 1f;
+        if (minigun.getUpgrades(EnumUpgrade.DISPENSER) > 0 && !getPotion(ammoStack).isEmpty()) {
+            return minigun.getUpgrades(EnumUpgrade.DISPENSER) + 1f;
         } else {
             return 1f;
         }
@@ -155,7 +155,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
         ItemStack potion = getPotion(ammo);
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
             PlayerEntity shooter = minigun.getPlayer();
-            int chance = PNCConfig.Common.Minigun.potionProcChance + minigun.getUpgrades(IItemRegistry.EnumUpgrade.DISPENSER) * 2;
+            int chance = PNCConfig.Common.Minigun.potionProcChance + minigun.getUpgrades(EnumUpgrade.DISPENSER) * 2;
             if (shooter.world.rand.nextInt(100) < chance) {
                 PotionEntity entityPotion = new PotionEntity(shooter.world, shooter);
                 entityPotion.setItem(potion);

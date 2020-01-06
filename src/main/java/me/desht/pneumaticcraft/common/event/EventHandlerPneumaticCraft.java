@@ -39,6 +39,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.BoatEntity;
@@ -75,7 +76,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidBlock;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -177,8 +177,8 @@ public class EventHandlerPneumaticCraft {
         if (rtr != null && rtr.getType() == RayTraceResult.Type.BLOCK) {
             BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
             Block b = event.getWorld().getBlockState(brtr.getPos()).getBlock();
-            if (b instanceof IFluidBlock) {
-                Fluid fluid = ((IFluidBlock) b).getFluid();
+            if (b instanceof FlowingFluidBlock) {
+                Fluid fluid = ((FlowingFluidBlock) b).getFluid();
                 if (TileEntityRefineryController.isInputFluidValid(fluid, 4) && event.getPlayer() instanceof ServerPlayerEntity) {
                     AdvancementTriggers.OIL_BUCKET.trigger((ServerPlayerEntity) event.getPlayer());
                 }

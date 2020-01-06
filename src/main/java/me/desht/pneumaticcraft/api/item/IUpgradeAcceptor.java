@@ -1,8 +1,6 @@
 package me.desht.pneumaticcraft.api.item;
 
-import net.minecraft.item.Item;
-
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Could be implemented by anything and registered through {@link IItemRegistry#registerUpgradeAcceptor(IUpgradeAcceptor)}
@@ -14,7 +12,7 @@ public interface IUpgradeAcceptor {
      *
      * @return a set of the items which will be accepted as upgrades
      */
-    Set<Item> getApplicableUpgrades();
+    Map<EnumUpgrade, Integer> getApplicableUpgrades();
 
     /**
      * Get a translation key for this upgrade acceptor. This is used to display the acceptor in relevant upgrades'

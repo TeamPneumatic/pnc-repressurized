@@ -1,14 +1,13 @@
 package me.desht.pneumaticcraft.common.sensor.eventSensors;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import com.google.common.collect.ImmutableSet;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IEventSensorSetting;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.Event;
 
-import java.util.HashSet;
 import java.util.Set;
 
 abstract class PlayerEventSensor implements IEventSensorSetting {
@@ -19,10 +18,8 @@ abstract class PlayerEventSensor implements IEventSensorSetting {
     }
 
     @Override
-    public Set<Item> getRequiredUpgrades() {
-        Set<Item> upgrades = new HashSet<>();
-        upgrades.add(IItemRegistry.EnumUpgrade.ENTITY_TRACKER.getItem());
-        return upgrades;
+    public Set<EnumUpgrade> getRequiredUpgrades() {
+        return ImmutableSet.of(EnumUpgrade.ENTITY_TRACKER);
     }
 
     @Override

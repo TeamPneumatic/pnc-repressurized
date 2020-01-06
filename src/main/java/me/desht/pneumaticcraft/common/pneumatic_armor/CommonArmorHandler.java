@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
@@ -30,7 +30,6 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.ByteNBT;
 import net.minecraft.nbt.INBT;
@@ -69,7 +68,7 @@ public class CommonArmorHandler {
     private final boolean[][] upgradeRenderersEnabled = new boolean[4][];
     private final int[] ticksSinceEquip = new int[4];
 //    public final float[] armorPressure = new float[4];
-    public final List<LazyOptional<IAirHandlerItem>> airHandlers = new ArrayList<>();
+    private final List<LazyOptional<IAirHandlerItem>> airHandlers = new ArrayList<>();
     private final int[][] upgradeMatrix = new int [4][];
     private final int[] startupTimes = new int[4];
 
@@ -247,6 +246,7 @@ public class CommonArmorHandler {
                     player.stepHeight = 0.6F;
                 }
                 handleJetBoots();
+                handleFlippersSpeedBoost();
                 break;
         }
 
@@ -293,19 +293,21 @@ public class CommonArmorHandler {
         }
     }
 
-    // track player movement across ticks on the server - very transient, a capability would be overkill here
-    private static final Map<UUID,Vec3d> moveMap = new HashMap<>();
+    private static final Vec3d FORWARD = new Vec3d(0, 0, 1);
 
+    // track player movement across ticks on the server - very transient, a capability would be overkill here
+
+    private static final Map<UUID,Vec3d> moveMap = new HashMap<>();
     private void handleLeggingsSpeedBoost() {
         double speedBoost = getSpeedBoostFromLegs();
         if (player.world.isRemote) {
             // doing this client-side only appears to be effective
             if (player.moveForward > 0) {
                 if (!player.onGround && isJetBootsEnabled() && jetBootsBuilderMode) {
-                    player.moveRelative(getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) / 400f, new Vec3d(0, 0, 1));
+                    player.moveRelative(getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) / 250f, new Vec3d(0, 0, 1));
                 }
                 if (player.onGround && !player.isInWater()) {
-                    player.moveRelative((float) speedBoost, new Vec3d(0, 0, 1));
+                    player.moveRelative((float) speedBoost, FORWARD);
                 }
             }
         }
@@ -329,6 +331,15 @@ public class CommonArmorHandler {
         }
     }
 
+    private void handleFlippersSpeedBoost() {
+        if (player.world.isRemote && player.isInWater() && player.moveForward > 0) {
+            // doing this client-side only appears to be effective
+            if (isArmorReady(EquipmentSlotType.FEET) && getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.FLIPPERS) > 0) {
+                player.moveRelative(player.onGround ? 0.03f : 0.05f, FORWARD);
+            }
+        }
+    }
+
     private void setYMotion(Entity entity, double y) {
         Vec3d v = entity.getMotion();
         v = v.add(0, y - v.y, 0);
@@ -342,25 +353,24 @@ public class CommonArmorHandler {
         int jetbootsAirUsage = 0;
         if (getArmorPressure(EquipmentSlotType.FEET) > 0.0F) {
             if (isJetBootsActive()) {
-                if (jetBootsBuilderMode && jetbootsCount >= 8) {
+                if (jetBootsBuilderMode && jetbootsCount >= JetBootsUpgradeHandler.BUILDER_MODE_LEVEL) {
                     // builder mode - rise vertically (or hover if sneaking and firing)
-                    setYMotion(player, player.isSneaking() ? 0 : 0.15 + 0.15 * (jetbootsCount - 8));
-                    jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount / 5F);
+                    setYMotion(player, player.isSneaking() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
+                    jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount / 2.5F);
                 } else {
                     // jetboots firing - move in direction of looking
-                    Vec3d lookVec = player.getLookVec().scale(0.15 * jetbootsCount);
-                    flightAccel += lookVec.y / -20.0;
-                    flightAccel = MathHelper.clamp(flightAccel, 0.8F, 4.0F);
+                    Vec3d lookVec = player.getLookVec().scale(0.25 * jetbootsCount);
+                    flightAccel = MathHelper.clamp(flightAccel + (float)lookVec.y / -16.0F, 0.8F, 4.2F);
                     lookVec = lookVec.scale(flightAccel);
                     if (jetBootsActiveTicks < 10) lookVec = lookVec.scale(jetBootsActiveTicks * 0.1);
                     player.setMotion(lookVec.x, player.onGround ? 0 : lookVec.y, lookVec.z);
                     jetbootsAirUsage = PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount;
                 }
+                if (player.isInWater()) jetbootsAirUsage *= 4;
                 jetBootsActiveTicks++;
             } else if (isJetBootsEnabled() && !player.onGround) {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
-                if (jetbootsCount > 6 && !player.isSneaking()) setYMotion(player, 0.0);
-                else setYMotion(player, player.isSneaking() ? -0.45 : -0.15 + 0.015 * jetbootsCount);
+                setYMotion(player, player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount);
                 player.fallDistance = 0;
                 jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F));
                 flightAccel = 1.0F;
@@ -370,6 +380,7 @@ public class CommonArmorHandler {
         }
         if (jetbootsAirUsage != 0 && !player.world.isRemote) {
             if (prevJetBootsAirUsage == 0) {
+                // jet boots starting up
                 NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, player), player.world.getDimension().getType());
                 AdvancementTriggers.FLIGHT.trigger((ServerPlayerEntity) player);
             }
@@ -517,7 +528,8 @@ public class CommonArmorHandler {
         Arrays.fill(upgradeMatrix[slot.getIndex()], 0);
         for (ItemStack stack : upgradeStacks) {
             if (stack.getItem() instanceof ItemMachineUpgrade) {
-                upgradeMatrix[slot.getIndex()][((ItemMachineUpgrade) stack.getItem()).getUpgradeType().ordinal()] += stack.getCount();
+                ItemMachineUpgrade item = (ItemMachineUpgrade) stack.getItem();
+                upgradeMatrix[slot.getIndex()][item.getUpgradeType().ordinal()] += stack.getCount() * item.getTier();
             }
         }
         startupTimes[slot.getIndex()] = (int) (PNCConfig.Common.Armor.armorStartupTime * Math.pow(0.8, getSpeedFromUpgrades(slot) - 1));
@@ -590,10 +602,10 @@ public class CommonArmorHandler {
     }
 
     private boolean isModuleEnabled(ItemStack[] helmetStacks, IUpgradeRenderHandler handler) {
-        for (Item requiredUpgrade : handler.getRequiredUpgrades()) {
+        for (EnumUpgrade requiredUpgrade : handler.getRequiredUpgrades()) {
             boolean found = false;
             for (ItemStack stack : helmetStacks) {
-                if (stack.getItem() == requiredUpgrade) {
+                if (EnumUpgrade.from(stack) == requiredUpgrade) {
                     found = true;
                     break;
                 }

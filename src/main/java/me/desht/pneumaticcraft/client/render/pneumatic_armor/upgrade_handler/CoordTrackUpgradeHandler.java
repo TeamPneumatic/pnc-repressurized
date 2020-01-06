@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiCoordinateTrackerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderCoordWireframe;
@@ -24,7 +24,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
@@ -121,8 +120,8 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public Item[] getRequiredUpgrades() {
-        return new Item[] { IItemRegistry.EnumUpgrade.COORDINATE_TRACKER.getItem() };
+    public EnumUpgrade[] getRequiredUpgrades() {
+        return new EnumUpgrade[] { EnumUpgrade.COORDINATE_TRACKER };
     }
 
     @Override

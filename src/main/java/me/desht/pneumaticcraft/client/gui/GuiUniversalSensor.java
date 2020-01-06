@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -14,23 +14,23 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor.SensorStatus;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -49,6 +49,13 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         super(container, inv, displayString);
 
         ySize = 239;
+    }
+
+    public static void maybeUpdateButtons() {
+        Screen guiScreen = Minecraft.getInstance().currentScreen;
+        if (guiScreen instanceof GuiUniversalSensor) {
+            ((GuiUniversalSensor) guiScreen).updateButtons();
+        }
     }
 
     @Override
@@ -90,10 +97,10 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
         String[] folders = te.getSensorSetting().split("/");
         if (folders.length == 1 && !folders[0].isEmpty()) {
-            Set<Item> requiredItems = SensorHandler.getInstance().getRequiredStacksFromText(folders[0]);
+            Set<EnumUpgrade> requiredUpgrades = SensorHandler.getInstance().getRequiredStacksFromText(folders[0]);
             int curX = 92;
-            for (Item requiredItem : requiredItems) {
-                GuiUtils.drawItemStack(new ItemStack(requiredItem), curX, 20);
+            for (EnumUpgrade upgrade : requiredUpgrades) {
+                GuiUtils.drawItemStack(upgrade.getItemStack(), curX, 20);
                 curX += 18;
             }
         } else {
@@ -112,6 +119,17 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             GuiUtils.showPopupHelpScreen(this, font,
                     PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
         }
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            minecraft.player.closeScreen();
+        }
+
+        return nameFilterField.keyPressed(keyCode, scanCode, modifiers)
+                || nameFilterField.func_212955_f()
+                || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -135,10 +153,10 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     protected PointXY getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + 34, yStart + ySize / 4);
+        return new PointXY(xStart + 34, yStart + ySize / 4 - 18);
     }
 
-    public void updateButtons() {
+    private void updateButtons() {
         sensorButtons.forEach(w -> {
             buttons.remove(w);
             children.remove(w);
@@ -148,7 +166,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         if (!te.getSensorSetting().equals("")) {
             addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 18, 20, 20, ARROW_LEFT_SHORT).withTag("back"));
         } else {
-            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.universalSensor.button.showRange"), b -> te.showRangeLines()));
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.universalSensor.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
         }
 
         String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(te.getSensorSetting());
@@ -183,15 +201,11 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             int buttonWidth = 98;
             int buttonHeight = 20;
             if (te.getSensorSetting().equals("")) {
-                Set<Item> requiredItems = SensorHandler.getInstance().getRequiredStacksFromText(buttonText);
+                Set<EnumUpgrade> requiredUpgrades = SensorHandler.getInstance().getRequiredStacksFromText(buttonText);
                 WidgetButtonExtended button = new WidgetButtonExtended(buttonX, buttonY, buttonWidth, buttonHeight, "").withTag("set:" + buttonID);
-                ItemStack[] requiredStacks = new ItemStack[requiredItems.size()];
-                Iterator<Item> iterator = requiredItems.iterator();
-                for (int j = 0; j < requiredStacks.length; j++) {
-                    requiredStacks[j] = new ItemStack(iterator.next());
-                }
-                button.setRenderStacks(requiredStacks);
-                button.active = te.areGivenUpgradesInserted(requiredItems);
+                button.setRenderStacks(requiredUpgrades.stream().map(EnumUpgrade::getItemStack).toArray(ItemStack[]::new));
+                button.active = (te.sensorStatus == SensorStatus.OK || te.sensorStatus == SensorStatus.NO_SENSOR)
+                        && te.areGivenUpgradesInserted(requiredUpgrades);
                 addButtonLocal(button);
             } else {
                 addButtonLocal(new WidgetButtonExtended(buttonX, buttonY, buttonWidth, buttonHeight, buttonText).withTag("set:" + buttonID));
@@ -256,41 +270,31 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
+
         if (te.isSensorActive) {
-            pressureStatText.add(TextFormatting.GRAY + "Usage:");
+            pressureStatText.add(TextFormatting.WHITE + "Usage:");
             pressureStatText.add(TextFormatting.BLACK.toString() + PneumaticValues.USAGE_UNIVERSAL_SENSOR + "mL/tick");
         }
     }
 
     @Override
-    protected void addProblems(List<String> textList) {
-        super.addProblems(textList);
-        if (SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting()) == null) {
-            textList.add(TextFormatting.GRAY + "No sensor selected!");
-            textList.add(TextFormatting.BLACK + "Insert upgrades and select the desired sensor.");
-        }
-        if (!te.lastSensorError.isEmpty()) {
-            textList.add(TextFormatting.GRAY + "Sensor error reported!");
-            textList.add(TextFormatting.BLACK + te.lastSensorError);
-        }
+    protected void addWarnings(List<String> curInfo) {
+        super.addWarnings(curInfo);
 
-        // upgrades are in slots 0..3
-        // get upgrades from the container, not the tile entity (te upgrade handler isn't sync'd)
-        for (int i = 0; i < te.getUpgradeHandler().getSlots(); i++) {
-            ItemStack stack = container.inventorySlots.get(i).getStack();
-            if (stack.getItem() instanceof IPositionProvider) {
-                BlockPos pos = ((IPositionProvider) stack.getItem()).getStoredPositions(stack).get(0);
-                if (pos == null) {
-                    textList.add(TextFormatting.GRAY + "The inserted GPS Tool doesn't have a coordinate selected!");
-                    textList.add(TextFormatting.BLACK + "Insert a GPS Tool with a stored coordinate.");
-                    break;
-                }
-                int sensorRange = te.getRange();
-                if (Math.abs(pos.getX() - te.getPos().getX()) > sensorRange || Math.abs(pos.getY() - te.getPos().getY()) > sensorRange || Math.abs(pos.getZ() - te.getPos().getZ()) > sensorRange) {
-                    textList.add(TextFormatting.GRAY + "The stored coordinate in the GPS Tool is out of the Sensor's range!");
-                    textList.add(TextFormatting.BLACK + "Move the sensor closer, select a closer coordinate or insert Range Upgrades.");
-                }
-            }
+        if (!te.getPrimaryInventory().getStackInSlot(0).isEmpty() && te.outOfRange > 0) {
+            curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.universalSensor.outOfRange")));
+        }
+    }
+
+    @Override
+    protected void addProblems(List<String> curInfo) {
+        super.addProblems(curInfo);
+
+        if (!te.lastSensorExceptionText.isEmpty()) {
+            curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.universalSensor.sensorException", te.lastSensorExceptionText)));
+        }
+        if (te.sensorStatus != SensorStatus.OK) {
+            curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(te.sensorStatus.getTranslationKey())));
         }
     }
 }

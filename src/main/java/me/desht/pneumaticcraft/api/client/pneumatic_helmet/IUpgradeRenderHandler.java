@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
 
 /**
  * To add upgrades to a Pneumatic armor piece, implement this interface. You can add members to this class, but these
@@ -72,7 +72,17 @@ public interface IUpgradeRenderHandler {
      *
      * @return an array of required items; these do not need be registered PneumaticCraft upgrades
      */
-    Item[] getRequiredUpgrades();
+    EnumUpgrade[] getRequiredUpgrades();
+
+    /**
+     * Get the maximum number of the given upgrade which may be installed.
+     *
+     * @param upgrade an upgrade
+     * @return the maximum installable amount of this upgrade
+     */
+    default int getMaxInstallableUpgrades(EnumUpgrade upgrade) {
+        return 1;
+    }
 
     /**
      * Returns the usage in mL/tick when this upgrade handler is enabled.

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.player.PlayerEntity;
@@ -86,7 +86,7 @@ public enum UpgradeRenderHandlerList {
         for (int i = 0; i < upgradeRenderers.get(slot.getIndex()).size(); i++) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.isUpgradeRendererInserted(slot, i) && (countDisabled || handler.isUpgradeRendererEnabled(slot, i)))
-                totalUsage += upgradeRenderers.get(slot.getIndex()).get(i).getEnergyUsage(handler.getUpgradeCount(slot, IItemRegistry.EnumUpgrade.RANGE), player);
+                totalUsage += upgradeRenderers.get(slot.getIndex()).get(i).getEnergyUsage(handler.getUpgradeCount(slot, EnumUpgrade.RANGE), player);
         }
         return totalUsage;
     }

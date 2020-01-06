@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:jet_boots_upgrade"
+      "item": "pneumaticcraft:jet_boots_upgrade_1"
     },
     "title": {
       "translate": "achievement.flight"

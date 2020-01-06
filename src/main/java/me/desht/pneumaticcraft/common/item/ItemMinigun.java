@@ -1,11 +1,10 @@
 package me.desht.pneumaticcraft.common.item;
 
-import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
@@ -18,6 +17,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,7 +26,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
@@ -39,30 +38,15 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemMinigun extends ItemPressurizable implements IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem, IInventoryItem {
     private static final int MAGAZINE_SIZE = 4;
 
-    private static Set<Item> applicableUpgrades;
     private static final String NBT_MAGAZINE = "Magazine";
     public static final String NBT_LOCKED_SLOT = "LockedSlot";
-
-    // TODO this should be part of a more general "max upgrades" database - 1.13, probably
-    private static final int[] MAX_UPGRADES = new int[EnumUpgrade.values().length];
-    private static void setMaxUpgrades(EnumUpgrade upgrade, int max) {
-        MAX_UPGRADES[upgrade.ordinal()] = max;
-    }
-    static {
-        setMaxUpgrades(EnumUpgrade.SPEED, 3);
-        setMaxUpgrades(EnumUpgrade.RANGE, 6);
-        setMaxUpgrades(EnumUpgrade.DISPENSER, 3);
-        setMaxUpgrades(EnumUpgrade.ITEM_LIFE, 4);
-        setMaxUpgrades(EnumUpgrade.ENTITY_TRACKER, 4);
-        setMaxUpgrades(EnumUpgrade.SECURITY, 1);
-    }
 
     public ItemMinigun() {
         super(defaultProps().setTEISR(() -> RenderItemMinigun::new), "minigun", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
@@ -182,18 +166,19 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     }
 
     @Override
-    public Set<Item> getApplicableUpgrades() {
-        if (applicableUpgrades == null) {
-            applicableUpgrades = ImmutableSet.of(
-                    EnumUpgrade.SPEED.getItem(),
-                    EnumUpgrade.RANGE.getItem(),
-                    EnumUpgrade.DISPENSER.getItem(),
-                    EnumUpgrade.ENTITY_TRACKER.getItem(),
-                    EnumUpgrade.ITEM_LIFE.getItem(),
-                    EnumUpgrade.SECURITY.getItem()
-            );
-        }
-        return applicableUpgrades;
+    public Map<EnumUpgrade,Integer> getApplicableUpgrades() {
+        return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
+//        if (applicableUpgrades == null) {
+//            applicableUpgrades = ImmutableSet.of(
+//                    EnumUpgrade.SPEED.getItem(),
+//                    EnumUpgrade.RANGE.getItem(),
+//                    EnumUpgrade.DISPENSER.getItem(),
+//                    EnumUpgrade.ENTITY_TRACKER.getItem(),
+//                    EnumUpgrade.ITEM_LIFE.getItem(),
+//                    EnumUpgrade.SECURITY.getItem()
+//            );
+//        }
+//        return applicableUpgrades;
     }
 
     @Override
@@ -264,17 +249,8 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     }
 
     private class MinigunItem extends Minigun {
-
-        private int[] upgrades = null;
-
         MinigunItem() {
             super(false);
-        }
-
-        @Override
-        public Minigun setAmmoStack(@Nonnull ItemStack ammoStack) {
-            upgrades = null; // force a rescan of upgrades from the item nbt next time an upgrade is queried
-            return super.setAmmoStack(ammoStack);
         }
 
         @Override
@@ -290,9 +266,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
         @Override
         public void setAmmoColorStack(@Nonnull ItemStack ammo) {
             if (!ammo.isEmpty() ) {
-                CompoundNBT tag = new CompoundNBT();
-                ammo.write(tag);
-                NBTUtil.setCompoundTag(minigunStack, "ammoColorStack", tag);
+                NBTUtil.setCompoundTag(minigunStack, "ammoColorStack", ammo.write(new CompoundNBT()));
             } else {
                 NBTUtil.removeTag(minigunStack, "ammoColorStack");
             }
@@ -365,7 +339,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
 
         @Override
         public int getUpgrades(EnumUpgrade upgrade) {
-            return Math.min(MAX_UPGRADES[upgrade.ordinal()], UpgradableItemUtils.getUpgrades(minigunStack, upgrade));
+            return Math.min(ApplicableUpgradesDB.getInstance().getMaxUpgrades(minigunStack.getItem(), upgrade), UpgradableItemUtils.getUpgrades(minigunStack, upgrade));
         }
     }
 }

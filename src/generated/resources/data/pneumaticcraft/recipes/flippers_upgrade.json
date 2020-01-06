@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "X": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "C": {
+      "item": "minecraft:black_wool"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:flippers_upgrade"
+  }
+}

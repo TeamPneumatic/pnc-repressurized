@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.util;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItem;
@@ -24,8 +25,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class UpgradableItemUtils {
     public static final String NBT_CREATIVE = "CreativeUpgrade";
     public static final String NBT_UPGRADE_TAG = "UpgradeInventory";
-    public static final String NBT_UPGRADE_CACHE_TAG = "UpgradeInventoryCached";
     public static final int UPGRADE_INV_SIZE = 9;
+    private static final String NBT_UPGRADE_CACHE_TAG = "UpgradeInventoryCached";
 
     /**
      * Add a standardized tooltip listing the installed upgrades in the given item.
@@ -67,6 +68,13 @@ public class UpgradableItemUtils {
         stack.getOrCreateTag().put(NBT_UPGRADE_TAG, handler.serializeNBT());
         UpgradeCache cache = new UpgradeCache(() -> handler);
         stack.getTag().put(NBT_UPGRADE_CACHE_TAG, cache.toNBT());
+
+        stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
+            if (h.getPressure() > 10f) {
+                int maxAir = (int)(h.getVolume() * h.maxPressure());
+                h.addAir(maxAir - h.getAir());
+            }
+        });
     }
 
     /**

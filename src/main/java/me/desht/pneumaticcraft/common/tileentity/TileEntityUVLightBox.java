@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -58,7 +57,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     public TileEntityUVLightBox() {
         super(ModTileEntityTypes.UV_LIGHT_BOX, PneumaticValues.DANGER_PRESSURE_UV_LIGHTBOX, PneumaticValues.MAX_PRESSURE_UV_LIGHTBOX, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
-        addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
     @Override

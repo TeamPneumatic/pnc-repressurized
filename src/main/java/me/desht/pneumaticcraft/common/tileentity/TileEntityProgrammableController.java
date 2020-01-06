@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.event.SemiblockEvent;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
@@ -116,7 +116,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     public TileEntityProgrammableController() {
         super(ModTileEntityTypes.PROGRAMMABLE_CONTROLLER, 5, 7, 5000, 4);
 
-        addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.DISPENSER);
         MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
@@ -320,7 +319,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
 
     private void calculateUpgrades() {
         int oldDispenserUpgrades = getUpgrades(EnumUpgrade.INVENTORY);
-        int dispenserUpgrades = Math.min(35, getUpgrades(EnumUpgrade.DISPENSER));
+        int dispenserUpgrades = Math.min(35, getUpgrades(EnumUpgrade.INVENTORY));
         if (!getWorld().isRemote && oldDispenserUpgrades != dispenserUpgrades) {
             tank.setCapacity((dispenserUpgrades + 1) * 16000);
             if (tank.getFluidAmount() > tank.getCapacity()) {

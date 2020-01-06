@@ -1,0 +1,8 @@
+{
+  "textures" : {
+    "layer0" : "pneumaticcraft:item/upgrades/upgrade_layer0",
+    "layer1" : "pneumaticcraft:item/upgrades/jumping",
+    "layer2" : "pneumaticcraft:item/upgrades/upgrade_frame_1"
+  },
+  "parent" : "item/generated"
+}

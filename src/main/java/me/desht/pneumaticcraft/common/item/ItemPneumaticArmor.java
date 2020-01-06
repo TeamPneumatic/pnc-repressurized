@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderCoordWireframe;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.util.ITooltipFlag;
@@ -40,7 +41,8 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 //@Optional.InterfaceList({
 //        @Optional.Interface(iface = "thaumcraft.api.items.IGoggles", modid = ModIds.THAUMCRAFT),
@@ -61,7 +63,6 @@ public class ItemPneumaticArmor extends ArmorItem
             PneumaticValues.PNEUMATIC_HELMET_VOLUME
     };
 //    private static final int[] VIS_DISCOUNTS = new int[] { 1, 2, 2, 5 };
-    private static final List<Set<Item>> applicableUpgrades = new ArrayList<>();
 
     public static final String NBT_SEARCH_ITEM = "SearchStack";
     public static final String NBT_COORD_TRACKER = "CoordTracker";
@@ -150,40 +151,10 @@ public class ItemPneumaticArmor extends ArmorItem
         return false;
     }
 
-    public static void initApplicableUpgrades() {
-        for (int i = 0; i < 4; i++) {
-            applicableUpgrades.add(new HashSet<>());
-        }
-
-        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-            Set<Item> upgrades = applicableUpgrades.get(slot.getIndex());
-            // upgrades automatically added due to an upgrade handler being registered
-            UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).forEach(
-                    handler -> Arrays.stream(handler.getRequiredUpgrades())
-                            .filter(Objects::nonNull)
-                            .forEach(upgrades::add)
-            );
-            // upgrades common to all armor pieces without a specific handler
-            addApplicableUpgrade(slot, EnumUpgrade.SPEED);
-            addApplicableUpgrade(slot, EnumUpgrade.VOLUME);
-            addApplicableUpgrade(slot, EnumUpgrade.ITEM_LIFE);
-            addApplicableUpgrade(slot, EnumUpgrade.ARMOR);
-            addApplicableUpgrade(slot, EnumUpgrade.THAUMCRAFT);
-        }
-        // piece-specific upgrades which don't have a specific handler
-        addApplicableUpgrade(EquipmentSlotType.HEAD, EnumUpgrade.RANGE);
-        addApplicableUpgrade(EquipmentSlotType.CHEST, EnumUpgrade.SECURITY);
-    }
-
-    private static void addApplicableUpgrade(EquipmentSlotType slot, EnumUpgrade upgrade) {
-        if (upgrade.isDepLoaded()) {
-            applicableUpgrades.get(slot.getIndex()).add(upgrade.getItem());
-        }
-    }
-
     @Override
-    public Set<Item> getApplicableUpgrades() {
-        return applicableUpgrades.get(slot.getIndex());
+    public Map<EnumUpgrade,Integer> getApplicableUpgrades() {
+        return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
+//        return maxUpgrades.get(slot.getIndex());
     }
 
     @Override

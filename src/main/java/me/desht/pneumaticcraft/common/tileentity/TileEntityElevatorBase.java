@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
@@ -80,7 +80,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
     public TileEntityElevatorBase() {
         super(ModTileEntityTypes.ELEVATOR_BASE, PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
-        addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.CHARGING);
     }
 
     @Override

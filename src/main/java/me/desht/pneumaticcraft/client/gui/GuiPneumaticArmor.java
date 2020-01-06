@@ -2,12 +2,10 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
-import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -19,16 +17,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
 
@@ -49,14 +43,9 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
         addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.item." + registryName);
         statusStat = addAnimatedStat("Status", itemStack, 0xFFFFAA00, false);
 
-        Set<Item> upgrades = ((IUpgradeAcceptor)itemStack.getItem()).getApplicableUpgrades();
-        List<Item> upgrades1 = upgrades.stream().sorted(Comparator.comparing(Item::getTranslationKey)).collect(Collectors.toList());
-
-        for (int i = 0; i < upgrades1.size(); i++) {
-            Item upgrade = upgrades1.get(i);
-            if (upgrade instanceof ItemMachineUpgrade) {
-                addUpgradeStat(((ItemMachineUpgrade) upgrade).getUpgradeType(), i <= upgrades1.size() / 2);
-            }
+        List<EnumUpgrade> upgrades = getApplicableUpgrades();
+        for (int i = 0; i < upgrades.size(); i++) {
+            addUpgradeStat(upgrades.get(i), i <= upgrades.size() / 2);
         }
     }
 

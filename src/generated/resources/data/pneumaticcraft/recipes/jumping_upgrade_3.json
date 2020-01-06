@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PCP",
+    "JUJ",
+    " J "
+  ],
+  "key": {
+    "U": {
+      "item": "pneumaticcraft:jumping_upgrade_2"
+    },
+    "J": {
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "count": 1,
+      "nbt": "{Potion:\"minecraft:leaping\"}"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "C": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:jumping_upgrade_3"
+  }
+}

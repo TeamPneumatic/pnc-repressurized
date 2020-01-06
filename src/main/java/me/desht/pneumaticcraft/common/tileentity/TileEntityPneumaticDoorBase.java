@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -58,7 +58,6 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
 
     public TileEntityPneumaticDoorBase() {
         super(ModTileEntityTypes.PNEUMATIC_DOOR_BASE, PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
-        addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.RANGE);
     }
 
     @Override

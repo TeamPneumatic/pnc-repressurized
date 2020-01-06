@@ -17,6 +17,13 @@ public class BlockUniversalSensor extends BlockPneumaticCraftModeled {
 
     public BlockUniversalSensor() {
         super("universal_sensor");
+
+        setDefaultState(getStateContainer().getBaseState()
+                .with(NORTH, false)
+                .with(SOUTH, false)
+                .with(WEST, false)
+                .with(EAST, false)
+        );
     }
 
     @Override

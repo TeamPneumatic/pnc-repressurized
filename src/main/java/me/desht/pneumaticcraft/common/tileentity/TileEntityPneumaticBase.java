@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -19,7 +19,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class TileEntityPneumaticBase extends TileEntityTickableBase /*implements IPneumaticPosProvider*/ {
+public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     @GuiSynced
     final IAirHandlerMachine airHandler;
     private final LazyOptional<IAirHandlerMachine> airHandlerCap;
@@ -36,9 +36,6 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase /*i
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
         this.defaultVolume = volume;
-
-        addApplicableUpgrade(IItemRegistry.EnumUpgrade.VOLUME);
-        addApplicableUpgrade(IItemRegistry.EnumUpgrade.SECURITY);
     }
 
     @Override
@@ -57,8 +54,8 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase /*i
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
-        airHandler.setVolumeUpgrades(getUpgrades(IItemRegistry.EnumUpgrade.VOLUME));
-        airHandler.setHasSecurityUpgrade(getUpgrades(IItemRegistry.EnumUpgrade.SECURITY) > 0);
+        airHandler.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
+        airHandler.setHasSecurityUpgrade(getUpgrades(EnumUpgrade.SECURITY) > 0);
     }
 
     @Nonnull

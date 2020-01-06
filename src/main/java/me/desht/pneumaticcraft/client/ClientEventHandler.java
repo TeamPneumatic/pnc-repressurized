@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
@@ -458,7 +458,7 @@ public class ClientEventHandler {
     public static void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
         if (event.getInfo().getFluidState().isTagged(FluidTags.WATER) && event.getInfo().getRenderViewEntity() instanceof PlayerEntity) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isScubaEnabled() && handler.getUpgradeCount(EquipmentSlotType.HEAD, IItemRegistry.EnumUpgrade.SCUBA) > 0) {
+            if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isScubaEnabled() && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.SCUBA) > 0) {
                 event.setDensity(0.02f);
                 event.setCanceled(true);
             }

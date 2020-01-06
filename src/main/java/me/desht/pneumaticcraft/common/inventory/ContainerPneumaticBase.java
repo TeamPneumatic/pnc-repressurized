@@ -179,6 +179,94 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
         return copyOfSrcStack;
     }
 
+    // almost the same as the super method, but pays attention to slot itemstack limits
+    protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
+        boolean flag = false;
+        int i = startIndex;
+        if (reverseDirection) {
+            i = endIndex - 1;
+        }
+
+        if (stack.isStackable()) {
+            while(!stack.isEmpty()) {
+                if (reverseDirection) {
+                    if (i < startIndex) {
+                        break;
+                    }
+                } else if (i >= endIndex) {
+                    break;
+                }
+
+                Slot slot = this.inventorySlots.get(i);
+                ItemStack itemstack = slot.getStack();
+                if (!itemstack.isEmpty() && areItemsAndTagsEqual(stack, itemstack)) {
+                    int j = itemstack.getCount() + stack.getCount();
+                    // modified HERE
+                    int maxSize = Math.min(slot.getItemStackLimit(itemstack), Math.min(slot.getSlotStackLimit(), stack.getMaxStackSize()));
+                    if (j <= maxSize) {
+                        stack.setCount(0);
+                        itemstack.setCount(j);
+                        slot.onSlotChanged();
+                        flag = true;
+                    } else if (itemstack.getCount() < maxSize) {
+                        stack.shrink(maxSize - itemstack.getCount());
+                        itemstack.setCount(maxSize);
+                        slot.onSlotChanged();
+                        flag = true;
+                    }
+                }
+
+                if (reverseDirection) {
+                    --i;
+                } else {
+                    ++i;
+                }
+            }
+        }
+
+        if (!stack.isEmpty()) {
+            if (reverseDirection) {
+                i = endIndex - 1;
+            } else {
+                i = startIndex;
+            }
+
+            while(true) {
+                if (reverseDirection) {
+                    if (i < startIndex) {
+                        break;
+                    }
+                } else if (i >= endIndex) {
+                    break;
+                }
+
+                Slot slot1 = this.inventorySlots.get(i);
+                ItemStack itemstack1 = slot1.getStack();
+                if (itemstack1.isEmpty() && slot1.isItemValid(stack)) {
+                    // modified HERE
+                    int limit = Math.min(slot1.getSlotStackLimit(), slot1.getItemStackLimit(stack));
+                    if (stack.getCount() > limit) {
+                        slot1.putStack(stack.split(limit));
+                    } else {
+                        slot1.putStack(stack.split(stack.getCount()));
+                    }
+
+                    slot1.onSlotChanged();
+                    flag = true;
+                    break;
+                }
+
+                if (reverseDirection) {
+                    --i;
+                } else {
+                    ++i;
+                }
+            }
+        }
+
+        return flag;
+    }
+
     @Nonnull
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickType, PlayerEntity player) {

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -22,7 +22,7 @@ public interface IBlockAndCoordinatePollSensor {
      *
      * @return
      */
-    Set<Item> getRequiredUpgrades();
+    Set<EnumUpgrade> getRequiredUpgrades();
 
     /**
      * See {@link ISensorSetting#needsTextBox()}

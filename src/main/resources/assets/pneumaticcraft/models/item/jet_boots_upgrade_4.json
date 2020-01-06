@@ -1,0 +1,8 @@
+{
+  "textures" : {
+    "layer0" : "pneumaticcraft:item/upgrades/upgrade_layer0",
+    "layer1" : "pneumaticcraft:item/upgrades/jet_boots",
+    "layer2" : "pneumaticcraft:item/upgrades/upgrade_frame_4"
+  },
+  "parent" : "item/generated"
+}

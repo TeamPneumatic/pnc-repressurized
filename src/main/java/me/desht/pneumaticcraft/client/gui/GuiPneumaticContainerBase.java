@@ -33,6 +33,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -144,24 +145,41 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         redstoneTab.addSubWidget(redstoneButton);
     }
 
+//    private void addUpgradeTab() {
+//        String upgrades = "gui.tab.upgrades.tile." + te.getType().getRegistryName().getPath();
+//        String translatedUpgrades = I18n.format(upgrades);
+//        List<String> upgradeText = new ArrayList<>();
+//        if (te instanceof TileEntityPneumaticBase) {
+//            upgradeText.add("gui.tab.upgrades.volume");
+//            upgradeText.add("gui.tab.upgrades.security");
+//        }
+//        if (te instanceof IHeatExchanger) {
+//            upgradeText.add("gui.tab.upgrades.volumeCapacity");
+//        }
+//        if (!translatedUpgrades.equals(upgrades)) upgradeText.add(upgrades);
+//
+//        addExtraUpgradeText(upgradeText);
+//
+//        if (upgradeText.size() > 0)
+//            addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(upgradeText);
+//    }
+
+
     private void addUpgradeTab() {
-        String upgrades = "gui.tab.upgrades.tile." + te.getType().getRegistryName().getPath();
-        String translatedUpgrades = I18n.format(upgrades);
-        List<String> upgradeText = new ArrayList<>();
-        if (te instanceof TileEntityPneumaticBase) {
-            upgradeText.add("gui.tab.upgrades.volume");
-            upgradeText.add("gui.tab.upgrades.security");
+        List<String> text = new ArrayList<>();
+        te.getApplicableUpgrades().forEach((upgrade, max) -> {
+            text.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + upgrade.getItemStack().getDisplayName().getFormattedText());
+            text.add(TextFormatting.GRAY + "Max Upgrades: " + max);
+            String upgradeName = upgrade.toString().toLowerCase();
+            String k = "gui.tab.upgrades." + te.getType().getRegistryName().getPath() + "." + upgradeName;
+            text.add(TextFormatting.BLACK + (I18n.hasKey(k) ? I18n.format(k) : I18n.format("gui.tab.upgrades.generic." + upgradeName)));
+            text.add("");
+        });
+        if (!text.isEmpty()) {
+            addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(text);
         }
-        if (te instanceof IHeatExchanger) {
-            upgradeText.add("gui.tab.upgrades.volumeCapacity");
-        }
-        if (!translatedUpgrades.equals(upgrades)) upgradeText.add(upgrades);
-
-        addExtraUpgradeText(upgradeText);
-
-        if (upgradeText.size() > 0)
-            addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(upgradeText);
     }
+
 
     protected void addExtraUpgradeText(List<String> upgradeText) {
     }

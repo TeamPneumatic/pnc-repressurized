@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.common.inventory.handler;
 
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import net.minecraft.item.ItemStack;
 
 public class ChargeableItemHandler extends BaseItemStackHandler {
@@ -36,9 +37,17 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
 
     @Override
     public boolean isItemValid(int slot, ItemStack itemStack) {
-        if (itemStack.isEmpty()) return true;
+        return itemStack.isEmpty() || isApplicable(itemStack) && isUnique(slot, itemStack);
+    }
 
-        return getChargingStack().getItem() instanceof IUpgradeAcceptor
-                && ((IUpgradeAcceptor) getChargingStack().getItem()).getApplicableUpgrades().contains(itemStack.getItem());
+    private boolean isUnique(int slot, ItemStack stack) {
+        for (int i = 0; i < getSlots(); i++) {
+            if (i != slot && EnumUpgrade.from(stack) == EnumUpgrade.from(getStackInSlot(i))) return false;
+        }
+        return true;
+    }
+
+    private boolean isApplicable(ItemStack stack) {
+        return ApplicableUpgradesDB.getInstance().getMaxUpgrades(getChargingStack().getItem(), EnumUpgrade.from(stack)) > 0;
     }
 }

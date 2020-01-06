@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PCP",
+    "VTV"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "V": {
+      "item": "pneumaticcraft:vortex_cannon"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "C": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:jumping_upgrade_1"
+  }
+}

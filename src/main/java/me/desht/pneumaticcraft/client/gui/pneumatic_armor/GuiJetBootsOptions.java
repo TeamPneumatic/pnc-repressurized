@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
@@ -38,7 +38,7 @@ public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions<JetB
 
     private void setBuilderMode(boolean enabled) {
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
-        if (commonArmorHandler.getUpgradeCount(EquipmentSlotType.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) >= 8) {
+        if (commonArmorHandler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) >= JetBootsUpgradeHandler.BUILDER_MODE_LEVEL) {
             CompoundNBT tag = new CompoundNBT();
             tag.putBoolean(ItemPneumaticArmor.NBT_BUILDER_MODE, enabled);
             NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.FEET, tag));
@@ -49,6 +49,6 @@ public class GuiJetBootsOptions extends IOptionPage.SimpleToggleableOptions<JetB
 
     public void tick() {
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-        checkBox.active = handler.getUpgradeCount(EquipmentSlotType.FEET, IItemRegistry.EnumUpgrade.JET_BOOTS) >= 8;
+        checkBox.active = handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) >= JetBootsUpgradeHandler.BUILDER_MODE_LEVEL;
     }
 }

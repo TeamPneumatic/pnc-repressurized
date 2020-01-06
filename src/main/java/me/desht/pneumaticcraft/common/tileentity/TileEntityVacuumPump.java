@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
@@ -48,8 +47,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
 
         this.vacuumHandler  = new MachineAirHandler(PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.VOLUME_VACUUM_PUMP);
         this.vacuumCap = LazyOptional.of(() -> vacuumHandler);
-
-        addApplicableUpgrade(EnumUpgrade.SPEED);
     }
 
     @Nonnull
@@ -76,11 +73,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
         super.onBlockRotated();
         vacuumHandler.invalidateNeighbours();
     }
-//    @Override
-//    public void onNeighborTileUpdate() {
-//        super.onNeighborTileUpdate();
-//        vacuumHandler.onNeighborChange();
-//    }
 
     @Override
     public IItemHandlerModifiable getPrimaryInventory() {

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -26,12 +26,10 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase im
     int leaveMaterialCount; // leave items/liquids (used as filter)
     @DescSynced
     public boolean isCreative; // has a creative upgrade installed
-    protected Direction inputDir = Direction.UP;
+    Direction inputDir = Direction.UP;
 
-    public TileEntityAbstractHopper(TileEntityType type) {
+    TileEntityAbstractHopper(TileEntityType type) {
         super(type, 4);
-        addApplicableUpgrade(EnumUpgrade.SPEED);
-        addApplicableUpgrade(EnumUpgrade.CREATIVE);
     }
 
     public Direction getInputDirection() {
