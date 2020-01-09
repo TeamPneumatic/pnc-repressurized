@@ -1,8 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -35,10 +33,10 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInve
                 if (!droneStack.isEmpty()) {
                     if (progWidget.isItemValidForFilters(droneStack)) {
                         for (int side = 0; side < 6; side++) {
-                            if (((ISidedWidget) progWidget).getSides()[side]) {
+                            if (progWidget.getSides()[side]) {
                                 droneStack = droneStack.copy();
                                 int oldCount = droneStack.getCount();
-                                if (((ICountWidget) progWidget).useCount()) {
+                                if (progWidget.useCount()) {
                                     droneStack.setCount(Math.min(droneStack.getCount(), getRemainingCount()));
                                 }
                                 ItemStack remainder = IOHelper.insert(te, droneStack.copy(), Direction.byIndex(side), simulate);
@@ -50,8 +48,6 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInve
                                     decreaseCount(exportedItems);
                                 }
                                 if (simulate && exportedItems > 0) return true;
-//                                if (!(inv instanceof ISidedInventory))
-//                                    break; //doing it for every side for no side sensitive inventories would be a waste.
                             }
                         }
                         if (droneStack.isEmpty() && !simulate) {

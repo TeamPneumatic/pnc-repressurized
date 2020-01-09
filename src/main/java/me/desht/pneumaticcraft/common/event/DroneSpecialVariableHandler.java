@@ -15,12 +15,12 @@ public class DroneSpecialVariableHandler {
     public void onSpecialVariableRetrieving(SpecialVariableRetrievalEvent.CoordinateVariable.Drone event) {
         if (event.specialVarName.equalsIgnoreCase("owner")) {
             PlayerEntity player = event.drone.getOwner();
-            if (player != null) event.coordinate = getPosForEntity(player);
+            if (player != null) event.setCoordinate(getPosForEntity(player));
         } else if (event.specialVarName.equalsIgnoreCase("drone")) {
-            event.coordinate = getPosForEntity(event.drone);
+            event.setCoordinate(getPosForEntity(event.drone));
         } else if (event.specialVarName.toLowerCase().startsWith("player=")) {
             PlayerEntity player = PneumaticCraftUtils.getPlayerFromName(event.specialVarName.substring("player=".length()));
-            if (player != null) event.coordinate = getPosForEntity(player);
+            if (player != null) event.setCoordinate(getPosForEntity(player));
         }
     }
 

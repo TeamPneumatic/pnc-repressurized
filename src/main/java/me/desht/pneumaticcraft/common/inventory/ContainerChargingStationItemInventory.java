@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
@@ -37,15 +37,15 @@ public class ContainerChargingStationItemInventory extends ContainerPneumaticBas
     }
 
     public static ContainerChargingStationItemInventory createMinigunContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
-        return new ContainerChargingStationItemInventory(ModContainerTypes.CHARGING_MINIGUN, windowId, inv, data);
+        return new ContainerChargingStationItemInventory(ModContainers.CHARGING_MINIGUN, windowId, inv, data);
     }
 
     public static ContainerChargingStationItemInventory createDroneContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
-        return new ContainerChargingStationItemInventory(ModContainerTypes.CHARGING_DRONE, windowId, inv, data);
+        return new ContainerChargingStationItemInventory(ModContainers.CHARGING_DRONE, windowId, inv, data);
     }
 
     public static ContainerChargingStationItemInventory createArmorContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
-        return new ContainerChargingStationItemInventory(ModContainerTypes.CHARGING_ARMOR, windowId, inv, data);
+        return new ContainerChargingStationItemInventory(ModContainers.CHARGING_ARMOR, windowId, inv, data);
     }
 
     private class UpgradeSlot extends SlotItemHandler {

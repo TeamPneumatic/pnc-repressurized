@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
@@ -16,6 +19,10 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariableSetWidget {
+    public ProgWidgetCoordinateOperator() {
+        super(ModProgWidgets.COORDINATE_OPERATOR);
+    }
+
     public enum EnumOperator {
         PLUS_MINUS("plus_minus"), MULIPLY_DIVIDE("multiply_divide"), MAX_MIN("max_min");
 
@@ -42,18 +49,13 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
+    public ProgWidgetType returnType() {
         return null;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetCoordinate.class};
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "coordinateOperator";
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.COORDINATE);
     }
 
     @Override
@@ -73,7 +75,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
             curInfo.add(xlate("gui.progWidget.general.error.emptyVariable"));
         }
         if (operator == EnumOperator.MAX_MIN) {
-            if (getConnectedParameters()[0] == null && getConnectedParameters()[getParameters().length] == null) {
+            if (getConnectedParameters()[0] == null && getConnectedParameters()[getParameters().size()] == null) {
                 curInfo.add(xlate("gui.progWidget.coordinateOperator.noParameter"));
             }
         } else if (operator == EnumOperator.MULIPLY_DIVIDE) {
@@ -109,7 +111,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
                     curPos = new BlockPos(curPos.getX() * pos.getX(), curPos.getY() * pos.getY(), curPos.getZ() * pos.getZ());
                     coordinateWidget = (ProgWidgetCoordinate) coordinateWidget.getConnectedParameters()[0];
                 }
-                coordinateWidget = (ProgWidgetCoordinate) widget.getConnectedParameters()[widget.getParameters().length + argIndex];
+                coordinateWidget = (ProgWidgetCoordinate) widget.getConnectedParameters()[widget.getParameters().size()+ argIndex];
                 while (coordinateWidget != null) {
                     BlockPos pos = coordinateWidget.getCoordinate();
                     if (pos.getX() != 0 && pos.getY() != 0 && pos.getZ() != 0)
@@ -125,7 +127,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
                     curPos = new BlockPos(curPos.getX() + pos.getX(), curPos.getY() + pos.getY(), curPos.getZ() + pos.getZ());
                     coordinateWidget = (ProgWidgetCoordinate) coordinateWidget.getConnectedParameters()[0];
                 }
-                coordinateWidget = (ProgWidgetCoordinate) widget.getConnectedParameters()[widget.getParameters().length + argIndex];
+                coordinateWidget = (ProgWidgetCoordinate) widget.getConnectedParameters()[widget.getParameters().size() + argIndex];
                 while (coordinateWidget != null) {
                     BlockPos pos = coordinateWidget.getCoordinate();
                     curPos = new BlockPos(curPos.getX() - pos.getX(), curPos.getY() - pos.getY(), curPos.getZ() - pos.getZ());
@@ -142,7 +144,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
                 }
                 if (curPos.equals(new BlockPos(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE)))
                     curPos = new BlockPos(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
-                coordinateWidget = (ProgWidgetCoordinate) widget.getConnectedParameters()[widget.getParameters().length + argIndex];
+                coordinateWidget = (ProgWidgetCoordinate) widget.getConnectedParameters()[widget.getParameters().size() + argIndex];
                 while (coordinateWidget != null) {
                     BlockPos pos = coordinateWidget.getCoordinate();
                     curPos = new BlockPos(Math.min(curPos.getX(), pos.getX()), Math.min(curPos.getY(), pos.getY()), Math.min(curPos.getZ(), pos.getZ()));

@@ -1,12 +1,16 @@
 package me.desht.pneumaticcraft.api.drone;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.fluids.FluidStack;
 
 /**
  * Fired (on the MinecraftForge.EVENT_BUS) when
- * {@link IDroneRegistry#retrieveItemsAmazonStyle(net.minecraft.world.World, BlockPos, net.minecraft.item.ItemStack...)}
- * has successfully retrieved the items requested.  The same drone will be passed as the one returned in the retrieve method.
+ * {@link IDroneRegistry#retrieveItemsAmazonStyle(GlobalPos, ItemStack...)} or
+ * {@link IDroneRegistry#retrieveFluidAmazonStyle(GlobalPos, FluidStack)}
+ * has successfully retrieved the items requested.  The drone passed to this event is the same as the one returned by
+ * the retrieval method.
  */
 public class AmadronRetrievalEvent extends Event {
     public final IDrone drone;

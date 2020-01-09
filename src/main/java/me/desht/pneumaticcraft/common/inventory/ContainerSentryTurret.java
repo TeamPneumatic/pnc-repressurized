@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketBuffer;
@@ -14,7 +14,7 @@ public class ContainerSentryTurret extends ContainerPneumaticBase<TileEntitySent
     }
 
     public ContainerSentryTurret(int windowId, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainerTypes.SENTRY_TURRET, windowId, playerInventory, pos);
+        super(ModContainers.SENTRY_TURRET, windowId, playerInventory, pos);
 
         // Add the hopper slots.
         for (int i = 0; i < 4; i++)

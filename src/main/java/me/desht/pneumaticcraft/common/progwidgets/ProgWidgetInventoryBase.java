@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import joptsimple.internal.Strings;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
@@ -12,10 +13,17 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
+/**
+ * Base class for widgets which have side filtering and count limits.
+ */
 public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase implements ISidedWidget, ICountWidget {
     private boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
     private boolean useCount;
     private int count = 1;
+
+    public ProgWidgetInventoryBase(ProgWidgetType<?> type) {
+        super(type);
+    }
 
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {

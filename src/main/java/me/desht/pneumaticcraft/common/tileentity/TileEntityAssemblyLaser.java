@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -20,7 +20,7 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     private static final float ITEM_SIZE = 10F;
 
     public TileEntityAssemblyLaser() {
-        super(ModTileEntityTypes.ASSEMBLY_LASER);
+        super(ModTileEntities.ASSEMBLY_LASER);
     }
 
     @Override

@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -175,7 +175,7 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
     protected void handleMouseClick(Slot slot, int slotId, int clickedButton, ClickType clickType) {
         if (slot instanceof SlotPhantom && minecraft.player.inventory.getItemStack().isEmpty() && !slot.getHasStack() && clickedButton == 1) {
             editingSlot = slot.getSlotIndex();
-            ClientUtils.openContainerGui(ModContainerTypes.SEARCHER, new StringTextComponent("Searcher"));
+            ClientUtils.openContainerGui(ModContainers.SEARCHER, new StringTextComponent("Searcher"));
             if (minecraft.currentScreen instanceof GuiItemSearcher) {
                 searchGui = (GuiItemSearcher) minecraft.currentScreen;
             }

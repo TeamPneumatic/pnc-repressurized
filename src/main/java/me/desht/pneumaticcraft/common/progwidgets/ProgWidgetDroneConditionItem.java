@@ -1,20 +1,24 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.List;
+
 public class ProgWidgetDroneConditionItem extends ProgWidgetDroneCondition implements IItemFiltering {
 
-    @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetItemFilter.class, ProgWidgetString.class};
+    public ProgWidgetDroneConditionItem() {
+        super(ModProgWidgets.DRONE_CONDITION_ITEM);
     }
 
     @Override
-    public String getWidgetString() {
-        return "droneConditionItem";
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER, ModProgWidgets.TEXT);
     }
 
     @Override
@@ -38,7 +42,7 @@ public class ProgWidgetDroneConditionItem extends ProgWidgetDroneCondition imple
     public boolean isItemValidForFilters(ItemStack item) {
         return ProgWidgetItemFilter.isItemValidForFilters(item,
                 ProgWidget.getConnectedWidgetList(this, 0),
-                ProgWidget.getConnectedWidgetList(this, getParameters().length),
+                ProgWidget.getConnectedWidgetList(this, getParameters().size()),
                 null);
     }
 

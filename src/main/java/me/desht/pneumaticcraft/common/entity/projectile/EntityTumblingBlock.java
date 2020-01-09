@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -48,11 +48,11 @@ public class EntityTumblingBlock extends ThrowableEntity {
     private static FakePlayer fakePlayer;
 
     public EntityTumblingBlock(World worldIn) {
-        super(ModEntityTypes.TUMBLING_BLOCK, worldIn);
+        super(ModEntities.TUMBLING_BLOCK, worldIn);
     }
 
     public EntityTumblingBlock(World worldIn, LivingEntity thrower, double x, double y, double z, @Nonnull ItemStack stack) {
-        super(ModEntityTypes.TUMBLING_BLOCK, worldIn);
+        super(ModEntities.TUMBLING_BLOCK, worldIn);
         Validate.isTrue(!stack.isEmpty() && stack.getItem() instanceof BlockItem);
 
         owner = thrower;

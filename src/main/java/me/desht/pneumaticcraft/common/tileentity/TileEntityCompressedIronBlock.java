@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.tileentity.TileEntityType;
@@ -18,7 +18,7 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     private int oldComparatorOutput = 0;
 
     public TileEntityCompressedIronBlock() {
-        this(ModTileEntityTypes.COMPRESSED_IRON_BLOCK);
+        this(ModTileEntities.COMPRESSED_IRON_BLOCK);
     }
 
     TileEntityCompressedIronBlock(TileEntityType type) {

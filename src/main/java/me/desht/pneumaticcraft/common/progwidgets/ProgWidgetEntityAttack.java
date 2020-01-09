@@ -1,8 +1,11 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIAttackEntity;
 import me.desht.pneumaticcraft.common.ai.DroneAINearestAttackableTarget;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaTypeBox;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -22,6 +25,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider, IEntityProvider {
     private EntityFilterPair entityFilters;
+
+    public ProgWidgetEntityAttack() {
+        super(ModProgWidgets.ENTITY_ATTACK);
+    }
 
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
@@ -48,23 +55,18 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
+    public ProgWidgetType returnType() {
         return null;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetArea.class, ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
     }
 
     @Override
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_ATTACK;
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "entityAttack";
     }
 
     @Override

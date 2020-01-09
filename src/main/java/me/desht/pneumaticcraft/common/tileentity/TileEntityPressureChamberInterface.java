@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -79,7 +79,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     public TileEntityPressureChamberInterface() {
-        super(ModTileEntityTypes.PRESSURE_CHAMBER_INTERFACE, 4);
+        super(ModTileEntities.PRESSURE_CHAMBER_INTERFACE, 4);
     }
 
     @Override

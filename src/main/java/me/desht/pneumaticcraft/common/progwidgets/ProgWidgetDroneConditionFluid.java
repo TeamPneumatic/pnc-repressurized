@@ -1,25 +1,30 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.List;
+
 public class ProgWidgetDroneConditionFluid extends ProgWidgetDroneCondition implements ILiquidFiltered {
 
-    @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetLiquidFilter.class, ProgWidgetString.class};
+    public ProgWidgetDroneConditionFluid() {
+        super(ModProgWidgets.DRONE_CONDITION_LIQUID);
     }
 
     @Override
-    public String getWidgetString() {
-        return "droneConditionLiquid";
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.LIQUID_FILTER, ModProgWidgets.TEXT);
     }
 
     @Override
     protected int getCount(IDroneBase drone, IProgWidget widget) {
-        return drone.getFluidTank().getFluid() != null && ((ILiquidFiltered) widget).isFluidValid(drone.getFluidTank().getFluid().getFluid()) ? drone.getFluidTank().getFluidAmount() : 0;
+        return !drone.getFluidTank().getFluid().isEmpty()
+                && ((ILiquidFiltered) widget).isFluidValid(drone.getFluidTank().getFluid().getFluid()) ? drone.getFluidTank().getFluidAmount() : 0;
     }
 
     @Override

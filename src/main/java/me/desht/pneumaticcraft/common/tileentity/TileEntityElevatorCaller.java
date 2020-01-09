@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.block.BlockElevatorCaller;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -22,7 +22,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     private BlockState camoState;
 
     public TileEntityElevatorCaller() {
-        super(ModTileEntityTypes.ELEVATOR_CALLER);
+        super(ModTileEntities.ELEVATOR_CALLER);
     }
 
     public void setEmittingRedstone(boolean emittingRedstone) {

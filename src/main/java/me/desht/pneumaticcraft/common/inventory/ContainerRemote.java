@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
@@ -44,11 +44,11 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     public static ContainerRemote createRemoteContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerRemote(ModContainerTypes.REMOTE, windowId, playerInventory, buffer);
+        return new ContainerRemote(ModContainers.REMOTE, windowId, playerInventory, buffer);
     }
 
     public static ContainerRemote createRemoteEditorContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerRemote(ModContainerTypes.REMOTE_EDITOR, windowId, playerInventory, buffer);
+        return new ContainerRemote(ModContainers.REMOTE_EDITOR, windowId, playerInventory, buffer);
     }
 
     private static Hand getHandFromBuffer(PacketBuffer buffer) {

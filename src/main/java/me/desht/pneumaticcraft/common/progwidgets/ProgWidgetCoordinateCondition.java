@@ -1,6 +1,9 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.ICondition.Operator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -19,14 +22,13 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     public final boolean[] checkingAxis = new boolean[3];
     private Operator operator = Operator.HIGHER_THAN_EQUALS;
 
-    @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetCoordinate.class, ProgWidgetCoordinate.class, ProgWidgetString.class};
+    public ProgWidgetCoordinateCondition() {
+        super(ModProgWidgets.CONDITION_COORDINATE);
     }
 
     @Override
-    public String getWidgetString() {
-        return "conditionCoordinate";
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.COORDINATE, ModProgWidgets.COORDINATE, ModProgWidgets.TEXT);
     }
 
     @Override
@@ -50,8 +52,9 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
         return !(checkingAxis[2] && !evaluate(pos1.getZ(), pos2.getZ()));
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean evaluate(int arg1, int arg2) {
-        return operator.evaluate(arg1, arg2); // == Operator.EQUALS ? arg1 == arg2 : arg1 >= arg2;
+        return operator.evaluate(arg1, arg2);
     }
 
     public Operator getOperator() {

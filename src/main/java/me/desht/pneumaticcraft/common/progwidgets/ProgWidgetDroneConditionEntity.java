@@ -1,6 +1,9 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.Entity;
@@ -15,9 +18,13 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition imp
 
     private EntityFilterPair entityFilters;
 
+    public ProgWidgetDroneConditionEntity() {
+        super(ModProgWidgets.DRONE_CONDITION_ENTITY);
+    }
+
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetString.class, ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.TEXT, ModProgWidgets.TEXT);
     }
 
     @Override
@@ -28,8 +35,8 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition imp
     }
 
     @Override
-    public String getWidgetString() {
-        return "droneConditionEntity";
+    public int getEntityFilterPosition() {
+        return 0;
     }
 
     @Override

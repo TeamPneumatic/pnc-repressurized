@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.IThermopneumaticProcessingPla
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -95,7 +95,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> fluidHandler);
 
     public TileEntityThermopneumaticProcessingPlant() {
-        super(ModTileEntityTypes.THERMOPNEUMATIC_PROCESSING_PLANT, 5, 7, 3000, 4);
+        super(ModTileEntities.THERMOPNEUMATIC_PROCESSING_PLANT, 5, 7, 3000, 4);
         heatExchanger.setThermalResistance(10);
     }
 

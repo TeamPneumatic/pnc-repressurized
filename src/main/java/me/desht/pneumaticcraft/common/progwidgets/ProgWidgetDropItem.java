@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.DroneAIImExBase;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.item.ItemEntity;
@@ -17,9 +18,8 @@ import java.util.Set;
 public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItemDropper {
     private boolean dropStraight;
 
-    @Override
-    public String getWidgetString() {
-        return "dropItem";
+    public ProgWidgetDropItem() {
+        super(ModProgWidgets.DROP_ITEM);
     }
 
     @Override

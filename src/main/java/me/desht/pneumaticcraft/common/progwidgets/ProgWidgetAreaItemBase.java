@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -29,19 +32,23 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     private boolean canCache = true;
     private EntityFilterPair entityFilters;
 
+    public ProgWidgetAreaItemBase(ProgWidgetType<?> type) {
+        super(type);
+    }
+
     @Override
     public boolean hasStepInput() {
         return true;
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
+    public ProgWidgetType returnType() {
         return null;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetArea.class, ProgWidgetItemFilter.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.ITEM_FILTER);
     }
 
     @Override
@@ -105,7 +112,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     private void initializeVariableCache() {
         areaVariableStates = new HashMap<>();
         ProgWidgetArea whitelistWidget = (ProgWidgetArea) getConnectedParameters()[0];
-        ProgWidgetArea blacklistWidget = (ProgWidgetArea) getConnectedParameters()[getParameters().length];
+        ProgWidgetArea blacklistWidget = (ProgWidgetArea) getConnectedParameters()[getParameters().size()];
         if (whitelistWidget == null) return;
         ProgWidgetArea widget = whitelistWidget;
         while (widget != null) {
@@ -145,7 +152,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
 
     @Override
     public void getArea(Set<BlockPos> area) {
-        getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[getParameters().length]);
+        getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[getParameters().size()]);
     }
 
     public static void getArea(Set<BlockPos> area, ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget) {
@@ -172,7 +179,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     public boolean isItemValidForFilters(ItemStack item, BlockState blockState) {
         return ProgWidgetItemFilter.isItemValidForFilters(item,
                 ProgWidget.getConnectedWidgetList(this, 1),
-                ProgWidget.getConnectedWidgetList(this, getParameters().length + 1),
+                ProgWidget.getConnectedWidgetList(this, getParameters().size() + 1),
                 blockState
         );
     }
@@ -184,7 +191,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
     public List<Entity> getEntitiesInArea(World world, Predicate<? super Entity> filter) {
         return getEntitiesInArea(
                 (ProgWidgetArea) getConnectedParameters()[0],
-                (ProgWidgetArea) getConnectedParameters()[getParameters().length],
+                (ProgWidgetArea) getConnectedParameters()[getParameters().size()],
                 world, filter, null
         );
     }
@@ -205,8 +212,8 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return entityFilters.isEntityValid(entity);
     }
 
-    public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world,
-                                                 Predicate<? super Entity> whitelistPredicate, Predicate<? super Entity> blacklistPredicate) {
+    private static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world,
+                                                  Predicate<? super Entity> whitelistPredicate, Predicate<? super Entity> blacklistPredicate) {
         if (whitelistWidget == null) return new ArrayList<>();
         Set<Entity> entities = new HashSet<>();
         ProgWidgetArea widget = whitelistWidget;

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.block.BlockAirCompressor;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -49,7 +49,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     public int curFuelUsage;
 
     public TileEntityAirCompressor() {
-        this(ModTileEntityTypes.AIR_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_AIR_COMPRESSOR, PneumaticValues.MAX_PRESSURE_AIR_COMPRESSOR, PneumaticValues.VOLUME_AIR_COMPRESSOR);
+        this(ModTileEntities.AIR_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_AIR_COMPRESSOR, PneumaticValues.MAX_PRESSURE_AIR_COMPRESSOR, PneumaticValues.VOLUME_AIR_COMPRESSOR);
     }
 
     TileEntityAirCompressor(TileEntityType type, float dangerPressure, float criticalPressure, int volume) {

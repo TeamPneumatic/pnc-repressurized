@@ -17,7 +17,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.ObjectHolder;
 
 @ObjectHolder(Names.MOD_ID)
-public class ModEntityTypes {
+public class ModEntities {
     public static final EntityType<EntityVortex> VORTEX = null;
     public static final EntityType<EntityDrone> DRONE = null;
     public static final EntityType<EntityLogisticsDrone> LOGISTIC_DRONE = null;
@@ -37,7 +37,7 @@ public class ModEntityTypes {
                     .immuneToFire()
                     .setTrackingRange(16)
                     .setUpdateInterval(3)
-                    .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.VORTEX.create(world))
+                    .setCustomClientFactory((spawnEntity, world) -> ModEntities.VORTEX.create(world))
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Names.MOD_ID + ":vortex")
                     .setRegistryName("vortex"));
@@ -46,7 +46,7 @@ public class ModEntityTypes {
                     .size(0.7f, 0.35f)
                     .setTrackingRange(32)
                     .setUpdateInterval(3)
-                    .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.DRONE.create(world)))
+                    .setCustomClientFactory(((spawnEntity, world) -> ModEntities.DRONE.create(world)))
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Names.MOD_ID + ":drone")
                     .setRegistryName("drone"));
@@ -55,7 +55,7 @@ public class ModEntityTypes {
                     .size(0.7f, 0.35f)
                     .setTrackingRange(32)
                     .setUpdateInterval(3)
-                    .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.LOGISTIC_DRONE.create(world)))
+                    .setCustomClientFactory(((spawnEntity, world) -> ModEntities.LOGISTIC_DRONE.create(world)))
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Names.MOD_ID + ":logistic_drone")
                     .setRegistryName("logistic_drone"));
@@ -64,7 +64,7 @@ public class ModEntityTypes {
                     .size(0.7f, 0.35f)
                     .setTrackingRange(32)
                     .setUpdateInterval(3)
-                    .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.HARVESTING_DRONE.create(world)))
+                    .setCustomClientFactory(((spawnEntity, world) -> ModEntities.HARVESTING_DRONE.create(world)))
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Names.MOD_ID + ":harvesting_drone")
                     .setRegistryName("harvesting_drone"));
@@ -74,7 +74,7 @@ public class ModEntityTypes {
                     .immuneToFire()
                     .setTrackingRange(4)
                     .setUpdateInterval(20)
-                    .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.MICROMISSILE.create(world))
+                    .setCustomClientFactory((spawnEntity, world) -> ModEntities.MICROMISSILE.create(world))
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Names.MOD_ID + ":micromissile")
                     .setRegistryName("micromissile"));
@@ -84,7 +84,7 @@ public class ModEntityTypes {
                     .immuneToFire()
                     .setTrackingRange(4)
                     .setUpdateInterval(20)
-                    .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.TUMBLING_BLOCK.create(world))
+                    .setCustomClientFactory((spawnEntity, world) -> ModEntities.TUMBLING_BLOCK.create(world))
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Names.MOD_ID + ":tumbling_block")
                     .setRegistryName("tumbling_block"));
@@ -94,7 +94,7 @@ public class ModEntityTypes {
                     .immuneToFire()
                     .setTrackingRange(4)
                     .setUpdateInterval(20)
-                    .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.RING.create(world))
+                    .setCustomClientFactory((spawnEntity, world) -> ModEntities.RING.create(world))
                     .setShouldReceiveVelocityUpdates(true)
                     .build(Names.MOD_ID + ":ring")
                     .setRegistryName("ring"));

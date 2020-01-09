@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
@@ -140,6 +141,7 @@ public class DroneAILogistics extends Goal {
         private final boolean[] sides = new boolean[6];
 
         FakeWidgetLogistics(BlockPos pos, Direction side, @Nonnull ItemStack stack) {
+            super(ModProgWidgets.LOGISTICS);
             this.stack = stack;
             this.fluid = null;
             area = new HashSet<>();
@@ -148,16 +150,12 @@ public class DroneAILogistics extends Goal {
         }
 
         FakeWidgetLogistics(BlockPos pos, Direction side, FluidStack fluid) {
+            super(ModProgWidgets.LOGISTICS);
             this.stack = ItemStack.EMPTY;
             this.fluid = fluid;
             area = new HashSet<>();
             area.add(pos);
             sides[side.getIndex()] = true;
-        }
-
-        @Override
-        public String getWidgetString() {
-            return null;
         }
 
         @Override

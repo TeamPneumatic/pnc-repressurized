@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.BlockState;
@@ -34,7 +37,11 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
 
     @OnlyIn(Dist.CLIENT)
     private static ItemRenderer itemRender;
-    
+
+    public ProgWidgetItemFilter() {
+        super(ModProgWidgets.ITEM_FILTER);
+    }
+
     public static ProgWidgetItemFilter withFilter(ItemStack filter){
         ProgWidgetItemFilter widget = new ProgWidgetItemFilter();
         widget.filter = filter;
@@ -120,18 +127,13 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
-        return ProgWidgetItemFilter.class;
+    public ProgWidgetType returnType() {
+        return ModProgWidgets.ITEM_FILTER;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetItemFilter.class};
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "itemFilter";
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER);
     }
 
     @Override

@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberWall;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,7 +24,7 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
     private int valveZ;
 
     public TileEntityPressureChamberWall() {
-        this(ModTileEntityTypes.PRESSURE_CHAMBER_WALL, 0);
+        this(ModTileEntities.PRESSURE_CHAMBER_WALL, 0);
     }
 
     TileEntityPressureChamberWall(TileEntityType type, int upgradeSize) {

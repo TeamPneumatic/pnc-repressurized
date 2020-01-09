@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,7 +42,7 @@ public class SemiBlockActiveProvider extends SemiBlockLogistics implements ISpec
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         // same container as passive provider
-        return new ContainerLogistics(ModContainerTypes.LOGISTICS_FRAME_PASSIVE_PROVIDER, i, playerInventory, getPos());
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_PASSIVE_PROVIDER, i, playerInventory, getPos());
     }
 
     @Override

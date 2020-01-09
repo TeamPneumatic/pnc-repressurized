@@ -13,7 +13,7 @@ import me.desht.pneumaticcraft.common.ai.EntityPathNavigateDrone;
 import me.desht.pneumaticcraft.common.config.ClientConfig;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -188,7 +188,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     public static Path getDronePath(PlayerEntity player, BlockPos pos) {
         World world = player.world;
-        EntityDrone drone = new EntityDrone(ModEntityTypes.DRONE, world);
+        EntityDrone drone = new EntityDrone(ModEntities.DRONE, world);
         drone.setPosition(player.posX, player.posY, player.posZ);
         return new EntityPathNavigateDrone(drone, world).getPathToPos(pos, 0);
     }

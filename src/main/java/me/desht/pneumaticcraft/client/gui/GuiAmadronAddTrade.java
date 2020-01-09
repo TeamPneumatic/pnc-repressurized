@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
@@ -169,7 +169,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void openItemSearchGui(boolean isInput) {
-        ClientUtils.openContainerGui(ModContainerTypes.SEARCHER, new StringTextComponent("Item Search"));
+        ClientUtils.openContainerGui(ModContainers.SEARCHER, new StringTextComponent("Item Search"));
         if (minecraft.currentScreen instanceof GuiItemSearcher) {
             isSettingInput = isInput;
             searchGui = (GuiItemSearcher) minecraft.currentScreen;
@@ -178,7 +178,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void openInventorySearchGui(boolean isInput) {
-        ClientUtils.openContainerGui(ModContainerTypes.INVENTORY_SEARCHER, new StringTextComponent("Inventory Search"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER, new StringTextComponent("Inventory Search"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             isSettingInput = isInput;
             invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
@@ -194,7 +194,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void openGPSGui(boolean isInput) {
-        ClientUtils.openContainerGui(ModContainerTypes.INVENTORY_SEARCHER, new StringTextComponent("Inventory Searcher (GPS)"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER, new StringTextComponent("Inventory Searcher (GPS)"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             gpsSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
             gpsSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -43,7 +43,7 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
     };
 
     public TileEntityPressureChamberGlass() {
-        super(ModTileEntityTypes.PRESSURE_CHAMBER_GLASS, 0);
+        super(ModTileEntities.PRESSURE_CHAMBER_GLASS, 0);
     }
 
     @Nonnull

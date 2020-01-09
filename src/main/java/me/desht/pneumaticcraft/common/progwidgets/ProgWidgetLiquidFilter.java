@@ -1,5 +1,8 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.fluid.Fluid;
@@ -19,6 +22,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetLiquidFilter extends ProgWidget {
     private Fluid fluid;
 
+    public ProgWidgetLiquidFilter() {
+        super(ModProgWidgets.LIQUID_FILTER);
+    }
+
     public static ProgWidgetLiquidFilter withFilter(Fluid fluid) {
         ProgWidgetLiquidFilter f = new ProgWidgetLiquidFilter();
         f.setFluid(fluid);
@@ -37,18 +44,13 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
-        return ProgWidgetLiquidFilter.class;
+    public ProgWidgetType returnType() {
+        return ModProgWidgets.LIQUID_FILTER;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetLiquidFilter.class};
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "liquidFilter";
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.LIQUID_FILTER);
     }
 
     @Override
@@ -84,7 +86,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     static boolean isLiquidValid(Fluid fluid, IProgWidget mainWidget, int filterIndex) {
-        ProgWidgetLiquidFilter widget = (ProgWidgetLiquidFilter) mainWidget.getConnectedParameters()[mainWidget.getParameters().length + filterIndex];
+        ProgWidgetLiquidFilter widget = (ProgWidgetLiquidFilter) mainWidget.getConnectedParameters()[mainWidget.getParameters().size() + filterIndex];
         while (widget != null) {
             if (!widget.isLiquidValid(fluid)) return false;
             widget = (ProgWidgetLiquidFilter) widget.getConnectedParameters()[0];
@@ -92,22 +94,22 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         widget = (ProgWidgetLiquidFilter) mainWidget.getConnectedParameters()[filterIndex];
         if (widget == null) return true;
         while (widget != null) {
-            if (widget.isLiquidValid(fluid)) return true;
+            if (widget.isLiquidValid(fluid)) return true;  // TODO verify this, looks dodgy
             widget = (ProgWidgetLiquidFilter) widget.getConnectedParameters()[0];
         }
         return false;
     }
 
-    public static boolean isLiquidValid(Fluid fluid, List<ProgWidgetLiquidFilter> whitelist, List<ProgWidgetLiquidFilter> blacklist) {
-        for (ProgWidgetLiquidFilter filter : blacklist) {
-            if (!filter.isLiquidValid(fluid)) return false;
-        }
-        if (whitelist.size() == 0) return true;
-        for (ProgWidgetLiquidFilter filter : whitelist) {
-            if (filter.isLiquidValid(fluid)) return true;
-        }
-        return false;
-    }
+//    public static boolean isLiquidValid(Fluid fluid, List<ProgWidgetLiquidFilter> whitelist, List<ProgWidgetLiquidFilter> blacklist) {
+//        for (ProgWidgetLiquidFilter filter : blacklist) {
+//            if (!filter.isLiquidValid(fluid)) return false;
+//        }
+//        if (whitelist.size() == 0) return true;
+//        for (ProgWidgetLiquidFilter filter : whitelist) {
+//            if (filter.isLiquidValid(fluid)) return true;
+//        }
+//        return false;
+//    }
 
     @Override
     public WidgetDifficulty getDifficulty() {

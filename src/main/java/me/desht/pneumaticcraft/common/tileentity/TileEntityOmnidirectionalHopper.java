@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -30,7 +30,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
     private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> itemHandler);
 
     public TileEntityOmnidirectionalHopper() {
-        super(ModTileEntityTypes.OMNIDIRECTIONAL_HOPPER);
+        super(ModTileEntities.OMNIDIRECTIONAL_HOPPER);
     }
 
     protected int getInvSize() {

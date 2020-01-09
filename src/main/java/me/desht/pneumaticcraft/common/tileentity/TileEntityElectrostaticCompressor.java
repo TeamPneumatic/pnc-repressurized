@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.block.BlockElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -55,7 +55,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     private int struckByLightningCooldown; //used by the redstone.
 
     public TileEntityElectrostaticCompressor() {
-        super(ModTileEntityTypes.ELECTROSTATIC_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.MAX_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.VOLUME_ELECTROSTATIC_COMPRESSOR, 4);
+        super(ModTileEntities.ELECTROSTATIC_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.MAX_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.VOLUME_ELECTROSTATIC_COMPRESSOR, 4);
     }
 
     @Override

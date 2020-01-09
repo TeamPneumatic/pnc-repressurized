@@ -1,18 +1,22 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 
+/**
+ * Non-API extension to public IDrone interface
+ */
 public interface IDroneBase extends IDrone {
 
     List<IProgWidget> getProgWidgets();
 
     void setActiveProgram(IProgWidget widget);
 
-    boolean isProgramApplicable(IProgWidget widget);
+    boolean isProgramApplicable(ProgWidgetType widgetType);
 
     void overload(String msgKey, Object... params);
 

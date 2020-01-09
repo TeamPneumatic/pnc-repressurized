@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIForEachCoordinate;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
@@ -20,9 +23,8 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     private final Set<BlockPos> traversedPositions = new HashSet<>();
     private DroneAIForEachCoordinate ai;
 
-    @Override
-    public String getWidgetString() {
-        return "forEachCoordinate";
+    public ProgWidgetForEachCoordinate() {
+        super(ModProgWidgets.FOR_EACH_COORDINATE);
     }
 
     @Override
@@ -36,8 +38,8 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetArea.class, ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
     }
 
     @Override
@@ -90,8 +92,8 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
 
     @Override
     public List<String> getPossibleJumpLocations() {
-        IProgWidget widget = getConnectedParameters()[getParameters().length - 1];
-        ProgWidgetString textWidget = widget != null ? (ProgWidgetString) widget : null;
+        IProgWidget widget = getConnectedParameters()[getParameters().size() - 1];
+        ProgWidgetText textWidget = widget != null ? (ProgWidgetText) widget : null;
         List<String> locations = new ArrayList<>();
         if (textWidget != null) locations.add(textWidget.string);
         return locations;

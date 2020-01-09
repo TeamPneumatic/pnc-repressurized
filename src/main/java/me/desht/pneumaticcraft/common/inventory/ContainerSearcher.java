@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -22,7 +22,7 @@ public class ContainerSearcher extends Container {
 
     @SuppressWarnings("unused")
     public ContainerSearcher(int windowId, PlayerInventory inv, PacketBuffer data) {
-        super(ModContainerTypes.SEARCHER, windowId);
+        super(ModContainers.SEARCHER, windowId);
     }
 
     public void init(GuiItemSearcher gui) {

@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidStack;
 
 /**
@@ -22,14 +23,17 @@ public interface IDroneRegistry {
     void addPathfindableBlock(Block block, IPathfindHandler handler);
 
     /**
-     * This will add a puzzle piece that has only a Area white- and blacklist parameter (similar to a GoTo piece).
-     * It will do the specified behaviour. This can be used to create energy import/export widgets.  This must be called
-     * from an event handler for {@link me.desht.pneumaticcraft.api.event.PuzzleRegistryEvent} to ensure registration
-     * is done at the right time - don't call it directly from a (pre/post) init handler.
+     * This will add a custom puzzle piece that has only an Area whitelist/blacklist parameter (similar to a GoTo piece).
+     * It will do the specified behaviour. This can be used, for example, to create energy import/export widgets for
+     * custom energy type (i.e. other than Forge Energy).
+     * <p>This <strong>must</strong> be called
+     * from a registry event handler for {@link RegistryEvent.Register&lt;ProgWidgetType&gt;} to ensure registration
+     * is done at the right time - do not call it directly from elsewhere.
      *
+     * @param event the Forge registry event
      * @param interactor the custom interactor object
      */
-    void registerCustomBlockInteractor(ICustomBlockInteract interactor);
+    void registerCustomBlockInteractor(RegistryEvent.Register<ProgWidgetType<?>> event, ICustomBlockInteract interactor);
 
     /**
      * Will spawn in a Drone a distance away from the given coordinate. When there is an inventory at the given block

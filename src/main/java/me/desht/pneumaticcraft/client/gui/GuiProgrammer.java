@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.google.common.base.CaseFormat;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
@@ -130,9 +131,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 break;
             }
         }
-        List<IProgWidget> registeredWidgets = WidgetRegistrator.registeredWidgets;
-        for (int i = 0; i < registeredWidgets.size(); i++) {
-            IProgWidget widget = registeredWidgets.get(i);
+        int i = 0;
+        for (ProgWidgetType type : ModProgWidgets.Registration.WIDGET_LIST) {
+            IProgWidget widget = type.create();
             if (difficulty >= widget.getDifficulty().ordinal()) {
                 widget.setY(y + 40);
                 widget.setX(showAllWidgets ? x : getWidgetTrayRight());
@@ -146,9 +147,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     y = 0;
                     x += WIDGET_X_SPACING;
                     page++;
-                    if (i < registeredWidgets.size() - 1) maxPage++;
+                    if (i < ModProgWidgets.Registration.WIDGET_LIST.size() - 1) maxPage++;
                 }
             }
+            i++;
         }
         maxPage++;
 
@@ -167,7 +169,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             filteredSpawnWidgets = new BitSet(visibleSpawnWidgets.size());
             for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
                 IProgWidget widget = visibleSpawnWidgets.get(i);
-                String widgetName = I18n.format("programmingPuzzle." + widget.getWidgetString() + ".name");
+                String widgetName = I18n.format(widget.getTranslationKey());
                 filteredSpawnWidgets.set(i, widgetName.toLowerCase().contains(filterText.toLowerCase()));
             }
         } else {
@@ -459,7 +461,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     private String getWidgetId(IProgWidget w) {
         if (w == null) return null;
-        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, w.getWidgetString());
+        return w.getTypeID().getPath();
+//        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, w.getWidgetString());
     }
 
     @Override
@@ -670,17 +673,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     private void handlePuzzleMargins() {
         //Check for connection to the left of the dragged widget.
-        Class<? extends IProgWidget> returnValue = draggingWidget.returnType();
+        ProgWidgetType returnValue = draggingWidget.returnType();
         if (returnValue != null) {
             for (IProgWidget widget : te.progWidgets) {
                 if (widget != draggingWidget && Math.abs(widget.getX() + widget.getWidth() / 2 - draggingWidget.getX()) <= FAULT_MARGIN) {
-                    Class<? extends IProgWidget>[] parameters = widget.getParameters();
-                    if (parameters != null) {
-                        for (int i = 0; i < parameters.length; i++) {
-                            if (widget.canSetParameter(i) && parameters[i] == returnValue && Math.abs(widget.getY() + i * 11 - draggingWidget.getY()) <= FAULT_MARGIN) {
-                                setConnectingWidgetsToXY(draggingWidget, widget.getX() + widget.getWidth() / 2, widget.getY() + i * 11);
-                                return;
-                            }
+                    List<ProgWidgetType> parameters = widget.getParameters();
+                    for (int i = 0; i < parameters.size(); i++) {
+                        if (widget.canSetParameter(i) && parameters.get(i) == returnValue
+                                && Math.abs(widget.getY() + i * 11 - draggingWidget.getY()) <= FAULT_MARGIN) {
+                            setConnectingWidgetsToXY(draggingWidget, widget.getX() + widget.getWidth() / 2, widget.getY() + i * 11);
+                            return;
                         }
                     }
                 }
@@ -688,8 +690,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
 
         //check for connection to the right of the dragged widget.
-        Class<? extends IProgWidget>[] parameters = draggingWidget.getParameters();
-        if (parameters != null) {
+        List<ProgWidgetType> parameters = draggingWidget.getParameters();
+        if (!parameters.isEmpty()) {
             for (IProgWidget widget : te.progWidgets) {
                 IProgWidget outerPiece = draggingWidget;
                 if (outerPiece.returnType() != null) {//When the piece is a parameter pice (area, item filter, text).
@@ -699,18 +701,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 }
                 if (widget != draggingWidget && Math.abs(outerPiece.getX() + outerPiece.getWidth() / 2 - widget.getX()) <= FAULT_MARGIN) {
                     if (widget.returnType() != null) {
-                        for (int i = 0; i < parameters.length; i++) {
-                            if (draggingWidget.canSetParameter(i) && parameters[i] == widget.returnType() && Math.abs(draggingWidget.getY() + i * 11 - widget.getY()) <= FAULT_MARGIN) {
+                        for (int i = 0; i < parameters.size(); i++) {
+                            if (draggingWidget.canSetParameter(i) && parameters.get(i) == widget.returnType() && Math.abs(draggingWidget.getY() + i * 11 - widget.getY()) <= FAULT_MARGIN) {
                                 setConnectingWidgetsToXY(draggingWidget, widget.getX() - draggingWidget.getWidth() / 2 - (outerPiece.getX() - draggingWidget.getX()), widget.getY() - i * 11);
                             }
                         }
                     } else {
-                        Class<? extends IProgWidget>[] checkingPieceParms = widget.getParameters();
-                        if (checkingPieceParms != null) {
-                            for (int i = 0; i < checkingPieceParms.length; i++) {
-                                if (widget.canSetParameter(i + parameters.length) && checkingPieceParms[i] == parameters[0] && Math.abs(widget.getY() + i * 11 - draggingWidget.getY()) <= FAULT_MARGIN) {
-                                    setConnectingWidgetsToXY(draggingWidget, widget.getX() - draggingWidget.getWidth() / 2 - (outerPiece.getX() - draggingWidget.getX()), widget.getY() + i * 11);
-                                }
+                        List<ProgWidgetType> checkingPieceParms = widget.getParameters();
+                        for (int i = 0; i < checkingPieceParms.size(); i++) {
+                            if (widget.canSetParameter(i + parameters.size()) && checkingPieceParms.get(i) == parameters.get(0) && Math.abs(widget.getY() + i * 11 - draggingWidget.getY()) <= FAULT_MARGIN) {
+                                setConnectingWidgetsToXY(draggingWidget, widget.getX() - draggingWidget.getWidth() / 2 - (outerPiece.getX() - draggingWidget.getX()), widget.getY() + i * 11);
                             }
                         }
                     }

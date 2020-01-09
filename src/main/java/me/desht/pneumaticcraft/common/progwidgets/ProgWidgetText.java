@@ -1,5 +1,8 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
@@ -9,11 +12,19 @@ import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 
-public class ProgWidgetString extends ProgWidget {
+public class ProgWidgetText extends ProgWidget {
     public String string = "";
 
-    public static ProgWidgetString withText(String string){
-        ProgWidgetString widget = new ProgWidgetString();
+    public ProgWidgetText() {
+        super(ModProgWidgets.TEXT);
+    }
+
+    public ProgWidgetText(ProgWidgetType<?> type) {
+        super(type);
+    }
+
+    public static ProgWidgetText withText(String string){
+        ProgWidgetText widget = new ProgWidgetText();
         widget.string = string;
         return widget;
     }
@@ -39,23 +50,18 @@ public class ProgWidgetString extends ProgWidget {
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
-        return ProgWidgetString.class;
+    public ProgWidgetType returnType() {
+        return ModProgWidgets.TEXT;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.TEXT);
     }
 
     @Override
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_TEXT;
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "text";
     }
 
     @Override

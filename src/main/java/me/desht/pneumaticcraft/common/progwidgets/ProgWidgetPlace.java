@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIPlace;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -19,7 +21,11 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace implements ISidedWidg
     public Direction placeDir = Direction.DOWN;
 
     public ProgWidgetPlace() {
-        super(ProgWidgetDigAndPlace.EnumOrder.LOW_TO_HIGH);
+        super(ModProgWidgets.PLACE, ProgWidgetDigAndPlace.EnumOrder.LOW_TO_HIGH);
+    }
+
+    ProgWidgetPlace(ProgWidgetType<?> type) {
+        super(type, EnumOrder.LOW_TO_HIGH);
     }
 
     @Override
@@ -52,11 +58,6 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace implements ISidedWidg
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         curTooltip.add(new StringTextComponent("Placing direction: " + PneumaticCraftUtils.getOrientationName(placeDir)));
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "place";
     }
 
     @Override

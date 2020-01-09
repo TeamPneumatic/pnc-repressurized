@@ -5,6 +5,7 @@ import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.event.SemiblockEvent;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
@@ -12,7 +13,7 @@ import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammableController;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -41,6 +42,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -65,7 +67,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntityProgrammableController extends TileEntityPneumaticBase implements IMinWorkingPressure, IDroneBase, ISideConfigurable, INamedContainerProvider {
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
+public class TileEntityProgrammableController extends TileEntityPneumaticBase
+        implements IMinWorkingPressure, IDroneBase, ISideConfigurable, INamedContainerProvider {
     private static final int INVENTORY_SIZE = 1;
     private static final String FALLBACK_NAME = "[ProgController]";
     private static final UUID FALLBACK_UUID = UUID.nameUUIDFromBytes(FALLBACK_NAME.getBytes());
@@ -79,10 +84,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     private EntityProgrammableController drone;
     private DroneAIManager aiManager;
     private DroneFakePlayer fakePlayer;
-    private DroneItemHandler droneItemHandler; // = new DroneItemHandler(this);
+    private DroneItemHandler droneItemHandler;
     private List<IProgWidget> progWidgets = new ArrayList<>();
     private final int[] redstoneLevels = new int[6];
-//    private int dispenserUpgrades;
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
 
     @DescSynced
@@ -95,15 +99,15 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     @DescSynced
     private int speedUpgrades;
 
-    public static final Set<String> BLACKLISTED_WIDGETS = ImmutableSet.of(
-            "computerCraft",
-            "entityAttack",
-            "droneConditionEntity",
-            "standby",
-            "suicide",
-            "teleport",
-            "entityExport",
-            "entityImport"
+    public static final Set<ResourceLocation> BLACKLISTED_WIDGETS = ImmutableSet.of(
+            RL("computer_craft"),
+            RL("entity_attack"),
+            RL("drone_condition_entity"),
+            RL("standby"),
+            RL("suicide"),
+            RL("teleport"),
+            RL("entity_export"),
+            RL("entity_import")
     );
 
     private UUID ownerID;
@@ -114,7 +118,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     private LogisticsManager logisticsManager;
 
     public TileEntityProgrammableController() {
-        super(ModTileEntityTypes.PROGRAMMABLE_CONTROLLER, 5, 7, 5000, 4);
+        super(ModTileEntities.PROGRAMMABLE_CONTROLLER, 5, 7, 5000, 4);
 
         MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
@@ -139,6 +143,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     public void tick() {
         super.tick();
 
+        droneItemHandler.setFakePlayerReady();
+
         if (!getWorld().isRemote && updateNeighbours) {
             updateNeighbours();
             updateNeighbours = false;
@@ -158,7 +164,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         }
 
         if (!getWorld().isRemote) {
-            getDroneItemHandler().updateHeldItem();
             DroneFakePlayer fp = getFakePlayer();
             for (int i = 0; i < 4; i++) {
                 fp.interactionManager.tick();
@@ -404,12 +409,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     private static boolean isProgrammableAndValidForDrone(IDroneBase drone, ItemStack programmable) {
-        if (programmable.getItem() instanceof IProgrammable && ((IProgrammable) programmable.getItem()).canProgram(programmable) && ((IProgrammable) programmable.getItem()).usesPieces(programmable)) {
+        if (programmable.getItem() instanceof IProgrammable
+                && ((IProgrammable) programmable.getItem()).canProgram(programmable)
+                && ((IProgrammable) programmable.getItem()).usesPieces(programmable)) {
             List<IProgWidget> widgets = TileEntityProgrammer.getProgWidgets(programmable);
-            for (IProgWidget widget : widgets) {
-                if (!drone.isProgramApplicable(widget)) return false;
-            }
-            return true;
+            return widgets.stream().allMatch(widget -> drone.isProgramApplicable(widget.getType()));
         }
         return false;
     }
@@ -423,26 +427,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     public AxisAlignedBB getRenderBoundingBox() {
         return INFINITE_EXTENT_AABB;
     }
-
-//    @Override
-//    public float getPressure(ItemStack iStack) {
-//        return getPressure();
-//    }
-//
-//    @Override
-//    public void addAir(ItemStack iStack, int amount) {
-//        addAir(amount);
-//    }
-//
-//    @Override
-//    public float maxPressure(ItemStack iStack) {
-//        return 7;
-//    }
-//
-//    @Override
-//    public int getVolume(ItemStack itemStack) {
-//        return getAirHandler(null).getVolume();
-//    }
 
     @Override
     public World world() {
@@ -565,8 +549,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
     }
 
     @Override
-    public boolean isProgramApplicable(IProgWidget widget) {
-        return !BLACKLISTED_WIDGETS.contains(widget.getWidgetString());
+    public boolean isProgramApplicable(ProgWidgetType widgetType) {
+        return !BLACKLISTED_WIDGETS.contains(widgetType.getRegistryName());
     }
 
     @Override

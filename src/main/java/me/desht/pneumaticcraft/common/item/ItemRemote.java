@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketNotifyVariablesRemote;
@@ -166,7 +166,7 @@ public class ItemRemote extends ItemPneumatic {
         }
 
         protected ContainerType<? extends ContainerRemote> getType() {
-            return ModContainerTypes.REMOTE;
+            return ModContainers.REMOTE;
         }
     }
 
@@ -177,7 +177,7 @@ public class ItemRemote extends ItemPneumatic {
 
         @Override
         protected ContainerType<? extends ContainerRemote> getType() {
-            return ModContainerTypes.REMOTE_EDITOR;
+            return ModContainers.REMOTE_EDITOR;
         }
     }
 }

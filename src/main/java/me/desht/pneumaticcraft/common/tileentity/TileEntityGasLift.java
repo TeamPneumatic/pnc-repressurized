@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.common.ai.ChunkPositionSorter;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -82,7 +82,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     private static final int MAX_PUMP_RANGE_SQUARED = 15 * 15;
 
     public TileEntityGasLift() {
-        super(ModTileEntityTypes.GAS_LIFT, 5, 7, 3000, 4);
+        super(ModTileEntities.GAS_LIFT, 5, 7, 3000, 4);
     }
 
     @Override

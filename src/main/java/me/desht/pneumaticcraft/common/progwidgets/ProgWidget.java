@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.text.WordUtils;
@@ -26,39 +27,30 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidget implements IProgWidget {
+    private final ProgWidgetType<?> type;
     private int x, y;
     private IProgWidget[] connectedParameters;
     private IProgWidget outputStepConnection;
     private IProgWidget parent;
 
-    // private static Gui gui;
-    public ProgWidget() {
-        if (getParameters() != null)
-            connectedParameters = new IProgWidget[getParameters().length * 2]; //times two because black- and whitelist.
+    public ProgWidget(ProgWidgetType<?> type) {
+        this.type = type;
+        if (!getParameters().isEmpty())
+            connectedParameters = new IProgWidget[getParameters().size() * 2]; //times two because black- and whitelist.
+    }
+
+    public ProgWidgetType<?> getType() {
+        return type;
+    }
+
+    @Override
+    public ResourceLocation getTypeID() {
+        return type.getRegistryName();
     }
 
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
-        curTooltip.add(xlate("programmingPuzzle." + getWidgetString() + ".name").applyTextStyle(TextFormatting.DARK_AQUA));
-    }
-
-    @Override
-    public void renderExtraInfo() {
-        if (getExtraStringInfo() != null) {
-            GlStateManager.pushMatrix();
-            GlStateManager.scaled(0.5, 0.5, 0.5);
-            FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            String[] splittedInfo = WordUtils.wrap(getExtraStringInfo(), 40).split(System.getProperty("line.separator"));
-            for (int i = 0; i < splittedInfo.length; i++) {
-                int stringLength = fr.getStringWidth(splittedInfo[i]);
-                int startX = getWidth() / 2 - stringLength / 4;
-                int startY = getHeight() / 2 - (fr.FONT_HEIGHT + 1) * (splittedInfo.length - 1) / 4 + (fr.FONT_HEIGHT + 1) * i / 2 - fr.FONT_HEIGHT / 4;
-                AbstractGui.fill(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
-                fr.drawString(splittedInfo[i], startX * 2, startY * 2, 0xFF000000);
-            }
-            GlStateManager.popMatrix();
-            GlStateManager.color4f(1, 1, 1, 1);
-        }
+        curTooltip.add(xlate(getTranslationKey()).applyTextStyle(TextFormatting.DARK_AQUA));
     }
 
     public String getExtraStringInfo() {
@@ -124,7 +116,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public int getHeight() {
-        return getParameters() != null ? getParameters().length * 22 : 22;
+        return !getParameters().isEmpty() ? getParameters().size() * 22 : 22;
     }
 
     @Override
@@ -140,7 +132,7 @@ public abstract class ProgWidget implements IProgWidget {
     @Override
     public void render() {
         Minecraft.getInstance().getTextureManager().bindTexture(getTexture());
-        int width = getWidth() + (getParameters() != null && getParameters().length > 0 ? 10 : 0);
+        int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);//(getParameters() != null && getParameters().size() > 0 ? 10 : 0);
         int height = getHeight() + (hasStepOutput() ? 10 : 0);
         Pair<Double, Double> maxUV = getMaxUV();
         double u = maxUV.getLeft();
@@ -155,8 +147,27 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
+    public void renderExtraInfo() {
+        if (getExtraStringInfo() != null) {
+            GlStateManager.pushMatrix();
+            GlStateManager.scaled(0.5, 0.5, 0.5);
+            FontRenderer fr = Minecraft.getInstance().fontRenderer;
+            String[] splittedInfo = WordUtils.wrap(getExtraStringInfo(), 40).split(System.getProperty("line.separator"));
+            for (int i = 0; i < splittedInfo.length; i++) {
+                int stringLength = fr.getStringWidth(splittedInfo[i]);
+                int startX = getWidth() / 2 - stringLength / 4;
+                int startY = getHeight() / 2 - (fr.FONT_HEIGHT + 1) * (splittedInfo.length - 1) / 4 + (fr.FONT_HEIGHT + 1) * i / 2 - fr.FONT_HEIGHT / 4;
+                AbstractGui.fill(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
+                fr.drawString(splittedInfo[i], startX * 2, startY * 2, 0xFF000000);
+            }
+            GlStateManager.popMatrix();
+            GlStateManager.color4f(1, 1, 1, 1);
+        }
+    }
+
+    @Override
     public Pair<Double, Double> getMaxUV() {
-        int width = getWidth() + (getParameters() != null && getParameters().length > 0 ? 10 : 0);
+        int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);
         int height = getHeight() + (hasStepOutput() ? 10 : 0);
         int textureSize = getTextureSize();
         double u = (double) width / textureSize;
@@ -166,7 +177,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public int getTextureSize() {
-        int width = getWidth() + (getParameters() != null && getParameters().length > 0 ? 10 : 0);
+        int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);
         int height = getHeight() + (hasStepOutput() ? 10 : 0);
         int maxSize = Math.max(width, height);
 
@@ -194,8 +205,8 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public void setParameter(int index, IProgWidget parm) {
-        int index2 = index >= getParameters().length ? index - getParameters().length : index;
-        if (connectedParameters != null && (parm == null || parm.getClass() == getParameters()[index2]))
+        int index2 = index >= getParameters().size() ? index - getParameters().size() : index;
+        if (connectedParameters != null && (parm == null || parm.getType() == getParameters().get(index2)))
             connectedParameters[index] = parm;
     }
 
@@ -233,23 +244,16 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public IProgWidget copy() {
-        try {
-            IProgWidget copy = this.getClass().newInstance();
-            CompoundNBT tag = new CompoundNBT();
-            writeToNBT(tag);
-            copy.readFromNBT(tag);
-            return copy;
-        } catch (Exception e) {
-            Log.error("Error occured when trying to copy an " + getWidgetString() + " widget.");
-            e.printStackTrace();
-            return null;
-        }
-
+        IProgWidget copy = getType().create();
+        CompoundNBT tag = new CompoundNBT();
+        writeToNBT(tag);
+        copy.readFromNBT(tag);
+        return copy;
     }
 
     @Override
     public void writeToNBT(CompoundNBT tag) {
-        tag.putString("name", getWidgetString());
+        tag.putString("name", getTypeID().toString());
         tag.putInt("x", x);
         tag.putInt("y", y);
     }

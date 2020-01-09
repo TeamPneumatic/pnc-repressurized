@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLogistics;
@@ -25,11 +25,11 @@ public class EntityLogisticsDrone extends EntityBasicDrone {
     }
 
     private EntityLogisticsDrone(World world) {
-        super(ModEntityTypes.LOGISTIC_DRONE, world);
+        super(ModEntities.LOGISTIC_DRONE, world);
     }
 
     public EntityLogisticsDrone(World world, PlayerEntity player) {
-        super(ModEntityTypes.LOGISTIC_DRONE, world, player);
+        super(ModEntities.LOGISTIC_DRONE, world, player);
     }
 
     @Override

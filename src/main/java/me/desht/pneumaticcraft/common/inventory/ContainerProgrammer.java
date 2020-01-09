@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,7 +24,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
     private final boolean hiRes;
 
     public ContainerProgrammer(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainerTypes.PROGRAMMER, i, playerInventory, pos);
+        super(ModContainers.PROGRAMMER, i, playerInventory, pos);
 
         this.hiRes = PneumaticCraftRepressurized.proxy.isScreenHiRes();
 

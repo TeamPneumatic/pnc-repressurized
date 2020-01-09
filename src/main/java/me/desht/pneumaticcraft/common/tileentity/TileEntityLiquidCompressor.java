@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -59,7 +59,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     public boolean isProducing;
 
     public TileEntityLiquidCompressor() {
-        this(ModTileEntityTypes.LIQUID_COMPRESSOR, 5, 7, 5000);
+        this(ModTileEntities.LIQUID_COMPRESSOR, 5, 7, 5000);
     }
 
     TileEntityLiquidCompressor(TileEntityType type, float dangerPressure, float criticalPressure, int volume) {

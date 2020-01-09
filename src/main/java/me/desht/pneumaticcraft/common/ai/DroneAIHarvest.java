@@ -13,58 +13,47 @@ import net.minecraft.util.math.BlockPos;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
-
-    /**
-     * @param drone the drone
-     * @param widget needs to implement IBlockOrdered, IToolUser
-     */
-    public DroneAIHarvest(IDroneBase drone, ProgWidgetAreaItemBase widget) {
+public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extends DroneAIBlockInteraction<W> {
+    public DroneAIHarvest(IDroneBase drone, W widget) {
         super(drone, widget);
     }
 
     @Override
-    public boolean shouldExecute(){
-        if(abortIfRequiredHoeIsMissing()) return false;        
+    public boolean shouldExecute() {
+        if (abortIfRequiredHoeIsMissing()) return false;
         return super.shouldExecute();
     }
-    
+
     @Override
     protected boolean isValidPosition(BlockPos pos) {
-        if(abortIfRequiredHoeIsMissing()) return false;        
+        if (abortIfRequiredHoeIsMissing()) return false;
         return getApplicableHandler(pos) != null;
     }
-    
-    private boolean abortIfRequiredHoeIsMissing(){
-        if(((IToolUser) progWidget).requiresTool() && getDamageableHoe() == null){
+
+    private boolean abortIfRequiredHoeIsMissing() {
+        if (progWidget.requiresTool() && getDamageableHoe() == null) {
             abort();
             drone.addDebugEntry("gui.progWidget.harvest.debug.missingHoe");
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    
-    private HarvestHandler getApplicableHandler(BlockPos pos){
+
+    private HarvestHandler getApplicableHandler(BlockPos pos) {
         BlockState state = worldCache.getBlockState(pos);
         return ModRegistries.HARVEST_HANDLERS.getValues()
-//        return HarvestRegistry.getInstance()
-//                              .getHarvestHandlers()
-                              .stream()
-                              .filter(handler -> handler.canHarvest(drone.world(), worldCache, pos, state, drone) &&
-                                                  hasApplicableItemFilters(handler, pos, state))
-                              .findFirst()
-                              .orElse(null);
+                .stream()
+                .filter(handler -> handler.canHarvest(drone.world(), worldCache, pos, state, drone) &&
+                        hasApplicableItemFilters(handler, pos, state))
+                .findFirst()
+                .orElse(null);
     }
-    
-    private boolean hasApplicableItemFilters(HarvestHandler harvestHandler, BlockPos pos, BlockState blockState){
+
+    private boolean hasApplicableItemFilters(HarvestHandler harvestHandler, BlockPos pos, BlockState blockState) {
         List<ItemStack> droppedStacks = harvestHandler.addFilterItems(drone.world(), worldCache, pos, blockState, drone);
-        for (ItemStack droppedStack : droppedStacks) {
-            if (progWidget.isItemValidForFilters(droppedStack, blockState)) {
-                return true;
-            }
-        }
-        return false;
+        return droppedStacks.stream()
+                .anyMatch(droppedStack -> progWidget.isItemValidForFilters(droppedStack, blockState));
     }
 
     @Override
@@ -91,9 +80,9 @@ public class DroneAIHarvest extends DroneAIBlockInteraction<ProgWidgetAreaItemBa
         }
         return false;
     }
-    
+
     private Consumer<PlayerEntity> getDamageableHoe() {
-        for (int i = 0; i < drone.getInv().getSlots(); i++){
+        for (int i = 0; i < drone.getInv().getSlots(); i++) {
             ItemStack stack = drone.getInv().getStackInSlot(i);
             HoeHandler handler = ModRegistries.HOE_HANDLERS.getValues().stream()
                     .filter(hoeHandler -> hoeHandler.test(stack))

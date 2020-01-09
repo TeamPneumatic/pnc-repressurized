@@ -203,7 +203,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         drone.addDebugEntry("gui.progWidget.blockInteraction.debug.noBlocksValid");
     }
 
-    protected int lookupsPerSearch() {
+    private int lookupsPerSearch() {
         return LOOKUPS_PER_SEARCH_TICK;
     }
 
@@ -215,7 +215,8 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         return false;
     }
 
-    protected boolean shouldAbort() {
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private boolean shouldAbort() {
         return aborted;
     }
 
@@ -230,7 +231,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     /**
      * Sends particle spawn packets to any close player that has a charged pneumatic helmet with entity tracker.
      *
-     * @param pos
+     * @param pos the blockpos to indicate
      */
     private void indicateToListeningPlayers(BlockPos pos) {
         for (PlayerEntity player : drone.world().getPlayers()) {
@@ -248,7 +249,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         }
     }
 
-    protected void addToBlacklist(BlockPos coord) {
+    void addToBlacklist(BlockPos coord) {
         blacklist.add(coord);
         drone.sendWireframeToClient(coord);
     }

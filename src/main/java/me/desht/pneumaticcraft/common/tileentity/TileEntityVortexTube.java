@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.nbt.CompoundNBT;
@@ -22,7 +22,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     private int coldHeatLevel = 10, hotHeatLevel = 10;
 
     public TileEntityVortexTube() {
-        super(ModTileEntityTypes.VORTEX_TUBE, 20, 25, 2000, 0);
+        super(ModTileEntities.VORTEX_TUBE, 20, 25, 2000, 0);
         coldHeatExchanger.setThermalResistance(0.01);
         hotHeatExchanger.setThermalResistance(0.01);
         connectingExchanger.setThermalResistance(100);

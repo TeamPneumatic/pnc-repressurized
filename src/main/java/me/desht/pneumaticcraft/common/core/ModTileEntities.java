@@ -11,7 +11,7 @@ import net.minecraftforge.registries.ObjectHolder;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @ObjectHolder(Names.MOD_ID)
-public class ModTileEntityTypes {
+public class ModTileEntities {
     public static final TileEntityType<TileEntityPressureTube> PRESSURE_TUBE = null;
     public static final TileEntityType<TileEntityAdvancedPressureTube> ADVANCED_PRESSURE_TUBE = null;
     public static final TileEntityType<TileEntityAirCompressor> AIR_COMPRESSOR = null;

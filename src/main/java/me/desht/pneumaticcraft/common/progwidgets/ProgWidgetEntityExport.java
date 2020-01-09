@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockInteraction;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -9,11 +12,12 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.List;
+
 public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase {
 
-    @Override
-    public String getWidgetString() {
-        return "entityExport";
+    public ProgWidgetEntityExport() {
+        super(ModProgWidgets.ENTITY_EXPORT);
     }
 
     @Override
@@ -22,8 +26,8 @@ public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase {
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetArea.class, ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
     }
 
     @Override

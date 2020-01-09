@@ -1,20 +1,24 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.List;
+
 public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneCondition {
 
-    @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetString.class};
+    public ProgWidgetDroneConditionPressure() {
+        super(ModProgWidgets.DRONE_CONDITION_PRESSURE);
     }
 
     @Override
-    public String getWidgetString() {
-        return "droneConditionPressure";
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.TEXT);
     }
 
     @Override

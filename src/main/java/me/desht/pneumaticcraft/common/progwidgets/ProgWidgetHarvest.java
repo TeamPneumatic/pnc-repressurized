@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.DroneAIHarvest;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
@@ -13,17 +14,12 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUser{
+public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUser {
 
     private boolean requireHoe;
     
     public ProgWidgetHarvest() {
-        super(ProgWidgetDigAndPlace.EnumOrder.CLOSEST);
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "harvest";
+        super(ModProgWidgets.HARVEST, ProgWidgetDigAndPlace.EnumOrder.CLOSEST);
     }
 
     @Override

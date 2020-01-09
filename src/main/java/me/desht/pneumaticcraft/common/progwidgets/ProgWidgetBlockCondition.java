@@ -1,26 +1,30 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.DroneAIDig;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.List;
+
 public class ProgWidgetBlockCondition extends ProgWidgetCondition {
     public boolean checkingForAir;
     public boolean checkingForLiquids;
 
-    @Override
-    public String getWidgetString() {
-        return "conditionBlock";
+    public ProgWidgetBlockCondition() {
+        super(ModProgWidgets.CONDITION_BLOCK);
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetArea.class, ProgWidgetItemFilter.class, ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.ITEM_FILTER, ModProgWidgets.TEXT);
     }
 
     @Override

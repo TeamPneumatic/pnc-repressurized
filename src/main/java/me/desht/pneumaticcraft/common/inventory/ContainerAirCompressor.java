@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ContainerType;
@@ -11,11 +11,11 @@ import net.minecraftforge.items.SlotItemHandler;
 public class ContainerAirCompressor extends ContainerPneumaticBase<TileEntityAirCompressor> {
 
     public ContainerAirCompressor(int windowId, PlayerInventory invPlayer, PacketBuffer extra) {
-        this(ModContainerTypes.AIR_COMPRESSOR, windowId, invPlayer, getTilePos(extra));
+        this(ModContainers.AIR_COMPRESSOR, windowId, invPlayer, getTilePos(extra));
     }
 
     public ContainerAirCompressor(int windowId, PlayerInventory invPlayer, BlockPos tePos) {
-        this(ModContainerTypes.AIR_COMPRESSOR, windowId, invPlayer, tePos);
+        this(ModContainers.AIR_COMPRESSOR, windowId, invPlayer, tePos);
     }
 
     ContainerAirCompressor(ContainerType type, int windowId, PlayerInventory invPlayer, BlockPos tePos) {

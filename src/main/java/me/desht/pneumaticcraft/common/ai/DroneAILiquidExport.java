@@ -13,9 +13,9 @@ import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
 import static net.minecraftforge.fluids.FluidAttributes.BUCKET_VOLUME;
 
-public class DroneAILiquidExport extends DroneAIImExBase<ProgWidgetInventoryBase> {
+public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFiltered & ILiquidExport> extends DroneAIImExBase<W> {
 
-    public DroneAILiquidExport(IDroneBase drone, ProgWidgetInventoryBase widget) {
+    public DroneAILiquidExport(IDroneBase drone, W widget) {
         super(drone, widget);
     }
 
@@ -38,7 +38,7 @@ public class DroneAILiquidExport extends DroneAIImExBase<ProgWidgetInventoryBase
             TileEntity te = drone.world().getTileEntity(pos);
             if (te != null) {
                 FluidStack exportedFluid = drone.getFluidTank().drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
-                if (!exportedFluid.isEmpty() && ((ILiquidFiltered) progWidget).isFluidValid(exportedFluid.getFluid())) {
+                if (!exportedFluid.isEmpty() && progWidget.isFluidValid(exportedFluid.getFluid())) {
                     for (Direction side : Direction.VALUES) {
                         if (ISidedWidget.checkSide(progWidget, side) && trySide(te, side, exportedFluid, simulate)) return true;
                     }
@@ -46,8 +46,8 @@ public class DroneAILiquidExport extends DroneAIImExBase<ProgWidgetInventoryBase
                 } else {
                     drone.addDebugEntry("gui.progWidget.liquidExport.debug.noValidFluid");
                 }
-            } else if (((ILiquidExport) progWidget).isPlacingFluidBlocks()
-                    && (!((ICountWidget) progWidget).useCount() || getRemainingCount() >= BUCKET_VOLUME)) {
+            } else if (progWidget.isPlacingFluidBlocks()
+                    && (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME)) {
                 LazyOptional<IFluidHandler> cap = drone.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
                 if (FluidUtils.tryPourOutFluid(cap, drone.world(), pos, false, false, simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE)) {
                     if (!simulate) {

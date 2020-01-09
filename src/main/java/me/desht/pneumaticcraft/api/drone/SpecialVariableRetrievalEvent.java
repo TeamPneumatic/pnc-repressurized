@@ -9,26 +9,28 @@ import net.minecraftforge.eventbus.api.Event;
  * These event are posted on the MinecraftForge.EVENT_BUS.
  */
 public abstract class SpecialVariableRetrievalEvent extends Event {
-
     /**
      * The special variable name, with the '$' stripped away.
      */
     public final String specialVarName;
 
-    /**
-     * The returning coordinate
-     */
-
-    public SpecialVariableRetrievalEvent(String specialVarName) {
-
+    SpecialVariableRetrievalEvent(String specialVarName) {
         this.specialVarName = specialVarName;
     }
 
     public static abstract class CoordinateVariable extends SpecialVariableRetrievalEvent {
-        public BlockPos coordinate;
+        private BlockPos coordinate;
 
-        public CoordinateVariable(String specialVarName) {
+        CoordinateVariable(String specialVarName) {
             super(specialVarName);
+        }
+
+        public BlockPos getCoordinate() {
+            return coordinate;
+        }
+
+        public void setCoordinate(BlockPos coordinate) {
+            this.coordinate = coordinate;
         }
 
         public static class Drone extends CoordinateVariable {
@@ -42,10 +44,14 @@ public abstract class SpecialVariableRetrievalEvent extends Event {
     }
 
     public static abstract class ItemVariable extends SpecialVariableRetrievalEvent {
-        public ItemStack item = ItemStack.EMPTY;
+        private ItemStack item = ItemStack.EMPTY;
 
-        public ItemVariable(String specialVarName) {
+        ItemVariable(String specialVarName) {
             super(specialVarName);
+        }
+
+        public ItemStack getItem() {
+            return item;
         }
 
         public static class Drone extends ItemVariable {

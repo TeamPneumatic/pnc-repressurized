@@ -63,8 +63,8 @@ public class DroneAIManager implements IVariableProvider {
         theProfiler = drone.world().getProfiler();
         this.drone = drone;
         if (!drone.world().isRemote) {
-            // we normally don't called clientside, but The One Probe can do it
-            // don't set the widgets clientside because there aren't any and that messes up any entity tracker info
+            // we normally don't get called clientside, but The One Probe can do it
+            // don't try to set the widgets clientside because there aren't any and that messes up entity tracker info
             setWidgets(drone.getProgWidgets());
         }
     }
@@ -142,7 +142,7 @@ public class DroneAIManager implements IVariableProvider {
         if (varName.startsWith("$")) {
             SpecialVariableRetrievalEvent.CoordinateVariable.Drone event = new SpecialVariableRetrievalEvent.CoordinateVariable.Drone(drone, varName.substring(1));
             MinecraftForge.EVENT_BUS.post(event);
-            pos = event.coordinate;
+            pos = event.getCoordinate();
         } else if (varName.startsWith("#")) {
             pos = GlobalVariableManager.getInstance().getPos(varName.substring(1));
         } else {
@@ -163,7 +163,7 @@ public class DroneAIManager implements IVariableProvider {
         if (varName.startsWith("$")) {
             SpecialVariableRetrievalEvent.ItemVariable.Drone event = new SpecialVariableRetrievalEvent.ItemVariable.Drone(drone, varName.substring(1));
             MinecraftForge.EVENT_BUS.post(event);
-            item = event.item;
+            item = event.getItem();
         } else if (varName.startsWith("#")) {
             item = GlobalVariableManager.getInstance().getItem(varName.substring(1));
         } else {
@@ -233,17 +233,22 @@ public class DroneAIManager implements IVariableProvider {
                 IProgWidget oldWidget = widget;
                 widget = widget.getOutputWidget(drone, progWidgets);
                 if (widget == null) {
+                    // reached the last widget in the line
                     if (first) {
+                        // only a start widget?
                         return;
                     } else {
                         if (stopWhenEndReached) {
+                            // stop executing
                             setActiveWidget(null);
                         } else {
+                            // return to the start widget
                             gotoFirstWidget();
                         }
                         return;
                     }
                 } else if (oldWidget.getOutputWidget() != widget) {
+                    // we jumped to a "subroutine"
                     if (addJumpBackWidget(oldWidget)) return;
                 }
                 targetAI = widget.getWidgetTargetAI(drone, widget);
@@ -255,9 +260,9 @@ public class DroneAIManager implements IVariableProvider {
         }
 
         curActiveWidget = widget;
-        if (curWidgetAI != null) removeTask(curWidgetAI);
+        if (curWidgetAI != null) removeGoal(curWidgetAI);
         if (curWidgetTargetAI != null) drone.getTargetAI().removeGoal(curWidgetTargetAI);
-        if (ai != null) addTask(2, ai);
+        if (ai != null) addGoal(2, ai);
         if (targetAI != null) drone.getTargetAI().addGoal(2, targetAI);
         curWidgetAI = ai;
         curWidgetTargetAI = targetAI;
@@ -289,14 +294,14 @@ public class DroneAIManager implements IVariableProvider {
      * START EntityAITasks code
      */
 
-    private void addTask(int priority, Goal goal) {
+    private void addGoal(int priority, Goal goal) {
         taskEntries.add(new EntityAITaskEntry(priority, goal));
     }
 
     /**
      * removes the indicated task from the entity's AI tasks.
      */
-    private void removeTask(Goal goal) {
+    private void removeGoal(Goal goal) {
         Iterator iterator = taskEntries.iterator();
 
         while (iterator.hasNext()) {
@@ -451,8 +456,8 @@ public class DroneAIManager implements IVariableProvider {
      * Returns whether two EntityAITaskEntries can be executed concurrently
      */
     private boolean areTasksCompatible(EntityAITaskEntry e1, EntityAITaskEntry e2) {
-        EnumSet flags2 = e2.goal.getMutexFlags();
-        return e1.goal.getMutexFlags().stream().noneMatch(flags2::contains);
+        EnumSet flags = e2.goal.getMutexFlags();
+        return e1.goal.getMutexFlags().stream().noneMatch(flags::contains);
     }
 
     public void setLabel(String label) {

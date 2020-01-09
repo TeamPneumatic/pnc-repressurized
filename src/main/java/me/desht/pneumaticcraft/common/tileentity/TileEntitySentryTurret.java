@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSentryTurret;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
@@ -67,7 +67,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     private Vec3d tileVec;
 
     public TileEntitySentryTurret() {
-        super(ModTileEntityTypes.SENTRY_TURRET, 4);
+        super(ModTileEntities.SENTRY_TURRET, 4);
     }
 
     @Override

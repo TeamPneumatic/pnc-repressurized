@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer.TradeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
@@ -20,7 +20,7 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityB
     private final TradeType tradeType;
 
     ContainerAmadronAddTrade(int windowId, PlayerInventory playerInventory, TradeType tradeType) {
-        super(ModContainerTypes.AMADRON_ADD_TRADE, windowId, playerInventory);
+        super(ModContainers.AMADRON_ADD_TRADE, windowId, playerInventory);
 
         this.tradeType = tradeType;
         addSlot(new SlotUntouchable(inv, INPUT_SLOT, 10, 90));

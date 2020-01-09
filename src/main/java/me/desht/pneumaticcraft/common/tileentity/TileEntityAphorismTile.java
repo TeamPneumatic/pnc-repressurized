@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -13,7 +13,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
     private int backgroundColor = DyeColor.WHITE.getId();
 
     public TileEntityAphorismTile() {
-        super(ModTileEntityTypes.APHORISM_TILE);
+        super(ModTileEntities.APHORISM_TILE);
     }
 
     @Override

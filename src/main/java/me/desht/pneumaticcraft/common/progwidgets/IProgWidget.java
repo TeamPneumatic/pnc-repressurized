@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.goal.Goal;
@@ -9,6 +10,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface IProgWidget {
@@ -45,7 +47,7 @@ public interface IProgWidget {
     boolean hasStepOutput();
 
     /**
-     * @param drone
+     * @param drone the drone
      * @param widget Will be 'this' most of the times, but not when controlled by ComputerCraft.
      * @return
      */
@@ -66,36 +68,46 @@ public interface IProgWidget {
      */
     IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets);
 
-    Class<? extends IProgWidget> returnType();//true for widgets that can give info to the widget left of it (like areas or filters)
+    /**
+     * For "auxiliary" widgets that are added onto the left or right of another widget, get the type of the widget
+     * being connected to.
+     *
+     * @return the widget being connected to, or null if this widget isn't an "auxiliary" widget.
+     */
+    ProgWidgetType returnType();
 
-    Class<? extends IProgWidget>[] getParameters(); //the entity attack widget for instance returns the filter and area class.
+    /**
+     * Get the types of the widgets which connect to this widget on the right, in order (top to bottom). Note that the
+     * length of the widget array returned by {@link #getConnectedParameters()} will be double the length of this list,
+     * since these widgets can be added on both the right (whitelist) and left (blacklist) sides.
+     *
+     * @return a list of widget types, or an empty list if no widgets can be added to the side of this widget
+     */
+    @Nonnull
+    List<ProgWidgetType> getParameters();
 
     void setParameter(int index, IProgWidget parm);
 
     boolean canSetParameter(int index);
 
-    IProgWidget[] getConnectedParameters();//this includes whitelist and blacklist. whitelist will go in the first half of elements, blacklist in the second half.
+    IProgWidget[] getConnectedParameters();
 
     void setParent(IProgWidget widget);
 
     IProgWidget getParent();
 
-    /**
-     * Unique identifier
-     *
-     * @return
-     */
-    String getWidgetString();
+    ResourceLocation getTypeID();
 
     default String getTranslationKey() {
-        return "programmingPuzzle." + getWidgetString() + ".name";
+        String s = getTypeID().toString().replace(':', '.');
+        return "programmingPuzzle." + s + ".name";
     }
 
-//    int getCraftingColorIndex();
     DyeColor getColor();
 
     /**
-     * At least do a tag.putString("id", getWidgetString());
+     * At least do <code>tag.putString("name", getTypeID().toString());</code>
+     * <p>Note that the base implementation {@link ProgWidget} does this.</p>
      *
      * @param tag
      */
@@ -108,6 +120,8 @@ public interface IProgWidget {
     boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget);
 
     WidgetDifficulty getDifficulty();
+
+    ProgWidgetType getType();
 
     enum WidgetDifficulty {
         EASY("easy"), MEDIUM("medium"), ADVANCED("advanced");

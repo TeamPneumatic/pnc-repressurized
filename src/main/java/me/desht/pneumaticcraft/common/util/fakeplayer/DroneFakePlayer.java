@@ -3,13 +3,9 @@ package me.desht.pneumaticcraft.common.util.fakeplayer;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import net.minecraft.entity.item.ExperienceOrbEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
-
-import javax.annotation.Nonnull;
 
 public class DroneFakePlayer extends FakePlayer {
     private final IDroneBase drone;
@@ -25,19 +21,6 @@ public class DroneFakePlayer extends FakePlayer {
         Vec3d pos = drone.getDronePos();
         ExperienceOrbEntity orb = new ExperienceOrbEntity(drone.world(), pos.x, pos.y, pos.z, amount);
         drone.world().addEntity(orb);
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack getItemStackFromSlot(@Nonnull EquipmentSlotType slotIn) {
-        return slotIn == EquipmentSlotType.MAINHAND && drone != null && drone.getInv() != null ? drone.getInv().getStackInSlot(0) : ItemStack.EMPTY;
-    }
-
-    @Override
-    public void setItemStackToSlot(EquipmentSlotType slotIn, ItemStack stack) {
-        if (slotIn == EquipmentSlotType.MAINHAND) {
-            drone.getInv().setStackInSlot(0, stack);
-        }
     }
 
     @Override

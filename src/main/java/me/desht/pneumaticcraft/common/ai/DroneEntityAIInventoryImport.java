@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -50,7 +49,7 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInve
                         continue;
                     }
                     importedStack = importedStack.copy();
-                    if (((ICountWidget) progWidget).useCount()) {
+                    if (progWidget.useCount()) {
                         importedStack.setCount(Math.min(importedStack.getCount(), getRemainingCount()));
                     }
                     ItemStack remainder = IOHelper.insert(drone, importedStack, Direction.UP, simulate);
@@ -60,7 +59,7 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInve
                         decreaseCount(removedItems);
                         drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
                                 .ifPresent(h -> h.addAir(-PneumaticValues.DRONE_USAGE_INV));
-                        if (((ICountWidget) progWidget).useCount() && getRemainingCount() <= 0) {
+                        if (progWidget.useCount() && getRemainingCount() <= 0) {
                             return false;
                         }
                     } else if (removedItems > 0) {

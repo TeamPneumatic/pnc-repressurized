@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.aux.AmadronOfferStaticConfig;
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -102,7 +102,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
 
     }
     public ContainerAmadron(int windowId, PlayerInventory invPlayer, Hand hand) {
-        super(ModContainerTypes.AMADRON, windowId, invPlayer);
+        super(ModContainers.AMADRON, windowId, invPlayer);
 
         this.hand = hand;
 

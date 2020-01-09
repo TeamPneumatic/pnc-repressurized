@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -17,7 +17,7 @@ public class ContainerSecurityStationHacking extends ContainerPneumaticBase<Tile
     }
 
     public ContainerSecurityStationHacking(int windowId, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainerTypes.SECURITY_STATION_HACKING, windowId, playerInventory, pos);
+        super(ModContainers.SECURITY_STATION_HACKING, windowId, playerInventory, pos);
 
         //add the network slots
         for (int i = 0; i < TileEntitySecurityStation.INV_ROWS; i++) {

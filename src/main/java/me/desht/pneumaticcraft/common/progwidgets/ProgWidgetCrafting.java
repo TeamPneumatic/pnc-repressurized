@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.ItemTagMatcher;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
@@ -37,6 +40,10 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     private boolean useCount;
     private int count;
 
+    public ProgWidgetCrafting() {
+        super(ModProgWidgets.CRAFTING);
+    }
+
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
@@ -59,18 +66,13 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
+    public ProgWidgetType returnType() {
         return null;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetItemFilter.class, ProgWidgetItemFilter.class, ProgWidgetItemFilter.class};
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "crafting";
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER, ModProgWidgets.ITEM_FILTER, ModProgWidgets.ITEM_FILTER);
     }
 
     @Override

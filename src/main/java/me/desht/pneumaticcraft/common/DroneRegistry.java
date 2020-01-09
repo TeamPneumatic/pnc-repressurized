@@ -3,13 +3,15 @@ package me.desht.pneumaticcraft.common;
 import me.desht.pneumaticcraft.api.drone.ICustomBlockInteract;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCustomBlockInteract;
-import me.desht.pneumaticcraft.common.progwidgets.WidgetRegistrator;
 import me.desht.pneumaticcraft.common.util.ProgrammedDroneUtils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.HashMap;
@@ -30,8 +32,10 @@ public class DroneRegistry implements IDroneRegistry {
     }
 
     @Override
-    public void registerCustomBlockInteractor(ICustomBlockInteract interactor) {
-        WidgetRegistrator.register(new ProgWidgetCustomBlockInteract().setInteractor(interactor));
+    public void registerCustomBlockInteractor(RegistryEvent.Register<ProgWidgetType<?>> event, ICustomBlockInteract interactor) {
+        ModProgWidgets.Registration.register(event.getRegistry(),
+                () -> new ProgWidgetCustomBlockInteract().setInteractor(interactor),
+                interactor.getID());
     }
 
     @Override

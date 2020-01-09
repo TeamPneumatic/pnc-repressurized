@@ -21,7 +21,6 @@ public class Waila implements IWailaPlugin, IThirdParty {
     @Override
     public void register(IRegistrar iRegistrar) {
         iRegistrar.registerBlockDataProvider(new PneumaticProvider.Data(), TileEntity.class);
-//        iRegistrar.registerBlockDataProvider(new PneumaticProvider.Data(), IInfoForwarder.class);
         iRegistrar.registerBlockDataProvider(new HeatProvider.Data(), IHeatExchanger.class);
         iRegistrar.registerBlockDataProvider(new SemiblockProvider.Data(), Block.class);
         iRegistrar.registerBlockDataProvider(new RedstoneControlProvider.Data(), IRedstoneControl.class);
@@ -29,7 +28,6 @@ public class Waila implements IWailaPlugin, IThirdParty {
         iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), LivingEntity.class);
 
         iRegistrar.registerComponentProvider(new PneumaticProvider.Component(), TooltipPosition.BODY, TileEntity.class);
-//        iRegistrar.registerComponentProvider(new PneumaticProvider.Component(), TooltipPosition.BODY, IInfoForwarder.class);
         iRegistrar.registerComponentProvider(new HeatProvider.Component(), TooltipPosition.BODY, IHeatExchanger.class);
         iRegistrar.registerComponentProvider(new SemiblockProvider.Component(), TooltipPosition.BODY, Block.class);
         iRegistrar.registerComponentProvider(new RedstoneControlProvider.Component(), TooltipPosition.BODY, IRedstoneControl.class);

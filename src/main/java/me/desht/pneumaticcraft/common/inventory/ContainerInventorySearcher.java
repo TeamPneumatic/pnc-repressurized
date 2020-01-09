@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 
 public class ContainerInventorySearcher extends Container {
     public ContainerInventorySearcher(int windowId, PlayerInventory inv, PacketBuffer data) {
-        super(ModContainerTypes.INVENTORY_SEARCHER, windowId);
+        super(ModContainers.INVENTORY_SEARCHER, windowId);
 
         // Add the player's inventory slots to the container
         for (int row = 0; row < 3; ++row) {

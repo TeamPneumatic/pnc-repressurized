@@ -1,13 +1,22 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.util.List;
+
 public class ProgWidgetWait extends ProgWidget {
+
+    public ProgWidgetWait() {
+        super(ModProgWidgets.WAIT);
+    }
 
     @Override
     public boolean hasStepInput() {
@@ -15,23 +24,18 @@ public class ProgWidgetWait extends ProgWidget {
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
+    public ProgWidgetType returnType() {
         return null;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.TEXT);
     }
 
     @Override
     protected boolean hasBlacklist() {
         return false;
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "wait";
     }
 
     @Override
@@ -41,7 +45,7 @@ public class ProgWidgetWait extends ProgWidget {
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return widget instanceof ProgWidgetWait ? widget.getConnectedParameters()[0] != null ? new DroneAIWait((ProgWidgetString) widget.getConnectedParameters()[0]) : null : null;
+        return widget instanceof ProgWidgetWait ? widget.getConnectedParameters()[0] != null ? new DroneAIWait((ProgWidgetText) widget.getConnectedParameters()[0]) : null : null;
     }
 
     private static class DroneAIWait extends Goal {
@@ -49,7 +53,7 @@ public class ProgWidgetWait extends ProgWidget {
         private final int maxTicks;
         private int ticks;
 
-        private DroneAIWait(ProgWidgetString widget) {
+        private DroneAIWait(ProgWidgetText widget) {
             String time = widget.string;
             int multiplier = 1;
             if (time.endsWith("s") || time.endsWith("S")) {

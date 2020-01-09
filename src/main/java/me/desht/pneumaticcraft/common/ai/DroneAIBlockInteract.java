@@ -40,7 +40,8 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction<ProgWidgetArea
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
-        return !visitedPositions.contains(pos) && (progWidget.isItemFilterEmpty() || DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget));
+        return !visitedPositions.contains(pos) &&
+                (progWidget.isItemFilterEmpty() || DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget));
     }
 
     @Override

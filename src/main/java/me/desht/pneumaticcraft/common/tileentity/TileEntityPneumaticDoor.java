@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor.DoorState;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import net.minecraft.block.BlockState;
@@ -21,7 +21,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     public boolean rightGoing;
 
     public TileEntityPneumaticDoor() {
-        super(ModTileEntityTypes.PNEUMATIC_DOOR);
+        super(ModTileEntities.PNEUMATIC_DOOR);
     }
 
     public void setRotationAngle(float rotationAngle) {

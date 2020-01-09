@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
@@ -17,9 +20,8 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     private int curIndex; //iterator index
     private DroneAIManager aiManager;
 
-    @Override
-    public String getWidgetString() {
-        return "forEachItem";
+    public ProgWidgetForEachItem() {
+        super(ModProgWidgets.FOR_EACH_ITEM);
     }
 
     @Override
@@ -33,8 +35,8 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetItemFilter.class, ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER, ModProgWidgets.TEXT);
     }
 
     @Override
@@ -92,8 +94,8 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
 
     @Override
     public List<String> getPossibleJumpLocations() {
-        IProgWidget widget = getConnectedParameters()[getParameters().length - 1];
-        ProgWidgetString textWidget = widget != null ? (ProgWidgetString) widget : null;
+        IProgWidget widget = getConnectedParameters()[getParameters().size() - 1];
+        ProgWidgetText textWidget = widget != null ? (ProgWidgetText) widget : null;
         List<String> locations = new ArrayList<>();
         if (textWidget != null) locations.add(textWidget.string);
         return locations;
@@ -115,7 +117,7 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
+    public ProgWidgetType returnType() {
         return null;
     }
 

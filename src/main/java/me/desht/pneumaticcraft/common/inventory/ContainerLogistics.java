@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
@@ -134,18 +134,18 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     public static ContainerLogistics createPassiveProviderContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerLogistics(ModContainerTypes.LOGISTICS_FRAME_PASSIVE_PROVIDER, i, playerInventory, buffer);
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_PASSIVE_PROVIDER, i, playerInventory, buffer);
     }
 
     public static ContainerLogistics createRequesterContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerLogistics(ModContainerTypes.LOGISTICS_FRAME_REQUESTER, i, playerInventory, buffer);
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_REQUESTER, i, playerInventory, buffer);
     }
 
     public static ContainerLogistics createStorageContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerLogistics(ModContainerTypes.LOGISTICS_FRAME_STORAGE, i, playerInventory, buffer);
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_STORAGE, i, playerInventory, buffer);
     }
 
     public static ContainerLogistics createDefaultStorageContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerLogistics(ModContainerTypes.LOGISTICS_FRAME_DEFAULT_STORAGE, i, playerInventory, buffer);
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE, i, playerInventory, buffer);
     }
 }

@@ -1,18 +1,22 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAILiquidImport;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.List;
+
 public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements ILiquidFiltered {
 
-    @Override
-    public String getWidgetString() {
-        return "liquidImport";
+    public ProgWidgetLiquidImport() {
+        super(ModProgWidgets.LIQUID_IMPORT);
     }
 
     @Override
@@ -21,8 +25,8 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetArea.class, ProgWidgetLiquidFilter.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.LIQUID_FILTER);
     }
 
     @Override

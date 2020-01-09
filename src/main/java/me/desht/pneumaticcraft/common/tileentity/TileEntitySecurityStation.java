@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationMain;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -70,7 +70,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     private boolean validNetwork;
 
     public TileEntitySecurityStation() {
-        super(ModTileEntityTypes.SECURITY_STATION, 4);
+        super(ModTileEntities.SECURITY_STATION, 4);
     }
     
     @Override

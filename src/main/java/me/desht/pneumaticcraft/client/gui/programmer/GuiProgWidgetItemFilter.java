@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
 import net.minecraft.util.text.StringTextComponent;
@@ -104,7 +104,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     }
 
     private void openSearcher() {
-        ClientUtils.openContainerGui(ModContainerTypes.SEARCHER, new StringTextComponent("Search"));
+        ClientUtils.openContainerGui(ModContainers.SEARCHER, new StringTextComponent("Search"));
         if (minecraft.currentScreen instanceof GuiItemSearcher) {
             searchGui = (GuiItemSearcher) minecraft.currentScreen;
             searchGui.setSearchStack(progWidget.getFilter());
@@ -112,7 +112,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     }
 
     private void openInventorySearcher() {
-        ClientUtils.openContainerGui(ModContainerTypes.INVENTORY_SEARCHER, new StringTextComponent("Search"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER, new StringTextComponent("Search"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
             invSearchGui.setSearchStack(progWidget.getFilter());

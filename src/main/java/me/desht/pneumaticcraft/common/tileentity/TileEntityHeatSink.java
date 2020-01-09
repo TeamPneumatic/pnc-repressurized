@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.util.Direction;
@@ -16,7 +16,7 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock implements
     private double ambientTemp = -1;
 
     public TileEntityHeatSink() {
-        super(ModTileEntityTypes.HEAT_SINK);
+        super(ModTileEntities.HEAT_SINK);
 
         airExchanger.addConnectedExchanger(heatExchanger);
         airExchanger.setThermalResistance(TileEntityConstants.HEAT_SINK_THERMAL_RESISTANCE);

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.lib.Log;
@@ -14,11 +15,18 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
+/**
+ * Base class for in-world conditions.
+ */
 public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implements ICondition, IJump {
 
     private DroneAIBlockCondition evaluator;
     private boolean isAndFunction;
     private ICondition.Operator operator = ICondition.Operator.HIGHER_THAN_EQUALS;
+
+    public ProgWidgetCondition(ProgWidgetType<?> type) {
+        super(type);
+    }
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
@@ -26,18 +34,15 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         return evaluator;
     }
 
+    protected abstract DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget);
+
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (getConnectedParameters()[getParameters().length - 1] == null && getConnectedParameters()[getParameters().length * 2 - 1] == null) {
+        if (getConnectedParameters()[getParameters().size() - 1] == null && getConnectedParameters()[getParameters().size() * 2 - 1] == null) {
             curInfo.add(xlate("gui.progWidget.condition.error.noFlowControl"));
         }
     }
-
-    @Override
-    public abstract Class<? extends IProgWidget>[] getParameters();
-
-    protected abstract DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget);
 
     @Override
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
@@ -77,10 +82,10 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
 
     @Override
     public List<String> getPossibleJumpLocations() {
-        IProgWidget widget = getConnectedParameters()[getParameters().length - 1];
-        IProgWidget widget2 = getConnectedParameters()[getParameters().length * 2 - 1];
-        ProgWidgetString textWidget = widget != null ? (ProgWidgetString) widget : null;
-        ProgWidgetString textWidget2 = widget2 != null ? (ProgWidgetString) widget2 : null;
+        IProgWidget widget = getConnectedParameters()[getParameters().size() - 1];
+        ProgWidgetText textWidget = widget != null ? (ProgWidgetText) widget : null;
+        IProgWidget widget2 = getConnectedParameters()[getParameters().size() * 2 - 1];
+        ProgWidgetText textWidget2 = widget2 != null ? (ProgWidgetText) widget2 : null;
         List<String> locations = new ArrayList<>();
         if (textWidget != null) locations.add(textWidget.string);
         if (textWidget2 != null) locations.add(textWidget2.string);

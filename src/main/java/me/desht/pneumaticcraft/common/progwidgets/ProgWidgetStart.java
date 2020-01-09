@@ -1,15 +1,22 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
+import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetStart extends ProgWidget {
+
+    public ProgWidgetStart() {
+        super(ModProgWidgets.START);
+    }
 
     @Override
     public boolean hasStepInput() {
@@ -22,23 +29,18 @@ public class ProgWidgetStart extends ProgWidget {
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
+    public ProgWidgetType returnType() {
         return null;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return null;
+    public List<ProgWidgetType> getParameters() {
+        return Collections.emptyList();
     }
 
     @Override
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_START;
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "start";
     }
 
     @Override

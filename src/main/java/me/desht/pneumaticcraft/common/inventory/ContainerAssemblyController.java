@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import net.minecraft.entity.player.PlayerInventory;
@@ -13,7 +13,7 @@ public class ContainerAssemblyController extends ContainerPneumaticBase<TileEnti
     }
 
     public ContainerAssemblyController(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainerTypes.ASSEMBLY_CONTROLLER, i, playerInventory, pos);
+        super(ModContainers.ASSEMBLY_CONTROLLER, i, playerInventory, pos);
 
         addSlot(new SlotItemSpecific(te.getPrimaryInventory(), item -> item instanceof ItemAssemblyProgram, 0, 74, 38));
 

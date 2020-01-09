@@ -57,7 +57,7 @@ class EntityFilterPair {
     List<Entity> getValidEntities(World world) {
         return getEntitiesInArea(
                 (ProgWidgetArea) widget.getConnectedParameters()[0],
-                (ProgWidgetArea) widget.getConnectedParameters()[widget.getParameters().length],
+                (ProgWidgetArea) widget.getConnectedParameters()[widget.getParameters().size()],
                 world
         );
     }

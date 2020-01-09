@@ -1,8 +1,11 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.area.*;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
 import me.desht.pneumaticcraft.lib.Log;
@@ -48,7 +51,11 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         register(AreaTypeGrid.ID, AreaTypeGrid.class, AreaTypeGrid::new);
         register(AreaTypeRandom.ID, AreaTypeRandom.class, AreaTypeRandom::new);
     }
-    
+
+    public ProgWidgetArea() {
+        super(ModProgWidgets.AREA);
+    }
+
     private static <T extends AreaType> void register(String id, Class<T> clazz, Supplier<T> creator) {
         if (areaTypes.containsKey(id)){
             throw new IllegalStateException("Area type " + clazz + " could not be registered, duplicate id: " + id);
@@ -187,18 +194,13 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
-        return ProgWidgetArea.class;
+    public ProgWidgetType returnType() {
+        return ModProgWidgets.AREA;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetArea.class};
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "area";
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.AREA);
     }
 
     @Override
@@ -294,7 +296,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     List<Entity> getEntitiesWithinArea(World world, Predicate<? super Entity> predicate) {
         AxisAlignedBB aabb = getAABB();
-        return aabb != null ? world.getEntitiesInAABBexcluding(null, aabb, predicate::test) : new ArrayList<>();
+        return aabb != null ? world.getEntitiesInAABBexcluding(null, aabb, predicate) : new ArrayList<>();
     }
 
     @Override

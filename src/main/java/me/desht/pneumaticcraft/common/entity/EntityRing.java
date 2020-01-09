@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.entity;
 
 import me.desht.pneumaticcraft.client.render.RenderRing;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
@@ -21,7 +21,7 @@ public class EntityRing extends Entity {
     }
 
     public EntityRing(World par1World, double startX, double startY, double startZ, Entity targetEntity, int color) {
-        super(ModEntityTypes.RING, par1World);
+        super(ModEntities.RING, par1World);
         posX = lastTickPosX = startX;
         posY = lastTickPosY = startY;
         posZ = lastTickPosZ = startZ;

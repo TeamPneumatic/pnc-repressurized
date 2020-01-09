@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketBuffer;
@@ -14,7 +14,7 @@ public class ContainerGasLift extends ContainerPneumaticBase<TileEntityGasLift> 
     }
 
     public ContainerGasLift(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainerTypes.GAS_LIFT, i, playerInventory, pos);
+        super(ModContainers.GAS_LIFT, i, playerInventory, pos);
 
         addUpgradeSlots(11, 29);
 

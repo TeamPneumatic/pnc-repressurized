@@ -99,38 +99,4 @@ public class DroneAIPlace extends DroneAIBlockInteraction<ProgWidgetPlace> {
             return true;
         }
     }
-
-//    private void setFakePlayerAccordingToDir() {
-//        PlayerEntity fakePlayer = drone.getFakePlayer();
-//        Vec3d pos = drone.getDronePos();
-//        fakePlayer.posX = pos.x;
-//        fakePlayer.posZ = pos.z;
-//        switch (ProgWidgetPlace.getDirForSides(((ISidedWidget) progWidget).getSides())) {
-//            case UP:
-//                fakePlayer.rotationPitch = -90;
-//                fakePlayer.posY = pos.y - 10;//do this for PistonBase.determineDirection()
-//                return;
-//            case DOWN:
-//                fakePlayer.rotationPitch = 90;
-//                fakePlayer.posY = pos.y + 10;//do this for PistonBase.determineDirection()
-//                return;
-//            case NORTH:
-//                fakePlayer.rotationYaw = 180;
-//                fakePlayer.posY = pos.y;//do this for PistonBase.determineDirection()
-//                break;
-//            case EAST:
-//                fakePlayer.rotationYaw = 270;
-//                fakePlayer.posY = pos.y;//do this for PistonBase.determineDirection()
-//                break;
-//            case SOUTH:
-//                fakePlayer.rotationYaw = 0;
-//                fakePlayer.posY = pos.y;//do this for PistonBase.determineDirection()
-//                break;
-//            case WEST:
-//                fakePlayer.rotationYaw = 90;
-//                fakePlayer.posY = pos.y;//do this for PistonBase.determineDirection()
-//                break;
-//        }
-//    }
-
 }

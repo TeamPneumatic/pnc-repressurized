@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressor;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketBuffer;
@@ -12,7 +12,7 @@ public class ContainerCreativeCompressor extends ContainerPneumaticBase<TileEnti
     }
 
     public ContainerCreativeCompressor(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainerTypes.CREATIVE_COMPRESSOR, i, playerInventory, pos);
+        super(ModContainers.CREATIVE_COMPRESSOR, i, playerInventory, pos);
     }
 
     // phenomenal cosmic power... itty-bitty container implementation

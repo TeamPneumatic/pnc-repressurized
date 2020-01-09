@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneEntityAIGoToLocation;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
@@ -17,8 +20,15 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, IAreaProvider {
-
     public boolean doneWhenDeparting;
+
+    public ProgWidgetGoToLocation() {
+        super(ModProgWidgets.GOTO);
+    }
+
+    ProgWidgetGoToLocation(ProgWidgetType<ProgWidgetTeleport> type) {
+        super(type);
+    }
 
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
@@ -45,11 +55,6 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public String getWidgetString() {
-        return "goto";
-    }
-
-    @Override
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_GOTO;
     }
@@ -65,18 +70,18 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
+    public ProgWidgetType returnType() {
         return null;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetArea.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.AREA);
     }
 
     @Override
     public void getArea(Set<BlockPos> area) {
-        ProgWidgetAreaItemBase.getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[getParameters().length]);
+        ProgWidgetAreaItemBase.getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[getParameters().size()]);
     }
 
     @Override

@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
 import me.desht.pneumaticcraft.common.item.ItemRemote;
@@ -89,7 +89,7 @@ public class GuiRemoteEditor extends GuiRemote {
         }
 
         WidgetButtonExtended importRemoteButton = new WidgetButtonExtended(guiLeft - 24, guiTop, 20, 20, "", b -> {
-            ClientUtils.openContainerGui(ModContainerTypes.INVENTORY_SEARCHER, new StringTextComponent("Inventory Searcher (Remote)"));
+            ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER, new StringTextComponent("Inventory Searcher (Remote)"));
             if (minecraft.currentScreen instanceof GuiInventorySearcher) invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
         });
         importRemoteButton.setTooltipText(I18n.format("gui.remote.button.importRemoteButton"));

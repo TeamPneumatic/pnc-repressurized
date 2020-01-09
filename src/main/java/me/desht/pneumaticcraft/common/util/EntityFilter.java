@@ -3,8 +3,9 @@ package me.desht.pneumaticcraft.common.util;
 import com.google.common.collect.ImmutableSet;
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetString;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetText;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -55,13 +56,13 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
     }
 
     public static EntityFilter fromProgWidget(IProgWidget widget, boolean whitelist) {
-        if (widget.getParameters().length > 1) {
-            // NOTE: assumption here that the entity filter string is always parameter #2 of prog widgets
-            IProgWidget w = widget.getConnectedParameters()[whitelist ? 1 : widget.getParameters().length + 1];
+        if (widget.getParameters().size() > 1) {
+            int pos = ((IEntityProvider) widget).getEntityFilterPosition();
+            IProgWidget w = widget.getConnectedParameters()[whitelist ? pos : widget.getParameters().size() + pos];
             List<String> l = new ArrayList<>();
-            if (w instanceof ProgWidgetString) {
-                while (w instanceof ProgWidgetString) {
-                    String str = ((ProgWidgetString) w).string;
+            if (w instanceof ProgWidgetText) {
+                while (w instanceof ProgWidgetText) {
+                    String str = ((ProgWidgetText) w).string;
                     Validate.isTrue(!str.startsWith("!"), "'!' negation can't be used here (put blacklist filters on left of widget)");
                     l.add(str);
                     w = w.getConnectedParameters()[0];

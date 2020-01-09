@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerAdvancedAirCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -21,7 +21,7 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
 
     public TileEntityAdvancedAirCompressor() {
-        super(ModTileEntityTypes.ADVANCED_AIR_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_TIER_TWO, PneumaticValues.MAX_PRESSURE_TIER_TWO, PneumaticValues.VOLUME_ADVANCED_AIR_COMPRESSOR);
+        super(ModTileEntities.ADVANCED_AIR_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_TIER_TWO, PneumaticValues.MAX_PRESSURE_TIER_TWO, PneumaticValues.VOLUME_ADVANCED_AIR_COMPRESSOR);
         heatExchanger.setThermalCapacity(100);
     }
 

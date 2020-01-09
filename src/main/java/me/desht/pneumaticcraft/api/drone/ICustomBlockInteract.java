@@ -3,24 +3,27 @@ package me.desht.pneumaticcraft.api.drone;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.event.RegistryEvent;
 
 /**
- * Implement this and register it with {@link IDroneRegistry#registerCustomBlockInteractor(ICustomBlockInteract)}.
+ * Implement this and register it with {@link IDroneRegistry#registerCustomBlockInteractor(RegistryEvent.Register, ICustomBlockInteract)}.
  * This will add a puzzle piece that has only a Area white- and blacklist parameter (similar to a GoTo piece).
  * It will do the specified behaviour. This can be used to create energy import/export widgets, for example.
  */
 public interface ICustomBlockInteract {
 
     /**
-     * Get a unique name for this puzzle piece. This will be used when serializing the piece.
+     * Get a unique name for this puzzle piece. This is a Forge Registry entry so make it unique, and namespaced with
+     * your mod's ID.
      *
-     * @return a unique string ID
+     * @return a unique ID
      */
-    String getName();
+    ResourceLocation getID();
 
     /**
      * Should return the puzzle piece texture. Should be a multiple of 80x64 (width x height). I'd recommend starting
-     * out with copying the Go To widget texture.
+     * out with copying the
+     * <a href="https://github.com/TeamPneumatic/pnc-repressurized/blob/master/src/main/resources/assets/pneumaticcraft/textures/items/progwidgets/goto_piece.png">Go To widget texture</a>
      *
      * @return a resource location for the texture to be used
      */
@@ -29,7 +32,7 @@ public interface ICustomBlockInteract {
     /**
      * The actual interaction.
      * <p>
-     * For every position in the specified area, the drone will visit every block (ordered from closest to furthest). It
+     * For each blockpos in the specified area, the drone will visit that block (ordered from closest to furthest). It
      * will call this method with {@code simulate} = true. If this method returns true, the drone will navigate to this
      * location, and call this method again with {@code simulate} = false. It will keep doing this until this method
      * returns false.

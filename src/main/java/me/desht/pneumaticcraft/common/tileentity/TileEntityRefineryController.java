@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.IRefineryRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -80,7 +80,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     private boolean searchForRecipe = true;
 
     public TileEntityRefineryController() {
-        super(ModTileEntityTypes.REFINERY);
+        super(ModTileEntities.REFINERY);
 
         for (int i = 0; i < IRefineryRecipe.MAX_OUTPUTS; i++) {
             outputsSynced[i] = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);

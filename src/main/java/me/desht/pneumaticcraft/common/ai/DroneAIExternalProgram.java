@@ -84,15 +84,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                     IProgrammable programmable = (IProgrammable) stack.getItem();
                     if (programmable.canProgram(stack) && programmable.usesPieces(stack)) {
                         List<IProgWidget> widgets = TileEntityProgrammer.getProgWidgets(stack);
-
-                        boolean areWidgetsValid = true;
-                        for (IProgWidget widget : widgets) {
-                            if (!drone.isProgramApplicable(widget)) {
-                                areWidgetsValid = false;
-                                break;
-                            }
-                        }
-
+                        boolean areWidgetsValid = widgets.stream().allMatch(widget -> drone.isProgramApplicable(widget.getType()));
                         if (areWidgetsValid) {
                             if (progWidget.shareVariables) mainAI.connectVariables(subAI);
                             subAI.getDrone().getAIManager().setLabel("Main");

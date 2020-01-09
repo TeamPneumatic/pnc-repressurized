@@ -2,12 +2,12 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetString;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetText;
 
-public class GuiProgWidgetString extends GuiProgWidgetOptionBase<ProgWidgetString> {
+public class GuiProgWidgetString extends GuiProgWidgetOptionBase<ProgWidgetText> {
     private WidgetTextField textfield;
 
-    public GuiProgWidgetString(ProgWidgetString widget, GuiProgrammer guiProgrammer) {
+    public GuiProgWidgetString(ProgWidgetText widget, GuiProgrammer guiProgrammer) {
         super(widget, guiProgrammer);
     }
 

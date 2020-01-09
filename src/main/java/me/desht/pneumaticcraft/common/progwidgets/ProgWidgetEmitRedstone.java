@@ -1,6 +1,9 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
@@ -18,10 +21,14 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmissionWidget, ISidedWidget {
     private boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
 
+    public ProgWidgetEmitRedstone() {
+        super(ModProgWidgets.EMIT_REDSTONE);
+    }
+
     @Override
     public int getEmittingRedstone() {
         if (getConnectedParameters()[0] != null) {
-            return NumberUtils.toInt(((ProgWidgetString) getConnectedParameters()[0]).string);
+            return NumberUtils.toInt(((ProgWidgetText) getConnectedParameters()[0]).string);
         } else {
             return 0;
         }
@@ -123,23 +130,18 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
+    public ProgWidgetType returnType() {
         return null;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.TEXT);
     }
 
     @Override
     protected boolean hasBlacklist() {
         return false;
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "emitRedstone";
     }
 
     @Override

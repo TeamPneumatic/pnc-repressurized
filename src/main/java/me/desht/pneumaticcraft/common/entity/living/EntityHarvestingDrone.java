@@ -1,10 +1,11 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +15,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.FMLPlayMessages;
-import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.List;
 
@@ -28,11 +28,11 @@ public class EntityHarvestingDrone extends EntityBasicDrone {
     }
 
     private EntityHarvestingDrone(World world) {
-        super(ModEntityTypes.HARVESTING_DRONE, world);
+        super(ModEntities.HARVESTING_DRONE, world);
     }
 
     public EntityHarvestingDrone(World world, PlayerEntity player) {
-        super(ModEntityTypes.LOGISTIC_DRONE, world, player);
+        super(ModEntities.HARVESTING_DRONE, world, player);
     }
 
     @Override
@@ -44,14 +44,16 @@ public class EntityHarvestingDrone extends EntityBasicDrone {
     public void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, List<IProgWidget> widgets) {
         TileEntity te = world.getTileEntity(clickPos);
         ProgWidgetHarvest harvestPiece = new ProgWidgetHarvest();
-        harvestPiece.setRequiresTool(te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent());
+        harvestPiece.setRequiresTool(IOHelper.getInventoryForTE(te, facing).isPresent());
         harvestPiece.setOrder(EnumOrder.HIGH_TO_LOW);
         
         DroneProgramBuilder builder = new DroneProgramBuilder();
         builder.add(new ProgWidgetStart());
-        builder.add(new ProgWidgetInventoryImport(), ProgWidgetArea.fromPosition(clickPos)); //No filter, because we cannot guarantee we won't filter away modded hoes...
+        // No item filter, because we cannot guarantee we won't filter away modded hoes...
+        builder.add(new ProgWidgetInventoryImport(), ProgWidgetArea.fromPosition(clickPos));
         builder.add(harvestPiece, ProgWidgetArea.fromPosAndExpansions(clickPos, 16, 16, 16));
-        builder.add(new ProgWidgetWait(), ProgWidgetString.withText("10s")); //Wait 10 seconds for performance reasons.
+        // Wait 10 seconds for performance reasons.
+        builder.add(new ProgWidgetWait(), ProgWidgetText.withText("10s"));
         widgets.addAll(builder.build());
     }
     

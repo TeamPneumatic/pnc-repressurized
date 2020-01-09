@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -22,7 +22,7 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
     }
 
     public ContainerMinigunMagazine(int windowId, PlayerInventory playerInventory) {
-        super(ModContainerTypes.MINIGUN_MAGAZINE, windowId, playerInventory);
+        super(ModContainers.MINIGUN_MAGAZINE, windowId, playerInventory);
 
         gunInv = ItemMinigun.getMagazine(playerInventory.player.getHeldItemMainhand());
 

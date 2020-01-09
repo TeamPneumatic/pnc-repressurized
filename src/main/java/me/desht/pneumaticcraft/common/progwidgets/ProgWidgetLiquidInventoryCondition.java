@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.tileentity.TileEntity;
@@ -11,16 +14,17 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
+import java.util.List;
+
 public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
 
-    @Override
-    public String getWidgetString() {
-        return "conditionLiquidInventory";
+    public ProgWidgetLiquidInventoryCondition() {
+        super(ModProgWidgets.CONDITION_LIQUID_INVENTORY);
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetArea.class, ProgWidgetLiquidFilter.class, ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.LIQUID_FILTER, ModProgWidgets.TEXT);
     }
 
     @Override

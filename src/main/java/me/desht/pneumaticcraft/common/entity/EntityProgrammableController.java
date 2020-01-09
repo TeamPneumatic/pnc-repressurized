@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.entity;
 
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import net.minecraft.item.ItemStack;
@@ -17,7 +17,7 @@ public class EntityProgrammableController extends EntityDroneBase {
 //    }
 
     public EntityProgrammableController(World world, TileEntityProgrammableController controller) {
-        super(ModEntityTypes.DRONE, world);
+        super(ModEntities.DRONE, world);
         preventEntitySpawning = false;
         this.controller = controller;
     }

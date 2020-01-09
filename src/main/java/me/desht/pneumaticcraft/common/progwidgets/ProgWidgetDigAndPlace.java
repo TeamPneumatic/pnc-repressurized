@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockInteraction;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
@@ -28,7 +29,8 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
         curTooltip.add(new StringTextComponent("Order: " + order.getLocalizedName()));
     }
 
-    ProgWidgetDigAndPlace(EnumOrder order) {
+    ProgWidgetDigAndPlace(ProgWidgetType type, EnumOrder order) {
+        super(type);
         this.order = order;
     }
 
@@ -74,9 +76,6 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     }
 
     DroneAIBlockInteraction setupMaxActions(DroneAIBlockInteraction ai, IMaxActions widget) {
-        if (widget.useMaxActions()) {
-            ai.setMaxActions(widget.getMaxActions());
-        }
-        return ai;
+        return widget.useMaxActions() ? ai.setMaxActions(widget.getMaxActions()) : ai;
     }
 }

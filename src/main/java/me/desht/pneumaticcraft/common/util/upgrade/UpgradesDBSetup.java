@@ -2,9 +2,9 @@ package me.desht.pneumaticcraft.common.util.upgrade;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -88,15 +88,15 @@ public class UpgradesDBSetup {
     private static void initEntities() {
         ApplicableUpgradesDB db = ApplicableUpgradesDB.getInstance();
 
-        db.addApplicableUpgrades(ModEntityTypes.DRONE, DRONE_UPGRADES);
-        db.addApplicableUpgrades(ModEntityTypes.LOGISTIC_DRONE, BASIC_DRONE_UPGRADES);
-        db.addApplicableUpgrades(ModEntityTypes.HARVESTING_DRONE, BASIC_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntities.DRONE, DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntities.LOGISTIC_DRONE, BASIC_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntities.HARVESTING_DRONE, BASIC_DRONE_UPGRADES);
     }
 
     private static void initTileEntities() {
         ApplicableUpgradesDB db = ApplicableUpgradesDB.getInstance();
 
-        db.addApplicableUpgrades(ModTileEntityTypes.AIR_CANNON,
+        db.addApplicableUpgrades(ModTileEntities.AIR_CANNON,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.RANGE, 8,
@@ -105,99 +105,99 @@ public class UpgradesDBSetup {
                 EnumUpgrade.BLOCK_TRACKER, 1,
                 EnumUpgrade.DISPENSER, 1,
                 EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.AIR_COMPRESSOR,
+        db.addApplicableUpgrades(ModTileEntities.AIR_COMPRESSOR,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.ADVANCED_AIR_COMPRESSOR,
+        db.addApplicableUpgrades(ModTileEntities.ADVANCED_AIR_COMPRESSOR,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.ASSEMBLY_CONTROLLER,
+        db.addApplicableUpgrades(ModTileEntities.ASSEMBLY_CONTROLLER,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.CHARGING_STATION,
+        db.addApplicableUpgrades(ModTileEntities.CHARGING_STATION,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10,
                 EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntityTypes.ELEVATOR_BASE,
+        db.addApplicableUpgrades(ModTileEntities.ELEVATOR_BASE,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10,
                 EnumUpgrade.CHARGING, 4);
-        db.addApplicableUpgrades(ModTileEntityTypes.PNEUMATIC_DOOR_BASE,
+        db.addApplicableUpgrades(ModTileEntities.PNEUMATIC_DOOR_BASE,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10,
                 EnumUpgrade.RANGE, 8);
-        db.addApplicableUpgrades(ModTileEntityTypes.PRESSURE_CHAMBER_INTERFACE,
+        db.addApplicableUpgrades(ModTileEntities.PRESSURE_CHAMBER_INTERFACE,
                 EnumUpgrade.SPEED, 10,
                 EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntityTypes.PRESSURE_CHAMBER_VALVE,
+        db.addApplicableUpgrades(ModTileEntities.PRESSURE_CHAMBER_VALVE,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.VACUUM_PUMP,
+        db.addApplicableUpgrades(ModTileEntities.VACUUM_PUMP,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.UV_LIGHT_BOX,
+        db.addApplicableUpgrades(ModTileEntities.UV_LIGHT_BOX,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.SECURITY_STATION,
+        db.addApplicableUpgrades(ModTileEntities.SECURITY_STATION,
                 EnumUpgrade.ENTITY_TRACKER, 4,
                 EnumUpgrade.SECURITY, 64,
                 EnumUpgrade.RANGE, 14);
-        db.addApplicableUpgrades(ModTileEntityTypes.AERIAL_INTERFACE,
+        db.addApplicableUpgrades(ModTileEntities.AERIAL_INTERFACE,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntityTypes.ELECTROSTATIC_COMPRESSOR,
+        db.addApplicableUpgrades(ModTileEntities.ELECTROSTATIC_COMPRESSOR,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.OMNIDIRECTIONAL_HOPPER,
+        db.addApplicableUpgrades(ModTileEntities.OMNIDIRECTIONAL_HOPPER,
                 EnumUpgrade.SPEED, 11,
                 EnumUpgrade.CREATIVE, 1,
                 EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntityTypes.LIQUID_HOPPER,
+        db.addApplicableUpgrades(ModTileEntities.LIQUID_HOPPER,
                 EnumUpgrade.SPEED, 11,
                 EnumUpgrade.CREATIVE, 1,
                 EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntityTypes.LIQUID_COMPRESSOR,
+        db.addApplicableUpgrades(ModTileEntities.LIQUID_COMPRESSOR,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.ADVANCED_LIQUID_COMPRESSOR,
+        db.addApplicableUpgrades(ModTileEntities.ADVANCED_LIQUID_COMPRESSOR,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.PROGRAMMABLE_CONTROLLER,
+        db.addApplicableUpgrades(ModTileEntities.PROGRAMMABLE_CONTROLLER,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10,
                 EnumUpgrade.INVENTORY, 35);
-        db.addApplicableUpgrades(ModTileEntityTypes.GAS_LIFT,
+        db.addApplicableUpgrades(ModTileEntities.GAS_LIFT,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10,
                 EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntityTypes.THERMOPNEUMATIC_PROCESSING_PLANT,
+        db.addApplicableUpgrades(ModTileEntities.THERMOPNEUMATIC_PROCESSING_PLANT,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntityTypes.SENTRY_TURRET,
+        db.addApplicableUpgrades(ModTileEntities.SENTRY_TURRET,
                 EnumUpgrade.RANGE, 16);
-        db.addApplicableUpgrades(ModTileEntityTypes.FLUX_COMPRESSOR,
+        db.addApplicableUpgrades(ModTileEntities.FLUX_COMPRESSOR,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.PNEUMATIC_DYNAMO,
+        db.addApplicableUpgrades(ModTileEntities.PNEUMATIC_DYNAMO,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10,
                 EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.THERMAL_COMPRESSOR,
+        db.addApplicableUpgrades(ModTileEntities.THERMAL_COMPRESSOR,
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, 10);
 
@@ -207,7 +207,7 @@ public class UpgradesDBSetup {
         addUpgrade(l, EnumUpgrade.RANGE, 64);
         addUpgrade(l, EnumUpgrade.SECURITY, 1);
         addUpgrade(l, EnumUpgrade.VOLUME, 10);
-        db.addApplicableUpgrades(ModTileEntityTypes.UNIVERSAL_SENSOR, l.toArray(new Object[0]));
+        db.addApplicableUpgrades(ModTileEntities.UNIVERSAL_SENSOR, l.toArray(new Object[0]));
     }
 
     private static void addUpgrade(List<Object> l, EnumUpgrade upgrade, int n) {

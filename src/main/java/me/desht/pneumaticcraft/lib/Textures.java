@@ -117,8 +117,8 @@ public class Textures {
     public static final ResourceLocation PROG_WIDGET_LIQUID_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "liquid_import_piece.png");
     public static final ResourceLocation PROG_WIDGET_ENTITY_EX = new ResourceLocation(PROG_WIDGET_LOCATION + "entity_export_piece.png");
     public static final ResourceLocation PROG_WIDGET_ENTITY_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "entity_import_piece.png");
-    public static final ResourceLocation PROG_WIDGET_RF_EX = new ResourceLocation(PROG_WIDGET_LOCATION + "rf_export_piece.png");
-    public static final ResourceLocation PROG_WIDGET_RF_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "rf_import_piece.png");
+    public static final ResourceLocation PROG_WIDGET_RF_EXPORT = new ResourceLocation(PROG_WIDGET_LOCATION + "rf_export_piece.png");
+    public static final ResourceLocation PROG_WIDGET_RF_IMPORT = new ResourceLocation(PROG_WIDGET_LOCATION + "rf_import_piece.png");
     public static final ResourceLocation PROG_WIDGET_ESSENTIA_EX = new ResourceLocation(PROG_WIDGET_LOCATION + "essentia_export_piece.png");
     public static final ResourceLocation PROG_WIDGET_ESSENTIA_IM = new ResourceLocation(PROG_WIDGET_LOCATION + "essentia_import_piece.png");
     public static final ResourceLocation PROG_WIDGET_ENTITY_RIGHT_CLICK = new ResourceLocation(PROG_WIDGET_LOCATION + "entity_right_click_piece.png");

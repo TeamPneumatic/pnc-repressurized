@@ -1,6 +1,9 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
@@ -23,19 +26,23 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     private boolean useVariable;
     private DroneAIManager aiManager;
 
+    public ProgWidgetCoordinate() {
+        super(ModProgWidgets.COORDINATE);
+    }
+
     @Override
     public boolean hasStepInput() {
         return false;
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
-        return ProgWidgetCoordinate.class;
+    public ProgWidgetType returnType() {
+        return ModProgWidgets.COORDINATE;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetCoordinate.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.COORDINATE);
     }
 
     @Override
@@ -52,11 +59,6 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         if (useVariable && variable.equals("")) {
             curInfo.add(xlate("gui.progWidget.general.error.emptyVariable"));
         }
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "coordinate";
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
@@ -15,8 +16,12 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModRegistries;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
-import me.desht.pneumaticcraft.common.item.*;
+import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
+import me.desht.pneumaticcraft.common.item.ItemMinigun;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.ItemPressurizable;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
@@ -52,6 +57,7 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.HandSide;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -81,7 +87,6 @@ public class ClientEventHandler {
 
     private static float currentScreenRoll = 0F;
 
-    public static float playerRenderPartialTick;
     private final static RenderProgressingLine minigunFire = new RenderProgressingLine().setProgress(1);
     private static int lastWidth = -1;
     private static int lastHeight = -1;
@@ -101,19 +106,19 @@ public class ClientEventHandler {
             boolean hasInvalidPrograms = false;
             List<ITextComponent> addedEntries = new ArrayList<>();
             List<IProgWidget> widgets = TileEntityProgrammer.getProgWidgets(event.getItemStack());
-            Map<String, Integer> widgetMap = getPuzzleSummary(widgets);
-            for (Map.Entry<String, Integer> entry : widgetMap.entrySet()) {
-                IProgWidget widget = ItemProgrammingPuzzle.getWidgetForName(entry.getKey());
+            Map<ResourceLocation, Integer> widgetMap = getPuzzleSummary(widgets);
+            for (Map.Entry<ResourceLocation, Integer> entry : widgetMap.entrySet()) {
                 TextFormatting[] prefix = new TextFormatting[0];
+                ProgWidgetType widgetType = ModRegistries.PROG_WIDGETS.getValue(entry.getKey());
                 Screen curScreen = Minecraft.getInstance().currentScreen;
                 if (curScreen instanceof IGuiDrone) {
-                    if (!((IGuiDrone) curScreen).getDrone().isProgramApplicable(widget)) {
+                    if (!((IGuiDrone) curScreen).getDrone().isProgramApplicable(widgetType)) {
                         prefix = new TextFormatting[]{ TextFormatting.RED, TextFormatting.ITALIC };
                         hasInvalidPrograms = true;
                     }
                 }
-                addedEntries.add(new StringTextComponent(GuiConstants.BULLET + " " + entry.getValue() + "x ")
-                        .appendSibling(xlate("programmingPuzzle." + entry.getKey() + ".name"))
+                addedEntries.add(new StringTextComponent(GuiConstants.BULLET + " " + entry.getValue() + " x ")
+                        .appendSibling(xlate(widgetType.getTranslationKey()))
                         .applyTextStyles(prefix));
             }
             if (hasInvalidPrograms) {
@@ -127,7 +132,6 @@ public class ClientEventHandler {
 
     private static void handleFluidContainerTooltip(ItemTooltipEvent event) {
         FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
-            String name = fluidStack.getFluid().getRegistryName().getPath();
             String key = "gui.tooltip.item." + event.getItemStack().getItem().getRegistryName().getPath();
             if (I18n.hasKey(key)) {
                 if (event.getToolTip().get(event.getToolTip().size() - 1).getFormattedText().contains("Minecraft Forge")) {
@@ -149,14 +153,10 @@ public class ClientEventHandler {
         });
     }
 
-    private static Map<String, Integer> getPuzzleSummary(List<IProgWidget> widgets) {
-        Map<String, Integer> map = new HashMap<>();
+    private static Map<ResourceLocation, Integer> getPuzzleSummary(List<IProgWidget> widgets) {
+        Map<ResourceLocation, Integer> map = new HashMap<>();
         for (IProgWidget widget : widgets) {
-            if (!map.containsKey(widget.getWidgetString())) {
-                map.put(widget.getWidgetString(), 1);
-            } else {
-                map.put(widget.getWidgetString(), map.get(widget.getWidgetString()) + 1);
-            }
+            map.put(widget.getTypeID(), map.getOrDefault(widget.getTypeID(), 0) + 1);
         }
         return map;
     }

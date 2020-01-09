@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketBuffer;
@@ -15,7 +15,7 @@ public class ContainerThermopneumaticProcessingPlant extends
     }
 
     public ContainerThermopneumaticProcessingPlant(int windowId, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainerTypes.THERMOPNEUMATIC_PROCESSING_PLANT, windowId, playerInventory, pos);
+        super(ModContainers.THERMOPNEUMATIC_PROCESSING_PLANT, windowId, playerInventory, pos);
 
         // add upgrade slots
         for (int i = 0; i < 4; i++) {

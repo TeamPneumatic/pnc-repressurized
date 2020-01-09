@@ -15,7 +15,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.ObjectHolder;
 
 @ObjectHolder(Names.MOD_ID)
-public class ModContainerTypes {
+public class ModContainers {
     public static final ContainerType<ContainerAdvancedAirCompressor> ADVANCED_AIR_COMPRESSOR = null;
     public static final ContainerType<ContainerAdvancedLiquidCompressor> ADVANCED_LIQUID_COMPRESSOR = null;
     public static final ContainerType<ContainerAerialInterface> AERIAL_INTERFACE = null;

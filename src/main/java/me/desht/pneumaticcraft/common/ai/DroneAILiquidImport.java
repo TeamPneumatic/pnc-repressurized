@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
@@ -16,9 +15,9 @@ import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
 import static net.minecraftforge.fluids.FluidAttributes.BUCKET_VOLUME;
 
-public class DroneAILiquidImport extends DroneAIImExBase<ProgWidgetInventoryBase> {
+public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFiltered> extends DroneAIImExBase<W> {
 
-    public DroneAILiquidImport(IDroneBase drone, ProgWidgetInventoryBase widget) {
+    public DroneAILiquidImport(IDroneBase drone, W widget) {
         super(drone, widget);
     }
 
@@ -53,11 +52,11 @@ public class DroneAILiquidImport extends DroneAIImExBase<ProgWidgetInventoryBase
             }
 
             // try to pick up a bucket of fluid from the world
-            if (!((ICountWidget) progWidget).useCount() || getRemainingCount() >= BUCKET_VOLUME) {
+            if (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME) {
                 LazyOptional<IFluidHandler> cap = drone.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
                 FluidStack stack = FluidUtils.tryPickupFluid(cap, drone.world(), pos, false, FluidAction.SIMULATE);
                 if (!stack.isEmpty() && stack.getAmount() == BUCKET_VOLUME
-                    && ((ILiquidFiltered) progWidget).isFluidValid(stack.getFluid())
+                    && progWidget.isFluidValid(stack.getFluid())
                     && drone.getFluidTank().fill(stack, FluidAction.SIMULATE) == BUCKET_VOLUME) {
                     if (!simulate) {
                         decreaseCount(BUCKET_VOLUME);
@@ -73,10 +72,10 @@ public class DroneAILiquidImport extends DroneAIImExBase<ProgWidgetInventoryBase
 
     private boolean tryImportFluid(IFluidHandler sourceHandler, boolean simulate) {
         FluidStack importedFluid = sourceHandler.drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
-        if (importedFluid != null && ((ILiquidFiltered) progWidget).isFluidValid(importedFluid.getFluid())) {
+        if (importedFluid != null && progWidget.isFluidValid(importedFluid.getFluid())) {
             int filledAmount = drone.getFluidTank().fill(importedFluid, FluidAction.SIMULATE);
             if (filledAmount > 0) {
-                if (((ICountWidget) progWidget).useCount())
+                if (progWidget.useCount())
                     filledAmount = Math.min(filledAmount, getRemainingCount());
                 if (!simulate) {
                     decreaseCount(drone.getFluidTank().fill(sourceHandler.drain(filledAmount, FluidAction.EXECUTE), FluidAction.EXECUTE));

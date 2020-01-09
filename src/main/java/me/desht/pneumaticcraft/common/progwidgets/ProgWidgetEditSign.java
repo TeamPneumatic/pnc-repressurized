@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIEditSign;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.remote.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
@@ -13,9 +16,8 @@ import java.util.List;
 
 public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignEditWidget {
 
-    @Override
-    public String getWidgetString() {
-        return "editSign";
+    public ProgWidgetEditSign() {
+        super(ModProgWidgets.EDIT_SIGN);
     }
 
     @Override
@@ -24,8 +26,8 @@ public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignE
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetArea.class, ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
     }
 
     @Override
@@ -41,10 +43,10 @@ public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignE
     @Override
     public String[] getLines() {
         List<String> lines = new ArrayList<>();
-        ProgWidgetString textWidget = (ProgWidgetString) getConnectedParameters()[1];
+        ProgWidgetText textWidget = (ProgWidgetText) getConnectedParameters()[1];
         while (textWidget != null) {
             lines.add(new TextVariableParser(textWidget.string, aiManager).parse());
-            textWidget = (ProgWidgetString) textWidget.getConnectedParameters()[0];
+            textWidget = (ProgWidgetText) textWidget.getConnectedParameters()[0];
         }
         return lines.toArray(new String[0]);
     }

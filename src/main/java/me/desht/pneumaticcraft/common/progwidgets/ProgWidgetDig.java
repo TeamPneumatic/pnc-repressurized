@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.DroneAIDig;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
@@ -14,16 +15,10 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetDig extends ProgWidgetDigAndPlace implements IToolUser {
-
     private boolean requireDiggingTool;
     
-    ProgWidgetDig() {
-        super(ProgWidgetDigAndPlace.EnumOrder.CLOSEST);
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "dig";
+    public ProgWidgetDig() {
+        super(ModProgWidgets.DIG, ProgWidgetDigAndPlace.EnumOrder.CLOSEST);
     }
 
     @Override

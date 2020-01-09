@@ -1,17 +1,22 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.google.common.base.CaseFormat;
+import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.util.JsonToNBTConverter;
 import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import me.desht.pneumaticcraft.common.util.PastebinHandler;
+import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.common.util.Constants;
 
 public class GuiPastebin extends GuiPneumaticScreenBase {
 
@@ -171,10 +176,29 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     private void readFromString(String string) {
         try {
             outputTag = new JsonToNBTConverter(string).convert();
+            if (outputTag.contains("widgets")) {
+                doLegacyConversion(outputTag);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             statusMessage = I18n.format("gui.pastebin.invalidFormattedPastebin");
         }
+    }
+
+    /**
+     * Handle legacy conversion: PNC 1.12.2 and older used a simple (mixed case) widget string
+     * but now ProgWidgets are registry entries and use a ResourceLocation
+     * @param outputTag the legacy data to convert
+     */
+    private void doLegacyConversion(CompoundNBT outputTag) {
+        ListNBT l = outputTag.getList("widgets", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < l.size(); i++) {
+            CompoundNBT tag = l.getCompound(i);
+            String newName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, tag.getString("name"));
+            tag.putString("name", Names.MOD_ID + ":" + newName);
+        }
+        outputTag.put(IProgrammable.NBT_WIDGETS, l);
+        outputTag.remove("widgets");
     }
 
     @Override

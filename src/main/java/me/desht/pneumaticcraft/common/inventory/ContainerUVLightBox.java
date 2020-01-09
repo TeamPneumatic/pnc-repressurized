@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import net.minecraft.entity.player.PlayerInventory;
@@ -14,7 +14,7 @@ public class ContainerUVLightBox extends ContainerPneumaticBase<TileEntityUVLigh
     }
 
     public ContainerUVLightBox(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainerTypes.UV_LIGHT_BOX, i, playerInventory, pos);
+        super(ModContainers.UV_LIGHT_BOX, i, playerInventory, pos);
 
         addSlot(new SlotItemSpecific(te.getPrimaryInventory(), ModItems.EMPTY_PCB, 0, 71, 36));
 

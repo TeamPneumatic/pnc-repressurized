@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneEntityBase;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
@@ -25,6 +28,10 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
 
     private EntityFilterPair entityFilters;
 
+    public ProgWidgetEntityRightClick() {
+        super(ModProgWidgets.ENTITY_RIGHT_CLICK);
+    }
+
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
@@ -40,18 +47,13 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
+    public ProgWidgetType returnType() {
         return null;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetArea.class, ProgWidgetString.class};
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "entityRightClick";
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
     }
 
     @Override
@@ -87,7 +89,8 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
                 if (stack.getItem().itemInteractionForEntity(stack, drone.getFakePlayer(), targetedEntity, Hand.MAIN_HAND)) {
                     activated = true;
                 }
-                if (!activated && targetedEntity instanceof AgeableEntity && ((AgeableEntity) targetedEntity).processInteract(drone.getFakePlayer(), Hand.MAIN_HAND)) {
+                if (!activated && targetedEntity instanceof AgeableEntity
+                        && ((AgeableEntity) targetedEntity).processInteract(drone.getFakePlayer(), Hand.MAIN_HAND)) {
                     activated = true;
                 }
                 return false;//return activated; <-- will right click as long as it's sucessfully activated.

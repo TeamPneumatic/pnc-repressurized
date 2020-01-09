@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerKeroseneLamp;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -105,7 +105,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
 
 
     public TileEntityKeroseneLamp() {
-        super(ModTileEntityTypes.KEROSENE_LAMP);
+        super(ModTileEntities.KEROSENE_LAMP);
     }
 
     @Override

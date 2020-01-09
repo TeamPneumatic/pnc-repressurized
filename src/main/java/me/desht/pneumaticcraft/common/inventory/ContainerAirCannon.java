@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import net.minecraft.entity.player.PlayerInventory;
@@ -15,7 +15,7 @@ public class ContainerAirCannon extends ContainerPneumaticBase<TileEntityAirCann
     }
 
     public ContainerAirCannon(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainerTypes.AIR_CANNON, i, playerInventory, pos);
+        super(ModContainers.AIR_CANNON, i, playerInventory, pos);
 
         addUpgradeSlots(8, 29);
 

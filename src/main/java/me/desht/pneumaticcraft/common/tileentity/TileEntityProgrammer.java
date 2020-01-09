@@ -1,12 +1,14 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.AreaShowManager;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.config.aux.ProgWidgetConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModRegistries;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
@@ -14,8 +16,8 @@ import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableWidget;
-import me.desht.pneumaticcraft.common.progwidgets.WidgetRegistrator;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -26,6 +28,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -70,7 +73,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public boolean recentreStartPiece = false;
 
     public TileEntityProgrammer() {
-        super(ModTileEntityTypes.PROGRAMMER);
+        super(ModTileEntities.PROGRAMMER);
 
         saveToHistory();
     }
@@ -143,14 +146,18 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         ListNBT widgetTags = tag.getList(IProgrammable.NBT_WIDGETS, NBT.TAG_COMPOUND);
         for (int i = 0; i < widgetTags.size(); i++) {
             CompoundNBT widgetTag = widgetTags.getCompound(i);
-            String widgetName = widgetTag.getString("name");
-            if (!ProgWidgetConfig.blacklistedPieces.contains(widgetName)) {
-                IProgWidget widget = WidgetRegistrator.getWidgetFromName(widgetName);
-                if (widget != null) {
-                    IProgWidget addedWidget = widget.copy();
+            ResourceLocation typeID = new ResourceLocation(widgetTag.getString("name"));
+            if (!ProgWidgetConfig.blacklistedPieces.contains(typeID)) {
+                ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
+                if (type != null) {
+                    IProgWidget addedWidget = type.create();
                     addedWidget.readFromNBT(widgetTag);
                     progWidgets.add(addedWidget);
+                } else {
+                    Log.warning("unknown widget type found: " + typeID);
                 }
+            } else {
+                Log.warning("ignoring blacklisted widget type: " + typeID);
             }
         }
         updatePuzzleConnections(progWidgets);
@@ -170,22 +177,20 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public static void updatePuzzleConnections(List<IProgWidget> progWidgets) {
         for (IProgWidget widget : progWidgets) {
             widget.setParent(null);
-            Class<? extends IProgWidget>[] parameters = widget.getParameters();
-            if (parameters != null) {
-                for (int i = 0; i < parameters.length * 2; i++) {
-                    widget.setParameter(i, null);
-                }
+            List<ProgWidgetType> parameters = widget.getParameters();
+            for (int i = 0; i < parameters.size() * 2; i++) {
+                widget.setParameter(i, null);
             }
             if (widget.hasStepOutput()) widget.setOutputWidget(null);
         }
         for (IProgWidget checkedWidget : progWidgets) {
             //check for connection to the right of the checked widget.
-            Class<? extends IProgWidget>[] parameters = checkedWidget.getParameters();
-            if (parameters != null) {
+            List<ProgWidgetType> parameters = checkedWidget.getParameters();
+            if (!parameters.isEmpty()) {
                 for (IProgWidget widget : progWidgets) {
                     if (widget != checkedWidget && checkedWidget.getX() + checkedWidget.getWidth() / 2 == widget.getX()) {
-                        for (int i = 0; i < parameters.length; i++) {
-                            if (checkedWidget.canSetParameter(i) && parameters[i] == widget.returnType() && checkedWidget.getY() + i * 11 == widget.getY()) {
+                        for (int i = 0; i < parameters.size(); i++) {
+                            if (checkedWidget.canSetParameter(i) && parameters.get(i) == widget.returnType() && checkedWidget.getY() + i * 11 == widget.getY()) {
                                 checkedWidget.setParameter(i, widget);
                                 widget.setParent(checkedWidget);
                             }
@@ -207,18 +212,18 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         //go again for the blacklist (as those are mirrored)
         for (IProgWidget checkedWidget : progWidgets) {
             if (checkedWidget.returnType() == null) { //if it's a program (import/export inventory, attack entity) rather than a parameter (area, item filter).
-                Class<? extends IProgWidget>[] parameters = checkedWidget.getParameters();
-                if (parameters != null) {
-                    for (int i = 0; i < parameters.length; i++) {
+                List<ProgWidgetType> parameters = checkedWidget.getParameters();
+                if (!parameters.isEmpty()) {
+                    for (int i = 0; i < parameters.size(); i++) {
                         if (checkedWidget.canSetParameter(i)) {
                             for (IProgWidget widget : progWidgets) {
-                                if (parameters[i] == widget.returnType()) {
+                                if (parameters.get(i) == widget.returnType()) {
                                     if (widget != checkedWidget && widget.getX() + widget.getWidth() / 2 == checkedWidget.getX() && widget.getY() == checkedWidget.getY() + i * 11) {
                                         IProgWidget root = widget;
                                         while (root.getParent() != null) {
                                             root = root.getParent();
                                         }
-                                        checkedWidget.setParameter(i + parameters.length, root);
+                                        checkedWidget.setParameter(i + parameters.size(), root);
                                     }
                                 }
                             }

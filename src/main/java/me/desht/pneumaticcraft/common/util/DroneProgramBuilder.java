@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.common.util;
 
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
+import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,60 +12,72 @@ import java.util.stream.Collectors;
 
 /**
  * Class to build simple (no jumping) Drone programs, without needing to worry about the X/Y locations of widgets
- * @author MineMaarten
  *
+ * @author MineMaarten
  */
-public class DroneProgramBuilder{
+public class DroneProgramBuilder {
 
     private final List<DroneInstruction> instructions = new ArrayList<>();
-    
-    public void add(IProgWidget mainInstruction, IProgWidget... whitelist){
+
+    public void add(IProgWidget mainInstruction, IProgWidget... whitelist) {
         instructions.add(new DroneInstruction(mainInstruction, Arrays.asList(whitelist)));
     }
-    
-    public List<IProgWidget> build(){
+
+    public List<IProgWidget> build() {
         List<IProgWidget> allWidgets = new ArrayList<>();
         int curY = 0;
-        for(DroneInstruction instruction : instructions){
+        for (DroneInstruction instruction : instructions) {
             instruction.mainInstruction.setX(0);
             instruction.mainInstruction.setY(curY);
-            
-            //Add whitelist
-            if(!instruction.whitelist.isEmpty()){
-                for(int parameterIndex = 0; parameterIndex < instruction.mainInstruction.getParameters().length; parameterIndex++){
-                    Class<? extends IProgWidget> parameterClass = instruction.mainInstruction.getParameters()[parameterIndex];
+
+            // Add whitelist pieces
+            if (!instruction.whitelist.isEmpty()) {
+                for (int paramIdx = 0; paramIdx < instruction.mainInstruction.getParameters().size(); paramIdx++) {
+                    ProgWidgetType type = instruction.mainInstruction.getParameters().get(paramIdx);
                     List<IProgWidget> whitelist = instruction.whitelist.stream()
-                                                             .filter(x -> parameterClass.isAssignableFrom(x.getClass()))
-                                                             .collect(Collectors.toList());
+                            .filter(x -> type == x.getType())
+                            .collect(Collectors.toList());
                     int curX = instruction.mainInstruction.getWidth() / 2;
-                    for(IProgWidget whitelistItem : whitelist){
+                    for (IProgWidget whitelistItem : whitelist) {
                         whitelistItem.setX(curX);
-                        whitelistItem.setY(curY + parameterIndex * 11);
+                        whitelistItem.setY(curY + paramIdx * 11);
                         curX += whitelistItem.getWidth() / 2;
                     }
                 }
             }
-            
-            
+
             curY += instruction.mainInstruction.getHeight() / 2;
             instruction.addToWidgets(allWidgets);
         }
         TileEntityProgrammer.updatePuzzleConnections(allWidgets);
         return allWidgets;
     }
-    
-    private class DroneInstruction{
+
+    private class DroneInstruction {
         final IProgWidget mainInstruction;
         final List<IProgWidget> whitelist;
-        
-        DroneInstruction(IProgWidget mainInstruction, List<IProgWidget> whitelist){
+
+        DroneInstruction(IProgWidget mainInstruction, List<IProgWidget> whitelist) {
+            sanityCheck(mainInstruction, whitelist);
             this.mainInstruction = mainInstruction;
             this.whitelist = whitelist;
         }
-        
-        void addToWidgets(List<IProgWidget> widgets){
+
+        void addToWidgets(List<IProgWidget> widgets) {
             widgets.add(mainInstruction);
             widgets.addAll(whitelist);
+        }
+
+        private void sanityCheck(IProgWidget mainInstruction, List<IProgWidget> whitelist) {
+            int nParams = mainInstruction.getParameters().size();
+            Validate.isTrue(whitelist.size() <= nParams, "Must supply at most " + nParams + " parameters for the whitelist!");
+            for (int i = 0; i < whitelist.size(); i++) {
+                Validate.isTrue(whitelist.get(i).getType() == mainInstruction.getParameters().get(i),
+                        String.format("Expected type %s, got %s for param %d",
+                                mainInstruction.getParameters().get(i).getRegistryName(),
+                                whitelist.get(i).getTypeID(), i));
+
+            }
         }
     }
 }

@@ -2,18 +2,17 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockInteract;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 
 public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlockRightClicker {
-
     private boolean sneaking;
 
-    @Override
-    public String getWidgetString() {
-        return "blockRightClick";
+    public ProgWidgetBlockRightClick() {
+        super(ModProgWidgets.BLOCK_RIGHT_CLICK);
     }
 
     @Override

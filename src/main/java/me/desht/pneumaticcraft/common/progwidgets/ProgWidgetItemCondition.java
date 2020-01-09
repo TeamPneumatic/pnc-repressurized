@@ -1,6 +1,9 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -11,14 +14,13 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
 
-    @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetItemFilter.class, ProgWidgetItemFilter.class, ProgWidgetString.class};
+    public ProgWidgetItemCondition() {
+        super(ModProgWidgets.CONDTION_ITEM);
     }
 
     @Override
-    public String getWidgetString() {
-        return "conditionItem";
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER, ModProgWidgets.ITEM_FILTER, ModProgWidgets.TEXT);
     }
 
     @Override
@@ -38,7 +40,7 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
         while (checkedFilter != null) {
             if (!ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(),
                     ProgWidget.getConnectedWidgetList(this, 1),
-                    ProgWidget.getConnectedWidgetList(this, getParameters().length + 1),
+                    ProgWidget.getConnectedWidgetList(this, getParameters().size() + 1),
                     null))
                 return false;
             checkedFilter = (ProgWidgetItemFilter) checkedFilter.getConnectedParameters()[0];
@@ -48,7 +50,7 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
         while (checkedFilter != null) {
             if (ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(),
                     ProgWidget.getConnectedWidgetList(this, 1),
-                    ProgWidget.getConnectedWidgetList(this, getParameters().length + 1),
+                    ProgWidget.getConnectedWidgetList(this, getParameters().size() + 1),
                     null))
                 return false;
             checkedFilter = (ProgWidgetItemFilter) checkedFilter.getConnectedParameters()[0];

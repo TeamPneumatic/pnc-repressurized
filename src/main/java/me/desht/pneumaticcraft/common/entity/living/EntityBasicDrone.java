@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
@@ -34,13 +35,13 @@ public abstract class EntityBasicDrone extends EntityDrone {
     @Override
     protected ItemStack getDroppedStack() {
         CompoundNBT tag = new CompoundNBT();
-        tag.putFloat("currentAir", getAirHandler().getAir());
         tag.putInt("color", getDroneColor());
         CompoundNBT invTag = new CompoundNBT();
         writeAdditional(invTag);
         tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, invTag.get(UpgradableItemUtils.NBT_UPGRADE_TAG));
         ItemStack drone = new ItemStack(getDroneItem());
         drone.setTag(tag);
+        drone.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> h.addAir(getAirHandler().getAir()));
         return drone;
     }
     

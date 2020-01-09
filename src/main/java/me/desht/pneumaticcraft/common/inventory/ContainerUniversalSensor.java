@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketBuffer;
@@ -14,7 +14,7 @@ public class ContainerUniversalSensor extends ContainerPneumaticBase<TileEntityU
     }
 
     public ContainerUniversalSensor(int windowId, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainerTypes.UNIVERSAL_SENSOR, windowId, playerInventory, pos);
+        super(ModContainers.UNIVERSAL_SENSOR, windowId, playerInventory, pos);
 
         addUpgradeSlots(19, 108);
 

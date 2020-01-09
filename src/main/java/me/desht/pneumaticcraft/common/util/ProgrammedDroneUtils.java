@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import net.minecraft.entity.CreatureEntity;
@@ -22,19 +22,19 @@ import java.util.Arrays;
 
 public class ProgrammedDroneUtils {
     /**
-     * Create a delivery drone: 10 speed upgrades, 64 inventory upgrades, 100000mL of air
+     * Create a delivery drone: 10 speed upgrades, 35 inventory upgrades, 100000mL of air
      *
      * @param world the world
      * @param pos drone's position
      * @return the delivery drone
      */
     private static EntityDrone makeDeliveryDrone(World world, BlockPos pos) {
-        EntityDrone drone = new EntityDrone(ModEntityTypes.DRONE, world, null);
+        EntityDrone drone = new EntityDrone(ModEntities.DRONE, world, null);
 
         CompoundNBT tag = new CompoundNBT();
         drone.writeAdditional(tag);
         ItemStackHandler upgrades = new ItemStackHandler(9);
-        upgrades.setStackInSlot(0, new ItemStack(EnumUpgrade.INVENTORY.getItem(), 64));
+        upgrades.setStackInSlot(0, new ItemStack(EnumUpgrade.INVENTORY.getItem(), 35));
         upgrades.setStackInSlot(1, new ItemStack(EnumUpgrade.SPEED.getItem(), 10));
         tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgrades.serializeNBT());
         tag.put("Inventory", new CompoundNBT());
@@ -56,8 +56,8 @@ public class ProgrammedDroneUtils {
         BlockPos pos = gPos.getPos();
 
         if (world == null || world.isRemote) return null;
-        Validate.isTrue(deliveredStacks.length > 0 && deliveredStacks.length <= 65,
-                "You can only deliver between 0 & 65 stacks at once!");
+        Validate.isTrue(deliveredStacks.length > 0 && deliveredStacks.length <= 36,
+                "You can only deliver between 0 & 36 stacks at once!");
         Arrays.stream(deliveredStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(),
                 "You can't supply an empty stack to be delivered!"));
 
@@ -117,7 +117,7 @@ public class ProgrammedDroneUtils {
         BlockPos pos = gPos.getPos();
 
         if (world == null || world.isRemote) return null;
-        Validate.isTrue(queriedStacks.length > 0 && queriedStacks.length <= 65, "Must retrieve between 1 & 65 itemstacks!");
+        Validate.isTrue(queriedStacks.length > 0 && queriedStacks.length <= 36, "Must retrieve between 1 & 36 itemstacks!");
         Arrays.stream(queriedStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(), "Cannot retrieve an empty stack!"));
 
         EntityDrone drone = makeDeliveryDrone(world, pos);

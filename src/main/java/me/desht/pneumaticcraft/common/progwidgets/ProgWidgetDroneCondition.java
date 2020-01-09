@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.goal.Goal;
@@ -10,6 +11,10 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     private boolean isAndFunction;
     private ICondition.Operator operator = ICondition.Operator.HIGHER_THAN_EQUALS;
     private int requiredCount = 1;
+
+    public ProgWidgetDroneCondition(ProgWidgetType<?> type) {
+        super(type);
+    }
 
     @Override
     public boolean isAndFunction() {

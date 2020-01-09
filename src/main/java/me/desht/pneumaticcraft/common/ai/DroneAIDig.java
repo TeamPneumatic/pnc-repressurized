@@ -17,13 +17,8 @@ import net.minecraft.world.storage.loot.LootParameters;
 
 import java.util.List;
 
-public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
-
-    /**
-     * @param drone the drone
-     * @param widget needs to implement IBlockOrdered, IToolUser
-     */
-    public DroneAIDig(IDroneBase drone, ProgWidgetAreaItemBase widget) {
+public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends DroneAIBlockInteraction<W> {
+    public DroneAIDig(IDroneBase drone, W widget) {
         super(drone, widget);
     }
 
@@ -34,12 +29,12 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
         if (!worldCache.isAirBlock(pos) && !ignoreBlock(block)) {
             for (ItemStack droppedStack : getDrops(worldCache, pos, drone)) {
                 if (progWidget.isItemValidForFilters(droppedStack, blockState)) {
-                    return swapBestItemToFirstSlot(pos) || !((IToolUser) progWidget).requiresTool();
+                    return swapBestItemToFirstSlot(pos) || !progWidget.requiresTool();
                 }
             }
             if (progWidget.isItemValidForFilters(ItemStack.EMPTY, blockState)) {
                 // try a by-block check
-                return swapBestItemToFirstSlot(pos) || !((IToolUser) progWidget).requiresTool();
+                return swapBestItemToFirstSlot(pos) || !progWidget.requiresTool();
             }
         }
         return false;
@@ -50,15 +45,21 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
         return true;
     }
 
-    //gui.progWidget.dig.debug.missingDiggingTool
+    /**
+     * Equip the best tool in the drone's inventory to break the block at the given pos.
+     * @param pos blockpos to break
+     * @return true if the drone has any tool which is better than using an empty hand
+     */
     private boolean swapBestItemToFirstSlot(BlockPos pos) {
-        
-        ItemStack oldCurrentStack = drone.getInv().getStackInSlot(0).copy();
+        ItemStack currentStackSaved = drone.getInv().getStackInSlot(0).copy();
+
+        // get relative hardness for empty hand
         drone.getInv().setStackInSlot(0, ItemStack.EMPTY);
         float baseSoftness = worldCache.getBlockState(pos).getPlayerRelativeBlockHardness(drone.getFakePlayer(), drone.world(), pos);
-        drone.getInv().setStackInSlot(0, oldCurrentStack);
+        drone.getInv().setStackInSlot(0, currentStackSaved);
         boolean hasDiggingTool = false;
-        
+
+        // now find the best tool which is better than an empty hand
         int bestSlot = 0;
         float bestSoftness = Float.MIN_VALUE;
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
@@ -67,13 +68,13 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
             if (softness > bestSoftness) {
                 bestSlot = i;
                 bestSoftness = softness;
-                
-                if(softness > baseSoftness){
+
+                if (softness > baseSoftness) {
                     hasDiggingTool = true;
                 }
             }
         }
-        drone.getInv().setStackInSlot(0, oldCurrentStack);
+        drone.getInv().setStackInSlot(0, currentStackSaved);
         if (bestSlot != 0) {
             ItemStack bestItem = drone.getInv().getStackInSlot(bestSlot).copy();
             drone.getInv().setStackInSlot(bestSlot, drone.getInv().getStackInSlot(0));
@@ -124,8 +125,10 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
     }
 
     private static List<ItemStack> getDrops(IWorldReader worldCache, BlockPos pos, IDroneBase drone) {
-        return worldCache.getBlockState(pos).getDrops(
+        BlockState state = worldCache.getBlockState(pos);
+        return state.getDrops(
                 new LootContext.Builder((ServerWorld) drone.world())
+                        .withParameter(LootParameters.BLOCK_STATE, state)
                         .withParameter(LootParameters.POSITION, pos)
                         .withParameter(LootParameters.TOOL, drone.getInv().getStackInSlot(0))
         );
@@ -134,5 +137,4 @@ public class DroneAIDig extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> 
     private static boolean ignoreBlock(Block block) {
         return PneumaticCraftUtils.isBlockLiquid(block);
     }
-
 }

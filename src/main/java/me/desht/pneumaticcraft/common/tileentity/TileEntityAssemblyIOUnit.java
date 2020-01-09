@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.handler.RenderedItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
@@ -48,7 +48,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private final static byte STATE_MAX = 127;
 
     public TileEntityAssemblyIOUnit() {
-        super(ModTileEntityTypes.ASSEMBLY_IO_UNIT);
+        super(ModTileEntities.ASSEMBLY_IO_UNIT);
     }
 
     @Override

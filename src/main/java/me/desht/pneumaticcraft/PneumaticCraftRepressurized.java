@@ -29,7 +29,6 @@ import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.progwidgets.WidgetRegistrator;
 import me.desht.pneumaticcraft.common.recipes.MachineRecipeHandler;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockInitializer;
@@ -107,7 +106,7 @@ public class PneumaticCraftRepressurized {
 
         Reflections.init();
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
-        WidgetRegistrator.init();  // TODO forge registry?
+//        WidgetRegistrator.init();  // TODO forge registry?
         ThirdPartyManager.instance().preInit();
         SemiBlockInitializer.preInit();  // TODO replace semiblocks with entity implementation
         proxy.preInit();  // TODO get rid of proxy entirely if possible

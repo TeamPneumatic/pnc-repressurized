@@ -1,5 +1,8 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
@@ -10,6 +13,10 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetLabel extends ProgWidget implements ILabel {
+
+    public ProgWidgetLabel() {
+        super(ModProgWidgets.LABEL);
+    }
 
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
@@ -28,23 +35,18 @@ public class ProgWidgetLabel extends ProgWidget implements ILabel {
     }
 
     @Override
-    public Class<? extends IProgWidget> returnType() {
+    public ProgWidgetType returnType() {
         return null;
     }
 
     @Override
-    public Class<? extends IProgWidget>[] getParameters() {
-        return new Class[]{ProgWidgetString.class};
+    public List<ProgWidgetType> getParameters() {
+        return ImmutableList.of(ModProgWidgets.TEXT);
     }
 
     @Override
     protected boolean hasBlacklist() {
         return false;
-    }
-
-    @Override
-    public String getWidgetString() {
-        return "label";
     }
 
     @Override
@@ -59,7 +61,7 @@ public class ProgWidgetLabel extends ProgWidget implements ILabel {
 
     @Override
     public String getLabel() {
-        ProgWidgetString labelWidget = (ProgWidgetString) getConnectedParameters()[0];
+        ProgWidgetText labelWidget = (ProgWidgetText) getConnectedParameters()[0];
         return labelWidget != null ? labelWidget.string : null;
     }
 

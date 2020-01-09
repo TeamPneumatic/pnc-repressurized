@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderCoordWirefram
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
@@ -263,7 +263,7 @@ public class ItemPneumaticArmor extends ArmorItem
 
     @Override
     public INamedContainerProvider getContainerProvider(TileEntityChargingStation te) {
-        return new IChargeableContainerProvider.Provider(te, ModContainerTypes.CHARGING_ARMOR);
+        return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_ARMOR);
     }
 
     /*------- Thaumcraft -------- */

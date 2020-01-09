@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
-import me.desht.pneumaticcraft.common.core.ModContainerTypes;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,7 +52,7 @@ public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificPro
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerLogistics(ModContainerTypes.LOGISTICS_FRAME_STORAGE, i, playerInventory, getPos());
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_STORAGE, i, playerInventory, getPos());
     }
 
     @Override

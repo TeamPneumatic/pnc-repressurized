@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.entity.projectile;
 
 import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
@@ -65,11 +65,11 @@ public class EntityMicromissile extends ThrowableEntity {
     }
 
     public EntityMicromissile(World worldIn) {
-        super(ModEntityTypes.MICROMISSILE, worldIn);
+        super(ModEntities.MICROMISSILE, worldIn);
     }
 
     public EntityMicromissile(World worldIn, LivingEntity thrower, ItemStack iStack) {
-        super(ModEntityTypes.MICROMISSILE, thrower, worldIn);
+        super(ModEntities.MICROMISSILE, thrower, worldIn);
 
         if (iStack.hasTag()) {
             CompoundNBT tag = iStack.getTag();
