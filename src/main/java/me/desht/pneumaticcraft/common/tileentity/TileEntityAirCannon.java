@@ -152,8 +152,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private boolean checkGPSSlot() {
         ItemStack gpsStack = itemHandler.getStackInSlot(GPS_SLOT);
         if (gpsStack.getItem() instanceof IPositionProvider && !externalControl) {
-            List<BlockPos> posList = ((IPositionProvider) gpsStack.getItem()).getStoredPositions(gpsStack);
-            if (posList != null && !posList.isEmpty()) {
+            List<BlockPos> posList = ((IPositionProvider) gpsStack.getItem()).getStoredPositions(world, gpsStack);
+            if (!posList.isEmpty() && posList.get(0) != null) {
                 int destinationX = posList.get(0).getX();
                 int destinationY = posList.get(0).getY();
                 int destinationZ = posList.get(0).getZ();
@@ -637,7 +637,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         launchedEntity.collidedHorizontally = false;
         launchedEntity.collidedVertically = false;
 
-        if (doSpawn && !world.isRemote) world.addEntity(launchedEntity);
+        if (doSpawn && !world.isRemote) {
+            world.addEntity(launchedEntity);
+        }
 
         for (int i = 0; i < 5; i++) {
             double velX = velocity.x * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
@@ -698,7 +700,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         } else {
             ItemEntity e = new ItemEntity(world, 0, 0, 0, stack);
             e.setPickupDelay(20);
-            e.lifespan = 1200;
+//            e.lifespan = 1200;
             return e;
         }
     }

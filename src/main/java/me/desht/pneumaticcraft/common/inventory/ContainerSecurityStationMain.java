@@ -19,7 +19,7 @@ public class ContainerSecurityStationMain extends ContainerPneumaticBase<TileEnt
         //add the network slots
         for (int i = 0; i < TileEntitySecurityStation.INV_ROWS; i++) {
             for (int j = 0; j < TileEntitySecurityStation.INV_COLS; j++) {
-                addSlot(new SlotItemSpecific(te.getPrimaryInventory(), item -> item instanceof ItemNetworkComponent, j + i * 5, 17 + j * 18, 22 + i * 18));
+                addSlot(new SlotItemSpecific(te.getPrimaryInventory(), stack -> stack.getItem() instanceof ItemNetworkComponent, j + i * 5, 17 + j * 18, 22 + i * 18));
             }
         }
 

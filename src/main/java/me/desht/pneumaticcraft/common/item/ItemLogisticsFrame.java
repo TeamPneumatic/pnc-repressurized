@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlockBase;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
@@ -55,7 +55,7 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlockBase implements IT
     @Override
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
         super.addInformation(stack, worldIn, curInfo, extraInfo);
-        addTooltip(stack, worldIn, curInfo, PneumaticCraftRepressurized.proxy.isSneakingInGui());
+        addTooltip(stack, worldIn, curInfo, ClientUtils.hasShiftDown());
     }
 
     public static void addTooltip(ItemStack stack, World world, List<ITextComponent> curInfo, boolean sneaking) {

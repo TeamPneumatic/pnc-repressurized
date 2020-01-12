@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
@@ -47,7 +47,7 @@ public class PacketSpawnRing extends LocationDoublePacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            World world = PneumaticCraftRepressurized.proxy.getClientWorld();
+            World world = ClientUtils.getClientWorld();
             Entity entity = world.getEntityByID(targetEntityId);
             if (entity != null) {
                 for (int color : colors) {

@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.math.IntMath;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberGlass;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
@@ -147,7 +147,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
         // particles
         if (getWorld().isRemote && hasGlass && isPrimaryValve() && roundedPressure > 0.2D) {
-            if (PneumaticCraftRepressurized.proxy.getClientPlayer().getDistanceSq(getPos().getX(), getPos().getY(), getPos().getZ()) < 256) {
+            if (ClientUtils.getClientPlayer().getDistanceSq(getPos().getX(), getPos().getY(), getPos().getZ()) < 256) {
                 for (int i = 0; i < nParticles; i++) {
                     double posX = multiBlockX + 1D + getWorld().rand.nextDouble() * (multiBlockSize - 2D);
                     double posY = multiBlockY + 1.5D + getWorld().rand.nextDouble() * (multiBlockSize - 2.5D);

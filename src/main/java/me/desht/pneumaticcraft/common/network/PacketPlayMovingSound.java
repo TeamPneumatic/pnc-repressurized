@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -64,7 +64,7 @@ public class PacketPlayMovingSound {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (sourceType == SourceType.ENTITY) {
-                Entity e = PneumaticCraftRepressurized.proxy.getClientWorld().getEntityByID(entityId);
+                Entity e = ClientUtils.getClientWorld().getEntityByID(entityId);
                 if (e != null) {
                     MovingSounds.playMovingSound(sound, e);
                 }

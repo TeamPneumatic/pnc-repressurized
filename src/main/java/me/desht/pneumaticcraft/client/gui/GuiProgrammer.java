@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
@@ -595,7 +594,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 if (areaToolWidget != null) {
                     draggingWidget = areaToolWidget;
                 } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
-                    if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+                    if (Screen.hasShiftDown()) {
                         BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
                         ProgWidgetArea areaWidget = ProgWidgetArea.fromPositions(pos, BlockPos.ZERO);
                         String var = ItemGPSTool.getVariable(heldItem);

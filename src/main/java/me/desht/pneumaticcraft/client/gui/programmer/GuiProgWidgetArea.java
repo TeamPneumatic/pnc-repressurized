@@ -102,7 +102,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         if (invSearchGui != null) {
             ItemStack stack = invSearchGui.getSearchStack();
             if (stack.getItem() instanceof IPositionProvider) {
-                List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(stack);
+                List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(ClientUtils.getClientWorld(), stack);
                 if (!posList.isEmpty()) {
                     BlockPos pos = posList.get(0);
                     if (pos != null) {

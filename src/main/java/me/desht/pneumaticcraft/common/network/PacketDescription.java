@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.Unpooled;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
@@ -76,7 +76,7 @@ public class PacketDescription extends LocationIntPacket {
     }
 
     public void process() {
-        PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+        PlayerEntity player = ClientUtils.getClientPlayer();
         if (player.world.isAreaLoaded(pos, 0)) {
             Object syncable = getSyncableForType(player, type);
             if (syncable instanceof IDescSynced) {

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty;
 
 import joptsimple.internal.Strings;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.common.config.aux.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
@@ -61,7 +60,7 @@ public class ThirdPartyManager {
 
         Set<String> enabledThirdParty = thirdPartyClasses.keySet().stream().filter(ThirdPartyConfig::isEnabled).collect(Collectors.toSet());
 
-        PneumaticCraftRepressurized.LOGGER.info("Thirdparty integration activated for [" + Strings.join(enabledThirdParty, ", ") + "]");
+        Log.info("Thirdparty integration activated for [" + Strings.join(enabledThirdParty, ", ") + "]");
 
         for (Map.Entry<String, Class<? extends IThirdParty>> entry : thirdPartyClasses.entrySet()) {
             if (enabledThirdParty.contains(entry.getKey()) && ModList.get().isLoaded(entry.getKey())) {

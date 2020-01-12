@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -15,6 +14,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Blo
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackUpgradeHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -347,7 +347,7 @@ public class HUDHandler implements IKeyListener {
                 getSpecificRenderer(BlockTrackUpgradeHandler.class).hack();
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).hack();
             } else if (key == KeyHandler.getInstance().keybindDebuggingDrone
-                    && DroneDebugUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer())) {
+                    && DroneDebugUpgradeHandler.enabledForPlayer(ClientUtils.getClientPlayer())) {
                 getSpecificRenderer(EntityTrackUpgradeHandler.class).selectAsDebuggingTarget();
             } else if (key == KeyHandler.getInstance().keybindKick
                     && CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.DISPENSER) > 0) {

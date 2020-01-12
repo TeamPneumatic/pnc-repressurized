@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -346,7 +346,7 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> impl
             addDrops(drops);
             if (!drops.isEmpty()) {
                 drops.get(0).setTag(tag);
-                ItemLogisticsFrame.addTooltip(drops.get(0), PneumaticCraftRepressurized.proxy.getClientWorld(), curInfo, true);
+                ItemLogisticsFrame.addTooltip(drops.get(0), ClientUtils.getClientWorld(), curInfo, true);
             }
         }
     }

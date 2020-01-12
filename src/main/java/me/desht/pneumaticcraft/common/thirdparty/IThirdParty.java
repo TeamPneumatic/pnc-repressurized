@@ -9,19 +9,29 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public interface IThirdParty {
 
+    /**
+     * Called on both client and server before any registry objects are created, from the mod constructor.
+     */
     default void preInit() {}
 
+    /**
+     * Called on both client and server after any registry objects are created, in the mod creation thread.
+     */
     default void init() {}
 
+    /**
+     * Called on both client and server after any registry objects are created, on a scheduled tick (so in the main
+     * execution thread).
+     */
     default void postInit() {}
 
     /**
-     * Gets called from the ClientProxy in the preInit.
+     * Called client-side before any registry objects are created, from the mod constructor.
      */
     default void clientPreInit() {}
 
     /**
-     * Gets called from the ClientProxy in the Init.
+     * Called client-side after registry objects are created, in the mod creation thread.
      */
     default void clientInit() {}
 

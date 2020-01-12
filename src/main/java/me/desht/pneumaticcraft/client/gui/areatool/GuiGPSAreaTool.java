@@ -21,7 +21,7 @@ public class GuiGPSAreaTool extends GuiGPSTool {
     }
     
     private GuiGPSAreaTool(Hand hand, ItemStack stack, int index) {
-        this(hand, ItemGPSAreaTool.getGPSLocation(stack, index), ItemGPSAreaTool.getVariable(stack, index), index);
+        this(hand, ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().world, stack, index), ItemGPSAreaTool.getVariable(stack, index), index);
     }
 
     public static void showGUI(Hand hand, ItemStack stack, int index) {

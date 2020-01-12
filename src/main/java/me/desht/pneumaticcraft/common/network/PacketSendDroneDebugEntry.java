@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.DebugEntry;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import net.minecraft.entity.Entity;
@@ -37,7 +37,7 @@ public class PacketSendDroneDebugEntry {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Entity entity = PneumaticCraftRepressurized.proxy.getClientWorld().getEntityByID(entityId);
+            Entity entity = ClientUtils.getClientWorld().getEntityByID(entityId);
             if (entity instanceof EntityDrone) {
                 EntityDrone drone = (EntityDrone) entity;
                 drone.addDebugEntry(entry);

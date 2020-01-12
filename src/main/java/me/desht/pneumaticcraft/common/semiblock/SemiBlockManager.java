@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.event.SemiblockEvent;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -217,7 +217,7 @@ public class SemiBlockManager {
         if (this == getServerInstance()) {
             getClientOldInstance().onClientTick(event);
         } else {
-            PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+            PlayerEntity player = ClientUtils.getClientPlayer();
             if (player != null) {
                 for (Iterator<ISemiBlock> iterator = addingBlocks.iterator(); iterator.hasNext(); ) {
                     // on the client, we can't assume the chunk is actually available yet; if we get an empty

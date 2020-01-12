@@ -1,15 +1,16 @@
 package me.desht.pneumaticcraft.common.event;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -57,7 +58,7 @@ public enum HackTickHandler {
     public void worldTick(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             try {
-                for (Entity entity : PneumaticCraftRepressurized.proxy.getAllEntities(event.world)) {
+                for (Entity entity : getAllEntities(event.world)) {
                     entity.getCapability(PNCCapabilities.HACKING_CAPABILITY, null).ifPresent(h -> {
                         if (!h.getCurrentHacks().isEmpty()) h.update(entity);
                     });
@@ -66,6 +67,10 @@ public enum HackTickHandler {
                 // Catching a CME which I have no clue on what might cause it.
             }
         }
+    }
+
+    private Iterable<? extends Entity> getAllEntities(World world) {
+        return world.isRemote ? ClientUtils.getAllEntities(world) : ((ServerWorld)world).getEntities()::iterator;
     }
 
     public void trackBlock(GlobalPos coord, IHackableBlock iHackable) {

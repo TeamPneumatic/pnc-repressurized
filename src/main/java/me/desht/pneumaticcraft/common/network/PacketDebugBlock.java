@@ -7,7 +7,7 @@
  */
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.util.Debugger;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -33,9 +33,7 @@ public class PacketDebugBlock extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Debugger.indicateBlock(PneumaticCraftRepressurized.proxy.getClientWorld(), pos);
-        });
+        ctx.get().enqueueWork(() -> Debugger.indicateBlock(ClientUtils.getClientWorld(), pos));
         ctx.get().setPacketHandled(true);
     }
 }

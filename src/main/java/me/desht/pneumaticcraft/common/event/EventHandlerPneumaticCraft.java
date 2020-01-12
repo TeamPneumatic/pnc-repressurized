@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.event;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.EntityTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.api.drone.AmadronRetrievalEvent;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
@@ -151,7 +151,7 @@ public class EventHandlerPneumaticCraft {
                 ((MobEntity) event.getEntity()).goalSelector.addGoal(Integer.MIN_VALUE, new EntityAINoAIWhenRidingDrone((MobEntity) event.getEntity()));
             }
         } else {
-            if (event.getEntity() instanceof PlayerEntity && event.getEntity().getEntityId() == PneumaticCraftRepressurized.proxy.getClientPlayer().getEntityId()) {
+            if (event.getEntity() instanceof PlayerEntity && event.getEntity().getEntityId() == ClientUtils.getClientPlayer().getEntityId()) {
                 SemiBlockManager.getInstance(event.getWorld()).clearAll();
             }
         }

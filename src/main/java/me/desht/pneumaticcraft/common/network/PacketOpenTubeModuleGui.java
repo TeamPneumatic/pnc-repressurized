@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiTubeModule;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -40,7 +40,7 @@ public class PacketOpenTubeModuleGui extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+            PlayerEntity player = ClientUtils.getClientPlayer();
             if (BlockPressureTube.getFocusedModule(player.world, pos, player) != null) {
                 GuiTubeModule.openGuiForType(moduleType, pos);
             }

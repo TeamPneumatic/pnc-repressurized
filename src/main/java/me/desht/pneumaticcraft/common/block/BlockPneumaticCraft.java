@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
@@ -322,7 +322,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             }
             addExtraInformation(stack, world, curInfo, flag);
         }
-        if (PneumaticCraftRepressurized.proxy.isSneakingInGui() && hasTileEntity(getDefaultState())) {
+        if (ClientUtils.hasShiftDown() && hasTileEntity(getDefaultState())) {
             TileEntity te = createTileEntity(getDefaultState(), world);
             if (te instanceof TileEntityPneumaticBase) {
                 float pressure = ((TileEntityPneumaticBase) te).dangerPressure;
@@ -332,7 +332,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
         String info = "gui.tooltip." + stack.getTranslationKey();
         if (I18n.hasKey(info)) {
-            if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+            if (ClientUtils.hasShiftDown()) {
                 String translatedInfo = TextFormatting.AQUA + I18n.format(info).substring(2);  // strip out the leading text formatting
                 curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 50).stream().map(StringTextComponent::new).collect(Collectors.toList()));
                 if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.aux.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
@@ -34,7 +34,7 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade<Pack
             if (player == null) {
                 // client
                 if (PNCConfig.Common.Amadron.notifyOfTradeAddition)
-                    PneumaticCraftRepressurized.proxy.getClientPlayer().sendStatusMessage(xlate("message.amadron.playerAddedTrade",
+                    ClientUtils.getClientPlayer().sendStatusMessage(xlate("message.amadron.playerAddedTrade",
                             getOffer().getVendor(),
                             getOffer().getOutput().toString(),
                             getOffer().getInput().toString()), false);

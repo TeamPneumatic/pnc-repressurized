@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
@@ -37,7 +37,7 @@ public class PacketHackingBlockFinish extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+            PlayerEntity player = ClientUtils.getClientPlayer();
             IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(player.world, pos, player);
             if (hackableBlock != null) {
                 hackableBlock.onHackFinished(player.world, pos, player);

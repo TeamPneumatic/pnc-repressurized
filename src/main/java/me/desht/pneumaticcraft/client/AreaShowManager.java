@@ -3,10 +3,10 @@ package me.desht.pneumaticcraft.client;
 import com.mojang.blaze3d.platform.GlStateManager;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
@@ -90,7 +90,7 @@ public class AreaShowManager {
         ItemStack curItem = getHeldPositionProvider(player);
         if (curItem.getItem() instanceof IPositionProvider) {
             IPositionProvider positionProvider = (IPositionProvider) curItem.getItem();
-            List<BlockPos> posList = positionProvider.getStoredPositions(curItem);
+            List<BlockPos> posList = positionProvider.getStoredPositions(player.getEntityWorld(), curItem);
             if (posList != null) {
                 if (!posList.equals(cachedPositionProviderData)) { //Cache miss
                     Int2ObjectMap<Set<BlockPos>> colorsToPositions = new Int2ObjectOpenHashMap<>();
@@ -154,7 +154,7 @@ public class AreaShowManager {
 
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event) {
-        PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+        PlayerEntity player = ClientUtils.getClientPlayer();
         if (player != null) {
             if (player.world != world) {
                 world = player.world;

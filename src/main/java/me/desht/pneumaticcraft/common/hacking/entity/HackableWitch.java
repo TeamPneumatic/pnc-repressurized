@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.WitchEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -45,7 +45,7 @@ public class HackableWitch implements IHackableEntity {
             ((WitchEntity) entity).setDrinkingPotion(true);
             return true;
         } else {
-            PneumaticCraftRepressurized.LOGGER.error("something's wrong: found HackableWitch hack on " + entity);
+            Log.error("something's wrong: found HackableWitch hack on " + entity);
             return false;
         }
     }

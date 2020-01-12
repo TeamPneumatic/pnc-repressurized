@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.lib.Log;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -49,7 +49,7 @@ public class DramaSplash {
         if (grabberThread == null && splashSite != null) {
             grabberThread = new Thread(new SplashGrabber());
             grabberThread.start();
-            PneumaticCraftRepressurized.LOGGER.info("Started splash fetcher: thread " + grabberThread.getName());
+            Log.info("Started splash fetcher: thread " + grabberThread.getName());
         }
     }
 
@@ -72,7 +72,7 @@ public class DramaSplash {
                 e.printStackTrace();
             }
             grabberThread = null;
-            PneumaticCraftRepressurized.LOGGER.info("Finished fetching splash: " + dramaFifo.size() + " texts in queue");
+            Log.info("Finished fetching splash: " + dramaFifo.size() + " texts in queue");
         }
     }
 }

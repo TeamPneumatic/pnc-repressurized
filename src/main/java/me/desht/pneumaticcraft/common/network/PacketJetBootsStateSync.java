@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -41,7 +41,7 @@ public class PacketJetBootsStateSync {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> JetBootsStateTracker.getTracker(PneumaticCraftRepressurized.proxy.getClientPlayer()).setJetBootsState(playerId, state));
+        ctx.get().enqueueWork(() -> JetBootsStateTracker.getTracker(ClientUtils.getClientPlayer()).setJetBootsState(playerId, state));
         ctx.get().setPacketHandled(true);
     }
 

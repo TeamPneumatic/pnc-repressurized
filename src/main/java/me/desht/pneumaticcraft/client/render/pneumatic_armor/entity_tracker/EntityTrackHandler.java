@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
@@ -16,6 +15,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackUpgradeHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -125,7 +125,7 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             curInfo.add(I18n.format("entityTracker.info.tamed", ((EntityDrone) entity).playerName));
             curInfo.add(I18n.format("entityTracker.info.drone.routine", ((EntityDrone) entity).getLabel()));
-            PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+            PlayerEntity player = ClientUtils.getClientPlayer();
             if (DroneDebugUpgradeHandler.enabledForPlayer(player)) {
                 if (NBTUtil.getInteger(player.getItemStackFromSlot(EquipmentSlotType.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId()) {
                     curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.debugging"));
@@ -309,12 +309,13 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryHackable extends EntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return HackUpgradeHandler.enabledForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer());
+            return HackUpgradeHandler.enabledForPlayer(ClientUtils.getClientPlayer());
         }
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
+            PlayerEntity player = ClientUtils.getClientPlayer();
+            IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, player);
             if (hackable != null) {
                 int hackTime = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
                         .filter(target -> target.entity == entity)
@@ -323,18 +324,18 @@ public class EntityTrackHandler {
                         .orElse(0);
                 if (hackTime == 0) {
                     if (isLookingAtTarget) {
-                        hackable.addHackInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
+                        hackable.addHackInfo(entity, curInfo, player);
                         HackUpgradeHandler.addKeybindTooltip(curInfo);
                     }
                 } else {
-                    int requiredHackTime = hackable.getHackTime(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
+                    int requiredHackTime = hackable.getHackTime(entity, player);
                     int percentageComplete = hackTime * 100 / requiredHackTime;
                     if (percentageComplete < 100) {
                         curInfo.add(I18n.format("pneumaticHelmet.hacking.hacking", percentageComplete));
                     } else if (hackTime < requiredHackTime + 20) {
-                        hackable.addPostHackInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
+                        hackable.addPostHackInfo(entity, curInfo, player);
                     } else if (isLookingAtTarget) {
-                        hackable.addHackInfo(entity, curInfo, PneumaticCraftRepressurized.proxy.getClientPlayer());
+                        hackable.addHackInfo(entity, curInfo, player);
                         HackUpgradeHandler.addKeybindTooltip(curInfo);
                     }
                 }

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
@@ -11,6 +10,7 @@ import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
@@ -197,7 +197,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void tickEnd(TickEvent.RenderTickEvent event) {
         if (event.phase == TickEvent.Phase.END && Minecraft.getInstance().isGameFocused() 
-                && PneumaticCraftRepressurized.proxy.getClientPlayer() != null
+                && ClientUtils.getClientPlayer() != null
                 && (ModuleRegulatorTube.inverted || !ModuleRegulatorTube.inLine)) {
             Minecraft mc = Minecraft.getInstance();
             MainWindow mw = mc.mainWindow;

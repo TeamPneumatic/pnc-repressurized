@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.client.util.ITooltipFlag;
@@ -47,7 +47,7 @@ public class ItemMachineUpgrade extends ItemPneumatic {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag par4) {
-        if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+        if (ClientUtils.hasShiftDown()) {
             infoList.add(xlate("gui.tooltip.item.upgrade.usedIn"));
             PneumaticRegistry.getInstance().getItemRegistry().addTooltip(upgrade, infoList);
         } else {

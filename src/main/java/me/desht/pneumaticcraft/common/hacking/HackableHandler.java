@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.hacking;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
@@ -11,6 +10,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.block.*;
 import me.desht.pneumaticcraft.common.hacking.entity.*;
@@ -178,7 +178,7 @@ public class HackableHandler {
     private static boolean isInDisplayCooldown(IHackableEntity hackableBlock, Entity entity) {
         if (entity.world.isRemote) {
             RenderEntityTarget target = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetForEntity(entity);
-            int requiredHackTime = hackableBlock.getHackTime(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
+            int requiredHackTime = hackableBlock.getHackTime(entity, ClientUtils.getClientPlayer());
             return target != null && target.getHackTime() >= requiredHackTime && target.getHackTime() <= requiredHackTime + 20;
         } else {
             return false;

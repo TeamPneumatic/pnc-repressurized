@@ -11,7 +11,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 
 public class BlockAirCannon extends BlockPneumaticCraft {
-    private static final VoxelShape SHAPE = Block.makeCuboidShape(1, 0, 1, 15, 10, 15);
+    private static final VoxelShape SHAPE = Block.makeCuboidShape(1, 0, 1, 15, 3, 15);
 
     public BlockAirCannon() {
         super(ModBlocks.defaultProps());

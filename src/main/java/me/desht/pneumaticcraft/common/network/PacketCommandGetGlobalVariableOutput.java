@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -40,13 +40,11 @@ public class PacketCommandGetGlobalVariableOutput extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            PneumaticCraftRepressurized.proxy.getClientPlayer().sendStatusMessage(xlate("command.getGlobalVariable.output",
-                            varName,
-                            pos.getX(), pos.getY(), pos.getZ(),
-                            stack.isEmpty() ? "-" : stack.getDisplayName().getFormattedText()),
-                    false);
-        });
+        ctx.get().enqueueWork(() -> ClientUtils.getClientPlayer().sendStatusMessage(xlate("command.getGlobalVariable.output",
+                        varName,
+                        pos.getX(), pos.getY(), pos.getZ(),
+                        stack.isEmpty() ? "-" : stack.getDisplayName().getFormattedText()),
+                false));
         ctx.get().setPacketHandled(true);
     }
 }

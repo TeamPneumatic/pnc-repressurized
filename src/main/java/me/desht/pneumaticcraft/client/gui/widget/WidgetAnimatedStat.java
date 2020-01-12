@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.base.Strings;
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
+import me.desht.pneumaticcraft.client.ClientEventHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
@@ -304,7 +304,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             height = Math.min(maxHeight, height + ANIMATED_STAT_SPEED);
             doneExpanding = width == maxWidth && height == maxHeight;
 
-            Pair<Integer,Integer> size = PneumaticCraftRepressurized.proxy.getScaledScreenSize();
+            Pair<Integer,Integer> size = ClientEventHandler.getScaledScreenSize();
             if (isLeftSided()) {
                 if (x >= size.getLeft()) x = size.getLeft();
             } else {

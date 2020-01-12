@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerInventorySearcher;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -83,7 +84,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
         font.drawString("Target", 71, 8, 4210752);
         ItemStack stack = inventory.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
-            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(stack);
+            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(ClientUtils.getClientWorld(), stack);
             if (!posList.isEmpty()) {
                 BlockPos pos = posList.get(0);
                 if (pos != null) {

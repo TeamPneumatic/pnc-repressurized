@@ -9,16 +9,16 @@ import javax.annotation.Nonnull;
 import java.util.function.Predicate;
 
 class SlotItemSpecific extends SlotItemHandler {
-    private final Predicate<Item> itemAllowed;
+    private final Predicate<ItemStack> itemAllowed;
 
-    SlotItemSpecific(IItemHandler handler, Predicate<Item> itemAllowed, int index, int x, int y) {
+    SlotItemSpecific(IItemHandler handler, Predicate<ItemStack> itemAllowed, int index, int x, int y) {
         super(handler, index, x, y);
         this.itemAllowed = itemAllowed;
     }
 
     public SlotItemSpecific(IItemHandler handler, Item item, int index, int x, int y) {
         super(handler, index, x, y);
-        this.itemAllowed = i -> i == item;
+        this.itemAllowed = stack -> stack.getItem() == item;
     }
 
 //    SlotItemSpecific(IItemHandler handler, Item itemAllowed, int index, int x, int y) {
@@ -41,7 +41,7 @@ class SlotItemSpecific extends SlotItemHandler {
      */
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
-        return stack.isEmpty() || itemAllowed.test(stack.getItem());
+        return stack.isEmpty() || itemAllowed.test(stack);
     }
 
 }

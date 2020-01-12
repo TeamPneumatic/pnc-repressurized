@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
@@ -126,7 +125,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
                 + Math.min(rangeUpgrades, 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         int blockTrackRangeSq = blockTrackRange * blockTrackRange;
 
-        PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+        PlayerEntity player = ClientUtils.getClientPlayer();
         List<BlockPos> toRemove = new ArrayList<>();
         for (Map.Entry<BlockPos,RenderSearchItemBlock> entry : trackedInventories.entrySet()) {
             int nItems = entry.getKey().distanceSq(player.getPosition()) < blockTrackRangeSq ?

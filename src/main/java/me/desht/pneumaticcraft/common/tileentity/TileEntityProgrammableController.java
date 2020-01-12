@@ -2,13 +2,13 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.event.SemiblockEvent;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
@@ -348,7 +348,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         droneItemHandler = new DroneItemHandler(this);
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(tag.getCompound("droneItems"));
-        if (getDroneSlots() != droneItemHandler.getSlots() && PneumaticCraftRepressurized.proxy.getClientWorld() == null) {
+        if (getDroneSlots() != droneItemHandler.getSlots() /*&& PneumaticCraftRepressurized.proxy.getClientWorld() == null*/) {
             Log.warning("drone inventory size mismatch: dispenser upgrades = " + getDroneSlots() + ", saved inv size = " + droneItemHandler.getSlots());
         }
         for (int i = 0; i < tmpInv.getSlots() && i < droneItemHandler.getSlots(); i++) {
@@ -603,7 +603,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public PlayerEntity getOwner() {
         if (ownerID == null) return null;
-        if (getWorld().isRemote) return PneumaticCraftRepressurized.proxy.getClientPlayer();
+        if (getWorld().isRemote) return ClientUtils.getClientPlayer();
 
         return PneumaticCraftUtils.getPlayerFromId(ownerID);
     }

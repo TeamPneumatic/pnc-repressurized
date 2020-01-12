@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.PacketSecurityStationFailedHack;
 import me.desht.pneumaticcraft.common.network.PacketUseItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
@@ -43,6 +44,12 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
         super(container, inv, displayString);
 
         ySize = 238;
+    }
+
+    public static void addExtraHackInfoStatic(List<ITextComponent> curInfo) {
+        if (Minecraft.getInstance().currentScreen instanceof GuiSecurityStationHacking) {
+            ((GuiSecurityStationHacking) Minecraft.getInstance().currentScreen).addExtraHackInfo(curInfo);
+        }
     }
 
     @Override

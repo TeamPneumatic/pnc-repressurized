@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
@@ -22,6 +21,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
@@ -319,7 +319,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         GlStateManager.disableLighting();
         for (Widget widget : buttons) {
             if (widget instanceof ITooltipProvider && widget.isHovered() && widget.visible) {
-                ((ITooltipProvider) widget).addTooltip(x, y, tooltip, PneumaticCraftRepressurized.proxy.isSneakingInGui());
+                ((ITooltipProvider) widget).addTooltip(x, y, tooltip, Screen.hasShiftDown());
             }
         }
 

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import net.minecraft.client.gui.screen.Screen;
@@ -61,7 +60,7 @@ public abstract class GuiPneumaticScreenBase extends Screen {
         GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1.0f);
 
         List<String> tooltip = new ArrayList<>();
-        boolean shift = PneumaticCraftRepressurized.proxy.isSneakingInGui();
+        boolean shift = Screen.hasShiftDown();
         for (Widget widget : buttons) {
             if (widget instanceof ITooltipProvider && widget.isHovered()) {
                 ((ITooltipProvider) widget).addTooltip(x, y, tooltip, shift);

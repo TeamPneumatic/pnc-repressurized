@@ -1,10 +1,8 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiSecurityStationHacking;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
@@ -43,10 +41,8 @@ public class ItemNetworkComponent extends ItemPneumatic implements IProgrammable
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
         super.addInformation(stack, worldIn, curInfo, extraInfo);
 
-        if (PneumaticCraftRepressurized.proxy.getClientWorld() != null) {
-            if (Minecraft.getInstance().currentScreen instanceof GuiSecurityStationHacking) {
-                ((GuiSecurityStationHacking) Minecraft.getInstance().currentScreen).addExtraHackInfo(curInfo);
-            }
+        if (worldIn != null && worldIn.isRemote) {
+            GuiSecurityStationHacking.addExtraHackInfoStatic(curInfo);
         }
     }
 

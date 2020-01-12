@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import net.minecraft.network.PacketBuffer;
@@ -26,7 +26,7 @@ public class PacketAmadronTradeRemoved extends PacketAbstractAmadronTrade<Packet
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (PNCConfig.Common.Amadron.notifyOfTradeRemoval)
-                PneumaticCraftRepressurized.proxy.getClientPlayer().sendStatusMessage(
+                ClientUtils.getClientPlayer().sendStatusMessage(
                         xlate("message.amadron.playerRemovedTrade",
                                 getOffer().getVendor(),
                                 getOffer().getInput().toString(),

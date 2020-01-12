@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
@@ -89,7 +89,7 @@ public class RenderRangeLines {
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         RenderUtils.glColorHex(color);
-        PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+        PlayerEntity player = ClientUtils.getClientPlayer();
         if (pos != null) {
             GlStateManager.translated(pos.getX() - player.posX + 0.5, pos.getY() - player.posY + 0.5, pos.getZ() - player.posZ + 0.5);
         }

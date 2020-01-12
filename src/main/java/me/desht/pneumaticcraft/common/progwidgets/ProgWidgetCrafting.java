@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.ItemTagMatcher;
@@ -55,7 +55,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
                 itemFilter = (ProgWidgetItemFilter) itemFilter.getConnectedParameters()[0];
             }
         }
-        if (!usingVariables && getRecipeResult(PneumaticCraftRepressurized.proxy.getClientWorld()) == null) {
+        if (!usingVariables && getRecipeResult(ClientUtils.getClientWorld()) == null) {
             curInfo.add(xlate("gui.progWidget.crafting.error.noCraftingRecipe"));
         }
     }
@@ -127,7 +127,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
     @Override
     public void renderExtraInfo() {
-        ItemStack recipe = getRecipeResult(PneumaticCraftRepressurized.proxy.getClientWorld());
+        ItemStack recipe = getRecipeResult(ClientUtils.getClientWorld());
         if (recipe != null) {
             ProgWidgetItemFilter.drawItemStack(recipe, 8, getHeight() / 2 - 8, recipe.getCount() + "");
         }

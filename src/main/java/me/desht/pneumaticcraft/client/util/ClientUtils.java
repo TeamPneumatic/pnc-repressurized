@@ -1,13 +1,18 @@
 package me.desht.pneumaticcraft.client.util;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.renderer.FirstPersonRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
@@ -35,7 +40,7 @@ public class ClientUtils {
     public static void emitParticles(World world, BlockPos pos, IParticleData particle) {
         float xOff = world.rand.nextFloat() * 0.6F + 0.2F;
         float zOff = world.rand.nextFloat() * 0.6F + 0.2F;
-        PneumaticCraftRepressurized.proxy.getClientWorld().addParticle(particle,
+        getClientWorld().addParticle(particle,
                 pos.getX() + xOff, pos.getY() + 1.2, pos.getZ() + zOff,
                 0, 0, 0);
     }
@@ -68,6 +73,14 @@ public class ClientUtils {
         return Minecraft.getInstance().world;
     }
 
+    public static PlayerEntity getClientPlayer() {
+        return Minecraft.getInstance().player;
+    }
+
+    public static boolean hasShiftDown() {
+        return Screen.hasShiftDown();
+    }
+
     /**
      * Get a TE client-side.  Convenience method for packet handling code, primarily.
      * @return a tile entity or null
@@ -96,5 +109,25 @@ public class ClientUtils {
                 y + h > y0 &&
                 x < x0 + rect.getWidth() &&
                 y < y0 + rect.getHeight());
+    }
+
+    public static void suppressItemEquipAnimation() {
+        FirstPersonRenderer renderer = Minecraft.getInstance().getFirstPersonRenderer();
+        renderer.equippedProgressMainHand = 1;
+        renderer.prevEquippedProgressMainHand = 1;
+    }
+
+    /**
+     * For the programmer GUI
+     *
+     * @return true if the screen res > 700x512
+     */
+    public static boolean isScreenHiRes() {
+        MainWindow mw = Minecraft.getInstance().mainWindow;
+        return mw.getScaledWidth() > 700 && mw.getScaledHeight() > 512;
+    }
+
+    public static Iterable<? extends Entity> getAllEntities(World world) {
+        return ((ClientWorld) world).getAllEntities();
     }
 }

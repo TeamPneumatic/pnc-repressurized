@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
@@ -11,6 +10,7 @@ import me.desht.pneumaticcraft.client.gui.GuiUnitProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.DebugEntry;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
@@ -66,11 +66,11 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
 
     @Override
     public void populateGui(IGuiScreen gui) {
-        if (PneumaticCraftRepressurized.proxy.getClientPlayer() != null) {
-            ItemStack helmet = PneumaticCraftRepressurized.proxy.getClientPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD);
+        if (Minecraft.getInstance().player != null) {
+            ItemStack helmet = ClientUtils.getClientPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD);
             if (!helmet.isEmpty()) {
                 int entityId = NBTUtil.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
-                Entity entity = PneumaticCraftRepressurized.proxy.getClientWorld().getEntityByID(entityId);
+                Entity entity = ClientUtils.getClientWorld().getEntityByID(entityId);
                 if (entity instanceof EntityDrone) {
                     selectedDrone = (EntityDrone) entity;
                 }

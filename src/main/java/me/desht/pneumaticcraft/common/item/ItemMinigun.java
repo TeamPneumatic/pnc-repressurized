@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -8,6 +7,7 @@ import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
@@ -75,7 +75,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
         }
 
         if (world.isRemote && currentItem && minigun.getMinigunSpeed() > 0) {
-            PneumaticCraftRepressurized.proxy.suppressItemEquipAnimation();
+            ClientUtils.suppressItemEquipAnimation();
         }
 
         if (!world.isRemote && slot >= 0 && slot <= 8) {

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketBuffer;
@@ -37,7 +37,7 @@ public class PacketSetEntityMotion extends LocationDoublePacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Entity entity = PneumaticCraftRepressurized.proxy.getClientWorld().getEntityByID(entityId);
+            Entity entity = ClientUtils.getClientWorld().getEntityByID(entityId);
             if (entity != null) {
                 entity.setMotion(x, y, z);
                 entity.onGround = false;

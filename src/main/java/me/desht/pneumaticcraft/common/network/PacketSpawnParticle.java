@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleType;
@@ -83,7 +83,7 @@ public class PacketSpawnParticle extends LocationDoublePacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            World world = PneumaticCraftRepressurized.proxy.getClientWorld();
+            World world = ClientUtils.getClientWorld();
             for (int i = 0; i < numParticles; i++) {
                 double x1 = x + (numParticles == 1 ? 0 : world.rand.nextDouble() * rx);
                 double y1 = y + (numParticles == 1 ? 0 : world.rand.nextDouble() * ry);

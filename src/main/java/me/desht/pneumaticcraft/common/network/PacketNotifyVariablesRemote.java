@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -39,7 +39,7 @@ public class PacketNotifyVariablesRemote {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+            PlayerEntity player = ClientUtils.getClientPlayer();
             if (player.openContainer instanceof ContainerRemote) {
                 ((ContainerRemote) player.openContainer).variables = variables;
             }

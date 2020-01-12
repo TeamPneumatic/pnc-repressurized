@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -26,7 +26,10 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
     public ContainerProgrammer(int i, PlayerInventory playerInventory, BlockPos pos) {
         super(ModContainers.PROGRAMMER.get(), i, playerInventory, pos);
 
-        this.hiRes = PneumaticCraftRepressurized.proxy.isScreenHiRes();
+        // server side doesn't care about slot positioning, so doesn't care about screen res either
+        this.hiRes = playerInventory.player.world.isRemote && ClientUtils.isScreenHiRes();
+        int xBase = hiRes ? 270 : 95;
+        int yBase = hiRes ? 430 : 174;
 
         addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, hiRes ? 676 : 326, 15) {
             @Override
@@ -34,9 +37,6 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
                 return isProgrammableItem(stack);
             }
         });
-
-        int xBase = hiRes ? 270 : 95;
-        int yBase = hiRes ? 430 : 174;
 
         // Add the player's inventory slots to the container
         for (int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {

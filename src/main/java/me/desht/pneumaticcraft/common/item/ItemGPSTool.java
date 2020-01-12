@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiGPSTool;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -48,7 +47,7 @@ public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
         if (worldIn.isRemote) {
-            GuiGPSTool.showGUI(stack, handIn, getGPSLocation(stack));
+            GuiGPSTool.showGUI(stack, handIn, getGPSLocation(worldIn, stack));
         }
         return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
@@ -80,11 +79,15 @@ public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
         }
     }
 
-    public static BlockPos getGPSLocation(ItemStack gpsTool) {
+    public static BlockPos getGPSLocation(ItemStack stack) {
+        return getGPSLocation(null, stack);
+    }
+
+    public static BlockPos getGPSLocation(World world, ItemStack gpsTool) {
         CompoundNBT compound = gpsTool.getTag();
         if (compound != null) {
             String var = getVariable(gpsTool);
-            if (!var.equals("") && PneumaticCraftRepressurized.proxy.getClientWorld() == null) {
+            if (!var.equals("") && world != null && !world.isRemote) {
                 BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
                 setGPSLocation(gpsTool, pos);
             }
@@ -116,8 +119,8 @@ public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
     }
 
     @Override
-    public List<BlockPos> getStoredPositions(@Nonnull ItemStack stack) {
-        return Collections.singletonList(getGPSLocation(stack));
+    public List<BlockPos> getStoredPositions(World world, @Nonnull ItemStack stack) {
+        return Collections.singletonList(getGPSLocation(world, stack));
     }
 
     @Override

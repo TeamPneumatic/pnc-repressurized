@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -59,7 +59,7 @@ public class ItemPneumatic extends Item {
 
         String info = "gui.tooltip." + stack.getTranslationKey();
         if (I18n.hasKey(info)) {
-            if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+            if (ClientUtils.hasShiftDown()) {
                 String translatedInfo = TextFormatting.AQUA + I18n.format(info);
                 curInfo.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 50)));
                 if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {

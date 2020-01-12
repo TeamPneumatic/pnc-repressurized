@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiDroneDebuggerOptions;
@@ -9,6 +8,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
@@ -88,7 +88,7 @@ public class RenderEntityTarget {
         isLookingAtTarget = isPlayerLookingAtTarget();
 
         if (hackTime > 0) {
-            IHackableEntity hackableEntity = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
+            IHackableEntity hackableEntity = HackableHandler.getHackableForEntity(entity, ClientUtils.getClientPlayer());
             if (hackableEntity != null) {
                 hackTime++;
             } else {
@@ -215,8 +215,8 @@ public class RenderEntityTarget {
 
     public void hack() {
         if (isInitialized() && isPlayerLookingAtTarget()) {
-            IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, PneumaticCraftRepressurized.proxy.getClientPlayer());
-            if (hackable != null && (hackTime == 0 || hackTime > hackable.getHackTime(entity, PneumaticCraftRepressurized.proxy.getClientPlayer())))
+            IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, ClientUtils.getClientPlayer());
+            if (hackable != null && (hackTime == 0 || hackTime > hackable.getHackTime(entity, ClientUtils.getClientPlayer())))
                 NetworkHandler.sendToServer(new PacketHackingEntityStart(entity));
         }
     }

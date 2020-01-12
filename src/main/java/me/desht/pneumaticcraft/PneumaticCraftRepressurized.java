@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.client.ClientTickHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
@@ -43,9 +44,6 @@ import me.desht.pneumaticcraft.datagen.ModLootTablesProvider;
 import me.desht.pneumaticcraft.datagen.ModRecipeProvider;
 import me.desht.pneumaticcraft.datagen.loot.TileEntitySerializerFunction;
 import me.desht.pneumaticcraft.lib.Names;
-import me.desht.pneumaticcraft.proxy.ClientProxy;
-import me.desht.pneumaticcraft.proxy.IProxy;
-import me.desht.pneumaticcraft.proxy.ServerProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.data.DataGenerator;
@@ -77,10 +75,7 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
-    public static final String MODVERSION = "@VERSION@";
-
-    public static IProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
-
+//    public static final String MODVERSION = "@VERSION@";
     public static final Logger LOGGER = LogManager.getLogger();
 
     public PneumaticCraftRepressurized() {
@@ -90,6 +85,7 @@ public class PneumaticCraftRepressurized {
         AuxConfigHandler.preInit();
 
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+            ThirdPartyManager.instance().clientPreInit();
             modBus.addListener(ClientHandler::clientSetup);
             MinecraftForge.EVENT_BUS.addListener(ClientHandler::registerRenders);
         });
@@ -118,7 +114,6 @@ public class PneumaticCraftRepressurized {
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
         ThirdPartyManager.instance().preInit();
         SemiBlockInitializer.preInit();  // TODO replace semiblocks with entity implementation
-        proxy.preInit();  // TODO get rid of proxy entirely if possible
         AdvancementTriggers.registerTriggers();
 
         LootFunctionManager.registerFunction(new TileEntitySerializerFunction.Serializer());
@@ -151,17 +146,9 @@ public class PneumaticCraftRepressurized {
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();
         ModWorldGen.init();
+        registerPermissionNodes();
 
-        PermissionAPI.registerNode(Names.AMADRON_ADD_PERIODIC_TRADE, DefaultPermissionLevel.OP,
-                "Allow player to add a custom periodic offer via the Amadron Tablet");
-        PermissionAPI.registerNode(Names.AMADRON_ADD_STATIC_TRADE, DefaultPermissionLevel.OP,
-                "Allow player to add a custom static offer via the Amadron Tablet");
-
-
-
-        proxy.init();
-
-        SemiBlockManager.registerEventHandler(proxy.getClientWorld() != null);
+        SemiBlockManager.registerEventHandler(true);
         ThirdPartyManager.instance().init();
 
         // TODO 1.14 loot
@@ -182,9 +169,7 @@ public class PneumaticCraftRepressurized {
             HeatBehaviourManager.getInstance().onPostInit();
             HeatExchangerManager.getInstance().onPostInit();
             FluidFuelManager.registerFuels();
-
             ThirdPartyManager.instance().postInit();
-            proxy.postInit();
 
             for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
                 if (block.get() instanceof IUpgradeAcceptor) {
@@ -197,6 +182,13 @@ public class PneumaticCraftRepressurized {
                 }
             }
         });
+    }
+
+    private void registerPermissionNodes() {
+        PermissionAPI.registerNode(Names.AMADRON_ADD_PERIODIC_TRADE, DefaultPermissionLevel.OP,
+                "Allow player to add a custom periodic offer via the Amadron Tablet");
+        PermissionAPI.registerNode(Names.AMADRON_ADD_STATIC_TRADE, DefaultPermissionLevel.OP,
+                "Allow player to add a custom static offer via the Amadron Tablet");
     }
 
     private void registerCapabilities() {
@@ -218,22 +210,6 @@ public class PneumaticCraftRepressurized {
     }
 
     private void serverStarted(FMLServerStartedEvent event) {
-//        AmadronOfferManager.getInstance().shufflePeriodicOffers();
-//        AmadronOfferManager.getInstance().recompileOffers();
-
-        // TODO 1.14 fluids & worldgen
-//        if (ConfigHandler.general.oilGenerationChance > 0) {
-//            Fluid oil = FluidRegistry.getFluid(Fluids.OIL.getName());
-//            if (oil.getBlock() == null) {
-//                String modName = FluidRegistry.getDefaultFluidName(oil).split(":")[0];
-//                Log.error(String.format("Oil fluid does not have a block associated with it. The fluid is owned by [%s]. " +
-//                        "This might be fixable by creating the world with having this mod loaded after PneumaticCraft.", modName));
-//                Log.error(String.format("Now disabling PneumaticCraft oil world gen: setting 'D:oilGenerationChance=0.0' " +
-//                        "in the config file pneumaticcraft.cfg.  PneumaticCraft machines should however accept the oil from [%s].", modName));
-//                ConfigHandler.general.oilGenerationChance = 0;
-//                ConfigHandler.sync();
-//            }
-//        }
     }
 
     static class ClientHandler {
@@ -246,11 +222,14 @@ public class PneumaticCraftRepressurized {
             MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
             MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
 
+            EntityTrackHandler.registerDefaultEntries();
+            ThirdPartyManager.instance().clientInit();
+
             DeferredWorkQueue.runLater(ClientSetup::init);
         }
 
         static void registerRenders(ModelRegistryEvent event) {
-            // todo 1.14 what do we need here?
+            // TODO 1.14 do we even need anything here?
         }
     }
 

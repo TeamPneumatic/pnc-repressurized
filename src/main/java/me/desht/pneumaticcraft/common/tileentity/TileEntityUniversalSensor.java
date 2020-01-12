@@ -343,7 +343,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         ItemStack stack = itemHandler.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
             int sensorRange = getRange();
-            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(stack);
+            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(world, stack);
             List<BlockPos> gpsPositions = posList.stream()
                     .filter(pos -> pos != null
                             && Math.abs(pos.getX() - getPos().getX()) <= sensorRange
@@ -488,7 +488,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
                 requireArgs(args, 1, "upgrade_slot");
                 ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
                 if (stack.getItem() == ModItems.GPS_TOOL.get()) {
-                    BlockPos pos = ItemGPSTool.getGPSLocation(stack);
+                    BlockPos pos = ItemGPSTool.getGPSLocation(world, stack);
                     if (pos != null) {
                         return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
                     } else {
@@ -588,7 +588,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             if (stack.getItem() instanceof IPositionProvider) {
-                List<BlockPos> l = ((IPositionProvider) stack.getItem()).getStoredPositions(stack);
+                List<BlockPos> l = ((IPositionProvider) stack.getItem()).getStoredPositions(world, stack);
                 return !l.isEmpty() && l.get(0) != null;
             }
             return false;

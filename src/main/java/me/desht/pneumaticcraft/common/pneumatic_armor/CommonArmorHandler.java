@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor;
 
-import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
@@ -11,6 +10,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -121,7 +121,7 @@ public class CommonArmorHandler {
     }
 
     public static CommonArmorHandler getHandlerForPlayer() {
-        return getHandlerForPlayer(PneumaticCraftRepressurized.proxy.getClientPlayer());
+        return getHandlerForPlayer(ClientUtils.getClientPlayer());
     }
 
     @SubscribeEvent
@@ -149,7 +149,7 @@ public class CommonArmorHandler {
     @SubscribeEvent
     public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
         // called client side when client disconnects
-        PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
+        PlayerEntity player = ClientUtils.getClientPlayer();
         if (player != null) {
             clearHUDHandlerForPlayer(player);
         }
