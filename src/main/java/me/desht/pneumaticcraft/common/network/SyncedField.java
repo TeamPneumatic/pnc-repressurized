@@ -320,12 +320,12 @@ public abstract class SyncedField<T> {
         protected boolean equals(ItemStackHandler oldValue, ItemStackHandler newValue) {
             if (oldValue.getSlots() != newValue.getSlots()) return false;
             for (int i = 0; i < oldValue.getSlots(); i++) {
-                if (oldValue.getStackInSlot(i).isEmpty() && newValue.getStackInSlot(i).isEmpty()) {
-                    // if both stacks are Item.AIR but different sizes, they're still equal -
-                    // https://github.com/TeamPneumatic/pnc-repressurized/issues/258
-                    return true;
-                }
-                if (!ItemStack.areItemsEqual(oldValue.getStackInSlot(i), newValue.getStackInSlot(i))) {
+//                if (oldValue.getStackInSlot(i).isEmpty() && newValue.getStackInSlot(i).isEmpty()) {
+//                    // if both stacks are Item.AIR but different sizes, they're still equal -
+//                    // https://github.com/TeamPneumatic/pnc-repressurized/issues/258
+//                    return true;
+//                }
+                if (!ItemStack.areItemStacksEqual(oldValue.getStackInSlot(i), newValue.getStackInSlot(i))) {
                     return false;
                 }
             }
