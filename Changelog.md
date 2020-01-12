@@ -6,11 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.11.8-??? (unreleased)
+### 0.11.8-380 (12 Jan 2020)
 #### Fixes
+* Performance improvement for Charging Module when charging Pneumatic Armor, e.g. via Aerial Interface.
 * Fixed NPE in custom (CraftTweaker) Thermopneumatic Processing Plant recipes which don't have a fluid, only an item.
 * Fixed Drones being unable to place fluids in a flowing fluid block (such blocks should be easily replaceable).
-* Performance improvement for Charging Module when charging Pneumatic Armor, e.g. via Aerial Interface.
+* Fixed desync in Pressure Chamber which caused phantom leftover items to be shown in the chamber after some crafting operations.
+* Fixed NPE when inserting unconfigured GPS tool into the Air Cannon
+* Fixed another NPE related to semiblock sync'ing.  Yay.
 
 ### 0.11.7-375 (7 Nov 2019)
 #### Fixes
