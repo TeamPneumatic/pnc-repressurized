@@ -14,7 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     public BlockPressureChamberGlass() {
-        super(IBlockPressureChamber.getPressureChamberBlockProps().hardnessAndResistance(3f, 20000f), "pressure_chamber_glass");
+        super(IBlockPressureChamber.pressureChamberBlockProps());
     }
 
     @Override

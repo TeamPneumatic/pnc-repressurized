@@ -5,13 +5,10 @@ import net.minecraft.fluid.FlowingFluid;
 
 import java.util.function.Supplier;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
 public class BlockFluidPneumaticCraft extends FlowingFluidBlock {
 
-    public BlockFluidPneumaticCraft(Supplier<? extends FlowingFluid> supplier, Properties props, String name) {
+    public BlockFluidPneumaticCraft(Supplier<? extends FlowingFluid> supplier, Properties props) {
         super(supplier, props);
-        setRegistryName(RL(name));
     }
 
 //    public BlockFluidPneumaticCraft(Fluid fluid, Material material) {

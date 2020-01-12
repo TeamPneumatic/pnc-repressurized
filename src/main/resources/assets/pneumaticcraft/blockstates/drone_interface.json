@@ -1,24 +1,10 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "pneumaticcraft:block/drone_interface",
-    "textures": {
-      "top": "pneumaticcraft:block/generic/plain_base",
-      "bottom": "pneumaticcraft:block/generic/plain_base",
-      "side": "pneumaticcraft:block/drone_interface_side"
-    }
-  },
   "variants": {
-    "": [{}],
-    "inventory": [{}],
-    "connected": {
-      "true": {
-        "textures": {
-          "side": "pneumaticcraft:block/drone_interface_side_on"
-        }
-      },
-      "false": {
-      }
+    "connected=true": {
+      "model": "pneumaticcraft:block/drone_interface_on"
+    },
+    "connected=false": {
+      "model": "pneumaticcraft:block/drone_interface_off"
     }
   }
 }

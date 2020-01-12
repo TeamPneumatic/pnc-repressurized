@@ -42,13 +42,13 @@ public class Patchouli implements IThirdParty, IDocsProvider {
 
         setConfigFlags();
 
-        IStateMatcher edge = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_WALL, this::validEdge);
-        IStateMatcher wall = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_WALL, this::validFace);
-        IStateMatcher glass = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_GLASS, this::validFace);
-        IStateMatcher valve = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_VALVE.getDefaultState().with(FACING, Direction.NORTH), this::validFace);
-        IStateMatcher valveUp = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_VALVE.getDefaultState().with(FACING, Direction.UP), this::validFace);
-        IStateMatcher intI = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_INTERFACE.getDefaultState().with(FACING, Direction.EAST), this::validFace);
-        IStateMatcher intO = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_INTERFACE.getDefaultState().with(FACING, Direction.WEST), this::validFace);
+        IStateMatcher edge = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_WALL.get(), this::validEdge);
+        IStateMatcher wall = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_WALL.get(), this::validFace);
+        IStateMatcher glass = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), this::validFace);
+        IStateMatcher valve = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_VALVE.get().getDefaultState().with(FACING, Direction.NORTH), this::validFace);
+        IStateMatcher valveUp = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_VALVE.get().getDefaultState().with(FACING, Direction.UP), this::validFace);
+        IStateMatcher intI = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get().getDefaultState().with(FACING, Direction.EAST), this::validFace);
+        IStateMatcher intO = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get().getDefaultState().with(FACING, Direction.WEST), this::validFace);
 
         IMultiblock pc3 = papi.makeMultiblock(new String[][] {
                         { "WWW", "WWW", "WWW" },
@@ -82,12 +82,12 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     }
 
     private boolean validEdge(BlockState state) {
-        return state.getBlock() == ModBlocks.PRESSURE_CHAMBER_WALL || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_GLASS;
+        return state.getBlock() == ModBlocks.PRESSURE_CHAMBER_WALL.get() || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_GLASS.get();
     }
 
     private boolean validFace(BlockState state) {
-        return state.getBlock() == ModBlocks.PRESSURE_CHAMBER_WALL || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_GLASS
-                || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_INTERFACE || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_VALVE;
+        return state.getBlock() == ModBlocks.PRESSURE_CHAMBER_WALL.get() || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_GLASS.get()
+                || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_INTERFACE.get() || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_VALVE.get();
     }
 
     private void setConfigFlags() {

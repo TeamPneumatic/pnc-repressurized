@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.common.block.BlockPressureChamberWall;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
@@ -24,7 +23,7 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
     private int valveZ;
 
     public TileEntityPressureChamberWall() {
-        this(ModTileEntities.PRESSURE_CHAMBER_WALL, 0);
+        this(ModTileEntities.PRESSURE_CHAMBER_WALL.get(), 0);
     }
 
     TileEntityPressureChamberWall(TileEntityType type, int upgradeSize) {
@@ -64,8 +63,8 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
         teValve = te;
         if (hasChanged && !getWorld().isRemote) {
             BlockState curState = getWorld().getBlockState(getPos());
-            if (curState.getBlock() == ModBlocks.PRESSURE_CHAMBER_WALL) {
-                BlockState newState = ((BlockPressureChamberWall) ModBlocks.PRESSURE_CHAMBER_WALL).updateState(curState, getWorld(), getPos());
+            if (curState.getBlock() == ModBlocks.PRESSURE_CHAMBER_WALL.get()) {
+                BlockState newState = ModBlocks.PRESSURE_CHAMBER_WALL.get().updateState(curState, getWorld(), getPos());
                 getWorld().setBlockState(getPos(), newState, 2);
             }
         }

@@ -47,12 +47,16 @@ public class EntityTumblingBlock extends ThrowableEntity {
     private static final DataParameter<ItemStack> STATE_STACK = EntityDataManager.createKey(EntityTumblingBlock.class, DataSerializers.ITEMSTACK);
     private static FakePlayer fakePlayer;
 
-    public EntityTumblingBlock(World worldIn) {
-        super(ModEntities.TUMBLING_BLOCK, worldIn);
+    public static EntityTumblingBlock create(EntityType<EntityTumblingBlock> type, World world) {
+        return new EntityTumblingBlock(type, world);
+    }
+
+    private EntityTumblingBlock(EntityType<EntityTumblingBlock> type, World worldIn) {
+        super(type, worldIn);
     }
 
     public EntityTumblingBlock(World worldIn, LivingEntity thrower, double x, double y, double z, @Nonnull ItemStack stack) {
-        super(ModEntities.TUMBLING_BLOCK, worldIn);
+        super(ModEntities.TUMBLING_BLOCK.get(), worldIn);
         Validate.isTrue(!stack.isEmpty() && stack.getItem() instanceof BlockItem);
 
         owner = thrower;
@@ -64,10 +68,6 @@ public class EntityTumblingBlock extends ThrowableEntity {
         this.prevPosZ = z;
         this.setOrigin(new BlockPos(this));
         dataManager.set(STATE_STACK, stack);
-    }
-
-    public static Entity create(EntityType<Entity> entityEntityType, World world) {
-        return new EntityTumblingBlock(world);
     }
 
     @Override

@@ -28,9 +28,9 @@ public class JEIRefineryCategory implements IRecipeCategory<IRefineryRecipe> {
     private final Map<ResourceLocation, WidgetTemperature> tempWidgets = new HashMap<>();
 
     JEIRefineryCategory() {
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.REFINERY));
+        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.REFINERY.get()));
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_REFINERY, 6, 3, 166, 79);
-        localizedName = I18n.format(ModBlocks.REFINERY.getTranslationKey());
+        localizedName = I18n.format(ModBlocks.REFINERY.get().getTranslationKey());
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
     }
 

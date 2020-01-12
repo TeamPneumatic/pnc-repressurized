@@ -1,6 +1,6 @@
 {
   "name": "Logistics Drones",
-  "icon": "pneumaticcraft:logistic_drone",
+  "icon": "pneumaticcraft:logistics_drone",
   "category": "logistics",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
@@ -10,7 +10,7 @@
     },
     {
       "type": "entity",
-      "entity": "pneumaticcraft:logistic_drone",
+      "entity": "pneumaticcraft:logistics_drone",
       "offset": -0.3
     },
     {
@@ -19,7 +19,7 @@
     },
     {
       "type": "crafting",
-      "recipe": "pneumaticcraft:logistic_drone",
+      "recipe": "pneumaticcraft:logistics_drone",
       "text": "Creating a Logistics Drone"
     }
   ]

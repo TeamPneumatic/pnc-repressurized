@@ -104,7 +104,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     }
 
     private void openSearcher() {
-        ClientUtils.openContainerGui(ModContainers.SEARCHER, new StringTextComponent("Search"));
+        ClientUtils.openContainerGui(ModContainers.SEARCHER.get(), new StringTextComponent("Search"));
         if (minecraft.currentScreen instanceof GuiItemSearcher) {
             searchGui = (GuiItemSearcher) minecraft.currentScreen;
             searchGui.setSearchStack(progWidget.getFilter());
@@ -112,7 +112,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     }
 
     private void openInventorySearcher() {
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER, new StringTextComponent("Search"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Search"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
             invSearchGui.setSearchStack(progWidget.getFilter());

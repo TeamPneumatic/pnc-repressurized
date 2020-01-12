@@ -27,9 +27,9 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
     private final IDrawable icon;
 
     JEIAmadronTradeCategory() {
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.AMADRON_TABLET));
+        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.AMADRON_TABLET.get()));
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.WIDGET_AMADRON_OFFER, 0, 0, 73, 35);
-        localizedName = I18n.format(ModItems.AMADRON_TABLET.getTranslationKey());
+        localizedName = I18n.format(ModItems.AMADRON_TABLET.get().getTranslationKey());
     }
 
     @Override

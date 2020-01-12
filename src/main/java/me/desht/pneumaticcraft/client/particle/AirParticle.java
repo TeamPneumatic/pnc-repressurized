@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.particle;
 
+import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import net.minecraft.client.particle.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

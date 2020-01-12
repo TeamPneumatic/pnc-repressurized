@@ -1,0 +1,8 @@
+{
+  "textures": {
+    "top": "pneumaticcraft:block/generic/plain_base",
+    "bottom": "pneumaticcraft:block/generic/plain_base",
+    "side": "pneumaticcraft:block/drone_interface_side_on"
+  },
+  "parent": "block/cube_bottom_top"
+}

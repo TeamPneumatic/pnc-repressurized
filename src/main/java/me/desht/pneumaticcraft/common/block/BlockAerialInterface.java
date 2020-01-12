@@ -12,8 +12,8 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockAerialInterface extends BlockPneumaticCraft {
-    public BlockAerialInterface() {
-        super("aerial_interface");
+    public BlockAerialInterface(Properties props) {
+        super(props);
     }
 
     @Override

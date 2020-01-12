@@ -38,14 +38,10 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider {
-    public ItemGPSAreaTool() {
-        super("gps_area_tool");
-    }
-
     @Override
     public ActionResultType onItemUse(ItemUseContext ctx) {
         setGPSPosAndNotify(ctx.getPlayer(), ctx.getPos(), ctx.getHand(), 0);
-        ctx.getPlayer().playSound(ModSounds.CHIRP, 1.0f, 1.5f);
+        ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
         return ActionResultType.SUCCESS; // we don't want to use the item.
     }
 
@@ -171,9 +167,9 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
     public static class EventHandler {
         @SubscribeEvent
         public static void onBlockLeftClick(PlayerInteractEvent.LeftClickBlock event) {
-            if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL) {
+            if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL.get()) {
                 if (!event.getPos().equals(getGPSLocation(event.getItemStack(), 1))) {
-                    event.getPlayer().playSound(ModSounds.CHIRP, 1.0f, 1.5f);
+                    event.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
                     setGPSPosAndNotify(event.getPlayer(), event.getPos(), event.getHand(), 1);
                 }
                 event.setCanceled(true);
@@ -182,7 +178,7 @@ public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider 
 
         @SubscribeEvent
         public static void onLeftClickAir(PlayerInteractEvent.LeftClickEmpty event) {
-            if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL) {
+            if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL.get()) {
                 GuiGPSAreaTool.showGUI(event.getHand(), event.getItemStack(), 1);
             }
         }

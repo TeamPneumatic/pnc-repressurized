@@ -10,11 +10,11 @@ import net.minecraft.util.math.BlockPos;
 public class ContainerLiquidCompressor extends ContainerPneumaticBase<TileEntityLiquidCompressor> {
 
     public ContainerLiquidCompressor(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        this(ModContainers.LIQUID_COMPRESSOR, i, playerInventory, getTilePos(buffer));
+        this(ModContainers.LIQUID_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));
     }
 
     public ContainerLiquidCompressor(int i, PlayerInventory playerInventory, BlockPos tePos) {
-        this(ModContainers.LIQUID_COMPRESSOR, i, playerInventory, tePos);
+        this(ModContainers.LIQUID_COMPRESSOR.get(), i, playerInventory, tePos);
     }
 
     ContainerLiquidCompressor(ContainerType type, int i, PlayerInventory playerInventory, BlockPos pos) {

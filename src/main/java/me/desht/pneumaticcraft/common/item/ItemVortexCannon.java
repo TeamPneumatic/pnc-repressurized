@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 public class ItemVortexCannon extends ItemPressurizable {
 
     public ItemVortexCannon() {
-        super("vortex_cannon", PneumaticValues.VORTEX_CANNON_MAX_AIR, PneumaticValues.VORTEX_CANNON_VOLUME);
+        super(PneumaticValues.VORTEX_CANNON_MAX_AIR, PneumaticValues.VORTEX_CANNON_VOLUME);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class ItemVortexCannon extends ItemPressurizable {
         iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
             if (airHandler.getPressure() > 0.1f) {
                 double factor = 0.2D * airHandler.getPressure();
-                world.playSound(playerIn.posX, playerIn.posY, playerIn.posZ, ModSounds.AIR_CANNON, SoundCategory.PLAYERS, 1.0F, 0.7F + (float) factor * 0.2F, false);
+                world.playSound(playerIn.posX, playerIn.posY, playerIn.posZ, ModSounds.AIR_CANNON.get(), SoundCategory.PLAYERS, 1.0F, 0.7F + (float) factor * 0.2F, false);
                 EntityVortex vortex = new EntityVortex(world, playerIn);
                 Vec3d directionVec = playerIn.getLookVec().normalize();
                 vortex.posX += directionVec.x;

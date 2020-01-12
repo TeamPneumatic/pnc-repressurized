@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,11 +11,11 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 
-public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraftModeled {
+public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraft {
     private static final VoxelShape BOUNDS = Block.makeCuboidShape(0.01, 0, 0, 16, 12, 16);
 
     public BlockThermopneumaticProcessingPlant() {
-        super("thermopneumatic_processing_plant");
+        super(ModBlocks.defaultProps());
     }
 
     @Override

@@ -8,10 +8,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class ContainerPneumaticDynamo extends ContainerEnergy<TileEntityPneumaticDynamo> {
     public ContainerPneumaticDynamo(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        super(ModContainers.PNEUMATIC_DYNAMO, i, playerInventory, getTilePos(buffer));
+        super(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, getTilePos(buffer));
     }
 
     public ContainerPneumaticDynamo(int i, PlayerInventory playerInventory, BlockPos tilePos) {
-        super(ModContainers.PNEUMATIC_DYNAMO, i, playerInventory, tilePos);
+        super(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, tilePos);
     }
 }

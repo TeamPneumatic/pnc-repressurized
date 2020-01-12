@@ -1,10 +1,11 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import net.minecraft.block.Block;
 
 // a marker interface
 public interface IBlockPressureChamber {
-    static Block.Properties getPressureChamberBlockProps() {
-        return BlockPneumaticCraft.getDefaultProps().hardnessAndResistance(3f, 2000f);
+    static Block.Properties pressureChamberBlockProps() {
+        return ModBlocks.defaultProps().hardnessAndResistance(3f, 20000f);
     }
 }

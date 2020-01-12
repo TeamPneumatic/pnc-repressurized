@@ -29,7 +29,7 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
     @Override
     public void init() {
         super.init();
-        statusStat = addAnimatedStat("gui.tab.status", new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("gui.tab.status", new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()), 0xFFFFAA00, false);
     }
 
     @Override

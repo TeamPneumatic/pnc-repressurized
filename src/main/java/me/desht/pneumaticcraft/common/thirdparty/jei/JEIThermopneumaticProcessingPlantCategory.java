@@ -30,9 +30,9 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
     private final Map<ResourceLocation, WidgetTemperature> tempWidgets = new HashMap<>();
 
     JEIThermopneumaticProcessingPlantCategory() {
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT));
+        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()));
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT, 5, 11, 166, 70);
-        localizedName = I18n.format(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.getTranslationKey());
+        localizedName = I18n.format(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get().getTranslationKey());
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
     }
 

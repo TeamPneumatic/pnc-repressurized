@@ -35,14 +35,14 @@ public class SemiBlockActiveProvider extends SemiBlockLogistics implements ISpec
 
     @Override
     public ITextComponent getDisplayName() {
-        return new ItemStack(ModItems.LOGISTICS_FRAME_ACTIVE_PROVIDER).getDisplayName();
+        return new ItemStack(ModItems.LOGISTICS_FRAME_ACTIVE_PROVIDER.get()).getDisplayName();
     }
 
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         // same container as passive provider
-        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_PASSIVE_PROVIDER, i, playerInventory, getPos());
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_PASSIVE_PROVIDER.get(), i, playerInventory, getPos());
     }
 
     @Override

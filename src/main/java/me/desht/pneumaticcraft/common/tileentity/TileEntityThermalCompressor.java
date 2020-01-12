@@ -39,7 +39,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase impleme
     private int redstoneMode;
 
     public TileEntityThermalCompressor() {
-        super(ModTileEntities.THERMAL_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_THERMAL_COMPRESSOR, PneumaticValues.MAX_PRESSURE_THERMAL_COMPRESSOR, PneumaticValues.VOLUME_THERMAL_COMPRESSOR, 4);
+        super(ModTileEntities.THERMAL_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_THERMAL_COMPRESSOR, PneumaticValues.MAX_PRESSURE_THERMAL_COMPRESSOR, PneumaticValues.VOLUME_THERMAL_COMPRESSOR, 4);
 
         for (int i = 0; i < heatExchangers.length; i++) {
             heatExchangers[i] = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();

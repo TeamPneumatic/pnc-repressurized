@@ -20,7 +20,7 @@ public class CapabilityAirHandler {
         CapabilityManager.INSTANCE.register(IAirHandler.class, new DefaultAirHandlerStorage<>(),
                 () -> new BasicAirHandler(1000));
         CapabilityManager.INSTANCE.register(IAirHandlerItem.class, new DefaultAirHandlerStorage<>(),
-                () -> new AirHandlerItemStack(new ItemStack(ModItems.AIR_CANISTER), PneumaticValues.AIR_CANISTER_VOLUME, 10f));
+                () -> new AirHandlerItemStack(new ItemStack(ModItems.AIR_CANISTER.get()), PneumaticValues.AIR_CANISTER_VOLUME, 10f));
         CapabilityManager.INSTANCE.register(IAirHandlerMachine.class, new DefaultAirHandlerStorage<>(),
                 () -> new MachineAirHandler(PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, 3000));
     }

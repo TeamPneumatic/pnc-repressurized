@@ -22,7 +22,7 @@ public class ContainerSearcher extends Container {
 
     @SuppressWarnings("unused")
     public ContainerSearcher(int windowId, PlayerInventory inv, PacketBuffer data) {
-        super(ModContainers.SEARCHER, windowId);
+        super(ModContainers.SEARCHER.get(), windowId);
     }
 
     public void init(GuiItemSearcher gui) {
@@ -40,7 +40,7 @@ public class ContainerSearcher extends Container {
 
     @Override
     public boolean canInteractWith(PlayerEntity player) {
-        return player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET;
+        return player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET.get();
     }
 
     /**

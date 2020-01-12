@@ -43,7 +43,7 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
     };
 
     public TileEntityPressureChamberGlass() {
-        super(ModTileEntities.PRESSURE_CHAMBER_GLASS, 0);
+        super(ModTileEntities.PRESSURE_CHAMBER_GLASS.get(), 0);
     }
 
     @Nonnull
@@ -100,6 +100,6 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
     }
 
     private boolean isGlass(IBlockReader world, BlockPos pos) {
-        return world.getBlockState(pos).getBlock() == ModBlocks.PRESSURE_CHAMBER_GLASS;
+        return world.getBlockState(pos).getBlock() == ModBlocks.PRESSURE_CHAMBER_GLASS.get();
     }
 }

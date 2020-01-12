@@ -18,7 +18,7 @@ import java.util.List;
 public class ItemLogisticsConfigurator extends ItemPressurizable {
 
     public ItemLogisticsConfigurator() {
-        super("logistics_configurator", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
+        super(PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
 
     @Override

@@ -95,7 +95,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> fluidHandler);
 
     public TileEntityThermopneumaticProcessingPlant() {
-        super(ModTileEntities.THERMOPNEUMATIC_PROCESSING_PLANT, 5, 7, 3000, 4);
+        super(ModTileEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), 5, 7, 3000, 4);
         heatExchanger.setThermalResistance(10);
     }
 

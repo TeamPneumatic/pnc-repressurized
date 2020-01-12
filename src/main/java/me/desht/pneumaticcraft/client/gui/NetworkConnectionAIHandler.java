@@ -20,7 +20,7 @@ public class NetworkConnectionAIHandler extends NetworkConnectionHandler {
 
         for (int i = 0; i < station.getPrimaryInventory().getSlots(); i++) {
             ItemStack stack = station.getPrimaryInventory().getStackInSlot(i);
-            if (stack.getItem() == ModItems.DIAGNOSTIC_SUBROUTINE) {
+            if (stack.getItem() == ModItems.DIAGNOSTIC_SUBROUTINE.get()) {
                 slotHacked[i] = true;
             }
         }
@@ -76,7 +76,7 @@ public class NetworkConnectionAIHandler extends NetworkConnectionHandler {
         ticksTillTrace = 0;
         int ioPortSlot = -1;
         for (int i = 0; i < station.getPrimaryInventory().getSlots(); i++) {
-            if (station.getPrimaryInventory().getStackInSlot(i).getItem() == ModItems.NETWORK_IO_PORT) {
+            if (station.getPrimaryInventory().getStackInSlot(i).getItem() == ModItems.NETWORK_IO_PORT.get()) {
                 ioPortSlot = i;
                 break;
             }
@@ -90,7 +90,7 @@ public class NetworkConnectionAIHandler extends NetworkConnectionHandler {
     @Override
     public void onSlotHack(int slot, boolean nuked) {
         ItemStack stack = station.getPrimaryInventory().getStackInSlot(slot);
-        if (!simulating && stack.getItem() == ModItems.NETWORK_IO_PORT) {
+        if (!simulating && stack.getItem() == ModItems.NETWORK_IO_PORT.get()) {
             Minecraft.getInstance().player.closeScreen();
             Minecraft.getInstance().player.sendStatusMessage(new StringTextComponent(TextFormatting.RED + "Hacking unsuccessful! The Diagnostic Subroutine traced to your location!"), false);
             if (gui instanceof GuiSecurityStationHacking)

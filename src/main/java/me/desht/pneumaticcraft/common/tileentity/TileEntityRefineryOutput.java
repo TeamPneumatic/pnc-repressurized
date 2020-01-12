@@ -51,7 +51,7 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
     private final LazyOptional<IFluidHandler> fluidCapWrapped = LazyOptional.of(() -> new TankWrapper(outputTank));
 
     public TileEntityRefineryOutput() {
-        super(ModTileEntities.REFINERY_OUTPUT);
+        super(ModTileEntities.REFINERY_OUTPUT.get());
     }
 
     @Override
@@ -104,16 +104,16 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
 
         if (controllerTE == null) {
             BlockPos checkPos = this.pos;
-            while (world.getBlockState(checkPos.down()).getBlock() == ModBlocks.REFINERY_OUTPUT) {
+            while (world.getBlockState(checkPos.down()).getBlock() == ModBlocks.REFINERY_OUTPUT.get()) {
                 checkPos = checkPos.down();
             }
-            if (world.getBlockState(checkPos.down()).getBlock() == ModBlocks.REFINERY) {
+            if (world.getBlockState(checkPos.down()).getBlock() == ModBlocks.REFINERY.get()) {
                 // refinery directly under the output stack
                 controllerTE = (TileEntityRefineryController) world.getTileEntity(checkPos.down());
             } else {
                 // is refinery horizontally adjacent to bottom of stack?
                 for (Direction d : Direction.Plane.HORIZONTAL) {
-                    if (world.getBlockState(checkPos.offset(d)).getBlock() == ModBlocks.REFINERY) {
+                    if (world.getBlockState(checkPos.offset(d)).getBlock() == ModBlocks.REFINERY.get()) {
                         controllerTE = (TileEntityRefineryController) world.getTileEntity(checkPos.offset(d));
                     }
                 }

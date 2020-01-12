@@ -48,7 +48,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private final static byte STATE_MAX = 127;
 
     public TileEntityAssemblyIOUnit() {
-        super(ModTileEntities.ASSEMBLY_IO_UNIT);
+        super(ModTileEntities.ASSEMBLY_IO_UNIT.get());
     }
 
     @Override
@@ -337,7 +337,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     }
 
     public boolean isImportUnit() {
-        return getBlockState().getBlock() == ModBlocks.ASSEMBLY_IO_UNIT_IMPORT;
+        return getBlockState().getBlock() == ModBlocks.ASSEMBLY_IO_UNIT_IMPORT.get();
     }
 
     @Override

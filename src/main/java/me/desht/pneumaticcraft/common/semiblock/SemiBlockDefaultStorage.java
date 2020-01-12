@@ -24,13 +24,13 @@ public class SemiBlockDefaultStorage extends SemiBlockStorage {
 
     @Override
     public ITextComponent getDisplayName() {
-        return new ItemStack(ModItems.LOGISTICS_FRAME_DEFAULT_STORAGE).getDisplayName();
+        return new ItemStack(ModItems.LOGISTICS_FRAME_DEFAULT_STORAGE.get()).getDisplayName();
     }
 
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE, i, playerInventory, getPos());
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE.get(), i, playerInventory, getPos());
     }
 
     @Override

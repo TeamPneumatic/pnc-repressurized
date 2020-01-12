@@ -49,7 +49,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        statusStat = addAnimatedStat("Security Status", new ItemStack(ModBlocks.SECURITY_STATION), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("Security Status", new ItemStack(ModBlocks.SECURITY_STATION.get()), 0xFFFFAA00, false);
         accessStat = addAnimatedStat("Shared Users", new ItemStack(Items.PLAYER_HEAD), 0xFF005500, false);
 
         Rectangle2d accessButtonRectangle = accessStat.getButtonScaledRectangle(145, 10, 20, 20);

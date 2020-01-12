@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -11,7 +12,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
-public class BlockGasLift extends BlockPneumaticCraftModeled {
+public class BlockGasLift extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE1 = Block.makeCuboidShape(0, 0, 0, 16, 2, 16);
     private static final VoxelShape SHAPE2 = Block.makeCuboidShape(2, 2, 2, 14, 4, 14);
     private static final VoxelShape SHAPE3 = Block.makeCuboidShape(4, 4, 4, 12, 6, 12);
@@ -19,7 +20,7 @@ public class BlockGasLift extends BlockPneumaticCraftModeled {
     private static final VoxelShape SHAPE = VoxelShapes.or(SHAPE1, VoxelShapes.or(SHAPE2, VoxelShapes.or(SHAPE3, SHAPE4)));
 
     public BlockGasLift() {
-        super("gas_lift");
+        super(ModBlocks.defaultProps());
     }
 
     @Override

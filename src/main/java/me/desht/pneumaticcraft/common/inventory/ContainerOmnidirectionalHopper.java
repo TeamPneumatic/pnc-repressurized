@@ -14,7 +14,7 @@ public class ContainerOmnidirectionalHopper extends ContainerPneumaticBase<TileE
     }
 
     public ContainerOmnidirectionalHopper(int windowId, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.OMNIDIRECTIONAL_HOPPER, windowId, playerInventory, pos);
+        super(ModContainers.OMNIDIRECTIONAL_HOPPER.get(), windowId, playerInventory, pos);
 
         addUpgradeSlots(23, 29);
 

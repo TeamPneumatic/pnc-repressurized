@@ -40,7 +40,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
 
     public TileEntityFluxCompressor() {
-        super(ModTileEntities.FLUX_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_FLUX_COMPRESSOR,
+        super(ModTileEntities.FLUX_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_FLUX_COMPRESSOR,
                 PneumaticValues.MAX_PRESSURE_FLUX_COMPRESSOR,
                 PneumaticValues.VOLUME_FLUX_COMPRESSOR, 4);
 
@@ -144,6 +144,6 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerEnergy(ModContainers.FLUX_COMPRESSOR, i, playerInventory, getPos());
+        return new ContainerEnergy(ModContainers.FLUX_COMPRESSOR.get(), i, playerInventory, getPos());
     }
 }

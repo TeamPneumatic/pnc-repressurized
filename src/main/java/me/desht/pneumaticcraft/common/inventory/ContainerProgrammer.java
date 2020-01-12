@@ -24,7 +24,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
     private final boolean hiRes;
 
     public ContainerProgrammer(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.PROGRAMMER, i, playerInventory, pos);
+        super(ModContainers.PROGRAMMER.get(), i, playerInventory, pos);
 
         this.hiRes = PneumaticCraftRepressurized.proxy.isScreenHiRes();
 

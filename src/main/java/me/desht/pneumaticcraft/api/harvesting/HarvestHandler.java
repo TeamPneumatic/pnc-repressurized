@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.harvesting;
 
+import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -12,6 +13,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Defines a generic harvest handler.  Register new harvest handlers via Forge registry events:
@@ -78,5 +80,21 @@ public abstract class HarvestHandler extends ForgeRegistryEntry<HarvestHandler> 
      */
     public List<ItemStack> addFilterItems(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone){
         return world instanceof ServerWorld ? Block.getDrops(state, (ServerWorld) world, pos, world.getTileEntity(pos)) : Collections.emptyList();
+    }
+
+    /**
+     * A simple harvest handler which just compares against a list of blocks, without checking any blockstate properties.
+     */
+    public static class SimpleHarvestHandler extends HarvestHandler {
+        private final Set<Block> blocks;
+
+        public SimpleHarvestHandler(Block... blocks) {
+            this.blocks = Sets.newHashSet(blocks);
+        }
+
+        @Override
+        public boolean canHarvest(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone) {
+            return blocks.contains(state.getBlock());
+        }
     }
 }

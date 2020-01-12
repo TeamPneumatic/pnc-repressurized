@@ -36,7 +36,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
     public void init() {
         super.init();
 
-        statusStat = addAnimatedStat("gui.pressureChamberInterface.status", new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("gui.pressureChamberInterface.status", new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), 0xFFFFAA00, false);
 
         exportAnyButton = addButton(new WidgetButtonExtended(guiLeft + 111, guiTop + 32, 60, 20, "")
                 .withTag("export_mode"));

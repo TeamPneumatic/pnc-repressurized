@@ -24,7 +24,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 public class BlockRefineryOutput extends BlockPneumaticCraft {
     public BlockRefineryOutput() {
-        super("refinery_output");
+        super(ModBlocks.defaultProps());
     }
 
     @Override
@@ -87,7 +87,7 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
 
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (!worldIn.isRemote() && facingState.getBlock() == ModBlocks.REFINERY_OUTPUT) {
+        if (!worldIn.isRemote() && facingState.getBlock() == ModBlocks.REFINERY_OUTPUT.get()) {
             recache(worldIn, currentPos);
         }
         return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);

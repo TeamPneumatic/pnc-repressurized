@@ -67,7 +67,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     private Vec3d tileVec;
 
     public TileEntitySentryTurret() {
-        super(ModTileEntities.SENTRY_TURRET, 4);
+        super(ModTileEntities.SENTRY_TURRET.get(), 4);
     }
 
     @Override

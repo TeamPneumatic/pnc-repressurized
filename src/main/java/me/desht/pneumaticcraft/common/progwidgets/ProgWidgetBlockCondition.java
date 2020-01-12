@@ -19,12 +19,12 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
     public boolean checkingForLiquids;
 
     public ProgWidgetBlockCondition() {
-        super(ModProgWidgets.CONDITION_BLOCK);
+        super(ModProgWidgets.CONDITION_BLOCK.get());
     }
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.ITEM_FILTER, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

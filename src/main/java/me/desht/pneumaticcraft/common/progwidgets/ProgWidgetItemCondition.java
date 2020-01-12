@@ -15,12 +15,12 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
 
     public ProgWidgetItemCondition() {
-        super(ModProgWidgets.CONDTION_ITEM);
+        super(ModProgWidgets.CONDTION_ITEM.get());
     }
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER, ModProgWidgets.ITEM_FILTER, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

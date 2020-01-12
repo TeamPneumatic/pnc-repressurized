@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.item.IColorableItem;
+import me.desht.pneumaticcraft.common.item.ITintableItem;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.tileentity.IHeatTinted;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAbstractHopper;
@@ -22,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -29,16 +30,16 @@ public class ColorHandlers {
 
     @SubscribeEvent
     public static void registerItemColorHandlers(ColorHandlerEvent.Item event) {
-        for (Item item : ModItems.Registration.ALL_ITEMS) {
-            if (item instanceof IColorableItem) {
-                event.getItemColors().register(((IColorableItem) item)::getTintColor, item);
+        for (RegistryObject<Item> item : ModItems.ITEMS.getEntries()) {
+            if (item.get() instanceof ITintableItem) {
+                event.getItemColors().register(((ITintableItem) item.get())::getTintColor, item.get());
             }
         }
 
         event.getItemColors().register((stack, tintIndex) -> {
             int n = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.CREATIVE);
             return n > 0 ? 0xFFFF60FF : 0xFFFFFFFF;
-        }, ModBlocks.OMNIDIRECTIONAL_HOPPER.asItem(), ModBlocks.LIQUID_HOPPER.asItem());
+        }, ModBlocks.OMNIDIRECTIONAL_HOPPER.get().asItem(), ModBlocks.LIQUID_HOPPER.get().asItem());
 
         event.getItemColors().register((stack, tintIndex) -> {
             switch (tintIndex) {
@@ -49,7 +50,7 @@ public class ColorHandlers {
                 default:
                     return 0xFFFFFF;
             }
-        }, ModBlocks.APHORISM_TILE.asItem());
+        }, ModBlocks.APHORISM_TILE.get().asItem());
     }
 
     @SubscribeEvent
@@ -62,7 +63,7 @@ public class ColorHandlers {
                 return 0xFF000000 + ((int) (color[0] * 255) << 16) + ((int) (color[1] * 255) << 8) + (int) (color[2] * 255);
             }
             return 0xFFFFFFFF;
-        }, ModBlocks.COMPRESSED_IRON_BLOCK, ModBlocks.HEAT_SINK, ModBlocks.VORTEX_TUBE, ModBlocks.THERMAL_COMPRESSOR);
+        }, ModBlocks.COMPRESSED_IRON_BLOCK.get(), ModBlocks.HEAT_SINK.get(), ModBlocks.VORTEX_TUBE.get(), ModBlocks.THERMAL_COMPRESSOR.get());
 
         event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
             if (blockAccess != null && pos != null) {
@@ -70,7 +71,7 @@ public class ColorHandlers {
                 return lightsOn ? 0xFF4000FF : 0xFFAFAFE4;
             }
             return 0xFFAFAFE4;
-        }, ModBlocks.UV_LIGHT_BOX);
+        }, ModBlocks.UV_LIGHT_BOX.get());
 
         event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
             if (blockAccess != null && pos != null) {
@@ -80,10 +81,10 @@ public class ColorHandlers {
                 }
             }
             return 0xFFFFFFFF;
-        }, ModBlocks.OMNIDIRECTIONAL_HOPPER, ModBlocks.LIQUID_HOPPER);
+        }, ModBlocks.OMNIDIRECTIONAL_HOPPER.get(), ModBlocks.LIQUID_HOPPER.get());
 
-        for (Block b : ModBlocks.Registration.ALL_BLOCKS) {
-            if (b instanceof BlockPneumaticCraftCamo) {
+        for (RegistryObject<Block> b : ModBlocks.BLOCKS.getEntries()) {
+            if (b.get() instanceof BlockPneumaticCraftCamo) {
                 event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
                     if (blockAccess != null && pos != null) {
                         TileEntity te = blockAccess.getTileEntity(pos);
@@ -92,7 +93,7 @@ public class ColorHandlers {
                         }
                     }
                     return 0xFFFFFFFF;
-                }, b);
+                }, b.get());
             }
         }
 
@@ -109,7 +110,7 @@ public class ColorHandlers {
                 }
             }
             return 0xFFFFFFFF;
-        }, ModBlocks.APHORISM_TILE);
+        }, ModBlocks.APHORISM_TILE.get());
     }
 
     private static int desaturate(int c) {

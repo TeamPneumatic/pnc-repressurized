@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -15,7 +16,7 @@ import net.minecraft.world.World;
 public class BlockProgrammableController extends BlockPneumaticCraft {
 
     public BlockProgrammableController() {
-        super("programmable_controller");
+        super(ModBlocks.defaultProps());
     }
 
     @Override

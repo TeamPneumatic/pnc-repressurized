@@ -23,10 +23,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ItemEmptyPCB extends ItemNonDespawning {
     private static final String NBT_ETCH_PROGRESS = "pneumaticcraft:etch_progress";
 
-    public ItemEmptyPCB() {
-        super(defaultProps(), "empty_pcb");
-    }
-
     @Override
     public void addInformation(ItemStack stack, World player, List<ITextComponent> infoList, ITooltipFlag par4) {
         super.addInformation(stack, player, infoList, par4);
@@ -70,8 +66,7 @@ public class ItemEmptyPCB extends ItemNonDespawning {
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entityItem) {
         super.onEntityItemUpdate(stack, entityItem);
 
-        // TODO 1.14 fluids : replace WATER with ETCHING_ACID
-        if (entityItem.world.getFluidState(new BlockPos(entityItem)).getFluid() == ModFluids.ETCHING_ACID) {
+        if (entityItem.world.getFluidState(new BlockPos(entityItem)).getFluid() == ModFluids.ETCHING_ACID.get()) {
             if (!stack.hasTag()) {
                 stack.setTag(new CompoundNBT());
             }
@@ -99,13 +94,13 @@ public class ItemEmptyPCB extends ItemNonDespawning {
                     }
                 }
 
-                ItemStack successStack = new ItemStack(successCount == 0 ? ModItems.FAILED_PCB : ModItems.UNASSEMBLED_PCB,
+                ItemStack successStack = new ItemStack(successCount == 0 ? ModItems.FAILED_PCB.get() : ModItems.UNASSEMBLED_PCB.get(),
                         successCount == 0 ? failedCount : successCount);
                 entityItem.setItem(successStack);
 
                 // Only when we have failed items and the existing item entity wasn't reused already for the failed items.
                 if (successCount > 0 && failedCount > 0) {
-                    ItemStack failedStack = new ItemStack(ModItems.FAILED_PCB, failedCount);
+                    ItemStack failedStack = new ItemStack(ModItems.FAILED_PCB.get(), failedCount);
                     entityItem.world.addEntity(new ItemEntity(entityItem.world, entityItem.posX, entityItem.posY, entityItem.posZ, failedStack));
                 }
             }

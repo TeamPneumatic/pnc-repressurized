@@ -16,27 +16,10 @@ public abstract class BlockAssemblyIOUnit extends BlockPneumaticCraft {
 
     private final boolean isImport;
 
-    public BlockAssemblyIOUnit(boolean isImport, String registryName) {
-        super(registryName);
+    public BlockAssemblyIOUnit(Properties props, boolean isImport) {
+        super(props);
         this.isImport = isImport;
     }
-
-//    @Override
-//    public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
-//        if (player != null && player.isSneaking()) {
-//            return super.onWrenched(world, player, pos, side, hand);
-//        } else {
-//            // flip between import and export
-//            BlockState state = world.getBlockState(pos);
-//            boolean isImport = state.get(IMPORT_UNIT);
-//            world.setBlockState(pos, state.with(IMPORT_UNIT, !isImport));
-//            TileEntity te = world.getTileEntity(pos);
-//            if (te instanceof TileEntityAssemblyIOUnit) {
-//                ((TileEntityAssemblyIOUnit) te).switchMode();
-//            }
-//            return true;
-//        }
-//    }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
@@ -49,14 +32,14 @@ public abstract class BlockAssemblyIOUnit extends BlockPneumaticCraft {
     }
 
     public static class Import extends BlockAssemblyIOUnit {
-        public Import() {
-            super(true, "assembly_io_unit_import");
+        public Import(Properties props) {
+            super(props,true);
         }
     }
 
     public static class Export extends BlockAssemblyIOUnit {
-        public Export() {
-            super(false, "assembly_io_unit_export");
+        public Export(Properties props) {
+            super(props,false);
         }
     }
 }

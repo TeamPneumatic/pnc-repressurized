@@ -15,7 +15,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetLabel extends ProgWidget implements ILabel {
 
     public ProgWidgetLabel() {
-        super(ModProgWidgets.LABEL);
+        super(ModProgWidgets.LABEL.get());
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ProgWidgetLabel extends ProgWidget implements ILabel {
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.TEXT.get());
     }
 
     @Override

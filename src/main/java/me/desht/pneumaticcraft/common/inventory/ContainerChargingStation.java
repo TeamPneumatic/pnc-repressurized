@@ -21,7 +21,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
     }
 
     public ContainerChargingStation(int i, PlayerInventory inventoryPlayer, BlockPos pos) {
-        super(ModContainers.CHARGING_STATION, i, inventoryPlayer, pos);
+        super(ModContainers.CHARGING_STATION.get(), i, inventoryPlayer, pos);
 
         addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 91, 39) {
             @Override

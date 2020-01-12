@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.event.SemiblockEvent;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -24,7 +23,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
@@ -76,7 +74,8 @@ public class SemiBlockManager {
     }
 
     static void registerSemiBlock(ResourceLocation key, Supplier<? extends ISemiBlock> semiBlock) {
-        registerSemiBlock(key, semiBlock, () -> new ItemSemiBlockBase(key.toString()));
+        Validate.isTrue(!registeredTypes.containsKey(key), "Duplicate registration key: " + key);
+        registeredTypes.put(key, semiBlock);
     }
 
     static void registerSemiBlock(ResourceLocation key, Supplier<? extends ISemiBlock> semiBlockFactory, Supplier<? extends ItemSemiBlockBase> itemFactory) {
@@ -124,12 +123,12 @@ public class SemiBlockManager {
 //        }
     }
 
-    @SubscribeEvent
-    public static void onItemRegistration(RegistryEvent.Register<Item> event) {
-        for (Supplier<? extends ItemSemiBlockBase> item : semiBlockToItems.values()) {
-            ModItems.Registration.registerItem(event.getRegistry(), item.get());
-        }
-    }
+//    @SubscribeEvent
+//    public static void onItemRegistration(RegistryEvent.Register<Item> event) {
+//        for (Supplier<? extends ItemSemiBlockBase> item : semiBlockToItems.values()) {
+//            ModItems.Registration.registerItem(event.getRegistry(), item.get());
+//        }
+//    }
 
     @SubscribeEvent
     public void onChunkUnLoad(ChunkEvent.Unload event) {

@@ -65,6 +65,6 @@ public class DroneColorCrafting extends SpecialRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return ModRecipes.DRONE_COLOR_CRAFTING;
+        return ModRecipes.DRONE_COLOR_CRAFTING.get();
     }
 }

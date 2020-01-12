@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
@@ -9,6 +10,10 @@ import java.util.List;
 
 public abstract class TubeModuleRedstoneEmitting extends TubeModule {
     protected int redstone;
+
+    TubeModuleRedstoneEmitting(ItemTubeModule item) {
+        super(item);
+    }
 
     /**
      * @param level signal level

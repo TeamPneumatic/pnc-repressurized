@@ -24,7 +24,7 @@ public class DroneUpgradeCrafting extends SpecialRecipe {
             if (stack.getItem() instanceof ItemBasicDrone) {
                 if (!hasDrone) hasDrone = true;
                 else return false;
-            } else if (stack.getItem() == ModItems.PRINTED_CIRCUIT_BOARD) {
+            } else if (stack.getItem() == ModItems.PRINTED_CIRCUIT_BOARD.get()) {
                 if (!hasPCB) hasPCB = true;
                 else return false;
             }
@@ -42,7 +42,7 @@ public class DroneUpgradeCrafting extends SpecialRecipe {
                 break;
             }
         }
-        ItemStack drone = new ItemStack(ModItems.DRONE);
+        ItemStack drone = new ItemStack(ModItems.DRONE.get());
         CompoundNBT droneTag = basicDrone.getTag();
         if (droneTag == null) {
             droneTag = new CompoundNBT();
@@ -59,6 +59,6 @@ public class DroneUpgradeCrafting extends SpecialRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return ModRecipes.DRONE_UPGRADE_CRAFTING;
+        return ModRecipes.DRONE_UPGRADE_CRAFTING.get();
     }
 }

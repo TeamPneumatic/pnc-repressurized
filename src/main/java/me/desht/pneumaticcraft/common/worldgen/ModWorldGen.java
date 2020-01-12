@@ -17,6 +17,6 @@ public class ModWorldGen {
     }
 
     private static void addOilLakes(Biome biomeIn) {
-        biomeIn.addFeature(GenerationStage.Decoration.LOCAL_MODIFICATIONS, Biome.createDecoratedFeature(Feature.LAKE, new LakesConfig(ModBlocks.OIL.getDefaultState()), ModDecorators.OIL_LAKE.get(), new LakeChanceConfig(PNCConfig.Common.General.oilGenerationChance)));
+        biomeIn.addFeature(GenerationStage.Decoration.LOCAL_MODIFICATIONS, Biome.createDecoratedFeature(Feature.LAKE, new LakesConfig(ModBlocks.OIL.get().getDefaultState()), ModDecorators.OIL_LAKE.get(), new LakeChanceConfig(PNCConfig.Common.General.oilGenerationChance)));
     }
 }

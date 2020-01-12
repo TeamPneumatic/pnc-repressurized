@@ -7,33 +7,28 @@ import net.minecraft.block.material.MaterialColor;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.state.StateContainer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
 public abstract class FluidEtchingAcid extends ForgeFlowingFluid {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            RL("block/fluid/etchacid_still"), RL("block/fluid/etchacid_flow")
+//            RL("block/fluid/etchacid_still"), RL("block/fluid/etchacid_flow")
+            new ResourceLocation("minecraft:block/water_still"),
+            new ResourceLocation("minecraft:block/water_flow")
     ).color(MaterialColor.EMERALD.colorValue | 0xFF000000);
 
     private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.ETCHING_ACID, () -> ModFluids.ETCHING_ACID_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.ETCHING_ACID).bucket(() -> ModItems.ETCHING_ACID_BUCKET
+            new ForgeFlowingFluid.Properties(ModFluids.ETCHING_ACID, ModFluids.ETCHING_ACID_FLOWING, ATTRS)
+                    .block(ModBlocks.ETCHING_ACID)
+                    .bucket(ModItems.ETCHING_ACID_BUCKET
             );
 
-    FluidEtchingAcid(String name) {
+    FluidEtchingAcid() {
         super(PROPS);
-
-        setRegistryName(name);
     }
 
     public static class Source extends FluidEtchingAcid {
-        public Source() {
-            super("etching_acid");
-        }
-
         @Override
         public boolean isSource(IFluidState state) {
             return true;
@@ -46,10 +41,6 @@ public abstract class FluidEtchingAcid extends ForgeFlowingFluid {
     }
 
     public static class Flowing extends FluidEtchingAcid {
-        public Flowing() {
-            super("etching_acid_flowing");
-        }
-
         @Override
         protected void fillStateContainer(StateContainer.Builder<Fluid, IFluidState> builder) {
             super.fillStateContainer(builder);

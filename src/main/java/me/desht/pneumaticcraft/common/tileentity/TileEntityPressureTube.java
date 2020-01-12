@@ -6,14 +6,16 @@ import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.IInfluenceDispersing;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -26,6 +28,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -41,7 +44,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     private Direction inLineModuleDir = null;  // only one inline module allowed
 
     public TileEntityPressureTube() {
-        this(ModTileEntities.PRESSURE_TUBE, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
+        this(ModTileEntities.PRESSURE_TUBE.get(), PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
     }
 
     TileEntityPressureTube(TileEntityType type, float dangerPressurePressureTube, float maxPressurePressureTube, int volumePressureTube, int upgradeSlots) {
@@ -101,10 +104,15 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         ListNBT moduleList = tag.getList("modules", 10);
         for (int i = 0; i < moduleList.size(); i++) {
             CompoundNBT moduleTag = moduleList.getCompound(i);
-            TubeModule module = ModuleRegistrator.createModule(new ResourceLocation(moduleTag.getString("type")));
-            if (module != null) {
-                module.readFromNBT(moduleTag);
-                setModule(module, Direction.byIndex(moduleTag.getInt("side")));
+            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(moduleTag.getString("type")));
+            if (item instanceof ItemTubeModule) {
+                TubeModule module = ((ItemTubeModule) item).createModule();
+                if (module != null) {
+                    module.readFromNBT(moduleTag);
+                    setModule(module, Direction.byIndex(moduleTag.getInt("side")));
+                }
+            } else {
+                Log.error("received unknown tube module ID from server: " + moduleTag.getString("type"));
             }
         }
         updateRenderBoundingBox();

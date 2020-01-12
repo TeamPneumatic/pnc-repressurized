@@ -70,7 +70,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        sensorInfoStat = addAnimatedStat("Sensor Info", new ItemStack(ModBlocks.UNIVERSAL_SENSOR), 0xFFFFAA00, false);
+        sensorInfoStat = addAnimatedStat("Sensor Info", new ItemStack(ModBlocks.UNIVERSAL_SENSOR.get()), 0xFFFFAA00, false);
         addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(getUpgradeText());
 
         nameFilterField = new TextFieldWidget(font, xStart + 70, yStart + 58, 98, 10, "");

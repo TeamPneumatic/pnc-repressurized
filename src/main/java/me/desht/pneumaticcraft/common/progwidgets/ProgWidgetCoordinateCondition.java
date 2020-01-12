@@ -23,12 +23,12 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     private Operator operator = Operator.HIGHER_THAN_EQUALS;
 
     public ProgWidgetCoordinateCondition() {
-        super(ModProgWidgets.CONDITION_COORDINATE);
+        super(ModProgWidgets.CONDITION_COORDINATE.get());
     }
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.COORDINATE, ModProgWidgets.COORDINATE, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.COORDINATE.get(), ModProgWidgets.COORDINATE.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

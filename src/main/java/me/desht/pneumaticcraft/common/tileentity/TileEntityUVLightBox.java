@@ -56,7 +56,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     private boolean oldRedstoneStatus;
 
     public TileEntityUVLightBox() {
-        super(ModTileEntities.UV_LIGHT_BOX, PneumaticValues.DANGER_PRESSURE_UV_LIGHTBOX, PneumaticValues.MAX_PRESSURE_UV_LIGHTBOX, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
+        super(ModTileEntities.UV_LIGHT_BOX.get(), PneumaticValues.DANGER_PRESSURE_UV_LIGHTBOX, PneumaticValues.MAX_PRESSURE_UV_LIGHTBOX, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
                     updateNeighbours();
                 }
             }
-            if (getBlockState().getBlock() == ModBlocks.UV_LIGHT_BOX) {
+            if (getBlockState().getBlock() == ModBlocks.UV_LIGHT_BOX.get()) {
                 boolean loaded = getBlockState().get(BlockUVLightBox.LOADED);
                 if (loaded == stack.isEmpty()) {
                     world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LOADED, !stack.isEmpty()));
@@ -166,7 +166,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     public boolean shouldEmitRedstone() {
         ItemStack stack = getLoadedPCB();
-        if (redstoneMode == 0 || stack.getItem() != ModItems.EMPTY_PCB) return false;
+        if (redstoneMode == 0 || stack.getItem() != ModItems.EMPTY_PCB.get()) return false;
         int progress = getExposureProgress(stack);
         switch (redstoneMode) {
             case 1: return progress > 70;

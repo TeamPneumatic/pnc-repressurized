@@ -17,22 +17,15 @@ public abstract class FluidGasoline extends ForgeFlowingFluid {
     ).viscosity(500);
 
     private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.GASOLINE, () -> ModFluids.GASOLINE_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.GASOLINE).bucket(() -> ModItems.GASOLINE_BUCKET
+            new ForgeFlowingFluid.Properties(ModFluids.GASOLINE, ModFluids.GASOLINE_FLOWING, ATTRS)
+                    .block(ModBlocks.GASOLINE).bucket(ModItems.GASOLINE_BUCKET
             );
 
-    FluidGasoline(String name) {
+    FluidGasoline() {
         super(PROPS);
-
-        setRegistryName(RL(name));
     }
 
     public static class Source extends FluidGasoline {
-        public Source() {
-            super("gasoline");
-        }
-
         @Override
         public boolean isSource(IFluidState state) {
             return true;
@@ -45,10 +38,6 @@ public abstract class FluidGasoline extends ForgeFlowingFluid {
     }
 
     public static class Flowing extends FluidGasoline {
-        public Flowing() {
-            super("gasoline_flowing");
-        }
-
         @Override
         protected void fillStateContainer(StateContainer.Builder<Fluid, IFluidState> builder) {
             super.fillStateContainer(builder);

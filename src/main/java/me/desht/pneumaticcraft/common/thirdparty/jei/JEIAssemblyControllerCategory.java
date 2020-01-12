@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
@@ -20,6 +21,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,8 +33,8 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<IAssemblyR
 
     JEIAssemblyControllerCategory() {
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_NEI_ASSEMBLY_CONTROLLER, 5, 11, 166, 130);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER));
-        localizedName = I18n.format(ModBlocks.ASSEMBLY_CONTROLLER.getTranslationKey());
+        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()));
+        localizedName = I18n.format(ModBlocks.ASSEMBLY_CONTROLLER.get().getTranslationKey());
         IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_NEI_ASSEMBLY_CONTROLLER, 173, 0, 24, 17);
         progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }
@@ -66,11 +68,10 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<IAssemblyR
     public void setIngredients(IAssemblyRecipe recipe, IIngredients ingredients) {
         List<Ingredient> input = new ArrayList<>();
         input.add(recipe.getInput());
-        input.add(Ingredient.fromItems(recipe.getProgram()));
-        AssemblyProgram program = AssemblyProgram.fromRecipe(recipe);
-        for (ItemStack stack : getMachinesFromEnum(program.getRequiredMachines())) {
-            input.add(Ingredient.fromStacks(stack));
-        }
+        input.add(Ingredient.fromItems(ItemAssemblyProgram.fromProgramType(recipe.getProgramType())));
+        Arrays.stream(getMachinesFromEnum(AssemblyProgram.fromRecipe(recipe).getRequiredMachines()))
+                .map(Ingredient::fromStacks)
+                .forEach(input::add);
         ingredients.setInputIngredients(input);
         ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutput());
     }
@@ -103,7 +104,7 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<IAssemblyR
     private ItemStack[] getMachinesFromEnum(AssemblyProgram.EnumMachine[] requiredMachines) {
         ItemStack[] machineStacks = new ItemStack[requiredMachines.length];
         for (int i = 0; i < requiredMachines.length; i++) {
-            machineStacks[i] = new ItemStack(requiredMachines[i].getMachine());
+            machineStacks[i] = new ItemStack(requiredMachines[i].getMachineBlock());
         }
         return machineStacks;
     }
@@ -115,36 +116,4 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<IAssemblyR
         res.addAll(PneumaticCraftRecipes.assemblyLaserDrillRecipes.values());
         return res;
     }
-
-//    static class AssemblyRecipeWrapper extends PneumaticCraftCategory.AbstractCategoryExtension {
-//        AssemblyRecipeWrapper(IAssemblyRecipe recipe) {
-//            AssemblyProgram program = AssemblyProgram.fromRecipe(recipe);
-//
-//            //for now not useful to put it in an array, but supports when adding multiple input/output.
-//            ItemStack[] inputStacks = new ItemStack[]{recipe.getInput().getMatchingStacks()[0]};
-//            for (int i = 0; i < inputStacks.length; i++) {
-//                PositionedStack stack = PositionedStack.of(inputStacks[i], 29 + i % 2 * 18, 66 + i / 2 * 18);
-//                this.addInputItem(stack);
-//            }
-//
-//            ItemStack[] outputStacks = new ItemStack[]{recipe.getOutput()};
-//            for (int i = 0; i < outputStacks.length; i++) {
-//                PositionedStack stack = PositionedStack.of(outputStacks[i], 96 + i % 2 * 18, 66 + i / 2 * 18);
-//                this.addOutputItem(stack);
-//            }
-//            this.addInputItem(PositionedStack.of(program.getItemStack(1), 133, 22));
-//            ItemStack[] requiredMachines = getMachinesFromEnum(program.getRequiredMachines());
-//            for (int i = 0; i < requiredMachines.length; i++) {
-//                this.addInputItem(PositionedStack.of(requiredMachines[i], 5 + i * 18, 25));
-//            }
-//        }
-//
-//        private ItemStack[] getMachinesFromEnum(AssemblyProgram.EnumMachine[] requiredMachines) {
-//            ItemStack[] machineStacks = new ItemStack[requiredMachines.length];
-//            for (int i = 0; i < requiredMachines.length; i++) {
-//                machineStacks[i] = new ItemStack(requiredMachines[i].getMachine());
-//            }
-//            return machineStacks;
-//        }
-//    }
 }

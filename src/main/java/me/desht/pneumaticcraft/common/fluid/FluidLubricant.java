@@ -17,22 +17,15 @@ public abstract class FluidLubricant extends ForgeFlowingFluid {
     );
 
     private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.LUBRICANT, () -> ModFluids.LUBRICANT_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.LUBRICANT).bucket(() -> ModItems.LUBRICANT_BUCKET
+            new ForgeFlowingFluid.Properties(ModFluids.LUBRICANT, ModFluids.LUBRICANT_FLOWING, ATTRS)
+                    .block(ModBlocks.LUBRICANT).bucket(ModItems.LUBRICANT_BUCKET
             );
 
-    FluidLubricant(String name) {
+    FluidLubricant() {
         super(PROPS);
-
-        setRegistryName(RL(name));
     }
 
     public static class Source extends FluidLubricant {
-        public Source() {
-            super("lubricant");
-        }
-
         @Override
         public boolean isSource(IFluidState state) {
             return true;
@@ -45,10 +38,6 @@ public abstract class FluidLubricant extends ForgeFlowingFluid {
     }
 
     public static class Flowing extends FluidLubricant {
-        public Flowing() {
-            super("lubricant_flowing");
-        }
-
         @Override
         protected void fillStateContainer(StateContainer.Builder<Fluid, IFluidState> builder) {
             super.fillStateContainer(builder);

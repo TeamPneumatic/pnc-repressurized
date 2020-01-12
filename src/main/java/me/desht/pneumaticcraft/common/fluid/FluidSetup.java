@@ -11,16 +11,16 @@ public class FluidSetup {
      * Fluid setup tasks to be done AFTER fluids (and items/blocks) are registered
      */
     public static void init() {
-        PneumaticRegistry.getInstance().registerFuel(ModFluids.OIL, 64000);
-        PneumaticRegistry.getInstance().registerFuel(ModFluids.DIESEL, 700000);
-        PneumaticRegistry.getInstance().registerFuel(ModFluids.KEROSENE, 1100000);
-        PneumaticRegistry.getInstance().registerFuel(ModFluids.GASOLINE, 1500000);
-        PneumaticRegistry.getInstance().registerFuel(ModFluids.LPG, 1800000);
+        PneumaticRegistry.getInstance().registerFuel(ModFluids.OIL.get(), 64000);
+        PneumaticRegistry.getInstance().registerFuel(ModFluids.DIESEL.get(), 700000);
+        PneumaticRegistry.getInstance().registerFuel(ModFluids.KEROSENE.get(), 1100000);
+        PneumaticRegistry.getInstance().registerFuel(ModFluids.GASOLINE.get(), 1500000);
+        PneumaticRegistry.getInstance().registerFuel(ModFluids.LPG.get(), 1800000);
 
         // no magnet'ing PCB's out of etching acid pools
         PneumaticCraftAPIHandler.getInstance().getItemRegistry().registerMagnetSuppressor(
-                e -> e instanceof ItemEntity && ((ItemEntity) e).getItem().getItem() == ModItems.EMPTY_PCB
-                        && e.getEntityWorld().getFluidState(e.getPosition()).getFluid() == ModFluids.ETCHING_ACID
+                e -> e instanceof ItemEntity && ((ItemEntity) e).getItem().getItem() == ModItems.EMPTY_PCB.get()
+                        && e.getEntityWorld().getFluidState(e.getPosition()).getFluid() == ModFluids.ETCHING_ACID.get()
         );
     }
 }

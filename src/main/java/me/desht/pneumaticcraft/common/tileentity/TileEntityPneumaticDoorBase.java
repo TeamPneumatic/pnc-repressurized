@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -57,7 +56,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     public int redstoneMode;
 
     public TileEntityPneumaticDoorBase() {
-        super(ModTileEntities.PNEUMATIC_DOOR_BASE, PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
+        super(ModTileEntities.PNEUMATIC_DOOR_BASE.get(), PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
     }
 
     @Override
@@ -120,9 +119,9 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
                         if (redstoneMode == 0) {
                             return true;
                         } else {
-                            ((BlockPneumaticDoor) ModBlocks.PNEUMATIC_DOOR).isTrackingPlayerEye = true;
+                            ModBlocks.PNEUMATIC_DOOR.get().isTrackingPlayerEye = true;
                             BlockPos lookedPosition = PneumaticCraftUtils.getEntityLookedBlock(player, range * 1.41F); //max range = range * sqrt(2).
-                            ((BlockPneumaticDoor) ModBlocks.PNEUMATIC_DOOR).isTrackingPlayerEye = false;
+                            ModBlocks.PNEUMATIC_DOOR.get().isTrackingPlayerEye = false;
                             if (lookedPosition != null) {
                                 if (lookedPosition.equals(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ()))) {
                                     return true;
@@ -149,7 +148,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         boolean wasOpening = this.opening;
         this.opening = opening;
         if (this.opening != wasOpening) {
-            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_DOOR, SoundCategory.BLOCKS, getPos(), 1.0F, 1.0F, false), getWorld());
+            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_DOOR.get(), SoundCategory.BLOCKS, getPos(), 1.0F, 1.0F, false), getWorld());
             sendDescriptionPacket();
         }
     }

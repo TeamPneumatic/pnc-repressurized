@@ -53,7 +53,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     public ProgWidgetArea() {
-        super(ModProgWidgets.AREA);
+        super(ModProgWidgets.AREA.get());
     }
 
     private static <T extends AreaType> void register(String id, Class<T> clazz, Supplier<T> creator) {
@@ -195,12 +195,12 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     @Override
     public ProgWidgetType returnType() {
-        return ModProgWidgets.AREA;
+        return ModProgWidgets.AREA.get();
     }
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA);
+        return ImmutableList.of(ModProgWidgets.AREA.get());
     }
 
     @Override

@@ -8,7 +8,7 @@ import net.minecraft.util.Direction;
 
 public class TileEntityDroneRedstoneEmitter extends TileEntity implements ITickableTileEntity {
     public TileEntityDroneRedstoneEmitter() {
-        super(ModTileEntities.DRONE_REDSTONE_EMITTER);
+        super(ModTileEntities.DRONE_REDSTONE_EMITTER.get());
     }
 
     @Override

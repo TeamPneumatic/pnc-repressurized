@@ -28,11 +28,15 @@ public class EntityVortex extends ThrowableEntity {
     private float renderOffsetX = -Float.MAX_VALUE;
 
     public EntityVortex(World world, LivingEntity thrower) {
-        super(ModEntities.VORTEX, thrower, world);
+        super(ModEntities.VORTEX.get(), thrower, world);
     }
 
     public EntityVortex(World world) {
-        super(ModEntities.VORTEX, world);
+        super(ModEntities.VORTEX.get(), world);
+    }
+
+    public EntityVortex(EntityType<EntityVortex> type, World world) {
+        super(type, world);
     }
 
     @Override
@@ -40,7 +44,7 @@ public class EntityVortex extends ThrowableEntity {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    public static EntityVortex create(EntityType<Entity> type, World world) {
+    public static EntityVortex create(EntityType<? extends EntityVortex> type, World world) {
         return new EntityVortex(world);
     }
 

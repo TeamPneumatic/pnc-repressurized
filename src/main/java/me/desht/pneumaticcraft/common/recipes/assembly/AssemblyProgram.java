@@ -7,47 +7,54 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
-import org.apache.commons.lang3.Validate;
+import net.minecraftforge.fml.RegistryObject;
 
 import java.util.Collection;
 import java.util.List;
 
 public abstract class AssemblyProgram {
-
-    public enum EnumTubeProblem {
+    public enum EnumAssemblyProblem {
         NO_PROBLEM, NO_INPUT, NO_OUTPUT
     }
 
-    public EnumTubeProblem curProblem = EnumTubeProblem.NO_PROBLEM;
-
     public enum EnumMachine {
-        PLATFORM, DRILL, LASER, IO_UNIT_EXPORT, IO_UNIT_IMPORT, CONTROLLER;
+        PLATFORM(ModBlocks.ASSEMBLY_PLATFORM),
+        DRILL(ModBlocks.ASSEMBLY_DRILL),
+        LASER(ModBlocks.ASSEMBLY_LASER),
+        IO_UNIT_EXPORT(ModBlocks.ASSEMBLY_IO_UNIT_EXPORT),
+        IO_UNIT_IMPORT(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT),
+        CONTROLLER(ModBlocks.ASSEMBLY_CONTROLLER);
+
+
+        private final RegistryObject<? extends Block> blockSupplier;
+
+        EnumMachine(RegistryObject<? extends Block> blockSupplier) {
+            this.blockSupplier = blockSupplier;
+        }
 
         public String getTranslationKey() {
             return "block.pneumaticcraft.assembly_" + this.toString().toLowerCase();
         }
 
-        public Block getMachine() {
-            switch (this) {
-                case PLATFORM: return ModBlocks.ASSEMBLY_PLATFORM;
-                case DRILL: return ModBlocks.ASSEMBLY_DRILL;
-                case LASER: return ModBlocks.ASSEMBLY_LASER;
-                case IO_UNIT_EXPORT: return ModBlocks.ASSEMBLY_IO_UNIT_EXPORT;
-                case IO_UNIT_IMPORT: return ModBlocks.ASSEMBLY_IO_UNIT_IMPORT;
-                case CONTROLLER: return ModBlocks.ASSEMBLY_CONTROLLER;
-                default: throw new IllegalArgumentException("invalid type");
-            }
+        public Block getMachineBlock() {
+            //noinspection unchecked
+            return blockSupplier.get();
         }
+    }
+
+    public EnumAssemblyProblem curProblem = EnumAssemblyProblem.NO_PROBLEM;
+
+    public IAssemblyRecipe.AssemblyProgramType getType() {
+        return getItem().getProgramType();
     }
 
     /**
      * Retrieves the needed machines for this Assembly Program. As a Controller is always needed this doesn't have to be returned.
      *
-     * @return
+     * @return an array of machine types
      */
     public abstract EnumMachine[] getRequiredMachines();
 
@@ -84,18 +91,17 @@ public abstract class AssemblyProgram {
         }
     }
 
-    public static boolean isValidInput(IAssemblyRecipe recipe, ItemStack input) {
+    static boolean isValidInput(IAssemblyRecipe recipe, ItemStack input) {
         return recipe.matches(input);
     }
 
     public static AssemblyProgram fromRecipe(IAssemblyRecipe recipe) {
-        Validate.isTrue(recipe.getProgram() instanceof ItemAssemblyProgram, "This program item is not an Assembly Program!");
-        return ((ItemAssemblyProgram) recipe.getProgram()).getProgram();
+        return ItemAssemblyProgram.fromProgramType(recipe.getProgramType()).getProgram();
     }
 
-    public ItemStack getItemStack(int amount) {
+    public ItemStack toItemStack(int amount) {
         return new ItemStack(getItem(), amount);
     }
 
-    protected abstract Item getItem();
+    public abstract ItemAssemblyProgram getItem();
 }

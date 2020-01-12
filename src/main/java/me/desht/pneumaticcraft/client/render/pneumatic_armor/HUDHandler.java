@@ -288,7 +288,7 @@ public class HUDHandler implements IKeyListener {
         // During init, display found/not found message for each possible upgrade
         for (int i = 0; i < renderHandlers.size(); i++) {
             if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot) / (renderHandlers.size() + 2) * (i + 1)) {
-                playArmorInitSound(player, ModSounds.HUD_INIT, 0.5F + (float) (i + 1) / (renderHandlers.size() + 2) * 0.5F);
+                playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F + (float) (i + 1) / (renderHandlers.size() + 2) * 0.5F);
                 boolean upgradeEnabled = comHudHandler.isUpgradeRendererInserted(slot, i);
                 addMessage(new ArmorMessage(I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeID()) + (upgradeEnabled ? " installed" : " not installed"), 80, upgradeEnabled ? 0x7000AA00 : 0x70FF8000));
             }
@@ -297,12 +297,12 @@ public class HUDHandler implements IKeyListener {
         String itemName = player.getItemStackFromSlot(slot).getDisplayName().getFormattedText();
 
         if (comHudHandler.getTicksSinceEquipped(slot) == 1) {
-            playArmorInitSound(player, ModSounds.HUD_INIT, 0.5F);
+            playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F);
             addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.initStarted", itemName), 50, 0x7000AA00));
         }
 
         if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot)) {
-            playArmorInitSound(player, ModSounds.HUD_INIT_COMPLETE, 1.0F);
+            playArmorInitSound(player, ModSounds.HUD_INIT_COMPLETE.get(), 1.0F);
             addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.initComplete", itemName), 50, 0x7000AA00));
         }
     }

@@ -67,8 +67,8 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
-        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE, AirParticle.Factory::new);
-        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE_2, AirParticle.Factory::new);
+        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
+        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
     }
 
     private static void registerEntityRenderers() {
@@ -110,51 +110,51 @@ public class ClientSetup {
     }
 
     private static void registerScreenFactories() {
-        ScreenManager.registerFactory(ModContainers.ADVANCED_AIR_COMPRESSOR, GuiAdvancedAirCompressor::new);
-        ScreenManager.registerFactory(ModContainers.ADVANCED_LIQUID_COMPRESSOR, GuiAdvancedLiquidCompressor::new);
-        ScreenManager.registerFactory(ModContainers.AERIAL_INTERFACE, GuiAerialInterface::new);
-        ScreenManager.registerFactory(ModContainers.AIR_CANNON, GuiAirCannon::new);
-        ScreenManager.registerFactory(ModContainers.AIR_COMPRESSOR, GuiAirCompressor::new);
-        ScreenManager.registerFactory(ModContainers.AMADRON, GuiAmadron::new);
-        ScreenManager.registerFactory(ModContainers.AMADRON_ADD_TRADE, GuiAmadronAddTrade::new);
-        ScreenManager.registerFactory(ModContainers.ASSEMBLY_CONTROLLER, GuiAssemblyController::new);
-        ScreenManager.registerFactory(ModContainers.CHARGING_STATION, GuiChargingStation::new);
-        ScreenManager.registerFactory(ModContainers.CHARGING_ARMOR, GuiPneumaticArmor::new);
-        ScreenManager.registerFactory(ModContainers.CHARGING_DRONE, GuiDrone::new);
-        ScreenManager.registerFactory(ModContainers.CHARGING_MINIGUN, GuiMinigun::new);
-        ScreenManager.registerFactory(ModContainers.CREATIVE_COMPRESSOR, GuiCreativeCompressor::new);
-        ScreenManager.registerFactory(ModContainers.ELECTROSTATIC_COMPRESSOR, GuiElectrostaticCompressor::new);
-        ScreenManager.registerFactory(ModContainers.ELEVATOR, GuiElevator::new);
-        ScreenManager.registerFactory(ModContainers.FLUX_COMPRESSOR, GuiFluxCompressor::new);
-        ScreenManager.registerFactory(ModContainers.GAS_LIFT, GuiGasLift::new);
-        ScreenManager.registerFactory(ModContainers.INVENTORY_SEARCHER, GuiInventorySearcher::new);
-        ScreenManager.registerFactory(ModContainers.KEROSENE_LAMP, GuiKeroseneLamp::new);
-        ScreenManager.registerFactory(ModContainers.LIQUID_COMPRESSOR, GuiLiquidCompressor::new);
-        ScreenManager.registerFactory(ModContainers.LIQUID_HOPPER, GuiLiquidHopper::new);
-        ScreenManager.registerFactory(ModContainers.MINIGUN_MAGAZINE, GuiMinigunMagazine::new);
-        ScreenManager.registerFactory(ModContainers.OMNIDIRECTIONAL_HOPPER, GuiOmnidirectionalHopper::new);
-        ScreenManager.registerFactory(ModContainers.PNEUMATIC_DOOR_BASE, GuiPneumaticDoor::new);
-        ScreenManager.registerFactory(ModContainers.PNEUMATIC_DYNAMO, GuiPneumaticDynamo::new);
-        ScreenManager.registerFactory(ModContainers.PRESSURE_CHAMBER_VALVE, GuiPressureChamber::new);
-        ScreenManager.registerFactory(ModContainers.PRESSURE_CHAMBER_INTERFACE, GuiPressureChamberInterface::new);
-        ScreenManager.registerFactory(ModContainers.PROGRAMMER, GuiProgrammer::new);
-        ScreenManager.registerFactory(ModContainers.PROGRAMMABLE_CONTROLLER, GuiProgrammableController::new);
-        ScreenManager.registerFactory(ModContainers.REFINERY, GuiRefineryController::new);
-        ScreenManager.registerFactory(ModContainers.REMOTE, GuiRemote::new);
-        ScreenManager.registerFactory(ModContainers.REMOTE_EDITOR, GuiRemoteEditor::new);
-        ScreenManager.registerFactory(ModContainers.SEARCHER, GuiItemSearcher::new);
-        ScreenManager.registerFactory(ModContainers.SECURITY_STATION_MAIN, GuiSecurityStationInventory::new);
-        ScreenManager.registerFactory(ModContainers.SECURITY_STATION_HACKING, GuiSecurityStationHacking::new);
-        ScreenManager.registerFactory(ModContainers.SENTRY_TURRET, GuiSentryTurret::new);
-        ScreenManager.registerFactory(ModContainers.THERMAL_COMPRESSOR, GuiThermalCompressor::new);
-        ScreenManager.registerFactory(ModContainers.THERMOPNEUMATIC_PROCESSING_PLANT, GuiThermopneumaticProcessingPlant::new);
-        ScreenManager.registerFactory(ModContainers.UNIVERSAL_SENSOR, GuiUniversalSensor::new);
-        ScreenManager.registerFactory(ModContainers.UV_LIGHT_BOX, GuiUVLightBox::new);
-        ScreenManager.registerFactory(ModContainers.VACUUM_PUMP, GuiVacuumPump::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE, GuiLogisticsDefaultStorage::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_PASSIVE_PROVIDER, GuiLogisticsProvider::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_REQUESTER, GuiLogisticsRequester::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_STORAGE, GuiLogisticsStorage::new);
+        ScreenManager.registerFactory(ModContainers.ADVANCED_AIR_COMPRESSOR.get(), GuiAdvancedAirCompressor::new);
+        ScreenManager.registerFactory(ModContainers.ADVANCED_LIQUID_COMPRESSOR.get(), GuiAdvancedLiquidCompressor::new);
+        ScreenManager.registerFactory(ModContainers.AERIAL_INTERFACE.get(), GuiAerialInterface::new);
+        ScreenManager.registerFactory(ModContainers.AIR_CANNON.get(), GuiAirCannon::new);
+        ScreenManager.registerFactory(ModContainers.AIR_COMPRESSOR.get(), GuiAirCompressor::new);
+        ScreenManager.registerFactory(ModContainers.AMADRON.get(), GuiAmadron::new);
+        ScreenManager.registerFactory(ModContainers.AMADRON_ADD_TRADE.get(), GuiAmadronAddTrade::new);
+        ScreenManager.registerFactory(ModContainers.ASSEMBLY_CONTROLLER.get(), GuiAssemblyController::new);
+        ScreenManager.registerFactory(ModContainers.CHARGING_STATION.get(), GuiChargingStation::new);
+        ScreenManager.registerFactory(ModContainers.CHARGING_ARMOR.get(), GuiPneumaticArmor::new);
+        ScreenManager.registerFactory(ModContainers.CHARGING_DRONE.get(), GuiDrone::new);
+        ScreenManager.registerFactory(ModContainers.CHARGING_MINIGUN.get(), GuiMinigun::new);
+        ScreenManager.registerFactory(ModContainers.CREATIVE_COMPRESSOR.get(), GuiCreativeCompressor::new);
+        ScreenManager.registerFactory(ModContainers.ELECTROSTATIC_COMPRESSOR.get(), GuiElectrostaticCompressor::new);
+        ScreenManager.registerFactory(ModContainers.ELEVATOR.get(), GuiElevator::new);
+        ScreenManager.registerFactory(ModContainers.FLUX_COMPRESSOR.get(), GuiFluxCompressor::new);
+        ScreenManager.registerFactory(ModContainers.GAS_LIFT.get(), GuiGasLift::new);
+        ScreenManager.registerFactory(ModContainers.INVENTORY_SEARCHER.get(), GuiInventorySearcher::new);
+        ScreenManager.registerFactory(ModContainers.KEROSENE_LAMP.get(), GuiKeroseneLamp::new);
+        ScreenManager.registerFactory(ModContainers.LIQUID_COMPRESSOR.get(), GuiLiquidCompressor::new);
+        ScreenManager.registerFactory(ModContainers.LIQUID_HOPPER.get(), GuiLiquidHopper::new);
+        ScreenManager.registerFactory(ModContainers.MINIGUN_MAGAZINE.get(), GuiMinigunMagazine::new);
+        ScreenManager.registerFactory(ModContainers.OMNIDIRECTIONAL_HOPPER.get(), GuiOmnidirectionalHopper::new);
+        ScreenManager.registerFactory(ModContainers.PNEUMATIC_DOOR_BASE.get(), GuiPneumaticDoor::new);
+        ScreenManager.registerFactory(ModContainers.PNEUMATIC_DYNAMO.get(), GuiPneumaticDynamo::new);
+        ScreenManager.registerFactory(ModContainers.PRESSURE_CHAMBER_VALVE.get(), GuiPressureChamber::new);
+        ScreenManager.registerFactory(ModContainers.PRESSURE_CHAMBER_INTERFACE.get(), GuiPressureChamberInterface::new);
+        ScreenManager.registerFactory(ModContainers.PROGRAMMER.get(), GuiProgrammer::new);
+        ScreenManager.registerFactory(ModContainers.PROGRAMMABLE_CONTROLLER.get(), GuiProgrammableController::new);
+        ScreenManager.registerFactory(ModContainers.REFINERY.get(), GuiRefineryController::new);
+        ScreenManager.registerFactory(ModContainers.REMOTE.get(), GuiRemote::new);
+        ScreenManager.registerFactory(ModContainers.REMOTE_EDITOR.get(), GuiRemoteEditor::new);
+        ScreenManager.registerFactory(ModContainers.SEARCHER.get(), GuiItemSearcher::new);
+        ScreenManager.registerFactory(ModContainers.SECURITY_STATION_MAIN.get(), GuiSecurityStationInventory::new);
+        ScreenManager.registerFactory(ModContainers.SECURITY_STATION_HACKING.get(), GuiSecurityStationHacking::new);
+        ScreenManager.registerFactory(ModContainers.SENTRY_TURRET.get(), GuiSentryTurret::new);
+        ScreenManager.registerFactory(ModContainers.THERMAL_COMPRESSOR.get(), GuiThermalCompressor::new);
+        ScreenManager.registerFactory(ModContainers.THERMOPNEUMATIC_PROCESSING_PLANT.get(), GuiThermopneumaticProcessingPlant::new);
+        ScreenManager.registerFactory(ModContainers.UNIVERSAL_SENSOR.get(), GuiUniversalSensor::new);
+        ScreenManager.registerFactory(ModContainers.UV_LIGHT_BOX.get(), GuiUVLightBox::new);
+        ScreenManager.registerFactory(ModContainers.VACUUM_PUMP.get(), GuiVacuumPump::new);
+        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE.get(), GuiLogisticsDefaultStorage::new);
+        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_PASSIVE_PROVIDER.get(), GuiLogisticsProvider::new);
+        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_REQUESTER.get(), GuiLogisticsRequester::new);
+        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_STORAGE.get(), GuiLogisticsStorage::new);
     }
 
     private static void registerProgWidgetScreenFactories() {

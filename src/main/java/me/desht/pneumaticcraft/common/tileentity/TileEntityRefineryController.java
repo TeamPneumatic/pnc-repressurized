@@ -80,7 +80,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     private boolean searchForRecipe = true;
 
     public TileEntityRefineryController() {
-        super(ModTileEntities.REFINERY);
+        super(ModTileEntities.REFINERY.get());
 
         for (int i = 0; i < IRefineryRecipe.MAX_OUTPUTS; i++) {
             outputsSynced[i] = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);

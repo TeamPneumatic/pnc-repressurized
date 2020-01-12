@@ -15,8 +15,7 @@ public class ItemBasicDrone extends ItemDrone {
 
     private final BiFunction<World, PlayerEntity, EntityBasicDrone> droneCreator;
     
-    public ItemBasicDrone(String name, BiFunction<World, PlayerEntity, EntityBasicDrone> droneCreator) {
-        super(name);
+    public ItemBasicDrone(BiFunction<World, PlayerEntity, EntityBasicDrone> droneCreator) {
         this.droneCreator = droneCreator;
     }
 

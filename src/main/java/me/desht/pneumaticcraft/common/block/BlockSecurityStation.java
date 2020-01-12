@@ -24,7 +24,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-public class BlockSecurityStation extends BlockPneumaticCraftModeled {
+public class BlockSecurityStation extends BlockPneumaticCraft {
     private static final VoxelShape BODY = Block.makeCuboidShape(1, 8, 1, 15, 11, 15);
     private static final VoxelShape LEG1 = Block.makeCuboidShape(1, 0, 1, 3, 8, 3);
     private static final VoxelShape LEG2 = Block.makeCuboidShape(13, 0, 13, 15, 8, 15);
@@ -32,8 +32,8 @@ public class BlockSecurityStation extends BlockPneumaticCraftModeled {
     private static final VoxelShape LEG4 = Block.makeCuboidShape(13, 0, 1, 15, 8, 3);
     private static final VoxelShape SHAPE = VoxelShapes.or(BODY, LEG1, LEG2, LEG3, LEG4);
 
-    public BlockSecurityStation() {
-        super("security_station");
+    public BlockSecurityStation(Properties props) {
+        super(props);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class BlockSecurityStation extends BlockPneumaticCraftModeled {
 
     private int getPlayerHackLevel(PlayerEntity player) {
         ItemStack armorStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
-        return armorStack.getItem() == ModItems.PNEUMATIC_HELMET ? UpgradableItemUtils.getUpgrades(armorStack, EnumUpgrade.SECURITY) : 0;
+        return armorStack.getItem() == ModItems.PNEUMATIC_HELMET.get() ? UpgradableItemUtils.getUpgrades(armorStack, EnumUpgrade.SECURITY) : 0;
     }
 
     @Override

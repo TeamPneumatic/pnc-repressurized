@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 public class ProgWidgetTeleport extends ProgWidgetGoToLocation {
 
     public ProgWidgetTeleport() {
-        super(ModProgWidgets.TELEPORT);
+        super(ModProgWidgets.TELEPORT.get());
     }
 
     @Override

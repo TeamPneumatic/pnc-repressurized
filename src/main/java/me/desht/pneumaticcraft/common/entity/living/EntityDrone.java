@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
@@ -105,7 +104,6 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.network.FMLPlayMessages;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -189,12 +187,8 @@ public class EntityDrone extends EntityDroneBase implements
     // so it can persist, for performance reasons; DroneAILogistics is a short-lived object
     private LogisticsManager logisticsManager;
 
-    public static EntityDrone create(EntityType<Entity> entityEntityType, World world) {
-        return new EntityDrone(ModEntities.DRONE, world);
-    }
-
-    public static Entity createClient(FMLPlayMessages.SpawnEntity spawnEntity, World world) {
-        return new EntityDrone(ModEntities.DRONE, world);
+    public static EntityDrone create(EntityType<? extends EntityDrone> type, World world) {
+        return new EntityDrone(type, world);
     }
 
     public EntityDrone(EntityType<? extends EntityDrone> type, World world) {
@@ -334,13 +328,13 @@ public class EntityDrone extends EntityDroneBase implements
     @Nullable
     @Override
     protected SoundEvent getHurtSound(DamageSource p_184601_1_) {
-        return ModSounds.DRONE_HURT;
+        return ModSounds.DRONE_HURT.get();
     }
 
     @Nullable
     @Override
     protected SoundEvent getDeathSound() {
-        return ModSounds.DRONE_DEATH;
+        return ModSounds.DRONE_DEATH.get();
     }
 
     @Override
@@ -464,7 +458,7 @@ public class EntityDrone extends EntityDroneBase implements
             for (Direction d : Direction.values()) {
                 if (getEmittingRedstone(d) > 0) {
                     if (world.isAirBlock(new BlockPos((int) Math.floor(posX + getWidth() / 2), (int) Math.floor(posY), (int) Math.floor(posZ + getWidth() / 2)))) {
-                        world.setBlockState(new BlockPos((int) Math.floor(posX + getWidth() / 2), (int) Math.floor(posY), (int) Math.floor(posZ + getWidth() / 2)), ModBlocks.DRONE_REDSTONE_EMITTER.getDefaultState());
+                        world.setBlockState(new BlockPos((int) Math.floor(posX + getWidth() / 2), (int) Math.floor(posY), (int) Math.floor(posZ + getWidth() / 2)), ModBlocks.DRONE_REDSTONE_EMITTER.get().getDefaultState());
                     }
                     break;
                 }
@@ -688,7 +682,7 @@ public class EntityDrone extends EntityDroneBase implements
     public boolean processInteract(PlayerEntity player, Hand hand) {
         ItemStack equippedItem = player.getHeldItem(hand);
         if (!world.isRemote && !equippedItem.isEmpty()) {
-            if (equippedItem.getItem() == ModItems.GPS_TOOL) {
+            if (equippedItem.getItem() == ModItems.GPS_TOOL.get()) {
                 BlockPos gpsLoc = ItemGPSTool.getGPSLocation(equippedItem);
                 if (gpsLoc != null) {
                     getNavigator().tryMoveToXYZ(gpsLoc.getX(), gpsLoc.getY(), gpsLoc.getZ(), 0.1D);
@@ -793,7 +787,7 @@ public class EntityDrone extends EntityDroneBase implements
     protected ItemStack getDroppedStack() {
         CompoundNBT tag = new CompoundNBT();
         writeAdditional(tag);
-        ItemStack drone = new ItemStack(ModItems.DRONE);
+        ItemStack drone = new ItemStack(ModItems.DRONE.get());
         drone.setTag(tag);
         drone.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> h.addAir(getAirHandler().getAir()));
         return drone;

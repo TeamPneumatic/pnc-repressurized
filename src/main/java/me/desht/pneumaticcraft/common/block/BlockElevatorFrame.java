@@ -38,11 +38,13 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     private static final BooleanProperty SW = BooleanProperty.create("sw");
     private static final BooleanProperty NW = BooleanProperty.create("nw");
 
-    public BlockElevatorFrame() {
-        super("elevator_frame");
+    public BlockElevatorFrame(Properties props) {
+        super(props);
+
         setDefaultState(getStateContainer().getBaseState()
-            .with(NE, false).with(SE, false).with(SW, false).with(NW, false)
-            .with(WATERLOGGED, false));
+                .with(NE, false).with(SE, false).with(SW, false).with(NW, false)
+                .with(WATERLOGGED, false));
+
     }
 
     @Override
@@ -143,10 +145,10 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     private boolean[] getConnections(IBlockReader world, BlockPos pos) {
         boolean[] res = new boolean[4];
 
-        boolean frameXPos = world.getBlockState(pos.east()).getBlock() == ModBlocks.ELEVATOR_FRAME;
-        boolean frameXNeg = world.getBlockState(pos.west()).getBlock() == ModBlocks.ELEVATOR_FRAME;
-        boolean frameZPos = world.getBlockState(pos.south()).getBlock() == ModBlocks.ELEVATOR_FRAME;
-        boolean frameZNeg = world.getBlockState(pos.north()).getBlock() == ModBlocks.ELEVATOR_FRAME;
+        boolean frameXPos = world.getBlockState(pos.east()).getBlock() == ModBlocks.ELEVATOR_FRAME.get();
+        boolean frameXNeg = world.getBlockState(pos.west()).getBlock() == ModBlocks.ELEVATOR_FRAME.get();
+        boolean frameZPos = world.getBlockState(pos.south()).getBlock() == ModBlocks.ELEVATOR_FRAME.get();
+        boolean frameZNeg = world.getBlockState(pos.north()).getBlock() == ModBlocks.ELEVATOR_FRAME.get();
 
         res[Corner.SE.ordinal()]  = frameXPos || frameZPos;
         res[Corner.NE.ordinal()]  = frameXPos || frameZNeg;
@@ -189,8 +191,8 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
         // TODO cache the elevator base pos in the frame's TE (careful with cache invalidation!)
         while (true) {
             pos = pos.offset(Direction.DOWN);
-            if (world.getBlockState(pos).getBlock() == ModBlocks.ELEVATOR_BASE) break;
-            if (world.getBlockState(pos).getBlock() != ModBlocks.ELEVATOR_FRAME || pos.getY() <= 0) return null;
+            if (world.getBlockState(pos).getBlock() == ModBlocks.ELEVATOR_BASE.get()) break;
+            if (world.getBlockState(pos).getBlock() != ModBlocks.ELEVATOR_FRAME.get() || pos.getY() <= 0) return null;
         }
         return (TileEntityElevatorBase) world.getTileEntity(pos);
     }

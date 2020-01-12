@@ -218,7 +218,7 @@ public class ShapedPressurizableRecipeBuilder {
         }
 
         public IRecipeSerializer<?> getSerializer() {
-            return ModRecipes.CRAFTING_SHAPED_PRESSURIZABLE;
+            return ModRecipes.CRAFTING_SHAPED_PRESSURIZABLE.get();
         }
 
         /**

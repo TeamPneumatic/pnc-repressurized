@@ -13,7 +13,7 @@ public class ContainerLiquidHopper extends ContainerPneumaticBase<TileEntityLiqu
     }
 
     public ContainerLiquidHopper(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.LIQUID_HOPPER, i, playerInventory, pos);
+        super(ModContainers.LIQUID_HOPPER.get(), i, playerInventory, pos);
 
         addUpgradeSlots(48, 29);
 

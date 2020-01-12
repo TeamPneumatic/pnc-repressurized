@@ -21,7 +21,7 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
 
     public TileEntityAdvancedLiquidCompressor() {
-        super(ModTileEntities.ADVANCED_LIQUID_COMPRESSOR, 20, 25, 10000);
+        super(ModTileEntities.ADVANCED_LIQUID_COMPRESSOR.get(), 20, 25, 10000);
         heatExchanger.setThermalCapacity(100);
     }
 

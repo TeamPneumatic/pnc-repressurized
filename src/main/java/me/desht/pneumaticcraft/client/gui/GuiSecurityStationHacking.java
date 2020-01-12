@@ -36,8 +36,8 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
     private int stopWorms = 0;
     private int nukeViruses = 0;
 
-    private final ItemStack stopWorm = new ItemStack(ModItems.STOP_WORM);
-    private final ItemStack nukeVirus = new ItemStack(ModItems.NUKE_VIRUS);
+    private final ItemStack stopWorm = new ItemStack(ModItems.STOP_WORM.get());
+    private final ItemStack nukeVirus = new ItemStack(ModItems.NUKE_VIRUS.get());
 
     public GuiSecurityStationHacking(ContainerSecurityStationHacking container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -57,11 +57,11 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        statusStat = addAnimatedStat("Security Status", new ItemStack(ModBlocks.SECURITY_STATION), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("Security Status", new ItemStack(ModBlocks.SECURITY_STATION.get()), 0xFFFFAA00, false);
         addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.tile.security_station.hacking");
         addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText("gui.tab.upgrades.tile.security_station.hacking");
-        addAnimatedStat(ModItems.NUKE_VIRUS.getTranslationKey() + ".name", new ItemStack(ModItems.NUKE_VIRUS), 0xFF18c9e8, false).setText("gui.tab.info.tile.security_station.nukeVirus");
-        addAnimatedStat(ModItems.STOP_WORM.getTranslationKey() + ".name", new ItemStack(ModItems.STOP_WORM), 0xFFc13232, false).setText("gui.tab.info.tile.security_station.stopWorm");
+        addAnimatedStat(ModItems.NUKE_VIRUS.get().getTranslationKey() + ".name", new ItemStack(ModItems.NUKE_VIRUS.get()), 0xFF18c9e8, false).setText("gui.tab.info.tile.security_station.nukeVirus");
+        addAnimatedStat(ModItems.STOP_WORM.get().getTranslationKey() + ".name", new ItemStack(ModItems.STOP_WORM.get()), 0xFFc13232, false).setText("gui.tab.info.tile.security_station.stopWorm");
 
         if (playerBackgroundBridges == null) {
             playerBackgroundBridges = new NetworkConnectionBackground(this, te, xStart + 21, yStart + 26, 31, 0xAA4444FF);
@@ -112,8 +112,8 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
         stopWorms = 0;
         nukeViruses = 0;
         for (ItemStack stack : playerInventory.mainInventory) {
-            if (stack.getItem() == ModItems.STOP_WORM) stopWorms += stack.getCount();
-            if (stack.getItem() == ModItems.NUKE_VIRUS) nukeViruses += stack.getCount();
+            if (stack.getItem() == ModItems.STOP_WORM.get()) stopWorms += stack.getCount();
+            if (stack.getItem() == ModItems.NUKE_VIRUS.get()) nukeViruses += stack.getCount();
         }
         GuiUtils.drawItemStack(nukeVirus, 155, 30);
         GuiUtils.drawItemStack(stopWorm, 155, 55);
@@ -189,8 +189,8 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
             int mx = (int)mouseX, my = (int)mouseY;
             hackerBridges.mouseClicked(mx, my, mouseButton, getSlotAtPosition(mx, my));
             if (aiBridges.isTracing() && mouseX >= guiLeft + 155 && mouseX <= guiLeft + 171 && mouseY >= guiTop + 55 && mouseY <= guiTop + 75) {
-                NetworkHandler.sendToServer(new PacketUseItem(new ItemStack(ModItems.STOP_WORM)));
-                PneumaticCraftUtils.consumeInventoryItem(playerInventory, ModItems.STOP_WORM);
+                NetworkHandler.sendToServer(new PacketUseItem(new ItemStack(ModItems.STOP_WORM.get())));
+                PneumaticCraftUtils.consumeInventoryItem(playerInventory, ModItems.STOP_WORM.get());
                 aiBridges.applyStopWorm();
             }
         }

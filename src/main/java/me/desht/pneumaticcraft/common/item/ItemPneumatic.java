@@ -23,23 +23,12 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemPneumatic extends Item {
-//    public static final Item.Properties DEFAULT_PROPS = new Item.Properties().group(ModItems.Groups.PNC_CREATIVE_TAB);
-
-    public ItemPneumatic(String registryName) {
-        this(defaultProps(), registryName);
+    public ItemPneumatic() {
+        super(ModItems.defaultProps());
     }
 
-    public ItemPneumatic(Item.Properties props, String registryName) {
+    public ItemPneumatic(Properties props) {
         super(props);
-        setRegistryName(registryName);
-    }
-
-    public static Item.Properties defaultProps() {
-        return new Item.Properties().group(ModItems.Groups.PNC_CREATIVE_TAB);
-    }
-
-    static Item.Properties pressurizableProps(int maxAir) {
-        return defaultProps().setNoRepair().defaultMaxDamage(maxAir);
     }
 
     @Override

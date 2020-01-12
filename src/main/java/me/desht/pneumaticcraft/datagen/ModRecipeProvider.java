@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.block.tubes.*;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -41,558 +40,558 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
-        shaped(ModItems.AIR_CANISTER, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModItems.AIR_CANISTER.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 " T /IRI/IRI",
-                'T', ModBlocks.PRESSURE_TUBE,
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'T', ModBlocks.PRESSURE_TUBE.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'R', Tags.Items.DUSTS_REDSTONE
         ).build(consumer);
 
-        shaped(ModBlocks.ADVANCED_AIR_COMPRESSOR, ModBlocks.ADVANCED_PRESSURE_TUBE,
+        shaped(ModBlocks.ADVANCED_AIR_COMPRESSOR.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "III/I T/ICI",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
-                'T', ModBlocks.ADVANCED_PRESSURE_TUBE,
-                'C', ModBlocks.AIR_COMPRESSOR
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+                'C', ModBlocks.AIR_COMPRESSOR.get()
         ).build(consumer);
 
-        shaped(ModBlocks.ADVANCED_LIQUID_COMPRESSOR, ModBlocks.ADVANCED_PRESSURE_TUBE,
+        shaped(ModBlocks.ADVANCED_LIQUID_COMPRESSOR.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "III/IBT/ICI",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'B', Items.BUCKET,
-                'T', ModBlocks.ADVANCED_PRESSURE_TUBE,
-                'C', ModBlocks.AIR_COMPRESSOR
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+                'C', ModBlocks.AIR_COMPRESSOR.get()
         ).build(consumer);
 
-        shaped(ModItems.ADVANCED_PCB, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModItems.ADVANCED_PCB.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "RPR/PCP/RPR",
                 'R', Tags.Items.DUSTS_REDSTONE,
-                'P', ModItems.PLASTIC,
-                'C', ModItems.PRINTED_CIRCUIT_BOARD
+                'P', ModItems.PLASTIC.get(),
+                'C', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).build(consumer);
 
-        shaped(ModBlocks.AERIAL_INTERFACE, ModBlocks.ADVANCED_PRESSURE_TUBE,
+        shaped(ModBlocks.AERIAL_INTERFACE.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "WHW/ESE/WTW",
-                'W', ModBlocks.PRESSURE_CHAMBER_WALL,
-                'H', ModBlocks.OMNIDIRECTIONAL_HOPPER,
+                'W', ModBlocks.PRESSURE_CHAMBER_WALL.get(),
+                'H', ModBlocks.OMNIDIRECTIONAL_HOPPER.get(),
                 'S', Items.NETHER_STAR,
-                'T', ModBlocks.ADVANCED_PRESSURE_TUBE,
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 'E', Items.ENDER_PEARL
         ).build(consumer);
 
-        shaped(ModItems.AIR_CANISTER, ModBlocks.PRESSURE_TUBE,
+        shaped(ModItems.AIR_CANISTER.get(), ModBlocks.PRESSURE_TUBE.get(),
                 " T /IRI/IRI",
-                'T', ModBlocks.PRESSURE_TUBE,
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'T', ModBlocks.PRESSURE_TUBE.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'R', Tags.Items.DUSTS_REDSTONE);
 
-        shaped(ModBlocks.AIR_CANNON, ModBlocks.PRESSURE_TUBE,
+        shaped(ModBlocks.AIR_CANNON.get(), ModBlocks.PRESSURE_TUBE.get(),
                 " B / ST/HHH",
-                'B', ModItems.CANNON_BARREL,
-                'S', ModItems.STONE_BASE,
-                'T', ModBlocks.PRESSURE_TUBE,
+                'B', ModItems.CANNON_BARREL.get(),
+                'S', ModItems.STONE_BASE.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get(),
                 'H', Blocks.COBBLESTONE_SLAB
         ).build(consumer);
 
-        shaped(ModBlocks.AIR_COMPRESSOR, ModBlocks.PRESSURE_TUBE,
+        shaped(ModBlocks.AIR_COMPRESSOR.get(), ModBlocks.PRESSURE_TUBE.get(),
                 "III/I T/IFI",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
-                'T', ModBlocks.PRESSURE_TUBE,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get(),
                 'F', Blocks.FURNACE
         ).build(consumer);
 
-        shaped(new ModuleAirGrate().getItem(), ModBlocks.PRESSURE_TUBE,
+        shaped(ModItems.AIR_GRATE_MODULE.get(), ModBlocks.PRESSURE_TUBE.get(),
                 " B /BTB/ B ",
                 'B', Blocks.IRON_BARS,
-                'T', ModBlocks.PRESSURE_TUBE
+                'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shapedPressure(ModItems.AMADRON_TABLET, ModItems.PLASTIC,
+        shapedPressure(ModItems.AMADRON_TABLET.get(), ModItems.PLASTIC.get(),
                 "PPP/PGP/PCP",
-                'P', ModItems.PLASTIC,
-                'G', ModItems.GPS_TOOL,
-                'C', ModItems.AIR_CANISTER
+                'P', ModItems.PLASTIC.get(),
+                'G', ModItems.GPS_TOOL.get(),
+                'C', ModItems.AIR_CANISTER.get()
         ).build(consumer);
 
-        shapeless(ModBlocks.APHORISM_TILE, ModBlocks.APHORISM_TILE,
-                ModBlocks.APHORISM_TILE
+        shapeless(ModBlocks.APHORISM_TILE.get(), ModBlocks.APHORISM_TILE.get(),
+                ModBlocks.APHORISM_TILE.get()
         ).build(consumer, RL("aphorism_tile_reset"));
 
-        shaped(ModBlocks.ASSEMBLY_CONTROLLER, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModBlocks.ASSEMBLY_CONTROLLER.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 " B /TBB/III",
-                'B', ModItems.PRINTED_CIRCUIT_BOARD,
-                'T', ModBlocks.PRESSURE_TUBE,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'B', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModBlocks.ASSEMBLY_DRILL, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModBlocks.ASSEMBLY_DRILL.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "DCC/  C/IBI",
                 'D', Tags.Items.GEMS_DIAMOND,
-                'C', ModItems.PNEUMATIC_CYLINDER,
-                'B', ModItems.PRINTED_CIRCUIT_BOARD,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'C', ModItems.PNEUMATIC_CYLINDER.get(),
+                'B', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModBlocks.ASSEMBLY_LASER, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModBlocks.ASSEMBLY_LASER.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "DCC/  C/IBI",
                 'D', Tags.Items.GLASS_RED,
-                'C', ModItems.PNEUMATIC_CYLINDER,
-                'B', ModItems.PRINTED_CIRCUIT_BOARD,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'C', ModItems.PNEUMATIC_CYLINDER.get(),
+                'B', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "HCC/  C/IBI",
                 'H', Blocks.HOPPER,
-                'C', ModItems.PNEUMATIC_CYLINDER,
-                'B', ModItems.PRINTED_CIRCUIT_BOARD,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'C', ModItems.PNEUMATIC_CYLINDER.get(),
+                'B', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModBlocks.ASSEMBLY_IO_UNIT_EXPORT, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModBlocks.ASSEMBLY_IO_UNIT_EXPORT.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "CCH/C  /IBI",
                 'H', Blocks.HOPPER,
-                'C', ModItems.PNEUMATIC_CYLINDER,
-                'B', ModItems.PRINTED_CIRCUIT_BOARD,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'C', ModItems.PNEUMATIC_CYLINDER.get(),
+                'B', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shapeless(ModBlocks.ASSEMBLY_IO_UNIT_EXPORT, ModItems.PRINTED_CIRCUIT_BOARD,
-                ModBlocks.ASSEMBLY_IO_UNIT_IMPORT
+        shapeless(ModBlocks.ASSEMBLY_IO_UNIT_EXPORT.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                ModBlocks.ASSEMBLY_IO_UNIT_IMPORT.get()
         ).build(consumer, RL("assembly_io_unit_export_from_import"));
 
-        shapeless(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT, ModItems.PRINTED_CIRCUIT_BOARD,
-                ModBlocks.ASSEMBLY_IO_UNIT_EXPORT
+        shapeless(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                ModBlocks.ASSEMBLY_IO_UNIT_EXPORT.get()
         ).build(consumer, RL("assembly_io_unit_import_from_export"));
 
-        shaped(ModBlocks.ASSEMBLY_PLATFORM, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModBlocks.ASSEMBLY_PLATFORM.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "C C/PPP/IBI",
-                'C', ModItems.PNEUMATIC_CYLINDER,
-                'P', ModItems.PLASTIC,
-                'B', ModItems.PRINTED_CIRCUIT_BOARD,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'C', ModItems.PNEUMATIC_CYLINDER.get(),
+                'P', ModItems.PLASTIC.get(),
+                'B', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shapeless(ModItems.ASSEMBLY_PROGRAM_DRILL_LASER, ModItems.PRINTED_CIRCUIT_BOARD,
-                ModItems.ASSEMBLY_PROGRAM_LASER,
-                ModItems.ASSEMBLY_PROGRAM_DRILL
+        shapeless(ModItems.ASSEMBLY_PROGRAM_DRILL_LASER.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                ModItems.ASSEMBLY_PROGRAM_LASER.get(),
+                ModItems.ASSEMBLY_PROGRAM_DRILL.get()
         ).build(consumer);
 
-        shaped(ModItems.CANNON_BARREL, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModItems.CANNON_BARREL.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "I I/I I/PII",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
-                'P', ModBlocks.PRESSURE_TUBE
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
+                'P', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(new ModuleCharging().getItem(), ModBlocks.CHARGING_STATION,
+        shaped(ModItems.CHARGING_MODULE.get(), ModBlocks.CHARGING_STATION.get(),
                 " C /CPC/ C ",
-                'C', ModBlocks.CHARGING_STATION,
-                'P', ModBlocks.PRESSURE_TUBE
+                'C', ModBlocks.CHARGING_STATION.get(),
+                'P', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(ModBlocks.CHARGING_STATION, ModBlocks.PRESSURE_TUBE,
+        shaped(ModBlocks.CHARGING_STATION.get(), ModBlocks.PRESSURE_TUBE.get(),
                 "  T/PPP/SSS",
-                'T', ModBlocks.PRESSURE_TUBE,
+                'T', ModBlocks.PRESSURE_TUBE.get(),
                 'P', Items.BRICK,
                 'S', Blocks.COBBLESTONE_SLAB
         ).build(consumer);
 
-        shaped(ModBlocks.COMPRESSED_IRON_BLOCK, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.COMPRESSED_IRON_BLOCK.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "III/III/III",
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer, RL("compressed_iron_block_from_ingot"));
 
-        shaped(ModItems.COMPRESSED_IRON_GEAR, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModItems.COMPRESSED_IRON_GEAR.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 " C /CIC/ C ",
-                'C', ModItems.INGOT_IRON_COMPRESSED,
+                'C', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'I', Tags.Items.INGOTS_IRON
         ).build(consumer);
 
-        shaped(ModItems.CROP_SUPPORT, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModItems.CROP_SUPPORT.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "I I/I I",
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModBlocks.DRILL_PIPE, 3, ModBlocks.GAS_LIFT,
+        shaped(ModBlocks.DRILL_PIPE.get(), 3, ModBlocks.GAS_LIFT.get(),
                 "T/T/T",
-                'T', ModBlocks.PRESSURE_TUBE
+                'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(ModItems.DRONE, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModItems.DRONE.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 " B /BPB/ B ",
-                'B', ModItems.TURBINE_ROTOR,
-                'P', ModItems.PRINTED_CIRCUIT_BOARD
+                'B', ModItems.TURBINE_ROTOR.get(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).build(consumer);
 
-        shaped(ModBlocks.ELECTROSTATIC_COMPRESSOR, ModItems.TURBINE_ROTOR,
+        shaped(ModBlocks.ELECTROSTATIC_COMPRESSOR.get(), ModItems.TURBINE_ROTOR.get(),
                 "BPB/PRP/BCB",
                 'B', Blocks.IRON_BARS,
-                'P', ModItems.PLASTIC,
-                'R', ModItems.TURBINE_ROTOR,
-                'C', ModBlocks.AIR_COMPRESSOR
+                'P', ModItems.PLASTIC.get(),
+                'R', ModItems.TURBINE_ROTOR.get(),
+                'C', ModBlocks.AIR_COMPRESSOR.get()
         ).build(consumer);
 
-        shaped(ModBlocks.ELEVATOR_BASE, ModItems.PLASTIC,
+        shaped(ModBlocks.ELEVATOR_BASE.get(), ModItems.PLASTIC.get(),
                 "CP/PC",
-                'C', ModItems.PNEUMATIC_CYLINDER,
-                'P', ModItems.PLASTIC
+                'C', ModItems.PNEUMATIC_CYLINDER.get(),
+                'P', ModItems.PLASTIC.get()
         ).build(consumer, RL("elevator_base_1"));
-        shaped(ModBlocks.ELEVATOR_BASE, ModItems.PLASTIC,
+        shaped(ModBlocks.ELEVATOR_BASE.get(), ModItems.PLASTIC.get(),
                 "PC/CP",
-                'C', ModItems.PNEUMATIC_CYLINDER,
-                'P', ModItems.PLASTIC
+                'C', ModItems.PNEUMATIC_CYLINDER.get(),
+                'P', ModItems.PLASTIC.get()
         ).build(consumer, RL("elevator_base_2"));
 
-        shaped(ModBlocks.ELEVATOR_CALLER, ModItems.PLASTIC,
+        shaped(ModBlocks.ELEVATOR_CALLER.get(), ModItems.PLASTIC.get(),
                 "BPB/PRP/BPB",
-                'P', ModItems.PLASTIC,
+                'P', ModItems.PLASTIC.get(),
                 'B', Blocks.STONE_BUTTON,
                 'R', Tags.Blocks.STONE
         ).build(consumer);
 
-        shaped(ModBlocks.ELEVATOR_FRAME, 4, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.ELEVATOR_FRAME.get(), 4, ModItems.INGOT_IRON_COMPRESSED.get(),
                 "I I/I I/I I",
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(new ModuleFlowDetector().getItem(), ModItems.TURBINE_BLADE,
+        shaped(ModItems.FLOW_DETECTOR_MODULE.get(), ModItems.TURBINE_BLADE.get(),
                 "B B/ T /B B",
-                'B', ModItems.TURBINE_BLADE,
-                'T', ModBlocks.PRESSURE_TUBE
+                'B', ModItems.TURBINE_BLADE.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(ModBlocks.FLUX_COMPRESSOR, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModBlocks.FLUX_COMPRESSOR.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "GCP/FRT/GQP",
                 'G', Tags.Items.DUSTS_REDSTONE,
-                'C', ModItems.COMPRESSED_IRON_GEAR,
-                'P', ModItems.PRINTED_CIRCUIT_BOARD,
+                'C', ModItems.COMPRESSED_IRON_GEAR.get(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 'F', Tags.Items.STORAGE_BLOCKS_REDSTONE,
-                'R', ModItems.TURBINE_ROTOR,
-                'T', ModBlocks.ADVANCED_PRESSURE_TUBE,
+                'R', ModItems.TURBINE_ROTOR.get(),
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 'Q', Blocks.BLAST_FURNACE
         ).build(consumer);
 
-        shaped(ModBlocks.GAS_LIFT, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.GAS_LIFT.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 " T /TGT/III",
-                'T', ModBlocks.PRESSURE_TUBE,
+                'T', ModBlocks.PRESSURE_TUBE.get(),
                 'G', Tags.Items.GLASS,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModItems.GPS_TOOL, ModItems.PLASTIC,
+        shaped(ModItems.GPS_TOOL.get(), ModItems.PLASTIC.get(),
                 " R /PGP/PDP",
                 'R', Blocks.REDSTONE_TORCH,
-                'P', ModItems.PLASTIC,
+                'P', ModItems.PLASTIC.get(),
                 'G', Tags.Items.GLASS_PANES,
                 'D', Tags.Items.GEMS_DIAMOND
         ).build(consumer);
 
-        shapeless(ModItems.GPS_AREA_TOOL, ModItems.PLASTIC,
-                ModItems.GPS_TOOL, ModItems.GPS_TOOL).build(consumer);
+        shapeless(ModItems.GPS_AREA_TOOL.get(), ModItems.PLASTIC.get(),
+                ModItems.GPS_TOOL.get(), ModItems.GPS_TOOL.get()).build(consumer);
 
-        shapeless(ModItems.GUN_AMMO, ModItems.MINIGUN,
-                Tags.Items.GUNPOWDER, ModItems.INGOT_IRON_COMPRESSED, Tags.Items.INGOTS_GOLD
+        shapeless(ModItems.GUN_AMMO.get(), ModItems.MINIGUN.get(),
+                Tags.Items.GUNPOWDER, ModItems.INGOT_IRON_COMPRESSED.get(), Tags.Items.INGOTS_GOLD
         ).build(consumer);
-        miniGunAmmo(ModItems.GUN_AMMO_AP, Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_DIAMOND).build(consumer);
-        miniGunAmmo(ModItems.GUN_AMMO_EXPLOSIVE, Blocks.TNT, Blocks.TNT).build(consumer);
-        miniGunAmmo(ModItems.GUN_AMMO_FREEZING, Blocks.ICE, Blocks.ICE).build(consumer);
-        miniGunAmmo(ModItems.GUN_AMMO_INCENDIARY, Tags.Items.RODS_BLAZE, Tags.Items.RODS_BLAZE).build(consumer);
-        miniGunAmmo(ModItems.GUN_AMMO_WEIGHTED, Tags.Items.STORAGE_BLOCKS_GOLD, Tags.Items.OBSIDIAN).build(consumer);
+        miniGunAmmo(ModItems.GUN_AMMO_AP.get(), Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_DIAMOND).build(consumer);
+        miniGunAmmo(ModItems.GUN_AMMO_EXPLOSIVE.get(), Blocks.TNT, Blocks.TNT).build(consumer);
+        miniGunAmmo(ModItems.GUN_AMMO_FREEZING.get(), Blocks.ICE, Blocks.ICE).build(consumer);
+        miniGunAmmo(ModItems.GUN_AMMO_INCENDIARY.get(), Tags.Items.RODS_BLAZE, Tags.Items.RODS_BLAZE).build(consumer);
+        miniGunAmmo(ModItems.GUN_AMMO_WEIGHTED.get(), Tags.Items.STORAGE_BLOCKS_GOLD, Tags.Items.OBSIDIAN).build(consumer);
 
-        shaped(ModItems.HARVESTING_DRONE, ModItems.TURBINE_ROTOR,
+        shaped(ModItems.HARVESTING_DRONE.get(), ModItems.TURBINE_ROTOR.get(),
                 " S /SRS/ S ",
                 'S', Tags.Items.CROPS,
-                'R', ModItems.TURBINE_ROTOR
+                'R', ModItems.TURBINE_ROTOR.get()
         ).build(consumer);
 
-        shaped(ModItems.HEAT_FRAME, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModItems.HEAT_FRAME.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "III/IFI/III",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'F', Blocks.FURNACE
         ).build(consumer);
 
-        shaped(ModBlocks.HEAT_SINK, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.HEAT_SINK.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "BBB/IGI",
                 'B', Blocks.IRON_BARS,
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'G', Tags.Items.INGOTS_GOLD
         ).build(consumer);
 
-        shapeless(ModItems.INGOT_IRON_COMPRESSED, 9, ModBlocks.COMPRESSED_IRON_BLOCK,
-                ModBlocks.COMPRESSED_IRON_BLOCK
+        shapeless(ModItems.INGOT_IRON_COMPRESSED.get(), 9, ModBlocks.COMPRESSED_IRON_BLOCK.get(),
+                ModBlocks.COMPRESSED_IRON_BLOCK.get()
         ).build(consumer, RL("compressed_iron_ingot_from_block"));
 
-        shaped(ModBlocks.KEROSENE_LAMP, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.KEROSENE_LAMP.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 " I /G G/IBI",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'G', Tags.Items.GLASS_PANES,
                 'B', Items.BUCKET
         ).build(consumer);
 
-        shaped(ModBlocks.LIQUID_COMPRESSOR, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.LIQUID_COMPRESSOR.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "PBP/LCL",
-                'P', ModBlocks.PRESSURE_TUBE,
+                'P', ModBlocks.PRESSURE_TUBE.get(),
                 'B', Items.BUCKET,
                 'L', Tags.Items.LEATHER,
-                'C', ModBlocks.AIR_COMPRESSOR
+                'C', ModBlocks.AIR_COMPRESSOR.get()
         ).build(consumer);
 
-        shaped(ModBlocks.LIQUID_HOPPER, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.LIQUID_HOPPER.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "I I/ICI/ I ",
                 'I', Tags.Items.GLASS,
                 'C', Blocks.HOPPER
         ).build(consumer);
 
-        shaped(ModItems.LOGISTIC_DRONE, ModItems.TURBINE_ROTOR,
+        shaped(ModItems.LOGISTICS_DRONE.get(), ModItems.TURBINE_ROTOR.get(),
                 " B /BCB/ B ",
-                'B', ModItems.TURBINE_ROTOR,
+                'B', ModItems.TURBINE_ROTOR.get(),
                 'C', Tags.Items.DUSTS_REDSTONE
         ).build(consumer);
 
-        shaped(new ModuleLogistics().getItem(), ModItems.PLASTIC,
+        shaped(ModItems.LOGISTICS_MODULE.get(), ModItems.PLASTIC.get(),
                 "PIP/IRI/PIP",
-                'P', ModItems.PLASTIC,
-                'R', new ModuleRegulatorTube().getItem(),
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'P', ModItems.PLASTIC.get(),
+                'R', ModItems.LOGISTICS_MODULE.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer, RL("logistics_module_1"));
-        shaped(new ModuleLogistics().getItem(), ModItems.PLASTIC,
+        shaped(ModItems.LOGISTICS_MODULE.get(), ModItems.PLASTIC.get(),
                 "IPI/PRP/IRI",
-                'P', ModItems.PLASTIC,
-                'R', new ModuleRegulatorTube().getItem(),
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'P', ModItems.PLASTIC.get(),
+                'R', ModItems.LOGISTICS_MODULE.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer, RL("logistics_module_2"));
 
-        shapedPressure(ModItems.MANOMETER, ModItems.INGOT_IRON_COMPRESSED,
+        shapedPressure(ModItems.MANOMETER.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "G/C",
-                'G', ModItems.PRESSURE_GAUGE,
-                'C', ModItems.AIR_CANISTER
+                'G', ModItems.PRESSURE_GAUGE.get(),
+                'C', ModItems.AIR_CANISTER.get()
         ).build(consumer);
 
-        shaped(ModItems.MICROMISSILES, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModItems.MICROMISSILES.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 " T /WPW/WFW",
-                'W', ModItems.PLASTIC,
-                'P', ModItems.PRINTED_CIRCUIT_BOARD,
+                'W', ModItems.PLASTIC.get(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 'T', Blocks.TNT,
                 'F', Items.FIRE_CHARGE
         ).build(consumer);
 
-        shapedPressure(ModItems.MINIGUN, ModItems.INGOT_IRON_COMPRESSED,
+        shapedPressure(ModItems.MINIGUN.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "A  /CIB/GL ",
-                'A', ModItems.AIR_CANISTER,
+                'A', ModItems.AIR_CANISTER.get(),
                 'C', Tags.Items.CHESTS,
-                'I', ModItems.INGOT_IRON_COMPRESSED,
-                'B', ModItems.CANNON_BARREL,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
+                'B', ModItems.CANNON_BARREL.get(),
                 'G', Tags.Items.INGOTS_GOLD,
                 'L', Blocks.LEVER
         ).build(consumer);
 
-        shaped(ModBlocks.OMNIDIRECTIONAL_HOPPER, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.OMNIDIRECTIONAL_HOPPER.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "I I/ICI/ I ",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'C', Tags.Items.CHESTS
         ).build(consumer);
 
-        shapedPressure(ModItems.PNEUMATIC_BOOTS, ModItems.PRINTED_CIRCUIT_BOARD,
+        shapedPressure(ModItems.PNEUMATIC_BOOTS.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "CPC/CAC",
-                'C', ModItems.AIR_CANISTER,
-                'P', ModItems.PRINTED_CIRCUIT_BOARD,
+                'C', ModItems.AIR_CANISTER.get(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 'A', Items.LEATHER_BOOTS
         ).build(consumer);
-        shapedPressure(ModItems.PNEUMATIC_CHESTPLATE, ModItems.PRINTED_CIRCUIT_BOARD,
+        shapedPressure(ModItems.PNEUMATIC_CHESTPLATE.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "CPC/CAC/CCC",
-                'C', ModItems.AIR_CANISTER,
-                'P', ModItems.PRINTED_CIRCUIT_BOARD,
+                'C', ModItems.AIR_CANISTER.get(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 'A', Items.LEATHER_CHESTPLATE
         ).build(consumer);
-        shapedPressure(ModItems.PNEUMATIC_HELMET, ModItems.PRINTED_CIRCUIT_BOARD,
+        shapedPressure(ModItems.PNEUMATIC_HELMET.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "CPC/CAC/CCC",
-                'C', ModItems.AIR_CANISTER,
-                'P', ModItems.PRINTED_CIRCUIT_BOARD,
+                'C', ModItems.AIR_CANISTER.get(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 'A', Items.LEATHER_HELMET
         ).build(consumer);
-        shapedPressure(ModItems.PNEUMATIC_LEGGINGS, ModItems.PRINTED_CIRCUIT_BOARD,
+        shapedPressure(ModItems.PNEUMATIC_LEGGINGS.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "CPC/CAC/I I",
-                'C', ModItems.AIR_CANISTER,
-                'P', ModItems.PRINTED_CIRCUIT_BOARD,
+                'C', ModItems.AIR_CANISTER.get(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 'A', Items.LEATHER_LEGGINGS,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModItems.PNEUMATIC_CYLINDER, 2, ModItems.PLASTIC,
+        shaped(ModItems.PNEUMATIC_CYLINDER.get(), 2, ModItems.PLASTIC.get(),
                 "PIP/PIP/PBP",
-                'P', ModItems.PLASTIC,
-                'B', ModItems.CANNON_BARREL,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'P', ModItems.PLASTIC.get(),
+                'B', ModItems.CANNON_BARREL.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModBlocks.PNEUMATIC_DOOR_BASE, ModItems.PLASTIC,
+        shaped(ModBlocks.PNEUMATIC_DOOR_BASE.get(), ModItems.PLASTIC.get(),
                 " CI/IIT/III",
-                'C', ModItems.PNEUMATIC_CYLINDER,
-                'I', ModItems.INGOT_IRON_COMPRESSED,
-                'T', ModBlocks.PRESSURE_TUBE
+                'C', ModItems.PNEUMATIC_CYLINDER.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(ModBlocks.PNEUMATIC_DOOR, ModItems.PLASTIC,
+        shaped(ModBlocks.PNEUMATIC_DOOR.get(), ModItems.PLASTIC.get(),
                 "II/II/II",
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModBlocks.PNEUMATIC_DYNAMO, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModBlocks.PNEUMATIC_DYNAMO.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 " T /GIG/IPI",
-                'T', ModBlocks.ADVANCED_PRESSURE_TUBE,
-                'G', ModItems.COMPRESSED_IRON_GEAR,
-                'I', ModItems.INGOT_IRON_COMPRESSED,
-                'P', ModItems.PRINTED_CIRCUIT_BOARD
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+                'G', ModItems.COMPRESSED_IRON_GEAR.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).build(consumer);
 
-        shaped(ModBlocks.PRESSURE_CHAMBER_GLASS, 16, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), 16, ModItems.INGOT_IRON_COMPRESSED.get(),
                 "III/IGI/III",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'G', Tags.Items.GLASS
         ).build(consumer);
-        shapeless(ModBlocks.PRESSURE_CHAMBER_GLASS, ModItems.INGOT_IRON_COMPRESSED,
-                Tags.Items.GLASS, ModBlocks.PRESSURE_CHAMBER_WALL
+        shapeless(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
+                Tags.Items.GLASS, ModBlocks.PRESSURE_CHAMBER_WALL.get()
         ).build(consumer, RL("pressure_chamber_glass_x1"));
-        shapeless(ModBlocks.PRESSURE_CHAMBER_GLASS, 4, ModItems.INGOT_IRON_COMPRESSED,
+        shapeless(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), 4, ModItems.INGOT_IRON_COMPRESSED.get(),
                 Tags.Items.GLASS,
-                ModBlocks.PRESSURE_CHAMBER_WALL,
-                ModBlocks.PRESSURE_CHAMBER_WALL,
-                ModBlocks.PRESSURE_CHAMBER_WALL,
-                ModBlocks.PRESSURE_CHAMBER_WALL
+                ModBlocks.PRESSURE_CHAMBER_WALL.get(),
+                ModBlocks.PRESSURE_CHAMBER_WALL.get(),
+                ModBlocks.PRESSURE_CHAMBER_WALL.get(),
+                ModBlocks.PRESSURE_CHAMBER_WALL.get()
         ).build(consumer, RL("pressure_chamber_glass_x4"));
 
-        shapeless(ModBlocks.PRESSURE_CHAMBER_INTERFACE, 2, ModItems.INGOT_IRON_COMPRESSED,
-                Blocks.HOPPER, ModBlocks.PRESSURE_CHAMBER_WALL, Blocks.HOPPER
+        shapeless(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get(), 2, ModItems.INGOT_IRON_COMPRESSED.get(),
+                Blocks.HOPPER, ModBlocks.PRESSURE_CHAMBER_WALL.get(), Blocks.HOPPER
         ).build(consumer);
 
-        shaped(ModBlocks.PRESSURE_CHAMBER_VALVE, 16, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.PRESSURE_CHAMBER_VALVE.get(), 16, ModItems.INGOT_IRON_COMPRESSED.get(),
                 "III/ITI/III",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
-                'T', ModBlocks.PRESSURE_TUBE
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
-        shapeless(ModBlocks.PRESSURE_CHAMBER_VALVE, ModItems.INGOT_IRON_COMPRESSED,
-                ModBlocks.PRESSURE_TUBE, ModBlocks.PRESSURE_CHAMBER_WALL
+        shapeless(ModBlocks.PRESSURE_CHAMBER_VALVE.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
+                ModBlocks.PRESSURE_TUBE.get(), ModBlocks.PRESSURE_CHAMBER_WALL.get()
         ).build(consumer, RL("pressure_chamber_valve_x1"));
-        shapeless(ModBlocks.PRESSURE_CHAMBER_VALVE, 4, ModItems.INGOT_IRON_COMPRESSED,
-                ModBlocks.PRESSURE_TUBE,
-                ModBlocks.PRESSURE_CHAMBER_WALL,
-                ModBlocks.PRESSURE_CHAMBER_WALL,
-                ModBlocks.PRESSURE_CHAMBER_WALL,
-                ModBlocks.PRESSURE_CHAMBER_WALL
+        shapeless(ModBlocks.PRESSURE_CHAMBER_VALVE.get(), 4, ModItems.INGOT_IRON_COMPRESSED.get(),
+                ModBlocks.PRESSURE_TUBE.get(),
+                ModBlocks.PRESSURE_CHAMBER_WALL.get(),
+                ModBlocks.PRESSURE_CHAMBER_WALL.get(),
+                ModBlocks.PRESSURE_CHAMBER_WALL.get(),
+                ModBlocks.PRESSURE_CHAMBER_WALL.get()
         ).build(consumer, RL("pressure_chamber_valve_x4"));
 
-        shaped(ModBlocks.PRESSURE_CHAMBER_WALL, 16, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.PRESSURE_CHAMBER_WALL.get(), 16, ModItems.INGOT_IRON_COMPRESSED.get(),
                 "III/I I/III",
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModItems.PRESSURE_GAUGE, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModItems.PRESSURE_GAUGE.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 " G /GIG/ G ",
                 'G', Tags.Items.INGOTS_GOLD,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(new ModulePressureGauge().getItem(), ModItems.PRESSURE_GAUGE,
+        shaped(ModItems.PRESSURE_GAUGE_MODULE.get(), ModItems.PRESSURE_GAUGE.get(),
                 " G /RTR",
-                'G', ModItems.PRESSURE_GAUGE,
+                'G', ModItems.PRESSURE_GAUGE.get(),
                 'R', Tags.Items.DUSTS_REDSTONE,
-                'T', ModBlocks.PRESSURE_TUBE
+                'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(ModBlocks.PRESSURE_TUBE, 8, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.PRESSURE_TUBE.get(), 8, ModItems.INGOT_IRON_COMPRESSED.get(),
                 "IGI",
                 'G', Tags.Items.GLASS,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shapeless(ModItems.PRINTED_CIRCUIT_BOARD, ModItems.PLASTIC,
-                ModItems.UNASSEMBLED_PCB,
-                ModItems.TRANSISTOR, ModItems.TRANSISTOR, ModItems.TRANSISTOR,
-                ModItems.CAPACITOR, ModItems.CAPACITOR, ModItems.CAPACITOR
+        shapeless(ModItems.PRINTED_CIRCUIT_BOARD.get(), ModItems.PLASTIC.get(),
+                ModItems.UNASSEMBLED_PCB.get(),
+                ModItems.TRANSISTOR.get(), ModItems.TRANSISTOR.get(), ModItems.TRANSISTOR.get(),
+                ModItems.CAPACITOR.get(), ModItems.CAPACITOR.get(), ModItems.CAPACITOR.get()
         ).build(consumer);
 
-        shaped(ModBlocks.PROGRAMMABLE_CONTROLLER, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModBlocks.PROGRAMMABLE_CONTROLLER.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "IRI/CDP/INI",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
-                'R', ModItems.REMOTE,
-                'C', ModItems.PRINTED_CIRCUIT_BOARD,
-                'P', ModBlocks.ADVANCED_PRESSURE_TUBE,
-                'D', ModItems.DRONE,
-                'N', ModItems.NETWORK_REGISTRY
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
+                'R', ModItems.REMOTE.get(),
+                'C', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                'P', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+                'D', ModItems.DRONE.get(),
+                'N', ModItems.NETWORK_REGISTRY.get()
         ).build(consumer);
 
-        shaped(ModBlocks.PROGRAMMER, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModBlocks.PROGRAMMER.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "RGR/TBT/P P",
                 'R', Tags.Items.DYES_RED,
                 'G', Tags.Items.GLASS_PANES_BLACK,
-                'T', ModItems.TURBINE_ROTOR,
-                'B', ModItems.PRINTED_CIRCUIT_BOARD,
-                'P', ModItems.PLASTIC
+                'T', ModItems.TURBINE_ROTOR.get(),
+                'B', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                'P', ModItems.PLASTIC.get()
         ).build(consumer);
 
-        shaped(ModItems.PROGRAMMING_PUZZLE,8, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModItems.PROGRAMMING_PUZZLE.get(),8, ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "PPP/PCP/PPP",
-                'P', ModItems.PLASTIC,
-                'C', ModItems.PRINTED_CIRCUIT_BOARD
+                'P', ModItems.PLASTIC.get(),
+                'C', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).build(consumer);
 
-        shaped(new ModuleRedstone().getItem(), ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModItems.REDSTONE_MODULE.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 " R /TDT",
                 'R', Tags.Items.DUSTS_REDSTONE,
-                'T', ModBlocks.PRESSURE_TUBE,
+                'T', ModBlocks.PRESSURE_TUBE.get(),
                 'D', Blocks.REPEATER
         ).build(consumer);
 
-        shaped(ModBlocks.REFINERY, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.REFINERY.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "III/GBG/III",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'G', Tags.Items.GLASS,
                 'B', Items.BUCKET
         ).build(consumer);
-        shaped(ModBlocks.REFINERY_OUTPUT, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.REFINERY_OUTPUT.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "III/GDG/III",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'G', Tags.Items.GLASS,
                 'D', Tags.Items.GEMS_DIAMOND
         ).build(consumer);
 
-        shaped(new ModuleRegulatorTube().getItem(), ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModItems.REGULATOR_TUBE_MODULE.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "STS",
-                'S', new ModuleSafetyValve().getItem(),
-                'T', ModBlocks.PRESSURE_TUBE
+                'S', ModItems.SAFETY_TUBE_MODULE.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(ModItems.REINFORCED_AIR_CANISTER, ModBlocks.ADVANCED_PRESSURE_TUBE,
+        shaped(ModItems.REINFORCED_AIR_CANISTER.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 " T /ICI/III",
-                'T', ModBlocks.ADVANCED_PRESSURE_TUBE,
-                'C', ModItems.AIR_CANISTER,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+                'C', ModItems.AIR_CANISTER.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModItems.REMOTE, ModItems.TRANSISTOR,
+        shaped(ModItems.REMOTE.get(), ModItems.TRANSISTOR.get(),
                 " I /TGT/TDT",
-                'I', ModItems.NETWORK_IO_PORT,
-                'D', ModItems.NETWORK_DATA_STORAGE,
-                'G', ModItems.GPS_TOOL,
-                'T', ModItems.TRANSISTOR
+                'I', ModItems.NETWORK_IO_PORT.get(),
+                'D', ModItems.NETWORK_DATA_STORAGE.get(),
+                'G', ModItems.GPS_TOOL.get(),
+                'T', ModItems.TRANSISTOR.get()
         ).build(consumer);
 
-        shaped(new ModuleSafetyValve().getItem(), ModItems.PRESSURE_GAUGE,
+        shaped(ModItems.SAFETY_TUBE_MODULE.get(), ModItems.PRESSURE_GAUGE.get(),
                 " G /LTL",
-                'G', ModItems.PRESSURE_GAUGE,
+                'G', ModItems.PRESSURE_GAUGE.get(),
                 'L', Blocks.LEVER,
-                'T', ModBlocks.PRESSURE_TUBE
+                'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(ModBlocks.SECURITY_STATION, ModItems.PRINTED_CIRCUIT_BOARD,
+        shaped(ModBlocks.SECURITY_STATION.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "DBD/TPT/G G",
                 'D', Tags.Items.DYES_GRAY,
-                'G', ModItems.PLASTIC,
+                'G', ModItems.PLASTIC.get(),
                 'B', Tags.Items.GLASS_PANES_BLACK,
-                'T', ModItems.TURBINE_ROTOR,
-                'P', ModItems.PRINTED_CIRCUIT_BOARD
+                'T', ModItems.TURBINE_ROTOR.get(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).build(consumer);
 
-        shaped(ModItems.SEISMIC_SENSOR, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModItems.SEISMIC_SENSOR.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 " T /GRG/GCG",
                 'T', Blocks.REDSTONE_TORCH,
                 'G', Tags.Items.GLASS,
@@ -600,125 +599,125 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', Blocks.NOTE_BLOCK
         ).build(consumer);
 
-        shaped(ModBlocks.SENTRY_TURRET, ModItems.PLASTIC,
+        shaped(ModBlocks.SENTRY_TURRET.get(), ModItems.PLASTIC.get(),
                 " M /PIP/I I",
-                'M', ModItems.MINIGUN,
-                'P', ModItems.PLASTIC,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'M', ModItems.MINIGUN.get(),
+                'P', ModItems.PLASTIC.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModItems.SPAWNER_AGITATOR, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModItems.SPAWNER_AGITATOR.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "III/IGI/III",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'G', Items.GHAST_TEAR
         ).build(consumer);
 
-        shaped(ModItems.STONE_BASE, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModItems.STONE_BASE.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "S S/STS",
                 'S', Tags.Items.STONE,
-                'T', ModBlocks.PRESSURE_TUBE
+                'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(ModBlocks.THERMAL_COMPRESSOR, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.THERMAL_COMPRESSOR.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "ITI/PAP/ITI",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
-                'T', ModBlocks.PRESSURE_TUBE,
-                'A', ModBlocks.AIR_COMPRESSOR,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get(),
+                'A', ModBlocks.AIR_COMPRESSOR.get(),
                 'P', Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE
         ).build(consumer);
 
-        shaped(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "IGI/TRI/IGI",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'G', Tags.Items.GLASS,
-                'T', ModBlocks.PRESSURE_TUBE,
+                'T', ModBlocks.PRESSURE_TUBE.get(),
                 'R', Tags.Items.DUSTS_REDSTONE
         ).build(consumer);
 
-        shapeless(ModItems.TRANSFER_GADGET, ModItems.INGOT_IRON_COMPRESSED,
-                Blocks.HOPPER, ModItems.INGOT_IRON_COMPRESSED
+        shapeless(ModItems.TRANSFER_GADGET.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
+                Blocks.HOPPER, ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModItems.TURBINE_ROTOR, ModItems.TURBINE_BLADE,
+        shaped(ModItems.TURBINE_ROTOR.get(), ModItems.TURBINE_BLADE.get(),
                 " B / I /B B",
-                'B', ModItems.TURBINE_BLADE,
-                'I', ModItems.INGOT_IRON_COMPRESSED
+                'B', ModItems.TURBINE_BLADE.get(),
+                'I', ModItems.INGOT_IRON_COMPRESSED.get()
         ).build(consumer);
 
-        shaped(ModBlocks.UNIVERSAL_SENSOR, ModItems.PLASTIC,
+        shaped(ModBlocks.UNIVERSAL_SENSOR.get(), ModItems.PLASTIC.get(),
                 " S /PRP/PCP",
-                'S', ModItems.SEISMIC_SENSOR,
-                'P', ModItems.PLASTIC,
+                'S', ModItems.SEISMIC_SENSOR.get(),
+                'P', ModItems.PLASTIC.get(),
                 'R', Blocks.REPEATER,
-                'C', ModBlocks.PRESSURE_TUBE
+                'C', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(ModBlocks.UV_LIGHT_BOX, ModItems.PCB_BLUEPRINT,
+        shaped(ModBlocks.UV_LIGHT_BOX.get(), ModItems.PCB_BLUEPRINT.get(),
                 "LLL/IBT/III",
                 'L', Blocks.REDSTONE_LAMP,
-                'I', ModItems.INGOT_IRON_COMPRESSED,
-                'B', ModItems.PCB_BLUEPRINT,
-                'T', ModBlocks.PRESSURE_TUBE
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
+                'B', ModItems.PCB_BLUEPRINT.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(ModBlocks.VACUUM_PUMP, ModItems.TURBINE_ROTOR,
+        shaped(ModBlocks.VACUUM_PUMP.get(), ModItems.TURBINE_ROTOR.get(),
                 "GRG/TRT/SSS",
-                'G', ModItems.PRESSURE_GAUGE,
-                'R', ModItems.TURBINE_ROTOR,
-                'T', ModBlocks.PRESSURE_TUBE,
+                'G', ModItems.PRESSURE_GAUGE.get(),
+                'R', ModItems.TURBINE_ROTOR.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get(),
                 'S', Blocks.STONE_SLAB
         ).build(consumer);
 
-        shaped(ModBlocks.VORTEX_TUBE, ModItems.INGOT_IRON_COMPRESSED,
+        shaped(ModBlocks.VORTEX_TUBE.get(), ModItems.INGOT_IRON_COMPRESSED.get(),
                 "ITI/GTG/III",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
-                'T', ModBlocks.PRESSURE_TUBE,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get(),
                 'G', Tags.Items.INGOTS_GOLD
         ).build(consumer);
 
         // network components
-        networkComponent(ModItems.DIAGNOSTIC_SUBROUTINE, 1, ModItems.PLASTIC, Tags.Items.DYES_RED).build(consumer);
-        networkComponent(ModItems.NETWORK_API, 1, ModItems.PLASTIC, Tags.Items.DYES_BLUE).build(consumer);
-        networkComponent(ModItems.NETWORK_DATA_STORAGE, 1, ModItems.PLASTIC, Tags.Items.DYES_GRAY).build(consumer);
-        networkComponent(ModItems.NETWORK_IO_PORT, 1, ModItems.CAPACITOR, Tags.Items.DYES_CYAN).build(consumer);
-        networkComponent(ModItems.NETWORK_REGISTRY, 1, ModItems.PLASTIC, Tags.Items.DYES_LIME).build(consumer);
-        networkComponent(ModItems.NETWORK_NODE, 16, ModItems.TRANSISTOR, Tags.Items.DYES_PURPLE).build(consumer);
+        networkComponent(ModItems.DIAGNOSTIC_SUBROUTINE.get(), 1, ModItems.PLASTIC.get(), Tags.Items.DYES_RED).build(consumer);
+        networkComponent(ModItems.NETWORK_API.get(), 1, ModItems.PLASTIC.get(), Tags.Items.DYES_BLUE).build(consumer);
+        networkComponent(ModItems.NETWORK_DATA_STORAGE.get(), 1, ModItems.PLASTIC.get(), Tags.Items.DYES_GRAY).build(consumer);
+        networkComponent(ModItems.NETWORK_IO_PORT.get(), 1, ModItems.CAPACITOR.get(), Tags.Items.DYES_CYAN).build(consumer);
+        networkComponent(ModItems.NETWORK_REGISTRY.get(), 1, ModItems.PLASTIC.get(), Tags.Items.DYES_LIME).build(consumer);
+        networkComponent(ModItems.NETWORK_NODE.get(), 16, ModItems.TRANSISTOR.get(), Tags.Items.DYES_PURPLE).build(consumer);
 
         // logistics frames
-        logisticsFrame(ModItems.LOGISTICS_FRAME_ACTIVE_PROVIDER, Tags.Items.DYES_PURPLE).build(consumer);
-        logisticsFrame(ModItems.LOGISTICS_FRAME_PASSIVE_PROVIDER, Tags.Items.DYES_RED).build(consumer);
-        logisticsFrame(ModItems.LOGISTICS_FRAME_REQUESTER, Tags.Items.DYES_BLUE).build(consumer);
-        logisticsFrame(ModItems.LOGISTICS_FRAME_STORAGE, Tags.Items.DYES_YELLOW).build(consumer);
-        logisticsFrame(ModItems.LOGISTICS_FRAME_DEFAULT_STORAGE, Tags.Items.DYES_GREEN).build(consumer);
+        logisticsFrame(ModItems.LOGISTICS_FRAME_ACTIVE_PROVIDER.get(), Tags.Items.DYES_PURPLE).build(consumer);
+        logisticsFrame(ModItems.LOGISTICS_FRAME_PASSIVE_PROVIDER.get(), Tags.Items.DYES_RED).build(consumer);
+        logisticsFrame(ModItems.LOGISTICS_FRAME_REQUESTER.get(), Tags.Items.DYES_BLUE).build(consumer);
+        logisticsFrame(ModItems.LOGISTICS_FRAME_STORAGE.get(), Tags.Items.DYES_YELLOW).build(consumer);
+        logisticsFrame(ModItems.LOGISTICS_FRAME_DEFAULT_STORAGE.get(), Tags.Items.DYES_GREEN).build(consumer);
 
         // pressurizable tools
-        pneumaticTool(ModItems.CAMO_APPLICATOR, Tags.Items.DYES_BLUE).build(consumer);
-        pneumaticTool(ModItems.PNEUMATIC_WRENCH, Tags.Items.DYES_ORANGE).build(consumer);
-        pneumaticTool(ModItems.LOGISTICS_CONFIGURATOR, Tags.Items.DYES_RED).build(consumer);
-        pneumaticTool(ModItems.VORTEX_CANNON, Tags.Items.DYES_YELLOW).build(consumer);
+        pneumaticTool(ModItems.CAMO_APPLICATOR.get(), Tags.Items.DYES_BLUE).build(consumer);
+        pneumaticTool(ModItems.PNEUMATIC_WRENCH.get(), Tags.Items.DYES_ORANGE).build(consumer);
+        pneumaticTool(ModItems.LOGISTICS_CONFIGURATOR.get(), Tags.Items.DYES_RED).build(consumer);
+        pneumaticTool(ModItems.VORTEX_CANNON.get(), Tags.Items.DYES_YELLOW).build(consumer);
 
         // standard upgrade shapes (4 x lapis, 4 x edge item, 1 x center item)
-        standardUpgrade(EnumUpgrade.ARMOR, ModItems.INGOT_IRON_COMPRESSED, Items.DIAMOND).build(consumer);
-        standardUpgrade(EnumUpgrade.BLOCK_TRACKER, Items.FERMENTED_SPIDER_EYE, ModBlocks.PRESSURE_CHAMBER_WALL).build(consumer);
-        standardUpgrade(EnumUpgrade.CHARGING, new ModuleCharging().getItem(), ModBlocks.PRESSURE_TUBE).build(consumer);
-        standardUpgrade(EnumUpgrade.COORDINATE_TRACKER, ModItems.GPS_TOOL, Items.REDSTONE).build(consumer);
+        standardUpgrade(EnumUpgrade.ARMOR, ModItems.INGOT_IRON_COMPRESSED.get(), Items.DIAMOND).build(consumer);
+        standardUpgrade(EnumUpgrade.BLOCK_TRACKER, Items.FERMENTED_SPIDER_EYE, ModBlocks.PRESSURE_CHAMBER_WALL.get()).build(consumer);
+        standardUpgrade(EnumUpgrade.CHARGING, ModItems.CHARGING_MODULE.get(), ModBlocks.PRESSURE_TUBE.get()).build(consumer);
+        standardUpgrade(EnumUpgrade.COORDINATE_TRACKER, ModItems.GPS_TOOL.get(), Items.REDSTONE).build(consumer);
         standardUpgrade(EnumUpgrade.DISPENSER, Blocks.DISPENSER, Items.QUARTZ).build(consumer);
         standardUpgrade(EnumUpgrade.ENTITY_TRACKER, Items.FERMENTED_SPIDER_EYE, Items.BONE).build(consumer);
         standardUpgrade(EnumUpgrade.ITEM_LIFE, Items.CLOCK, Items.APPLE).build(consumer);
-        standardUpgrade(EnumUpgrade.MAGNET, ModItems.PLASTIC, ModItems.INGOT_IRON_COMPRESSED).build(consumer);
+        standardUpgrade(EnumUpgrade.MAGNET, ModItems.PLASTIC.get(), ModItems.INGOT_IRON_COMPRESSED.get()).build(consumer);
         standardUpgrade(EnumUpgrade.RANGE, Items.BOW, Items.ARROW).build(consumer);
         standardUpgrade(EnumUpgrade.SEARCH, Items.GOLDEN_CARROT, Items.ENDER_EYE).build(consumer);
-        standardUpgrade(EnumUpgrade.SECURITY, new ModuleSafetyValve().getItem(), Blocks.OBSIDIAN).build(consumer);
-        standardUpgrade(EnumUpgrade.VOLUME, ModItems.AIR_CANISTER, ModItems.INGOT_IRON_COMPRESSED).build(consumer);
-        standardUpgrade(EnumUpgrade.FLIPPERS, Items.BLACK_WOOL, ModItems.PLASTIC).build(consumer);
+        standardUpgrade(EnumUpgrade.SECURITY, ModItems.SAFETY_TUBE_MODULE.get(), Blocks.OBSIDIAN).build(consumer);
+        standardUpgrade(EnumUpgrade.VOLUME, ModItems.AIR_CANISTER.get(), ModItems.INGOT_IRON_COMPRESSED.get()).build(consumer);
+        standardUpgrade(EnumUpgrade.FLIPPERS, Items.BLACK_WOOL, ModItems.PLASTIC.get()).build(consumer);
 
         // non-standard upgrades
         ItemStack nightVisionPotion = new ItemStack(Items.POTION);
         PotionUtils.addPotionToItemStack(nightVisionPotion, Potions.LONG_NIGHT_VISION);
-        shaped(EnumUpgrade.NIGHT_VISION.getItem(), ModItems.PNEUMATIC_HELMET,
+        shaped(EnumUpgrade.NIGHT_VISION.getItem(), ModItems.PNEUMATIC_HELMET.get(),
                 "LNL/GNG/LNL",
                 'L', Items.LAPIS_LAZULI,
-                'G', ModBlocks.PRESSURE_CHAMBER_GLASS,
+                'G', ModBlocks.PRESSURE_CHAMBER_GLASS.get(),
                 'N', IngredientNBTWrapper.fromItemStack(nightVisionPotion)
         ).build(consumer);
 
@@ -729,102 +728,102 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', Tags.Items.CHESTS
         ).build(consumer);
 
-        shaped(EnumUpgrade.SCUBA.getItem(), ModItems.PNEUMATIC_HELMET,
+        shaped(EnumUpgrade.SCUBA.getItem(), ModItems.PNEUMATIC_HELMET.get(),
                 "LTL/PRP/LPL",
                 'L', Items.LAPIS_LAZULI,
-                'P', ModItems.PLASTIC,
-                'R', new ModuleRegulatorTube().getItem(),
-                'T', ModBlocks.ADVANCED_PRESSURE_TUBE
+                'P', ModItems.PLASTIC.get(),
+                'R', ModItems.REGULATOR_TUBE_MODULE.get(),
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(EnumUpgrade.SPEED.getItem(), ModItems.LUBRICANT_BUCKET,
+        shaped(EnumUpgrade.SPEED.getItem(), ModItems.LUBRICANT_BUCKET.get(),
                 "LSL/SFS/LSL",
                 'L', Items.LAPIS_LAZULI,
                 'S', Items.SUGAR,
-                'F', new FluidIngredient(ModFluids.LUBRICANT, 1000)
+                'F', new FluidIngredient(ModFluids.LUBRICANT.get(), 1000)
         ).build(consumer);
 
-        shaped(EnumUpgrade.JET_BOOTS.getItem(1), ModItems.PNEUMATIC_BOOTS,
+        shaped(EnumUpgrade.JET_BOOTS.getItem(1), ModItems.PNEUMATIC_BOOTS.get(),
                 "LTL/VCV/LTL",
                 'L', Items.LAPIS_LAZULI,
-                'V', ModItems.VORTEX_CANNON,
-                'C', ModBlocks.ADVANCED_AIR_COMPRESSOR,
-                'T', ModBlocks.ADVANCED_PRESSURE_TUBE
+                'V', ModItems.VORTEX_CANNON.get(),
+                'C', ModBlocks.ADVANCED_AIR_COMPRESSOR.get(),
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
         ).build(consumer);
-        shaped(EnumUpgrade.JET_BOOTS.getItem(2), ModItems.PNEUMATIC_BOOTS,
+        shaped(EnumUpgrade.JET_BOOTS.getItem(2), ModItems.PNEUMATIC_BOOTS.get(),
                 "FFF/VUV/CFC",
                 'F', Items.FEATHER,
-                'V', ModItems.VORTEX_CANNON,
-                'C', ModItems.PNEUMATIC_CYLINDER,
+                'V', ModItems.VORTEX_CANNON.get(),
+                'C', ModItems.PNEUMATIC_CYLINDER.get(),
                 'U', EnumUpgrade.JET_BOOTS.getItem(1)
         ).build(consumer);
-        shaped(EnumUpgrade.JET_BOOTS.getItem(3), ModItems.PNEUMATIC_BOOTS,
+        shaped(EnumUpgrade.JET_BOOTS.getItem(3), ModItems.PNEUMATIC_BOOTS.get(),
                 "TBT/VUV/TBT",
                 'T', Items.GHAST_TEAR,
                 'B', Items.BLAZE_ROD,
-                'V', ModItems.VORTEX_CANNON,
+                'V', ModItems.VORTEX_CANNON.get(),
                 'U', EnumUpgrade.JET_BOOTS.getItem(2)
         ).build(consumer);
         ItemStack slowFallPotion = new ItemStack(Items.POTION);
         PotionUtils.addPotionToItemStack(slowFallPotion, Potions.LONG_SLOW_FALLING);
-        shaped(EnumUpgrade.JET_BOOTS.getItem(4), ModItems.PNEUMATIC_BOOTS,
+        shaped(EnumUpgrade.JET_BOOTS.getItem(4), ModItems.PNEUMATIC_BOOTS.get(),
                 "MNM/VUV/P P",
                 'N', Items.NETHER_STAR,
                 'M', Items.PHANTOM_MEMBRANE,
-                'V', ModItems.VORTEX_CANNON,
+                'V', ModItems.VORTEX_CANNON.get(),
                 'P', IngredientNBTWrapper.fromItemStack(slowFallPotion),
                 'U', EnumUpgrade.JET_BOOTS.getItem(3)
         ).build(consumer);
-        shaped(EnumUpgrade.JET_BOOTS.getItem(5), ModItems.PNEUMATIC_BOOTS,
+        shaped(EnumUpgrade.JET_BOOTS.getItem(5), ModItems.PNEUMATIC_BOOTS.get(),
                 "RER/VUV/RDR",
                 'R', Items.END_ROD,
                 'E', Items.ELYTRA,
-                'V', ModItems.VORTEX_CANNON,
+                'V', ModItems.VORTEX_CANNON.get(),
                 'D', Items.DRAGON_BREATH,
                 'U', EnumUpgrade.JET_BOOTS.getItem(4)
         ).build(consumer);
 
-        shaped(EnumUpgrade.JUMPING.getItem(1), ModItems.PNEUMATIC_LEGGINGS,
+        shaped(EnumUpgrade.JUMPING.getItem(1), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "PCP/VTV",
                 'P', Blocks.PISTON,
-                'V', ModItems.VORTEX_CANNON,
-                'T', ModBlocks.PRESSURE_TUBE,
-                'C', ModItems.PNEUMATIC_CYLINDER
+                'V', ModItems.VORTEX_CANNON.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get(),
+                'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).build(consumer);
-        shaped(EnumUpgrade.JUMPING.getItem(2), ModItems.PNEUMATIC_LEGGINGS,
+        shaped(EnumUpgrade.JUMPING.getItem(2), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "PCP/SUS",
                 'U', EnumUpgrade.JUMPING.getItem(1),
                 'S', Blocks.SLIME_BLOCK,
                 'P', Blocks.PISTON,
-                'C', ModItems.PNEUMATIC_CYLINDER
+                'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).build(consumer);
         ItemStack jumpBoostPotion1 = new ItemStack(Items.POTION);
         PotionUtils.addPotionToItemStack(jumpBoostPotion1, Potions.LEAPING);
-        shaped(EnumUpgrade.JUMPING.getItem(3), ModItems.PNEUMATIC_LEGGINGS,
+        shaped(EnumUpgrade.JUMPING.getItem(3), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "PCP/JUJ/ J ",
                 'U', EnumUpgrade.JUMPING.getItem(2),
                 'J', IngredientNBTWrapper.fromItemStack(jumpBoostPotion1),
                 'P', Blocks.PISTON,
-                'C', ModItems.PNEUMATIC_CYLINDER
+                'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).build(consumer);
         ItemStack jumpBoostPotion2 = new ItemStack(Items.POTION);
         PotionUtils.addPotionToItemStack(jumpBoostPotion2, Potions.STRONG_LEAPING);
-        shaped(EnumUpgrade.JUMPING.getItem(4), ModItems.PNEUMATIC_LEGGINGS,
+        shaped(EnumUpgrade.JUMPING.getItem(4), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "PCP/JUJ/ J ",
                 'U', EnumUpgrade.JUMPING.getItem(3),
                 'J', IngredientNBTWrapper.fromItemStack(jumpBoostPotion2),
                 'P', Blocks.PISTON,
-                'C', ModItems.PNEUMATIC_CYLINDER
+                'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).build(consumer);
 
-        specialRecipe(ModRecipes.DRONE_COLOR_CRAFTING).build(consumer, getId("color_drone"));
-        specialRecipe(ModRecipes.DRONE_UPGRADE_CRAFTING).build(consumer, getId("drone_upgrade"));
-        specialRecipe(ModRecipes.GUN_AMMO_POTION_CRAFTING).build(consumer, getId("gun_ammo_potion_crafting"));
-        specialRecipe(ModRecipes.ONE_PROBE_HELMET_CRAFTING).build(consumer, getId("one_probe_crafting"));
-        specialRecipe(ModRecipes.PATCHOULI_BOOK_CRAFTING).build(consumer, getId("patchouli_book_crafting"));
+        specialRecipe(ModRecipes.DRONE_COLOR_CRAFTING.get()).build(consumer, getId("color_drone"));
+        specialRecipe(ModRecipes.DRONE_UPGRADE_CRAFTING.get()).build(consumer, getId("drone_upgrade"));
+        specialRecipe(ModRecipes.GUN_AMMO_POTION_CRAFTING.get()).build(consumer, getId("gun_ammo_potion_crafting"));
+        specialRecipe(ModRecipes.ONE_PROBE_HELMET_CRAFTING.get()).build(consumer, getId("one_probe_crafting"));
+        specialRecipe(ModRecipes.PATCHOULI_BOOK_CRAFTING.get()).build(consumer, getId("patchouli_book_crafting"));
 
-        CookingRecipeBuilder.blastingRecipe(Ingredient.fromItems(ModItems.FAILED_PCB), ModItems.EMPTY_PCB, 0.5f, 100)
-                .addCriterion("has_empty_pcb", this.hasItem(ModItems.FAILED_PCB))
+        CookingRecipeBuilder.blastingRecipe(Ingredient.fromItems(ModItems.FAILED_PCB.get()), ModItems.EMPTY_PCB.get(), 0.5f, 100)
+                .addCriterion("has_empty_pcb", this.hasItem(ModItems.FAILED_PCB.get()))
                 .build(consumer, RL("empty_pcb_from_failed_pcb"));
     }
 
@@ -851,19 +850,19 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private ShapedRecipeBuilder logisticsFrame(Item result, Tag<Item> dye) {
-        return shaped(result, 4, ModItems.PLASTIC, "PPP/PDP/PPP", 'P', ModItems.PLASTIC, 'D', dye);
+        return shaped(result, 4, ModItems.PLASTIC.get(), "PPP/PDP/PPP", 'P', ModItems.PLASTIC.get(), 'D', dye);
     }
 
     private ShapedRecipeBuilder networkComponent(Item result, int count, Item edge, Tag<Item> dyeCorner) {
-        return shaped(result, count, ModItems.CAPACITOR, "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS);
+        return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS);
     }
 
     private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedPressurizableRecipeBuilder pneumaticTool(T result, Object dye) {
-        return shapedPressure(result, ModItems.INGOT_IRON_COMPRESSED,
+        return shapedPressure(result, ModItems.INGOT_IRON_COMPRESSED.get(),
                 "IDI/C  /ILI",
-                'I', ModItems.INGOT_IRON_COMPRESSED,
+                'I', ModItems.INGOT_IRON_COMPRESSED.get(),
                 'D', dye,
-                'C', ModItems.AIR_CANISTER,
+                'C', ModItems.AIR_CANISTER.get(),
                 'L', Blocks.LEVER
         );
     }
@@ -913,10 +912,10 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private ShapedRecipeBuilder miniGunAmmo(Item result, Object item1, Object item2) {
-        return shaped(result, ModItems.GUN_AMMO,
+        return shaped(result, ModItems.GUN_AMMO.get(),
                 " A /C1C/C2C",
-                'A', ModItems.GUN_AMMO,
-                'C', ModItems.INGOT_IRON_COMPRESSED,
+                'A', ModItems.GUN_AMMO.get(),
+                'C', ModItems.INGOT_IRON_COMPRESSED.get(),
                 '1', item1,
                 '2', item2);
     }

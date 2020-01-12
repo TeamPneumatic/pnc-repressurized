@@ -37,15 +37,15 @@ public class ContainerChargingStationItemInventory extends ContainerPneumaticBas
     }
 
     public static ContainerChargingStationItemInventory createMinigunContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
-        return new ContainerChargingStationItemInventory(ModContainers.CHARGING_MINIGUN, windowId, inv, data);
+        return new ContainerChargingStationItemInventory(ModContainers.CHARGING_MINIGUN.get(), windowId, inv, data);
     }
 
     public static ContainerChargingStationItemInventory createDroneContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
-        return new ContainerChargingStationItemInventory(ModContainers.CHARGING_DRONE, windowId, inv, data);
+        return new ContainerChargingStationItemInventory(ModContainers.CHARGING_DRONE.get(), windowId, inv, data);
     }
 
     public static ContainerChargingStationItemInventory createArmorContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
-        return new ContainerChargingStationItemInventory(ModContainers.CHARGING_ARMOR, windowId, inv, data);
+        return new ContainerChargingStationItemInventory(ModContainers.CHARGING_ARMOR.get(), windowId, inv, data);
     }
 
     private class UpgradeSlot extends SlotItemHandler {

@@ -24,10 +24,6 @@ import net.minecraft.world.dimension.DimensionType;
 import java.util.Random;
 
 public class ItemGunAmmoFreezing extends ItemGunAmmo {
-    public ItemGunAmmoFreezing() {
-        super("gun_ammo_freezing");
-    }
-
     @Override
     public int getMaxDamage(ItemStack stack) {
         return PNCConfig.Common.Minigun.freezingAmmoCartridgeSize;
@@ -76,7 +72,8 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
                 for (int z = (int) Math.floor(aabb.minZ); z <= aabb.maxZ; z++) {
                     BlockPos pos = new BlockPos(x, y, z);
                     if (world.getBlockState(pos).isAir(world, pos) || world.getFluidState(pos).isTagged(FluidTags.WATER)) {
-                        mgr.trySetBlock(minigun.getWorld(), minigun.getPlayer(), Direction.UP, pos, ModBlocks.FAKE_ICE.getDefaultState(), 60 + rnd.nextInt(40));
+                        mgr.trySetBlock(minigun.getWorld(), minigun.getPlayer(), Direction.UP, pos,
+                                ModBlocks.FAKE_ICE.get().getDefaultState(), 60 + rnd.nextInt(40));
                     }
                 }
             }

@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "pneumaticcraft:logistic_drone"
+      "pneumaticcraft:logistics_drone"
     ]
   },
   "criteria": {
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "pneumaticcraft:logistic_drone"
+        "recipe": "pneumaticcraft:logistics_drone"
       }
     }
   },

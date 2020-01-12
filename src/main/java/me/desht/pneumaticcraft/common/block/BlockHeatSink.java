@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -33,7 +34,7 @@ public class BlockHeatSink extends BlockPneumaticCraft {
     };
 
     public BlockHeatSink() {
-        super("heat_sink");
+        super(ModBlocks.defaultProps());
     }
 
     @Override

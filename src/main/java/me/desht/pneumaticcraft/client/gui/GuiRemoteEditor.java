@@ -66,7 +66,7 @@ public class GuiRemoteEditor extends GuiRemote {
             tag.put("actionWidgets", remoteLayout.toNBT(oldGuiLeft, oldGuiTop).getList("actionWidgets", 10));
         }
 
-        if (invSearchGui != null && invSearchGui.getSearchStack() != null && invSearchGui.getSearchStack().getItem() == ModItems.REMOTE) {
+        if (invSearchGui != null && invSearchGui.getSearchStack() != null && invSearchGui.getSearchStack().getItem() == ModItems.REMOTE.get()) {
             if (ItemRemote.hasSameSecuritySettings(remote, invSearchGui.getSearchStack())) {
                 remoteLayout = new RemoteLayout(invSearchGui.getSearchStack(), guiLeft, guiTop);
             } else {
@@ -89,11 +89,11 @@ public class GuiRemoteEditor extends GuiRemote {
         }
 
         WidgetButtonExtended importRemoteButton = new WidgetButtonExtended(guiLeft - 24, guiTop, 20, 20, "", b -> {
-            ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER, new StringTextComponent("Inventory Searcher (Remote)"));
+            ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Searcher (Remote)"));
             if (minecraft.currentScreen instanceof GuiInventorySearcher) invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
         });
         importRemoteButton.setTooltipText(I18n.format("gui.remote.button.importRemoteButton"));
-        importRemoteButton.setRenderStacks(new ItemStack(ModItems.REMOTE));
+        importRemoteButton.setRenderStacks(new ItemStack(ModItems.REMOTE.get()));
         addButton(importRemoteButton);
 
         WidgetButtonExtended pastebinButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 22, 20, 20, "", b -> {

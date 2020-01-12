@@ -12,7 +12,7 @@ public class ContainerCreativeCompressor extends ContainerPneumaticBase<TileEnti
     }
 
     public ContainerCreativeCompressor(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.CREATIVE_COMPRESSOR, i, playerInventory, pos);
+        super(ModContainers.CREATIVE_COMPRESSOR.get(), i, playerInventory, pos);
     }
 
     // phenomenal cosmic power... itty-bitty container implementation

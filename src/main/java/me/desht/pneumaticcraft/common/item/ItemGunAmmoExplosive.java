@@ -15,10 +15,6 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemGunAmmoExplosive extends ItemGunAmmo {
-    public ItemGunAmmoExplosive() {
-        super("gun_ammo_explosive");
-    }
-
     @Override
     public int getMaxDamage(ItemStack stack) {
         return PNCConfig.Common.Minigun.explosiveAmmoCartridgeSize;

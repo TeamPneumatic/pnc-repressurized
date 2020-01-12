@@ -14,12 +14,12 @@ import java.util.List;
 public class ProgWidgetEntityCondition extends ProgWidgetCondition {
 
     public ProgWidgetEntityCondition() {
-        super(ModProgWidgets.CONDITION_ENTITY);
+        super(ModProgWidgets.CONDITION_ENTITY.get());
     }
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

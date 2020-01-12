@@ -45,7 +45,7 @@ public class PacketHackingEntityFinish {
                     hackableEntity.onHackFinished(entity, player);
                     HackTickHandler.instance().trackEntity(entity, hackableEntity);
                     CommonArmorHandler.getHandlerForPlayer(player).setHackedEntity(null);
-                    player.playSound(ModSounds.HELMET_HACK_FINISH, 1.0F, 1.0F);
+                    player.playSound(ModSounds.HELMET_HACK_FINISH.get(), 1.0F, 1.0F);
                 }
             }
         });

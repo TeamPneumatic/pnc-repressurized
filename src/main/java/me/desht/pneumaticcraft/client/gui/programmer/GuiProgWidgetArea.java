@@ -59,8 +59,8 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         boolean advancedMode = PNCConfig.Client.programmerDifficulty == IProgWidget.WidgetDifficulty.ADVANCED;
         WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + (advancedMode ? 6 : 55), guiTop + 20, 20, 20, "", b -> openInvSearchGUI(0));
         WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + (advancedMode ? 133 : 182), guiTop + 20, 20, 20, "", b -> openInvSearchGUI(1));
-        gpsButton1.setRenderStacks(new ItemStack(ModItems.GPS_TOOL));
-        gpsButton2.setRenderStacks(new ItemStack(ModItems.GPS_TOOL));
+        gpsButton1.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
+        gpsButton2.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
         addButton(gpsButton1);
         addButton(gpsButton2);
 
@@ -140,13 +140,13 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     }
 
     private void openInvSearchGUI(int which) {
-        ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL);
+        ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
         if (which == 0) {
             ItemGPSTool.setGPSLocation(gpsStack, new BlockPos(progWidget.x1, progWidget.y1, progWidget.z1));
         } else {
             ItemGPSTool.setGPSLocation(gpsStack, new BlockPos(progWidget.x2, progWidget.y2, progWidget.z2));
         }
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER, new StringTextComponent("Inventory Searcher (GPS)"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Searcher (GPS)"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);

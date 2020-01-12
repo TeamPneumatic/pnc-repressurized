@@ -36,9 +36,9 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     public void init() {
         super.init();
 
-        statusStat = this.addAnimatedStat("Cannon Status", new ItemStack(ModBlocks.AIR_CANNON), 0xFFFFAA00, false);
+        statusStat = this.addAnimatedStat("Cannon Status", new ItemStack(ModBlocks.AIR_CANNON.get()), 0xFFFFAA00, false);
 
-        strengthTab = this.addAnimatedStat("Force", new ItemStack(ModItems.AIR_CANISTER), 0xFF2080FF, false);
+        strengthTab = this.addAnimatedStat("Force", new ItemStack(ModItems.AIR_CANISTER.get()), 0xFF2080FF, false);
         strengthTab.addPadding(3, 22);
         strengthTab.addSubWidget(new WidgetButtonExtended(16, 16, 20, 20, "--").withTag("--"));
         strengthTab.addSubWidget(new WidgetButtonExtended(38, 16, 20, 20, "-").withTag("-"));

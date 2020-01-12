@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -11,7 +12,7 @@ import net.minecraft.world.IBlockReader;
 public class BlockLiquidCompressor extends BlockPneumaticCraft {
 
     public BlockLiquidCompressor() {
-        super("liquid_compressor");
+        super(ModBlocks.defaultProps());
     }
 
     @Override

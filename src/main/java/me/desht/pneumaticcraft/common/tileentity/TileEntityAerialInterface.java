@@ -96,7 +96,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     private final List<Integer> chargeableSlots = new ArrayList<>();
 
     public TileEntityAerialInterface() {
-        super(ModTileEntities.AERIAL_INTERFACE, PneumaticValues.DANGER_PRESSURE_AERIAL_INTERFACE, PneumaticValues.MAX_PRESSURE_AERIAL_INTERFACE, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
+        super(ModTileEntities.AERIAL_INTERFACE.get(), PneumaticValues.DANGER_PRESSURE_AERIAL_INTERFACE, PneumaticValues.MAX_PRESSURE_AERIAL_INTERFACE, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
 
         PlayerMainInvHandler playerMainInvHandler = new PlayerMainInvHandler();
         PlayerArmorInvHandler playerArmorInvHandler = new PlayerArmorInvHandler();
@@ -107,7 +107,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         itemHandlerSideConfigurator.registerHandler("mainInv", new ItemStack(Blocks.CHEST),
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerMainInvHandler,
                 RelativeFace.FRONT, RelativeFace.BACK, RelativeFace.LEFT, RelativeFace.RIGHT);
-        itemHandlerSideConfigurator.registerHandler("armorInv", new ItemStack(ModItems.PNEUMATIC_CHESTPLATE),
+        itemHandlerSideConfigurator.registerHandler("armorInv", new ItemStack(ModItems.PNEUMATIC_CHESTPLATE.get()),
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerArmorInvHandler,
                 RelativeFace.TOP, RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.registerHandler("offhandInv", new ItemStack(Items.SHIELD),
@@ -355,7 +355,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerEnergy(ModContainers.AERIAL_INTERFACE, i, playerInventory, getPos());
+        return new ContainerEnergy(ModContainers.AERIAL_INTERFACE.get(), i, playerInventory, getPos());
     }
 
     private abstract class PlayerInvHandler implements IItemHandler {

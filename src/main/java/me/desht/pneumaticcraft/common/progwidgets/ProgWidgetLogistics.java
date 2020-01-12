@@ -15,7 +15,7 @@ import java.util.List;
 public class ProgWidgetLogistics extends ProgWidgetAreaItemBase {
 
     public ProgWidgetLogistics() {
-        super(ModProgWidgets.LOGISTICS);
+        super(ModProgWidgets.LOGISTICS.get());
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ProgWidgetLogistics extends ProgWidgetAreaItemBase {
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA);
+        return ImmutableList.of(ModProgWidgets.AREA.get());
     }
 
     @Override

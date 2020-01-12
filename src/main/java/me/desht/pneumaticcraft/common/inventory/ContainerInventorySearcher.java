@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 
 public class ContainerInventorySearcher extends Container {
     public ContainerInventorySearcher(int windowId, PlayerInventory inv, PacketBuffer data) {
-        super(ModContainers.INVENTORY_SEARCHER, windowId);
+        super(ModContainers.INVENTORY_SEARCHER.get(), windowId);
 
         // Add the player's inventory slots to the container
         for (int row = 0; row < 3; ++row) {

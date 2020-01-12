@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ProgWidgetStandby extends ProgWidget {
     public ProgWidgetStandby() {
-        super(ModProgWidgets.STANDBY);
+        super(ModProgWidgets.STANDBY.get());
     }
 
     @Override

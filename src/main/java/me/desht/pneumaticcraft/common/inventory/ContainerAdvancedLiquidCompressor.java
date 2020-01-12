@@ -12,7 +12,7 @@ public class ContainerAdvancedLiquidCompressor extends ContainerLiquidCompressor
     }
 
     public ContainerAdvancedLiquidCompressor(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.ADVANCED_LIQUID_COMPRESSOR, i, playerInventory, pos);
+        super(ModContainers.ADVANCED_LIQUID_COMPRESSOR.get(), i, playerInventory, pos);
     }
 
     @Override

@@ -2,9 +2,9 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -86,28 +86,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
     private final Tier tier;
 
-    public enum Tier {
-        ONE(1, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, TileEntityPressureTube.class),
-        TWO(2, PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE, TileEntityAdvancedPressureTube.class);
-
-        private final int tier;
-        final float dangerPressure;
-        final float criticalPressure;
-        final int volume;
-        private final Class<? extends TileEntityPressureTube> teClass;
-
-        Tier(int tier, float dangerPressure, float criticalPressure, int volume, Class<? extends TileEntityPressureTube> teClass) {
-            this.tier = tier;
-            this.dangerPressure = dangerPressure;
-            this.criticalPressure = criticalPressure;
-            this.volume = volume;
-            this.teClass = teClass;
-        }
-    }
-
-    public BlockPressureTube(String registryName, Tier tier) {
-        super(registryName);
-
+    public BlockPressureTube(Tier tier) {
+        super(ModBlocks.defaultProps());
         this.tier = tier;
 
         BlockState state = getStateContainer().getBaseState();
@@ -273,7 +253,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
 
         ItemStack heldStack = player.getHeldItem(hand);
         if (heldStack.getItem() instanceof ItemTubeModule) {
-            TubeModule module = ModuleRegistrator.createModule(heldStack.getItem().getRegistryName());
+            TubeModule module = ((ItemTubeModule) heldStack.getItem()).createModule();
             if (tePT.mayPlaceModule(side)) {
                 if (module == null) return false;
                 if (simulate) module.markFake();
@@ -290,7 +270,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                 }
                 return true;
             }
-        } else if (heldStack.getItem() == ModItems.ADVANCED_PCB && !simulate) {
+        } else if (heldStack.getItem() == ModItems.ADVANCED_PCB.get() && !simulate) {
             TubeModule module = BlockPressureTube.getFocusedModule(world, pos, player);
             if (module != null && !module.isUpgraded() && module.canUpgrade()) {
                 if (!world.isRemote) {
@@ -544,6 +524,25 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     @Nonnull
     private static TubeHitInfo getHitInfo(RayTraceResult result) {
         return result != null && result.hitInfo instanceof TubeHitInfo ? (TubeHitInfo) result.hitInfo : TubeHitInfo.NO_HIT;
+    }
+
+    public enum Tier {
+        ONE(1, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, TileEntityPressureTube.class),
+        TWO(2, PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE, TileEntityAdvancedPressureTube.class);
+
+        private final int tier;
+        final float dangerPressure;
+        final float criticalPressure;
+        final int volume;
+        private final Class<? extends TileEntityPressureTube> teClass;
+
+        Tier(int tier, float dangerPressure, float criticalPressure, int volume, Class<? extends TileEntityPressureTube> teClass) {
+            this.tier = tier;
+            this.dangerPressure = dangerPressure;
+            this.criticalPressure = criticalPressure;
+            this.volume = volume;
+            this.teClass = teClass;
+        }
     }
 
     /**

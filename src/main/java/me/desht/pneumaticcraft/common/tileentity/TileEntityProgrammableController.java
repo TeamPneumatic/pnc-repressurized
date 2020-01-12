@@ -118,15 +118,15 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private LogisticsManager logisticsManager;
 
     public TileEntityProgrammableController() {
-        super(ModTileEntities.PROGRAMMABLE_CONTROLLER, 5, 7, 5000, 4);
+        super(ModTileEntities.PROGRAMMABLE_CONTROLLER.get(), 5, 7, 5000, 4);
 
         MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
-        itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(ModItems.DRONE),
+        itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(ModItems.DRONE.get()),
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> droneItemHandler,
                 RelativeFace.TOP, RelativeFace.FRONT, RelativeFace.BACK, RelativeFace.LEFT, RelativeFace.RIGHT);
-        itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStack(ModItems.NETWORK_API),
+        itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStack(ModItems.NETWORK_API.get()),
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> inventory,
                 RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.setNullFaceHandler("droneInv");

@@ -22,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -45,35 +46,38 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     private boolean dragging = false;
     private String entityFilter;
     private int sendTimer = 0;
+    private final Hand hand;
 
     private WidgetTextField textField;
     private WidgetLabel filterLabel;
     private WidgetButtonExtended modeButton;
     private WidgetButtonExtended warningButton;
 
-    private GuiMicromissile(ITextComponent title) {
+    private GuiMicromissile(ITextComponent title, Hand hand) {
         super(title);
         xSize = 183;
         ySize = 191;
 
-        ItemStack stack = ItemMicromissiles.getHeldMicroMissile(Minecraft.getInstance().player);
-        if (stack.getItem() == ModItems.MICROMISSILES && stack.hasTag()) {
+        ItemStack stack = Minecraft.getInstance().player.getHeldItem(hand);
+        if (stack.getItem() == ModItems.MICROMISSILES.get() && stack.hasTag()) {
             topSpeed = NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED);
             turnSpeed = NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED);
             damage = NBTUtil.getFloat(stack, ItemMicromissiles.NBT_DAMAGE);
             entityFilter = NBTUtil.getString(stack, ItemMicromissiles.NBT_FILTER);
             point = new PointXY(NBTUtil.getInteger(stack,ItemMicromissiles.NBT_PX), NBTUtil.getInteger(stack, ItemMicromissiles.NBT_PY));
             fireMode = FireMode.fromString(NBTUtil.getString(stack, ItemMicromissiles.NBT_FIRE_MODE));
+            this.hand = hand;
         } else {
             topSpeed = turnSpeed = damage = 1/3f;
             point = new PointXY(MAX_DIST / 2, MAX_DIST / 4);
             entityFilter = "";
             fireMode = FireMode.SMART;
+            this.hand = Hand.MAIN_HAND;
         }
     }
 
-    public static void openGui(ITextComponent title) {
-        Minecraft.getInstance().displayGuiScreen(new GuiMicromissile(title));
+    public static void openGui(ITextComponent title, Hand handIn) {
+        Minecraft.getInstance().displayGuiScreen(new GuiMicromissile(title, handIn));
     }
 
     @Override
@@ -302,7 +306,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     }
 
     private void sendSettingsToServer(boolean saveDefault) {
-        NetworkHandler.sendToServer(new PacketUpdateMicromissileSettings(topSpeed, turnSpeed, damage, point, entityFilter, fireMode, saveDefault));
+        NetworkHandler.sendToServer(new PacketUpdateMicromissileSettings(topSpeed, turnSpeed, damage, point, entityFilter, fireMode, saveDefault, hand));
     }
 
     private PointXY getPoint(int mouseX, int mouseY) {

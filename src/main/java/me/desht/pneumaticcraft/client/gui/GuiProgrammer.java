@@ -47,6 +47,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer,TileEntityProgrammer> {
@@ -132,8 +133,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
         }
         int i = 0;
-        for (ProgWidgetType type : ModProgWidgets.Registration.WIDGET_LIST) {
-            IProgWidget widget = type.create();
+        for (Supplier<? extends ProgWidgetType> type : ModProgWidgets.WIDGET_LIST) {
+            IProgWidget widget = type.get().create();
             if (difficulty >= widget.getDifficulty().ordinal()) {
                 widget.setY(y + 40);
                 widget.setX(showAllWidgets ? x : getWidgetTrayRight());
@@ -147,7 +148,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     y = 0;
                     x += WIDGET_X_SPACING;
                     page++;
-                    if (i < ModProgWidgets.Registration.WIDGET_LIST.size() - 1) maxPage++;
+                    if (i < ModProgWidgets.WIDGET_LIST.size() - 1) maxPage++;
                 }
             }
             i++;
@@ -574,7 +575,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                         CompoundNBT tag = new CompoundNBT();
                         areaToolWidget.writeToNBT(tag);
                         widget.readFromNBT(tag);
-                    } else if (heldItem.getItem() == ModItems.GPS_TOOL) {
+                    } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
                         if (widget instanceof ProgWidgetCoordinate) {
                             ((ProgWidgetCoordinate) widget).loadFromGPSTool(heldItem);
                         } else if (widget instanceof ProgWidgetArea) {
@@ -593,7 +594,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             if (draggingWidget == null) {
                 if (areaToolWidget != null) {
                     draggingWidget = areaToolWidget;
-                } else if (heldItem.getItem() == ModItems.GPS_TOOL) {
+                } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
                     if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
                         BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
                         ProgWidgetArea areaWidget = ProgWidgetArea.fromPositions(pos, BlockPos.ZERO);

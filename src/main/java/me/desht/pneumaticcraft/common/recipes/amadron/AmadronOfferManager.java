@@ -192,51 +192,51 @@ public enum AmadronOfferManager {
         // TODO move to JSON
         addStaticOffer(new AmadronOffer(
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
-                AmadronTradeResource.of(new ItemStack(ModItems.PCB_BLUEPRINT))
+                AmadronTradeResource.of(new ItemStack(ModItems.PCB_BLUEPRINT.get()))
         ));
         addStaticOffer(new AmadronOffer(
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
-                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL))
+                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL.get()))
         ));
         addStaticOffer(new AmadronOffer(
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
-                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_LASER))
+                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_LASER.get()))
         ));
         addStaticOffer(new AmadronOffer(
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD, 14)),
-                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL_LASER))
+                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL_LASER.get()))
         ));
         addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.OIL, 5000)),
+                AmadronTradeResource.of(new FluidStack(ModFluids.OIL.get(), 5000)),
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD, 1))
         ));
         addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.OIL, 5000)),
+                AmadronTradeResource.of(new FluidStack(ModFluids.OIL.get(), 5000)),
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.DIESEL, 4000)),
+                AmadronTradeResource.of(new FluidStack(ModFluids.DIESEL.get(), 4000)),
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.KEROSENE, 3000)),
+                AmadronTradeResource.of(new FluidStack(ModFluids.KEROSENE.get(), 3000)),
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.GASOLINE, 2000)),
+                AmadronTradeResource.of(new FluidStack(ModFluids.GASOLINE.get(), 2000)),
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.LPG, 1000)),
+                AmadronTradeResource.of(new FluidStack(ModFluids.LPG.get(), 1000)),
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD)),
-                AmadronTradeResource.of(new FluidStack(ModFluids.OIL, 1000))
+                AmadronTradeResource.of(new FluidStack(ModFluids.OIL.get(), 1000))
         ));
         addStaticOffer(new AmadronOffer(
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD, 5)),
-                AmadronTradeResource.of(new FluidStack(ModFluids.LUBRICANT, 1000))
+                AmadronTradeResource.of(new FluidStack(ModFluids.LUBRICANT.get(), 1000))
         ));
 
         addVillagerTrades();

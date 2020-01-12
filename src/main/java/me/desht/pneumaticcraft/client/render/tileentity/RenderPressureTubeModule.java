@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
 import me.desht.pneumaticcraft.client.model.module.ModelModuleBase;
-import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
@@ -88,7 +87,7 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
         if (mc.objectMouseOver instanceof BlockRayTraceResult) {
             BlockRayTraceResult brtr = (BlockRayTraceResult) mc.objectMouseOver;
             if (brtr.getPos().equals(tile.getPos()) && mc.world.getTileEntity(brtr.getPos()) == tile) {
-                ((BlockPressureTube) ModBlocks.PRESSURE_TUBE).tryPlaceModule(mc.player, mc.world, tile.getPos(), brtr.getFace(), hand,true);
+                ModBlocks.PRESSURE_TUBE.get().tryPlaceModule(mc.player, mc.world, tile.getPos(), brtr.getFace(), hand,true);
             }
         }
     }

@@ -18,7 +18,7 @@ public class RenderItemMinigun extends ItemStackTileEntityRenderer {
 
     @Override
     public void renderByItem(ItemStack stack) {
-        if (stack.getItem() == ModItems.MINIGUN && stack.hasTag()) {
+        if (stack.getItem() == ModItems.MINIGUN.get() && stack.hasTag()) {
             Minecraft mc = Minecraft.getInstance();
             PlayerEntity player = mc.player;
             int id = stack.getTag().getInt("owningPlayerId");

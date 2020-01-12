@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -22,12 +23,12 @@ public class ItemPressurizable extends ItemPneumatic {
     private final int volume;
     private final float maxPressure;
 
-    public ItemPressurizable(String registryName, int maxAir, int volume) {
-        this(defaultProps(), registryName, maxAir, volume);
+    public ItemPressurizable(int maxAir, int volume) {
+        this(ModItems.defaultProps(), maxAir, volume);
     }
 
-    public ItemPressurizable(Item.Properties props, String registryName, int maxAir, int volume) {
-        super(props, registryName);
+    public ItemPressurizable(Item.Properties props, int maxAir, int volume) {
+        super(props);
 
         this.volume = volume;
         this.maxPressure = (float)maxAir / volume;

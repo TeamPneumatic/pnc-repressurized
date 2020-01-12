@@ -8,97 +8,101 @@ import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
-@ObjectHolder(Names.MOD_ID)
+import java.util.function.Supplier;
+
 public class ModEntities {
-    public static final EntityType<EntityVortex> VORTEX = null;
-    public static final EntityType<EntityDrone> DRONE = null;
-    public static final EntityType<EntityLogisticsDrone> LOGISTIC_DRONE = null;
-    public static final EntityType<EntityHarvestingDrone> HARVESTING_DRONE = null;
-    public static final EntityType<EntityMicromissile> MICROMISSILE = null;
-    public static final EntityType<EntityTumblingBlock> TUMBLING_BLOCK = null;
-    public static final EntityType<EntityRing> RING = null;
+    public static final DeferredRegister<EntityType<?>> ENTITIES = new DeferredRegister<>(ForgeRegistries.ENTITIES, Names.MOD_ID);
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class Registration {
-        @SubscribeEvent
-        public static void onEntityRegister(RegistryEvent.Register<EntityType<?>> event) {
-            IForgeRegistry<EntityType<?>> r = event.getRegistry();
+    public static final RegistryObject<EntityType<EntityVortex>> VORTEX
+            = register("vortex", ModEntities::vortex);
+    public static final RegistryObject<EntityType<EntityDrone>> DRONE
+            = register("drone", ModEntities::drone);
+    public static final RegistryObject<EntityType<EntityLogisticsDrone>> LOGISTICS_DRONE
+            = register("logistics_drone", ModEntities::logisticsDrone);
+    public static final RegistryObject<EntityType<EntityHarvestingDrone>> HARVESTING_DRONE
+            = register("harvesting_drone", ModEntities::harvestingDrone);
+    public static final RegistryObject<EntityType<EntityMicromissile>> MICROMISSILE
+            = register("micromissile", ModEntities::micromissile);
+    public static final RegistryObject<EntityType<EntityTumblingBlock>> TUMBLING_BLOCK
+            = register("tumbling_block", ModEntities::tumblingBlock);
+    public static final RegistryObject<EntityType<EntityRing>> RING
+            = register("ring", ModEntities::ring);
 
-            r.register(EntityType.Builder.create(EntityVortex::create, EntityClassification.MISC)
-                    .size(0.5f, 0.5f)
-                    .immuneToFire()
-                    .setTrackingRange(16)
-                    .setUpdateInterval(3)
-                    .setCustomClientFactory((spawnEntity, world) -> ModEntities.VORTEX.create(world))
-                    .setShouldReceiveVelocityUpdates(true)
-                    .build(Names.MOD_ID + ":vortex")
-                    .setRegistryName("vortex"));
+    private static <E extends Entity> RegistryObject<EntityType<E>> register(final String name, final Supplier<EntityType.Builder<E>> sup) {
+        return ENTITIES.register(name, () -> sup.get().build(name));
+    }
 
-            r.register(EntityType.Builder.create(EntityDrone::create, EntityClassification.CREATURE)
-                    .size(0.7f, 0.35f)
-                    .setTrackingRange(32)
-                    .setUpdateInterval(3)
-                    .setCustomClientFactory(((spawnEntity, world) -> ModEntities.DRONE.create(world)))
-                    .setShouldReceiveVelocityUpdates(true)
-                    .build(Names.MOD_ID + ":drone")
-                    .setRegistryName("drone"));
+    private static EntityType.Builder<EntityVortex> vortex() {
+        return EntityType.Builder.create(EntityVortex::create, EntityClassification.MISC)
+                .size(0.5f, 0.5f)
+                .immuneToFire()
+                .setTrackingRange(4)
+                .setUpdateInterval(3)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.VORTEX.get().create(world))
+                .setShouldReceiveVelocityUpdates(true);
+    }
 
-            r.register(EntityType.Builder.create(EntityLogisticsDrone::create, EntityClassification.CREATURE)
-                    .size(0.7f, 0.35f)
-                    .setTrackingRange(32)
-                    .setUpdateInterval(3)
-                    .setCustomClientFactory(((spawnEntity, world) -> ModEntities.LOGISTIC_DRONE.create(world)))
-                    .setShouldReceiveVelocityUpdates(true)
-                    .build(Names.MOD_ID + ":logistic_drone")
-                    .setRegistryName("logistic_drone"));
+    private static EntityType.Builder<EntityDrone> drone() {
+        return EntityType.Builder.create(EntityDrone::create, EntityClassification.CREATURE)
+                .size(0.7f, 0.35f)
+                .setTrackingRange(32)
+                .setUpdateInterval(3)
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.DRONE.get().create(world)))
+                .setShouldReceiveVelocityUpdates(true);
+    }
 
-            r.register(EntityType.Builder.create(EntityHarvestingDrone::create, EntityClassification.CREATURE)
-                    .size(0.7f, 0.35f)
-                    .setTrackingRange(32)
-                    .setUpdateInterval(3)
-                    .setCustomClientFactory(((spawnEntity, world) -> ModEntities.HARVESTING_DRONE.create(world)))
-                    .setShouldReceiveVelocityUpdates(true)
-                    .build(Names.MOD_ID + ":harvesting_drone")
-                    .setRegistryName("harvesting_drone"));
+    private static EntityType.Builder<EntityLogisticsDrone> logisticsDrone() {
+        return EntityType.Builder.create(EntityLogisticsDrone::createLogisticsDrone, EntityClassification.CREATURE)
+                .size(0.7f, 0.35f)
+                .setTrackingRange(32)
+                .setUpdateInterval(3)
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.LOGISTICS_DRONE.get().create(world)))
+                .setShouldReceiveVelocityUpdates(true);
+    }
 
-            r.register(EntityType.Builder.create(EntityMicromissile::create, EntityClassification.MISC)
-                    .size(0.5f, 0.5f)
-                    .immuneToFire()
-                    .setTrackingRange(4)
-                    .setUpdateInterval(20)
-                    .setCustomClientFactory((spawnEntity, world) -> ModEntities.MICROMISSILE.create(world))
-                    .setShouldReceiveVelocityUpdates(true)
-                    .build(Names.MOD_ID + ":micromissile")
-                    .setRegistryName("micromissile"));
+    private static EntityType.Builder<EntityHarvestingDrone> harvestingDrone() {
+        return EntityType.Builder.create(EntityHarvestingDrone::createHarvestingDrone, EntityClassification.CREATURE)
+                .size(0.7f, 0.35f)
+                .setTrackingRange(32)
+                .setUpdateInterval(3)
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.HARVESTING_DRONE.get().create(world)))
+                .setShouldReceiveVelocityUpdates(true);
+    }
 
-            r.register(EntityType.Builder.create(EntityTumblingBlock::create, EntityClassification.MISC)
-                    .size(0.98f, 0.98f)
-                    .immuneToFire()
-                    .setTrackingRange(4)
-                    .setUpdateInterval(20)
-                    .setCustomClientFactory((spawnEntity, world) -> ModEntities.TUMBLING_BLOCK.create(world))
-                    .setShouldReceiveVelocityUpdates(true)
-                    .build(Names.MOD_ID + ":tumbling_block")
-                    .setRegistryName("tumbling_block"));
+    private static EntityType.Builder<EntityMicromissile> micromissile() {
+        return EntityType.Builder.create(EntityMicromissile::create, EntityClassification.MISC)
+                .size(0.5f, 0.5f)
+                .immuneToFire()
+                .setTrackingRange(4)
+                .setUpdateInterval(20)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.MICROMISSILE.get().create(world))
+                .setShouldReceiveVelocityUpdates(true);
+    }
 
-            r.register(EntityType.Builder.create(EntityRing::create, EntityClassification.MISC)
-                    .size(0.5f, 0.5f)
-                    .immuneToFire()
-                    .setTrackingRange(4)
-                    .setUpdateInterval(20)
-                    .setCustomClientFactory((spawnEntity, world) -> ModEntities.RING.create(world))
-                    .setShouldReceiveVelocityUpdates(true)
-                    .build(Names.MOD_ID + ":ring")
-                    .setRegistryName("ring"));
-        }
+    private static EntityType.Builder<EntityTumblingBlock> tumblingBlock() {
+        return EntityType.Builder.create(EntityTumblingBlock::create, EntityClassification.MISC)
+                .size(0.5f, 0.5f)
+                .immuneToFire()
+                .setTrackingRange(4)
+                .setUpdateInterval(20)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.TUMBLING_BLOCK.get().create(world))
+                .setShouldReceiveVelocityUpdates(true);
+    }
 
+    private static EntityType.Builder<EntityRing> ring() {
+        return EntityType.Builder.create(EntityRing::create, EntityClassification.MISC)
+                .size(0.5f, 0.5f)
+                .immuneToFire()
+                .setTrackingRange(4)
+                .setUpdateInterval(20)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.RING.get().create(world))
+                .setShouldReceiveVelocityUpdates(true);
     }
 }

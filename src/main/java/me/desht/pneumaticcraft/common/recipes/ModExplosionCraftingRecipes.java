@@ -26,14 +26,14 @@ public class ModExplosionCraftingRecipes {
                 RL("compressed_iron_ingot"),
                 Ingredient.fromTag(Tags.Items.INGOTS_IRON),
                 20,
-                new ItemStack(ModItems.INGOT_IRON_COMPRESSED)
+                new ItemStack(ModItems.INGOT_IRON_COMPRESSED.get())
         ));
 
         exp.accept(new ExplosionCraftingRecipe(
                 RL("compressed_iron_block"),
                 Ingredient.fromTag(Tags.Items.STORAGE_BLOCKS_IRON),
                 20,
-                new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK)
+                new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK.get())
         ));
     }
 }

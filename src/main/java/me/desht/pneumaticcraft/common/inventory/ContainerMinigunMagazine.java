@@ -22,7 +22,7 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
     }
 
     public ContainerMinigunMagazine(int windowId, PlayerInventory playerInventory) {
-        super(ModContainers.MINIGUN_MAGAZINE, windowId, playerInventory);
+        super(ModContainers.MINIGUN_MAGAZINE.get(), windowId, playerInventory);
 
         gunInv = ItemMinigun.getMagazine(playerInventory.player.getHeldItemMainhand());
 

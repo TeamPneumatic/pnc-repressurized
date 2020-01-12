@@ -19,7 +19,7 @@ public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery
     }
 
     public ContainerRefinery(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.REFINERY, i, playerInventory, pos);
+        super(ModContainers.REFINERY.get(), i, playerInventory, pos);
 
         TileEntityRefineryController refinery = te;
         refinery.onNeighborTileUpdate();

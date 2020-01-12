@@ -73,7 +73,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public boolean recentreStartPiece = false;
 
     public TileEntityProgrammer() {
-        super(ModTileEntities.PROGRAMMER);
+        super(ModTileEntities.PROGRAMMER.get());
 
         saveToHistory();
     }
@@ -290,7 +290,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                     if (!takePuzzleStacks(player, true)) return;
                     takePuzzleStacks(player, false);
                 } else if (required < 0) {
-                    ItemStack stack = new ItemStack(ModItems.PROGRAMMING_PUZZLE);
+                    ItemStack stack = new ItemStack(ModItems.PROGRAMMING_PUZZLE.get());
                     while (required < 0) {
                         int size = Math.min(required, stack.getMaxStackSize());
                         ItemHandlerHelper.giveItemToPlayer(player, ItemHandlerHelper.copyStackWithSize(stack, size));
@@ -304,7 +304,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             }
             writeProgWidgetsToNBT(stack.getTag());
             if (player != null) {
-                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.HUD_INIT_COMPLETE, SoundCategory.BLOCKS, getPos(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
+                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundCategory.BLOCKS, getPos(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
                 AdvancementTriggers.PROGRAM_DRONE.trigger((ServerPlayerEntity) player);
             }
         }

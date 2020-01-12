@@ -87,7 +87,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     public int outOfRange;
 
     public TileEntityUniversalSensor() {
-        super(ModTileEntities.UNIVERSAL_SENSOR, PneumaticValues.DANGER_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.MAX_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 4);
+        super(ModTileEntities.UNIVERSAL_SENSOR.get(), PneumaticValues.DANGER_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.MAX_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 4);
     }
 
     @Override
@@ -472,7 +472,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
             public Object[] call(Object[] args) {
                 requireArgs(args, 4, "slot, x, y, z");
                 ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
-                if (stack.getItem() == ModItems.GPS_TOOL) {
+                if (stack.getItem() == ModItems.GPS_TOOL.get()) {
                     ItemGPSTool.setGPSLocation(stack, new BlockPos((Double) args[1], (Double) args[2], (Double) args[3]));
                     return new Object[]{true};
                 } else {
@@ -487,7 +487,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "upgrade_slot");
                 ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
-                if (stack.getItem() == ModItems.GPS_TOOL) {
+                if (stack.getItem() == ModItems.GPS_TOOL.get()) {
                     BlockPos pos = ItemGPSTool.getGPSLocation(stack);
                     if (pos != null) {
                         return new Object[]{pos.getX(), pos.getY(), pos.getZ()};

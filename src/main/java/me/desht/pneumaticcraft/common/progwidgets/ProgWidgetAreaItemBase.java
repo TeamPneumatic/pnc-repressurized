@@ -48,7 +48,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.ITEM_FILTER);
+        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.ITEM_FILTER.get());
     }
 
     @Override

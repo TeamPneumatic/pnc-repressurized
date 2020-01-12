@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
@@ -41,12 +42,8 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
     // standard FACING property is used for the output direction
     public static final EnumProperty<Direction> INPUT_FACING = EnumProperty.create("input", Direction.class);
 
-    BlockOmnidirectionalHopper(String registryName) {
-        super(registryName);
-    }
-
     public BlockOmnidirectionalHopper() {
-        super("omnidirectional_hopper");
+        super(ModBlocks.defaultProps());
     }
 
     @Override

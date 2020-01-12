@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
+import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import vazkii.patchouli.api.IComponentProcessor;
@@ -22,7 +23,7 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
     public String process(String key) {
         if (recipe == null) return null;
 
-        ItemStack programStack = new ItemStack(recipe.getProgram());
+        ItemStack programStack = new ItemStack(ItemAssemblyProgram.fromProgramType(recipe.getProgramType()));
         switch (key) {
             case "input":
                 return ItemStackUtil.serializeIngredient(recipe.getInput());

@@ -13,7 +13,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
     private int backgroundColor = DyeColor.WHITE.getId();
 
     public TileEntityAphorismTile() {
-        super(ModTileEntities.APHORISM_TILE);
+        super(ModTileEntities.APHORISM_TILE.get());
     }
 
     @Override

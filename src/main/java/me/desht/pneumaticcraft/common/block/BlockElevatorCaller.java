@@ -21,7 +21,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     public BlockElevatorCaller() {
-        super("elevator_caller");
+        super(ModBlocks.defaultProps());
     }
 
     @Override
@@ -160,10 +160,10 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     private static TileEntityElevatorBase getElevatorBase(World world, BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
         TileEntityElevatorBase elevator = null;
-        if (block == ModBlocks.ELEVATOR_FRAME) {
+        if (block == ModBlocks.ELEVATOR_FRAME.get()) {
             elevator = BlockElevatorFrame.getElevatorTE(world, pos);
         }
-        if (block == ModBlocks.ELEVATOR_BASE) {
+        if (block == ModBlocks.ELEVATOR_BASE.get()) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityElevatorBase && ((TileEntityElevatorBase) te).isCoreElevator()) {
                 elevator = (TileEntityElevatorBase) te;

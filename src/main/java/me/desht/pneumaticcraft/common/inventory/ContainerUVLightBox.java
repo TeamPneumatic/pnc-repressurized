@@ -14,9 +14,9 @@ public class ContainerUVLightBox extends ContainerPneumaticBase<TileEntityUVLigh
     }
 
     public ContainerUVLightBox(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.UV_LIGHT_BOX, i, playerInventory, pos);
+        super(ModContainers.UV_LIGHT_BOX.get(), i, playerInventory, pos);
 
-        addSlot(new SlotItemSpecific(te.getPrimaryInventory(), ModItems.EMPTY_PCB, 0, 71, 36));
+        addSlot(new SlotItemSpecific(te.getPrimaryInventory(), ModItems.EMPTY_PCB.get(), 0, 71, 36));
 
         addUpgradeSlots(21, 29);
 

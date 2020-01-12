@@ -22,7 +22,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     private BlockState camoState;
 
     public TileEntityElevatorCaller() {
-        super(ModTileEntities.ELEVATOR_CALLER);
+        super(ModTileEntities.ELEVATOR_CALLER.get());
     }
 
     public void setEmittingRedstone(boolean emittingRedstone) {

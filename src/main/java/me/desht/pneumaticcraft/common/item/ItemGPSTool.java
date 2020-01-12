@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiGPSTool;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -30,7 +31,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
     public ItemGPSTool() {
-        super("gps_tool");
+        super(ModItems.defaultProps());
     }
 
     @Override
@@ -39,7 +40,7 @@ public class ItemGPSTool extends ItemPneumatic implements IPositionProvider {
         setGPSLocation(ctx.getPlayer().getHeldItem(ctx.getHand()), pos);
         if (!ctx.getWorld().isRemote)
             ctx.getPlayer().sendStatusMessage(new TranslationTextComponent("message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).applyTextStyle(TextFormatting.GREEN), false);
-        ctx.getPlayer().playSound(ModSounds.CHIRP, 1.0f, 1.5f);
+        ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
         return ActionResultType.SUCCESS; // we don't want to use the item.
     }
 

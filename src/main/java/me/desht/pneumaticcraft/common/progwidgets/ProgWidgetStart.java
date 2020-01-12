@@ -15,7 +15,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetStart extends ProgWidget {
 
     public ProgWidgetStart() {
-        super(ModProgWidgets.START);
+        super(ModProgWidgets.START.get());
     }
 
     @Override

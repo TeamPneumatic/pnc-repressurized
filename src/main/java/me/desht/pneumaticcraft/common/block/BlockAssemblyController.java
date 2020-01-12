@@ -17,8 +17,8 @@ public class BlockAssemblyController extends BlockPneumaticCraft {
     private static final VoxelShape LEG_SHAPE = Block.makeCuboidShape(7, 2, 7, 9, 12, 9);
     private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, LEG_SHAPE);
 
-    public BlockAssemblyController() {
-        super("assembly_controller");
+    public BlockAssemblyController(Properties props) {
+        super(props);
         setDefaultState(getStateContainer().getBaseState()
                 .with(DOWN, false)
                 .with(NORTH, false)

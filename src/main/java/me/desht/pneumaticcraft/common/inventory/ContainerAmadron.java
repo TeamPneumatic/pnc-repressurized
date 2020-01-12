@@ -102,7 +102,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
 
     }
     public ContainerAmadron(int windowId, PlayerInventory invPlayer, Hand hand) {
-        super(ModContainers.AMADRON, windowId, invPlayer);
+        super(ModContainers.AMADRON.get(), windowId, invPlayer);
 
         this.hand = hand;
 
@@ -175,7 +175,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
 
     @Override
     public boolean canInteractWith(PlayerEntity player) {
-        if (player.getHeldItem(hand).getItem() == ModItems.AMADRON_TABLET) {
+        if (player.getHeldItem(hand).getItem() == ModItems.AMADRON_TABLET.get()) {
             return player.getHeldItem(hand).getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 h.addAir(-1);
                 if (h.getPressure() > 0) {
@@ -270,7 +270,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                     }
                 }
                 if (placed && player instanceof ServerPlayerEntity) {
-                    NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.2f, 1.0f, false), (ServerPlayerEntity) player);
+                    NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.2f, 1.0f, false), (ServerPlayerEntity) player);
                 }
             }
             Arrays.fill(shoppingAmounts, 0);
@@ -432,7 +432,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     @Override
     public void onContainerClosed(PlayerEntity player) {
         super.onContainerClosed(player);
-        if (!player.world.isRemote && player.getHeldItem(hand).getItem() == ModItems.AMADRON_TABLET) {
+        if (!player.world.isRemote && player.getHeldItem(hand).getItem() == ModItems.AMADRON_TABLET.get()) {
             Map<AmadronOffer, Integer> shoppingCart = new HashMap<>();
             for (int i = 0; i < shoppingItems.length; i++) {
                 if (shoppingItems[i] >= 0) {

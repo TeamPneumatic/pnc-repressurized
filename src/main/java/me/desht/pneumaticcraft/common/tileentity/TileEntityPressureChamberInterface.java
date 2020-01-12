@@ -79,7 +79,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     public TileEntityPressureChamberInterface() {
-        super(ModTileEntities.PRESSURE_CHAMBER_INTERFACE, 4);
+        super(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), 4);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         }
 
         if (getWorld().isRemote && soundTimer++ >= MIN_SOUND_INTERVAL && (wasOpeningI != isOpeningInput || wasOpeningO != isOpeningOutput)) {
-            getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, ModSounds.INTERFACE_DOOR, SoundCategory.BLOCKS, 0.5F, 1.0F, true);
+            getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, ModSounds.INTERFACE_DOOR.get(), SoundCategory.BLOCKS, 0.5F, 1.0F, true);
             soundTimer = 0;
         }
     }

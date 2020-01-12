@@ -1,9 +1,8 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
@@ -12,6 +11,10 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
     public float rotation, oldRotation;
     private int flow;
     private int oldFlow;
+
+    public ModuleFlowDetector(ItemTubeModule item) {
+        super(item);
+    }
 
     @Override
     public void update() {
@@ -27,11 +30,6 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
             oldFlow = flow;
             flow = 0;
         }
-    }
-
-    @Override
-    public ResourceLocation getType() {
-        return Names.MODULE_FLOW_DETECTOR;
     }
 
     @Override

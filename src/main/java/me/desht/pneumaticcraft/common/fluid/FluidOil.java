@@ -17,22 +17,15 @@ public abstract class FluidOil extends ForgeFlowingFluid {
     ).density(800).viscosity(10000).temperature(300);
 
     private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.OIL, () -> ModFluids.OIL_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.OIL).bucket(() -> ModItems.OIL_BUCKET
-            );
+            new ForgeFlowingFluid.Properties(ModFluids.OIL, ModFluids.OIL_FLOWING, ATTRS)
+                    .block(ModBlocks.OIL)
+                    .bucket(ModItems.OIL_BUCKET);
 
-    FluidOil(String name) {
+    FluidOil() {
         super(PROPS);
-
-        setRegistryName(RL(name));
     }
 
     public static class Source extends FluidOil {
-        public Source() {
-            super("oil");
-        }
-
         @Override
         public boolean isSource(IFluidState state) {
             return true;
@@ -45,10 +38,6 @@ public abstract class FluidOil extends ForgeFlowingFluid {
     }
 
     public static class Flowing extends FluidOil {
-        public Flowing() {
-            super("oil_flowing");
-        }
-
         @Override
         protected void fillStateContainer(StateContainer.Builder<Fluid, IFluidState> builder) {
             super.fillStateContainer(builder);

@@ -11,12 +11,11 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 
-public class BlockUniversalSensor extends BlockPneumaticCraftModeled {
-
+public class BlockUniversalSensor extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 4, 16);
 
-    public BlockUniversalSensor() {
-        super("universal_sensor");
+    public BlockUniversalSensor(Properties props) {
+        super(props);
 
         setDefaultState(getStateContainer().getBaseState()
                 .with(NORTH, false)

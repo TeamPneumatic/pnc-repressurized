@@ -11,7 +11,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
 public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
-
     public enum EnumWallState implements IStringSerializable {
         NONE, CENTER, XEDGE, ZEDGE, YEDGE, XMIN_YMIN_ZMIN, XMIN_YMIN_ZMAX, XMIN_YMAX_ZMIN, XMIN_YMAX_ZMAX;
 
@@ -21,11 +20,11 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
         }
     }
 
-    private static final EnumProperty<EnumWallState> WALL_STATE = EnumProperty.create("wall_state", EnumWallState.class);
-
     public BlockPressureChamberWall() {
-        super(IBlockPressureChamber.getPressureChamberBlockProps(), "pressure_chamber_wall");
+        super(IBlockPressureChamber.pressureChamberBlockProps());
     }
+
+    private static final EnumProperty<EnumWallState> WALL_STATE = EnumProperty.create("wall_state", EnumWallState.class);
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {

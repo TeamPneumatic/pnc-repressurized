@@ -30,10 +30,10 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     private static final String TITLE_PREFIX = TextFormatting.AQUA + "" + TextFormatting.UNDERLINE;
 
     public static final ItemStack[] ARMOR_STACKS = new ItemStack[]{
-            new ItemStack(ModItems.PNEUMATIC_BOOTS),
-            new ItemStack(ModItems.PNEUMATIC_LEGGINGS),
-            new ItemStack(ModItems.PNEUMATIC_CHESTPLATE),
-            new ItemStack(ModItems.PNEUMATIC_HELMET)
+            new ItemStack(ModItems.PNEUMATIC_BOOTS.get()),
+            new ItemStack(ModItems.PNEUMATIC_LEGGINGS.get()),
+            new ItemStack(ModItems.PNEUMATIC_CHESTPLATE.get()),
+            new ItemStack(ModItems.PNEUMATIC_HELMET.get())
     };
     private final List<UpgradeOption> upgradeOptions = new ArrayList<>();
     private static int pageNumber;

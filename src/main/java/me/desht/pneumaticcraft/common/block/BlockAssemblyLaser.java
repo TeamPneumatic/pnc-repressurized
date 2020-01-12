@@ -14,8 +14,8 @@ public class BlockAssemblyLaser extends BlockPneumaticCraft {
     private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 1, 16);
     private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, Block.makeCuboidShape(5, 1, 5, 11, 7, 11));
 
-    public BlockAssemblyLaser() {
-        super("assembly_laser");
+    public BlockAssemblyLaser(Properties props) {
+        super(props);
     }
 
     @Override

@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:logistic_drone"
+      "item": "pneumaticcraft:logistics_drone"
     },
     "title": {
       "translate": "achievement.logisticsDrone"

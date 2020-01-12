@@ -21,8 +21,8 @@ public class BlockUVLightBox extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE_EW = Block.makeCuboidShape(1, 0, 4.5, 15, 7, 11.5);
     private static final VoxelShape SHAPE_NS = Block.makeCuboidShape(4.5, 0, 1, 11.5, 7, 15);
 
-    public BlockUVLightBox() {
-        super("uv_light_box");
+    public BlockUVLightBox(Properties props) {
+        super(props);
         setDefaultState(getStateContainer().getBaseState().with(LOADED, false).with(LIT, false));
     }
 

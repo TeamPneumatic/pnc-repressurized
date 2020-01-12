@@ -1,19 +1,19 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
+import me.desht.pneumaticcraft.common.core.ModFluids;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.function.Supplier;
+public class BlockFluidEtchingAcid extends FlowingFluidBlock {
 
-public class BlockFluidEtchingAcid extends BlockFluidPneumaticCraft {
-
-    public BlockFluidEtchingAcid(Supplier<? extends FlowingFluid> supplier, Properties props) {
-        super(supplier, props, "etching_acid");
+    public BlockFluidEtchingAcid(Properties props) {
+        super(() -> (FlowingFluid) ModFluids.ETCHING_ACID.get(), props);
     }
 
 //    public BlockFluidEtchingAcid(Fluid fluid) {

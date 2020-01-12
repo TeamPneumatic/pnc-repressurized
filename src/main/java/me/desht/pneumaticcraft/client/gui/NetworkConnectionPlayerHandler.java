@@ -28,7 +28,7 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
                                    int baseY, int nodeSpacing, int color) {
         super(gui, station, baseX, baseY, nodeSpacing, color, TileEntityConstants.NETWORK_NORMAL_BRIDGE_SPEED);
         for (int i = 0; i < station.getPrimaryInventory().getSlots(); i++) {
-            if (station.getPrimaryInventory().getStackInSlot(i).getItem() == ModItems.NETWORK_IO_PORT) {
+            if (station.getPrimaryInventory().getStackInSlot(i).getItem() == ModItems.NETWORK_IO_PORT.get()) {
                 slotHacked[i] = true;
             }
         }
@@ -90,8 +90,8 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
                 int linesBefore = lineList.size();
                 if (tryToHackSlot(slot.slotNumber)) {
                     PlayerEntity player = Minecraft.getInstance().player;
-                    NetworkHandler.sendToServer(new PacketUseItem(new ItemStack(ModItems.NUKE_VIRUS)));
-                    PneumaticCraftUtils.consumeInventoryItem(player.inventory, ModItems.NUKE_VIRUS);
+                    NetworkHandler.sendToServer(new PacketUseItem(new ItemStack(ModItems.NUKE_VIRUS.get())));
+                    PneumaticCraftUtils.consumeInventoryItem(player.inventory, ModItems.NUKE_VIRUS.get());
                     for (int i = linesBefore; i < lineList.size(); i++) {
                         RenderProgressingLine line = lineList.get(i);
                         line.setProgress(1);
@@ -115,7 +115,7 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
             ((GuiSecurityStationHacking) gui).onSlotHack(slot);
         }
         ItemStack stack = station.getPrimaryInventory().getStackInSlot(slot);
-        if (stack.getItem() == ModItems.NETWORK_REGISTRY || stack.getItem() == ModItems.DIAGNOSTIC_SUBROUTINE) {
+        if (stack.getItem() == ModItems.NETWORK_REGISTRY.get() || stack.getItem() == ModItems.DIAGNOSTIC_SUBROUTINE.get()) {
             hackedSuccessfully = true;
             PlayerEntity player = Minecraft.getInstance().player;
             // TODO should be sending entity or player UUID here

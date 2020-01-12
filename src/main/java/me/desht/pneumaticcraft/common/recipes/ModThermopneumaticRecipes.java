@@ -25,45 +25,45 @@ public class ModThermopneumaticRecipes {
 
         tpp.accept(new BasicThermopneumaticProcessingPlantRecipe(
                 RL("plastic"),
-                new FluidStack(ModFluids.LPG, 100),
+                new FluidStack(ModFluids.LPG.get(), 100),
                 Ingredient.fromTag(ItemTags.COALS),
-                new FluidStack(ModFluids.PLASTIC, 1000),
+                new FluidStack(ModFluids.PLASTIC.get(), 1000),
                 TemperatureRange.min(373), 0f,
                 false
         ));
 
         tpp.accept(new BasicThermopneumaticProcessingPlantRecipe(
                 RL("lubricant"),
-                new FluidStack(ModFluids.DIESEL, 1000),
+                new FluidStack(ModFluids.DIESEL.get(), 1000),
                 Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE),
-                new FluidStack(ModFluids.LUBRICANT, 1000),
+                new FluidStack(ModFluids.LUBRICANT.get(), 1000),
                 TemperatureRange.min(373), 0f,
                 false
         ));
 
         tpp.accept(new BasicThermopneumaticProcessingPlantRecipe(
                 RL("kerosene"),
-                new FluidStack(ModFluids.DIESEL, 100),
+                new FluidStack(ModFluids.DIESEL.get(), 100),
                 Ingredient.EMPTY,
-                new FluidStack(ModFluids.KEROSENE, 80),
+                new FluidStack(ModFluids.KEROSENE.get(), 80),
                 TemperatureRange.min(573), 2.0f,
                 false
         ));
 
         tpp.accept(new BasicThermopneumaticProcessingPlantRecipe(
                 RL("gasoline"),
-                new FluidStack(ModFluids.KEROSENE, 100),
+                new FluidStack(ModFluids.KEROSENE.get(), 100),
                 Ingredient.EMPTY,
-                new FluidStack(ModFluids.GASOLINE, 80),
+                new FluidStack(ModFluids.GASOLINE.get(), 80),
                 TemperatureRange.min(573), 2.0f,
                 false
         ));
 
         tpp.accept(new BasicThermopneumaticProcessingPlantRecipe(
                 RL("lpg"),
-                new FluidStack(ModFluids.GASOLINE, 100),
+                new FluidStack(ModFluids.GASOLINE.get(), 100),
                 Ingredient.EMPTY,
-                new FluidStack(ModFluids.LPG, 80),
+                new FluidStack(ModFluids.LPG.get(), 80),
                 TemperatureRange.min(573), 2.0f,
                 false
         ));

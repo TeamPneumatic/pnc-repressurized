@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDynamo;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.Block;
@@ -17,7 +18,7 @@ import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nullable;
 
-public class BlockPneumaticDynamo extends BlockPneumaticCraftModeled {
+public class BlockPneumaticDynamo extends BlockPneumaticCraft {
     private static final VoxelShape BASE = Block.makeCuboidShape(0, 0, 0, 16, 10, 16);
     private static final VoxelShape COIL = Block.makeCuboidShape(4, 10, 4, 12, 16, 12);
     private static final VoxelShape SHAPE_UP = VoxelShapes.combineAndSimplify(BASE, COIL, IBooleanFunction.OR);
@@ -33,7 +34,7 @@ public class BlockPneumaticDynamo extends BlockPneumaticCraftModeled {
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
     public BlockPneumaticDynamo() {
-        super("pneumatic_dynamo");
+        super(ModBlocks.defaultProps());
         setDefaultState(getStateContainer().getBaseState().with(ACTIVE, false));
     }
 

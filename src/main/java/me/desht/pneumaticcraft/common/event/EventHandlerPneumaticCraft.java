@@ -55,7 +55,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -126,14 +128,14 @@ public class EventHandlerPneumaticCraft {
         }
     }
 
-    private void checkForAdvancement(ExplosionEvent.Detonate event, ItemStack result) {
-        if ((result.getItem() == ModItems.INGOT_IRON_COMPRESSED || result.getItem() == ModBlocks.COMPRESSED_IRON_BLOCK.asItem())) {
-            Vec3d exp = event.getExplosion().getPosition();
-            for (PlayerEntity player : event.getWorld().getEntitiesWithinAABB(PlayerEntity.class, new AxisAlignedBB(exp.x - 32, exp.y - 32, exp.z - 32, exp.x + 32, exp.y + 32, exp.z + 32))) {
-                AdvancementTriggers.EXPLODE_IRON.trigger((ServerPlayerEntity) player);
-            }
-        }
-    }
+//    private void checkForAdvancement(ExplosionEvent.Detonate event, ItemStack result) {
+//        if ((result.getItem() == ModItems.INGOT_IRON_COMPRESSED.get() || result.getItem() == ModBlocks.COMPRESSED_IRON_BLOCK.get().asItem())) {
+//            Vec3d exp = event.getExplosion().getPosition();
+//            for (PlayerEntity player : event.getWorld().getEntitiesWithinAABB(PlayerEntity.class, new AxisAlignedBB(exp.x - 32, exp.y - 32, exp.z - 32, exp.x + 32, exp.y + 32, exp.z + 32))) {
+//                AdvancementTriggers.EXPLODE_IRON.trigger((ServerPlayerEntity) player);
+//            }
+//        }
+//    }
 
     @SubscribeEvent
     public void onEntityConstruction(EntityConstructing event) {
@@ -166,7 +168,7 @@ public class EventHandlerPneumaticCraft {
         if (!HackableEnderman.onEndermanTeleport(e)) {
             event.setCanceled(true);
         }
-        if (e.getEntityWorld().getBlockState(e.getPosition()).getBlock() == ModBlocks.FAKE_ICE) {
+        if (e.getEntityWorld().getBlockState(e.getPosition()).getBlock() == ModBlocks.FAKE_ICE.get()) {
             event.setCanceled(true);
         }
     }
@@ -196,8 +198,8 @@ public class EventHandlerPneumaticCraft {
 
         if (!event.getPlayer().isCreative() || !event.getPlayer().getCommandSource().hasPermissionLevel(2)) {
             if (event.getWorld() != null && !event.getWorld().isRemote) {
-                if (interactedBlock != ModBlocks.SECURITY_STATION || event instanceof PlayerInteractEvent.LeftClickBlock) {
-                    boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem && ((BlockItem) heldItem.getItem()).getBlock() == ModBlocks.SECURITY_STATION;
+                if (interactedBlock != ModBlocks.SECURITY_STATION.get() || event instanceof PlayerInteractEvent.LeftClickBlock) {
+                    boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem && ((BlockItem) heldItem.getItem()).getBlock() == ModBlocks.SECURITY_STATION.get();
                     int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.getWorld(), event.getPos(), event.getPlayer(), true, tryingToPlaceSecurityStation);
                     if (blockingStations > 0) {
                         event.setCanceled(true);
@@ -394,10 +396,10 @@ public class EventHandlerPneumaticCraft {
                 // tag the minigun with the player's entity ID - it's sync'd to clients
                 // so other clients will know who's wielding it, and render appropriately
                 // See RenderItemMinigun#renderByItem()
-                if (event.getTo().getItem() == ModItems.MINIGUN) {
+                if (event.getTo().getItem() == ModItems.MINIGUN.get()) {
                     NBTUtil.initNBTTagCompound(event.getTo());
                     event.getTo().getTag().putInt("owningPlayerId", event.getEntityLiving().getEntityId());
-                } else if (event.getFrom().getItem() == ModItems.MINIGUN) {
+                } else if (event.getFrom().getItem() == ModItems.MINIGUN.get()) {
                     NBTUtil.initNBTTagCompound(event.getFrom());
                     event.getFrom().getTag().remove("owningPlayerId");
                 }

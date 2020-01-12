@@ -146,8 +146,8 @@ public abstract class SemiBlockLogistics extends SemiBlockBasic<TileEntity> impl
     private boolean playerIsHoldingLogisticItems() {
         PlayerEntity player = Minecraft.getInstance().player;
         ItemStack stack = player.getHeldItemMainhand();
-        return (stack.getItem() == ModItems.LOGISTICS_CONFIGURATOR
-                || stack.getItem() == ModItems.LOGISTIC_DRONE
+        return (stack.getItem() == ModItems.LOGISTICS_CONFIGURATOR.get()
+                || stack.getItem() == ModItems.LOGISTICS_DRONE.get()
                 || stack.getItem() instanceof ItemSemiBlockBase);
     }
 

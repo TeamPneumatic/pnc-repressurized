@@ -8,10 +8,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class ContainerElectrostaticCompressor extends Container4UpgradeSlots<TileEntityElectrostaticCompressor> {
     public ContainerElectrostaticCompressor(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        super(ModContainers.ELECTROSTATIC_COMPRESSOR, i, playerInventory, getTilePos(buffer));
+        super(ModContainers.ELECTROSTATIC_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));
     }
 
     public ContainerElectrostaticCompressor(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.ELECTROSTATIC_COMPRESSOR, i, playerInventory, pos);
+        super(ModContainers.ELECTROSTATIC_COMPRESSOR.get(), i, playerInventory, pos);
     }
 }

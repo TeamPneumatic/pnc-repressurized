@@ -1,12 +1,11 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
-import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -15,9 +14,8 @@ public class ModuleCharging extends TubeModule {
     private TileEntityCache connectedInventory;
     private LazyOptional<IItemHandler> cachedHandler = LazyOptional.empty();
 
-    @Override
-    public ResourceLocation getType() {
-        return Names.MODULE_CHARGING;
+    public ModuleCharging(ItemTubeModule itemTubeModule) {
+        super(itemTubeModule);
     }
 
     @Override

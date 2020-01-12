@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -22,11 +23,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 public class BlockPressureChamberValve extends BlockPneumaticCraft implements IBlockPressureChamber {
-
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
 
     public BlockPressureChamberValve() {
-        super(IBlockPressureChamber.getPressureChamberBlockProps(), "pressure_chamber_valve");
+        super(ModBlocks.defaultProps());
         setDefaultState(getStateContainer().getBaseState().with(FORMED, false));
     }
 
@@ -35,9 +35,11 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
         return TileEntityPressureChamberValve.class;
     }
 
-    /**
-     * Called when the block is placed in the world.
-     */
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return ALMOST_FULL_SHAPE;
+    }
+
     @Override
     public void onBlockPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
         super.onBlockPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
@@ -108,10 +110,5 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
                 }
             }
         }
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return ALMOST_FULL_SHAPE;
     }
 }

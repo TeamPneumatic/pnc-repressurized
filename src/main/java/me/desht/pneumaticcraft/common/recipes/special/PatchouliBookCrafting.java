@@ -31,7 +31,7 @@ public class PatchouliBookCrafting extends SpecialRecipe {
         boolean bookFound = false, ingotFound = false;
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             Item item = inv.getStackInSlot(i).getItem();
-            if (item == ModItems.INGOT_IRON_COMPRESSED) {
+            if (item == ModItems.INGOT_IRON_COMPRESSED.get()) {
                 if (ingotFound) return false;
                 ingotFound = true;
             } else if (item == Items.BOOK) {
@@ -60,7 +60,7 @@ public class PatchouliBookCrafting extends SpecialRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return ModRecipes.PATCHOULI_BOOK_CRAFTING;
+        return ModRecipes.PATCHOULI_BOOK_CRAFTING.get();
     }
 
     public static void setBookNBT(ItemStack guideBook) {

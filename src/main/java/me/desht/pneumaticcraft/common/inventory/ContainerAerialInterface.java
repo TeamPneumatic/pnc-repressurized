@@ -8,10 +8,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class ContainerAerialInterface extends ContainerEnergy<TileEntityAerialInterface> {
     public ContainerAerialInterface(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        super(ModContainers.AERIAL_INTERFACE, i, playerInventory, getTilePos(buffer));
+        super(ModContainers.AERIAL_INTERFACE.get(), i, playerInventory, getTilePos(buffer));
     }
 
     public ContainerAerialInterface(int i, PlayerInventory playerInventory, BlockPos tilePos) {
-        super(ModContainers.AERIAL_INTERFACE, i, playerInventory, tilePos);
+        super(ModContainers.AERIAL_INTERFACE.get(), i, playerInventory, tilePos);
     }
 }

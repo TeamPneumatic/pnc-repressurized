@@ -64,7 +64,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || itemStack.getItem() == ModBlocks.DRILL_PIPE.asItem();
+            return itemStack.isEmpty() || itemStack.getItem() == ModBlocks.DRILL_PIPE.get().asItem();
         }
     };
     private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> inventory);
@@ -82,7 +82,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     private static final int MAX_PUMP_RANGE_SQUARED = 15 * 15;
 
     public TileEntityGasLift() {
-        super(ModTileEntities.GAS_LIFT, 5, 7, 3000, 4);
+        super(ModTileEntities.GAS_LIFT.get(), 5, 7, 3000, 4);
     }
 
     @Override
@@ -164,7 +164,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
             BlockPos pos1 = getPos().offset(Direction.DOWN, currentDepth);
             if (!isPipe(world, pos1)) {
                 ItemStack extracted = inventory.extractItem(0, 1, true);
-                if (extracted.getItem() == ModBlocks.DRILL_PIPE.asItem()) {
+                if (extracted.getItem() == ModBlocks.DRILL_PIPE.get().asItem()) {
                     BlockState currentState = world.getBlockState(pos1);
                     BlockState newState = ((BlockItem) extracted.getItem()).getBlock().getDefaultState();
 
@@ -193,7 +193,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     private boolean isPipe(World world, BlockPos pos) {
-        return world.getBlockState(pos).getBlock() == ModBlocks.DRILL_PIPE;
+        return world.getBlockState(pos).getBlock() == ModBlocks.DRILL_PIPE.get();
     }
 
     private boolean isUnbreakable(BlockPos pos) {

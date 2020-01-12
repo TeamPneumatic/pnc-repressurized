@@ -16,12 +16,20 @@ public class EntityRing extends Entity {
     private final Entity targetEntity;
     public final int color;
 
-    public EntityRing(World world) {
-        this(world, 0, 0, 0, null, 0);
+    public static EntityRing create(EntityType<EntityRing> type, World world) {
+        return new EntityRing(type, world);
+    }
+
+    private EntityRing(EntityType<EntityRing> type, World world) {
+        super(type, world);
+
+        targetEntity = null;
+        color = 0;
     }
 
     public EntityRing(World par1World, double startX, double startY, double startZ, Entity targetEntity, int color) {
-        super(ModEntities.RING, par1World);
+        super(ModEntities.RING.get(), par1World);
+
         posX = lastTickPosX = startX;
         posY = lastTickPosY = startY;
         posZ = lastTickPosZ = startZ;
@@ -40,8 +48,9 @@ public class EntityRing extends Entity {
         }
     }
 
-    public static Entity create(EntityType<Entity> entityEntityType, World world) {
-        return new EntityRing(world);
+    @Override
+    public IPacket<?> createSpawnPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
@@ -84,22 +93,14 @@ public class EntityRing extends Entity {
 
     @Override
     protected void registerData() {
-
     }
 
     @Override
     protected void readAdditional(CompoundNBT compound) {
-
     }
 
     @Override
     protected void writeAdditional(CompoundNBT compound) {
-
-    }
-
-    @Override
-    public IPacket<?> createSpawnPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
 }

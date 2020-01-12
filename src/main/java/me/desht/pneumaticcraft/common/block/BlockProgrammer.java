@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,7 +15,7 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-public class BlockProgrammer extends BlockPneumaticCraftModeled {
+public class BlockProgrammer extends BlockPneumaticCraft {
     private static final VoxelShape BODY = Block.makeCuboidShape(1, 8, 1, 15, 11, 15);
     private static final VoxelShape LEG1 = Block.makeCuboidShape(1, 0, 1, 3, 8, 3);
     private static final VoxelShape LEG2 = Block.makeCuboidShape(13, 0, 13, 15, 8, 15);
@@ -23,7 +24,7 @@ public class BlockProgrammer extends BlockPneumaticCraftModeled {
     private static final VoxelShape SHAPE = VoxelShapes.or(BODY, LEG1, LEG2, LEG3, LEG4);
 
     public BlockProgrammer() {
-        super("programmer");
+        super(ModBlocks.defaultProps());
     }
 
     @Override

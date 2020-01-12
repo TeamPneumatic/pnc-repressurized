@@ -237,7 +237,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         for (PlayerEntity player : drone.world().getPlayers()) {
             if (player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) < 1024) {
                 ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
-                if (helmet.getItem() == ModItems.PNEUMATIC_HELMET) {
+                if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isEntityTrackerEnabled()
                             && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.ENTITY_TRACKER) > 0

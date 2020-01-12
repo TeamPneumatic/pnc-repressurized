@@ -34,7 +34,7 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<IPressu
     JEIPressureChamberRecipeCategory() {
 //        super(jeiHelpers);
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_PRESSURE_CHAMBER_LOCATION, 5, 11, 166, 130);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL));
+        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()));
         localizedName = I18n.format("gui.pressureChamber");
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
     }

@@ -12,6 +12,7 @@ import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.*;
 import net.minecraft.world.storage.loot.functions.CopyName;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -40,24 +41,24 @@ public class ModLootTablesProvider extends LootTableProvider {
     private static class BlockLootTablePNC extends BlockLootTables {
         @Override
         protected void addTables() {
-            for (Block b : ModBlocks.Registration.ALL_BLOCKS) {
-                if (b instanceof BlockPneumaticCraft && b.hasTileEntity(b.getDefaultState()) && ForgeRegistries.ITEMS.containsKey(b.getRegistryName())) {
+            for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
+                Block b = ro.get();
+                if (b instanceof BlockPneumaticCraft
+                        && b.hasTileEntity(b.getDefaultState())
+                        && ForgeRegistries.ITEMS.containsKey(b.getRegistryName())) {
                     addStandardSerializedDrop(b);
                 }
             }
 
-            registerDropSelfLootTable(ModBlocks.DRILL_PIPE);
-//            registerDropping(ModBlocks.FAKE_ICE, Blocks.AIR);
-//            registerDropping(ModBlocks.KEROSENE_LAMP_LIGHT, Blocks.AIR);
-//            registerDropping(ModBlocks.DRONE_REDSTONE_EMITTER, Blocks.AIR);
+            registerDropSelfLootTable(ModBlocks.DRILL_PIPE.get());
         }
 
         @Override
         protected Iterable<Block> getKnownBlocks() {
             List<Block> l = new ArrayList<>();
-            for (Block b : ModBlocks.Registration.ALL_BLOCKS) {
-                if (ForgeRegistries.ITEMS.containsKey(b.getRegistryName())) {
-                    l.add(b);
+            for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
+                if (ForgeRegistries.ITEMS.containsKey(ro.get().getRegistryName())) {
+                    l.add(ro.get());
                 }
             }
             return l;

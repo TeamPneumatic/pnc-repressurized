@@ -49,7 +49,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemAmadronTablet extends ItemPressurizable implements IPositionProvider {
     public ItemAmadronTablet() {
-        super("amadron_tablet", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
+        super(PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
 
     @Override
@@ -86,13 +86,13 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
             if (!worldIn.isRemote) {
                 setFluidProvidingLocation(player.getHeldItem(ctx.getHand()), GlobalPos.of(worldIn.getDimension().getType(), pos));
             } else {
-                ctx.getPlayer().playSound(ModSounds.CHIRP, 1.0f, 1.5f);
+                ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
         } else if (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()) {
             if (!worldIn.isRemote) {
                 setItemProvidingLocation(player.getHeldItem(ctx.getHand()), GlobalPos.of(worldIn.getDimension().getType(), pos));
             } else {
-                ctx.getPlayer().playSound(ModSounds.CHIRP, 1.0f, 1.5f);
+                ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
         } else {
             return ActionResultType.PASS;

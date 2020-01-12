@@ -29,7 +29,7 @@ public class ProgrammedDroneUtils {
      * @return the delivery drone
      */
     private static EntityDrone makeDeliveryDrone(World world, BlockPos pos) {
-        EntityDrone drone = new EntityDrone(ModEntities.DRONE, world, null);
+        EntityDrone drone = new EntityDrone(ModEntities.DRONE.get(), world, null);
 
         CompoundNBT tag = new CompoundNBT();
         drone.writeAdditional(tag);

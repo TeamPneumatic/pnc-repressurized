@@ -13,12 +13,12 @@ import java.util.List;
 public class ProgWidgetDroneConditionItem extends ProgWidgetDroneCondition implements IItemFiltering {
 
     public ProgWidgetDroneConditionItem() {
-        super(ModProgWidgets.DRONE_CONDITION_ITEM);
+        super(ModProgWidgets.DRONE_CONDITION_ITEM.get());
     }
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

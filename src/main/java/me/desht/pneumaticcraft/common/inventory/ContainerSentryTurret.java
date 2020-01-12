@@ -14,7 +14,7 @@ public class ContainerSentryTurret extends ContainerPneumaticBase<TileEntitySent
     }
 
     public ContainerSentryTurret(int windowId, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.SENTRY_TURRET, windowId, playerInventory, pos);
+        super(ModContainers.SENTRY_TURRET.get(), windowId, playerInventory, pos);
 
         // Add the hopper slots.
         for (int i = 0; i < 4; i++)

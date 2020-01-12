@@ -20,7 +20,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariableSetWidget {
     public ProgWidgetCoordinateOperator() {
-        super(ModProgWidgets.COORDINATE_OPERATOR);
+        super(ModProgWidgets.COORDINATE_OPERATOR.get());
     }
 
     public enum EnumOperator {
@@ -55,7 +55,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.COORDINATE);
+        return ImmutableList.of(ModProgWidgets.COORDINATE.get());
     }
 
     @Override

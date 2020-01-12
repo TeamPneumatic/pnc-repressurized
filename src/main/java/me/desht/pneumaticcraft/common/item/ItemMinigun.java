@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
 import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -49,7 +50,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     public static final String NBT_LOCKED_SLOT = "LockedSlot";
 
     public ItemMinigun() {
-        super(defaultProps().setTEISR(() -> RenderItemMinigun::new), "minigun", PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
+        super(ModItems.defaultProps().setTEISR(() -> RenderItemMinigun::new), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
 
     public static MagazineHandler getMagazine(ItemStack stack) {
@@ -211,7 +212,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
 
     @Override
     public INamedContainerProvider getContainerProvider(TileEntityChargingStation te) {
-        return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_MINIGUN);
+        return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_MINIGUN.get());
     }
 
     public static class MagazineHandler extends BaseItemStackHandler {

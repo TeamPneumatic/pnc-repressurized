@@ -17,8 +17,9 @@ public class EntityProgrammableController extends EntityDroneBase {
 //    }
 
     public EntityProgrammableController(World world, TileEntityProgrammableController controller) {
-        super(ModEntities.DRONE, world);
-        preventEntitySpawning = false;
+        super(ModEntities.DRONE.get(), world);
+
+        this.preventEntitySpawning = false;
         this.controller = controller;
     }
 

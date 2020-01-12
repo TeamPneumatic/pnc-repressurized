@@ -24,7 +24,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
     private int drillStep;
 
     public TileEntityAssemblyDrill() {
-        super(ModTileEntities.ASSEMBLY_DRILL);
+        super(ModTileEntities.ASSEMBLY_DRILL.get());
     }
 
     @Override

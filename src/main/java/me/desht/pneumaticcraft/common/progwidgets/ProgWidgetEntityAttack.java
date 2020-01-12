@@ -27,7 +27,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     private EntityFilterPair entityFilters;
 
     public ProgWidgetEntityAttack() {
-        super(ModProgWidgets.ENTITY_ATTACK);
+        super(ModProgWidgets.ENTITY_ATTACK.get());
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

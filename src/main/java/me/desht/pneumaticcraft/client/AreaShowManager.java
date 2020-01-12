@@ -62,7 +62,7 @@ public class AreaShowManager {
         maybeRenderCamo(player);
 
         ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
-        if (helmet.getItem() == ModItems.PNEUMATIC_HELMET) {
+        if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()) {
             if (droneDebugger == null)
                 droneDebugger = HUDHandler.instance().getSpecificRenderer(DroneDebugUpgradeHandler.class);
             Set<BlockPos> set = droneDebugger.getShowingPositions();

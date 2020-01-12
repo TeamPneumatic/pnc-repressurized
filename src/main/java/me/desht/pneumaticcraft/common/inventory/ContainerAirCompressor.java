@@ -11,11 +11,11 @@ import net.minecraftforge.items.SlotItemHandler;
 public class ContainerAirCompressor extends ContainerPneumaticBase<TileEntityAirCompressor> {
 
     public ContainerAirCompressor(int windowId, PlayerInventory invPlayer, PacketBuffer extra) {
-        this(ModContainers.AIR_COMPRESSOR, windowId, invPlayer, getTilePos(extra));
+        this(ModContainers.AIR_COMPRESSOR.get(), windowId, invPlayer, getTilePos(extra));
     }
 
     public ContainerAirCompressor(int windowId, PlayerInventory invPlayer, BlockPos tePos) {
-        this(ModContainers.AIR_COMPRESSOR, windowId, invPlayer, tePos);
+        this(ModContainers.AIR_COMPRESSOR.get(), windowId, invPlayer, tePos);
     }
 
     ContainerAirCompressor(ContainerType type, int windowId, PlayerInventory invPlayer, BlockPos tePos) {

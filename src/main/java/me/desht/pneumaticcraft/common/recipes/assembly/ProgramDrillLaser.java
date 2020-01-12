@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.common.recipes.assembly;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 
@@ -68,7 +68,7 @@ public class ProgramDrillLaser extends AssemblyProgram {
     }
 
     @Override
-    protected Item getItem() {
-        return ModItems.ASSEMBLY_PROGRAM_DRILL_LASER;
+    public ItemAssemblyProgram getItem() {
+        return ModItems.ASSEMBLY_PROGRAM_DRILL_LASER.get();
     }
 }

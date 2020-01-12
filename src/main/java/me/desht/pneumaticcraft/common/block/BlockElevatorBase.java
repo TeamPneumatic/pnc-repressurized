@@ -17,11 +17,10 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockElevatorBase extends BlockPneumaticCraftCamo {
-
     private static final VoxelShape SHAPE = Block.makeCuboidShape(0.001, 0, 0.001, 15.999, 16, 15.999);
 
-    public BlockElevatorBase() {
-        super("elevator_base");
+    public BlockElevatorBase(Properties props) {
+        super(props);
         setDefaultState(getStateContainer().getBaseState()
                 .with(BlockPneumaticCraft.NORTH, false)
                 .with(BlockPneumaticCraft.SOUTH, false)
@@ -61,7 +60,7 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     }
 
     private static BlockPos getCoreElevatorPos(World world, BlockPos pos) {
-        if (world.getBlockState(pos.offset(Direction.UP)).getBlock() == ModBlocks.ELEVATOR_BASE) {
+        if (world.getBlockState(pos.offset(Direction.UP)).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
             return getCoreElevatorPos(world, pos.offset(Direction.UP));
         } else {
             return pos;
@@ -75,7 +74,7 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
-            if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() == ModBlocks.ELEVATOR_BASE) {
+            if (world.getBlockState(pos.offset(Direction.DOWN)).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
                 TileEntity te = world.getTileEntity(pos.offset(Direction.DOWN));
                 ((TileEntityElevatorBase) te).moveUpgradesFromAbove();
             }

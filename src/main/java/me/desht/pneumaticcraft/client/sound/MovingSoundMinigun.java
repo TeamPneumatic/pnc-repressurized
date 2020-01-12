@@ -18,14 +18,14 @@ public class MovingSoundMinigun extends TickableSound {
     private final TileEntity tileEntity;
 
     MovingSoundMinigun(Entity entity) {
-        super(ModSounds.MINIGUN, SoundCategory.NEUTRAL);
+        super(ModSounds.MINIGUN.get(), SoundCategory.NEUTRAL);
         this.entity = entity;
         this.tileEntity = null;
         init();
     }
 
     MovingSoundMinigun(TileEntity tileEntity) {
-        super(ModSounds.MINIGUN, SoundCategory.NEUTRAL);
+        super(ModSounds.MINIGUN.get(), SoundCategory.NEUTRAL);
         this.entity = null;
         this.tileEntity = tileEntity;
         x = tileEntity.getPos().getX();
@@ -54,8 +54,8 @@ public class MovingSoundMinigun extends TickableSound {
             if (entity instanceof PlayerEntity) {
                 PlayerEntity player = (PlayerEntity) entity;
                 ItemStack curItem = player.getHeldItemMainhand();
-                if (curItem.getItem() == ModItems.MINIGUN) {
-                    minigun = ((ItemMinigun) ModItems.MINIGUN).getMinigun(curItem, player);
+                if (curItem.getItem() == ModItems.MINIGUN.get()) {
+                    minigun = ((ItemMinigun) ModItems.MINIGUN.get()).getMinigun(curItem, player);
                 }
             } else if (entity instanceof EntityDrone) {
                 minigun = ((EntityDrone) entity).getMinigun();

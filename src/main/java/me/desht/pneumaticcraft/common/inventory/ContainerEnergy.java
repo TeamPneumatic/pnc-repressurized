@@ -33,6 +33,6 @@ public class ContainerEnergy<T extends TileEntityBase> extends Container4Upgrade
     }
 
     public static Container createPneumaticDynamoContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerEnergy(ModContainers.PNEUMATIC_DYNAMO, i, playerInventory, buffer);
+        return new ContainerEnergy(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, buffer);
     }
 }

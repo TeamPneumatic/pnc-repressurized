@@ -27,6 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.RegistryObject;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -36,12 +37,16 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
-        for (Item item : ModItems.Registration.ALL_ITEMS) {
-            if (item instanceof ItemPressurizable) {
-                registration.registerSubtypeInterpreter(item, s -> s.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h2 -> String.valueOf(h2.getPressure())).orElse(ISubtypeInterpreter.NONE));
+        for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
+            if (item.get() instanceof ItemPressurizable) {
+                registration.registerSubtypeInterpreter(item.get(),
+                        s -> s.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+                                .map(h2 -> String.valueOf(h2.getPressure()))
+                                .orElse(ISubtypeInterpreter.NONE)
+                );
             }
         }
-        registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB, s -> String.valueOf(TileEntityUVLightBox.getExposureProgress(s)));
+        registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB.get(), s -> String.valueOf(TileEntityUVLightBox.getExposureProgress(s)));
     }
 
     @Override
@@ -72,11 +77,11 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipes(JEIUVLightBoxCategory.getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
         registration.addRecipes(JEIAmadronTradeCategory.getAllRecipes(), ModCategoryUid.AMADRON_TRADE);
 
-        for (Item item : ModItems.Registration.ALL_ITEMS) {
-            addStackInfo(registration, new ItemStack(item));
+        for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
+            addStackInfo(registration, new ItemStack(item.get()));
         }
-        for (Block block : ModBlocks.Registration.ALL_BLOCKS) {
-            addStackInfo(registration, new ItemStack(block));
+        for (RegistryObject<Block> block: ModBlocks.BLOCKS.getEntries()) {
+            addStackInfo(registration, new ItemStack(block.get()));
         }
     }
 
@@ -90,13 +95,13 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(ModItems.AMADRON_TABLET), ModCategoryUid.AMADRON_TRADE);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER), ModCategoryUid.ASSEMBLY_CONTROLLER);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL), ModCategoryUid.PRESSURE_CHAMBER);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.REFINERY), ModCategoryUid.REFINERY);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT), ModCategoryUid.THERMO_PNEUMATIC);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.UV_LIGHT_BOX), ModCategoryUid.UV_LIGHT_BOX);
-        registration.addRecipeCatalyst(new ItemStack(ModItems.HEAT_FRAME), ModCategoryUid.HEAT_FRAME_COOLING);
+        registration.addRecipeCatalyst(new ItemStack(ModItems.AMADRON_TABLET.get()), ModCategoryUid.AMADRON_TRADE);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()), ModCategoryUid.ASSEMBLY_CONTROLLER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), ModCategoryUid.PRESSURE_CHAMBER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.REFINERY.get()), ModCategoryUid.REFINERY);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()), ModCategoryUid.THERMO_PNEUMATIC);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.UV_LIGHT_BOX.get()), ModCategoryUid.UV_LIGHT_BOX);
+        registration.addRecipeCatalyst(new ItemStack(ModItems.HEAT_FRAME.get()), ModCategoryUid.HEAT_FRAME_COOLING);
     }
 
     @Override

@@ -27,7 +27,7 @@ public class ArmorMessage {
         stat.setMinDimensionsAndReset(0, 0);
         stat.setText(message);
         PlayerEntity player = PneumaticCraftRepressurized.proxy.getClientPlayer();
-        player.world.playSound(player.posX, player.posY, player.posZ, ModSounds.SCI_FI, SoundCategory.PLAYERS, 0.1F, 1.0F, true);
+        player.world.playSound(player.posX, player.posY, player.posZ, ModSounds.SCI_FI.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
     }
 
     void setDependingMessage(WidgetAnimatedStat dependingStat) {

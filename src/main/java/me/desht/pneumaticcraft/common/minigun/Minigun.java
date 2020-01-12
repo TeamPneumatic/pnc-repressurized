@@ -248,11 +248,11 @@ public abstract class Minigun {
             if (getMinigunTriggerTimeOut() > 0) {
                 setMinigunTriggerTimeOut(getMinigunTriggerTimeOut() - 1);
                 if (getMinigunSpeed() == 0) {
-                    playSound(ModSounds.HUD_INIT, 3, 0.9F);
+                    playSound(ModSounds.HUD_INIT.get(), 3, 0.9F);
                 }
             }
             if (getMinigunSoundCounter() == 0 && getMinigunTriggerTimeOut() == 0) {
-                playSound(ModSounds.MINIGUN_STOP, 3, 0.5F);
+                playSound(ModSounds.MINIGUN_STOP.get(), 3, 0.5F);
                 setMinigunSoundCounter(-1);
             }
         }

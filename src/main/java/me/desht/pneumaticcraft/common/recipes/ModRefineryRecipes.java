@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 public class ModRefineryRecipes {
     @SubscribeEvent
     public static void register(RegisterMachineRecipesEvent evt) {
-        addDefaultRefiningRecipe(evt, ModFluids.OIL);
+        addDefaultRefiningRecipe(evt, ModFluids.OIL.get());
     }
 
     public static void addDefaultRefiningRecipe(RegisterMachineRecipesEvent evt, Fluid fluid) {
@@ -31,27 +31,27 @@ public class ModRefineryRecipes {
                 new ResourceLocation(domain, name + "_2"),
                 new FluidStack(fluid, 10),
                 TemperatureRange.min(373),
-                new FluidStack(ModFluids.DIESEL, 4),
-                new FluidStack(ModFluids.LPG, 2)
+                new FluidStack(ModFluids.DIESEL.get(), 4),
+                new FluidStack(ModFluids.LPG.get(), 2)
         ));
 
         ref.accept(new RefineryRecipe(
                 new ResourceLocation(domain, name + "_3"),
                 new FluidStack(fluid, 10),
                 TemperatureRange.min(373),
-                new FluidStack(ModFluids.DIESEL, 2),
-                new FluidStack(ModFluids.KEROSENE, 3),
-                new FluidStack(ModFluids.LPG, 2)
+                new FluidStack(ModFluids.DIESEL.get(), 2),
+                new FluidStack(ModFluids.KEROSENE.get(), 3),
+                new FluidStack(ModFluids.LPG.get(), 2)
         ));
 
         ref.accept(new RefineryRecipe(
                 new ResourceLocation(domain, name + "_4"),
                 new FluidStack(fluid, 10),
                 TemperatureRange.min(373),
-                new FluidStack(ModFluids.DIESEL, 2),
-                new FluidStack(ModFluids.KEROSENE, 3),
-                new FluidStack(ModFluids.GASOLINE, 3),
-                new FluidStack(ModFluids.LPG, 2)
+                new FluidStack(ModFluids.DIESEL.get(), 2),
+                new FluidStack(ModFluids.KEROSENE.get(), 3),
+                new FluidStack(ModFluids.GASOLINE.get(), 3),
+                new FluidStack(ModFluids.LPG.get(), 2)
         ));
     }
 }

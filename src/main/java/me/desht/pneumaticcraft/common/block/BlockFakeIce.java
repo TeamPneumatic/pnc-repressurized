@@ -18,7 +18,6 @@ import net.minecraft.world.World;
 public class BlockFakeIce extends BreakableBlock implements ICustomItemBlock {
     public BlockFakeIce() {
         super(Block.Properties.from(Blocks.ICE).doesNotBlockMovement().noDrops());
-        setRegistryName("fake_ice");
     }
 
     @Override

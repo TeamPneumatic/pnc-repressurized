@@ -37,8 +37,9 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
     // on the player watched block.
     public boolean isTrackingPlayerEye;
 
-    public BlockPneumaticDoor() {
-        super("pneumatic_door");
+    public BlockPneumaticDoor(Properties props) {
+        super(props);
+
         setDefaultState(getStateContainer().getBaseState()
                 .with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
                 .with(TOP_DOOR, false)

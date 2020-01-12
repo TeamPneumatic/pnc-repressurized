@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
-import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
+import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -27,7 +27,6 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.*;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.FMLPlayMessages;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.Comparator;
@@ -51,25 +50,16 @@ public class EntityMicromissile extends ThrowableEntity {
     private boolean outOfFuel = false;
     private FireMode fireMode = FireMode.SMART;
 
-    public static Entity create(EntityType<Entity> entityEntityType, World world) {
-        return new EntityMicromissile(world);
+    public static EntityMicromissile create(EntityType<EntityMicromissile> type, World world) {
+        return new EntityMicromissile(type, world);
     }
 
-    public static Entity createClient(FMLPlayMessages.SpawnEntity spawnEntity, World world) {
-        return new EntityMicromissile(world);
-    }
-
-    @Override
-    public IPacket<?> createSpawnPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    public EntityMicromissile(World worldIn) {
-        super(ModEntities.MICROMISSILE, worldIn);
+    private EntityMicromissile(EntityType<EntityMicromissile> type, World worldIn) {
+        super(type, worldIn);
     }
 
     public EntityMicromissile(World worldIn, LivingEntity thrower, ItemStack iStack) {
-        super(ModEntities.MICROMISSILE, thrower, worldIn);
+        super(ModEntities.MICROMISSILE.get(), thrower, worldIn);
 
         if (iStack.hasTag()) {
             CompoundNBT tag = iStack.getTag();
@@ -92,9 +82,9 @@ public class EntityMicromissile extends ThrowableEntity {
         }
     }
 
-    public EntityMicromissile(World worldIn, double x, double y, double z) {
-        this(worldIn);
-        this.setPosition(x, y, z);
+    @Override
+    public IPacket<?> createSpawnPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override

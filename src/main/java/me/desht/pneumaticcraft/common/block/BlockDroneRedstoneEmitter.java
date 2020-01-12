@@ -19,7 +19,6 @@ import java.util.List;
 public class BlockDroneRedstoneEmitter extends AirBlock {
     public BlockDroneRedstoneEmitter() {
         super(Block.Properties.from(Blocks.AIR));
-        setRegistryName("drone_redstone_emitter");
     }
 
     @Override

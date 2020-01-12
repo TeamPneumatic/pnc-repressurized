@@ -1,233 +1,229 @@
 package me.desht.pneumaticcraft.common.core;
 
+import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.block.ICustomItemBlock;
+import me.desht.pneumaticcraft.common.block.tubes.*;
 import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
-import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlockBase;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.AirBlock;
-import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraft.item.Items;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
-@ObjectHolder(Names.MOD_ID)
 public class ModItems {
-    public static final Item GPS_TOOL = null;
-    public static final Item GPS_AREA_TOOL = null;
-    public static final Item INGOT_IRON_COMPRESSED = null;
-    public static final Item PRESSURE_GAUGE = null;
-    public static final Item STONE_BASE = null;
-    public static final Item CANNON_BARREL = null;
-    public static final Item TURBINE_BLADE = null;
-    public static final Item PLASTIC = null;
-    public static final Item AIR_CANISTER = null;
-    public static final Item REINFORCED_AIR_CANISTER = null;
-    public static final Item VORTEX_CANNON = null;
-    public static final Item PNEUMATIC_CYLINDER = null;
-    public static final Item PNEUMATIC_HELMET = null;
-    public static final Item PNEUMATIC_CHESTPLATE = null;
-    public static final Item PNEUMATIC_LEGGINGS = null;
-    public static final Item PNEUMATIC_BOOTS = null;
-    public static final Item MANOMETER = null;
-    public static final Item TURBINE_ROTOR = null;
-    public static final Item ASSEMBLY_PROGRAM_LASER = null;
-    public static final Item ASSEMBLY_PROGRAM_DRILL = null;
-    public static final Item ASSEMBLY_PROGRAM_DRILL_LASER = null;
-    public static final Item EMPTY_PCB = null;
-    public static final Item UNASSEMBLED_PCB = null;
-    public static final Item PCB_BLUEPRINT = null;
-    public static final Item TRANSISTOR = null;
-    public static final Item CAPACITOR = null;
-    public static final Item PRINTED_CIRCUIT_BOARD = null;
-    public static final Item FAILED_PCB = null;
-    public static final Item DIAGNOSTIC_SUBROUTINE = null;
-    public static final Item NETWORK_API = null;
-    public static final Item NETWORK_DATA_STORAGE = null;
-    public static final Item NETWORK_IO_PORT = null;
-    public static final Item NETWORK_REGISTRY = null;
-    public static final Item NETWORK_NODE = null;
-    public static final Item STOP_WORM = null;
-    public static final Item NUKE_VIRUS = null;
-    public static final Item COMPRESSED_IRON_GEAR = null;
-    public static final Item PNEUMATIC_WRENCH = null;
-    public static final Item DRONE = null;
-    public static final Item PROGRAMMING_PUZZLE = null;
-    public static final Item ADVANCED_PCB = null;
-    public static final Item REMOTE = null;
-    public static final Item SEISMIC_SENSOR = null;
-    public static final Item LOGISTICS_CONFIGURATOR = null;
-    public static final Item LOGISTICS_FRAME_REQUESTER = null;
-    public static final Item LOGISTICS_FRAME_STORAGE = null;
-    public static final Item LOGISTICS_FRAME_DEFAULT_STORAGE = null;
-    public static final Item LOGISTICS_FRAME_PASSIVE_PROVIDER = null;
-    public static final Item LOGISTICS_FRAME_ACTIVE_PROVIDER = null;
-    public static final Item HEAT_FRAME = null;
-    public static final Item SPAWNER_AGITATOR = null;
-    public static final Item CROP_SUPPORT = null;
-    public static final Item TRANSFER_GADGET = null;
-    public static final Item LOGISTIC_DRONE = null;
-    public static final Item HARVESTING_DRONE = null;
-    public static final Item GUN_AMMO = null;
-    public static final Item GUN_AMMO_INCENDIARY = null;
-    public static final Item GUN_AMMO_WEIGHTED = null;
-    public static final Item GUN_AMMO_AP = null;
-    public static final Item GUN_AMMO_EXPLOSIVE = null;
-    public static final Item GUN_AMMO_FREEZING = null;
-    public static final Item AMADRON_TABLET = null;
-    public static final Item MINIGUN = null;
-    public static final Item CAMO_APPLICATOR = null;
-    public static final Item MICROMISSILES = null;
-    public static final Item OIL_BUCKET = null;
-    public static final Item ETCHING_ACID_BUCKET = null;
-    public static final Item PLASTIC_BUCKET = null;
-    public static final Item DIESEL_BUCKET = null;
-    public static final Item KEROSENE_BUCKET = null;
-    public static final Item GASOLINE_BUCKET = null;
-    public static final Item LPG_BUCKET = null;
-    public static final Item LUBRICANT_BUCKET = null;
+    public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, Names.MOD_ID);
 
-    public static class Groups {
-        public static final ItemGroup PNC_CREATIVE_TAB = new ItemGroup(Names.MOD_ID) {
-            @Override
-            public ItemStack createIcon() {
-                return new ItemStack(ModBlocks.AIR_COMPRESSOR);
-            }
-        };
+    public static final RegistryObject<ItemPneumatic> INGOT_IRON_COMPRESSED = register("ingot_iron_compressed");
+    public static final RegistryObject<ItemPneumatic> PRESSURE_GAUGE = register("pressure_gauge");
+    public static final RegistryObject<ItemPneumatic> STONE_BASE = register("stone_base");
+    public static final RegistryObject<ItemPneumatic> CANNON_BARREL = register("cannon_barrel");
+    public static final RegistryObject<ItemPneumatic> TURBINE_BLADE = register("turbine_blade");
+    public static final RegistryObject<ItemPneumatic> PLASTIC = register("plastic");
+    public static final RegistryObject<ItemPneumatic> PNEUMATIC_CYLINDER = register("pneumatic_cylinder");
+    public static final RegistryObject<ItemPneumatic> TURBINE_ROTOR = register("turbine_rotor");
+    public static final RegistryObject<ItemPneumatic> PCB_BLUEPRINT = register("pcb_blueprint");
+    public static final RegistryObject<ItemPneumatic> TRANSISTOR = register("transistor");
+    public static final RegistryObject<ItemPneumatic> CAPACITOR = register("capacitor");
+    public static final RegistryObject<ItemPneumatic> PRINTED_CIRCUIT_BOARD = register("printed_circuit_board");
+    public static final RegistryObject<ItemPneumatic> STOP_WORM = register("stop_worm");
+    public static final RegistryObject<ItemPneumatic> NUKE_VIRUS = register("nuke_virus");
+    public static final RegistryObject<ItemPneumatic> COMPRESSED_IRON_GEAR = register("compressed_iron_gear");
+    public static final RegistryObject<ItemPneumatic> PROGRAMMING_PUZZLE = register("programming_puzzle");
+    public static final RegistryObject<ItemPneumatic> ADVANCED_PCB = register("advanced_pcb");
+
+    public static final RegistryObject<ItemGPSTool> GPS_TOOL = register("gps_tool",
+            ItemGPSTool::new);
+    public static final RegistryObject<ItemGPSAreaTool> GPS_AREA_TOOL = register("gps_area_tool",
+            ItemGPSAreaTool::new);
+    public static final RegistryObject<ItemRemote> REMOTE = register("remote",
+            ItemRemote::new);
+    public static final RegistryObject<ItemSeismicSensor> SEISMIC_SENSOR = register("seismic_sensor",
+            ItemSeismicSensor::new);
+    public static final RegistryObject<ItemMicromissiles> MICROMISSILES = register("micromissiles",
+            ItemMicromissiles::new);
+
+    public static final RegistryObject<ItemPressurizable> AIR_CANISTER = register("air_canister",
+            () -> new ItemPressurizable(PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));
+    public static final RegistryObject<ItemPressurizable> REINFORCED_AIR_CANISTER = register("reinforced_air_canister",
+            () -> new ItemPressurizable(PneumaticValues.REINFORCED_AIR_CANISTER_MAX_AIR, PneumaticValues.REINFORCED_AIR_CANISTER_VOLUME));
+    public static final RegistryObject<ItemVortexCannon> VORTEX_CANNON = register("vortex_cannon",
+            ItemVortexCannon::new);
+    public static final RegistryObject<ItemPneumaticWrench> PNEUMATIC_WRENCH = register("pneumatic_wrench",
+            ItemPneumaticWrench::new);
+    public static final RegistryObject<ItemManometer> MANOMETER = register("manometer",
+            ItemManometer::new);
+    public static final RegistryObject<ItemLogisticsConfigurator> LOGISTICS_CONFIGURATOR = register("logistics_configurator",
+            ItemLogisticsConfigurator::new);
+    public static final RegistryObject<ItemAmadronTablet> AMADRON_TABLET = register("amadron_tablet",
+            ItemAmadronTablet::new);
+    public static final RegistryObject<ItemMinigun> MINIGUN = register("minigun",
+            ItemMinigun::new);
+    public static final RegistryObject<ItemCamoApplicator> CAMO_APPLICATOR = register("camo_applicator",
+            ItemCamoApplicator::new);
+
+    public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_HELMET = register("pneumatic_helmet",
+            () -> new ItemPneumaticArmor(EquipmentSlotType.HEAD));
+    public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_CHESTPLATE = register("pneumatic_chestplate",
+            () -> new ItemPneumaticArmor(EquipmentSlotType.CHEST));
+    public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_LEGGINGS = register("pneumatic_leggings",
+            () -> new ItemPneumaticArmor(EquipmentSlotType.LEGS));
+    public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_BOOTS = register("pneumatic_boots",
+            () -> new ItemPneumaticArmor(EquipmentSlotType.FEET));
+
+    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_LASER = register(IAssemblyRecipe.AssemblyProgramType.LASER);
+    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_DRILL = register(IAssemblyRecipe.AssemblyProgramType.DRILL);
+    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_DRILL_LASER = register(IAssemblyRecipe.AssemblyProgramType.DRILL_LASER);
+
+    public static final RegistryObject<ItemEmptyPCB> EMPTY_PCB = register("empty_pcb",
+            ItemEmptyPCB::new);
+    public static final RegistryObject<ItemNonDespawning> UNASSEMBLED_PCB = register("unassembled_pcb",
+            ItemNonDespawning::new);
+    public static final RegistryObject<ItemNonDespawning> FAILED_PCB = register("failed_pcb",
+            ItemNonDespawning::new);
+
+    public static final RegistryObject<ItemNetworkComponent> DIAGNOSTIC_SUBROUTINE = register(NetworkComponentType.DIAGNOSTIC_SUBROUTINE);
+    public static final RegistryObject<ItemNetworkComponent> NETWORK_API = register(NetworkComponentType.NETWORK_API);
+    public static final RegistryObject<ItemNetworkComponent> NETWORK_DATA_STORAGE = register(NetworkComponentType.NETWORK_DATA_STORAGE);
+    public static final RegistryObject<ItemNetworkComponent> NETWORK_IO_PORT = register(NetworkComponentType.NETWORK_IO_PORT);
+    public static final RegistryObject<ItemNetworkComponent> NETWORK_REGISTRY = register(NetworkComponentType.NETWORK_REGISTRY);
+    public static final RegistryObject<ItemNetworkComponent> NETWORK_NODE = register(NetworkComponentType.NETWORK_NODE);
+
+    public static final RegistryObject<ItemDrone> DRONE = register("drone",
+            ItemDrone::new);
+    public static final RegistryObject<ItemBasicDrone> LOGISTICS_DRONE = register("logistics_drone",
+            () -> new ItemBasicDrone(EntityLogisticsDrone::new));
+    public static final RegistryObject<ItemBasicDrone> HARVESTING_DRONE = register("harvesting_drone",
+            () -> new ItemBasicDrone(EntityHarvestingDrone::new));
+
+    public static final RegistryObject<ItemLogisticsFrameRequester> LOGISTICS_FRAME_REQUESTER = register("logistics_frame_requester",
+            ItemLogisticsFrameRequester::new);
+    public static final RegistryObject<ItemLogisticsFrameStorage> LOGISTICS_FRAME_STORAGE = register("logistics_frame_storage",
+            ItemLogisticsFrameStorage::new);
+    public static final RegistryObject<ItemLogisticsFrameDefaultStorage> LOGISTICS_FRAME_DEFAULT_STORAGE = register("logistics_frame_default_storage",
+            ItemLogisticsFrameDefaultStorage::new);
+    public static final RegistryObject<ItemLogisticsFramePassiveProvider> LOGISTICS_FRAME_PASSIVE_PROVIDER = register("logistics_frame_passive_provider",
+            ItemLogisticsFramePassiveProvider::new);
+    public static final RegistryObject<ItemLogisticsFrameActiveProvider> LOGISTICS_FRAME_ACTIVE_PROVIDER = register("logistics_frame_active_provider",
+            ItemLogisticsFrameActiveProvider::new);
+
+    public static final RegistryObject<ItemSemiBlockBase> HEAT_FRAME = register("heat_frame",
+            ItemSemiBlockBase::new);
+    public static final RegistryObject<ItemSemiBlockBase> SPAWNER_AGITATOR = register("spawner_agitator",
+            ItemSemiBlockBase::new);
+    public static final RegistryObject<ItemSemiBlockBase> CROP_SUPPORT = register("crop_support",
+            ItemSemiBlockBase::new);
+    public static final RegistryObject<ItemSemiBlockBase> TRANSFER_GADGET = register("transfer_gadget",
+            ItemSemiBlockBase::new);
+
+    public static final RegistryObject<ItemGunAmmoStandard> GUN_AMMO = register("gun_ammo",
+            ItemGunAmmoStandard::new);
+    public static final RegistryObject<ItemGunAmmoIncendiary> GUN_AMMO_INCENDIARY = register("gun_ammo_incendiary",
+            ItemGunAmmoIncendiary::new);
+    public static final RegistryObject<ItemGunAmmoWeighted> GUN_AMMO_WEIGHTED = register("gun_ammo_weighted",
+            ItemGunAmmoWeighted::new);
+    public static final RegistryObject<ItemGunAmmoArmorPiercing> GUN_AMMO_AP = register("gun_ammo_ap",
+            ItemGunAmmoArmorPiercing::new);
+    public static final RegistryObject<ItemGunAmmoExplosive> GUN_AMMO_EXPLOSIVE = register("gun_ammo_explosive",
+            ItemGunAmmoExplosive::new);
+    public static final RegistryObject<ItemGunAmmoFreezing> GUN_AMMO_FREEZING = register("gun_ammo_freezing",
+            ItemGunAmmoFreezing::new);
+
+    public static final RegistryObject<ItemTubeModule> SAFETY_TUBE_MODULE = register("safety_tube_module",
+            () -> new ItemTubeModule(ModuleSafetyValve::new));
+    public static final RegistryObject<ItemTubeModule> PRESSURE_GAUGE_MODULE = register("pressure_gauge_module",
+            () -> new ItemTubeModule(ModulePressureGauge::new));
+    public static final RegistryObject<ItemTubeModule> FLOW_DETECTOR_MODULE = register("flow_detector_module",
+            () -> new ItemTubeModule(ModuleFlowDetector::new));
+    public static final RegistryObject<ItemTubeModule> AIR_GRATE_MODULE = register("air_grate_module",
+            () -> new ItemTubeModule(ModuleAirGrate::new));
+    public static final RegistryObject<ItemTubeModule> REGULATOR_TUBE_MODULE = register("regulator_tube_module",
+            () -> new ItemTubeModule(ModuleRegulatorTube::new));
+    public static final RegistryObject<ItemTubeModule> CHARGING_MODULE = register("charging_module",
+            () -> new ItemTubeModule(ModuleCharging::new));
+    public static final RegistryObject<ItemTubeModule> LOGISTICS_MODULE = register("logistics_module",
+            () -> new ItemTubeModule(ModuleLogistics::new));
+    public static final RegistryObject<ItemTubeModule> REDSTONE_MODULE = register("redstone_module",
+            () -> new ItemTubeModule(ModuleRedstone::new));
+
+    public static final RegistryObject<ItemBucketPneumaticCraft> OIL_BUCKET = registerBucket("oil_bucket",
+            ModFluids.OIL);
+    public static final RegistryObject<ItemBucketPneumaticCraft> ETCHING_ACID_BUCKET = registerBucket("etching_acid_bucket",
+            ModFluids.ETCHING_ACID);
+    public static final RegistryObject<ItemBucketPneumaticCraft> PLASTIC_BUCKET = registerBucket("plastic_bucket",
+            ModFluids.PLASTIC);
+    public static final RegistryObject<ItemBucketPneumaticCraft> DIESEL_BUCKET = registerBucket("diesel_bucket",
+            ModFluids.DIESEL);
+    public static final RegistryObject<ItemBucketPneumaticCraft> KEROSENE_BUCKET = registerBucket("kerosene_bucket",
+            ModFluids.KEROSENE);
+    public static final RegistryObject<ItemBucketPneumaticCraft> GASOLINE_BUCKET = registerBucket("gasoline_bucket",
+            ModFluids.GASOLINE);
+    public static final RegistryObject<ItemBucketPneumaticCraft> LPG_BUCKET = registerBucket("lpg_bucket",
+            ModFluids.LPG);
+    public static final RegistryObject<ItemBucketPneumaticCraft> LUBRICANT_BUCKET = registerBucket("lubricant_bucket",
+            ModFluids.LUBRICANT);
+
+    static {
+        for (EnumUpgrade upgrade : EnumUpgrade.values()) {
+            register(upgrade);
+        }
     }
 
-//    public static Item getUpgradeItem(EnumUpgrade upgrade) {
-//        return Registration.UPGRADES.get(upgrade);
-//    }
+   /* -----------------------*/
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class Registration {
-        public static final List<Item> ALL_ITEMS = new ArrayList<>();
-        private static List<BlockItem> all_itemblocks = new ArrayList<>();
-//        public static final UpgradeList UPGRADES = new UpgradeList();
+    public static Item.Properties defaultProps() {
+        return new Item.Properties().group(ItemGroups.PNC_CREATIVE_TAB);
+    }
 
-        @SubscribeEvent
-        public static void registerItems(RegistryEvent.Register<Item> event) {
-            IForgeRegistry<Item> registry = event.getRegistry();
+    public static Item.Properties bucketProps() {
+        return defaultProps().maxStackSize(1).containerItem(Items.BUCKET);
+    }
 
-            registerItem(registry, new ItemGPSTool());
-            registerItem(registry, new ItemGPSAreaTool());
-            registerItem(registry, new ItemPneumatic("ingot_iron_compressed"));
-            registerItem(registry, new ItemPneumatic("pressure_gauge"));
-            registerItem(registry, new ItemPneumatic("stone_base"));
-            registerItem(registry, new ItemPneumatic("cannon_barrel"));
-            registerItem(registry, new ItemPneumatic("turbine_blade"));
-            registerItem(registry, new ItemPneumatic("plastic"));
-            registerItem(registry, new ItemPressurizable("air_canister",
-                    PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));
-            registerItem(registry, new ItemPressurizable("reinforced_air_canister",
-                    PneumaticValues.REINFORCED_AIR_CANISTER_MAX_AIR, PneumaticValues.REINFORCED_AIR_CANISTER_VOLUME));
-            registerItem(registry, new ItemVortexCannon());
-            registerItem(registry, new ItemPneumatic("pneumatic_cylinder"));
-            registerItem(registry, new ItemPneumaticArmor("pneumatic_helmet", EquipmentSlotType.HEAD));
-            registerItem(registry, new ItemPneumaticArmor("pneumatic_chestplate", EquipmentSlotType.CHEST));
-            registerItem(registry, new ItemPneumaticArmor("pneumatic_leggings", EquipmentSlotType.LEGS));
-            registerItem(registry, new ItemPneumaticArmor("pneumatic_boots", EquipmentSlotType.FEET));
-            registerItem(registry, new ItemManometer());
-            registerItem(registry, new ItemPneumatic("turbine_rotor"));
-            for (ItemAssemblyProgram.AssemblyProgramType type : ItemAssemblyProgram.AssemblyProgramType.values()) {
-                registerItem(registry, new ItemAssemblyProgram(type));
+    private static <T extends Item> RegistryObject<T> register(final String name, final Supplier<T> sup) {
+        return ITEMS.register(name, sup);
+    }
+
+    private static RegistryObject<ItemNetworkComponent> register(final NetworkComponentType type) {
+        return register(type.getRegistryName(), () -> new ItemNetworkComponent(type));
+    }
+
+    private static RegistryObject<ItemAssemblyProgram> register(final AssemblyProgramType type) {
+        return register(type.getRegistryName(), () -> new ItemAssemblyProgram(type));
+    }
+
+    private static RegistryObject<ItemPneumatic> register(final String name) {
+        return register(name, ItemPneumatic::new);
+    }
+
+    private static RegistryObject<ItemBucketPneumaticCraft> registerBucket(String name, Supplier<? extends Fluid> sup) {
+        return register(name, () -> new ItemBucketPneumaticCraft(sup));
+    }
+
+    private static void register(EnumUpgrade upgrade) {
+        IntStream.range(1, upgrade.getMaxTier() + 1).forEach(
+                tier -> register(upgrade.getItemName(tier), () -> new ItemMachineUpgrade(upgrade, tier))
+        );
+    }
+
+    static class ItemGroups {
+        static final ItemGroup PNC_CREATIVE_TAB = new ItemGroup(Names.MOD_ID) {
+            @Override
+            public ItemStack createIcon() {
+                return new ItemStack(ModBlocks.AIR_COMPRESSOR.get());
             }
-            registerItem(registry, new ItemEmptyPCB());
-            registerItem(registry, new ItemNonDespawning("unassembled_pcb"));
-            registerItem(registry, new ItemPneumatic("pcb_blueprint"));
-            registerItem(registry, new ItemPneumatic("transistor"));
-            registerItem(registry, new ItemPneumatic("capacitor"));
-            registerItem(registry, new ItemPneumatic("printed_circuit_board"));
-            registerItem(registry, new ItemNonDespawning("failed_pcb"));
-            for (NetworkComponentType type : NetworkComponentType.values()) {
-                registerItem(registry, new ItemNetworkComponent(type));
-            }
-            registerItem(registry, new ItemPneumatic("stop_worm"));
-            registerItem(registry, new ItemPneumatic("nuke_virus"));
-            registerItem(registry, new ItemPneumatic("compressed_iron_gear"));
-            registerItem(registry, new ItemPneumaticWrench());
-            registerItem(registry, new ItemDrone());
-            registerItem(registry, new ItemProgrammingPuzzle());
-            registerItem(registry, new ItemPneumatic("advanced_pcb"));
-            registerItem(registry, new ItemRemote());
-            registerItem(registry, new ItemSeismicSensor());
-            registerItem(registry, new ItemLogisticsConfigurator());
-            registerItem(registry, new ItemBasicDrone("logistic_drone", EntityLogisticsDrone::new));
-            registerItem(registry, new ItemBasicDrone("harvesting_drone", EntityHarvestingDrone::new));
-            registerItem(registry, new ItemGunAmmoStandard());
-            registerItem(registry, new ItemGunAmmoIncendiary());
-            registerItem(registry, new ItemGunAmmoWeighted());
-            registerItem(registry, new ItemGunAmmoArmorPiercing());
-            registerItem(registry, new ItemGunAmmoExplosive());
-            registerItem(registry, new ItemGunAmmoFreezing());
-            registerItem(registry, new ItemAmadronTablet());
-            registerItem(registry, new ItemMinigun());
-            registerItem(registry, new ItemCamoApplicator());
-            registerItem(registry, new ItemMicromissiles());
-
-            registerItem(registry, new ItemBucketPneumaticCraft("oil", () -> ModFluids.OIL));
-            registerItem(registry, new ItemBucketPneumaticCraft("etching_acid", () -> ModFluids.ETCHING_ACID));
-            registerItem(registry, new ItemBucketPneumaticCraft("plastic", () -> ModFluids.PLASTIC));
-            registerItem(registry, new ItemBucketPneumaticCraft("diesel", () -> ModFluids.DIESEL));
-            registerItem(registry, new ItemBucketPneumaticCraft("kerosene", () -> ModFluids.KEROSENE));
-            registerItem(registry, new ItemBucketPneumaticCraft("gasoline", () -> ModFluids.GASOLINE));
-            registerItem(registry, new ItemBucketPneumaticCraft("lpg", () -> ModFluids.LPG));
-            registerItem(registry, new ItemBucketPneumaticCraft("lubricant", () -> ModFluids.LUBRICANT));
-
-            registerUpgrades(registry);
-
-//            ItemPneumaticArmor.initApplicableUpgrades();
-
-            ModBlocks.Registration.ALL_BLOCKS.stream()
-                    .filter(b -> !(b instanceof AirBlock || b instanceof FlowingFluidBlock))
-                    .forEach(b -> {
-                        Item itemBlock = b instanceof ICustomItemBlock ?
-                                ((ICustomItemBlock) b).getCustomItemBlock() :
-                                new BlockItem(b, new Item.Properties().group(Groups.PNC_CREATIVE_TAB));
-                        if (itemBlock != null) {
-                            registerItem(registry, itemBlock.setRegistryName(b.getRegistryName()));
-                        }
-                    });
-        }
-
-        private static void registerUpgrades(IForgeRegistry<Item> registry) {
-            for (EnumUpgrade upgrade : EnumUpgrade.values()) {
-                for (int tier = 1; tier <= upgrade.getMaxTier(); tier++) {
-                    registerItem(registry, new ItemMachineUpgrade(upgrade, tier));
-//                    UPGRADES.add(upgradeItem);
-                }
-            }
-        }
-
-        public static void registerItem(IForgeRegistry<Item> registry, Item item) {
-            registry.register(item);
-            ThirdPartyManager.instance().onItemRegistry(item);
-            if (item instanceof BlockItem) {
-                all_itemblocks.add((BlockItem) item);
-            } else {
-                ALL_ITEMS.add(item);
-            }
-        }
-
-        public static class UpgradeList extends ArrayList<Item> {
-            public Item get(EnumUpgrade upgrade) {
-                return get(upgrade.ordinal());
-            }
-        }
+        };
     }
 }

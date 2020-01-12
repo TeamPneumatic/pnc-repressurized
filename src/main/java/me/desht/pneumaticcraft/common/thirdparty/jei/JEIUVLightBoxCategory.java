@@ -31,16 +31,16 @@ public class JEIUVLightBoxCategory implements IRecipeCategory<UVLightBoxRecipe> 
 
     private static final List<UVLightBoxRecipe> UV_LIGHT_BOX_RECIPES;
     static {
-        ItemStack out = new ItemStack(ModItems.EMPTY_PCB);
+        ItemStack out = new ItemStack(ModItems.EMPTY_PCB.get());
         TileEntityUVLightBox.setExposureProgress(out, 100);
-        UVLightBoxRecipe recipe = new UVLightBoxRecipe(Ingredient.fromItems(ModItems.EMPTY_PCB), out);
+        UVLightBoxRecipe recipe = new UVLightBoxRecipe(Ingredient.fromItems(ModItems.EMPTY_PCB.get()), out);
         UV_LIGHT_BOX_RECIPES = Collections.singletonList(recipe);
     }
 
     JEIUVLightBoxCategory() {
-        localizedName = I18n.format(ModBlocks.UV_LIGHT_BOX.getTranslationKey());
+        localizedName = I18n.format(ModBlocks.UV_LIGHT_BOX.get().getTranslationKey());
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.UV_LIGHT_BOX));
+        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.UV_LIGHT_BOX.get()));
         IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
         progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }

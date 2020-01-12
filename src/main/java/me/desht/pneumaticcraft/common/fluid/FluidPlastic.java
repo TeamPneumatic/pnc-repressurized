@@ -18,22 +18,15 @@ public abstract class FluidPlastic extends ForgeFlowingFluid {
     ).temperature(PneumaticValues.PLASTIC_MIXER_MELTING_TEMP);
 
     private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.PLASTIC, () -> ModFluids.PLASTIC_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.PLASTIC).bucket(() -> ModItems.PLASTIC_BUCKET
+            new ForgeFlowingFluid.Properties(ModFluids.PLASTIC, ModFluids.PLASTIC_FLOWING, ATTRS)
+                    .block(ModBlocks.PLASTIC).bucket(ModItems.PLASTIC_BUCKET
             );
 
-    public FluidPlastic(String name) {
+    FluidPlastic() {
         super(PROPS);
-
-        setRegistryName(name);
     }
 
     public static class Source extends FluidPlastic {
-        public Source() {
-            super("plastic");
-        }
-
         @Override
         public boolean isSource(IFluidState state) {
             return true;
@@ -46,10 +39,6 @@ public abstract class FluidPlastic extends ForgeFlowingFluid {
     }
 
     public static class Flowing extends FluidPlastic {
-        public Flowing() {
-            super("plastic_flowing");
-        }
-
         @Override
         protected void fillStateContainer(StateContainer.Builder<Fluid, IFluidState> builder) {
             super.fillStateContainer(builder);

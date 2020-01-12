@@ -1,24 +1,23 @@
 package me.desht.pneumaticcraft.common.core;
 
-import me.desht.pneumaticcraft.client.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.particles.ParticleType;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
-@ObjectHolder(Names.MOD_ID)
+import java.util.function.Supplier;
+
 public class ModParticleTypes {
-    public static final ParticleType<AirParticleData> AIR_PARTICLE = null;
-    public static final ParticleType<AirParticleData> AIR_PARTICLE_2 = null;
+    public static final DeferredRegister<ParticleType<?>> PARTICLES = new DeferredRegister<>(ForgeRegistries.PARTICLE_TYPES, Names.MOD_ID);
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class Registration {
-        @SubscribeEvent
-        public static void registerParticles(RegistryEvent.Register<ParticleType<?>> event) {
-            event.getRegistry().register(new ParticleType<>(false, AirParticleData.DESERIALIZER).setRegistryName("air_particle"));
-            event.getRegistry().register(new ParticleType<>(false, AirParticleData.DESERIALIZER).setRegistryName("air_particle_2"));
-        }
+    public static final RegistryObject<ParticleType<AirParticleData>> AIR_PARTICLE = register("air_particle",
+            () -> new ParticleType<>(false, AirParticleData.DESERIALIZER));
+    public static final RegistryObject<ParticleType<AirParticleData>> AIR_PARTICLE_2 = register("air_particle_2",
+            () -> new ParticleType<>(false, AirParticleData.DESERIALIZER));
+
+    private static <T extends ParticleType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
+        return PARTICLES.register(name, sup);
     }
 }

@@ -2,9 +2,8 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.LazyOptional;
 
 public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements IInfluenceDispersing {
@@ -13,6 +12,10 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     public static boolean inverted;
 
     private LazyOptional<IAirHandlerMachine> neighbourCap = null;
+
+    public ModuleRegulatorTube(ItemTubeModule itemTubeModule) {
+        super(itemTubeModule);
+    }
 
 //    @OnlyIn(Dist.CLIENT)
 //    private void renderPreview() {
@@ -47,11 +50,6 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
 //        GlStateManager.popMatrix();
 //        GlStateManager.disableBlend();
 //    }
-
-    @Override
-    public ResourceLocation getType() {
-        return Names.MODULE_REGULATOR;
-    }
 
     @Override
     public int getMaxDispersion() {

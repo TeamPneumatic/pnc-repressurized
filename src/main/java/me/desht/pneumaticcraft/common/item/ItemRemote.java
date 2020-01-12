@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketNotifyVariablesRemote;
@@ -38,11 +39,10 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemRemote extends ItemPneumatic {
-
     private static final String NBT_SECURITY_POS = "securityPos";
 
     public ItemRemote() {
-        super(defaultProps().maxStackSize(1), "remote");
+        super(ModItems.defaultProps().maxStackSize(1));
     }
 
     @Override
@@ -166,7 +166,7 @@ public class ItemRemote extends ItemPneumatic {
         }
 
         protected ContainerType<? extends ContainerRemote> getType() {
-            return ModContainers.REMOTE;
+            return ModContainers.REMOTE.get();
         }
     }
 
@@ -177,7 +177,7 @@ public class ItemRemote extends ItemPneumatic {
 
         @Override
         protected ContainerType<? extends ContainerRemote> getType() {
-            return ModContainers.REMOTE_EDITOR;
+            return ModContainers.REMOTE_EDITOR.get();
         }
     }
 }

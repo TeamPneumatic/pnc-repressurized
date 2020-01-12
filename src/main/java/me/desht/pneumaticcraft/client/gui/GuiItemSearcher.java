@@ -121,7 +121,7 @@ public class GuiItemSearcher extends DisplayEffectsScreen<ContainerSearcher> {
         super.tick();
 
         if (parentScreen instanceof GuiHelmetMainScreen) {
-            if (minecraft.player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() != ModItems.PNEUMATIC_HELMET) {
+            if (minecraft.player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
                 minecraft.displayGuiScreen(parentScreen);
                 onClose();
             }

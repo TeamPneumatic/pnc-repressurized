@@ -16,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -30,17 +29,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class ItemLogisticsFrame extends ItemSemiBlockBase implements IColorableItem {
-
-    ItemLogisticsFrame(ResourceLocation registryName) {
-        super(registryName.toString());
-    }
-
-    @SuppressWarnings("unused")
-    ItemLogisticsFrame(String registryName) {
-        super(registryName);
-    }
-
+public abstract class ItemLogisticsFrame extends ItemSemiBlockBase implements ITintableItem {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getHeldItem(handIn);

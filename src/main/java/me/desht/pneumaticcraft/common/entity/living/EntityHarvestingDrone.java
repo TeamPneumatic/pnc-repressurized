@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -14,30 +13,25 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.FMLPlayMessages;
 
 import java.util.List;
 
 public class EntityHarvestingDrone extends EntityBasicDrone {
-    public static EntityHarvestingDrone create(EntityType<Entity> entityEntityType, World world) {
-        return new EntityHarvestingDrone(world);
+    public static EntityHarvestingDrone createHarvestingDrone(EntityType<EntityHarvestingDrone> type, World world) {
+        return new EntityHarvestingDrone(type, world);
     }
 
-    public static Entity createClient(FMLPlayMessages.SpawnEntity spawnEntity, World world) {
-        return new EntityHarvestingDrone(world);
-    }
-
-    private EntityHarvestingDrone(World world) {
-        super(ModEntities.HARVESTING_DRONE, world);
+    private EntityHarvestingDrone(EntityType<EntityHarvestingDrone> type, World world) {
+        super(type, world);
     }
 
     public EntityHarvestingDrone(World world, PlayerEntity player) {
-        super(ModEntities.HARVESTING_DRONE, world, player);
+        super(ModEntities.HARVESTING_DRONE.get(), world, player);
     }
 
     @Override
     protected Item getDroneItem(){
-        return ModItems.HARVESTING_DRONE;
+        return ModItems.HARVESTING_DRONE.get();
     }
 
     @Override
@@ -56,5 +50,4 @@ public class EntityHarvestingDrone extends EntityBasicDrone {
         builder.add(new ProgWidgetWait(), ProgWidgetText.withText("10s"));
         widgets.addAll(builder.build());
     }
-    
 }

@@ -2,19 +2,18 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
+import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -38,9 +37,8 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     public float extension = 1.0f;
     public float lastExtension;
 
-    @Override
-    public ResourceLocation getType() {
-        return Names.MODULE_REDSTONE;
+    public ModuleRedstone(ItemTubeModule itemTubeModule) {
+        super(itemTubeModule);
     }
 
     @Override

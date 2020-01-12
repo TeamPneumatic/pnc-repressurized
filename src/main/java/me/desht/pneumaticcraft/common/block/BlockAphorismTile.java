@@ -50,7 +50,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     };
 
     public BlockAphorismTile() {
-        super(Block.Properties.create(Material.ROCK).hardnessAndResistance(1.5f, 4.0f).doesNotBlockMovement(), "aphorism_tile");
+        super(Block.Properties.create(Material.ROCK).hardnessAndResistance(1.5f, 4.0f).doesNotBlockMovement());
     }
 
     @Override

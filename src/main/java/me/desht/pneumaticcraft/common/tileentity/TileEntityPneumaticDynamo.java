@@ -45,7 +45,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
 
     public TileEntityPneumaticDynamo() {
-        super(ModTileEntities.PNEUMATIC_DYNAMO, PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO, 4);
+        super(ModTileEntities.PNEUMATIC_DYNAMO.get(), PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO, 4);
     }
 
     public int getEfficiency() {
@@ -171,6 +171,6 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerEnergy(ModContainers.PNEUMATIC_DYNAMO, i, playerInventory, getPos());
+        return new ContainerEnergy(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, getPos());
     }
 }

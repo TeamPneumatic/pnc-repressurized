@@ -51,7 +51,7 @@ public class ElectricAttackHandler {
 
     private static void playLeakSound(Entity e) {
         if (e.world.getGameTime() - sounds.getOrDefault(e.getUniqueID(), 0L) > 16) {
-            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.LEAKING_GAS, SoundCategory.PLAYERS, e.posX, e.posY, e.posZ, 0.5f, 0.7f, true), e.world);
+            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, e.posX, e.posY, e.posZ, 0.5f, 0.7f, true), e.world);
             sounds.put(e.getUniqueID(), e.world.getGameTime());
         }
     }

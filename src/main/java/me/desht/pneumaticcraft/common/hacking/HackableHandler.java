@@ -67,7 +67,7 @@ public class HackableHandler {
         manager.addHackable(Blocks.TRIPWIRE_HOOK, HackableTripwire.class);
         manager.addHackable(Blocks.DISPENSER, HackableDispenser.class);
         manager.addHackable(Blocks.DROPPER, HackableDispenser.class);
-        manager.addHackable(ModBlocks.SECURITY_STATION, HackableSecurityStation.class);
+        manager.addHackable(ModBlocks.SECURITY_STATION.get(), HackableSecurityStation.class);
         manager.addHackable(Blocks.INFESTED_COBBLESTONE, HackableSilverfish.class);
         manager.addHackable(Blocks.INFESTED_CHISELED_STONE_BRICKS, HackableSilverfish.class);
         manager.addHackable(Blocks.INFESTED_CRACKED_STONE_BRICKS, HackableSilverfish.class);

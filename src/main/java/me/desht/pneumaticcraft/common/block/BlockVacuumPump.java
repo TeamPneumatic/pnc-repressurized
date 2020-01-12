@@ -9,12 +9,12 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 
-public class BlockVacuumPump extends BlockPneumaticCraftModeled {
+public class BlockVacuumPump extends BlockPneumaticCraft {
     private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(2, 0, 2, 14, 11, 14);
     private static final VoxelShape COLLISION_SHAPE = Block.makeCuboidShape(2, 2, 2, 14, 14, 14);
 
-    public BlockVacuumPump() {
-        super("vacuum_pump");
+    public BlockVacuumPump(Properties props) {
+        super(props);
     }
 
     @Override

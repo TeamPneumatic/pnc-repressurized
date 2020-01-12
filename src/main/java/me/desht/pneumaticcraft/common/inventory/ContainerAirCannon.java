@@ -15,12 +15,12 @@ public class ContainerAirCannon extends ContainerPneumaticBase<TileEntityAirCann
     }
 
     public ContainerAirCannon(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.AIR_CANNON, i, playerInventory, pos);
+        super(ModContainers.AIR_CANNON.get(), i, playerInventory, pos);
 
         addUpgradeSlots(8, 29);
 
         // add the gps slot
-        addSlot(new SlotItemSpecific(te.getPrimaryInventory(), ModItems.GPS_TOOL, 1, 51, 29));
+        addSlot(new SlotItemSpecific(te.getPrimaryInventory(), ModItems.GPS_TOOL.get(), 1, 51, 29));
 
         // add the cannoned slot.
         addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 79, 40));

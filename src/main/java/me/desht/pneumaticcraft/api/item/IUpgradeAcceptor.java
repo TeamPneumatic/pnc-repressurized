@@ -3,7 +3,10 @@ package me.desht.pneumaticcraft.api.item;
 import java.util.Map;
 
 /**
- * Could be implemented by anything and registered through {@link IItemRegistry#registerUpgradeAcceptor(IUpgradeAcceptor)}
+ * Indicates that the implementor can accept PneumaticCraft upgrades.
+ *
+ * Could be implemented by anything; implementations should be registered through
+ * {@link IItemRegistry#registerUpgradeAcceptor(IUpgradeAcceptor)}
  */
 public interface IUpgradeAcceptor {
     /**

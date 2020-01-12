@@ -13,7 +13,7 @@ public class ContainerPressureChamberValve extends ContainerPneumaticBase<TileEn
     }
 
     public ContainerPressureChamberValve(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.PRESSURE_CHAMBER_VALVE, i, playerInventory, pos);
+        super(ModContainers.PRESSURE_CHAMBER_VALVE.get(), i, playerInventory, pos);
 
         addUpgradeSlots(48, 29);
 

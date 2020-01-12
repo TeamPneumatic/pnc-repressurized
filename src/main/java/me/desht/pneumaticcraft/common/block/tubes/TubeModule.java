@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
@@ -20,7 +21,6 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +30,7 @@ import static me.desht.pneumaticcraft.common.block.BlockPressureTube.CORE_MIN;
 
 public abstract class TubeModule {
     public static final float MAX_VALUE = 30;
+    private final ItemTubeModule item;
 
     protected TileEntityPressureTube pressureTube;
     protected Direction dir = Direction.UP;
@@ -40,7 +41,9 @@ public abstract class TubeModule {
     public boolean advancedConfig;
     public boolean shouldDrop;
 
-    public TubeModule() {
+    public TubeModule(ItemTubeModule item) {
+        this.item = item;
+
         double w = getWidth() / 2;
         double h = getHeight();
 
@@ -104,13 +107,13 @@ public abstract class TubeModule {
         NonNullList<ItemStack> drops = NonNullList.create();
         if (shouldDrop) {
             drops.add(new ItemStack(getItem()));
-            if (upgraded) drops.add(new ItemStack(ModItems.ADVANCED_PCB));
+            if (upgraded) drops.add(new ItemStack(ModItems.ADVANCED_PCB.get()));
         }
         return drops;
     }
 
     public Item getItem() {
-        return ForgeRegistries.ITEMS.getValue(getType());
+        return item;
     }
 
     public void setDirection(Direction dir) {
@@ -146,13 +149,9 @@ public abstract class TubeModule {
     public void onNeighborBlockUpdate() {
     }
 
-    /**
-     * Get a unique identifier for this module type, which <strong>must</strong> match the registry name of the
-     * corresponding module item.
-     *
-     * @return the module ID
-     */
-    public abstract ResourceLocation getType();
+    public final ResourceLocation getType() {
+        return item.getRegistryName();
+    }
 
     public int getRedstoneLevel() {
         return 0;
@@ -172,7 +171,7 @@ public abstract class TubeModule {
 
     public void addInfo(List<ITextComponent> curInfo) {
         if (upgraded) {
-            ItemStack stack = new ItemStack(ModItems.ADVANCED_PCB);
+            ItemStack stack = new ItemStack(ModItems.ADVANCED_PCB.get());
             curInfo.add(stack.getDisplayName().appendText(" installed").applyTextStyle(TextFormatting.GREEN));
         }
         if (this instanceof INetworkedModule) {

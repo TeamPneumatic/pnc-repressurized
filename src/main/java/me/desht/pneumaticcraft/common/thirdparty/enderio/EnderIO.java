@@ -12,10 +12,10 @@ public class EnderIO implements IThirdParty {
 
     @Override
     public void init() {
-        registerFuel(ModFluids.DIESEL);
-        registerFuel(ModFluids.KEROSENE);
-        registerFuel(ModFluids.GASOLINE);
-        registerFuel(ModFluids.LPG);
+        registerFuel(ModFluids.DIESEL.get());
+        registerFuel(ModFluids.KEROSENE.get());
+        registerFuel(ModFluids.GASOLINE.get());
+        registerFuel(ModFluids.LPG.get());
     }
 
     private void registerFuel(Fluid fluid) {

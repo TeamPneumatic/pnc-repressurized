@@ -20,7 +20,7 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     private static final float ITEM_SIZE = 10F;
 
     public TileEntityAssemblyLaser() {
-        super(ModTileEntities.ASSEMBLY_LASER);
+        super(ModTileEntities.ASSEMBLY_LASER.get());
     }
 
     @Override

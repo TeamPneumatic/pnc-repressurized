@@ -13,7 +13,7 @@ public class ContainerVacuumPump extends ContainerPneumaticBase<TileEntityVacuum
     }
 
     public ContainerVacuumPump(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.VACUUM_PUMP, i, playerInventory, pos);
+        super(ModContainers.VACUUM_PUMP.get(), i, playerInventory, pos);
 
         addUpgradeSlots(71, 29);
 

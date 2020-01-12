@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.item;
 public class ItemProgrammingPuzzle extends ItemPneumatic {
 
     public ItemProgrammingPuzzle() {
-        super("programming_puzzle");
+        super();
     }
 
 //    public static IProgWidget getWidgetForClass(Class<? extends IProgWidget> clazz) {

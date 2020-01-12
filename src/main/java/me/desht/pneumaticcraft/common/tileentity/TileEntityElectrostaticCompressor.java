@@ -55,7 +55,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     private int struckByLightningCooldown; //used by the redstone.
 
     public TileEntityElectrostaticCompressor() {
-        super(ModTileEntities.ELECTROSTATIC_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.MAX_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.VOLUME_ELECTROSTATIC_COMPRESSOR, 4);
+        super(ModTileEntities.ELECTROSTATIC_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.MAX_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.VOLUME_ELECTROSTATIC_COMPRESSOR, 4);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
                     Set<BlockPos> posSet = new HashSet<>();
                     getElectrostaticGrid(posSet, getWorld(), hitPos, null);
                     List<TileEntityElectrostaticCompressor> compressors = posSet.stream()
-                            .filter(pos -> world.getBlockState(pos).getBlock() == ModBlocks.ELECTROSTATIC_COMPRESSOR)
+                            .filter(pos -> world.getBlockState(pos).getBlock() == ModBlocks.ELECTROSTATIC_COMPRESSOR.get())
                             .map(pos -> world.getTileEntity(pos))
                             .filter(te -> te instanceof TileEntityElectrostaticCompressor)
                             .map(te -> (TileEntityElectrostaticCompressor) te)
@@ -207,7 +207,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
             if (d == dir) continue;
             BlockPos newPos = pos.offset(d);
             Block block = world.getBlockState(newPos).getBlock();
-            if ((isValidGridBlock(block) || block == ModBlocks.ELECTROSTATIC_COMPRESSOR)
+            if ((isValidGridBlock(block) || block == ModBlocks.ELECTROSTATIC_COMPRESSOR.get())
                     && set.size() < MAX_ELECTROSTATIC_GRID_SIZE && set.add(newPos)) {
                 getElectrostaticGrid(set, world, newPos, d.getOpposite());
             }

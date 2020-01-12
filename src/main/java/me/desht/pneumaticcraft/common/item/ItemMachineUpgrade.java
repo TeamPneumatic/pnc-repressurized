@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,7 +31,7 @@ public class ItemMachineUpgrade extends ItemPneumatic {
     private final int tier;
 
     public ItemMachineUpgrade(EnumUpgrade upgrade, int tier) {
-        super(upgrade.getItemName(tier));
+        super(ModItems.defaultProps());
         this.upgrade = upgrade;
         this.tier = tier;
     }

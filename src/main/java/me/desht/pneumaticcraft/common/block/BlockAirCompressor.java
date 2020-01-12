@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -16,11 +17,7 @@ public class BlockAirCompressor extends BlockPneumaticCraft {
     public static final BooleanProperty ON = BooleanProperty.create("on");
 
     public BlockAirCompressor() {
-        this("air_compressor");
-    }
-
-    BlockAirCompressor(String name) {
-        super(name);
+        super(ModBlocks.defaultProps());
         setDefaultState(getStateContainer().getBaseState().with(ON, false));
     }
 

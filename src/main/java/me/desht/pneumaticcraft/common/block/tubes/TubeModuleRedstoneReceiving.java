@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
@@ -8,6 +9,10 @@ import java.util.List;
 
 public abstract class TubeModuleRedstoneReceiving extends TubeModule {
     private int redstoneLevel;
+
+    TubeModuleRedstoneReceiving(ItemTubeModule item) {
+        super(item);
+    }
 
     @Override
     public void readFromNBT(CompoundNBT tag) {

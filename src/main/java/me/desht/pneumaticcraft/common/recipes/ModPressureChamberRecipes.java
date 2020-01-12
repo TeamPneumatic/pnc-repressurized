@@ -42,14 +42,14 @@ public class ModPressureChamberRecipes {
                 RL("compressed_iron_ingot"),
                 ImmutableList.of(Ingredient.fromTag(Tags.Items.INGOTS_IRON)),
                 2F,
-                new ItemStack(ModItems.INGOT_IRON_COMPRESSED)
+                new ItemStack(ModItems.INGOT_IRON_COMPRESSED.get())
         ));
 
         pc.accept(new BasicPressureChamberRecipe(
                 RL("compressed_iron_block"),
                 ImmutableList.of(Ingredient.fromTag(Tags.Items.STORAGE_BLOCKS_IRON)),
                 2F,
-                new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK)
+                new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK.get())
         ));
 
         pc.accept(new BasicPressureChamberRecipe(
@@ -59,16 +59,16 @@ public class ModPressureChamberRecipes {
                         Ingredient.fromTag(Tags.Items.INGOTS_GOLD)
                 ),
                 1F,
-                new ItemStack(ModItems.TURBINE_BLADE)
+                new ItemStack(ModItems.TURBINE_BLADE.get())
         ));
 
-        ItemStack pcb = new ItemStack(ModItems.EMPTY_PCB);
+        ItemStack pcb = new ItemStack(ModItems.EMPTY_PCB.get());
         pcb.setDamage(pcb.getMaxDamage());
         pc.accept(new BasicPressureChamberRecipe(
                 RL("empty_pcb"),
                 ImmutableList.of(
-                        Ingredient.fromItems(ModItems.PLASTIC),
-                        Ingredient.fromItems(ModItems.INGOT_IRON_COMPRESSED)
+                        Ingredient.fromItems(ModItems.PLASTIC.get()),
+                        Ingredient.fromItems(ModItems.INGOT_IRON_COMPRESSED.get())
                 ),
                 1.5F,
                 pcb
@@ -77,35 +77,45 @@ public class ModPressureChamberRecipes {
         pc.accept(new BasicPressureChamberRecipe(
                 RL("etching_acid_bucket"),
                 ImmutableList.of(
-                        Ingredient.fromItems(ModItems.PLASTIC_BUCKET),
+                        Ingredient.fromItems(ModItems.PLASTIC_BUCKET.get()),
                         Ingredient.fromStacks(new ItemStack(Items.ROTTEN_FLESH, 2)),
                         StackedIngredient.fromTag(Tags.Items.GUNPOWDER, 2),
                         Ingredient.fromStacks(new ItemStack(Items.SPIDER_EYE, 2))
                 ),
                 1.0F,
-                new ItemStack(ModItems.ETCHING_ACID_BUCKET)
+                new ItemStack(ModItems.ETCHING_ACID_BUCKET.get())
         ));
 
         pc.accept(new BasicPressureChamberRecipe(
                 RL("transistor"),
                 ImmutableList.of(
-                        Ingredient.fromItems(ModItems.PLASTIC),
+                        Ingredient.fromItems(ModItems.PLASTIC.get()),
                         StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 3),
                         Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE)
                 ),
                 1.0F,
-                new ItemStack(ModItems.TRANSISTOR)
+                new ItemStack(ModItems.TRANSISTOR.get())
         ));
 
         pc.accept(new BasicPressureChamberRecipe(
                 RL("capacitor"),
                 ImmutableList.of(
-                        Ingredient.fromItems(ModItems.PLASTIC),
+                        Ingredient.fromItems(ModItems.PLASTIC.get()),
                         StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 2),
                         Ingredient.fromTag(Tags.Items.SLIMEBALLS)
                 ),
                 1.0F,
-                new ItemStack(ModItems.CAPACITOR)
+                new ItemStack(ModItems.CAPACITOR.get())
+        ));
+
+        pc.accept(new BasicPressureChamberRecipe(
+                RL("slime_balls"),
+                ImmutableList.of(
+                        Ingredient.fromItems(Items.MILK_BUCKET),
+                        StackedIngredient.fromTag(Tags.Items.DYES_GREEN, 4)
+                ),
+                1.5F,
+                new ItemStack(Items.SLIME_BALL, 4), new ItemStack(Items.BUCKET)
         ));
 
         pc.accept(new PressureChamberEnchantingRecipe());

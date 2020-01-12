@@ -29,7 +29,7 @@ import net.minecraft.world.World;
 
 public class ItemCamoApplicator extends ItemPressurizable {
     public ItemCamoApplicator() {
-        super("camo_applicator", PneumaticValues.PNEUMATIC_WRENCH_MAX_AIR, PneumaticValues.PNEUMATIC_WRENCH_VOLUME);
+        super(PneumaticValues.PNEUMATIC_WRENCH_MAX_AIR, PneumaticValues.PNEUMATIC_WRENCH_VOLUME);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
                 if (particleState != null) {
                     player.getEntityWorld().playEvent(2001, pos, Block.getStateId(particleState));
                 }
-                NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.SHORT_HISS, SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
+                NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.SHORT_HISS.get(), SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
             }
         }
         return ActionResultType.SUCCESS;

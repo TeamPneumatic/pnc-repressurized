@@ -64,7 +64,7 @@ public class RenderEntityVortex extends DefaultRenderer {
     private float calculateXoffset() {
         ClientPlayerEntity player = Minecraft.getInstance().player;
         HandSide hs = player.getPrimaryHand();
-        if (player.getHeldItemMainhand().getItem() != ModItems.VORTEX_CANNON) {
+        if (player.getHeldItemMainhand().getItem() != ModItems.VORTEX_CANNON.get()) {
             hs = hs.opposite();
         }
         // yeah, this is supposed to be asymmetric; it looks better that way

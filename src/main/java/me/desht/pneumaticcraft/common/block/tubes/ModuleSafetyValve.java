@@ -1,10 +1,13 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.util.ResourceLocation;
+import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 
 public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
+
+    public ModuleSafetyValve(ItemTubeModule item) {
+        super(item);
+    }
 
     @Override
     public void update() {
@@ -17,10 +20,4 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
             });
         }
     }
-
-    @Override
-    public ResourceLocation getType() {
-        return Names.MODULE_SAFETY_VALVE;
-    }
-
 }

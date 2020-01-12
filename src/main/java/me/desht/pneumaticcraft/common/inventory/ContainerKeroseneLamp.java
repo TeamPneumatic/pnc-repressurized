@@ -14,7 +14,7 @@ public class ContainerKeroseneLamp extends ContainerPneumaticBase<TileEntityKero
     }
 
     public ContainerKeroseneLamp(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.KEROSENE_LAMP, i, playerInventory, pos);
+        super(ModContainers.KEROSENE_LAMP.get(), i, playerInventory, pos);
 
         addSlot(new SlotFluidContainer(te.getPrimaryInventory(), 0, 132, 22));
         addSlot(new SlotOutput(te.getPrimaryInventory(), 1, 132, 55));

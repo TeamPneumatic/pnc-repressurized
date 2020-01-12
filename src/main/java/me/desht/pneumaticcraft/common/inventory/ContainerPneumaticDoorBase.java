@@ -13,7 +13,7 @@ public class ContainerPneumaticDoorBase extends ContainerPneumaticBase<TileEntit
     }
 
     public ContainerPneumaticDoorBase(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.PNEUMATIC_DOOR_BASE, i, playerInventory, pos);
+        super(ModContainers.PNEUMATIC_DOOR_BASE.get(), i, playerInventory, pos);
 
         addUpgradeSlots(23, 29);
 

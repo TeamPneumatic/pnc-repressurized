@@ -19,7 +19,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetJump extends ProgWidget implements IJump {
 
     public ProgWidgetJump() {
-        super(ModProgWidgets.JUMP);
+        super(ModProgWidgets.JUMP.get());
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.TEXT.get());
     }
 
     @Override

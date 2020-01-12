@@ -13,7 +13,7 @@ public class ContainerAssemblyController extends ContainerPneumaticBase<TileEnti
     }
 
     public ContainerAssemblyController(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.ASSEMBLY_CONTROLLER, i, playerInventory, pos);
+        super(ModContainers.ASSEMBLY_CONTROLLER.get(), i, playerInventory, pos);
 
         addSlot(new SlotItemSpecific(te.getPrimaryInventory(), item -> item instanceof ItemAssemblyProgram, 0, 74, 38));
 

@@ -13,7 +13,7 @@ public class ContainerPressureChamberInterface extends ContainerPneumaticBase<Ti
     }
 
     public ContainerPressureChamberInterface(int windowId, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.PRESSURE_CHAMBER_INTERFACE, windowId, playerInventory, pos);
+        super(ModContainers.PRESSURE_CHAMBER_INTERFACE.get(), windowId, playerInventory, pos);
 
         // add the transfer slot
         addSlot(new SlotUntouchable(te.getPrimaryInventory(), 0, 66, 35));

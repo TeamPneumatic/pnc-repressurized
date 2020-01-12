@@ -2,75 +2,41 @@ package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-@ObjectHolder(Names.MOD_ID)
 public class ModSounds {
-    public static final SoundEvent AIR_CANNON = null;
-    public static final SoundEvent CREAK = null;
-    public static final SoundEvent LEAKING_GAS = null;
-    public static final SoundEvent PNEUMATIC_CRUSHER = null;
-    public static final SoundEvent INTERFACE_DOOR = null;
-    public static final SoundEvent ELEVATOR_RISING_START = null;
-    public static final SoundEvent ELEVATOR_RISING_STOP = null;
-    public static final SoundEvent ELEVATOR_RISING = null;
-    public static final SoundEvent HELMET_HACK_FINISH = null;
-    public static final SoundEvent HUD_INIT = null;
-    public static final SoundEvent HUD_INIT_COMPLETE = null;
-    public static final SoundEvent HUD_ENTITY_LOCK = null;
-    public static final SoundEvent SCI_FI = null;
-    public static final SoundEvent PNEUMATIC_WRENCH = null;
-    public static final SoundEvent MINIGUN = null;
-    public static final SoundEvent MINIGUN_STOP = null;
-    public static final SoundEvent DRONE_HURT = null;
-    public static final SoundEvent DRONE_DEATH = null;
-    public static final SoundEvent SHORT_HISS = null;
-    public static final SoundEvent PUNCH = null;
-    public static final SoundEvent PNEUMATIC_DOOR = null;
-    public static final SoundEvent CHIRP = null;
-    public static final SoundEvent SCUBA = null;
-    public static final SoundEvent LEAKING_GAS_LOW = null;
+    public static final DeferredRegister<SoundEvent> SOUNDS = new DeferredRegister<>(ForgeRegistries.SOUND_EVENTS, Names.MOD_ID);
 
-    @Mod.EventBusSubscriber(modid=Names.MOD_ID, bus= Mod.EventBusSubscriber.Bus.MOD)
-    public static class Registration {
-        @SubscribeEvent
-        public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
-            event.getRegistry().registerAll(
-                    buildSound("air_cannon"),
-                    buildSound("creak"),
-                    buildSound("leaking_gas"),
-                    buildSound("pneumatic_crusher"),
-                    buildSound("interface_door"),
-                    buildSound("elevator_rising_start"),
-                    buildSound("elevator_rising_stop"),
-                    buildSound("elevator_rising"),
-                    buildSound("helmet_hack_finish"),
-                    buildSound("hud_init"),
-                    buildSound("hud_init_complete"),
-                    buildSound("hud_entity_lock"),
-                    buildSound("sci_fi"),
-                    buildSound("pneumatic_wrench"),
-                    buildSound("minigun"),
-                    buildSound("minigun_stop"),
-                    buildSound("drone_hurt"),
-                    buildSound("drone_death"),
-                    buildSound("short_hiss"),
-                    buildSound("punch"),
-                    buildSound("pneumatic_door"),
-                    buildSound("chirp"),
-                    buildSound("scuba"),
-                    buildSound("leaking_gas_low")
-            );
-        }
+    public static final RegistryObject<SoundEvent> AIR_CANNON = register("air_cannon");
+    public static final RegistryObject<SoundEvent> CREAK = register("creak");
+    public static final RegistryObject<SoundEvent> LEAKING_GAS = register("leaking_gas");
+    public static final RegistryObject<SoundEvent> PNEUMATIC_CRUSHER = register("pneumatic_crusher");
+    public static final RegistryObject<SoundEvent> INTERFACE_DOOR = register("interface_door");
+    public static final RegistryObject<SoundEvent> ELEVATOR_RISING_START = register("elevator_rising_start");
+    public static final RegistryObject<SoundEvent> ELEVATOR_RISING_STOP = register("elevator_rising_stop");
+    public static final RegistryObject<SoundEvent> ELEVATOR_RISING = register("elevator_rising");
+    public static final RegistryObject<SoundEvent> HELMET_HACK_FINISH = register("helmet_hack_finish");
+    public static final RegistryObject<SoundEvent> HUD_INIT = register("hud_init");
+    public static final RegistryObject<SoundEvent> HUD_INIT_COMPLETE = register("hud_init_complete");
+    public static final RegistryObject<SoundEvent> HUD_ENTITY_LOCK = register("hud_entity_lock");
+    public static final RegistryObject<SoundEvent> SCI_FI = register("sci_fi");
+    public static final RegistryObject<SoundEvent> PNEUMATIC_WRENCH = register("pneumatic_wrench");
+    public static final RegistryObject<SoundEvent> MINIGUN = register("minigun");
+    public static final RegistryObject<SoundEvent> MINIGUN_STOP = register("minigun_stop");
+    public static final RegistryObject<SoundEvent> DRONE_HURT = register("drone_hurt");
+    public static final RegistryObject<SoundEvent> DRONE_DEATH = register("drone_death");
+    public static final RegistryObject<SoundEvent> SHORT_HISS = register("short_hiss");
+    public static final RegistryObject<SoundEvent> PUNCH = register("punch");
+    public static final RegistryObject<SoundEvent> PNEUMATIC_DOOR = register("pneumatic_door");
+    public static final RegistryObject<SoundEvent> CHIRP = register("chirp");
+    public static final RegistryObject<SoundEvent> SCUBA = register("scuba");
+    public static final RegistryObject<SoundEvent> LEAKING_GAS_LOW = register("leaking_gas_low");
 
-        private static SoundEvent buildSound(String key) {
-            return new SoundEvent(RL(key)).setRegistryName(key);
-        }
+    private static RegistryObject<SoundEvent> register(String name) {
+        return SOUNDS.register(name, () -> new SoundEvent(RL(name)));
     }
-
 }

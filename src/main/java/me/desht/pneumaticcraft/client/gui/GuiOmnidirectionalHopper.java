@@ -30,7 +30,7 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
     @Override
     public void init() {
         super.init();
-        statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER.get()), 0xFFFFAA00, false);
 
         WidgetAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.addPadding(4, 14);

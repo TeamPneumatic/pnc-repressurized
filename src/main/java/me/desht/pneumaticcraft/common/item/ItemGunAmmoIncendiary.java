@@ -10,9 +10,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockRayTraceResult;
 
 public class ItemGunAmmoIncendiary extends ItemGunAmmo {
-    public ItemGunAmmoIncendiary() {
-        super("gun_ammo_incendiary");
-    }
 
     @Override
     public int getMaxDamage(ItemStack stack) {

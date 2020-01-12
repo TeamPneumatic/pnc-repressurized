@@ -59,7 +59,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     public boolean isProducing;
 
     public TileEntityLiquidCompressor() {
-        this(ModTileEntities.LIQUID_COMPRESSOR, 5, 7, 5000);
+        this(ModTileEntities.LIQUID_COMPRESSOR.get(), 5, 7, 5000);
     }
 
     TileEntityLiquidCompressor(TileEntityType type, float dangerPressure, float criticalPressure, int volume) {

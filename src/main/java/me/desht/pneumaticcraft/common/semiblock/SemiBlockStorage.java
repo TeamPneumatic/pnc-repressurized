@@ -46,13 +46,13 @@ public class SemiBlockStorage extends SemiBlockLogistics implements ISpecificPro
 
     @Override
     public ITextComponent getDisplayName() {
-        return new ItemStack(ModItems.LOGISTICS_FRAME_STORAGE).getDisplayName();
+        return new ItemStack(ModItems.LOGISTICS_FRAME_STORAGE.get()).getDisplayName();
     }
 
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_STORAGE, i, playerInventory, getPos());
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_STORAGE.get(), i, playerInventory, getPos());
     }
 
     @Override

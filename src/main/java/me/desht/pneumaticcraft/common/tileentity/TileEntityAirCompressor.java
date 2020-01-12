@@ -49,7 +49,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     public int curFuelUsage;
 
     public TileEntityAirCompressor() {
-        this(ModTileEntities.AIR_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_AIR_COMPRESSOR, PneumaticValues.MAX_PRESSURE_AIR_COMPRESSOR, PneumaticValues.VOLUME_AIR_COMPRESSOR);
+        this(ModTileEntities.AIR_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_AIR_COMPRESSOR, PneumaticValues.MAX_PRESSURE_AIR_COMPRESSOR, PneumaticValues.VOLUME_AIR_COMPRESSOR);
     }
 
     TileEntityAirCompressor(TileEntityType type, float dangerPressure, float criticalPressure, int volume) {

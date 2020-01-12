@@ -73,7 +73,7 @@ public class RenderEntityTarget {
 
         if (ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;
-            player.world.playSound(player.posX, player.posY, player.posZ, ModSounds.HUD_ENTITY_LOCK, SoundCategory.PLAYERS, 0.1F, 1.0F, true);
+            player.world.playSound(player.posX, player.posY, player.posZ, ModSounds.HUD_ENTITY_LOCK.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
         }
 
         boolean tagged = NBTUtil.getInteger(player.getItemStackFromSlot(EquipmentSlotType.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId();
@@ -225,7 +225,7 @@ public class RenderEntityTarget {
         if (isInitialized() && isPlayerLookingAtTarget() && entity instanceof EntityDrone) {
             GuiDroneDebuggerOptions.clearAreaShowWidgetId();
             NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getEntityId()));
-            Minecraft.getInstance().player.playSound(ModSounds.HUD_ENTITY_LOCK, 1.0f, 2.0f);
+            Minecraft.getInstance().player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
         }
     }
 

@@ -24,7 +24,7 @@ public abstract class BlockAndCoordinatePollSensor implements IPollSensorSetting
 
             for (int i = 0; i < teUs.getUpgradeHandler().getSlots(); i++) {
                 ItemStack stack = teUs.getUpgradeHandler().getStackInSlot(i);
-                if (stack.getItem() == ModItems.GPS_TOOL && stack.hasTag()) {
+                if (stack.getItem() == ModItems.GPS_TOOL.get() && stack.hasTag()) {
                     BlockPos gpsPos = ItemGPSTool.getGPSLocation(stack);
                     if (gpsPos != null) {
                         AxisAlignedBB aabb = new AxisAlignedBB(gpsPos).grow(sensorRange);

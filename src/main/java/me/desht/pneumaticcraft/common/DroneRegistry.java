@@ -13,12 +13,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidStack;
+import org.apache.commons.lang3.Validate;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class DroneRegistry implements IDroneRegistry {
-    private static final DroneRegistry INSTANCE = new DroneRegistry();
+public enum DroneRegistry implements IDroneRegistry {
+    INSTANCE;
+
     public final Map<Block, IPathfindHandler> pathfindableBlocks = new HashMap<>();
 
     public static DroneRegistry getInstance() {
@@ -27,15 +29,16 @@ public class DroneRegistry implements IDroneRegistry {
 
     @Override
     public void addPathfindableBlock(Block block, IPathfindHandler handler) {
-        if (block == null) throw new IllegalArgumentException("Block can't be null!");
+        Validate.notNull(block);
         pathfindableBlocks.put(block, handler);
     }
 
     @Override
     public void registerCustomBlockInteractor(RegistryEvent.Register<ProgWidgetType<?>> event, ICustomBlockInteract interactor) {
-        ModProgWidgets.Registration.register(event.getRegistry(),
-                () -> new ProgWidgetCustomBlockInteract().setInteractor(interactor),
-                interactor.getID());
+        ProgWidgetType type = new ProgWidgetType<>(() ->
+                new ProgWidgetCustomBlockInteract().setInteractor(interactor)).setRegistryName(interactor.getID());
+        event.getRegistry().register(type);
+        ModProgWidgets.registerCustom(type);
     }
 
     @Override

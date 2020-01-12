@@ -29,7 +29,7 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
     private BlockPos controllerPos;
 
     public TileEntityAssemblyPlatform() {
-        super(ModTileEntities.ASSEMBLY_PLATFORM);
+        super(ModTileEntities.ASSEMBLY_PLATFORM.get());
     }
 
     @Override

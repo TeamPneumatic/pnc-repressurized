@@ -172,7 +172,7 @@ public class ClientEventHandler {
     }
 
     private static void setRenderHead(LivingEntity entity, boolean setRender) {
-        if (entity.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET
+        if (entity.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET.get()
                 && (PNCConfig.Client.Armor.fancyArmorModels || DateEventHandler.isIronManEvent())) {
             EntityRenderer renderer = Minecraft.getInstance().getRenderManager().getRenderer(entity);
             if (renderer instanceof BipedRenderer) {
@@ -288,8 +288,8 @@ public class ClientEventHandler {
         for (PlayerEntity player : Minecraft.getInstance().world.getPlayers()) {
             if (thisPlayer == player && Minecraft.getInstance().gameSettings.thirdPersonView == 0) continue;
             ItemStack curItem = player.getHeldItemMainhand();
-            if (curItem.getItem() == ModItems.MINIGUN) {
-                Minigun minigun = ((ItemMinigun) ModItems.MINIGUN).getMinigun(curItem, player);
+            if (curItem.getItem() == ModItems.MINIGUN.get()) {
+                Minigun minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
                 if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
                     GlStateManager.pushMatrix();
                     playerX = player.prevPosX + (player.posX - player.prevPosX) * event.getPartialTicks();

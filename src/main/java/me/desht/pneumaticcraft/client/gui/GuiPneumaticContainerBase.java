@@ -64,7 +64,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
         lastLeftStat = lastRightStat = null;
         if (shouldAddPressureTab() && te instanceof TileEntityPneumaticBase) {
-            pressureStat = this.addAnimatedStat("gui.tab.pressure", new ItemStack(ModBlocks.PRESSURE_TUBE), 0xFF00AA00, false);
+            pressureStat = this.addAnimatedStat("gui.tab.pressure", new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFF00AA00, false);
         }
         if (shouldAddProblemTab()) {
             problemTab = addAnimatedStat("gui.tab.problems", 0xFFA0A0A0, false);
@@ -194,7 +194,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     private void addSideConfiguratorTabs() {
         for (SideConfigurator sc : ((ISideConfigurable) te).getSideConfigurators()) {
-            WidgetAnimatedStat stat = addAnimatedStat(sc.getTranslationKey(), new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER), 0xFF90C0E0, false);
+            WidgetAnimatedStat stat = addAnimatedStat(sc.getTranslationKey(), new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER.get()), 0xFF90C0E0, false);
             stat.addPadding(7, 16);
 
             int yTop = 15, xLeft = 25;

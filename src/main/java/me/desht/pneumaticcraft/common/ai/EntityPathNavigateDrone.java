@@ -134,7 +134,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     public void tick() {
         if (isGoingToTeleport()) {
             if (teleportCounter == 0 || teleportCounter == 60) {
-                NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.HUD_INIT, SoundCategory.PLAYERS, pathfindingEntity.posX, pathfindingEntity.posY, pathfindingEntity.posZ, 0.1F, teleportCounter == 0 ? 0.7F : 1F, true), pathfindingEntity.world);
+                NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.HUD_INIT.get(), SoundCategory.PLAYERS, pathfindingEntity.posX, pathfindingEntity.posY, pathfindingEntity.posZ, 0.1F, teleportCounter == 0 ? 0.7F : 1F, true), pathfindingEntity.world);
             }
 
             if (teleportCounter < TELEPORT_TICKS - 40) {

@@ -1,163 +1,111 @@
 package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.common.inventory.*;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockDefaultStorage;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockPassiveProvider;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockRequester;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockStorage;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.network.IContainerFactory;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
-@ObjectHolder(Names.MOD_ID)
 public class ModContainers {
-    public static final ContainerType<ContainerAdvancedAirCompressor> ADVANCED_AIR_COMPRESSOR = null;
-    public static final ContainerType<ContainerAdvancedLiquidCompressor> ADVANCED_LIQUID_COMPRESSOR = null;
-    public static final ContainerType<ContainerAerialInterface> AERIAL_INTERFACE = null;
-    public static final ContainerType<ContainerAirCannon> AIR_CANNON = null;
-    public static final ContainerType<ContainerAirCompressor> AIR_COMPRESSOR = null;
-    public static final ContainerType<ContainerAssemblyController> ASSEMBLY_CONTROLLER = null;
-    public static final ContainerType<ContainerChargingStation> CHARGING_STATION = null;
-    public static final ContainerType<ContainerChargingStationItemInventory> CHARGING_MINIGUN = null;
-    public static final ContainerType<ContainerChargingStationItemInventory> CHARGING_DRONE = null;
-    public static final ContainerType<ContainerChargingStationItemInventory> CHARGING_ARMOR = null;
-    public static final ContainerType<ContainerCreativeCompressor> CREATIVE_COMPRESSOR = null;
-    public static final ContainerType<ContainerElectrostaticCompressor> ELECTROSTATIC_COMPRESSOR = null;
-    public static final ContainerType<ContainerElevator> ELEVATOR = null;
-    public static final ContainerType<ContainerFluxCompressor> FLUX_COMPRESSOR = null;
-    public static final ContainerType<ContainerGasLift> GAS_LIFT = null;
-    public static final ContainerType<ContainerKeroseneLamp> KEROSENE_LAMP = null;
-    public static final ContainerType<ContainerLiquidCompressor> LIQUID_COMPRESSOR = null;
-    public static final ContainerType<ContainerLiquidHopper> LIQUID_HOPPER = null;
-    public static final ContainerType<ContainerOmnidirectionalHopper> OMNIDIRECTIONAL_HOPPER = null;
-    public static final ContainerType<ContainerPneumaticDoorBase> PNEUMATIC_DOOR_BASE = null;
-    public static final ContainerType<ContainerPneumaticDynamo> PNEUMATIC_DYNAMO = null;
-    public static final ContainerType<ContainerPressureChamberInterface> PRESSURE_CHAMBER_INTERFACE = null;
-    public static final ContainerType<ContainerPressureChamberValve> PRESSURE_CHAMBER_VALVE = null;
-    public static final ContainerType<ContainerProgrammableController> PROGRAMMABLE_CONTROLLER = null;
-    public static final ContainerType<ContainerProgrammer> PROGRAMMER = null;
-    public static final ContainerType<ContainerRefinery> REFINERY = null;
-    public static final ContainerType<ContainerSecurityStationMain> SECURITY_STATION_MAIN = null;
-    public static final ContainerType<ContainerSecurityStationHacking> SECURITY_STATION_HACKING = null;
-    public static final ContainerType<ContainerSentryTurret> SENTRY_TURRET = null;
-    public static final ContainerType<ContainerThermalCompressor> THERMAL_COMPRESSOR = null;
-    public static final ContainerType<ContainerThermopneumaticProcessingPlant> THERMOPNEUMATIC_PROCESSING_PLANT = null;
-    public static final ContainerType<ContainerUniversalSensor> UNIVERSAL_SENSOR = null;
-    public static final ContainerType<ContainerUVLightBox> UV_LIGHT_BOX = null;
-    public static final ContainerType<ContainerVacuumPump> VACUUM_PUMP = null;
-    public static final ContainerType<ContainerAmadron> AMADRON = null;
-    public static final ContainerType<ContainerAmadronAddTrade> AMADRON_ADD_TRADE = null;
-    public static final ContainerType<ContainerMinigunMagazine> MINIGUN_MAGAZINE = null;
-    public static final ContainerType<ContainerLogistics> LOGISTICS_FRAME_STORAGE = null;
-    public static final ContainerType<ContainerLogistics> LOGISTICS_FRAME_DEFAULT_STORAGE = null;
-    public static final ContainerType<ContainerLogistics> LOGISTICS_FRAME_PASSIVE_PROVIDER = null;
-    public static final ContainerType<ContainerLogistics> LOGISTICS_FRAME_REQUESTER = null;
-    public static final ContainerType<ContainerInventorySearcher> INVENTORY_SEARCHER = null;
-    public static final ContainerType<ContainerRemote> REMOTE = null;
-    public static final ContainerType<ContainerRemote> REMOTE_EDITOR = null;
-    public static final ContainerType<ContainerSearcher> SEARCHER = null;
+    public static final DeferredRegister<ContainerType<?>> CONTAINERS = new DeferredRegister<>(ForgeRegistries.CONTAINERS, Names.MOD_ID);
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class Registration {
-        @SubscribeEvent
-        public static void registerContainerTypes(RegistryEvent.Register<ContainerType<?>> event) {
-            IForgeRegistry<ContainerType<?>> registry = event.getRegistry();
+    public static final RegistryObject<ContainerType<ContainerAdvancedAirCompressor>> ADVANCED_AIR_COMPRESSOR
+            = register("advanced_air_compressor", ContainerAdvancedAirCompressor::new);
+    public static final RegistryObject<ContainerType<ContainerAdvancedLiquidCompressor>> ADVANCED_LIQUID_COMPRESSOR
+            = register("advanced_liquid_compressor", ContainerAdvancedLiquidCompressor::new);
+    public static final RegistryObject<ContainerType<ContainerAerialInterface>> AERIAL_INTERFACE
+            = register("aerial_interface", ContainerAerialInterface::new);
+    public static final RegistryObject<ContainerType<ContainerAirCannon>> AIR_CANNON
+            = register("air_cannon", ContainerAirCannon::new);
+    public static final RegistryObject<ContainerType<ContainerAirCompressor>> AIR_COMPRESSOR
+            = register("air_compressor", ContainerAirCompressor::new);
+    public static final RegistryObject<ContainerType<ContainerAssemblyController>> ASSEMBLY_CONTROLLER
+            = register("assembly_controller", ContainerAssemblyController::new);
+    public static final RegistryObject<ContainerType<ContainerChargingStation>> CHARGING_STATION
+            = register("charging_station", ContainerChargingStation::new);
+    public static final RegistryObject<ContainerType<ContainerChargingStationItemInventory>> CHARGING_MINIGUN
+            = register("charging_minigun", ContainerChargingStationItemInventory::createMinigunContainer);
+    public static final RegistryObject<ContainerType<ContainerChargingStationItemInventory>> CHARGING_DRONE
+            = register("charging_drone", ContainerChargingStationItemInventory::createDroneContainer);
+    public static final RegistryObject<ContainerType<ContainerChargingStationItemInventory>> CHARGING_ARMOR
+            = register("charging_armor", ContainerChargingStationItemInventory::createArmorContainer);
+    public static final RegistryObject<ContainerType<ContainerCreativeCompressor>> CREATIVE_COMPRESSOR
+            = register("creative_compressor", ContainerCreativeCompressor::new);
+    public static final RegistryObject<ContainerType<ContainerElectrostaticCompressor>> ELECTROSTATIC_COMPRESSOR
+            = register("electrostatic_compressor", ContainerElectrostaticCompressor::new);
+    public static final RegistryObject<ContainerType<ContainerElevator>> ELEVATOR
+            = register("elevator", ContainerElevator::new);
+    public static final RegistryObject<ContainerType<ContainerFluxCompressor>> FLUX_COMPRESSOR
+            = register("flux_compressor", ContainerFluxCompressor::new);
+    public static final RegistryObject<ContainerType<ContainerGasLift>> GAS_LIFT
+            = register("gas_lift", ContainerGasLift::new);
+    public static final RegistryObject<ContainerType<ContainerKeroseneLamp>> KEROSENE_LAMP
+            = register("kerosene_lamp", ContainerKeroseneLamp::new);
+    public static final RegistryObject<ContainerType<ContainerLiquidCompressor>> LIQUID_COMPRESSOR
+            = register("liquid_compressor", ContainerLiquidCompressor::new);
+    public static final RegistryObject<ContainerType<ContainerLiquidHopper>> LIQUID_HOPPER
+            = register("liquid_hopper", ContainerLiquidHopper::new);
+    public static final RegistryObject<ContainerType<ContainerOmnidirectionalHopper>> OMNIDIRECTIONAL_HOPPER
+            = register("omnidirectional_hopper", ContainerOmnidirectionalHopper::new);
+    public static final RegistryObject<ContainerType<ContainerPneumaticDoorBase>> PNEUMATIC_DOOR_BASE
+            = register("pneumatic_door_base", ContainerPneumaticDoorBase::new);
+    public static final RegistryObject<ContainerType<ContainerPneumaticDynamo>> PNEUMATIC_DYNAMO
+            = register("pneumatic_dynamo", ContainerPneumaticDynamo::new);
+    public static final RegistryObject<ContainerType<ContainerPressureChamberInterface>> PRESSURE_CHAMBER_INTERFACE
+            = register("pressure_chamber_interface", ContainerPressureChamberInterface::new);
+    public static final RegistryObject<ContainerType<ContainerPressureChamberValve>> PRESSURE_CHAMBER_VALVE
+            = register("pressure_chamber_valve", ContainerPressureChamberValve::new);
+    public static final RegistryObject<ContainerType<ContainerProgrammableController>> PROGRAMMABLE_CONTROLLER
+            = register("programmable_controller", ContainerProgrammableController::new);
+    public static final RegistryObject<ContainerType<ContainerProgrammer>> PROGRAMMER
+            = register("programmer", ContainerProgrammer::new);
+    public static final RegistryObject<ContainerType<ContainerRefinery>> REFINERY
+            = register("refinery", ContainerRefinery::new);
+    public static final RegistryObject<ContainerType<ContainerSecurityStationMain>> SECURITY_STATION_MAIN
+            = register("security_station_main", ContainerSecurityStationMain::new);
+    public static final RegistryObject<ContainerType<ContainerSecurityStationHacking>> SECURITY_STATION_HACKING
+            = register("security_station_hacking", ContainerSecurityStationHacking::new);
+    public static final RegistryObject<ContainerType<ContainerSentryTurret>> SENTRY_TURRET
+            = register("sentry_turret", ContainerSentryTurret::new);
+    public static final RegistryObject<ContainerType<ContainerThermalCompressor>> THERMAL_COMPRESSOR
+            = register("thermal_compressor", ContainerThermalCompressor::new);
+    public static final RegistryObject<ContainerType<ContainerThermopneumaticProcessingPlant>> THERMOPNEUMATIC_PROCESSING_PLANT
+            = register("thermopneumatic_processing_plant", ContainerThermopneumaticProcessingPlant::new);
+    public static final RegistryObject<ContainerType<ContainerUniversalSensor>> UNIVERSAL_SENSOR
+            = register("universal_sensor", ContainerUniversalSensor::new);
+    public static final RegistryObject<ContainerType<ContainerUVLightBox>> UV_LIGHT_BOX
+            = register("uv_light_box", ContainerUVLightBox::new);
+    public static final RegistryObject<ContainerType<ContainerVacuumPump>> VACUUM_PUMP
+            = register("vacuum_pump", ContainerVacuumPump::new);
+    public static final RegistryObject<ContainerType<ContainerAmadron>> AMADRON
+            = register("amadron", ContainerAmadron::new);
+    public static final RegistryObject<ContainerType<ContainerAmadronAddTrade>> AMADRON_ADD_TRADE
+            = register("amadron_add_trade", ContainerAmadronAddTrade::new);
+    public static final RegistryObject<ContainerType<ContainerMinigunMagazine>> MINIGUN_MAGAZINE
+            = register("minigun_magazine", ContainerMinigunMagazine::new);
+    public static final RegistryObject<ContainerType<ContainerLogistics>> LOGISTICS_FRAME_STORAGE
+            = register("logistics_frame_storage", ContainerLogistics::createStorageContainer);
+    public static final RegistryObject<ContainerType<ContainerLogistics>> LOGISTICS_FRAME_DEFAULT_STORAGE
+            = register("logistics_frame_default_storage", ContainerLogistics::createDefaultStorageContainer);
+    public static final RegistryObject<ContainerType<ContainerLogistics>> LOGISTICS_FRAME_PASSIVE_PROVIDER
+            = register("logistics_frame_passive_provider", ContainerLogistics::createPassiveProviderContainer);
+    public static final RegistryObject<ContainerType<ContainerLogistics>> LOGISTICS_FRAME_REQUESTER
+            = register("logistics_frame_requester", ContainerLogistics::createRequesterContainer);
+    public static final RegistryObject<ContainerType<ContainerInventorySearcher>> INVENTORY_SEARCHER
+            = register("inventory_searcher", ContainerInventorySearcher::new);
+    public static final RegistryObject<ContainerType<ContainerRemote>> REMOTE
+            = register("remote", ContainerRemote::createRemoteContainer);
+    public static final RegistryObject<ContainerType<ContainerRemote>> REMOTE_EDITOR
+            = register("remote_editor", ContainerRemote::createRemoteEditorContainer);
+    public static final RegistryObject<ContainerType<ContainerSearcher>> SEARCHER
+            = register("searcher", ContainerSearcher::new);
 
-            registry.register(IForgeContainerType.create(ContainerAdvancedAirCompressor::new)
-                    .setRegistryName("advanced_air_compressor"));
-            registry.register(IForgeContainerType.create(ContainerAdvancedLiquidCompressor::new)
-                    .setRegistryName("advanced_liquid_compressor"));
-            registry.register(IForgeContainerType.create(ContainerAerialInterface::new)
-                    .setRegistryName("aerial_interface"));
-            registry.register(IForgeContainerType.create(ContainerAirCompressor::new)
-                    .setRegistryName("air_compressor"));
-            registry.register(IForgeContainerType.create(ContainerAirCannon::new)
-                    .setRegistryName("air_cannon"));
-            registry.register(IForgeContainerType.create(ContainerAssemblyController::new)
-                    .setRegistryName("assembly_controller"));
-            registry.register(IForgeContainerType.create(ContainerChargingStation::new)
-                    .setRegistryName("charging_station"));
-            registry.register(IForgeContainerType.create(ContainerChargingStationItemInventory::createMinigunContainer)
-                    .setRegistryName("charging_minigun"));
-            registry.register(IForgeContainerType.create(ContainerChargingStationItemInventory::createDroneContainer)
-                    .setRegistryName("charging_drone"));
-            registry.register(IForgeContainerType.create(ContainerChargingStationItemInventory::createArmorContainer)
-                    .setRegistryName("charging_armor"));
-            registry.register(IForgeContainerType.create(ContainerCreativeCompressor::new)
-                    .setRegistryName("creative_compressor"));
-            registry.register(IForgeContainerType.create(ContainerElectrostaticCompressor::new)
-                    .setRegistryName("electrostatic_compressor"));
-            registry.register(IForgeContainerType.create(ContainerElevator::new)
-                    .setRegistryName("elevator"));
-            registry.register(IForgeContainerType.create(ContainerFluxCompressor::new)
-                    .setRegistryName("flux_compressor"));
-            registry.register(IForgeContainerType.create(ContainerGasLift::new)
-                    .setRegistryName("gas_lift"));
-            registry.register(IForgeContainerType.create(ContainerKeroseneLamp::new)
-                    .setRegistryName("kerosene_lamp"));
-            registry.register(IForgeContainerType.create(ContainerLiquidCompressor::new)
-                    .setRegistryName("liquid_compressor"));
-            registry.register(IForgeContainerType.create(ContainerLiquidHopper::new)
-                    .setRegistryName("liquid_hopper"));
-            registry.register(IForgeContainerType.create(ContainerOmnidirectionalHopper::new)
-                    .setRegistryName("omnidirectional_hopper"));
-            registry.register(IForgeContainerType.create(ContainerPneumaticDoorBase::new)
-                    .setRegistryName("pneumatic_door_base"));
-            registry.register(IForgeContainerType.create(ContainerPneumaticDynamo::new)
-                    .setRegistryName("pneumatic_dynamo"));
-            registry.register(IForgeContainerType.create(ContainerPressureChamberInterface::new)
-                    .setRegistryName("pressure_chamber_interface"));
-            registry.register(IForgeContainerType.create(ContainerPressureChamberValve::new)
-                    .setRegistryName("pressure_chamber_valve"));
-            registry.register(IForgeContainerType.create(ContainerProgrammableController::new)
-                    .setRegistryName("programmable_controller"));
-            registry.register(IForgeContainerType.create(ContainerProgrammer::new)
-                    .setRegistryName("programmer"));
-            registry.register(IForgeContainerType.create(ContainerRefinery::new)
-                    .setRegistryName("refinery"));
-            registry.register(IForgeContainerType.create(ContainerSecurityStationMain::new)
-                    .setRegistryName("security_station_main"));
-            registry.register(IForgeContainerType.create(ContainerSecurityStationHacking::new)
-                    .setRegistryName("security_station_hacking"));
-            registry.register(IForgeContainerType.create(ContainerSentryTurret::new)
-                    .setRegistryName("sentry_turret"));
-            registry.register(IForgeContainerType.create(ContainerThermalCompressor::new)
-                    .setRegistryName("thermal_compressor"));
-            registry.register(IForgeContainerType.create(ContainerThermopneumaticProcessingPlant::new)
-                    .setRegistryName("thermopneumatic_processing_plant"));
-            registry.register(IForgeContainerType.create(ContainerUniversalSensor::new)
-                    .setRegistryName("universal_sensor"));
-            registry.register(IForgeContainerType.create(ContainerUVLightBox::new)
-                    .setRegistryName("uv_light_box"));
-            registry.register(IForgeContainerType.create(ContainerVacuumPump::new)
-                    .setRegistryName("vacuum_pump"));
-            registry.register(IForgeContainerType.create(ContainerAmadron::new)
-                    .setRegistryName("amadron"));
-            registry.register(IForgeContainerType.create(ContainerAmadronAddTrade::new)
-                    .setRegistryName("amadron_add_trade"));
-            registry.register(IForgeContainerType.create(ContainerMinigunMagazine::new)
-                    .setRegistryName("minigun_magazine"));
-            registry.register(IForgeContainerType.create(ContainerLogistics::createPassiveProviderContainer)
-                    .setRegistryName(SemiBlockPassiveProvider.ID));
-            registry.register(IForgeContainerType.create(ContainerLogistics::createRequesterContainer)
-                    .setRegistryName(SemiBlockRequester.ID));
-            registry.register(IForgeContainerType.create(ContainerLogistics::createDefaultStorageContainer)
-                    .setRegistryName(SemiBlockDefaultStorage.ID));
-            registry.register(IForgeContainerType.create(ContainerLogistics::createStorageContainer)
-                    .setRegistryName(SemiBlockStorage.ID));
-            registry.register(IForgeContainerType.create(ContainerInventorySearcher::new)
-                    .setRegistryName("inventory_searcher"));
-            registry.register(IForgeContainerType.create(ContainerRemote::createRemoteContainer)
-                    .setRegistryName("remote"));
-            registry.register(IForgeContainerType.create(ContainerRemote::createRemoteEditorContainer)
-                    .setRegistryName("remote_editor"));
-            registry.register(IForgeContainerType.create(ContainerSearcher::new)
-                    .setRegistryName("searcher"));
-        }
+    private static <C extends Container, T extends ContainerType<C>> RegistryObject<T> register(String name, IContainerFactory<? extends C> f) {
+        //noinspection unchecked
+        return CONTAINERS.register(name, () -> (T) IForgeContainerType.create(f));
     }
 }

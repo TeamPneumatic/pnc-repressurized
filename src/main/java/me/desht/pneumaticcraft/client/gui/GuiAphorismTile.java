@@ -27,7 +27,7 @@ public class GuiAphorismTile extends Screen {
     public int updateCounter;
 
     public GuiAphorismTile(TileEntityAphorismTile tile) {
-        super(new ItemStack(ModBlocks.APHORISM_TILE).getDisplayName());
+        super(new ItemStack(ModBlocks.APHORISM_TILE.get()).getDisplayName());
 
         this.tile = tile;
         textLines = tile.getTextLines();

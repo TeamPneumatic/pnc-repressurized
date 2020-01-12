@@ -4,20 +4,19 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticModule;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -41,6 +40,10 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     private static final double ITEM_TRANSPORT_COST = 2.5;
     private static final double FLUID_TRANSPORT_COST = 0.05;
 
+    public ModuleLogistics(ItemTubeModule itemTubeModule) {
+        super(itemTubeModule);
+    }
+
     public int getTicksSinceAction() {
         return ticksSinceAction;
     }
@@ -57,11 +60,6 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     @Override
     protected double getHeight() {
         return 4.5D;
-    }
-
-    @Override
-    public ResourceLocation getType() {
-        return Names.MODULE_LOGISTICS;
     }
 
     @Override

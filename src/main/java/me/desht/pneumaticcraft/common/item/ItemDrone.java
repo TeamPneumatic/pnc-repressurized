@@ -26,12 +26,8 @@ import java.util.Map;
 
 public class ItemDrone extends ItemPressurizable implements IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor {
 
-    ItemDrone(String registryName) {
-        super(registryName, (int)(PneumaticValues.DRONE_MAX_PRESSURE * PneumaticValues.DRONE_VOLUME), PneumaticValues.DRONE_VOLUME);
-    }
-
     public ItemDrone() {
-        this("drone");
+        super((int)(PneumaticValues.DRONE_MAX_PRESSURE * PneumaticValues.DRONE_VOLUME), PneumaticValues.DRONE_VOLUME);
     }
 
     @Override
@@ -51,7 +47,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     }
 
     public void spawnDrone(PlayerEntity player, World world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack){
-        EntityDrone drone = new EntityDrone(ModEntities.DRONE, world, player);
+        EntityDrone drone = new EntityDrone(ModEntities.DRONE.get(), world, player);
 
         drone.setPosition(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
         drone.initFromItemStack(iStack);
@@ -88,6 +84,6 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
 
     @Override
     public INamedContainerProvider getContainerProvider(TileEntityChargingStation te) {
-        return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_DRONE);
+        return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_DRONE.get());
     }
 }

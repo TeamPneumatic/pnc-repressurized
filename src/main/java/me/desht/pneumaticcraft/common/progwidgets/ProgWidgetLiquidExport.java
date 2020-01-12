@@ -19,7 +19,7 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
     private boolean placeFluidBlocks;
 
     public ProgWidgetLiquidExport() {
-        super(ModProgWidgets.LIQUID_EXPORT);
+        super(ModProgWidgets.LIQUID_EXPORT.get());
     }
 
     @Override
@@ -29,7 +29,7 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.LIQUID_FILTER);
+        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.LIQUID_FILTER.get());
     }
 
     @Override

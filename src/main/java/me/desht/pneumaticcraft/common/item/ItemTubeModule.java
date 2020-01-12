@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRegistrator;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -12,21 +11,25 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class ItemTubeModule extends ItemPneumatic {
-    public final String moduleName;
+    private final Function<ItemTubeModule, TubeModule> moduleFactory;
 
-    public ItemTubeModule(String moduleName) {
-        super(moduleName);
+    public ItemTubeModule(Function<ItemTubeModule, TubeModule> moduleFactory) {
+        super();
+        this.moduleFactory = moduleFactory;
+    }
 
-        this.moduleName = moduleName;
+    public TubeModule createModule() {
+        return moduleFactory.apply(this);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack par1ItemStack, World par2EntityPlayer, List<ITextComponent> par3List, ITooltipFlag par4) {
         super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
-        TubeModule module = ModuleRegistrator.createModule(getRegistryName());
+        TubeModule module = createModule();
         if (module != null) {
             par3List.add(new StringTextComponent("In line: " + (module.isInline() ? "Yes" : "No")).applyTextStyle(TextFormatting.DARK_AQUA));
         }

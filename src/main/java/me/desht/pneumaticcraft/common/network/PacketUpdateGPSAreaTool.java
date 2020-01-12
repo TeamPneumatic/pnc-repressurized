@@ -44,7 +44,7 @@ public class PacketUpdateGPSAreaTool {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ItemStack stack = ctx.get().getSender().getHeldItem(hand);
-            if (stack.getItem() == ModItems.GPS_AREA_TOOL) {
+            if (stack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
                 stack.setTag(areaWidgetData);
             }
         });

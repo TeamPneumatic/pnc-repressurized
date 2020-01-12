@@ -17,22 +17,15 @@ public abstract class FluidLPG extends ForgeFlowingFluid {
     ).viscosity(250);
 
     private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.LPG, () -> ModFluids.LPG_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.LPG).bucket(() -> ModItems.LPG_BUCKET
+            new ForgeFlowingFluid.Properties(ModFluids.LPG, ModFluids.LPG_FLOWING, ATTRS)
+                    .block(ModBlocks.LPG).bucket(ModItems.LPG_BUCKET
             );
 
-    FluidLPG(String name) {
+    FluidLPG() {
         super(PROPS);
-
-        setRegistryName(RL(name));
     }
 
     public static class Source extends FluidLPG {
-        public Source() {
-            super("lpg");
-        }
-
         @Override
         public boolean isSource(IFluidState state) {
             return true;
@@ -45,10 +38,6 @@ public abstract class FluidLPG extends ForgeFlowingFluid {
     }
 
     public static class Flowing extends FluidLPG {
-        public Flowing() {
-            super("lpg_flowing");
-        }
-
         @Override
         protected void fillStateContainer(StateContainer.Builder<Fluid, IFluidState> builder) {
             super.fillStateContainer(builder);

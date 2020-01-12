@@ -18,7 +18,7 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     private int oldComparatorOutput = 0;
 
     public TileEntityCompressedIronBlock() {
-        this(ModTileEntities.COMPRESSED_IRON_BLOCK);
+        this(ModTileEntities.COMPRESSED_IRON_BLOCK.get());
     }
 
     TileEntityCompressedIronBlock(TileEntityType type) {

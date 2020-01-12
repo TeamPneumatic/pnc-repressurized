@@ -67,7 +67,7 @@ public class PacketPneumaticKick {
         }
         target.setMotion(target.getMotion().add(lookVec.scale(1.0 + upgrades * 0.5f)));
 
-        NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PUNCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0f, 1.0f, false), player.world);
+        NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PUNCH.get(), SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0f, 1.0f, false), player.world);
         NetworkHandler.sendToAllAround(new PacketSetEntityMotion(target, target.getMotion()), player.world);
         NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.posX, target.posY, target.posZ, 1.0D, 0.0D, 0.0D), player.world);
         CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlotType.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * (2 << upgrades));

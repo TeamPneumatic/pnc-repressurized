@@ -53,7 +53,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         addButton(radioButton);
 
         gpsButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 20, 20, 20, "", b -> openGPSSearcher());
-        gpsButton.setRenderStacks(new ItemStack(ModItems.GPS_TOOL));
+        gpsButton.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
         gpsButton.setTooltipText(I18n.format("gui.progWidget.coordinate.selectFromGPS"));
         gpsButton.active = !progWidget.isUsingVariable();
         addButton(gpsButton);
@@ -84,12 +84,12 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
     }
 
     private void openGPSSearcher() {
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER, new StringTextComponent("Inventory Searcher (GPS)"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Searcher (GPS)"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
             BlockPos area = progWidget.getRawCoordinate();
-            ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL);
+            ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
             ItemGPSTool.setGPSLocation(gpsStack, area);
             invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack) != null ? gpsStack : ItemStack.EMPTY);
         }

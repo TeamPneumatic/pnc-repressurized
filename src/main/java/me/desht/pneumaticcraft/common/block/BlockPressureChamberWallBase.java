@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,9 +15,9 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-public class BlockPressureChamberWallBase extends BlockPneumaticCraft implements IBlockPressureChamber {
-    BlockPressureChamberWallBase(Block.Properties props, String registryName) {
-        super(props, registryName);
+public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft implements IBlockPressureChamber {
+    BlockPressureChamberWallBase(Properties props) {
+        super(props);
     }
 
     @Override

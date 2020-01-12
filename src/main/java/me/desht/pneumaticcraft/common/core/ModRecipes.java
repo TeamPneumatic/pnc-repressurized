@@ -5,32 +5,23 @@ import me.desht.pneumaticcraft.common.recipes.special.*;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
-@ObjectHolder(Names.MOD_ID)
 public class ModRecipes {
-    public static final SpecialRecipeSerializer<OneProbeCrafting> ONE_PROBE_HELMET_CRAFTING = null;
-    public static final SpecialRecipeSerializer<GunAmmoPotionCrafting> GUN_AMMO_POTION_CRAFTING = null;
-    public static final SpecialRecipeSerializer<DroneUpgradeCrafting> DRONE_UPGRADE_CRAFTING = null;
-    public static final SpecialRecipeSerializer<DroneColorCrafting> DRONE_COLOR_CRAFTING = null;
-    public static final SpecialRecipeSerializer<PatchouliBookCrafting> PATCHOULI_BOOK_CRAFTING = null;
-    public static final IRecipeSerializer<ShapedPressurizableRecipe> CRAFTING_SHAPED_PRESSURIZABLE = null;
+    public static final DeferredRegister<IRecipeSerializer<?>> RECIPES = new DeferredRegister<>(ForgeRegistries.RECIPE_SERIALIZERS, Names.MOD_ID);
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class Registration {
-        @SubscribeEvent
-        public static void registerRecipes(final RegistryEvent.Register<IRecipeSerializer<?>> event) {
-            event.getRegistry().register(new SpecialRecipeSerializer<>(OneProbeCrafting::new).setRegistryName(RL("one_probe_helmet_crafting")));
-            event.getRegistry().register(new SpecialRecipeSerializer<>(GunAmmoPotionCrafting::new).setRegistryName(RL("gun_ammo_potion_crafting")));
-            event.getRegistry().register(new SpecialRecipeSerializer<>(DroneUpgradeCrafting::new).setRegistryName(RL("drone_upgrade_crafting")));
-            event.getRegistry().register(new SpecialRecipeSerializer<>(DroneColorCrafting::new).setRegistryName(RL("drone_color_crafting")));
-            event.getRegistry().register(new SpecialRecipeSerializer<>(PatchouliBookCrafting::new).setRegistryName(RL("patchouli_book_crafting")));
-            event.getRegistry().register(new ShapedPressurizableRecipe.Serializer().setRegistryName(RL("crafting_shaped_pressurizable")));
-        }
-    }
+    public static final RegistryObject<SpecialRecipeSerializer<OneProbeCrafting>> ONE_PROBE_HELMET_CRAFTING
+            = RECIPES.register("one_probe_helmet_crafting", () -> new SpecialRecipeSerializer<>(OneProbeCrafting::new));
+    public static final RegistryObject<SpecialRecipeSerializer<GunAmmoPotionCrafting>> GUN_AMMO_POTION_CRAFTING
+            = RECIPES.register("gun_ammo_potion_crafting", () -> new SpecialRecipeSerializer<>(GunAmmoPotionCrafting::new));
+    public static final RegistryObject<SpecialRecipeSerializer<DroneUpgradeCrafting>> DRONE_UPGRADE_CRAFTING
+            = RECIPES.register("drone_upgrade_crafting", () -> new SpecialRecipeSerializer<>(DroneUpgradeCrafting::new));
+    public static final RegistryObject<SpecialRecipeSerializer<DroneColorCrafting>> DRONE_COLOR_CRAFTING
+            = RECIPES.register("drone_color_crafting", () -> new SpecialRecipeSerializer<>(DroneColorCrafting::new));
+    public static final RegistryObject<SpecialRecipeSerializer<PatchouliBookCrafting>> PATCHOULI_BOOK_CRAFTING
+            = RECIPES.register("patchouli_book_crafting", () -> new SpecialRecipeSerializer<>(PatchouliBookCrafting::new));
+    public static final RegistryObject<ShapedPressurizableRecipe.Serializer> CRAFTING_SHAPED_PRESSURIZABLE
+            = RECIPES.register("crafting_shaped_pressurizable", ShapedPressurizableRecipe.Serializer::new);
 }

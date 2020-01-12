@@ -14,7 +14,7 @@ public class ContainerGasLift extends ContainerPneumaticBase<TileEntityGasLift> 
     }
 
     public ContainerGasLift(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.GAS_LIFT, i, playerInventory, pos);
+        super(ModContainers.GAS_LIFT.get(), i, playerInventory, pos);
 
         addUpgradeSlots(11, 29);
 

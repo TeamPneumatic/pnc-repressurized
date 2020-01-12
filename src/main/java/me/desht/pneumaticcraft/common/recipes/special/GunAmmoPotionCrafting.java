@@ -27,7 +27,7 @@ public class GunAmmoPotionCrafting extends SpecialRecipe {
                 if (++itemCount > 2) return false;
                 itemCount++;
                 if (stack.getItem() instanceof PotionItem) foundPotion = true;
-                if (stack.getItem() == ModItems.GUN_AMMO) foundAmmo = true;
+                if (stack.getItem() == ModItems.GUN_AMMO.get()) foundAmmo = true;
             }
         }
         return foundPotion && foundAmmo;
@@ -59,6 +59,6 @@ public class GunAmmoPotionCrafting extends SpecialRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return ModRecipes.GUN_AMMO_POTION_CRAFTING;
+        return ModRecipes.GUN_AMMO_POTION_CRAFTING.get();
     }
 }

@@ -22,7 +22,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     private int coldHeatLevel = 10, hotHeatLevel = 10;
 
     public TileEntityVortexTube() {
-        super(ModTileEntities.VORTEX_TUBE, 20, 25, 2000, 0);
+        super(ModTileEntities.VORTEX_TUBE.get(), 20, 25, 2000, 0);
         coldHeatExchanger.setThermalResistance(0.01);
         hotHeatExchanger.setThermalResistance(0.01);
         connectingExchanger.setThermalResistance(100);

@@ -4,37 +4,31 @@ import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLogistics;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.FMLPlayMessages;
 
 import java.util.List;
 
 public class EntityLogisticsDrone extends EntityBasicDrone {
-    public static EntityLogisticsDrone create(EntityType<Entity> entityEntityType, World world) {
-        return new EntityLogisticsDrone(world);
+    public static EntityLogisticsDrone createLogisticsDrone(EntityType<EntityLogisticsDrone> type, World world) {
+        return new EntityLogisticsDrone(type, world);
     }
 
-    public static Entity createClient(FMLPlayMessages.SpawnEntity spawnEntity, World world) {
-        return new EntityLogisticsDrone(world);
-    }
-
-    private EntityLogisticsDrone(World world) {
-        super(ModEntities.LOGISTIC_DRONE, world);
+    private EntityLogisticsDrone(EntityType<EntityLogisticsDrone> type, World world) {
+        super(type, world);
     }
 
     public EntityLogisticsDrone(World world, PlayerEntity player) {
-        super(ModEntities.LOGISTIC_DRONE, world, player);
+        super(ModEntities.LOGISTICS_DRONE.get(), world, player);
     }
 
     @Override
     protected Item getDroneItem(){
-        return ModItems.LOGISTIC_DRONE;
+        return ModItems.LOGISTICS_DRONE.get();
     }
 
     @Override

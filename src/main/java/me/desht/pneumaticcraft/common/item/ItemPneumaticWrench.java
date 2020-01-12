@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 public class ItemPneumaticWrench extends ItemPressurizable {
 
     public ItemPneumaticWrench() {
-        super("pneumatic_wrench", PneumaticValues.PNEUMATIC_WRENCH_MAX_AIR, PneumaticValues.PNEUMATIC_WRENCH_VOLUME);
+        super(PneumaticValues.PNEUMATIC_WRENCH_MAX_AIR, PneumaticValues.PNEUMATIC_WRENCH_VOLUME);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ItemPneumaticWrench extends ItemPressurizable {
     }
 
     private void playWrenchSound(World world, BlockPos pos) {
-        NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH, SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
+        NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH.get(), SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ItemPneumaticWrench extends ItemPressurizable {
                         if (h.getPressure() < 0.1) return false;
                         h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                     }
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH, SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0F, 1.0F, false), target.world);
+                    NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH.get(), SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0F, 1.0F, false), target.world);
                 }
                 return wrenched;
             }).orElse(false);

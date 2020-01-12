@@ -23,7 +23,7 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
     public void init() {
         super.init();
 
-        addAnimatedStat("Pressure Chamber Status", new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL), 0xFFFFAA00, false)
+        addAnimatedStat("Pressure Chamber Status", new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), 0xFFFFAA00, false)
                 .setText(ImmutableList.of(
                         "\u00a7fChamber Size:",
                         "\u00a70" + te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize + " (outside)",

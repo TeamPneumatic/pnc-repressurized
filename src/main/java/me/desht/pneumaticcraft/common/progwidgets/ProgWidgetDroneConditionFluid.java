@@ -13,12 +13,12 @@ import java.util.List;
 public class ProgWidgetDroneConditionFluid extends ProgWidgetDroneCondition implements ILiquidFiltered {
 
     public ProgWidgetDroneConditionFluid() {
-        super(ModProgWidgets.DRONE_CONDITION_LIQUID);
+        super(ModProgWidgets.DRONE_CONDITION_LIQUID.get());
     }
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.LIQUID_FILTER, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.LIQUID_FILTER.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

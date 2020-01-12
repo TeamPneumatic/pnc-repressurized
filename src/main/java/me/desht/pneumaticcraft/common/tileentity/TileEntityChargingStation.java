@@ -72,7 +72,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     private BlockState camoState;
 
     public TileEntityChargingStation() {
-        super(ModTileEntities.CHARGING_STATION, PneumaticValues.DANGER_PRESSURE_CHARGING_STATION, PneumaticValues.MAX_PRESSURE_CHARGING_STATION, PneumaticValues.VOLUME_CHARGING_STATION, 4);
+        super(ModTileEntities.CHARGING_STATION.get(), PneumaticValues.DANGER_PRESSURE_CHARGING_STATION, PneumaticValues.MAX_PRESSURE_CHARGING_STATION, PneumaticValues.VOLUME_CHARGING_STATION, 4);
         itemHandler = new ChargingStationHandler();
     }
 

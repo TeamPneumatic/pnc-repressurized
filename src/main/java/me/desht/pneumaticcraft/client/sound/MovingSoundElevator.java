@@ -9,7 +9,7 @@ public class MovingSoundElevator extends TickableSound {
     private final TileEntityElevatorBase te;
 
     MovingSoundElevator(TileEntityElevatorBase te) {
-        super(ModSounds.ELEVATOR_RISING, SoundCategory.BLOCKS);
+        super(ModSounds.ELEVATOR_RISING.get(), SoundCategory.BLOCKS);
         this.te = te;
         x = te.getPos().getX();
         y = te.getPos().getY() + te.extension / 2;

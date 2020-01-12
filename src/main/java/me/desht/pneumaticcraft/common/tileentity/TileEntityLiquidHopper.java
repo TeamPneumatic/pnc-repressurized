@@ -53,7 +53,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
     private int fluidAmountScaled;
 
     public TileEntityLiquidHopper() {
-        super(ModTileEntities.LIQUID_HOPPER);
+        super(ModTileEntities.LIQUID_HOPPER.get());
     }
 
     @Override

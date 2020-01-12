@@ -15,7 +15,7 @@ import java.util.List;
 public class ProgWidgetWait extends ProgWidget {
 
     public ProgWidgetWait() {
-        super(ModProgWidgets.WAIT);
+        super(ModProgWidgets.WAIT.get());
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ProgWidgetWait extends ProgWidget {
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.TEXT.get());
     }
 
     @Override

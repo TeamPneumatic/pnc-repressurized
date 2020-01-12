@@ -70,7 +70,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     private boolean validNetwork;
 
     public TileEntitySecurityStation() {
-        super(ModTileEntities.SECURITY_STATION, 4);
+        super(ModTileEntities.SECURITY_STATION.get(), 4);
     }
     
     @Override

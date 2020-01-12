@@ -6,13 +6,13 @@ import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
-import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberGlass;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberValve;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -82,7 +82,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     private int nParticles;  // client-side: the number of particles to create each tick (dependent on chamber size & pressure)
 
     public TileEntityPressureChamberValve() {
-        super(ModTileEntities.PRESSURE_CHAMBER_VALVE, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
+        super(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
         accessoryValves = new ArrayList<>();
         nbtValveList = new ArrayList<>();
     }

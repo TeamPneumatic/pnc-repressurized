@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.block.Block;
@@ -25,7 +26,7 @@ public class BlockSentryTurret extends BlockPneumaticCraft {
     private static final String NBT_ENTITY_FILTER = "EntityFilter";
 
     public BlockSentryTurret() {
-        super("sentry_turret");
+        super(ModBlocks.defaultProps());
     }
 
     @Override

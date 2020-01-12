@@ -79,7 +79,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     private BlockState camoState;
 
     public TileEntityElevatorBase() {
-        super(ModTileEntities.ELEVATOR_BASE, PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
+        super(ModTileEntities.ELEVATOR_BASE.get(), PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                     if (!getWorld().isRemote) updateFloors();
                 }
                 if (isStopped) {
-                    soundName = ModSounds.ELEVATOR_RISING_START;
+                    soundName = ModSounds.ELEVATOR_RISING_START.get();
                     isStopped = false;
                     if (!world.isRemote) {
                         PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
@@ -160,7 +160,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                     if (!getWorld().isRemote) updateFloors();
                 }
                 if (isStopped) {
-                    soundName = ModSounds.ELEVATOR_RISING_START;
+                    soundName = ModSounds.ELEVATOR_RISING_START.get();
                     isStopped = false;
                     if (!world.isRemote) {
                         PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
@@ -174,7 +174,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 //  movePlayerDown();
             }
             if (oldExtension == extension && !isStopped) {
-                soundName = ModSounds.ELEVATOR_RISING_STOP;
+                soundName = ModSounds.ELEVATOR_RISING_STOP.get();
                 isStopped = true;
             }
 
@@ -229,7 +229,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         int maxRedstone = 0;
         for (TileEntityElevatorBase base : multiElevators) {
             int i = 0;
-            while (getWorld().getBlockState(base.getPos().add(0, i, 0)).getBlock() == ModBlocks.ELEVATOR_BASE) {
+            while (getWorld().getBlockState(base.getPos().add(0, i, 0)).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
                 maxRedstone = Math.max(maxRedstone, PneumaticCraftUtils.getRedstoneLevel(getWorld(), base.getPos().add(0, i, 0)));
                 i--;
             }
@@ -253,11 +253,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         int i = -1;
         do {
             i++;
-        } while (getWorld().getBlockState(getPos().add(0, i + 1, 0)).getBlock() == ModBlocks.ELEVATOR_FRAME);
+        } while (getWorld().getBlockState(getPos().add(0, i + 1, 0)).getBlock() == ModBlocks.ELEVATOR_FRAME.get());
         int elevatorBases = 0;
         do {
             elevatorBases++;
-        } while (getWorld().getBlockState(getPos().add(0, -elevatorBases, 0)).getBlock() == ModBlocks.ELEVATOR_BASE);
+        } while (getWorld().getBlockState(getPos().add(0, -elevatorBases, 0)).getBlock() == ModBlocks.ELEVATOR_BASE.get());
 
         maxFloorHeight = Math.min(i, elevatorBases * PNCConfig.Common.Machines.elevatorBaseBlocksPerBase);
     }
@@ -362,7 +362,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     private void updateConnections() {
-        if (getWorld().getBlockState(getPos().offset(Direction.UP)).getBlock() != ModBlocks.ELEVATOR_BASE) {
+        if (getWorld().getBlockState(getPos().offset(Direction.UP)).getBlock() != ModBlocks.ELEVATOR_BASE.get()) {
             coreElevator = this;
             int i = -1;
             TileEntity te = getWorld().getTileEntity(getPos().offset(Direction.DOWN));
@@ -404,7 +404,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 for (TileEntityElevatorBase base : multiElevators) {
                     for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
                         BlockPos checkPos = base.getPos().offset(dir).up(yOffset + 2);
-                        if (base.world.getBlockState(checkPos).getBlock() == ModBlocks.ELEVATOR_CALLER) {
+                        if (base.world.getBlockState(checkPos).getBlock() == ModBlocks.ELEVATOR_CALLER.get()) {
                             callerList.add(checkPos);
                             if (!registeredThisFloor) floorList.add(yOffset);
                             registeredThisFloor = true;
@@ -414,7 +414,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
                 yOffset++;
                 for (TileEntityElevatorBase base : multiElevators) {
-                    if (base.world.getBlockState(base.getPos().up(yOffset)).getBlock() != ModBlocks.ELEVATOR_FRAME) {
+                    if (base.world.getBlockState(base.getPos().up(yOffset)).getBlock() != ModBlocks.ELEVATOR_FRAME.get()) {
                         shouldBreak = true;
                         break;
                     }
@@ -526,7 +526,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
     @Override
     public boolean canConnectPneumatic(Direction side) {
-        return side != Direction.UP && side != Direction.DOWN || getWorld().getBlockState(getPos().offset(side)).getBlock() != ModBlocks.ELEVATOR_BASE;
+        return side != Direction.UP && side != Direction.DOWN
+                || getWorld().getBlockState(getPos().offset(side)).getBlock() != ModBlocks.ELEVATOR_BASE.get();
     }
 
     @Nonnull

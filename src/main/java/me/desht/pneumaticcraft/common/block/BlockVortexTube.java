@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVortexTube;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,7 +11,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 
-public class BlockVortexTube extends BlockPneumaticCraftModeled {
+public class BlockVortexTube extends BlockPneumaticCraft {
 
     private static final VoxelShape[] SHAPES = new VoxelShape[] {  // DUNSWE order
             Block.makeCuboidShape(0,0, 0, 15, 15, 15),
@@ -22,7 +23,8 @@ public class BlockVortexTube extends BlockPneumaticCraftModeled {
     };
 
     public BlockVortexTube() {
-        super("vortex_tube");
+        super(ModBlocks.defaultProps());
+
         setDefaultState(getStateContainer().getBaseState()
             .with(DOWN, false)
             .with(UP, false)

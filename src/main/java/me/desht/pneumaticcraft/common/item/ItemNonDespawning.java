@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.Item;
@@ -14,12 +15,12 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemNonDespawning extends ItemPneumatic {
-    public ItemNonDespawning(Item.Properties props,  String registryName) {
-        super(props, registryName);
+    public ItemNonDespawning(Item.Properties props) {
+        super(props);
     }
 
-    public ItemNonDespawning(String registryName) {
-        super(registryName);
+    public ItemNonDespawning() {
+        super(ModItems.defaultProps());
     }
 
     @Override

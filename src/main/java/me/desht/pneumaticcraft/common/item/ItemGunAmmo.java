@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -28,10 +29,10 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class ItemGunAmmo extends ItemPneumatic implements IColorableItem {
+public abstract class ItemGunAmmo extends ItemPneumatic implements ITintableItem {
 
-    public ItemGunAmmo(String name) {
-        super(defaultProps().maxStackSize(1).setNoRepair(), name);
+    public ItemGunAmmo() {
+        super(ModItems.defaultProps().maxStackSize(1).setNoRepair());
     }
 
     @Override

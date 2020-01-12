@@ -1,19 +1,13 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockDefaultStorage;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.ItemStack;
 
 public class ItemLogisticsFrameDefaultStorage extends ItemLogisticsFrame {
-
-    public ItemLogisticsFrameDefaultStorage() {
-        super(SemiBlockDefaultStorage.ID);
-    }
-
     @Override
     protected ContainerType<?> getContainerType() {
-        return ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE;
+        return ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE.get();
     }
 
     @Override

@@ -32,7 +32,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEntityAssemblyController extends TileEntityPneumaticBase implements IAssemblyMachine, IMinWorkingPressure, INamedContainerProvider {
+public class TileEntityAssemblyController extends TileEntityPneumaticBase
+        implements IAssemblyMachine, IMinWorkingPressure, INamedContainerProvider {
     private static final int PROGRAM_SLOT = 0;
     private static final int INVENTORY_SIZE = 1;
 
@@ -61,7 +62,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
     private AssemblySystem assemblySystem = null;
 
     public TileEntityAssemblyController() {
-        super(ModTileEntities.ASSEMBLY_CONTROLLER,  PneumaticValues.DANGER_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.MAX_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.VOLUME_ASSEMBLY_CONTROLLER, 4);
+        super(ModTileEntities.ASSEMBLY_CONTROLLER.get(),  PneumaticValues.DANGER_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.MAX_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.VOLUME_ASSEMBLY_CONTROLLER, 4);
     }
 
     @Override
@@ -80,8 +81,9 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
 
         // curProgram must be available on the client, or we can't show program-problems in the GUI
         if (curProgram == null && !goingToHomePosition && programStack.getItem() instanceof ItemAssemblyProgram) {
-            curProgram = ((ItemAssemblyProgram) programStack.getItem()).getProgram();
-        } else if (curProgram != null && (programStack.isEmpty() || curProgram != ItemAssemblyProgram.getProgram(programStack))) {
+            curProgram = ItemAssemblyProgram.getProgram(programStack);
+        } else if (curProgram != null &&
+                (programStack.isEmpty() || curProgram.getType() != ItemAssemblyProgram.getProgram(programStack).getType())) {
             curProgram = null;
             if (!getWorld().isRemote) goingToHomePosition = true;
         }
@@ -117,7 +119,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase implem
                     || isMachineDuplicate
                     || getPressure() < PneumaticValues.MIN_PRESSURE_ASSEMBLY_CONTROLLER
                     || curProgram == null
-                    || curProgram.curProblem != AssemblyProgram.EnumTubeProblem.NO_PROBLEM;
+                    || curProgram.curProblem != AssemblyProgram.EnumAssemblyProblem.NO_PROBLEM;
         }
         super.tick();
     }

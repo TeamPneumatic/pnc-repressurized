@@ -15,8 +15,8 @@ public class BlockDrillPipe extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE2 = Block.makeCuboidShape(7, 0, 6, 9, 16, 10);
     private static final VoxelShape SHAPE = VoxelShapes.combineAndSimplify(SHAPE1, SHAPE2, IBooleanFunction.OR);
 
-    public BlockDrillPipe() {
-        super("drill_pipe");
+    public BlockDrillPipe(Properties props) {
+        super(props);
     }
 
     @Override

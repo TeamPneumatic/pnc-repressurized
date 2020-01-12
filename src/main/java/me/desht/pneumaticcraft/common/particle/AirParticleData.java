@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.particle;
+package me.desht.pneumaticcraft.common.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -38,7 +38,7 @@ public class AirParticleData implements IParticleData {
 
     @Override
     public ParticleType<?> getType() {
-        return useAltParticles() ? ModParticleTypes.AIR_PARTICLE_2 : ModParticleTypes.AIR_PARTICLE;
+        return useAltParticles() ? ModParticleTypes.AIR_PARTICLE_2.get() : ModParticleTypes.AIR_PARTICLE.get();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class AirParticleData implements IParticleData {
         return String.format(Locale.ROOT, "%s %f", getType().getRegistryName(), alpha);
     }
 
-    float getAlpha() {
+    public float getAlpha() {
         return alpha;
     }
 

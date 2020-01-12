@@ -71,7 +71,6 @@ public enum EnumUpgrade {
     public Item getItem(int tier) {
         if (!isDepLoaded() || tier > maxTier) return null;
         return ForgeRegistries.ITEMS.getValue(RL(getItemName(tier)));
-//        return isDepLoaded() ? ModItems.Registration.UPGRADES.get(this) : null;
     }
 
     public Item getItem() {
@@ -85,8 +84,7 @@ public enum EnumUpgrade {
 
     public String getItemName(int tier) {
         String name = this.toString().toLowerCase() + "_upgrade";
-        if (maxTier > 1) name = name + "_" + tier;
-        return name;
+        return maxTier > 1 ? name + "_" + tier : name;
     }
 
     public static EnumUpgrade from(ItemStack stack) {

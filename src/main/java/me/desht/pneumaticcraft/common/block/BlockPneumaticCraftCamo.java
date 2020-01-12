@@ -28,8 +28,8 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
     public static final ModelProperty<IEnviromentBlockReader> BLOCK_ACCESS = new ModelProperty<>();
     public static final ModelProperty<BlockPos> BLOCK_POS = new ModelProperty<>();
 
-    protected BlockPneumaticCraftCamo(String registryName) {
-        super(registryName);
+    protected BlockPneumaticCraftCamo(Properties props) {
+        super(props);
     }
 
     /**

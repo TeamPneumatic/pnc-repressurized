@@ -134,18 +134,18 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     public static ContainerLogistics createPassiveProviderContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_PASSIVE_PROVIDER, i, playerInventory, buffer);
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_PASSIVE_PROVIDER.get(), i, playerInventory, buffer);
     }
 
     public static ContainerLogistics createRequesterContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_REQUESTER, i, playerInventory, buffer);
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_REQUESTER.get(), i, playerInventory, buffer);
     }
 
     public static ContainerLogistics createStorageContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_STORAGE, i, playerInventory, buffer);
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_STORAGE.get(), i, playerInventory, buffer);
     }
 
     public static ContainerLogistics createDefaultStorageContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE, i, playerInventory, buffer);
+        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE.get(), i, playerInventory, buffer);
     }
 }

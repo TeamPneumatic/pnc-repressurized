@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -13,7 +14,7 @@ public class BlockThermalCompressor extends BlockPneumaticCraft {
     private VoxelShape BOUNDS = Block.makeCuboidShape(2, 0, 2, 14, 15, 14);
 
     public BlockThermalCompressor() {
-        super("thermal_compressor");
+        super(ModBlocks.defaultProps());
     }
 
     @Override

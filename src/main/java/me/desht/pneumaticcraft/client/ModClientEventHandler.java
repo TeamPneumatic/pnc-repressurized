@@ -19,6 +19,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -26,9 +27,9 @@ public class ModClientEventHandler {
     @SubscribeEvent
     public static void onModelBaking(ModelBakeEvent event) {
         // set up camo models for camouflageable blocks
-        for (Block block : ModBlocks.Registration.ALL_BLOCKS) {
-            if (block instanceof BlockPneumaticCraftCamo) {
-                for (BlockState state : block.getStateContainer().getValidStates()) {
+        for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
+            if (block.get() instanceof BlockPneumaticCraftCamo) {
+                for (BlockState state : block.get().getStateContainer().getValidStates()) {
                     ModelResourceLocation loc = BlockModelShapes.getModelLocation(state);
                     IBakedModel model = event.getModelRegistry().get(loc);
                     if (model != null) {
@@ -39,7 +40,7 @@ public class ModClientEventHandler {
         }
 
         // pressure chamber glass
-        for (BlockState state : ModBlocks.PRESSURE_CHAMBER_GLASS.getStateContainer().getValidStates()) {
+        for (BlockState state : ModBlocks.PRESSURE_CHAMBER_GLASS.get().getStateContainer().getValidStates()) {
             ModelResourceLocation loc = BlockModelShapes.getModelLocation(state);
             IBakedModel model = event.getModelRegistry().get(loc);
             if (model != null) {
@@ -48,7 +49,7 @@ public class ModClientEventHandler {
         }
 
         // minigun model: using TEISR for in-hand transforms
-        ModelResourceLocation mrl = new ModelResourceLocation(ModItems.MINIGUN.getRegistryName(), "inventory");
+        ModelResourceLocation mrl = new ModelResourceLocation(ModItems.MINIGUN.get().getRegistryName(), "inventory");
         IBakedModel object = event.getModelRegistry().get(mrl);
         if (object != null) {
             event.getModelRegistry().put(mrl, new BakedMinigunWrapper(object));

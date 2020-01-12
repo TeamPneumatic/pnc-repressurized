@@ -33,12 +33,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemGunAmmoStandard extends ItemGunAmmo {
-
     private static final String NBT_POTION = "potion";
-
-    public ItemGunAmmoStandard() {
-        super("gun_ammo");
-    }
 
     @Override
     public int getMaxDamage(ItemStack stack) {
@@ -59,22 +54,6 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
         potion.write(tag);
         NBTUtil.setCompoundTag(ammo, "potion", tag);
     }
-
-
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> list) {
-//        if (this.isInCreativeTab(tab)) {
-//            super.getSubItems(tab, list);
-//            NonNullList<ItemStack> potions = NonNullList.create();
-//            Items.POTIONITEM.getSubItems(tab, potions);
-//            for (ItemStack potion : potions) {
-//                ItemStack ammo = new ItemStack(this);
-//                setPotion(ammo, potion);
-//                list.add(ammo);
-//            }
-//        }
-//    }
 
     @Override
     @OnlyIn(Dist.CLIENT)

@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 
 public class HelmetOneProbeExtension extends AbstractShapelessExtension {
     public HelmetOneProbeExtension(OneProbeCrafting recipe) {
-        super(recipe, new ItemStack(ModItems.PNEUMATIC_HELMET), ModItems.PNEUMATIC_HELMET, OneProbeCrafting.ONE_PROBE);
+        super(recipe, new ItemStack(ModItems.PNEUMATIC_HELMET.get()), ModItems.PNEUMATIC_HELMET.get(), OneProbeCrafting.ONE_PROBE);
 
         OneProbeCrafting.setOneProbeEnabled(getOutput());
     }

@@ -30,7 +30,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
     private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> itemHandler);
 
     public TileEntityOmnidirectionalHopper() {
-        super(ModTileEntities.OMNIDIRECTIONAL_HOPPER);
+        super(ModTileEntities.OMNIDIRECTIONAL_HOPPER.get());
     }
 
     protected int getInvSize() {

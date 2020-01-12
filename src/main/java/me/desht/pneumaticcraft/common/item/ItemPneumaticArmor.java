@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandle
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
@@ -71,10 +72,8 @@ public class ItemPneumaticArmor extends ArmorItem
     public static final String NBT_SPEED_BOOST = "speedBoost";
     public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
 
-    public ItemPneumaticArmor(String name, EquipmentSlotType equipmentSlotIn) {
-        super(COMPRESSED_IRON_MATERIAL, equipmentSlotIn, ItemPneumatic.defaultProps());
-
-        setRegistryName(name);
+    public ItemPneumaticArmor(EquipmentSlotType equipmentSlotIn) {
+        super(COMPRESSED_IRON_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
     }
 
     @Nullable
@@ -263,7 +262,7 @@ public class ItemPneumaticArmor extends ArmorItem
 
     @Override
     public INamedContainerProvider getContainerProvider(TileEntityChargingStation te) {
-        return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_ARMOR);
+        return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_ARMOR.get());
     }
 
     /*------- Thaumcraft -------- */

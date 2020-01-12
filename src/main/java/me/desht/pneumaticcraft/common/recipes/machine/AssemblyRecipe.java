@@ -4,16 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
-import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram.AssemblyProgramType;
 import me.desht.pneumaticcraft.common.recipes.AbstractRecipeSerializer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,10 +24,9 @@ public class AssemblyRecipe implements IAssemblyRecipe {
     private final ResourceLocation id;
     private final Ingredient input;
     private final ItemStack output;
-    private final Item program;
+    private final AssemblyProgramType program;
 
-    public AssemblyRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output, Item program) {
-        Validate.isTrue(program instanceof ItemAssemblyProgram);
+    public AssemblyRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output, AssemblyProgramType program) {
         this.id = id;
         this.input = input;
         this.output = output;
@@ -55,7 +49,7 @@ public class AssemblyRecipe implements IAssemblyRecipe {
     }
 
     @Override
-    public Item getProgram() {
+    public AssemblyProgramType getProgramType() {
         return program;
     }
 
@@ -84,8 +78,7 @@ public class AssemblyRecipe implements IAssemblyRecipe {
         Map<ResourceLocation, IAssemblyRecipe> laser = new HashMap<>();
         Map<ResourceLocation, IAssemblyRecipe> drill = new HashMap<>();
         for (IAssemblyRecipe recipe : recipes) {
-            AssemblyProgramType type = ((ItemAssemblyProgram) recipe.getProgram()).getProgramType();
-            switch (type) {
+            switch (recipe.getProgramType()) {
                 case LASER:
                     laser.put(recipe.getId(), recipe);
                     break;
@@ -114,7 +107,7 @@ public class AssemblyRecipe implements IAssemblyRecipe {
                     output.setCount(output.getCount() * (r1.getOutput().getCount() / r2.getInputAmount()));
                     String name = r1.getId().getPath() + "/" + r2.getId().getPath();
                     ResourceLocation id = RL(name);
-                    r.put(id, new AssemblyRecipe(id, r1.getInput(), output, ModItems.ASSEMBLY_PROGRAM_DRILL_LASER));
+                    r.put(id, new AssemblyRecipe(id, r1.getInput(), output, AssemblyProgramType.DRILL_LASER));
                 }
             }
         }
@@ -132,7 +125,7 @@ public class AssemblyRecipe implements IAssemblyRecipe {
         public AssemblyRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
             Ingredient input = Ingredient.read(buffer);
             ItemStack out = buffer.readItemStack();
-            Item program = buffer.readItemStack().getItem();
+            AssemblyProgramType program = AssemblyProgramType.values()[buffer.readVarInt()];
             return new AssemblyRecipe(recipeId, input, out, program);
         }
 
@@ -142,7 +135,7 @@ public class AssemblyRecipe implements IAssemblyRecipe {
 
             recipe.input.write(buffer);
             buffer.writeItemStack(recipe.output);
-            buffer.writeItemStack(new ItemStack(recipe.program));
+            buffer.writeVarInt(recipe.program.ordinal());
         }
     }
 }

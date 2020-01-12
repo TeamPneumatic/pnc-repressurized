@@ -35,7 +35,7 @@ public class DroneProgramBuilder {
                 for (int paramIdx = 0; paramIdx < instruction.mainInstruction.getParameters().size(); paramIdx++) {
                     ProgWidgetType type = instruction.mainInstruction.getParameters().get(paramIdx);
                     List<IProgWidget> whitelist = instruction.whitelist.stream()
-                            .filter(x -> type == x.getType())
+                            .filter(w -> type == w.getType())
                             .collect(Collectors.toList());
                     int curX = instruction.mainInstruction.getWidth() / 2;
                     for (IProgWidget whitelistItem : whitelist) {

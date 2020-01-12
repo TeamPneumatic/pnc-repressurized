@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -13,7 +14,7 @@ public class BlockAirCannon extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE = Block.makeCuboidShape(1, 0, 1, 15, 10, 15);
 
     public BlockAirCannon() {
-        super("air_cannon");
+        super(ModBlocks.defaultProps());
     }
 
     @Override

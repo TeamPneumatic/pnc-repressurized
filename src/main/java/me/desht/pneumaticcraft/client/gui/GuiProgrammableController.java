@@ -31,7 +31,7 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
                 .sorted()
                 .collect(Collectors.toList());
         addAnimatedStat("gui.tab.info.programmable_controller.excluded",
-                new ItemStack(ModItems.DRONE), 0xFFFF5050, true).setText(exc);
+                new ItemStack(ModItems.DRONE.get()), 0xFFFF5050, true).setText(exc);
     }
 
     @Override

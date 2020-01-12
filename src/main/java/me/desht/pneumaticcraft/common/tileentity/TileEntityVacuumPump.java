@@ -43,7 +43,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     public int redstoneMode;
 
     public TileEntityVacuumPump() {
-        super(ModTileEntities.VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.VOLUME_VACUUM_PUMP, 4);
+        super(ModTileEntities.VACUUM_PUMP.get(), PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.VOLUME_VACUUM_PUMP, 4);
 
         this.vacuumHandler  = new MachineAirHandler(PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.VOLUME_VACUUM_PUMP);
         this.vacuumCap = LazyOptional.of(() -> vacuumHandler);

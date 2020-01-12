@@ -17,8 +17,7 @@ import me.desht.pneumaticcraft.common.capabilities.CapabilityHeat;
 import me.desht.pneumaticcraft.common.commands.ModCommands;
 import me.desht.pneumaticcraft.common.config.ConfigHolder;
 import me.desht.pneumaticcraft.common.config.aux.AuxConfigHandler;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.dispenser.BehaviorDispenseDrone;
 import me.desht.pneumaticcraft.common.event.*;
 import me.desht.pneumaticcraft.common.fluid.FluidFuelManager;
@@ -55,10 +54,13 @@ import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -87,26 +89,33 @@ public class PneumaticCraftRepressurized {
         ConfigHolder.init();
         AuxConfigHandler.preInit();
 
-        // TODO DeferredRegister
-
-        // things that can be init'ed right away (not dependent on item/block/etc. registration)
-
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
             modBus.addListener(ClientHandler::clientSetup);
             MinecraftForge.EVENT_BUS.addListener(ClientHandler::registerRenders);
         });
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
+        modBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.addListener(this::serverAboutToStart);
         MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
         MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
         MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
 
+        ModBlocks.BLOCKS.register(modBus);
+        ModItems.ITEMS.register(modBus);
+        ModFluids.FLUIDS.register(modBus);
+        ModSounds.SOUNDS.register(modBus);
+        ModTileEntities.TILE_ENTITIES.register(modBus);
+        ModEntities.ENTITIES.register(modBus);
+        ModContainers.CONTAINERS.register(modBus);
+        ModParticleTypes.PARTICLES.register(modBus);
+        ModRecipes.RECIPES.register(modBus);
         ModDecorators.DECORATORS.register(modBus);
+        // Temp. hacky solution: delay adding deferred registration for custom registries
+        // Proper forge support under discussion...
+        modBus.addListener(EventPriority.LOW, this::addCustomRegistryDeferredRegisters);
 
         Reflections.init();
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
-//        WidgetRegistrator.init();  // TODO forge registry?
         ThirdPartyManager.instance().preInit();
         SemiBlockInitializer.preInit();  // TODO replace semiblocks with entity implementation
         proxy.preInit();  // TODO get rid of proxy entirely if possible
@@ -122,6 +131,13 @@ public class PneumaticCraftRepressurized {
         MinecraftForge.EVENT_BUS.register(ItemGPSAreaTool.EventHandler.class);
         MinecraftForge.EVENT_BUS.register(CommonArmorHandler.class);
         MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
+    }
+
+    private void addCustomRegistryDeferredRegisters(RegistryEvent.NewRegistry event) {
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        ModHarvestHandlers.HARVEST_HANDLERS.register(modBus);
+        ModHoeHandlers.HOE_HANDLERS.register(modBus);
+        ModProgWidgets.PROG_WIDGETS.register(modBus);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
@@ -158,9 +174,9 @@ public class PneumaticCraftRepressurized {
 
         // stuff to do after every other mod is done initialising
         DeferredWorkQueue.runLater(() -> {
-            DispenserBlock.registerDispenseBehavior(ModItems.DRONE, new BehaviorDispenseDrone());
-            DispenserBlock.registerDispenseBehavior(ModItems.LOGISTIC_DRONE, new BehaviorDispenseDrone());
-            DispenserBlock.registerDispenseBehavior(ModItems.HARVESTING_DRONE, new BehaviorDispenseDrone());
+            DispenserBlock.registerDispenseBehavior(ModItems.DRONE.get(), new BehaviorDispenseDrone());
+            DispenserBlock.registerDispenseBehavior(ModItems.LOGISTICS_DRONE.get(), new BehaviorDispenseDrone());
+            DispenserBlock.registerDispenseBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());
 
             ModNameCache.init();
             HeatBehaviourManager.getInstance().onPostInit();
@@ -170,14 +186,14 @@ public class PneumaticCraftRepressurized {
             ThirdPartyManager.instance().postInit();
             proxy.postInit();
 
-            for (Block block : ModBlocks.Registration.ALL_BLOCKS) {
-                if (block instanceof IUpgradeAcceptor) {
-                    PneumaticRegistry.getInstance().getItemRegistry().registerUpgradeAcceptor((IUpgradeAcceptor) block);
+            for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
+                if (block.get() instanceof IUpgradeAcceptor) {
+                    PneumaticRegistry.getInstance().getItemRegistry().registerUpgradeAcceptor((IUpgradeAcceptor) block.get());
                 }
             }
-            for (Item item : ModItems.Registration.ALL_ITEMS) {
-                if (item instanceof IUpgradeAcceptor) {
-                    PneumaticRegistry.getInstance().getItemRegistry().registerUpgradeAcceptor((IUpgradeAcceptor) item);
+            for (RegistryObject<Item> item : ModItems.ITEMS.getEntries()) {
+                if (item.get() instanceof IUpgradeAcceptor) {
+                    PneumaticRegistry.getInstance().getItemRegistry().registerUpgradeAcceptor((IUpgradeAcceptor) item.get());
                 }
             }
         });

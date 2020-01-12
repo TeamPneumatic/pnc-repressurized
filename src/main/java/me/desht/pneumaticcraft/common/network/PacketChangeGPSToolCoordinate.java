@@ -50,12 +50,12 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
             ItemStack playerStack = player.getHeldItem(hand);
-            if (playerStack.getItem() == ModItems.GPS_TOOL) {
+            if (playerStack.getItem() == ModItems.GPS_TOOL.get()) {
                 ItemGPSTool.setVariable(playerStack, variable);
                 if (pos.getY() >= 0) {
                     ItemGPSTool.setGPSLocation(playerStack, pos);
                 }
-            } else if (playerStack.getItem() == ModItems.GPS_AREA_TOOL) {
+            } else if (playerStack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
                 ItemGPSAreaTool.setVariable(playerStack, variable, metadata);
                 if (pos.getY() >= 0) {
                     ItemGPSAreaTool.setGPSPosAndNotify(player, pos, hand, metadata);

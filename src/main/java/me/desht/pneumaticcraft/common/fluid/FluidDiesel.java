@@ -17,22 +17,16 @@ public abstract class FluidDiesel extends ForgeFlowingFluid {
     );
 
     private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(
-                    () -> ModFluids.DIESEL, () -> ModFluids.DIESEL_FLOWING, ATTRS)
-                    .block(() -> ModBlocks.DIESEL).bucket(() -> ModItems.DIESEL_BUCKET
+            new ForgeFlowingFluid.Properties(ModFluids.DIESEL, ModFluids.DIESEL_FLOWING, ATTRS)
+                    .block(ModBlocks.DIESEL)
+                    .bucket(ModItems.DIESEL_BUCKET
             );
 
-    FluidDiesel(String name) {
+    FluidDiesel() {
         super(PROPS);
-
-        setRegistryName(RL(name));
     }
 
     public static class Source extends FluidDiesel {
-        public Source() {
-            super("diesel");
-        }
-
         @Override
         public boolean isSource(IFluidState state) {
             return true;
@@ -45,10 +39,6 @@ public abstract class FluidDiesel extends ForgeFlowingFluid {
     }
 
     public static class Flowing extends FluidDiesel {
-        public Flowing() {
-            super("diesel_flowing");
-        }
-
         @Override
         protected void fillStateContainer(StateContainer.Builder<Fluid, IFluidState> builder) {
             super.fillStateContainer(builder);

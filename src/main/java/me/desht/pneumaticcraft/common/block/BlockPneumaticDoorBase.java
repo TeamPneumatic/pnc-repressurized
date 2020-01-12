@@ -14,8 +14,8 @@ import net.minecraft.world.World;
 
 public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
 
-    public BlockPneumaticDoorBase() {
-        super("pneumatic_door_base");
+    public BlockPneumaticDoorBase(Properties props) {
+        super(props);
     }
 
     @Override
@@ -39,8 +39,8 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
         if (te instanceof TileEntityPneumaticDoorBase) {
             updateDoorSide((TileEntityPneumaticDoorBase) te);
             Direction dir = ((TileEntityPneumaticDoorBase) te).getRotation();
-            if (world.getBlockState(pos.offset(dir)).getBlock() == ModBlocks.PNEUMATIC_DOOR) {
-                ModBlocks.PNEUMATIC_DOOR.neighborChanged(world.getBlockState(pos.offset(dir)), world, pos, block, pos.offset(dir), b);
+            if (world.getBlockState(pos.offset(dir)).getBlock() == ModBlocks.PNEUMATIC_DOOR.get()) {
+                ModBlocks.PNEUMATIC_DOOR.get().neighborChanged(world.getBlockState(pos.offset(dir)), world, pos, block, pos.offset(dir), b);
             }
         }
     }

@@ -105,7 +105,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
 
 
     public TileEntityKeroseneLamp() {
-        super(ModTileEntities.KEROSENE_LAMP);
+        super(ModTileEntities.KEROSENE_LAMP.get());
     }
 
     @Override
@@ -140,7 +140,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
                 // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
                 fuelQuality = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(f.getRegistryName(), 0) / 110f;
             } else {
-                fuelQuality = tank.getFluid().getFluid() == ModFluids.KEROSENE ? 10000f : 0f;
+                fuelQuality = tank.getFluid().getFluid() == ModFluids.KEROSENE.get() ? 10000f : 0f;
             }
             fuelQuality *= PNCConfig.Common.Machines.keroseneLampFuelEfficiency;
         }
@@ -174,7 +174,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     }
 
     private boolean isLampLight(BlockPos pos) {
-        return getWorld().getBlockState(pos).getBlock() == ModBlocks.KEROSENE_LAMP_LIGHT;
+        return getWorld().getBlockState(pos).getBlock() == ModBlocks.KEROSENE_LAMP_LIGHT.get();
     }
 
     private void updateLights() {
@@ -257,7 +257,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
         if (!PNCConfig.Common.Advanced.disableKeroseneLampFakeAirBlock && PneumaticCraftUtils.distBetween(pos, lampPos) <= range) {
             if (getWorld().isAirBlock(pos) && !isLampLight(pos)) {
                 if (passesRaytraceTest(pos, lampPos)) {
-                    getWorld().setBlockState(pos, ModBlocks.KEROSENE_LAMP_LIGHT.getDefaultState());
+                    getWorld().setBlockState(pos, ModBlocks.KEROSENE_LAMP_LIGHT.get().getDefaultState());
                     managingLights.add(pos);
                 }
             }

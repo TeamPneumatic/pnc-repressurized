@@ -15,7 +15,7 @@ public class ContainerThermopneumaticProcessingPlant extends
     }
 
     public ContainerThermopneumaticProcessingPlant(int windowId, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.THERMOPNEUMATIC_PROCESSING_PLANT, windowId, playerInventory, pos);
+        super(ModContainers.THERMOPNEUMATIC_PROCESSING_PLANT.get(), windowId, playerInventory, pos);
 
         // add upgrade slots
         for (int i = 0; i < 4; i++) {

@@ -13,7 +13,7 @@ public class ContainerElevator extends ContainerPneumaticBase<TileEntityElevator
     }
 
     public ContainerElevator(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.ELEVATOR, i, playerInventory, pos);
+        super(ModContainers.ELEVATOR.get(), i, playerInventory, pos);
 
         addUpgradeSlots(23, 29);
 

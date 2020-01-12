@@ -12,7 +12,7 @@ public class ContainerAdvancedAirCompressor extends ContainerAirCompressor {
     }
 
     public ContainerAdvancedAirCompressor(int windowId, PlayerInventory invPlayer, BlockPos tePos) {
-        super(ModContainers.ADVANCED_AIR_COMPRESSOR, windowId, invPlayer, tePos);
+        super(ModContainers.ADVANCED_AIR_COMPRESSOR.get(), windowId, invPlayer, tePos);
     }
 
     @Override

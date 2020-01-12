@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.itemblock;
 
-import me.desht.pneumaticcraft.common.block.BlockLiquidHopper;
 import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
-import me.desht.pneumaticcraft.common.item.ItemPneumatic;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -14,8 +14,8 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import javax.annotation.Nullable;
 
 public class ItemBlockLiquidHopper extends BlockItem {
-    public ItemBlockLiquidHopper(BlockLiquidHopper blockLiquidHopper) {
-        super(blockLiquidHopper, ItemPneumatic.defaultProps());
+    public ItemBlockLiquidHopper(Block block) {
+        super(block, ModItems.defaultProps());
     }
 
     @Override

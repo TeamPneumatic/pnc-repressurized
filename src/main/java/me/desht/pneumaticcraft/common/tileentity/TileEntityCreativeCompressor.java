@@ -18,7 +18,7 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
     private float pressureSetpoint;
 
     public TileEntityCreativeCompressor() {
-        super(ModTileEntities.CREATIVE_COMPRESSOR, 30, 30, 50000, 0);
+        super(ModTileEntities.CREATIVE_COMPRESSOR.get(), 30, 30, 50000, 0);
     }
 
     @Override

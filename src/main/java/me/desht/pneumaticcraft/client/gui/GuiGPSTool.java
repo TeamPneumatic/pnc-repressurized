@@ -26,7 +26,7 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
     private final int metadata;
 
     public GuiGPSTool(Hand hand, BlockPos gpsLoc, String oldVarName, int metadata) {
-        super(new ItemStack(ModItems.GPS_TOOL).getDisplayName());
+        super(new ItemStack(ModItems.GPS_TOOL.get()).getDisplayName());
 
         this.hand = hand;
         this.oldGPSLoc = gpsLoc;

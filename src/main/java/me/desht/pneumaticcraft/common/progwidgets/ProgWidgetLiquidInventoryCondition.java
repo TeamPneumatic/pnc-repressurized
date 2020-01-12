@@ -19,12 +19,12 @@ import java.util.List;
 public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
 
     public ProgWidgetLiquidInventoryCondition() {
-        super(ModProgWidgets.CONDITION_LIQUID_INVENTORY);
+        super(ModProgWidgets.CONDITION_LIQUID_INVENTORY.get());
     }
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.LIQUID_FILTER, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.LIQUID_FILTER.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

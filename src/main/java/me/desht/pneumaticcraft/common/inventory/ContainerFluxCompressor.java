@@ -8,10 +8,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class ContainerFluxCompressor extends ContainerEnergy<TileEntityFluxCompressor> {
     public ContainerFluxCompressor(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        super(ModContainers.FLUX_COMPRESSOR, i, playerInventory, getTilePos(buffer));
+        super(ModContainers.FLUX_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));
     }
 
     public ContainerFluxCompressor(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.FLUX_COMPRESSOR, i, playerInventory, pos);
+        super(ModContainers.FLUX_COMPRESSOR.get(), i, playerInventory, pos);
     }
 }

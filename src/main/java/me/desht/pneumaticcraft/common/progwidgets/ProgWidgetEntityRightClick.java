@@ -29,7 +29,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     private EntityFilterPair entityFilters;
 
     public ProgWidgetEntityRightClick() {
-        super(ModProgWidgets.ENTITY_RIGHT_CLICK);
+        super(ModProgWidgets.ENTITY_RIGHT_CLICK.get());
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
 
     @Override
     public List<ProgWidgetType> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

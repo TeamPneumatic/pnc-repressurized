@@ -31,7 +31,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     @Override
     public void init() {
         super.init();
-        electrostaticStat = addAnimatedStat("gui.tab.electrostaticCompressor.info.title", new ItemStack(ModBlocks.ELECTROSTATIC_COMPRESSOR), 0xFF20A0FF, false);
+        electrostaticStat = addAnimatedStat("gui.tab.electrostaticCompressor.info.title", new ItemStack(ModBlocks.ELECTROSTATIC_COMPRESSOR.get()), 0xFF20A0FF, false);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
             te.getElectrostaticGrid(positions, te.getWorld(), te.getPos(), null);
             connectedCompressors = 0;
             for (BlockPos coord : positions) {
-                if (te.getWorld().getBlockState(coord).getBlock() == ModBlocks.ELECTROSTATIC_COMPRESSOR) {
+                if (te.getWorld().getBlockState(coord).getBlock() == ModBlocks.ELECTROSTATIC_COMPRESSOR.get()) {
                     connectedCompressors++;
                 }
             }

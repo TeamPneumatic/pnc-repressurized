@@ -37,9 +37,9 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     public void init() {
         super.init();
 
-        statusStat = addAnimatedStat("Elevator Status", new ItemStack(ModBlocks.ELEVATOR_BASE), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("Elevator Status", new ItemStack(ModBlocks.ELEVATOR_BASE.get()), 0xFFFFAA00, false);
 
-        floorNameStat = addAnimatedStat("Floor Names", new ItemStack(ModBlocks.ELEVATOR_CALLER), 0xFF005500, false);
+        floorNameStat = addAnimatedStat("Floor Names", new ItemStack(ModBlocks.ELEVATOR_CALLER.get()), 0xFF005500, false);
         floorNameStat.setTextWithoutCuttingString(getFloorNameStat());
 
         Rectangle2d fieldRectangle = floorNameStat.getButtonScaledRectangle(6, 60, 160, 20);

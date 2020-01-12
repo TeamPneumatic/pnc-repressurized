@@ -44,11 +44,11 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     public static ContainerRemote createRemoteContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerRemote(ModContainers.REMOTE, windowId, playerInventory, buffer);
+        return new ContainerRemote(ModContainers.REMOTE.get(), windowId, playerInventory, buffer);
     }
 
     public static ContainerRemote createRemoteEditorContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerRemote(ModContainers.REMOTE_EDITOR, windowId, playerInventory, buffer);
+        return new ContainerRemote(ModContainers.REMOTE_EDITOR.get(), windowId, playerInventory, buffer);
     }
 
     private static Hand getHandFromBuffer(PacketBuffer buffer) {
@@ -90,7 +90,7 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
 
     @Override
     public boolean canInteractWith(PlayerEntity player) {
-        return player.getHeldItemMainhand().getItem() == ModItems.REMOTE;
+        return player.getHeldItem(hand).getItem() == ModItems.REMOTE.get();
     }
 
     public Hand getHand() {

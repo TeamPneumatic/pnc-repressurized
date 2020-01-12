@@ -45,8 +45,8 @@ public class BlockPressureChamberInterface extends BlockPneumaticCraft implement
         DOORS[5] = Block.makeCuboidShape(14, 3, 3, 15, 13, 13);
     }
 
-    public BlockPressureChamberInterface() {
-        super(IBlockPressureChamber.getPressureChamberBlockProps(), "pressure_chamber_interface");
+    public BlockPressureChamberInterface(Properties props) {
+        super(props);
     }
 
     @Override

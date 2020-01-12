@@ -20,8 +20,6 @@ import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
@@ -80,19 +78,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public static final BooleanProperty WEST = BooleanProperty.create("west");
     public static final BooleanProperty[] CONNECTION_PROPERTIES = new BooleanProperty[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
 
-    protected BlockPneumaticCraft(String registryName) {
-        super(getDefaultProps());
-        setRegistryName(registryName);
-    }
-
-    protected BlockPneumaticCraft(Block.Properties props, String registryName) {
+    protected BlockPneumaticCraft(Properties props) {
         super(props);
-        setRegistryName(registryName);
-    }
-
-    public static Block.Properties getDefaultProps() {
-        return Block.Properties.create(Material.IRON)
-                .hardnessAndResistance(3f, 10f).sound(SoundType.METAL);
     }
 
     @Override
@@ -128,7 +115,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         TileEntity te = world.getTileEntity(pos);
         if (player.isSneaking()
                 || !(te instanceof INamedContainerProvider)
-                || isRotatable() && (heldItem.getItem() == ModItems.MANOMETER || ModdedWrenchUtils.getInstance().isModdedWrench(heldItem))
+                || isRotatable() && (heldItem.getItem() == ModItems.MANOMETER.get() || ModdedWrenchUtils.getInstance().isModdedWrench(heldItem))
                 || hand == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(player.getHeldItemMainhand())) {
             return false;
         } else {
@@ -335,7 +322,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             }
             addExtraInformation(stack, world, curInfo, flag);
         }
-        if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+        if (PneumaticCraftRepressurized.proxy.isSneakingInGui() && hasTileEntity(getDefaultState())) {
             TileEntity te = createTileEntity(getDefaultState(), world);
             if (te instanceof TileEntityPneumaticBase) {
                 float pressure = ((TileEntityPneumaticBase) te).dangerPressure;
@@ -382,8 +369,11 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public Map<EnumUpgrade, Integer> getApplicableUpgrades() {
-        TileEntity te = createTileEntity(getDefaultState(), null);
-        return te instanceof IUpgradeAcceptor ? ((IUpgradeAcceptor) te).getApplicableUpgrades() : Collections.emptyMap();
+        if (hasTileEntity(getDefaultState())) {
+            TileEntity te = createTileEntity(getDefaultState(), null);
+            if (te instanceof IUpgradeAcceptor) return ((IUpgradeAcceptor) te).getApplicableUpgrades();
+        }
+        return Collections.emptyMap();
     }
 
     @Override

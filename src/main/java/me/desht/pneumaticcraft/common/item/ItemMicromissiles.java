@@ -48,7 +48,7 @@ public class ItemMicromissiles extends ItemPneumatic {
     }
 
     public ItemMicromissiles() {
-        super(defaultProps().maxStackSize(1), "micromissiles");
+        super(ModItems.defaultProps().maxStackSize(1));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ItemMicromissiles extends ItemPneumatic {
 
         if (playerIn.isSneaking()) {
             if (worldIn.isRemote) {
-                GuiMicromissile.openGui(stack.getDisplayName());
+                GuiMicromissile.openGui(stack.getDisplayName(), handIn);
             }
             return ActionResult.newResult(ActionResultType.SUCCESS, stack);
         }
@@ -142,18 +142,5 @@ public class ItemMicromissiles extends ItemPneumatic {
             }
         }
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
-    }
-
-    public static ItemStack getHeldMicroMissile(PlayerEntity player) {
-        ItemStack stack = player.getHeldItemMainhand();
-        if (stack.getItem() == ModItems.MICROMISSILES) {
-            return stack;
-        } else {
-            stack = player.getHeldItemOffhand();
-            if (stack.getItem() == ModItems.MICROMISSILES) {
-                return stack;
-            }
-        }
-        return ItemStack.EMPTY;
     }
 }

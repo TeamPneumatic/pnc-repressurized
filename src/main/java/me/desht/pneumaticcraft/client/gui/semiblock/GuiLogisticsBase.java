@@ -175,7 +175,7 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
     protected void handleMouseClick(Slot slot, int slotId, int clickedButton, ClickType clickType) {
         if (slot instanceof SlotPhantom && minecraft.player.inventory.getItemStack().isEmpty() && !slot.getHasStack() && clickedButton == 1) {
             editingSlot = slot.getSlotIndex();
-            ClientUtils.openContainerGui(ModContainers.SEARCHER, new StringTextComponent("Searcher"));
+            ClientUtils.openContainerGui(ModContainers.SEARCHER.get(), new StringTextComponent("Searcher"));
             if (minecraft.currentScreen instanceof GuiItemSearcher) {
                 searchGui = (GuiItemSearcher) minecraft.currentScreen;
             }

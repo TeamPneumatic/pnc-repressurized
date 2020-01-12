@@ -7,7 +7,7 @@ public class TileEntityElevatorFrame extends TileEntityBase {
     //TODO redo elevator frames
 
     public TileEntityElevatorFrame() {
-        super(ModTileEntities.ELEVATOR_FRAME);
+        super(ModTileEntities.ELEVATOR_FRAME.get());
     }
 
     @Override

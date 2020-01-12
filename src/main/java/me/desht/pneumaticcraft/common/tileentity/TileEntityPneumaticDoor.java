@@ -21,7 +21,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     public boolean rightGoing;
 
     public TileEntityPneumaticDoor() {
-        super(ModTileEntities.PNEUMATIC_DOOR);
+        super(ModTileEntities.PNEUMATIC_DOOR.get());
     }
 
     public void setRotationAngle(float rotationAngle) {

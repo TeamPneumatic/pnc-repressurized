@@ -27,7 +27,7 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<IHeatFrameCo
     JEIHeatFrameCoolingCategory() {
         localizedName = I18n.format("gui.nei.title.heatFrameCooling");
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.HEAT_FRAME));
+        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.HEAT_FRAME.get()));
     }
 
     @Override

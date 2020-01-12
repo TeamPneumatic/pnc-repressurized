@@ -21,7 +21,7 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
 
     public TileEntityAdvancedAirCompressor() {
-        super(ModTileEntities.ADVANCED_AIR_COMPRESSOR, PneumaticValues.DANGER_PRESSURE_TIER_TWO, PneumaticValues.MAX_PRESSURE_TIER_TWO, PneumaticValues.VOLUME_ADVANCED_AIR_COMPRESSOR);
+        super(ModTileEntities.ADVANCED_AIR_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_TIER_TWO, PneumaticValues.MAX_PRESSURE_TIER_TWO, PneumaticValues.VOLUME_ADVANCED_AIR_COMPRESSOR);
         heatExchanger.setThermalCapacity(100);
     }
 

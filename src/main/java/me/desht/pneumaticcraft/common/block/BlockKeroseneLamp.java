@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,7 +20,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class BlockKeroseneLamp extends BlockPneumaticCraftModeled {
+public class BlockKeroseneLamp extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE_NS = Block.makeCuboidShape(3, 0, 5, 13, 10, 11);
     private static final VoxelShape SHAPE_EW = Block.makeCuboidShape(5, 0, 3, 11, 10, 13);
 
@@ -27,7 +28,7 @@ public class BlockKeroseneLamp extends BlockPneumaticCraftModeled {
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
     public BlockKeroseneLamp() {
-        super("kerosene_lamp");
+        super(ModBlocks.defaultProps());
         setDefaultState(getStateContainer().getBaseState().with(LIT, false));
     }
 

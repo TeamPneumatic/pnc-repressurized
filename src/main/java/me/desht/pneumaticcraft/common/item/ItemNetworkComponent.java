@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiSecurityStationHacking;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -34,7 +35,7 @@ public class ItemNetworkComponent extends ItemPneumatic implements IProgrammable
     }
 
     public ItemNetworkComponent(NetworkComponentType type) {
-        super(type.getRegistryName());
+        super(ModItems.defaultProps());
         this.type = type;
     }
 

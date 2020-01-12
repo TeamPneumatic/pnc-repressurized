@@ -4,11 +4,11 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
@@ -121,7 +121,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                 float r = criticalPressure - dangerPressure;
                 float d = p - dangerPressure;
                 if (world.rand.nextFloat() * r < d / 50.0f) {
-                    world.playSound(null, ownerTE.getPos(), ModSounds.CREAK, SoundCategory.BLOCKS, 0.7f, 0.6f + world.rand.nextFloat() * 0.8f);
+                    world.playSound(null, ownerTE.getPos(), ModSounds.CREAK.get(), SoundCategory.BLOCKS, 0.7f, 0.6f + world.rand.nextFloat() * 0.8f);
                 }
             }
             disperseAir(ownerTE);
@@ -154,7 +154,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         if (soundCounter <= 0) {
             float pitch = MathHelper.clamp(1.0f + ((getPressure() - 3) / 10), 0.8f, 1.2f);
             soundCounter = (int) (20 / pitch);
-            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.LEAKING_GAS, SoundCategory.BLOCKS, pos.getX(), pos.getY(), pos.getZ(), 0.1F, pitch, true), world);
+            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.LEAKING_GAS.get(), SoundCategory.BLOCKS, pos.getX(), pos.getY(), pos.getZ(), 0.1F, pitch, true), world);
         }
 
         if (getPressure() < 0) {

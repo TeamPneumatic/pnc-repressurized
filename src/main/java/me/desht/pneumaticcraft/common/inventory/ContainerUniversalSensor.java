@@ -14,7 +14,7 @@ public class ContainerUniversalSensor extends ContainerPneumaticBase<TileEntityU
     }
 
     public ContainerUniversalSensor(int windowId, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.UNIVERSAL_SENSOR, windowId, playerInventory, pos);
+        super(ModContainers.UNIVERSAL_SENSOR.get(), windowId, playerInventory, pos);
 
         addUpgradeSlots(19, 108);
 

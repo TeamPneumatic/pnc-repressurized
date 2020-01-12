@@ -20,7 +20,7 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityB
     private final TradeType tradeType;
 
     ContainerAmadronAddTrade(int windowId, PlayerInventory playerInventory, TradeType tradeType) {
-        super(ModContainers.AMADRON_ADD_TRADE, windowId, playerInventory);
+        super(ModContainers.AMADRON_ADD_TRADE.get(), windowId, playerInventory);
 
         this.tradeType = tradeType;
         addSlot(new SlotUntouchable(inv, INPUT_SLOT, 10, 90));
@@ -50,7 +50,7 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityB
 
     @Override
     public boolean canInteractWith(PlayerEntity player) {
-        return player.getHeldItemMainhand().getItem() == ModItems.AMADRON_TABLET;
+        return player.getHeldItemMainhand().getItem() == ModItems.AMADRON_TABLET.get();
     }
 
     @Override

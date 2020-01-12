@@ -31,9 +31,9 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
     public void init() {
         super.init();
         addButton(new WidgetTank(guiLeft + 80, guiTop + 15, te.getTank()));
-        statusStat = addAnimatedStat("gui.tab.status", new ItemStack(ModBlocks.GAS_LIFT), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("gui.tab.status", new ItemStack(ModBlocks.GAS_LIFT.get()), 0xFFFFAA00, false);
 
-        WidgetAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(ModBlocks.PRESSURE_TUBE), 0xFFFFCC00, false);
+        WidgetAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFFFFCC00, false);
         optionStat.addPadding(4, 17);
 
         WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, "").withTag(PumpMode.PUMP_EMPTY.toString());
@@ -49,7 +49,7 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
         modeButtons[1] = button;
 
         button = new WidgetButtonExtended(55, 20, 20, 20, "").withTag(PumpMode.RETRACT.toString());
-        button.setRenderStacks(new ItemStack(ModBlocks.PRESSURE_TUBE));
+        button.setRenderStacks(new ItemStack(ModBlocks.PRESSURE_TUBE.get()));
         button.setTooltipText(I18n.format("gui.tab.gasLift.mode.drawIn"));
         optionStat.addSubWidget(button);
         modeButtons[2] = button;

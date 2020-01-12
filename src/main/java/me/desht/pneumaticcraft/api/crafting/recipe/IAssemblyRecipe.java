@@ -1,8 +1,6 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipe;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
@@ -10,9 +8,6 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 
 public interface IAssemblyRecipe extends IModRecipe {
-    Item DRILL = ModItems.ASSEMBLY_PROGRAM_DRILL;
-    Item LASER = ModItems.ASSEMBLY_PROGRAM_LASER;
-
     /**
      * Get the input ingredient.
      * @return the input ingredient
@@ -34,11 +29,15 @@ public interface IAssemblyRecipe extends IModRecipe {
 
     /**
      * Get the program required.
-     * @return an item for the program, which must be either {@link IAssemblyRecipe#DRILL} or
-     * {@link IAssemblyRecipe#LASER}.  Anything else will probably cause a crash!
+     * @return the program type
      */
-    Item getProgram();
+    AssemblyProgramType getProgramType();
 
+    /**
+     * Check if the given stack is a valid input for this recipe.
+     * @param stack input stack
+     * @return true if valid, false otherwise
+     */
     boolean matches(ItemStack stack);
 
     /**
@@ -51,7 +50,7 @@ public interface IAssemblyRecipe extends IModRecipe {
      * @return a lasering recipe
      */
     static AssemblyRecipe basicLaserRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
-        return new AssemblyRecipe(id, input, output, ModItems.ASSEMBLY_PROGRAM_LASER);
+        return new AssemblyRecipe(id, input, output, AssemblyProgramType.LASER);
     }
 
     /**
@@ -64,6 +63,15 @@ public interface IAssemblyRecipe extends IModRecipe {
      * @return a drilling recipe
      */
     static AssemblyRecipe basicDrillRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
-        return new AssemblyRecipe(id, input, output, ModItems.ASSEMBLY_PROGRAM_DRILL);
+        return new AssemblyRecipe(id, input, output, AssemblyProgramType.DRILL);
+    }
+
+    enum AssemblyProgramType {
+        DRILL, LASER, DRILL_LASER;
+
+        public String getRegistryName() {
+            return "assembly_program_" + this.toString().toLowerCase();
+        }
+
     }
 }

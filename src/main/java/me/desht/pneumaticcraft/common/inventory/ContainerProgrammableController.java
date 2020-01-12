@@ -14,7 +14,7 @@ public class ContainerProgrammableController extends ContainerPneumaticBase<Tile
     }
 
     public ContainerProgrammableController(int i, PlayerInventory playerInventory, BlockPos pos) {
-        super(ModContainers.PROGRAMMABLE_CONTROLLER, i, playerInventory, pos);
+        super(ModContainers.PROGRAMMABLE_CONTROLLER.get(), i, playerInventory, pos);
 
         addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 71, 36));
 

@@ -29,7 +29,7 @@ public class OneProbeCrafting extends SpecialRecipe {
         boolean probeFound = false, helmetFound = false;
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             Item item = inv.getStackInSlot(i).getItem();
-            if (item == ModItems.PNEUMATIC_HELMET) {
+            if (item == ModItems.PNEUMATIC_HELMET.get()) {
                 if (helmetFound) return false;
                 helmetFound = true;
             } else if (item == ONE_PROBE) {
@@ -58,7 +58,7 @@ public class OneProbeCrafting extends SpecialRecipe {
 
     private ItemStack findHelmet(CraftingInventory inv) {
         for (int i = 0; i < inv.getSizeInventory(); i++) {
-            if (inv.getStackInSlot(i).getItem() == ModItems.PNEUMATIC_HELMET) {
+            if (inv.getStackInSlot(i).getItem() == ModItems.PNEUMATIC_HELMET.get()) {
                 return inv.getStackInSlot(i).copy();
             }
         }
@@ -67,7 +67,7 @@ public class OneProbeCrafting extends SpecialRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return ModRecipes.ONE_PROBE_HELMET_CRAFTING;
+        return ModRecipes.ONE_PROBE_HELMET_CRAFTING.get();
     }
 
     public static boolean isOneProbeEnabled(ItemStack helmetStack) {

@@ -14,8 +14,8 @@ public class BlockAssemblyPlatform extends BlockPneumaticCraft {
     private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 1, 16);
     private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, Block.makeCuboidShape(4, 1, 4, 12, 6, 12));
 
-    public BlockAssemblyPlatform() {
-        super("assembly_platform");
+    public BlockAssemblyPlatform(Properties props) {
+        super(props);
     }
 
     @Override

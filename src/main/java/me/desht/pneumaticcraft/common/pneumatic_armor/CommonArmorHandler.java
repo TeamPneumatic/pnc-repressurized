@@ -188,7 +188,7 @@ public class CommonArmorHandler {
                             float oldPressure = addAir(slot, (int) -airUsage);
                             if (oldPressure > 0F && getArmorPressure(slot) == 0F) {
                                 // out of air!
-                                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (ServerPlayerEntity) player);
+                                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (ServerPlayerEntity) player);
                             }
                         }
                     }
@@ -287,7 +287,7 @@ public class CommonArmorHandler {
 
             int airUsed = playerAir * PneumaticValues.PNEUMATIC_HELMET_SCUBA_MULTIPLIER;
             addAir(EquipmentSlotType.HEAD, -airUsed);
-            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA, SoundCategory.PLAYERS, player.getPosition(), 1.5f, 1.0f, false), (ServerPlayerEntity) player);
+            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.getPosition(), 1.5f, 1.0f, false), (ServerPlayerEntity) player);
             Vec3d eyes = player.getEyePosition(1.0f).add(player.getLookVec().scale(0.5));
             NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.BUBBLE, eyes.x - 0.5, eyes.y, eyes.z -0.5, 0.0, 0.2, 0.0, 10, 1.0, 1.0, 1.0), player.world);
         }

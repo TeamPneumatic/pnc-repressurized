@@ -23,9 +23,8 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     private static final VoxelShape SHAPE = VoxelShapes.combineAndSimplify(BASE, FRAME, IBooleanFunction.OR);
     private static final VoxelShape PAD_SHAPE = VoxelShapes.combineAndSimplify(BASE, PAD_FRAME, IBooleanFunction.OR);
 
-    public BlockChargingStation() {
-        super("charging_station");
-
+    public BlockChargingStation(Properties props) {
+        super(props);
         setDefaultState(getStateContainer().getBaseState().with(CHARGE_PAD, false));
     }
 

@@ -11,6 +11,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -29,12 +30,13 @@ public class PacketUpdateMicromissileSettings {
     private String entityFilter;
     private FireMode fireMode;
     private boolean saveDefault;
+    private Hand hand;
 
     public PacketUpdateMicromissileSettings() {
         // empty
     }
 
-    public PacketUpdateMicromissileSettings(float topSpeed, float accel, float damage, PointXY point, String entityFilter, FireMode fireMode, boolean saveDefault) {
+    public PacketUpdateMicromissileSettings(float topSpeed, float accel, float damage, PointXY point, String entityFilter, FireMode fireMode, boolean saveDefault, Hand hand) {
         this.topSpeed = topSpeed;
         this.accel = accel;
         this.damage = damage;
@@ -42,6 +44,7 @@ public class PacketUpdateMicromissileSettings {
         this.entityFilter = entityFilter;
         this.fireMode = fireMode;
         this.saveDefault = saveDefault;
+        this.hand = hand;
     }
 
     PacketUpdateMicromissileSettings(PacketBuffer buffer) {
@@ -52,6 +55,7 @@ public class PacketUpdateMicromissileSettings {
         entityFilter = buffer.readString();
         fireMode = FireMode.values()[buffer.readByte()];
         saveDefault = buffer.readBoolean();
+        hand = buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
     }
 
     public void toBytes(PacketBuffer buf) {
@@ -63,12 +67,13 @@ public class PacketUpdateMicromissileSettings {
         buf.writeString(entityFilter);
         buf.writeByte(fireMode.ordinal());
         buf.writeBoolean(saveDefault);
+        buf.writeBoolean(hand == Hand.MAIN_HAND);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            ItemStack stack = ItemMicromissiles.getHeldMicroMissile(player);
+            ItemStack stack = player.getHeldItem(hand);
             if (!stack.isEmpty()) {
                 applySettings(player, stack);
             } else {
@@ -97,7 +102,7 @@ public class PacketUpdateMicromissileSettings {
                         new MicromissileDefaults.Entry(topSpeed, accel, damage, point, entityFilter, fireMode)
                 );
                 MicromissileDefaults.INSTANCE.writeToFile();
-                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 1.0f, false), (ServerPlayerEntity) player);
+                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 1.0f, false), (ServerPlayerEntity) player);
             } catch (IOException e) {
                 e.printStackTrace();
             }

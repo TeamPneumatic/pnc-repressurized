@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.client.particle.AirParticleData;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
+import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
@@ -17,7 +17,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -40,7 +39,8 @@ public class ModuleAirGrate extends TubeModule {
     private TileEntity adjacentInsertionTE = null;
     private Direction adjacentInsertionSide;
 
-    public ModuleAirGrate() {
+    public ModuleAirGrate(ItemTubeModule itemTubeModule) {
+        super(itemTubeModule);
     }
 
     private int getRange() {
@@ -192,11 +192,6 @@ public class ModuleAirGrate extends TubeModule {
         tag.putBoolean("vacuum", vacuum);
         tag.putInt("grateRange", grateRange);
         tag.putString("entityFilter", entityFilter == null ? "" : entityFilter.toString());
-    }
-
-    @Override
-    public ResourceLocation getType() {
-        return Names.MODULE_AIR_GRATE;
     }
 
     @Override

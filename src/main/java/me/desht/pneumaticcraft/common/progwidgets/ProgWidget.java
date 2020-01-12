@@ -45,7 +45,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public ResourceLocation getTypeID() {
-        return type.getRegistryName();
+        return getType().getRegistryName();
     }
 
     @Override

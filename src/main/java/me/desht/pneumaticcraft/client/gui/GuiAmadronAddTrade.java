@@ -100,8 +100,8 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
             WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + 99, guiTop + 115, 20, 20, "", b -> openGPSGui(false));
             gpsButton1.setTooltipText(Arrays.asList(WordUtils.wrap(I18n.format("gui.amadron.button.selectSellingBlock.tooltip"), 40).split(System.getProperty("line.separator"))));
             gpsButton2.setTooltipText(Arrays.asList(WordUtils.wrap(I18n.format("gui.amadron.button.selectPaymentBlock.tooltip"), 40).split(System.getProperty("line.separator"))));
-            gpsButton1.setRenderStacks(new ItemStack(ModItems.GPS_TOOL));
-            gpsButton2.setRenderStacks(new ItemStack(ModItems.GPS_TOOL));
+            gpsButton1.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
+            gpsButton2.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
             addButton(gpsButton1);
             addButton(gpsButton2);
         }
@@ -169,7 +169,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void openItemSearchGui(boolean isInput) {
-        ClientUtils.openContainerGui(ModContainers.SEARCHER, new StringTextComponent("Item Search"));
+        ClientUtils.openContainerGui(ModContainers.SEARCHER.get(), new StringTextComponent("Item Search"));
         if (minecraft.currentScreen instanceof GuiItemSearcher) {
             isSettingInput = isInput;
             searchGui = (GuiItemSearcher) minecraft.currentScreen;
@@ -178,7 +178,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void openInventorySearchGui(boolean isInput) {
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER, new StringTextComponent("Inventory Search"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Search"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             isSettingInput = isInput;
             invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
@@ -194,12 +194,12 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void openGPSGui(boolean isInput) {
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER, new StringTextComponent("Inventory Searcher (GPS)"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Searcher (GPS)"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             gpsSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
             gpsSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
             isSettingInput = isInput;
-            ItemStack gps = new ItemStack(ModItems.GPS_TOOL);
+            ItemStack gps = new ItemStack(ModItems.GPS_TOOL.get());
             GlobalPos gPos = getPosition(isInput ? ContainerAmadronAddTrade.INPUT_SLOT : ContainerAmadronAddTrade.OUTPUT_SLOT);
             if (gPos != null) ItemGPSTool.setGPSLocation(gps, gPos.getPos());
             gpsSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gps) != null ? gps : ItemStack.EMPTY);
