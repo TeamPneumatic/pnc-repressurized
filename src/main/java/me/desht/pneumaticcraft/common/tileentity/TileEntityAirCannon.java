@@ -145,7 +145,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         ItemStack gpsStack = inventory.getStackInSlot(GPS_SLOT);
         if (gpsStack.getItem() instanceof IPositionProvider && !externalControl) {
             List<BlockPos> posList = ((IPositionProvider) gpsStack.getItem()).getStoredPositions(gpsStack);
-            if (posList != null && !posList.isEmpty()) {
+            if (!posList.isEmpty() && posList.get(0) != null) {
                 int destinationX = posList.get(0).getX();
                 int destinationY = posList.get(0).getY();
                 int destinationZ = posList.get(0).getZ();
@@ -465,7 +465,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             if (slot == GPS_SLOT) {
-                return itemStack.isEmpty() || itemStack.getItem() instanceof IPositionProvider;
+                return itemStack.isEmpty()
+                        || (itemStack.getItem() instanceof IPositionProvider
+                        && ((IPositionProvider) itemStack.getItem()).getStoredPositions(itemStack).get(0) != null);
             } else {
                 return true;
             }
