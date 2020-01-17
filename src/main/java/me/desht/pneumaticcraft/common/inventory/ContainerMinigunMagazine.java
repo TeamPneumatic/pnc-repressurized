@@ -17,10 +17,11 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase {
     public ContainerMinigunMagazine(EntityPlayer player) {
         super(null);
 
-        gunInv = ItemMinigun.getMagazine(player.getHeldItemMainhand());
-
-        for (int i = 0; i < gunInv.getSlots(); i++) {
-            addSlotToContainer(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
+        gunInv = ItemMinigun.getMagazine(ItemMinigun.getHeldMinigun(player));
+        if (gunInv != null) {
+            for (int i = 0; i < gunInv.getSlots(); i++) {
+                addSlotToContainer(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
+            }
         }
 
         addPlayerSlots(player.inventory, 84);
@@ -41,7 +42,7 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase {
     @Nonnull
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickType, EntityPlayer player) {
-        if (clickType == ClickType.CLONE && dragType == 2) {
+        if (clickType == ClickType.CLONE && dragType == 2 && slotId >= 0 && slotId < ItemMinigun.MAGAZINE_SIZE) {
             // middle-click to lock a slot
             ItemStack gunStack = player.getHeldItemMainhand();
             if (gunStack.getItem() instanceof ItemMinigun) {

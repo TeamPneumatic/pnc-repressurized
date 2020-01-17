@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
@@ -37,7 +38,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ItemMinigun extends ItemPressurizable implements IChargingStationGUIHolderItem, IUpgradeAcceptor, IFOVModifierItem, IInventoryItem {
-    private static final int MAGAZINE_SIZE = 4;
+    public static final int MAGAZINE_SIZE = 4;
 
     private static Set<Item> applicableUpgrades;
     private static final String NBT_MAGAZINE = "Magazine";
@@ -210,21 +211,35 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         return TextFormatting.GREEN + I18n.format("gui.tooltip.gunAmmo.loaded");
     }
 
+    public static int getLockedSlot(ItemStack stack) {
+        if (NBTUtil.hasTag(stack, NBT_LOCKED_SLOT)) {
+            int slot = NBTUtil.getInteger(stack, NBT_LOCKED_SLOT);
+            if (slot >= 0 && slot < MAGAZINE_SIZE) {
+                return slot;
+            } else {
+                Log.warning("removed out of range saved ammo slot: " + slot);
+                NBTUtil.removeTag(stack, NBT_LOCKED_SLOT);
+            }
+        }
+        return -1;
+    }
+
+    public static ItemStack getHeldMinigun(EntityPlayer player) {
+        if (player.getHeldItemMainhand().getItem() == Itemss.MINIGUN) return player.getHeldItemMainhand();
+        else if (player.getHeldItemOffhand().getItem() == Itemss.MINIGUN) return player.getHeldItemOffhand();
+        else return ItemStack.EMPTY;
+    }
+
     public static class MagazineHandler extends BaseItemStackHandler {
         private final ItemStack gunStack;
 
         MagazineHandler(ItemStack gunStack) {
             super(MAGAZINE_SIZE);
-            this.gunStack = gunStack;
 
+            this.gunStack = gunStack;
             if (gunStack.hasTagCompound() && gunStack.getTagCompound().hasKey(NBT_MAGAZINE)) {
                 deserializeNBT(gunStack.getTagCompound().getCompoundTag(NBT_MAGAZINE));
             }
-        }
-
-        public MagazineHandler() {
-            super(MAGAZINE_SIZE);
-            gunStack = ItemStack.EMPTY;
         }
 
         @Override
@@ -233,8 +248,9 @@ public class ItemMinigun extends ItemPressurizable implements IChargingStationGU
         }
 
         public ItemStack getAmmo() {
-            if (NBTUtil.hasTag(gunStack, NBT_LOCKED_SLOT)) {
-                return getStackInSlot(NBTUtil.getInteger(gunStack, NBT_LOCKED_SLOT));
+            int slot = getLockedSlot(gunStack);
+            if (slot >= 0) {
+                return getStackInSlot(slot);
             }
             for (int i = 0; i < MAGAZINE_SIZE; i++) {
                 if (getStackInSlot(i).getItem() instanceof ItemGunAmmo) {

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.Itemss;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -49,13 +48,9 @@ public class GuiMinigunMagazine extends GuiPneumaticContainerBase implements IEx
     public void updateScreen() {
         super.updateScreen();
 
-        ItemStack gunStack = Minecraft.getMinecraft().player.getHeldItemMainhand();
+        ItemStack gunStack = ItemMinigun.getHeldMinigun(Minecraft.getMinecraft().player);
         if (gunStack.getItem() instanceof ItemMinigun) {
-            if (NBTUtil.hasTag(gunStack, ItemMinigun.NBT_LOCKED_SLOT)) {
-                lockedSlot = NBTUtil.getInteger(gunStack, ItemMinigun.NBT_LOCKED_SLOT);
-            } else {
-                lockedSlot = -1;
-            }
+            lockedSlot = ItemMinigun.getLockedSlot(gunStack);
         }
     }
 

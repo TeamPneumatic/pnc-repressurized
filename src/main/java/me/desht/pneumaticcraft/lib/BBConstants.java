@@ -1,22 +1,19 @@
 package me.desht.pneumaticcraft.lib;
 
 public class BBConstants {
-    public static final float PRESSURE_PIPE_MIN_POS = 0.375F;
-    public static final float PRESSURE_PIPE_MAX_POS = 0.625F;
+    public static final float PRESSURE_PIPE_MIN_POS = 6F / 16F;
+    public static final float PRESSURE_PIPE_MAX_POS = 10F / 16F;
 
-    public static final float ADVANCED_PRESSURE_PIPE_MIN_POS = 5 / 16F;
-    public static final float ADVANCED_PRESSURE_PIPE_MAX_POS = 11 / 16F;
+    public static final float AIR_CANNON_MIN_POS_SIDE = 1F / 16F;
+    public static final float AIR_CANNON_MAX_POS_SIDE = 15F / 16F;
+    public static final float AIR_CANNON_MAX_POS_TOP = 3F / 16F;
 
-    public static final float AIR_CANNON_MIN_POS_SIDE = 0.0625F;
-    public static final float AIR_CANNON_MAX_POS_SIDE = 0.9375F;
-    public static final float AIR_CANNON_MAX_POS_TOP = 0.625F;
+    public static final float CHARGING_STATION_MIN_POS = 3F / 16F;
+    public static final float CHARGING_STATION_MAX_POS = 13F / 16F;
+    public static final float CHARGING_STATION_MAX_POS_TOP = 10F / 16F;
 
-    public static final float CHARGING_STATION_MIN_POS = 0.1875F;
-    public static final float CHARGING_STATION_MAX_POS = 0.8125F;
-    public static final float CHARGING_STATION_MAX_POS_TOP = 0.625F;
-
-    public static final float PLASTIC_MIXER_MIN_POS = 1 / 16F;
-    public static final float PLASTIC_MIXER_MAX_POS = 15 / 16F;
+    public static final float PLASTIC_MIXER_MIN_POS = 1F / 16F;
+    public static final float PLASTIC_MIXER_MAX_POS = 15F / 16F;
 
     public static final float VACUUM_PUMP_MIN_POS = 2F / 16F;
     public static final float VACUUM_PUMP_MAX_POS = 14F / 16F;
@@ -40,7 +37,7 @@ public class BBConstants {
     public static final float SECURITY_STATION_MAX_POS = 15F / 16F;
     public static final float SECURITY_STATION_MAX_POS_TOP = 11F / 16F;
 
-    public static final float UNIVERSAL_SENSOR_MIN_POS = 0;
+    public static final float UNIVERSAL_SENSOR_MIN_POS = 0F;
     public static final float UNIVERSAL_SENSOR_MAX_POS = 1F;
     public static final float UNIVERSAL_SENSOR_MAX_POS_TOP = 4F / 16F;
 
