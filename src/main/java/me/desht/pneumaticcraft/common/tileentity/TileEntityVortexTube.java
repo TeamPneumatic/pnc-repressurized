@@ -66,6 +66,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
         tag.put("coldHeat", coldHeatExchanger.serializeNBT());
+        tag.put("connector", connectingExchanger.serializeNBT());
         return tag;
     }
 
@@ -73,6 +74,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     public void read(CompoundNBT tag) {
         super.read(tag);
         coldHeatExchanger.deserializeNBT(tag.getCompound("coldHeat"));
+        connectingExchanger.deserializeNBT(tag.getCompound("connector"));
     }
 
     public int getColdHeatLevel() {
