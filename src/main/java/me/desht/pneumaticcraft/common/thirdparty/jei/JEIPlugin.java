@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.GuiAssemblyController;
 import me.desht.pneumaticcraft.client.gui.GuiPressureChamber;
 import me.desht.pneumaticcraft.client.gui.GuiRefineryController;
@@ -20,6 +21,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.registration.*;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.BlockItem;
@@ -28,6 +30,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.RegistryObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -120,6 +125,19 @@ public class JEIPlugin implements IModPlugin {
             registration.getCraftingCategory().addCategoryExtension(OneProbeCrafting.class, HelmetOneProbeExtension::new);
         }
         registration.getCraftingCategory().addCategoryExtension(PatchouliBookCrafting.class, PatchouliBookExtension::new);
+    }
+
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        List<ItemStack> l = new ArrayList<>();
+        for (EnumUpgrade upgrade : EnumUpgrade.values()) {
+            if (!upgrade.isDepLoaded()) {
+                for (int i = 1; i <= upgrade.getMaxTier(); i++) {
+                    l.add(new ItemStack(upgrade.getItem(i)));
+                }
+            }
+        }
+        jeiRuntime.getIngredientManager().removeIngredientsAtRuntime(VanillaTypes.ITEM, l);
     }
 
     @Override

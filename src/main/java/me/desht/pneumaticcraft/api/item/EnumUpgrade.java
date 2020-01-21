@@ -69,7 +69,7 @@ public enum EnumUpgrade {
     }
 
     public Item getItem(int tier) {
-        if (!isDepLoaded() || tier > maxTier) return null;
+        if (tier > maxTier) return null;
         return ForgeRegistries.ITEMS.getValue(RL(getItemName(tier)));
     }
 
