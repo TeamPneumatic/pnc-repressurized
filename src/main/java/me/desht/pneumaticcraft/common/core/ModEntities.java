@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
+import me.desht.pneumaticcraft.common.entity.semiblock.*;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
@@ -20,20 +21,40 @@ import java.util.function.Supplier;
 public class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES = new DeferredRegister<>(ForgeRegistries.ENTITIES, Names.MOD_ID);
 
-    public static final RegistryObject<EntityType<EntityVortex>> VORTEX
-            = register("vortex", ModEntities::vortex);
     public static final RegistryObject<EntityType<EntityDrone>> DRONE
             = register("drone", ModEntities::drone);
     public static final RegistryObject<EntityType<EntityLogisticsDrone>> LOGISTICS_DRONE
             = register("logistics_drone", ModEntities::logisticsDrone);
     public static final RegistryObject<EntityType<EntityHarvestingDrone>> HARVESTING_DRONE
             = register("harvesting_drone", ModEntities::harvestingDrone);
+
+    public static final RegistryObject<EntityType<EntityVortex>> VORTEX
+            = register("vortex", ModEntities::vortex);
     public static final RegistryObject<EntityType<EntityMicromissile>> MICROMISSILE
             = register("micromissile", ModEntities::micromissile);
     public static final RegistryObject<EntityType<EntityTumblingBlock>> TUMBLING_BLOCK
             = register("tumbling_block", ModEntities::tumblingBlock);
     public static final RegistryObject<EntityType<EntityRing>> RING
             = register("ring", ModEntities::ring);
+
+    public static final RegistryObject<EntityType<EntityCropSupport>> CROP_SUPPORT
+            = register("crop_support", ModEntities::cropSupport);
+    public static final RegistryObject<EntityType<EntitySpawnerAgitator>> SPAWNER_AGITATOR
+            = register("spawner_agitator", ModEntities::spawnerAgitator);
+    public static final RegistryObject<EntityType<EntityHeatFrame>> HEAT_FRAME
+            = register("heat_frame", ModEntities::heatFrame);
+    public static final RegistryObject<EntityType<EntityTransferGadget>> TRANSFER_GADGET
+            = register("transfer_gadget", ModEntities::transferGadget);
+    public static final RegistryObject<EntityType<EntityLogisticsActiveProvider>> LOGISTICS_FRAME_ACTIVE_PROVIDER
+            = register("logistics_frame_active_provider", ModEntities::activeProvider);
+    public static final RegistryObject<EntityType<EntityLogisticsPassiveProvider>> LOGISTICS_FRAME_PASSIVE_PROVIDER
+            = register("logistics_frame_passive_provider", ModEntities::passiveProvider);
+    public static final RegistryObject<EntityType<EntityLogisticsStorage>> LOGISTICS_FRAME_STORAGE
+            = register("logistics_frame_storage", ModEntities::storage);
+    public static final RegistryObject<EntityType<EntityLogisticsDefaultStorage>> LOGISTICS_FRAME_DEFAULT_STORAGE
+            = register("logistics_frame_default_storage", ModEntities::defaultStorage);
+    public static final RegistryObject<EntityType<EntityLogisticsRequester>> LOGISTICS_FRAME_REQUESTER
+            = register("logistics_frame_requester", ModEntities::requester);
 
     private static <E extends Entity> RegistryObject<EntityType<E>> register(final String name, final Supplier<EntityType.Builder<E>> sup) {
         return ENTITIES.register(name, () -> sup.get().build(name));
@@ -104,5 +125,95 @@ public class ModEntities {
                 .setUpdateInterval(20)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.RING.get().create(world))
                 .setShouldReceiveVelocityUpdates(true);
+    }
+
+    private static EntityType.Builder<EntityCropSupport> cropSupport() {
+        return EntityType.Builder.create(EntityCropSupport::create, EntityClassification.MISC)
+                .size(10 / 16F, 9 / 16F)
+                .immuneToFire()
+                .setTrackingRange(2)
+                .setUpdateInterval(Integer.MAX_VALUE)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.CROP_SUPPORT.get().create(world))
+                .setShouldReceiveVelocityUpdates(false);
+    }
+
+    private static EntityType.Builder<EntitySpawnerAgitator> spawnerAgitator() {
+        return EntityType.Builder.create(EntitySpawnerAgitator::create, EntityClassification.MISC)
+                .size(1F, 1F)
+                .immuneToFire()
+                .setTrackingRange(2)
+                .setUpdateInterval(Integer.MAX_VALUE)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.SPAWNER_AGITATOR.get().create(world))
+                .setShouldReceiveVelocityUpdates(false);
+    }
+
+    private static EntityType.Builder<EntityHeatFrame> heatFrame() {
+        return EntityType.Builder.create(EntityHeatFrame::create, EntityClassification.MISC)
+                .size(1F, 1F)
+                .immuneToFire()
+                .setTrackingRange(2)
+                .setUpdateInterval(Integer.MAX_VALUE)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.HEAT_FRAME.get().create(world))
+                .setShouldReceiveVelocityUpdates(false);
+    }
+
+    private static EntityType.Builder<EntityTransferGadget> transferGadget() {
+        return EntityType.Builder.create(EntityTransferGadget::create, EntityClassification.MISC)
+                .size(1F, 1F)
+                .immuneToFire()
+                .setTrackingRange(2)
+                .setUpdateInterval(Integer.MAX_VALUE)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.TRANSFER_GADGET.get().create(world))
+                .setShouldReceiveVelocityUpdates(false);
+    }
+
+    private static EntityType.Builder<EntityLogisticsActiveProvider> activeProvider() {
+        return EntityType.Builder.create(EntityLogisticsActiveProvider::create, EntityClassification.MISC)
+                .size(10 / 16F, 9 / 16F)
+                .immuneToFire()
+                .setTrackingRange(2)
+                .setUpdateInterval(Integer.MAX_VALUE)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_ACTIVE_PROVIDER.get().create(world))
+                .setShouldReceiveVelocityUpdates(false);
+    }
+
+    private static EntityType.Builder<EntityLogisticsPassiveProvider> passiveProvider() {
+        return EntityType.Builder.create(EntityLogisticsPassiveProvider::createPassive, EntityClassification.MISC)
+                .size(10 / 16F, 9 / 16F)
+                .immuneToFire()
+                .setTrackingRange(2)
+                .setUpdateInterval(Integer.MAX_VALUE)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_PASSIVE_PROVIDER.get().create(world))
+                .setShouldReceiveVelocityUpdates(false);
+    }
+
+    private static EntityType.Builder<EntityLogisticsStorage> storage() {
+        return EntityType.Builder.create(EntityLogisticsStorage::create, EntityClassification.MISC)
+                .size(10 / 16F, 9 / 16F)
+                .immuneToFire()
+                .setTrackingRange(2)
+                .setUpdateInterval(Integer.MAX_VALUE)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_STORAGE.get().create(world))
+                .setShouldReceiveVelocityUpdates(false);
+    }
+
+    private static EntityType.Builder<EntityLogisticsDefaultStorage> defaultStorage() {
+        return EntityType.Builder.create(EntityLogisticsDefaultStorage::createDefault, EntityClassification.MISC)
+                .size(10 / 16F, 9 / 16F)
+                .immuneToFire()
+                .setTrackingRange(2)
+                .setUpdateInterval(Integer.MAX_VALUE)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_DEFAULT_STORAGE.get().create(world))
+                .setShouldReceiveVelocityUpdates(false);
+    }
+
+    private static EntityType.Builder<EntityLogisticsRequester> requester() {
+        return EntityType.Builder.create(EntityLogisticsRequester::create, EntityClassification.MISC)
+                .size(10 / 16F, 9 / 16F)
+                .immuneToFire()
+                .setTrackingRange(2)
+                .setUpdateInterval(Integer.MAX_VALUE)
+                .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_REQUESTER.get().create(world))
+                .setShouldReceiveVelocityUpdates(false);
     }
 }

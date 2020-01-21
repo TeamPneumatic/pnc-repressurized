@@ -2,16 +2,11 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
-import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Container;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -94,20 +89,19 @@ public class PacketDescription extends LocationIntPacket {
     }
 
     private Object getSyncableForType(PlayerEntity player, IDescSynced.Type type) {
-        switch (type) {
-            case TILE_ENTITY:
-                return player.world.getTileEntity(pos);
-            case SEMI_BLOCK:
-                if (pos.equals(BlockPos.ZERO)) {
-                    Container container = player.openContainer;
-                    if (container instanceof ContainerLogistics) {
-                        return ((ContainerLogistics) container).logistics;
-                    }
-                } else {
-                    List<ISemiBlock> semiBlocks = SemiBlockManager.getInstance(player.world).getSemiBlocksAsList(player.world, pos);
-                    int index = extraData.getByte("index");
-                    return index < semiBlocks.size() ? semiBlocks.get(index) : null;
-                }
+        if (type == IDescSynced.Type.TILE_ENTITY) {
+            return player.world.getTileEntity(pos);
+//            case SEMI_BLOCK:
+//                if (pos.equals(BlockPos.ZERO)) {
+//                    Container container = player.openContainer;
+//                    if (container instanceof ContainerLogistics) {
+//                        return ((ContainerLogistics) container).logistics;
+//                    }
+//                } else {
+//                    List<ISemiBlock> semiBlocks = SemiBlockManager.getInstance(player.world).getSemiBlocksAsList(player.world, pos);
+//                    int index = extraData.getByte("index");
+//                    return index < semiBlocks.size() ? semiBlocks.get(index) : null;
+//                }
         }
         return null;
     }

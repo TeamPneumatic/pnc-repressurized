@@ -43,15 +43,15 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
     public void init() {
         super.init();
 
-        mainFilter = new WidgetFluidFilter(guiLeft + 124, guiTop + 25, b -> {
+        mainFilter = new WidgetFluidFilter(guiLeft + 124, guiTop + 25, progWidget.getFluid(),  b -> {
             b.setFluid(Fluids.EMPTY);
             progWidget.setFluid(Fluids.EMPTY);
-        }).setFluid(progWidget.getFluid());
+        });
         addButton(mainFilter);
 
         for (int y = 0; y < GRID_HEIGHT; y++) {
             for (int x = 0; x < GRID_WIDTH; x++) {
-                WidgetFluidFilter f = new WidgetFluidFilter(guiLeft + 8 + x * 18, guiTop + 52 + y * 18, b -> {
+                WidgetFluidFilter f = new WidgetFluidFilter(guiLeft + 8 + x * 18, guiTop + 52 + y * 18, Fluids.EMPTY, b -> {
                     mainFilter.setFluid(b.getFluid());
                     progWidget.setFluid(b.getFluid());
                 });

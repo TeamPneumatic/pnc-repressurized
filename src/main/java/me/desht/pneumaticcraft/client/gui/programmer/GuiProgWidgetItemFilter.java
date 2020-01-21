@@ -104,7 +104,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     }
 
     private void openSearcher() {
-        ClientUtils.openContainerGui(ModContainers.SEARCHER.get(), new StringTextComponent("Search"));
+        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new StringTextComponent("Search"));
         if (minecraft.currentScreen instanceof GuiItemSearcher) {
             searchGui = (GuiItemSearcher) minecraft.currentScreen;
             searchGui.setSearchStack(progWidget.getFilter());

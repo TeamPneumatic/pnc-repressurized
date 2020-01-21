@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client;
 import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.*;
-import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsDefaultStorage;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsProvider;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsRequester;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsStorage;
@@ -25,6 +24,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
+import me.desht.pneumaticcraft.common.entity.semiblock.*;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.DramaSplash;
@@ -72,10 +72,20 @@ public class ClientSetup {
     }
 
     private static void registerEntityRenderers() {
-        RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, RenderEntityVortex.FACTORY);
+        // drones
         RenderingRegistry.registerEntityRenderingHandler(EntityDrone.class, RenderDrone.REGULAR_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityLogisticsDrone.class, RenderDrone.LOGISTICS_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityHarvestingDrone.class, RenderDrone.HARVESTING_FACTORY);
+
+        // semiblocks
+        RenderingRegistry.registerEntityRenderingHandler(EntityCropSupport.class, RenderCropSupport.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(EntitySpawnerAgitator.class, RenderSpawnerAgitator.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(EntityHeatFrame.class, RenderHeatFrame.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(EntityTransferGadget.class, RenderTransferGadget.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(EntityLogisticsFrame.class, RenderLogisticsFrame.FACTORY);
+
+        // misc
+        RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, RenderEntityVortex.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, RenderDrone.REGULAR_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, RenderEntityRing.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityMicromissile.class, RenderMicromissile.FACTORY);
@@ -142,7 +152,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.REFINERY.get(), GuiRefineryController::new);
         ScreenManager.registerFactory(ModContainers.REMOTE.get(), GuiRemote::new);
         ScreenManager.registerFactory(ModContainers.REMOTE_EDITOR.get(), GuiRemoteEditor::new);
-        ScreenManager.registerFactory(ModContainers.SEARCHER.get(), GuiItemSearcher::new);
+        ScreenManager.registerFactory(ModContainers.ITEM_SEARCHER.get(), GuiItemSearcher::new);
         ScreenManager.registerFactory(ModContainers.SECURITY_STATION_MAIN.get(), GuiSecurityStationInventory::new);
         ScreenManager.registerFactory(ModContainers.SECURITY_STATION_HACKING.get(), GuiSecurityStationHacking::new);
         ScreenManager.registerFactory(ModContainers.SENTRY_TURRET.get(), GuiSentryTurret::new);
@@ -151,8 +161,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.UNIVERSAL_SENSOR.get(), GuiUniversalSensor::new);
         ScreenManager.registerFactory(ModContainers.UV_LIGHT_BOX.get(), GuiUVLightBox::new);
         ScreenManager.registerFactory(ModContainers.VACUUM_PUMP.get(), GuiVacuumPump::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE.get(), GuiLogisticsDefaultStorage::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_PASSIVE_PROVIDER.get(), GuiLogisticsProvider::new);
+        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_PROVIDER.get(), GuiLogisticsProvider::new);
         ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_REQUESTER.get(), GuiLogisticsRequester::new);
         ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_STORAGE.get(), GuiLogisticsStorage::new);
     }

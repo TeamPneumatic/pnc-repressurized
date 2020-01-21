@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 public class ItemLogisticsFrameActiveProvider extends ItemLogisticsFrame {
     @Override
     protected ContainerType<?> getContainerType() {
-        return ModContainers.LOGISTICS_FRAME_PASSIVE_PROVIDER.get();
+        return ModContainers.LOGISTICS_FRAME_PROVIDER.get();
     }
 
     @Override

@@ -359,6 +359,8 @@ public class EntityDrone extends EntityDroneBase implements
         }
         boolean enabled = !disabledByHacking && getAirHandler().getPressure() > 0.01F;
         if (!world.isRemote) {
+            float roundedPressure = ((int) (getAirHandler().getPressure() * 10.0f)) / 10.0f;
+            dataManager.set(PRESSURE, roundedPressure);
             setAccelerating(!standby && enabled);
             if (isAccelerating()) {
                 fallDistance = 0;
@@ -795,21 +797,25 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void notifyDataManagerChange(DataParameter<?> key) {
-        if (world.isRemote && TARGET_ID.equals(key)) {
-            int id = dataManager.get(TARGET_ID);
-            if (id > 0) {
-                Entity e = getEntityWorld().getEntityByID(id);
-                if (e instanceof LivingEntity) {
-                    setAttackTarget((LivingEntity) e);
+        if (world.isRemote) {
+            if (TARGET_ID.equals(key)) {
+                int id = dataManager.get(TARGET_ID);
+                if (id > 0) {
+                    Entity e = getEntityWorld().getEntityByID(id);
+                    if (e instanceof LivingEntity) {
+                        setAttackTarget((LivingEntity) e);
+                    }
                 }
+                if (targetLine != null && oldTargetLine != null) {
+                    targetLine.setProgress(0);
+                    oldTargetLine.setProgress(0);
+                }
+            } else if (PRESSURE.equals(key)) {
+                int newAir = (int) (dataManager.get(PRESSURE) * getAirHandler().getVolume());
+                getAirHandler().addAir(newAir - airHandler.getAir());
             }
-            if (targetLine != null && oldTargetLine != null) {
-                targetLine.setProgress(0);
-                oldTargetLine.setProgress(0);
-            }
-        } else {
-            super.notifyDataManagerChange(key);
         }
+        super.notifyDataManagerChange(key);
     }
 
     @Override
@@ -889,7 +895,6 @@ public class EntityDrone extends EntityDroneBase implements
         progWidgets = TileEntityProgrammer.getWidgetsFromNBT(tag);
         naturallySpawned = tag.getBoolean("naturallySpawned");
         getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
-        dataManager.set(PRESSURE, getAirHandler().getPressure());
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");
         setGoingToOwner(tag.getBoolean("hackedByOwner"));

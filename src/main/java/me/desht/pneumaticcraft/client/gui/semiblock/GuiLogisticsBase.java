@@ -7,14 +7,12 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSetLogisticsFilterStack;
-import me.desht.pneumaticcraft.common.network.PacketSetLogisticsFluidFilterStack;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
+import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
@@ -28,23 +26,20 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidTank;
-import org.apache.commons.lang3.text.WordUtils;
 
-import java.util.Arrays;
+import java.util.stream.IntStream;
 
-public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumaticContainerBase<ContainerLogistics,TileEntityBase> {
+public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumaticContainerBase<ContainerLogistics,TileEntityBase> {
     protected final L logistics;
-    private GuiItemSearcher searchGui;
+    private GuiItemSearcher itemSearchGui;
     private GuiLogisticsLiquidFilter fluidSearchGui;
-    private int editingSlot; //either fluid or item search.
-    private WidgetCheckBox invisible;
-    private WidgetCheckBox fuzzyDamage;
-    private WidgetCheckBox fuzzyNBT;
-    private WidgetCheckBox whitelist;
+    private int editingSlot; // used for both fluid & item search.
     private WidgetButtonExtended[] facingButtons = new WidgetButtonExtended[6];
     private WidgetAnimatedStat facingTab;
+    private WidgetLabel itemLabel;
+    private WidgetLabel fluidLabel;
 
     public GuiLogisticsBase(ContainerLogistics container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -57,30 +52,38 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
     public void init() {
         super.init();
 
-        if (searchGui != null) {
-            container.getSlot(editingSlot).putStack(searchGui.getSearchStack());
-            NetworkHandler.sendToServer(new PacketSetLogisticsFilterStack(logistics, searchGui.getSearchStack(), editingSlot));
-            searchGui = null;
+        if (itemSearchGui != null) {
+            container.getSlot(editingSlot).putStack(itemSearchGui.getSearchStack());
+            logistics.setItemFilter(editingSlot, itemSearchGui.getSearchStack());
+            syncToServer();
+            itemSearchGui = null;
         }
 
         if (fluidSearchGui != null && fluidSearchGui.getFilter() != null) {
             FluidStack filter = new FluidStack(fluidSearchGui.getFilter(), 1000);
-            logistics.setFilter(editingSlot, filter);
-            NetworkHandler.sendToServer(new PacketSetLogisticsFluidFilterStack(logistics, filter, editingSlot));
+            logistics.setFluidFilter(editingSlot, filter);
+            syncToServer();
             fluidSearchGui = null;
         }
 
         String invisibleText = I18n.format("gui.logistics_frame.invisible");
-        addButton(invisible = new WidgetCheckBox(guiLeft + xSize - 18 - font.getStringWidth(invisibleText), guiTop + 16, 0xFF404040, invisibleText).withTag("invisible"));
-        invisible.setTooltip(Arrays.asList(WordUtils.wrap(I18n.format("gui.logistics_frame.invisible.tooltip"), 40).split(System.getProperty("line.separator"))));
+        WidgetCheckBox invisible;
+        addButton(invisible = new WidgetCheckBox(guiLeft + xSize - 18 - font.getStringWidth(invisibleText), guiTop + 16, 0xFF404040, invisibleText, b -> {
+            logistics.setSemiblockInvisible(b.checked);
+            syncToServer();
+        }).setChecked(logistics.isSemiblockInvisible()));
 
-        addButton(new WidgetLabel(guiLeft + 8, guiTop + 18, I18n.format(String.format("gui.%s.filters", logistics.getId().getPath()))));
-        addButton(new WidgetLabel(guiLeft + 8, guiTop + 90, I18n.format("gui.logistics_frame.liquid")));
-        for (int i = 0; i < 9; i++) {
-            final int idx = i;
-            addButton(new WidgetFluidStack(guiLeft + i * 18 + 8, guiTop + 101, FluidUtils.copyTank(logistics.getTankFilter(i)),
-                    b -> fluidClicked((WidgetFluidStack) b, idx)));
-        }
+        invisible.setTooltip(PneumaticCraftUtils.convertStringIntoList(
+                I18n.format("gui.logistics_frame.invisible.tooltip"), 40));
+
+        addButton(itemLabel = new WidgetLabel(guiLeft + 8, guiTop + 18, ""));
+        addButton(fluidLabel = new WidgetLabel(guiLeft + 8, guiTop + 90, ""));
+        updateLabels();
+
+        IntStream.range(0, EntityLogisticsFrame.FLUID_FILTER_SLOTS).forEach(i -> {
+            FluidStack stack = logistics.getFluidFilter(i);
+            addButton(new WidgetFluidStack(guiLeft + i * 18 + 8, guiTop + 101, stack.copy(), w -> fluidClicked((WidgetFluidStack) w, i)));
+        });
 
         addInfoTab(I18n.format("gui.tooltip.item.pneumaticcraft." + logistics.getId().getPath()));
         addFilterTab();
@@ -89,11 +92,21 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
         }
     }
 
-    private void fluidClicked(WidgetFluidStack b, int idx) {
-        IFluidTank tank = logistics.getTankFilter(idx);
-        if (!tank.getFluid().isEmpty()) {
-            logistics.setFilter(idx, b.getStack());
-            NetworkHandler.sendToServer(new PacketSetLogisticsFluidFilterStack(logistics, tank.getFluid(), idx));
+    private void updateLabels() {
+        String s = logistics.isWhiteList() ? "" : TextFormatting.STRIKETHROUGH.toString();
+        itemLabel.setMessage(s + I18n.format(String.format("gui.%s.itemFilters", logistics.getId().getPath())));
+        fluidLabel.setMessage(s + I18n.format(String.format("gui.%s.fluidFilters", logistics.getId().getPath())));
+    }
+
+    private void syncToServer() {
+        NetworkHandler.sendToServer(new PacketSyncSemiblock(logistics));
+    }
+
+    private void fluidClicked(WidgetFluidStack widget, int idx) {
+        FluidStack stack = logistics.getFluidFilter(idx);
+        if (!stack.isEmpty()) {
+            logistics.setFluidFilter(idx, widget.getFluidStack().copy());
+            syncToServer();
         } else {
             fluidSearchGui = new GuiLogisticsLiquidFilter(this);
             editingSlot = idx;
@@ -105,12 +118,25 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
         WidgetAnimatedStat filterTab = addAnimatedStat("gui.logistics_frame.filter_settings",
                 new ItemStack(Blocks.COBWEB), 0xFF106010, false);
         filterTab.addPadding(logistics.supportsBlacklisting() ? 6 : 4, 28);
-        fuzzyDamage = new WidgetCheckBox(5, 20, 0xFFFFFFFF, I18n.format("gui.logistics_frame.fuzzyDamage")).withTag("fuzzyDamage");
-        filterTab.addSubWidget(fuzzyDamage);
-        fuzzyNBT = new WidgetCheckBox(5, 36, 0xFFFFFFFF, I18n.format("gui.logistics_frame.fuzzyNBT")).withTag("fuzzyNBT");
-        filterTab.addSubWidget(fuzzyNBT);
+
+        WidgetCheckBox matchTags = new WidgetCheckBox(5, 20, 0xFFFFFFFF, I18n.format("gui.logistics_frame.matchTags"), b -> {
+            logistics.setMatchTags(b.checked);
+            syncToServer();
+        }).setChecked(logistics.isMatchTags());
+        filterTab.addSubWidget(matchTags);
+
+        WidgetCheckBox matchNBT = new WidgetCheckBox(5, 36, 0xFFFFFFFF, I18n.format("gui.logistics_frame.matchNBT"), b -> {
+            logistics.setMatchNBT(b.checked);
+            syncToServer();
+        }).setChecked(logistics.isMatchNBT());
+        filterTab.addSubWidget(matchNBT);
+
         if (logistics.supportsBlacklisting()) {
-            whitelist = new WidgetCheckBox(5, 52, 0xFFFFFFFF, I18n.format("gui.logistics_frame.whitelist")).withTag("whitelist");
+            WidgetCheckBox whitelist = new WidgetCheckBox(5, 52, 0xFFFFFFFF, I18n.format("gui.logistics_frame.whitelist"), b -> {
+                logistics.setWhiteList(b.checked);
+                updateLabels();
+                syncToServer();
+            }).setChecked(logistics.isWhiteList());
             filterTab.addSubWidget(whitelist);
         }
     }
@@ -118,17 +144,40 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
     private void addFacingTab() {
         facingTab = addAnimatedStat("", new ItemStack(Items.MAP), 0xFFC0C0C0, false);
         facingTab.addPadding(8, 18);
-        facingTab.addSubWidget(facingButtons[0] = new WidgetButtonExtended(15, 62, 20, 20,"D").withTag("side:0"));
-        facingTab.addSubWidget(facingButtons[1] = new WidgetButtonExtended(15, 20, 20, 20,"U").withTag("side:1"));
-        facingTab.addSubWidget(facingButtons[2] = new WidgetButtonExtended(36, 20, 20, 20,"N").withTag("side:2"));
-        facingTab.addSubWidget(facingButtons[3] = new WidgetButtonExtended(36, 62, 20, 20,"S").withTag("side:3"));
-        facingTab.addSubWidget(facingButtons[4] = new WidgetButtonExtended(15, 41, 20, 20,"W").withTag("side:4"));
-        facingTab.addSubWidget(facingButtons[5] = new WidgetButtonExtended(57, 41, 20, 20,"E").withTag("side:5"));
-        WidgetButtonExtended info = new WidgetButtonExtended(36, 41, 20, 20,"");
-        info.setVisible(false);
-        info.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.logistics_frame.facing.tooltip")));
-        info.setRenderedIcon(Textures.GUI_INFO_LOCATION);
-        facingTab.addSubWidget(info);
+
+        facingTab.addSubWidget(facingButtons[0] = new WidgetButtonExtended(15, 62, 20, 20,"D",
+                b -> setFace(Direction.DOWN)));
+        facingTab.addSubWidget(facingButtons[1] = new WidgetButtonExtended(15, 20, 20, 20,"U",
+                b -> setFace(Direction.UP)));
+        facingTab.addSubWidget(facingButtons[2] = new WidgetButtonExtended(36, 20, 20, 20,"N",
+                b -> setFace(Direction.NORTH)));
+        facingTab.addSubWidget(facingButtons[3] = new WidgetButtonExtended(36, 62, 20, 20,"S",
+                b -> setFace(Direction.SOUTH)));
+        facingTab.addSubWidget(facingButtons[4] = new WidgetButtonExtended(15, 41, 20, 20,"W",
+                b -> setFace(Direction.WEST)));
+        facingTab.addSubWidget(facingButtons[5] = new WidgetButtonExtended(57, 41, 20, 20,"E",
+                b -> setFace(Direction.EAST)));
+
+        facingTab.addSubWidget(new WidgetButtonExtended(36, 41, 20, 20,"")
+                .setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.logistics_frame.facing.tooltip")))
+                .setRenderedIcon(Textures.GUI_INFO_LOCATION)
+                .setVisible(false)
+        );
+        updateFacing();
+    }
+
+    private void updateFacing() {
+        String s = logistics.getFacing() == null ? "-" : logistics.getFacing().getName();
+        facingTab.setTitle(I18n.format("gui.logistics_frame.facing", s));
+        for (Direction face : Direction.values()) {
+            facingButtons[face.getIndex()].active = face != logistics.getFacing();
+        }
+    }
+
+    private void setFace(Direction face) {
+        logistics.setFacing(face);
+        syncToServer();
+        updateFacing();
     }
 
     @Override
@@ -154,30 +203,15 @@ public class GuiLogisticsBase<L extends SemiBlockLogistics> extends GuiPneumatic
     }
 
     @Override
-    public void tick() {
-        super.tick();
-
-        invisible.checked = logistics.isInvisible();
-        fuzzyDamage.checked = logistics.isFuzzyDamage();
-        fuzzyNBT.checked = logistics.isFuzzyNBT();
-        if (logistics.supportsBlacklisting())
-            whitelist.checked = logistics.isWhitelist();
-        String s = logistics.getSide() == null ? "-" : logistics.getSide().getName();
-        if (facingTab != null) {
-            facingTab.setTitle(I18n.format("gui.logistics_frame.facing") + ": " + s);
-            for (Direction face : Direction.values()) {
-                facingButtons[face.getIndex()].active = face != logistics.getSide();
-            }
-        }
-    }
-
-    @Override
     protected void handleMouseClick(Slot slot, int slotId, int clickedButton, ClickType clickType) {
-        if (slot instanceof SlotPhantom && minecraft.player.inventory.getItemStack().isEmpty() && !slot.getHasStack() && clickedButton == 1) {
+        if (slot instanceof SlotPhantom
+                && minecraft.player.inventory.getItemStack().isEmpty()
+                && !slot.getHasStack()
+                && (clickedButton == 0 || clickedButton == 1)) {
             editingSlot = slot.getSlotIndex();
-            ClientUtils.openContainerGui(ModContainers.SEARCHER.get(), new StringTextComponent("Searcher"));
+            ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new StringTextComponent("Searcher"));
             if (minecraft.currentScreen instanceof GuiItemSearcher) {
-                searchGui = (GuiItemSearcher) minecraft.currentScreen;
+                itemSearchGui = (GuiItemSearcher) minecraft.currentScreen;
             }
         } else {
             super.handleMouseClick(slot, slotId, clickedButton, clickType);

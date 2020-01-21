@@ -11,8 +11,6 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
-import static mcjty.theoneprobe.rendering.RenderHelper.drawTexturedModalRect;
-
 public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirCompressor,TileEntityAirCompressor> {
 
     public GuiAirCompressor(ContainerAirCompressor container, PlayerInventory inv, ITextComponent displayString) {
@@ -34,7 +32,7 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
         int yStart = (height - ySize) / 2;
 
         if (te.burnTime >= te.curFuelUsage) {
-            drawTexturedModalRect(xStart + getFuelSlotXOffset(), yStart + 38 + 12 - i1, 176, 12 - i1, 14, i1 + 2);
+            blit(xStart + getFuelSlotXOffset(), yStart + 38 + 12 - i1, 176, 12 - i1, 14, i1 + 2);
         }
     }
 

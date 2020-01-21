@@ -10,9 +10,8 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerSearcher extends Container {
+public class ContainerItemSearcher extends Container {
     private static final int SEARCH_ROWS = 6;
     private static final int SEARCH_COLS = 8;
 
@@ -21,8 +20,8 @@ public class ContainerSearcher extends Container {
     private GuiItemSearcher gui;
 
     @SuppressWarnings("unused")
-    public ContainerSearcher(int windowId, PlayerInventory inv, PacketBuffer data) {
-        super(ModContainers.SEARCHER.get(), windowId);
+    public ContainerItemSearcher(int windowId, PlayerInventory inv, PacketBuffer data) {
+        super(ModContainers.ITEM_SEARCHER.get(), windowId);
     }
 
     public void init(GuiItemSearcher gui) {
@@ -30,11 +29,11 @@ public class ContainerSearcher extends Container {
 
         for (int i = 0; i < SEARCH_ROWS; ++i) {
             for (int j = 0; j < SEARCH_COLS; ++j) {
-                addSlot(new SlotItemHandler(gui.getInventory(), i * SEARCH_COLS + j, SEARCH_COLS + j * 18, 52 + i * 18));
+                addSlot(new SlotPhantomUnstackable(gui.getInventory(), i * SEARCH_COLS + j, SEARCH_COLS + j * 18, 52 + i * 18));
             }
         }
 
-        addSlot(new SlotItemHandler(gui.getInventory(), 48, 124, 25));
+        addSlot(new SlotPhantomUnstackable(gui.getInventory(), 48, 124, 25));
         scrollTo(0.0F);
     }
 

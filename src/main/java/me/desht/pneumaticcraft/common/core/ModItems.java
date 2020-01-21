@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
-import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlockBase;
+import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.fluid.Fluid;
@@ -120,14 +120,14 @@ public class ModItems {
     public static final RegistryObject<ItemLogisticsFrameActiveProvider> LOGISTICS_FRAME_ACTIVE_PROVIDER = register("logistics_frame_active_provider",
             ItemLogisticsFrameActiveProvider::new);
 
-    public static final RegistryObject<ItemSemiBlockBase> HEAT_FRAME = register("heat_frame",
-            ItemSemiBlockBase::new);
-    public static final RegistryObject<ItemSemiBlockBase> SPAWNER_AGITATOR = register("spawner_agitator",
-            ItemSemiBlockBase::new);
-    public static final RegistryObject<ItemSemiBlockBase> CROP_SUPPORT = register("crop_support",
-            ItemSemiBlockBase::new);
-    public static final RegistryObject<ItemSemiBlockBase> TRANSFER_GADGET = register("transfer_gadget",
-            ItemSemiBlockBase::new);
+    public static final RegistryObject<ItemSemiBlock> HEAT_FRAME = register("heat_frame",
+            ItemSemiBlock::new);
+    public static final RegistryObject<ItemSemiBlock> SPAWNER_AGITATOR = register("spawner_agitator",
+            ItemSemiBlock::new);
+    public static final RegistryObject<ItemSemiBlock> CROP_SUPPORT = register("crop_support",
+            ItemSemiBlock::new);
+    public static final RegistryObject<ItemSemiBlock> TRANSFER_GADGET = register("transfer_gadget",
+            ItemSemiBlock::new);
 
     public static final RegistryObject<ItemGunAmmoStandard> GUN_AMMO = register("gun_ammo",
             ItemGunAmmoStandard::new);

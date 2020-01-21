@@ -1,9 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
-import mcjty.theoneprobe.apiimpl.styles.LayoutStyle;
+import mcjty.theoneprobe.api.*;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
@@ -14,8 +11,6 @@ import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockBasic;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
@@ -103,20 +98,17 @@ public class TOPInfoProvider {
         }
     }
 
-    static void handleSemiblock(ProbeMode mode, IProbeInfo probeInfo, ISemiBlock semiBlock) {
-        NonNullList<ItemStack> l = NonNullList.create();
-        semiBlock.addDrops(l);
-        if (l.isEmpty()) return;
-        ItemStack stack = l.get(0);
-        int color = semiBlock instanceof SemiBlockLogistics ? ((SemiBlockLogistics) semiBlock).getColor() : 0xFF808080;
-        IProbeInfo vert = probeInfo.vertical(new LayoutStyle().borderColor(color).spacing(3));
+    static void handleSemiblock(PlayerEntity player, ProbeMode mode, IProbeInfo probeInfo, ISemiBlock semiBlock) {
+        IProbeInfo vert = probeInfo.vertical(new Layout(semiBlock.getColor()));
         IProbeInfo horiz = vert.horizontal();
-        horiz.item(stack);
-        horiz.text(stack.getDisplayName().getFormattedText());
-        if (semiBlock instanceof SemiBlockBasic) {
-            List<String> currenttip = new ArrayList<>();
-            ((SemiBlockBasic) semiBlock).addTooltip(currenttip, stack.getTag(), mode == ProbeMode.EXTENDED);
-            currenttip.forEach(vert::text);
+        NonNullList<ItemStack> drops = semiBlock.getDrops();
+        if (!drops.isEmpty()) {
+            ItemStack stack = drops.get(0);
+            horiz.item(stack);
+            horiz.text(stack.getDisplayName().getFormattedText());
+            List<ITextComponent> currenttip = new ArrayList<>();
+            semiBlock.addTooltip(currenttip, player, stack.getTag(), player.isSneaking());
+            currenttip.forEach(t -> vert.text(t.getFormattedText()));
         }
     }
 
@@ -133,7 +125,7 @@ public class TOPInfoProvider {
             List<ITextComponent> currenttip = new ArrayList<>();
             module.addInfo(currenttip);
             if (!currenttip.isEmpty()) {
-                IProbeInfo vert = probeInfo.vertical(new LayoutStyle().borderColor(0xFF4040FF).spacing(3));
+                IProbeInfo vert = probeInfo.vertical(new Layout(0xFF4040FF));
                 currenttip.stream().map(ITextComponent::getFormattedText).forEach(vert::text);
             }
         }
@@ -149,7 +141,7 @@ public class TOPInfoProvider {
         }
     }
 
-    public static void handleCamo(ProbeMode mode, IProbeInfo probeInfo, BlockState camo) {
+    private static void handleCamo(ProbeMode mode, IProbeInfo probeInfo, BlockState camo) {
         if (camo != null) {
             probeInfo.text(TextFormatting.YELLOW + "[Camo: " + ItemCamoApplicator.getCamoStateDisplayName(camo).getFormattedText() + "]");
         }
@@ -157,5 +149,44 @@ public class TOPInfoProvider {
 
     private static String L(String s) {
         return IProbeInfo.STARTLOC + s + IProbeInfo.ENDLOC;
+    }
+
+    private static class Layout implements ILayoutStyle {
+        private int borderColor;
+
+        Layout(int borderColor) {
+            this.borderColor = borderColor;
+        }
+
+        @Override
+        public ILayoutStyle borderColor(Integer borderColor) {
+            this.borderColor = borderColor;
+            return this;
+        }
+
+        @Override
+        public ILayoutStyle spacing(int i) {
+            return this;
+        }
+
+        @Override
+        public ILayoutStyle alignment(ElementAlignment elementAlignment) {
+            return this;
+        }
+
+        @Override
+        public Integer getBorderColor() {
+            return borderColor;
+        }
+
+        @Override
+        public int getSpacing() {
+            return 3;
+        }
+
+        @Override
+        public ElementAlignment getAlignment() {
+            return ElementAlignment.ALIGN_TOPLEFT;
+        }
     }
 }

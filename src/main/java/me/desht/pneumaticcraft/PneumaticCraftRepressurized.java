@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
-import me.desht.pneumaticcraft.client.semiblock.ClientSemiBlockManager;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
@@ -31,8 +30,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.MachineRecipeHandler;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockInitializer;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -113,7 +110,6 @@ public class PneumaticCraftRepressurized {
         Reflections.init();
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
         ThirdPartyManager.instance().preInit();
-        SemiBlockInitializer.preInit();  // TODO replace semiblocks with entity implementation
         AdvancementTriggers.registerTriggers();
 
         LootFunctionManager.registerFunction(new TileEntitySerializerFunction.Serializer());
@@ -148,7 +144,6 @@ public class PneumaticCraftRepressurized {
         ModWorldGen.init();
         registerPermissionNodes();
 
-        SemiBlockManager.registerEventHandler(true);
         ThirdPartyManager.instance().init();
 
         // TODO 1.14 loot
@@ -217,7 +212,6 @@ public class PneumaticCraftRepressurized {
             MinecraftForge.EVENT_BUS.register(HUDHandler.instance());
             MinecraftForge.EVENT_BUS.register(ClientTickHandler.instance());
             MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
-            MinecraftForge.EVENT_BUS.register(new ClientSemiBlockManager());
             MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));
             MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
             MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());

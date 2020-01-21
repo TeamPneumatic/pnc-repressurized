@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.api.drone.AmadronRetrievalEvent;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
@@ -30,7 +29,6 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipe;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
@@ -45,7 +43,6 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.BoatEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -149,10 +146,6 @@ public class EventHandlerPneumaticCraft {
         if (!event.getWorld().isRemote) {
             if (event.getEntity() instanceof MobEntity) {
                 ((MobEntity) event.getEntity()).goalSelector.addGoal(Integer.MIN_VALUE, new EntityAINoAIWhenRidingDrone((MobEntity) event.getEntity()));
-            }
-        } else {
-            if (event.getEntity() instanceof PlayerEntity && event.getEntity().getEntityId() == ClientUtils.getClientPlayer().getEntityId()) {
-                SemiBlockManager.getInstance(event.getWorld()).clearAll();
             }
         }
     }

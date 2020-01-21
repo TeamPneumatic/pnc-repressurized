@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.util;
 
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.ItemStackHandler;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
 
 public class ItemStackHandlerIterable implements Iterable<ItemStack>{
 

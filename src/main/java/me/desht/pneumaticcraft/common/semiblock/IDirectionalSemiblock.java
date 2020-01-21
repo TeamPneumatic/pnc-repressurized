@@ -9,5 +9,7 @@ import net.minecraft.util.Direction;
  * drones which side of the inventory to access.
  */
 public interface IDirectionalSemiblock {
-    Direction getFacing();
+    Direction getSide();
+
+    void setSide(Direction direction);
 }

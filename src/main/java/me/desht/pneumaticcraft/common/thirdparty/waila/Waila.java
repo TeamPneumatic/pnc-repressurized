@@ -5,6 +5,7 @@ import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
 import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
@@ -26,6 +27,7 @@ public class Waila implements IWailaPlugin, IThirdParty {
         iRegistrar.registerBlockDataProvider(new RedstoneControlProvider.Data(), IRedstoneControl.class);
         iRegistrar.registerBlockDataProvider(new TubeModuleProvider.Data(), TileEntityPressureTube.class);
         iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), LivingEntity.class);
+        iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), EntitySemiblockBase.class);
 
         iRegistrar.registerComponentProvider(new PneumaticProvider.Component(), TooltipPosition.BODY, TileEntity.class);
         iRegistrar.registerComponentProvider(new HeatProvider.Component(), TooltipPosition.BODY, IHeatExchanger.class);
@@ -33,6 +35,9 @@ public class Waila implements IWailaPlugin, IThirdParty {
         iRegistrar.registerComponentProvider(new RedstoneControlProvider.Component(), TooltipPosition.BODY, IRedstoneControl.class);
         iRegistrar.registerComponentProvider(new TubeModuleProvider.Component(), TooltipPosition.BODY, TileEntityPressureTube.class);
         iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, LivingEntity.class);
+        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.HEAD, EntitySemiblockBase.class);
+        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, EntitySemiblockBase.class);
+        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.TAIL, EntitySemiblockBase.class);
         iRegistrar.registerComponentProvider(new CamoProvider.Component(), TooltipPosition.BODY, ICamouflageableTE.class);
     }
 }

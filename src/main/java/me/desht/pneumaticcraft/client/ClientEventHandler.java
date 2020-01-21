@@ -132,7 +132,7 @@ public class ClientEventHandler {
 
     private static void handleFluidContainerTooltip(ItemTooltipEvent event) {
         FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
-            String key = "gui.tooltip.item." + event.getItemStack().getItem().getRegistryName().getPath();
+            String key = "gui.tooltip.item.pneumaticcraft." + event.getItemStack().getItem().getRegistryName().getPath();
             if (I18n.hasKey(key)) {
                 if (event.getToolTip().get(event.getToolTip().size() - 1).getFormattedText().contains("Minecraft Forge")) {
                     // bit of a kludge!  otherwise the blue "Minecraft Forge" string gets shown twice

@@ -128,9 +128,6 @@ public class ThirdPartyManager {
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.clientPreInit();
-                if (thirdParty instanceof IDocsProvider) {
-                    docsProvider = (IDocsProvider) thirdParty;
-                }
             } catch (Throwable e) {
                 Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " client side!");
                 e.printStackTrace();
@@ -142,33 +139,13 @@ public class ThirdPartyManager {
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.clientInit();
+                if (thirdParty instanceof IDocsProvider) {
+                    docsProvider = (IDocsProvider) thirdParty;
+                }
             } catch (Throwable e) {
                 Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " client side on the init!");
                 e.printStackTrace();
             }
         }
     }
-
-//    @Override
-//    public Object getServerGuiElement(int ID, Pl player, World world, int x, int y, int z) {
-//        for (IThirdParty thirdParty : thirdPartyMods) {
-//            if (thirdParty instanceof IGuiHandler) {
-//                Object obj = ((IGuiHandler) thirdParty).getServerGuiElement(ID, player, world, x, y, z);
-//                if (obj != null) return obj;
-//            }
-//        }
-//        return null;
-//    }
-//
-//    @Override
-//    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-//        for (IThirdParty thirdParty : thirdPartyMods) {
-//            if (thirdParty instanceof IGuiHandler) {
-//                Object obj = ((IGuiHandler) thirdParty).getClientGuiElement(ID, player, world, x, y, z);
-//                if (obj != null) return obj;
-//            }
-//        }
-//        return null;
-//    }
-
 }

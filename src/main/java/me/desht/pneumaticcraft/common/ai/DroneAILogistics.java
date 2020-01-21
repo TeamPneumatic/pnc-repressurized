@@ -2,12 +2,12 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
+import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.fluid.Fluid;
@@ -38,14 +38,14 @@ public class DroneAILogistics extends Goal {
 
     private LogisticsManager getLogisticsManager() {
         if (drone.getLogisticsManager() == null) {
+            // note: this is an expensive operation!  hence we cache the logistics manager object in the drone
             Set<BlockPos> area = widget.getCachedAreaSet();
             if (!area.isEmpty()) {
                 AxisAlignedBB aabb = ProgWidgetAreaItemBase.getExtents(area);
-                Stream<ISemiBlock> semiBlocksInArea = SemiBlockManager.getInstance(drone.world()).getSemiBlocksInArea(drone.world(), aabb);
-                Stream<SemiBlockLogistics> logisticFrames = StreamUtils.ofType(SemiBlockLogistics.class, semiBlocksInArea);
-
+                Stream<ISemiBlock> semiBlocksInArea = SemiblockTracker.getInstance().getSemiblocksInArea(drone.world(), aabb);
+                Stream<EntityLogisticsFrame> logisticFrames = StreamUtils.ofType(EntityLogisticsFrame.class, semiBlocksInArea);
                 LogisticsManager manager = new LogisticsManager();
-                logisticFrames.filter(frame -> area.contains(frame.getPos())).forEach(manager::addLogisticFrame);
+                logisticFrames.filter(frame -> area.contains(frame.getBlockPos())).forEach(manager::addLogisticFrame);
                 drone.setLogisticsManager(manager);
             }
         }
@@ -102,21 +102,21 @@ public class DroneAILogistics extends Goal {
 
     public boolean execute(LogisticsTask task) {
         if (!drone.getInv().getStackInSlot(0).isEmpty()) {
-            if (hasNoPathTo(task.requester.getPos())) return false;
+            if (hasNoPathTo(task.requester.getBlockPos())) return false;
             curAI = new DroneEntityAIInventoryExport(drone,
-                    new FakeWidgetLogistics(task.requester.getPos(), task.requester.getSide(), task.transportingItem));
+                    new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getFacing(), task.transportingItem));
         } else if (drone.getFluidTank().getFluidAmount() > 0) {
-            if (hasNoPathTo(task.requester.getPos())) return false;
+            if (hasNoPathTo(task.requester.getBlockPos())) return false;
             curAI = new DroneAILiquidExport(drone,
-                    new FakeWidgetLogistics(task.requester.getPos(), task.requester.getSide(), task.transportingFluid.stack));
+                    new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getFacing(), task.transportingFluid));
         } else if (!task.transportingItem.isEmpty()) {
-            if (hasNoPathTo(task.provider.getPos())) return false;
+            if (hasNoPathTo(task.provider.getBlockPos())) return false;
             curAI = new DroneEntityAIInventoryImport(drone,
-                    new FakeWidgetLogistics(task.provider.getPos(), task.provider.getSide(), task.transportingItem));
+                    new FakeWidgetLogistics(task.provider.getBlockPos(), task.provider.getFacing(), task.transportingItem));
         } else {
-            if (hasNoPathTo(task.provider.getPos())) return false;
+            if (hasNoPathTo(task.provider.getBlockPos())) return false;
             curAI = new DroneAILiquidImport(drone,
-                    new FakeWidgetLogistics(task.provider.getPos(),  task.provider.getSide(), task.transportingFluid.stack));
+                    new FakeWidgetLogistics(task.provider.getBlockPos(),  task.provider.getFacing(), task.transportingFluid));
         }
         if (curAI.shouldExecute()) {
             task.informRequester();
@@ -143,7 +143,7 @@ public class DroneAILogistics extends Goal {
         FakeWidgetLogistics(BlockPos pos, Direction side, @Nonnull ItemStack stack) {
             super(ModProgWidgets.LOGISTICS.get());
             this.stack = stack;
-            this.fluid = null;
+            this.fluid = FluidStack.EMPTY;
             area = new HashSet<>();
             area.add(pos);
             sides[side.getIndex()] = true;

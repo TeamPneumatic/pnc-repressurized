@@ -1,72 +1,121 @@
-package me.desht.pneumaticcraft.common.semiblock;
+package me.desht.pneumaticcraft.common.entity.semiblock;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IHeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+public class EntityHeatFrame extends EntitySemiblockBase {
+    private static final DataParameter<Integer> HEAT_LEVEL = EntityDataManager.createKey(EntityHeatFrame.class, DataSerializers.VARINT);
+    private static final DataParameter<Byte> STATUS = EntityDataManager.createKey(EntityHeatFrame.class, DataSerializers.BYTE);
 
-public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IHeatExchanger {
-    public static final ResourceLocation ID = RL("heat_frame");
+    private static final byte IDLE = 0;
+    private static final byte COOKING = 1;
+    private static final byte COOLING = 2;
 
     private final IHeatExchangerLogic logic = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+    private final LazyOptional<IHeatExchangerLogic> heatCap;
+
     private int lastValidSlot; // cache the current cooking slot for performance boost
     private int cookingProgress;
     private int coolingProgress;
-    @DescSynced
-    private int heatLevel = 10;
 
-    public SemiBlockHeatFrame(Class<TileEntity> tileClass){
-        super(tileClass);
+    public static EntityHeatFrame create(EntityType<EntityHeatFrame> type, World world) {
+        return new EntityHeatFrame(type, world);
     }
 
-    public SemiBlockHeatFrame() {
-        super(TileEntity.class);
+    private EntityHeatFrame(EntityType<?> entityTypeIn, World worldIn) {
+        super(entityTypeIn, worldIn);
+
+         heatCap = LazyOptional.of(() -> logic);
+    }
+
+    public int getHeatLevel() {
+        return getDataManager().get(HEAT_LEVEL);
+    }
+
+    private void setHeatLevel(int level) {
+        getDataManager().set(HEAT_LEVEL, level);
+    }
+
+    public IHeatExchangerLogic getHeatExchangerLogic() {
+        return logic;
+    }
+
+    @Override
+    protected void registerData() {
+        super.registerData();
+
+        this.dataManager.register(HEAT_LEVEL, 10);
+        this.dataManager.register(STATUS, IDLE);
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
+            return PNCCapabilities.HEAT_EXCHANGER_CAPABILITY.orEmpty(cap, heatCap);
+        }
+        return super.getCapability(cap, side);
     }
 
     @Override
     public boolean canPlace(Direction facing) {
-        return getTileEntity() != null && getTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
+        return getCachedTileEntity() != null && getCachedTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
     }
 
-    public int getHeatLevel() {
-        return heatLevel;
+    private void setStatus(byte status) {
+        getDataManager().set(STATUS, status);
+    }
+
+    private byte getStatus() {
+        return getDataManager().get(STATUS);
     }
 
     @Override
     public void tick() {
         super.tick();
+
         if (!getWorld().isRemote) {
-            heatLevel = HeatUtil.getHeatLevelForTemperature(logic.getTemperature());
+            byte newStatus = IDLE;
+            setHeatLevel(HeatUtil.getHeatLevelForTemperature(logic.getTemperature()));
             if (logic.getTemperature() > 374) {
                 if (cookingProgress < 100) {
                     int progress = Math.max(0, ((int) logic.getTemperature() - 343) / 30);
                     progress = Math.min(5, progress);
                     logic.addHeat(-progress);
                     cookingProgress += progress;
+                    newStatus = COOKING;
                 }
                 if (cookingProgress >= 100) {
-                    IOHelper.getInventoryForTE(getTileEntity()).ifPresent(handler -> {
+                    IOHelper.getInventoryForTE(getCachedTileEntity()).ifPresent(handler -> {
                         if (!tryCookSlot(handler, lastValidSlot)) {
                             for (int i = 0; i < handler.getSlots(); i++) {
                                 if (tryCookSlot(handler, i)) {
@@ -85,9 +134,10 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
                     progress = 6 - Math.min(5, progress);
                     logic.addHeat(progress);
                     coolingProgress += progress;
+                    newStatus = COOLING;
                 }
                 if (coolingProgress >= 100) {
-                    IOHelper.getInventoryForTE(getTileEntity()).ifPresent(handler -> {
+                    IOHelper.getInventoryForTE(getCachedTileEntity()).ifPresent(handler -> {
                         if (!tryCoolSlot(handler, lastValidSlot)) {
                             for (int i = 0; i < handler.getSlots(); i++) {
                                 if (tryCoolSlot(handler, i)) {
@@ -101,6 +151,20 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
                     });
                 }
             }
+            setStatus(newStatus);
+        } else {
+            // client
+            if ((ticksExisted & 0x3) == 0) {
+                byte status = getStatus();
+                switch (status) {
+                    case COOKING:
+                        ClientUtils.emitParticles(world, getBlockPos(), world.rand.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMOKE);
+                        break;
+                    case COOLING:
+                        ClientUtils.emitParticles(world, getBlockPos(), ParticleTypes.SPIT);
+                        break;
+                }
+            }
         }
     }
 
@@ -112,9 +176,9 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
             return world.getRecipeManager().getRecipe(IRecipeType.SMELTING, inv, this.world).map(recipe -> {
                 ItemStack result = recipe.getRecipeOutput();
                 if (!result.isEmpty()) {
-                    ItemStack remainder = IOHelper.insert(getTileEntity(), result, true);
+                    ItemStack remainder = IOHelper.insert(getCachedTileEntity(), result, true);
                     if (remainder.isEmpty()) {
-                        IOHelper.insert(getTileEntity(), result, false);
+                        IOHelper.insert(getCachedTileEntity(), result, false);
                         handler.extractItem(slot, 1, false);
                         lastValidSlot = slot;
                         return true;
@@ -154,7 +218,7 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
         return false;
     }
 
-    Pair<Integer,Integer> findOutputSpace(IItemHandler handler, ItemStack output, ItemStack containerItem) {
+    private Pair<Integer,Integer> findOutputSpace(IItemHandler handler, ItemStack output, ItemStack containerItem) {
         int outSlot = -1;
         int containerSlot = -1;
 
@@ -182,54 +246,38 @@ public class SemiBlockHeatFrame extends SemiBlockBasic<TileEntity> implements IH
     }
 
     @Override
-    public ResourceLocation getId() {
-        return ID;
-    }
+    protected void readAdditional(CompoundNBT tag) {
+        super.readAdditional(tag);
 
-    @Override
-    public void writeToNBT(CompoundNBT tag) {
-        super.writeToNBT(tag);
-        tag.put("heatExchanger", logic.serializeNBT());
-        tag.putInt("cookingProgress", cookingProgress);
-        tag.putInt("coolingProgress", coolingProgress);
-    }
-
-    @Override
-    public void readFromNBT(CompoundNBT tag) {
-        super.readFromNBT(tag);
         logic.deserializeNBT(tag.getCompound("heatExchanger"));
         cookingProgress = tag.getInt("cookingProgress");
         coolingProgress = tag.getInt("coolingProgress");
     }
 
     @Override
-    public void onPlaced(PlayerEntity player, ItemStack stack, Direction facing) {
-        super.onPlaced(player, stack, facing);
-        getWorld().notifyNeighborsOfStateChange(getPos(), getBlockState().getBlock());
+    protected void writeAdditional(CompoundNBT tag) {
+        super.writeAdditional(tag);
+
+        tag.put("heatExchanger", logic.serializeNBT());
+        tag.putInt("cookingProgress", cookingProgress);
+        tag.putInt("coolingProgress", coolingProgress);
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
-        return logic;
+    public CompoundNBT serializeNBT(CompoundNBT tag) {
+        tag.putInt("temperature", getHeatExchangerLogic().getTemperatureAsInt());
+
+        return super.serializeNBT(tag);
     }
 
     @Override
-    public void invalidate() {
-        super.invalidate();
-        getWorld().notifyNeighborsOfStateChange(getPos(), getBlockState().getBlock());
-    }
-
-    @Override
-    public void addWailaInfoToTag(CompoundNBT tag) {
-        super.addWailaInfoToTag(tag);
-        tag.putInt("temp", (int) logic.getTemperature());
-    }
-
-    @Override
-    public void addTooltip(List<ITextComponent> curInfo, CompoundNBT tag, boolean extended) {
-        super.addTooltip(curInfo, tag, extended);
-        // WAILA sync's the temperature via NBT, TOP runs serverside and gets it here
-        int temp = tag != null && tag.contains("temp") ? tag.getInt("temp") : (int) logic.getTemperature();
-        curInfo.add(HeatUtil.formatHeatString(temp));
+    public void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
+        if (!world.isRemote) {
+            // TOP
+            curInfo.add(HeatUtil.formatHeatString(getHeatExchangerLogic().getTemperatureAsInt()));
+        } else {
+            // Waila
+            curInfo.add(HeatUtil.formatHeatString(tag.getInt("temperature")));
+        }
     }
 }

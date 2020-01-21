@@ -130,4 +130,10 @@ public class ClientUtils {
     public static Iterable<? extends Entity> getAllEntities(World world) {
         return ((ClientWorld) world).getAllEntities();
     }
+
+    public static int getBrightnessAtWorldHeight() {
+        PlayerEntity player = getClientPlayer();
+        BlockPos blockpos = new BlockPos(player.posX, getClientWorld().getMaxHeight(), player.posZ);
+        return getClientWorld().isAreaLoaded(blockpos, 1) ? getClientWorld().getCombinedLight(blockpos, 0) : 0;
+    }
 }

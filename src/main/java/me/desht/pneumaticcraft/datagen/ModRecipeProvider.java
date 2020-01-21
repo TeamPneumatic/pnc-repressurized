@@ -689,6 +689,11 @@ public class ModRecipeProvider extends RecipeProvider {
         logisticsFrame(ModItems.LOGISTICS_FRAME_REQUESTER.get(), Tags.Items.DYES_BLUE).build(consumer);
         logisticsFrame(ModItems.LOGISTICS_FRAME_STORAGE.get(), Tags.Items.DYES_YELLOW).build(consumer);
         logisticsFrame(ModItems.LOGISTICS_FRAME_DEFAULT_STORAGE.get(), Tags.Items.DYES_GREEN).build(consumer);
+        buildLogisticsFrameSelfCraft(ModItems.LOGISTICS_FRAME_ACTIVE_PROVIDER.get(), consumer);
+        buildLogisticsFrameSelfCraft(ModItems.LOGISTICS_FRAME_PASSIVE_PROVIDER.get(), consumer);
+        buildLogisticsFrameSelfCraft(ModItems.LOGISTICS_FRAME_REQUESTER.get(), consumer);
+        buildLogisticsFrameSelfCraft(ModItems.LOGISTICS_FRAME_STORAGE.get(), consumer);
+        buildLogisticsFrameSelfCraft(ModItems.LOGISTICS_FRAME_DEFAULT_STORAGE.get(), consumer);
 
         // pressurizable tools
         pneumaticTool(ModItems.CAMO_APPLICATOR.get(), Tags.Items.DYES_BLUE).build(consumer);
@@ -847,6 +852,10 @@ public class ModRecipeProvider extends RecipeProvider {
         }
         b.addCriterion("has_" + safeName(required), this.hasItem(required));
         return b;
+    }
+
+    private void buildLogisticsFrameSelfCraft(Item frame, Consumer<IFinishedRecipe> consumer) {
+        shapeless(frame, frame, frame).build(consumer, frame.getRegistryName().toString() + "_self");
     }
 
     private ShapedRecipeBuilder logisticsFrame(Item result, Tag<Item> dye) {

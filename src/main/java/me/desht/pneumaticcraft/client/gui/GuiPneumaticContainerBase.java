@@ -497,11 +497,26 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         buttons.stream().filter(widget -> widget instanceof ITickable).forEach(w -> ((ITickable) w).tick());
     }
 
-    void sendDelayed(int ticks) {
+    /**
+     * Schedule a delayed action to be done some time in the future. Calling this again will reset the delay.
+     * Useful to avoid excessive network traffic if sending updates to the server from a textfield change.
+     * @param ticks number of ticks to delay
+     */
+    protected void sendDelayed(int ticks) {
         sendDelay = ticks;
     }
 
+    /**
+     * Run the delayed action set up by sendDelayed()
+     */
     protected void doDelayedAction() {
         // nothing; override in subclasses
+    }
+
+    @Override
+    public void onClose() {
+        if (sendDelay > 0) doDelayedAction();  // ensure any pending delayed action is done
+
+        super.onClose();
     }
 }

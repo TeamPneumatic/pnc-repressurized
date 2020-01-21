@@ -23,6 +23,12 @@ public class WidgetTextFieldNumber extends WidgetTextField {
         });
     }
 
+    public WidgetTextFieldNumber setRange(int min, int max) {
+        minValue = min;
+        maxValue = max;
+        return this;
+    }
+
     public WidgetTextFieldNumber setDecimals(int decimals) {
         this.decimals = decimals;
         return this;

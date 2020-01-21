@@ -89,10 +89,8 @@ public class ModContainers {
             = register("minigun_magazine", ContainerMinigunMagazine::new);
     public static final RegistryObject<ContainerType<ContainerLogistics>> LOGISTICS_FRAME_STORAGE
             = register("logistics_frame_storage", ContainerLogistics::createStorageContainer);
-    public static final RegistryObject<ContainerType<ContainerLogistics>> LOGISTICS_FRAME_DEFAULT_STORAGE
-            = register("logistics_frame_default_storage", ContainerLogistics::createDefaultStorageContainer);
-    public static final RegistryObject<ContainerType<ContainerLogistics>> LOGISTICS_FRAME_PASSIVE_PROVIDER
-            = register("logistics_frame_passive_provider", ContainerLogistics::createPassiveProviderContainer);
+    public static final RegistryObject<ContainerType<ContainerLogistics>> LOGISTICS_FRAME_PROVIDER
+            = register("logistics_frame_provider", ContainerLogistics::createProviderContainer);
     public static final RegistryObject<ContainerType<ContainerLogistics>> LOGISTICS_FRAME_REQUESTER
             = register("logistics_frame_requester", ContainerLogistics::createRequesterContainer);
     public static final RegistryObject<ContainerType<ContainerInventorySearcher>> INVENTORY_SEARCHER
@@ -101,8 +99,8 @@ public class ModContainers {
             = register("remote", ContainerRemote::createRemoteContainer);
     public static final RegistryObject<ContainerType<ContainerRemote>> REMOTE_EDITOR
             = register("remote_editor", ContainerRemote::createRemoteEditorContainer);
-    public static final RegistryObject<ContainerType<ContainerSearcher>> SEARCHER
-            = register("searcher", ContainerSearcher::new);
+    public static final RegistryObject<ContainerType<ContainerItemSearcher>> ITEM_SEARCHER
+            = register("item_searcher", ContainerItemSearcher::new);
 
     private static <C extends Container, T extends ContainerType<C>> RegistryObject<T> register(String name, IContainerFactory<? extends C> f) {
         //noinspection unchecked

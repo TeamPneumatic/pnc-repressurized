@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -20,7 +21,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetLiquidFilter extends ProgWidget {
-    private Fluid fluid;
+    private Fluid fluid = Fluids.EMPTY;
 
     public ProgWidgetLiquidFilter() {
         super(ModProgWidgets.LIQUID_FILTER.get());
@@ -35,7 +36,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (fluid == null) curInfo.add(xlate("gui.progWidget.liquidFilter.error.noLiquid"));
+        if (fluid == Fluids.EMPTY) curInfo.add(xlate("gui.progWidget.liquidFilter.error.noLiquid"));
     }
 
     @Override
@@ -118,7 +119,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
 
     @Override
     public String getExtraStringInfo() {
-        return fluid != null ?
+        return fluid != Fluids.EMPTY ?
                 new FluidStack(fluid, 1).getDisplayName().getFormattedText() :
                 I18n.format("gui.progWidget.liquidFilter.noFluid");
     }

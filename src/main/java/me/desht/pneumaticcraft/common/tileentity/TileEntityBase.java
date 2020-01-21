@@ -374,7 +374,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     public void onNeighborTileUpdate() {
-        initializeIfHeatExchanger();
+//        initializeIfHeatExchanger();
         for (TileEntityCache cache : getTileCache()) {
             cache.update();
         }

@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberGlass;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
@@ -18,6 +19,7 @@ import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -259,11 +261,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         }
     }
 
-    // todo 1.14 villagers
     private void handleEntitiesInChamber() {
-//        AxisAlignedBB bbBox = new AxisAlignedBB(multiBlockX + 1, multiBlockY + 1, multiBlockZ + 1, multiBlockX + multiBlockSize - 1, multiBlockY + multiBlockSize - 1, multiBlockZ + multiBlockSize - 1);
-//        List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, bbBox);
-//        for (LivingEntity entity : entities) {
+        AxisAlignedBB bbBox = new AxisAlignedBB(multiBlockX + 1, multiBlockY + 1, multiBlockZ + 1, multiBlockX + multiBlockSize - 1, multiBlockY + multiBlockSize - 1, multiBlockZ + multiBlockSize - 1);
+        List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, bbBox);
+        for (LivingEntity entity : entities) {
+            // TODO 1.14 villagers
 //            if (entity instanceof VillagerEntity) {
 //                VillagerEntity villager = (VillagerEntity) entity;
 //                if (villager.getProfessionForge() != VillagerHandler.mechanicProfession) {
@@ -275,9 +277,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 //                }
 //            }
 //            if (!(entity instanceof VillagerEntity) || ((VillagerEntity) entity).getProfessionForge() != VillagerHandler.mechanicProfession) {
-//                entity.attackEntityFrom(DamageSourcePneumaticCraft.PRESSURE, (int) (getPressure() * 2D));
+                entity.attackEntityFrom(DamageSourcePneumaticCraft.PRESSURE, (int) (getPressure() * 2D));
 //            }
-//        }
+        }
     }
 
     private boolean checkForGlass() {

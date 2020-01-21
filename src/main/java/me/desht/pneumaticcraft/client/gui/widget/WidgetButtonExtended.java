@@ -61,16 +61,19 @@ public class WidgetButtonExtended extends GuiButtonExt implements ITaggedWidget,
         return tag;
     }
 
-    public void setVisible(boolean visible) {
+    public WidgetButtonExtended setVisible(boolean visible) {
         thisVisible = visible;
+        return this;
     }
 
-    public void setInvisibleHoverColor(int color) {
+    public WidgetButtonExtended setInvisibleHoverColor(int color) {
         invisibleHoverColor = color;
+        return this;
     }
 
-    public void setIconPosition(IconPosition iconPosition) {
+    public WidgetButtonExtended setIconPosition(IconPosition iconPosition) {
         this.iconPosition = iconPosition;
+        return this;
     }
 
     public WidgetButtonExtended setRenderStacks(ItemStack... renderedStacks) {
@@ -132,6 +135,7 @@ public class WidgetButtonExtended extends GuiButtonExt implements ITaggedWidget,
                 GlStateManager.disableRescaleNormal();
             }
             if (resLoc != null) {
+//                GuiUtils.drawTexture(resLoc, this.x + width / 2 - 8, this.y + 2);
                 GlStateManager.enableLighting();
                 Minecraft.getInstance().getTextureManager().bindTexture(resLoc);
                 blit(this.x + width / 2 - 8, this.y + 2, 0, 0, 16, 16, 16, 16);

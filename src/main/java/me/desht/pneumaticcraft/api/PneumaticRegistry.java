@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
@@ -14,8 +13,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.fml.ModLoadingContext;
 
 /**
@@ -101,6 +98,4 @@ public final class PneumaticRegistry {
         void registerXPFluid(Fluid fluid, int liquidToPointRatio);
     }
 
-    @CapabilityInject(IHeatExchangerLogic.class)
-    public static final Capability<IHeatExchangerLogic> HEAT_EXCHANGER_CAPABILITY = null;
 }

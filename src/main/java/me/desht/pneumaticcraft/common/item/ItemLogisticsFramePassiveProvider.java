@@ -8,11 +8,11 @@ public class ItemLogisticsFramePassiveProvider extends ItemLogisticsFrame {
 
     @Override
     protected ContainerType<?> getContainerType() {
-        return ModContainers.LOGISTICS_FRAME_PASSIVE_PROVIDER.get();
+        return ModContainers.LOGISTICS_FRAME_PROVIDER.get();
     }
 
     @Override
     public int getTintColor(ItemStack stack, int tintIndex) {
-        return 0xFF008800;
+        return 0xFFFF0000;
     }
 }

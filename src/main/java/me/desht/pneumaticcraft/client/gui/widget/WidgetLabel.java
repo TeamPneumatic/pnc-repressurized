@@ -1,16 +1,22 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.resources.I18n;
 
-public class WidgetLabel extends Widget {
+import java.util.ArrayList;
+import java.util.List;
+
+public class WidgetLabel extends Widget implements ITooltipProvider {
     public enum Alignment {
         LEFT, CENTRE, RIGHT
     }
+
     private int color;
     private Alignment alignment = Alignment.LEFT;
-
+    private final List<String> tooltip = new ArrayList<>();
     public WidgetLabel(int x, int y, String text) {
         this(x, y, text, 0xFF404040);
     }
@@ -25,6 +31,16 @@ public class WidgetLabel extends Widget {
     public WidgetLabel setAlignment(Alignment alignment) {
         this.alignment = alignment;
         return this;
+    }
+
+    @Override
+    public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
+        curTip.addAll(tooltip);
+    }
+
+    public void setTooltipText(String text) {
+        tooltip.clear();
+        tooltip.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(text), 35));
     }
 
     public void setColor(int color) {

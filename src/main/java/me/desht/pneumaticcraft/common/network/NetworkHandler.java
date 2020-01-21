@@ -103,16 +103,12 @@ public class NetworkHandler {
 				PacketUpdateRemoteLayout::toBytes, PacketUpdateRemoteLayout::new, PacketUpdateRemoteLayout::handle);
 		registerMessage(PacketSetGlobalVariable.class,
 				PacketSetGlobalVariable::toBytes, PacketSetGlobalVariable::new, PacketSetGlobalVariable::handle);
-		registerMessage(PacketAddSemiBlock.class,
-				PacketAddSemiBlock::toBytes, PacketAddSemiBlock::new, PacketAddSemiBlock::handle);
-		registerMessage(PacketRemoveSemiBlock.class,
-				PacketRemoveSemiBlock::toBytes, PacketRemoveSemiBlock::new, PacketRemoveSemiBlock::handle);
-		registerMessage(PacketSetLogisticsFilterStack.class,
-				PacketSetLogisticsFilterStack::toBytes, PacketSetLogisticsFilterStack::new, PacketSetLogisticsFilterStack::handle);
-		registerMessage(PacketSetLogisticsFluidFilterStack.class,
-				PacketSetLogisticsFluidFilterStack::toBytes, PacketSetLogisticsFluidFilterStack::new, PacketSetLogisticsFluidFilterStack::handle);
-		registerMessage(PacketSetLogisticsMinAmounts.class,
-				PacketSetLogisticsMinAmounts::toBytes, PacketSetLogisticsMinAmounts::new, PacketSetLogisticsMinAmounts::handle);
+//		registerMessage(PacketSetLogisticsFilterStack.class,
+//				PacketSetLogisticsFilterStack::toBytes, PacketSetLogisticsFilterStack::new, PacketSetLogisticsFilterStack::handle);
+//		registerMessage(PacketSetLogisticsFluidFilterStack.class,
+//				PacketSetLogisticsFluidFilterStack::toBytes, PacketSetLogisticsFluidFilterStack::new, PacketSetLogisticsFluidFilterStack::handle);
+//		registerMessage(PacketSetLogisticsMinAmounts.class,
+//				PacketSetLogisticsMinAmounts::toBytes, PacketSetLogisticsMinAmounts::new, PacketSetLogisticsMinAmounts::handle);
 		registerMessage(PacketServerTickTime.class,
 				PacketServerTickTime::toBytes, PacketServerTickTime::new, PacketServerTickTime::handle);
 		registerMessage(PacketUpdatePressureBlock.class,
@@ -193,6 +189,8 @@ public class NetworkHandler {
 				PacketChestplateLauncher::toBytes, PacketChestplateLauncher::new, PacketChestplateLauncher::handle);
 		registerMessage(PacketSyncRecipes.class,
 				PacketSyncRecipes::toBytes, PacketSyncRecipes::new, PacketSyncRecipes::handle);
+		registerMessage(PacketSyncSemiblock.class,
+				PacketSyncSemiblock::toBytes, PacketSyncSemiblock::new, PacketSyncSemiblock::handle);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {

@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 public class ItemLogisticsFrameDefaultStorage extends ItemLogisticsFrame {
     @Override
     protected ContainerType<?> getContainerType() {
-        return ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE.get();
+        return ModContainers.LOGISTICS_FRAME_STORAGE.get();
     }
 
     @Override

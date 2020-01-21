@@ -173,12 +173,11 @@ minecraft {
 dependencies {
     minecraft "net.minecraftforge:forge:1.14.4-28.1.113-model-system-rework"
 //    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    compile fg.deobf (project.dependencies.create("mcjty.theoneprobe:TheOneProbe-1.14:${top_version}") {
-        transitive = false
-    })
     compile fg.deobf (project.dependencies.create("mcp.mobius.waila:Hwyla:${hwyla_version}") {
         transitive = false
     })
+    compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.14:${top_version}:api")
+    runtime fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.14:${top_version}")
     compileOnly fg.deobf("mezz.jei:jei-1.14.4:${jei_version}:api")
     runtime fg.deobf("mezz.jei:jei-1.14.4:${jei_version}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"

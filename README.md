@@ -47,4 +47,5 @@ PneumaticCraft: Repressurized is licensed under the GNU GPLv3: https://www.gnu.o
 PneumaticCraft: Repressurized also includes the following free sound resources, which are licensed separately:
 
 * https://freesound.org/people/ThompsonMan/sounds/237245/ (CC BY 3.0)
+* https://freesound.org/people/Crinkem/sounds/481787/ (CC0 1.0)
 

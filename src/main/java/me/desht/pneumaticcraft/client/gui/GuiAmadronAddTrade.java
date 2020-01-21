@@ -27,6 +27,7 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -86,14 +87,10 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
 
         addButton(addButton = new Button(guiLeft + 50, guiTop + 164, 85, 20, "Add Trade", b -> addTrade()));
 
-        Fluid oldInputFluid = inputFluid != null ? inputFluid.getFluid() : null;
-        Fluid oldOutputFluid = outputFluid != null ? outputFluid.getFluid() : null;
-        inputFluid = new WidgetFluidFilter(guiLeft + 10, guiTop + 90);
-        outputFluid = new WidgetFluidFilter(guiLeft + 99, guiTop + 90);
-        inputFluid.setFluid(oldInputFluid);
-        outputFluid.setFluid(oldOutputFluid);
-        addButton(inputFluid);
-        addButton(outputFluid);
+        Fluid oldInputFluid = inputFluid != null ? inputFluid.getFluid() : Fluids.EMPTY;
+        Fluid oldOutputFluid = outputFluid != null ? outputFluid.getFluid() : Fluids.EMPTY;
+        addButton(inputFluid = new WidgetFluidFilter(guiLeft + 10, guiTop + 90, oldInputFluid));
+        addButton(outputFluid = new WidgetFluidFilter(guiLeft + 99, guiTop + 90, oldOutputFluid));
 
         if (tradeType == TradeType.PLAYER) {
             WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + 10, guiTop + 115, 20, 20, "", b -> openGPSGui(true));
@@ -115,19 +112,19 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
 
         if (searchGui != null) {
             if (isSettingInput) {
-                inputFluid.setFluid(null);
+                inputFluid.setFluid(Fluids.EMPTY);
                 container.setStack(0, searchGui.getSearchStack());
             } else {
-                outputFluid.setFluid(null);
+                outputFluid.setFluid(Fluids.EMPTY);
                 container.setStack(1, searchGui.getSearchStack());
             }
         }
         if (invSearchGui != null) {
             if (isSettingInput) {
-                inputFluid.setFluid(null);
+                inputFluid.setFluid(Fluids.EMPTY);
                 container.setStack(0, invSearchGui.getSearchStack());
             } else {
-                outputFluid.setFluid(null);
+                outputFluid.setFluid(Fluids.EMPTY);
                 container.setStack(1, invSearchGui.getSearchStack());
             }
         }
@@ -152,8 +149,8 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         invSearchGui = null;
         gpsSearchGui = null;
 
-        WidgetLabel inputNumberLabel = new WidgetLabel(guiLeft + 52, guiTop + 145, container.getInputStack().isEmpty() ? inputFluid.getFluid() != null ? "mB" : "" : "x", 0xFFFFFFFF);
-        WidgetLabel outputNumberLabel = new WidgetLabel(guiLeft + 149, guiTop + 145, container.getOutputStack().isEmpty() ? outputFluid.getFluid() != null ? "mB" : "" : "x", 0xFFFFFFFF);
+        WidgetLabel inputNumberLabel = new WidgetLabel(guiLeft + 52, guiTop + 145, container.getInputStack().isEmpty() ? inputFluid.getFluid() != Fluids.EMPTY ? "mB" : "" : "x", 0xFFFFFFFF);
+        WidgetLabel outputNumberLabel = new WidgetLabel(guiLeft + 149, guiTop + 145, container.getOutputStack().isEmpty() ? outputFluid.getFluid() != Fluids.EMPTY ? "mB" : "" : "x", 0xFFFFFFFF);
         addButton(inputNumberLabel);
         addButton(outputNumberLabel);
     }
@@ -169,7 +166,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void openItemSearchGui(boolean isInput) {
-        ClientUtils.openContainerGui(ModContainers.SEARCHER.get(), new StringTextComponent("Item Search"));
+        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new StringTextComponent("Item Search"));
         if (minecraft.currentScreen instanceof GuiItemSearcher) {
             isSettingInput = isInput;
             searchGui = (GuiItemSearcher) minecraft.currentScreen;
@@ -260,8 +257,8 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
                 || (getPosition(ContainerAmadronAddTrade.INPUT_SLOT) != null && getPosition(ContainerAmadronAddTrade.OUTPUT_SLOT) != null);
         addButton.active = inputNumber.getValue() > 0
                 && outputNumber.getValue() > 0
-                && (inputFluid.getFluid() != null || !container.getInputStack().isEmpty())
-                && (outputFluid.getFluid() != null || !container.getOutputStack().isEmpty())
+                && (inputFluid.getFluid() != Fluids.EMPTY || !container.getInputStack().isEmpty())
+                && (outputFluid.getFluid() != Fluids.EMPTY || !container.getOutputStack().isEmpty())
                 && posOK;
     }
 

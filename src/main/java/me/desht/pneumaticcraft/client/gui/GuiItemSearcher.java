@@ -3,11 +3,12 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.inventory.ContainerSearcher;
+import me.desht.pneumaticcraft.common.inventory.ContainerItemSearcher;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -34,7 +35,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class GuiItemSearcher extends DisplayEffectsScreen<ContainerSearcher> {
+public class GuiItemSearcher extends DisplayEffectsScreen<ContainerItemSearcher> {
     private static final ResourceLocation GUI_TEXTURE = Textures.GUI_ITEM_SEARCHER_LOCATION;
     private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
     private static List<SearchEntry> cachedSearchEntries;
@@ -49,10 +50,9 @@ public class GuiItemSearcher extends DisplayEffectsScreen<ContainerSearcher> {
     private TextFieldWidget searchField;
     private boolean firstRun = true;
 
-    public GuiItemSearcher(ContainerSearcher container, PlayerInventory playerInventory, ITextComponent displayString) {
+    public GuiItemSearcher(ContainerItemSearcher container, PlayerInventory playerInventory, ITextComponent displayString) {
         super(container, playerInventory, displayString);
 
-        playerInventory.player.openContainer = container;
         passEvents = true;
         ySize = 176;
         parentScreen = Minecraft.getInstance().currentScreen;
@@ -111,6 +111,9 @@ public class GuiItemSearcher extends DisplayEffectsScreen<ContainerSearcher> {
         minecraft.keyboardListener.enableRepeatEvents(false);
         if (parentScreen != null) {
             minecraft.displayGuiScreen(parentScreen);
+            if (parentScreen instanceof ContainerScreen) {
+                minecraft.player.openContainer = ((ContainerScreen) parentScreen).getContainer();
+            }
         } else {
             super.onClose();
         }
@@ -131,7 +134,7 @@ public class GuiItemSearcher extends DisplayEffectsScreen<ContainerSearcher> {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            minecraft.player.closeScreen();
+            onClose();
         }
         return !searchField.keyPressed(keyCode, scanCode, modifiers)
                 && searchField.func_212955_f() || super.keyPressed(keyCode, scanCode, modifiers);

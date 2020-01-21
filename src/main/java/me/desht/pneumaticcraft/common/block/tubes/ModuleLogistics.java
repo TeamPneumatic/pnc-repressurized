@@ -4,13 +4,15 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticModule;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockLogistics;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
+import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
+import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
@@ -30,15 +32,16 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 public class ModuleLogistics extends TubeModule implements INetworkedModule {
-    private SemiBlockLogistics cachedFrame;
+    private static final double MIN_PRESSURE = 3;
+    private static final double ITEM_TRANSPORT_COST = 2.5;  // per item per block distance
+    private static final double FLUID_TRANSPORT_COST = 0.05;  // per mB per block distance
+
+    private EntityLogisticsFrame cachedFrame;
     private int colorChannel;
     private int ticksSinceAction = -1; // client sided timer used to display the blue color when doing a logistic task.
     private int ticksSinceNotEnoughAir = -1;
     private int ticksUntilNextCycle;
     private boolean powered;
-    private static final double MIN_PRESSURE = 3;
-    private static final double ITEM_TRANSPORT_COST = 2.5;
-    private static final double FLUID_TRANSPORT_COST = 0.05;
 
     public ModuleLogistics(ItemTubeModule itemTubeModule) {
         super(itemTubeModule);
@@ -97,9 +100,12 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         colorChannel = nbt.getByte("colorChannel");
     }
 
-    public SemiBlockLogistics getFrame() {
+    public EntityLogisticsFrame getFrame() {
         if (cachedFrame == null) {
-            cachedFrame = SemiBlockManager.getInstance(getTube().getWorld()).getSemiBlock(SemiBlockLogistics.class, getTube().getWorld(), getTube().getPos().offset(dir));
+            ISemiBlock semiBlock = SemiblockTracker.getInstance().getSemiblock(getTube().getWorld(), getTube().getPos().offset(dir));
+            if (semiBlock instanceof EntityLogisticsFrame) {
+                cachedFrame = (EntityLogisticsFrame) semiBlock;
+            }
         }
         return cachedFrame;
     }
@@ -125,7 +131,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     @Override
     public void update() {
         super.update();
-        if (cachedFrame != null && cachedFrame.isInvalid()) cachedFrame = null;
+        if (cachedFrame != null && !cachedFrame.isValid()) cachedFrame = null;
         if (!getTube().getWorld().isRemote) {
             if (powered != getTube().getPressure() >= MIN_PRESSURE) {
                 powered = !powered;
@@ -133,22 +139,22 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
             }
             if (--ticksUntilNextCycle <= 0) {
                 LogisticsManager manager = new LogisticsManager();
-                Map<SemiBlockLogistics, ModuleLogistics> frameToModuleMap = new HashMap<>();
-                Map<SemiBlockLogistics, Direction> frameToSide = new HashMap<>();
+                Map<Integer, ModuleLogistics> frame2module = new HashMap<>();
+                Map<Integer, Direction> frame2side = new HashMap<>();
                 for (TubeModule module : ModuleNetworkManager.getInstance(getTube().getWorld()).getConnectedModules(this)) {
                     if (module instanceof ModuleLogistics) {
                         ModuleLogistics logistics = (ModuleLogistics) module;
                         if (logistics.getColorChannel() == getColorChannel()) {
-                            // Make sure any connected module doesn't tick, set it to a 5 second timer.
+                            // Make sure any connected module doesn't tick; set it to a 5 second timer.
                             // This is also a penalty value when no task is executed this tick.
                             // The timer will be reduced to 20 ticks later if the module does some work.
                             logistics.ticksUntilNextCycle = 100;
                             if (logistics.hasPower() && logistics.getFrame() != null) {
                                 // make frame temporarily face the logistics module
-                                frameToSide.put(logistics.getFrame(), logistics.getFrame().getSide());
-                                logistics.getFrame().setSide(logistics.dir.getOpposite());
+                                frame2side.put(logistics.getFrame().getEntityId(), logistics.getFrame().getFacing());
+                                logistics.getFrame().setFacing(logistics.dir.getOpposite());
                                 // record the frame->module mapping and add the frame to the logistics manager
-                                frameToModuleMap.put(logistics.getFrame(), logistics);
+                                frame2module.put(logistics.getFrame().getEntityId(), logistics);
                                 manager.addLogisticFrame(logistics.getFrame());
                             }
                         }
@@ -157,17 +163,20 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
 
                 PriorityQueue<LogisticsTask> tasks = manager.getTasks(null);
                 for (LogisticsTask task : tasks) {
-                    if (task.isStillValid(task.transportingItem.isEmpty() ? task.transportingFluid.stack : task.transportingItem)) {
+                    if (task.isStillValid(task.transportingItem.isEmpty() ? task.transportingFluid : task.transportingItem)) {
                         if (!task.transportingItem.isEmpty()) {
-                            handleItems(frameToModuleMap.get(task.provider), frameToModuleMap.get(task.requester), task);
+                            handleItems(frame2module.get(task.provider.getEntityId()), frame2module.get(task.requester.getEntityId()), task);
                         } else {
-                            handleFluids(frameToModuleMap.get(task.provider), frameToModuleMap.get(task.requester), task);
+                            handleFluids(frame2module.get(task.provider.getEntityId()), frame2module.get(task.requester.getEntityId()), task);
                         }
                     }
                 }
 
                 // restore facing of frames
-                frameToSide.forEach(SemiBlockLogistics::setSide);
+                frame2side.forEach((id, dir) -> {
+                    Entity e = getTube().getWorld().getEntityByID(id);
+                    if (e instanceof EntityLogisticsFrame) ((EntityLogisticsFrame) e).setFacing(dir);
+                });
             }
         } else {
             if (ticksSinceAction >= 0) {
@@ -182,12 +191,12 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     private void handleItems(ModuleLogistics providingModule, ModuleLogistics requestingModule, LogisticsTask task) {
-        IOHelper.getInventoryForTE(task.requester.getTileEntity(), requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
+        IOHelper.getInventoryForTE(task.requester.getCachedTileEntity(), requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
             ItemStack remainder = ItemHandlerHelper.insertItem(requestingHandler, task.transportingItem, true);
             if (remainder.getCount() != task.transportingItem.getCount()) {
                 ItemStack toBeExtracted = task.transportingItem.copy();
                 toBeExtracted.shrink(remainder.getCount());
-                IOHelper.getInventoryForTE(task.provider.getTileEntity(), providingModule.dir.getOpposite())
+                IOHelper.getInventoryForTE(task.provider.getCachedTileEntity(), providingModule.dir.getOpposite())
                         .ifPresent(providingHandler -> tryItemTransfer(providingModule, requestingModule, providingHandler, requestingHandler, toBeExtracted));
             }
         });
@@ -220,12 +229,12 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     private void handleFluids(ModuleLogistics providingModule, ModuleLogistics requestingModule, LogisticsTask task) {
-        task.requester.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
-            int amountFilled = requestingHandler.fill(task.transportingFluid.stack, IFluidHandler.FluidAction.SIMULATE);
+        task.requester.getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
+            int amountFilled = requestingHandler.fill(task.transportingFluid, IFluidHandler.FluidAction.SIMULATE);
             if (amountFilled > 0) {
-                FluidStack drainingFluid = task.transportingFluid.stack.copy();
+                FluidStack drainingFluid = task.transportingFluid.copy();
                 drainingFluid.setAmount(amountFilled);
-                task.provider.getTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, providingModule.dir.getOpposite())
+                task.provider.getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, providingModule.dir.getOpposite())
                         .ifPresent(providingHandler -> tryFluidTransfer(providingModule, providingHandler, requestingModule, requestingHandler, drainingFluid));
             }
         });
@@ -233,7 +242,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
 
     private void tryFluidTransfer(ModuleLogistics providingModule, IFluidHandler providingHandler, ModuleLogistics requestingModule, IFluidHandler requestingHandler, FluidStack toTransfer) {
         FluidStack extractedFluid = providingHandler.drain(toTransfer, IFluidHandler.FluidAction.SIMULATE);
-        if (extractedFluid != null) {
+        if (!extractedFluid.isEmpty()) {
             requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(receiverAirHandler -> {
                 double airUsed = (FLUID_TRANSPORT_COST * extractedFluid.getAmount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getPos(), requestingModule.getTube().getPos()));
                 if (airUsed > receiverAirHandler.getAir()) {

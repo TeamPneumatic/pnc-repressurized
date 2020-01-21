@@ -53,7 +53,7 @@ public class GuiSearchUpgradeOptions extends IOptionPage.SimpleToggleableOptions
     }
 
     private void openSearchGui() {
-        ClientUtils.openContainerGui(ModContainers.SEARCHER.get(), new StringTextComponent("Search"));
+        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new StringTextComponent("Search"));
         if (Minecraft.getInstance().currentScreen instanceof GuiItemSearcher) {
             searchGui = (GuiItemSearcher) Minecraft.getInstance().currentScreen;
             if (!player.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()) {

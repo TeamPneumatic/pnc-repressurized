@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
+import me.desht.pneumaticcraft.common.entity.semiblock.EntitySpawnerAgitator;
 import me.desht.pneumaticcraft.common.hacking.block.HackableMobSpawner;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockSpawnerAgitator;
+import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.block.BlockState;
@@ -44,7 +44,7 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
             AbstractSpawner spawner = ((MobSpawnerTileEntity) te).getSpawnerBaseLogic();
             Entity e = spawner.getCachedEntity();
             infoList.add("Spawner Type: " + TextFormatting.AQUA + e.getName());
-            if (Reflections.isActivated(spawner) || SemiBlockManager.getInstance(world).getSemiBlock(SemiBlockSpawnerAgitator.class, world, pos) != null) {
+            if (Reflections.isActivated(spawner) || hasAgitator(world, pos)) {
                 infoList.add("Time until next spawn: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false));
             } else if (HackableMobSpawner.isHacked(world, pos)) {
                 infoList.add("Spawner is hacked");
@@ -52,7 +52,10 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
                 infoList.add("Spawner is standing by");
             }
         }
+    }
 
+    private boolean hasAgitator(World world, BlockPos pos) {
+        return SemiblockTracker.getInstance().getSemiblock(world, pos) instanceof EntitySpawnerAgitator;
     }
 
     @Override

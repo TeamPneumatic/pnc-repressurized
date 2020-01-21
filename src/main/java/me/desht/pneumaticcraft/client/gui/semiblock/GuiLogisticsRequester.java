@@ -1,24 +1,24 @@
 package me.desht.pneumaticcraft.client.gui.semiblock;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
+import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsRequester;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSetLogisticsMinAmounts;
-import me.desht.pneumaticcraft.common.semiblock.SemiBlockRequester;
+import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> {
-    private WidgetCheckBox aeIntegration;
+public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsRequester> {
+//    private WidgetCheckBox aeIntegration;
     private WidgetTextFieldNumber minItems;
     private WidgetTextFieldNumber minFluid;
-    private int packetSendDelay = 0;
 
     public GuiLogisticsRequester(ContainerLogistics container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -28,7 +28,7 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
     public void init() {
         super.init();
 
-        addAnimatedStat("gui.tab.info.ghostSlotInteraction.title", new ItemStack(Blocks.HOPPER), 0xFF00AAFF, true)
+        addAnimatedStat("gui.tab.info.ghostSlotInteraction.title", new ResourceLocation(Textures.GUI_LOCATION + "gui_mouse.png"), 0xFF00AAFF, true)
                 .setText("gui.tab.info.ghostSlotInteraction");
 
 //        if (ModList.get().isLoaded(ModIds.AE2)) {
@@ -53,48 +53,36 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<SemiBlockRequester> 
         minAmountStat.addPadding(7, 21);
 
         WidgetLabel minItemsLabel = new WidgetLabel(5, 20, I18n.format("gui.logistics_frame.min_items"));
-//        minItemsLabel.setTooltipText("gui.logistic_frame.min_items.tooltip");
+        minItemsLabel.setTooltipText("gui.logistics_frame.min_items.tooltip");
         minAmountStat.addSubWidget(minItemsLabel);
-        minItems = new WidgetTextFieldNumber(font, 5, 30, 30, 12);
-        minItems.minValue = 1;
-        minItems.maxValue = 64;
-        minItems.setResponder(s -> packetSendDelay = 8);
+        minItems = new WidgetTextFieldNumber(font, 5, 30, 30, 12)
+                .setRange(1, 64)
+                .setValue(logistics.getMinItemOrderSize());
+        minItems.setResponder(s -> sendDelayed(8));
         minAmountStat.addSubWidget(minItems);
 
         WidgetLabel minFluidLabel = new WidgetLabel(5, 47, I18n.format("gui.logistics_frame.min_fluid"));
-//        minFluidLabel.setTooltipText("gui.logistic_frame.min_fluid.tooltip");
+        minFluidLabel.setTooltipText("gui.logistics_frame.min_fluid.tooltip");
         minAmountStat.addSubWidget(minFluidLabel);
-        minFluid = new WidgetTextFieldNumber(font, 5, 57, 50, 12);
-        minFluid.minValue = 1;
-        minFluid.maxValue = 16000;
-        minItems.setResponder(s -> packetSendDelay = 8);
+        minFluid = new WidgetTextFieldNumber(font, 5, 57, 50, 12)
+                .setRange(1, 16000)
+                .setValue(logistics.getMinFluidOrderSize());
+        minFluid.setResponder(s -> sendDelayed(8));
         minAmountStat.addSubWidget(minFluid);
     }
 
     @Override
     public void tick() {
-        if (firstUpdate) {
-            // do this before calling superclass method
-            minItems.setValue(logistics.getMinItemOrderSize());
-            minFluid.setValue(logistics.getMinFluidOrderSize());
-        }
-
         super.tick();
-
-        if (aeIntegration != null) {
-            aeIntegration.checked = logistics.isIntegrationEnabled();
-        }
-
-        if (packetSendDelay > 0 && --packetSendDelay == 0) {
-            NetworkHandler.sendToServer(new PacketSetLogisticsMinAmounts(logistics, minItems.getValue(), minFluid.getValue()));
-        }
+//        if (aeIntegration != null) {
+//            aeIntegration.checked = logistics.isIntegrationEnabled();
+//        }
     }
 
     @Override
-    public void onClose() {
-        if (packetSendDelay > 0) {
-            NetworkHandler.sendToServer(new PacketSetLogisticsMinAmounts(logistics, minItems.getValue(), minFluid.getValue()));
-        }
-        super.onClose();
+    protected void doDelayedAction() {
+        logistics.setMinItemOrderSize(minItems.getValue());
+        logistics.setMinFluidOrderSize(minFluid.getValue());
+        NetworkHandler.sendToServer(new PacketSyncSemiblock(logistics));
     }
 }
