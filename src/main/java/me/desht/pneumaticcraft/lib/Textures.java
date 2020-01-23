@@ -232,6 +232,7 @@ public class Textures {
     public static final ResourceLocation GUI_WARNING_TEXTURE = guiTexture("gui_warning.png");
     public static final ResourceLocation GUI_NO_PROBLEMS_TEXTURE = guiTexture("gui_no_problem.png");
     public static final ResourceLocation GUI_INFO_LOCATION = guiTexture("gui_info.png");
+    public static final ResourceLocation GUI_MOUSE_LOCATION = guiTexture("gui_mouse.png");
     public static final ResourceLocation GUI_UPGRADES_LOCATION = guiTexture("gui_upgrade.png");
     public static final ResourceLocation GUI_X_BUTTON = guiTexture("gui_x_button.png");
     public static final ResourceLocation GUI_PASTEBIN_ICON_LOCATION = guiTexture("gui_pastebin_icon.png");
@@ -245,7 +246,6 @@ public class Textures {
     public static final ResourceLocation GUI_CHARGING_STATION_LOCATION = guiTexture("gui_charging_station.png");
     public static final ResourceLocation GUI_PNEUMATIC_ARMOR_LOCATION = guiTexture("gui_pneumatic_armor.png");
     public static final ResourceLocation GUI_PRESSURE_CHAMBER_INTERFACE_LOCATION = guiTexture("gui_pressure_chamber_interface.png");
-    public static final ResourceLocation GUI_PRESSURE_CHAMBER_INTERFACE_CREATIVE_FILTER_LOCATION = guiTexture( "gui_pressure_chamber_interface_creative_filter.png");
     public static final ResourceLocation GUI_VACUUM_PUMP_LOCATION = guiTexture("gui_vacuum_pump.png");
     public static final ResourceLocation GUI_ITEM_SEARCHER_LOCATION = guiTexture("gui_item_searcher.png");
     public static final ResourceLocation GUI_ASSEMBLY_CONTROLLER = guiTexture("gui_assembly_controller.png");

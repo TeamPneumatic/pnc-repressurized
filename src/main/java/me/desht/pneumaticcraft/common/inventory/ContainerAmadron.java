@@ -29,7 +29,6 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Hand;
-import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.GlobalPos;
@@ -52,16 +51,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     public static final int ROWS = 4;
     public static final int OFFERS_PER_PAGE = ROWS * 2;
 
-    // Set client-side when a PacketSyncAmadronOffers is received.  Only controls button visibility; actual control
-    // is done server-side via permissions API.  So make button available unless server tells us no.  Worst that
-    // can happen is button does nothing.
-//    public static boolean mayAddPeriodicOffers = true;
-//    public static boolean mayAddStaticOffers = true;
-
     public final List<AmadronOffer> offers = new ArrayList<>(AmadronOfferManager.getInstance().getAllOffers());
-
     private final ItemStackHandler inv = new ItemStackHandler(OFFERS_PER_PAGE * 2);
-
     @GuiSynced
     private final int[] shoppingItems = new int[OFFERS_PER_PAGE];
     @GuiSynced
@@ -77,8 +68,10 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     public int currentOffers = 0;
     @GuiSynced
     private boolean basketEmpty = true;
-
-    private final IntReferenceHolder permsHolder = IntReferenceHolder.single();
+    @GuiSynced
+    private boolean mayAddStaticTrades;
+    @GuiSynced
+    private boolean mayAddPeriodicTrades;
 
     public enum EnumProblemState {
         NO_PROBLEMS("noProblems"),
@@ -115,9 +108,6 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         addSyncedFields(this);
         Arrays.fill(shoppingItems, -1);
 
-        trackInt(permsHolder);
-
-
         PlayerEntity player = invPlayer.player;
         if (!player.world.isRemote) {
             IItemHandler itemHandler = ItemAmadronTablet.getItemCapability(player.getHeldItem(hand)).map(h -> h).orElse(null);
@@ -142,10 +132,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             basketEmpty = Arrays.stream(shoppingAmounts).noneMatch(shoppingAmount -> shoppingAmount > 0);
             currentOffers = AmadronOfferManager.getInstance().countOffers(player.getGameProfile().getId().toString());
             maxOffers = PneumaticCraftUtils.isPlayerOp(player) ? Integer.MAX_VALUE : PNCConfig.Common.Amadron.maxTradesPerPlayer;
-
-            int n = (PermissionAPI.hasPermission(player, Names.AMADRON_ADD_PERIODIC_TRADE) ? 0x1 : 0)
-                    | (PermissionAPI.hasPermission(player, Names.AMADRON_ADD_STATIC_TRADE) ? 0x2 : 0);
-            permsHolder.set(n);
+            mayAddStaticTrades = PermissionAPI.hasPermission(player, Names.AMADRON_ADD_STATIC_TRADE);
+            mayAddPeriodicTrades = PermissionAPI.hasPermission(player, Names.AMADRON_ADD_PERIODIC_TRADE);
         }
     }
 
@@ -162,11 +150,11 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     public boolean mayAddPeriodicTrades() {
-        return (permsHolder.get() & 0x1) != 0;
+        return mayAddPeriodicTrades;
     }
 
     public boolean mayAddStaticTrades() {
-        return (permsHolder.get() & 0x2) != 0;
+        return mayAddStaticTrades;
     }
 
     @Override

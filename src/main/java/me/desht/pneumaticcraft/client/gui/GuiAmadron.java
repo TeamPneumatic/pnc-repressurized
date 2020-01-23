@@ -12,7 +12,6 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -36,6 +35,8 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     private boolean hadProblem = false;
     private WidgetButtonExtended orderButton;
     private WidgetButtonExtended addTradeButton;
+    private WidgetButtonExtended addPeriodicButton;
+    private WidgetButtonExtended addStaticButton;
 
     public GuiAmadron(ContainerAmadron container, PlayerInventory inv, @SuppressWarnings("unused") ITextComponent displayString) {
         super(container, inv, new StringTextComponent(""));
@@ -52,7 +53,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         addLabel(I18n.format("gui.search"), guiLeft + 76 - font.getStringWidth(I18n.format("gui.search")), guiTop + 41, 0xFFFFFF);
 
         addInfoTab(I18n.format("gui.tooltip.item.pneumaticcraft.amadron_tablet"));
-        addAnimatedStat("gui.tab.info.ghostSlotInteraction.title", new ItemStack(Blocks.HOPPER), 0xFF00AAFF, true)
+        addAnimatedStat("gui.tab.info.ghostSlotInteraction.title", Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
                 .setText("gui.tab.info.ghostSlotInteraction");
         addAnimatedStat("gui.tab.amadron.disclaimer.title", new ItemStack(Items.WRITABLE_BOOK), 0xFF0000FF, true)
                 .setText("gui.tab.amadron.disclaimer");
@@ -79,17 +80,13 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
                 .setRenderStacks(new ItemStack(Items.GOLD_INGOT)).withTag("addPlayerTrade");
         customTrades.addSubWidget(addTradeButton);
         int startX = 40;
-        if (container.mayAddPeriodicTrades()) {
-            WidgetButtonExtended addPeriodicButton = new WidgetButtonExtended(startX, 16, 20, 20, "")
-                    .setRenderStacks(new ItemStack(Items.CLOCK)).setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addPeriodicTrade"), 40)).withTag("addPeriodicTrade");
-            customTrades.addSubWidget(addPeriodicButton);
-            startX += 24;
-        }
-        if (container.mayAddStaticTrades()) {
-            WidgetButtonExtended addStaticButton = new WidgetButtonExtended(startX, 16, 20, 20, "")
-                    .setRenderStacks(new ItemStack(Items.EMERALD)).setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addStaticTrade"), 40)).withTag("addStaticTrade");
-            customTrades.addSubWidget(addStaticButton);
-        }
+        addPeriodicButton = new WidgetButtonExtended(startX, 16, 20, 20, "")
+                .setRenderStacks(new ItemStack(Items.CLOCK)).setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addPeriodicTrade"), 40)).withTag("addPeriodicTrade");
+        customTrades.addSubWidget(addPeriodicButton);
+        startX += 24;
+        addStaticButton = new WidgetButtonExtended(startX, 16, 20, 20, "")
+                .setRenderStacks(new ItemStack(Items.EMERALD)).setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addStaticTrade"), 40)).withTag("addStaticTrade");
+        customTrades.addSubWidget(addStaticButton);
 
         needsRefreshing = true;
     }
@@ -131,6 +128,8 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         tooltip.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addTrade.tooltip"), 40));
         tooltip.add((addTradeButton.active ? TextFormatting.GRAY : TextFormatting.RED) + I18n.format("gui.amadron.button.addTrade.tooltip.offerCount", container.currentOffers, container.maxOffers == Integer.MAX_VALUE ? "\u221E" : container.maxOffers));
         addTradeButton.setTooltipText(tooltip);
+        addPeriodicButton.setVisible(container.mayAddPeriodicTrades());
+        addStaticButton.setVisible(container.mayAddStaticTrades());
     }
 
     public void setPage(int page) {
