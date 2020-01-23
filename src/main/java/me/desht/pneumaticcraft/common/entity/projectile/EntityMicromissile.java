@@ -73,8 +73,8 @@ public class EntityMicromissile extends ThrowableEntity {
                     explosionPower = Math.max(1f, 5 * tag.getFloat(ItemMicromissiles.NBT_DAMAGE));
                     break;
                 case DUMB:
-                    accel = 1.02f;
-                    maxVelocitySq = 2f;
+                    accel = 1.5f;
+                    maxVelocitySq = 6.25f;
                     turnSpeed = 0f;
                     explosionPower = 3f;
                     break;
