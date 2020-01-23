@@ -237,7 +237,7 @@ public class ClientEventHandler {
                     mc.fontRenderer.drawString(text, 0, 0, minigun.getAmmoColor());
                     GlStateManager.popMatrix();
                 }
-                mc.getTextureManager().bindTexture(Textures.GUI_MINIGUN_CROSSHAIR);
+                mc.getTextureManager().bindTexture(Textures.MINIGUN_CROSSHAIR);
                 GlStateManager.enableBlend();
                 GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                 GlStateManager.color4f(0.2f, 1.0f, 0.2f, 0.6f);

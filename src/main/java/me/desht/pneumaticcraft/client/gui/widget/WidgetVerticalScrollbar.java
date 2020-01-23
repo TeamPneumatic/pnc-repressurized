@@ -4,13 +4,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 
 public class WidgetVerticalScrollbar extends Widget {
-    private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation(Textures.GUI_LOCATION + "widget/vertical_scrollbar.png");
-    
     public float currentScroll;
     private int states;
     private boolean listening;
@@ -73,7 +70,7 @@ public class WidgetVerticalScrollbar extends Widget {
     public void renderButton(int mouseX, int mouseY, float partialTick) {
         if (visible) {
             GlStateManager.color4f(1, 1, 1, 1);
-            Minecraft.getInstance().getTextureManager().bindTexture(SCROLL_TEXTURE);
+            Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_VERTICAL_SCROLLBAR);
             blit(x, y, 12, 0, width, 1, 26, 15);
             for (int i = 0; i < height - 2; i++)
                 blit(x, y + 1 + i, 12, 1, width, 1, 26, 15);

@@ -12,7 +12,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsRequester> {
@@ -28,7 +27,7 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsReque
     public void init() {
         super.init();
 
-        addAnimatedStat("gui.tab.info.ghostSlotInteraction.title", new ResourceLocation(Textures.GUI_LOCATION + "gui_mouse.png"), 0xFF00AAFF, true)
+        addAnimatedStat("gui.tab.info.ghostSlotInteraction.title", Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
                 .setText("gui.tab.info.ghostSlotInteraction");
 
 //        if (ModList.get().isLoaded(ModIds.AE2)) {

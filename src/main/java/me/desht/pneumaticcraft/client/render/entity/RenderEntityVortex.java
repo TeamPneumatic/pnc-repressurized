@@ -19,8 +19,8 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
 
 public class RenderEntityVortex extends DefaultRenderer {
-
-    private static final ResourceLocation TEXTURE = new ResourceLocation("pneumaticcraft:textures/items/" + Textures.ITEM_VORTEX + ".png");
+    private static final int CIRCLE_POINTS = 200;
+    private static final double RADIUS = 0.5D;
 
     public static final IRenderFactory<EntityVortex> FACTORY = RenderEntityVortex::new;
 
@@ -33,8 +33,6 @@ public class RenderEntityVortex extends DefaultRenderer {
             entity.setRenderOffsetX(calculateXoffset());
         }
 
-        int circlePoints = 200;
-        double radius = 0.5D;
         GlStateManager.pushMatrix();
         GlStateManager.enableRescaleNormal();
         GlStateManager.disableTexture();
@@ -46,10 +44,10 @@ public class RenderEntityVortex extends DefaultRenderer {
 
         GlStateManager.rotated(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks, 0.0F, 1.0F, 0.0F);
 
-        for (int i = 0; i < circlePoints; i++) {
-            float angleRadians = (float) i / (float) circlePoints * 2F * (float) Math.PI;
+        for (int i = 0; i < CIRCLE_POINTS; i++) {
+            float angleRadians = (float) i / (float) CIRCLE_POINTS * 2F * (float) Math.PI;
             GlStateManager.pushMatrix();
-            GlStateManager.translated(radius * MathHelper.sin(angleRadians), radius * MathHelper.cos(angleRadians), 0);
+            GlStateManager.translated(RADIUS * MathHelper.sin(angleRadians), RADIUS * MathHelper.cos(angleRadians), 0);
             renderGust(entity.getRenderOffsetX());
             GlStateManager.popMatrix();
         }
@@ -127,7 +125,6 @@ public class RenderEntityVortex extends DefaultRenderer {
         wr.pos(-7.0D, -2.0D, 2.0D).tex(f7, f9).endVertex();
         wr.pos(-7.0D, -2.0D, -2.0D).tex(f6, f9).endVertex();
         Tessellator.getInstance().draw();
-
     }
 
     @Override
@@ -137,6 +134,6 @@ public class RenderEntityVortex extends DefaultRenderer {
 
     @Override
     protected ResourceLocation getEntityTexture(Entity par1Entity) {
-        return TEXTURE;
+        return Textures.VORTEX;
     }
 }

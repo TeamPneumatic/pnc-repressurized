@@ -31,7 +31,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
 
         EnumOperator(String name) {
             this.name = name;
-            texture = new ResourceLocation(Textures.PROG_WIDGET_LOCATION + "coordinate_operation_" + name + ".png");
+            this.texture = Textures.progWidgetTexture("coordinate_operation_" + name + ".png");
         }
 
         public String getTranslationKey() {
