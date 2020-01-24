@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:aerial_interface"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

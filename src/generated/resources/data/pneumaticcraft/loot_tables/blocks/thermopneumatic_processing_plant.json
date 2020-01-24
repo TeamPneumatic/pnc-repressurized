@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:thermopneumatic_processing_plant"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

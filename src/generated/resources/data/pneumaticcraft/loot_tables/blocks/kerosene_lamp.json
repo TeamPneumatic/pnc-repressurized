@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:kerosene_lamp"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

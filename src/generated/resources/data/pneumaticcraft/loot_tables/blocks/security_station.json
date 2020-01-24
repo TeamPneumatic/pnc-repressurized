@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:security_station"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

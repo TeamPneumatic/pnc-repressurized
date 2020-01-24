@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:electrostatic_compressor"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

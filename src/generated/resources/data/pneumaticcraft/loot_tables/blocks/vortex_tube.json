@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:vortex_tube"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:flux_compressor"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:assembly_io_unit_export"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

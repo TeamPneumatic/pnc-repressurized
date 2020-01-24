@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:pneumatic_dynamo"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

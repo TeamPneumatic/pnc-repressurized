@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T ",
+    "IRI",
+    "IRI"
+  ],
+  "key": {
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "I": {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:air_canister"
+  }
+}

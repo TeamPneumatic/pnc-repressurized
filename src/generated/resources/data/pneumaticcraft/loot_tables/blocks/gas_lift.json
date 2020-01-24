@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:gas_lift"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

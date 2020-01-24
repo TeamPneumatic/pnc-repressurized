@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:compressed_iron_block"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

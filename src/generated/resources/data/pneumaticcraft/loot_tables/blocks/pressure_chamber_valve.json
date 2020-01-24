@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:pressure_chamber_valve"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

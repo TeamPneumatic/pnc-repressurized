@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:creative_compressor"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

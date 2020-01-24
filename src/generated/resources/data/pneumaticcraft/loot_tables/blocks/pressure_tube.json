@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:pressure_tube"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

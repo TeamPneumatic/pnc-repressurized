@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:assembly_controller"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

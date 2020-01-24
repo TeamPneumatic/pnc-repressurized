@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:advanced_air_compressor"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

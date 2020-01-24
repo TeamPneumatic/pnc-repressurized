@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:liquid_hopper"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

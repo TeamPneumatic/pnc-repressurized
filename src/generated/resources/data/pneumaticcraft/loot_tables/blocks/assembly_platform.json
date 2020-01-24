@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:assembly_platform"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

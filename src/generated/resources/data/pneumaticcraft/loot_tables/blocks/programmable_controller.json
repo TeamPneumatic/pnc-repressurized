@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:programmable_controller"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:sentry_turret"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:uv_light_box"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

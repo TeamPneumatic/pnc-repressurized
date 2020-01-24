@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:aphorism_tile"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

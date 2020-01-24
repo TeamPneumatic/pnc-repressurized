@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:elevator_caller"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

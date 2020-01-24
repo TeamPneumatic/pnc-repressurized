@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:refinery_output"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

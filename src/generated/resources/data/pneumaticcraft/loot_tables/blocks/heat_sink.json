@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:heat_sink"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

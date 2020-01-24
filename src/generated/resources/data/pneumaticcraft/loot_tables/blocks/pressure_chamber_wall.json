@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:pressure_chamber_wall"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

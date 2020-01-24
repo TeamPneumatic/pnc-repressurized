@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:assembly_laser"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

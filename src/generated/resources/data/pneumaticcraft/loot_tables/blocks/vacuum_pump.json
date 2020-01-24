@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:vacuum_pump"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

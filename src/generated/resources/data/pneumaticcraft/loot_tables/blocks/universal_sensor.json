@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:universal_sensor"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

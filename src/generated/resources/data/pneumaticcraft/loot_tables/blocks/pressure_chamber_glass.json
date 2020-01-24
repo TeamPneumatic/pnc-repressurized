@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:pressure_chamber_glass"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

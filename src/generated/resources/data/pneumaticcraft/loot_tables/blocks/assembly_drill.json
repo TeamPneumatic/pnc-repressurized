@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:assembly_drill"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

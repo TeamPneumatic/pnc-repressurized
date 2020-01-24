@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:elevator_base"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

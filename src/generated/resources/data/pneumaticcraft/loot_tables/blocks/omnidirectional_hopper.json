@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:omnidirectional_hopper"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]

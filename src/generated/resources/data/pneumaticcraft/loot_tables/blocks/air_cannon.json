@@ -18,6 +18,11 @@
           ],
           "name": "pneumaticcraft:air_cannon"
         }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
       ]
     }
   ]
