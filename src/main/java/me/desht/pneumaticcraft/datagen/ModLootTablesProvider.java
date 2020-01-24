@@ -9,8 +9,10 @@ import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.LootTableProvider;
 import net.minecraft.data.loot.BlockLootTables;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.*;
+import net.minecraft.world.storage.loot.conditions.SurvivesExplosion;
 import net.minecraft.world.storage.loot.functions.CopyName;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -47,10 +49,10 @@ public class ModLootTablesProvider extends LootTableProvider {
                         && b.hasTileEntity(b.getDefaultState())
                         && ForgeRegistries.ITEMS.containsKey(b.getRegistryName())) {
                     addStandardSerializedDrop(b);
+                } else if (b.asItem() != Items.AIR) {
+                    registerDropSelfLootTable(b);
                 }
             }
-
-            registerDropSelfLootTable(ModBlocks.DRILL_PIPE.get());
         }
 
         @Override
@@ -67,6 +69,7 @@ public class ModLootTablesProvider extends LootTableProvider {
         private void addStandardSerializedDrop(Block block) {
             LootPool.Builder builder = LootPool.builder()
                     .name(block.getRegistryName().getPath())
+                    .acceptCondition(SurvivesExplosion::new)
                     .rolls(ConstantRange.of(1))
                     .addEntry(ItemLootEntry.builder(block)
                             .acceptFunction(CopyName.builder(CopyName.Source.BLOCK_ENTITY))
