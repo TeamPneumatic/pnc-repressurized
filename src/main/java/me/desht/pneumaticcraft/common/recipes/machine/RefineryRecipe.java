@@ -1,28 +1,33 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.recipe.IRefineryRecipe;
 import me.desht.pneumaticcraft.common.recipes.AbstractRecipeSerializer;
+import me.desht.pneumaticcraft.common.recipes.MachineRecipeHandler;
+import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
 public class RefineryRecipe implements IRefineryRecipe {
-	public static final ResourceLocation RECIPE_TYPE = RL("refinery");
-
-	public final FluidStack input;
+	public final FluidIngredient input;
 	public final List<FluidStack> outputs;
 	private ResourceLocation id;
 	private final TemperatureRange operatingTemp;
 
-	public RefineryRecipe(ResourceLocation id, FluidStack input, TemperatureRange operatingTemp, FluidStack... outputs) {
+	public RefineryRecipe(ResourceLocation id, FluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs) {
 		this.id = id;
 		this.operatingTemp = operatingTemp;
 		if (outputs.length < 2 || outputs.length > MAX_OUTPUTS) {
@@ -33,7 +38,7 @@ public class RefineryRecipe implements IRefineryRecipe {
 	}
 
 	@Override
-	public FluidStack getInput() {
+	public FluidIngredient getInput() {
 		return input;
 	}
 
@@ -54,20 +59,31 @@ public class RefineryRecipe implements IRefineryRecipe {
 
 	@Override
 	public ResourceLocation getRecipeType() {
-		return RECIPE_TYPE;
+		return MachineRecipeHandler.Category.REFINERY.getId();
 	}
 
 	public static class Serializer extends AbstractRecipeSerializer<RefineryRecipe> {
-
         @Override
         public RefineryRecipe read(ResourceLocation recipeId, JsonObject json) {
-            return null;
+        	Ingredient input = FluidIngredient.deserialize(json.get("input"));
+        	int minTemp = JSONUtils.getInt(json, "min_temp", 373);
+        	int maxTemp = JSONUtils.getInt(json, "max_temp", Integer.MAX_VALUE);
+        	JsonArray outputs = json.get("results").getAsJsonArray();
+        	if (outputs.size() < 2 || outputs.size() > IRefineryRecipe.MAX_OUTPUTS) {
+        		throw new JsonSyntaxException("must be between 2 and 4 (inclusive) output fluids!");
+			}
+        	List<FluidStack> results = new ArrayList<>();
+        	for (JsonElement element : outputs) {
+        		results.add(ModCraftingHelper.fluidStackFromJSON(element.getAsJsonObject()));
+			}
+            return new RefineryRecipe(recipeId, (FluidIngredient) input,
+					TemperatureRange.of(minTemp, maxTemp), results.toArray(new FluidStack[0]));
         }
 
         @Nullable
         @Override
         public RefineryRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
-            FluidStack input = FluidStack.readFromPacket(buffer);
+            FluidIngredient input = FluidIngredient.readFromPacket(buffer);
             TemperatureRange range = TemperatureRange.of(buffer.readVarInt(), buffer.readVarInt());
             int nOutputs = buffer.readVarInt();
             FluidStack[] outputs = new FluidStack[nOutputs];

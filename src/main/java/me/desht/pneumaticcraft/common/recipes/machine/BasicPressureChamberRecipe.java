@@ -1,12 +1,17 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.common.recipes.AbstractRecipeSerializer;
+import me.desht.pneumaticcraft.common.recipes.MachineRecipeHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.ItemStackHandler;
@@ -16,11 +21,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
 public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
-    public static final ResourceLocation RECIPE_TYPE = RL("basic_pressure_chamber");
-
     private final ResourceLocation id;
     private final float pressureRequired;
     private final List<Ingredient> inputs;
@@ -85,7 +86,7 @@ public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
 
     @Override
     public ResourceLocation getRecipeType() {
-        return RECIPE_TYPE;
+        return MachineRecipeHandler.Category.PRESSURE_CHAMBER.getId();
     }
 
     @Nonnull
@@ -109,8 +110,18 @@ public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
     public static class Serializer extends AbstractRecipeSerializer<BasicPressureChamberRecipe> {
         @Override
         public BasicPressureChamberRecipe read(ResourceLocation recipeId, JsonObject json) {
-            // TODO when we add support for data pack machine recipes
-            return null;
+            JsonArray inputs = json.get("inputs").getAsJsonArray();
+            List<Ingredient> inputIngredients = new ArrayList<>();
+            for (JsonElement e : inputs) {
+                inputIngredients.add(Ingredient.deserialize(e.getAsJsonObject()));
+            }
+            float pressure = JSONUtils.getFloat(json, "pressure");
+            JsonArray outputs = json.get("results").getAsJsonArray();
+            NonNullList<ItemStack> results = NonNullList.create();
+            for (JsonElement e : outputs) {
+                results.add(ShapedRecipe.deserializeItem(e.getAsJsonObject()));
+            }
+            return new BasicPressureChamberRecipe(recipeId, inputIngredients, pressure, results.toArray(new ItemStack[0]));
         }
 
         @Nullable

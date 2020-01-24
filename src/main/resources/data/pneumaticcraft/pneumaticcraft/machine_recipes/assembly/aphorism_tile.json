@@ -1,0 +1,10 @@
+{
+  "input": {
+    "tag": "forge:storage_blocks/quartz"
+  },
+  "result": {
+    "item": "pneumaticcraft:aphorism_tile",
+    "count": 4
+  },
+  "program": "laser"
+}

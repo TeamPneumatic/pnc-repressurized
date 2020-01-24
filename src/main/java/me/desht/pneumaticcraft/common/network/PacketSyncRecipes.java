@@ -126,5 +126,6 @@ public class PacketSyncRecipes {
             PneumaticCraftRecipes.assemblyDrillRecipes = assemblyDrillRecipes;
             PneumaticCraftRecipes.assemblyLaserDrillRecipes = assemblyLaserDrillRecipes;
         });
+        ctx.get().setPacketHandled(true);
     }
 }

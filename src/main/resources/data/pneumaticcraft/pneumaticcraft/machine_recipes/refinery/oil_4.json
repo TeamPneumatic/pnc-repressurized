@@ -1,0 +1,25 @@
+{
+  "input": {
+    "type": "pneumaticcraft:fluid",
+    "fluid": "pneumaticcraft:oil",
+    "amount": 10
+  },
+  "results": [
+    {
+      "fluid": "pneumaticcraft:diesel",
+      "amount": 2
+    },
+    {
+      "fluid": "pneumaticcraft:kerosene",
+      "amount": 3
+    },
+    {
+      "fluid": "pneumaticcraft:gasoline",
+      "amount": 3
+    },
+    {
+      "fluid": "pneumaticcraft:lpg",
+      "amount": 2
+    }
+  ]
+}

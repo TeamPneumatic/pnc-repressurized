@@ -1,0 +1,15 @@
+{
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "fluid": "pneumaticcraft:lpg",
+    "amount": 100
+  },
+  "item_input": {
+    "tag": "minecraft:coals"
+  },
+  "min_temp": 373,
+  "fluid_output": {
+    "fluid": "pneumaticcraft:plastic",
+    "amount": 1000
+  }
+}

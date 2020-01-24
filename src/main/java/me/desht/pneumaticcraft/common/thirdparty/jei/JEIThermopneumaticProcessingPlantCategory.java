@@ -63,7 +63,9 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
 
     @Override
     public void setIngredients(IThermopneumaticProcessingPlantRecipe recipe, IIngredients ingredients) {
-        ingredients.setInput(VanillaTypes.FLUID, recipe.getInputFluid());
+        if (!recipe.getInputFluid().hasNoMatchingItems()) {
+            ingredients.setInputLists(VanillaTypes.FLUID, Collections.singletonList(recipe.getInputFluid().getFluidStacks()));
+        }
         if (!recipe.getInputItem().hasNoMatchingItems()) {
             ingredients.setInputIngredients(Collections.singletonList(recipe.getInputItem()));
         }
@@ -83,9 +85,10 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
         int inOff = 64 - inH;
         int outOff = 64 - outH;
 
-        recipeLayout.getFluidStacks().init(0, true, 8, 4 + inOff, 16, inH, in.getAmount(), false, Helpers.makeTankOverlay(inH));
-        recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
-
+        if (!recipe.getInputFluid().hasNoMatchingItems()) {
+            recipeLayout.getFluidStacks().init(0, true, 8, 4 + inOff, 16, inH, in.getAmount(), false, Helpers.makeTankOverlay(inH));
+            recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
+        }
         if (!recipe.getInputItem().hasNoMatchingItems()) {
             recipeLayout.getItemStacks().init(0, true, 40, 2);
             recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
@@ -119,7 +122,7 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
         if (w != null && w.isMouseOver(mouseX, mouseY)) {
             res.add(HeatUtil.formatHeatString(recipe.getOperatingTemperature().getMin()).getFormattedText());
         }
-        if (mouseX >= 116 && mouseY >= 22 && mouseX <= 156 && mouseY <= 62) {
+        if (recipe.getRequiredPressure() > 0 && mouseX >= 116 && mouseY >= 22 && mouseX <= 156 && mouseY <= 62) {
             res.add(I18n.format("gui.tooltip.pressure", recipe.getRequiredPressure()));
         }
         return res;

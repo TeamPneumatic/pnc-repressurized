@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.entity.merchant.villager.VillagerTrades;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -30,6 +31,7 @@ public enum AmadronOfferManager {
 //    private static final AmadronOfferManager SERVER_INSTANCE = new AmadronOfferManager();
 
     private final LinkedHashSet<AmadronOffer> staticOffers = new LinkedHashSet<>();
+    private final List<AmadronOffer> villagerTrades = new ArrayList<>();
     private final List<AmadronOffer> periodicOffers = new ArrayList<>();  // a list due to random access needs
     private final LinkedHashSet<AmadronOffer> selectedPeriodicOffers = new LinkedHashSet<>();
     private final LinkedHashSet<AmadronOffer> allOffers = new LinkedHashSet<>();
@@ -189,6 +191,9 @@ public enum AmadronOfferManager {
         staticOffers.clear();
         periodicOffers.clear();
 
+        List<AmadronOffer> v = getVillagerTrades();
+        periodicOffers.addAll(v);
+
         // TODO move to JSON
         addStaticOffer(new AmadronOffer(
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
@@ -209,10 +214,6 @@ public enum AmadronOfferManager {
         addStaticOffer(new AmadronOffer(
                 AmadronTradeResource.of(new FluidStack(ModFluids.OIL.get(), 5000)),
                 AmadronTradeResource.of(new ItemStack(Items.EMERALD, 1))
-        ));
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.OIL.get(), 5000)),
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
         ));
         addStaticOffer(new AmadronOffer(
                 AmadronTradeResource.of(new FluidStack(ModFluids.DIESEL.get(), 4000)),
@@ -239,25 +240,29 @@ public enum AmadronOfferManager {
                 AmadronTradeResource.of(new FluidStack(ModFluids.LUBRICANT.get(), 1000))
         ));
 
-        addVillagerTrades();
-
         shufflePeriodicOffers();  // does a recompile
     }
 
-    private void addVillagerTrades() {
-        Random rand = new Random();
-        VillagerTrades.VILLAGER_DEFAULT_TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
-            for (VillagerTrades.ITrade trade : trades) {
-                try {
-                    MerchantOffer offer = trade.getOffer(null, rand);
-                    addPeriodicOffer(new AmadronOffer(
-                            AmadronTradeResource.of(offer.getBuyingStackFirst()),
-                            AmadronTradeResource.of(offer.getSellingStack())
-                    ));
-                } catch (NullPointerException ignored) {
-                    // some offers need a non-null entity; all we can do is ignore those
+    private List<AmadronOffer> getVillagerTrades() {
+        if (villagerTrades.isEmpty()) {
+            Random rand = new Random();
+            VillagerTrades.VILLAGER_DEFAULT_TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
+                // cartographer map trades require a player entity so we'll ignore those
+                if (profession != VillagerProfession.CARTOGRAPHER) {
+                    for (VillagerTrades.ITrade trade : trades) {
+                        try {
+                            MerchantOffer offer = trade.getOffer(null, rand);
+                            villagerTrades.add(new AmadronOffer(
+                                    AmadronTradeResource.of(offer.getBuyingStackFirst()),
+                                    AmadronTradeResource.of(offer.getSellingStack())
+                            ));
+                        } catch (NullPointerException ignored) {
+                            // some offers need a non-null entity; all we can do is ignore those
+                        }
+                    }
                 }
-            }
-        }));
+            }));
+        }
+        return villagerTrades;
     }
 }

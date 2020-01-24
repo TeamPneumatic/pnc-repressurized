@@ -1,16 +1,11 @@
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
 import me.desht.pneumaticcraft.api.crafting.RegisterMachineRecipesEvent;
-import me.desht.pneumaticcraft.common.recipes.ModRefineryRecipes;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(modid= Names.MOD_ID)
 public class CoFHCore implements IThirdParty {
@@ -36,11 +31,11 @@ public class CoFHCore implements IThirdParty {
 
     @SubscribeEvent
     public static void register(RegisterMachineRecipesEvent evt) {
-        // TODO 1.14 verify this will be the right fluid name
-        Fluid crudeOil = ForgeRegistries.FLUIDS.getValue(new ResourceLocation("thermalfoundation:crude_oil"));
-        if (crudeOil != null && crudeOil != Fluids.EMPTY) {
-            ModRefineryRecipes.addDefaultRefiningRecipe(evt, crudeOil);
-            Log.info("Added CoFH Crude Oil as a Refinery input");
-        }
+        // TODO 1.14 do this via tags (i.e. add CoFH oil to "pneumaticcraft:oil" fluid tag)
+//        Fluid crudeOil = ForgeRegistries.FLUIDS.getValue(new ResourceLocation("thermalfoundation:crude_oil"));
+//        if (crudeOil != null && crudeOil != Fluids.EMPTY) {
+//            ModRefineryRecipes.addDefaultRefiningRecipe(evt, crudeOil);
+//            Log.info("Added CoFH Crude Oil as a Refinery input");
+//        }
     }
 }

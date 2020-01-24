@@ -1,0 +1,13 @@
+{
+  "inputs": [
+    {
+      "tag": "forge:storage_blocks/iron"
+    }
+  ],
+  "pressure": 2.0,
+  "results": [
+    {
+      "item": "pneumaticcraft:compressed_iron_block"
+    }
+  ]
+}

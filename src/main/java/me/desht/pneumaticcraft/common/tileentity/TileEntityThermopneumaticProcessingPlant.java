@@ -278,7 +278,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         
         @Override
         public boolean isFluidValid(FluidStack fluid){
-            return fluid.isEmpty() || PneumaticCraftRecipes.thermopneumaticProcessingPlantRecipes.values().stream().anyMatch(r -> r.getInputFluid().isFluidEqual(fluid));
+            return fluid.isEmpty() || PneumaticCraftRecipes.thermopneumaticProcessingPlantRecipes.values().stream()
+                    .anyMatch(r -> r.getInputFluid().testFluid(fluid));
         }
 
         @Override

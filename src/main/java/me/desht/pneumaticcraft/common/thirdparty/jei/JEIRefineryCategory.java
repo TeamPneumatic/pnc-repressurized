@@ -61,7 +61,7 @@ public class JEIRefineryCategory implements IRecipeCategory<IRefineryRecipe> {
 
     @Override
     public void setIngredients(IRefineryRecipe recipe, IIngredients ingredients) {
-        ingredients.setInput(VanillaTypes.FLUID, recipe.getInput());
+        ingredients.setInputLists(VanillaTypes.FLUID, Collections.singletonList(recipe.getInput().getFluidStacks()));
         ingredients.setOutputs(VanillaTypes.FLUID, recipe.getOutputs());
     }
 

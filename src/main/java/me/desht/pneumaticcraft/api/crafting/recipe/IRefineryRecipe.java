@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
+import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.common.recipes.machine.RefineryRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -10,7 +11,7 @@ import java.util.List;
 public interface IRefineryRecipe extends IModRecipe {
     int MAX_OUTPUTS = 4;
 
-    FluidStack getInput();
+    FluidIngredient getInput();
 
     List<FluidStack> getOutputs();
 
@@ -27,7 +28,7 @@ public interface IRefineryRecipe extends IModRecipe {
      * @param outputs the output fluids
      * @return a basic Refinery recipe
      */
-    static IRefineryRecipe basicRecipe(ResourceLocation id, FluidStack input, TemperatureRange operatingTemp, FluidStack... outputs) {
+    static IRefineryRecipe basicRecipe(ResourceLocation id, FluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs) {
         return new RefineryRecipe(id, input, operatingTemp, outputs);
     }
 }

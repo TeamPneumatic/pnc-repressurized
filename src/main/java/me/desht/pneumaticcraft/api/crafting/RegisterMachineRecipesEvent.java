@@ -13,6 +13,7 @@ import java.util.function.Consumer;
  * <p>
  *     <code>event.getPressureChamber().accept(IPressureChamberRecipe.basicRecipe(...))</code>
  * </p>
+ * Consider whether you need to use this event; adding or removing recipes via datapacks is to be preferred.
  */
 public class RegisterMachineRecipesEvent extends Event {
     private final Consumer<IPressureChamberRecipe> pressureChamber;

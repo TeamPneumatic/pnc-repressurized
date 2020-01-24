@@ -89,7 +89,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
 
     public static boolean isInputFluidValid(Fluid fluid, int size) {
         return PneumaticCraftRecipes.refineryRecipes.values().stream()
-                .anyMatch(r -> r.getOutputs().size() <= size && FluidUtils.matchFluid(r.getInput().getFluid(), fluid, true));
+                .anyMatch(r -> r.getOutputs().size() <= size && FluidUtils.matchFluid(r.getInput(), fluid, true));
     }
 
     private IRefineryRecipe getRecipeFor(FluidStack fluid) {

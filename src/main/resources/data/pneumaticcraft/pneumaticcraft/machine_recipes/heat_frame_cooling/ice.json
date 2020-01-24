@@ -1,0 +1,9 @@
+{
+  "input" : {
+    "item": "minecraft:water_bucket"
+  },
+  "result": {
+    "item": "minecraft:ice"
+  },
+  "max_temp": 273
+}

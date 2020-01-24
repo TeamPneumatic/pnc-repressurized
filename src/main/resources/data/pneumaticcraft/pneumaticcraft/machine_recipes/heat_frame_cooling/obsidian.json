@@ -1,0 +1,9 @@
+{
+  "input" : {
+    "item": "minecraft:lava_bucket"
+  },
+  "result": {
+    "item": "minecraft:obsidian"
+  },
+  "max_temp": 273
+}

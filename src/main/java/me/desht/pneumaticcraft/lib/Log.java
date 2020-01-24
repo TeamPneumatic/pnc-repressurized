@@ -7,6 +7,10 @@ import org.apache.logging.log4j.Logger;
 public class Log {
     private static final Logger logger = LogManager.getLogger();
 
+    public static void debug(String message, Object... params) {
+        logger.log(Level.DEBUG, String.format(message, params));
+    }
+
     public static void info(String message, Object... params) {
         logger.log(Level.INFO, String.format(message, params));
     }

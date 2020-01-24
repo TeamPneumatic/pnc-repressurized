@@ -8,8 +8,8 @@ import java.util.Map;
 /**
  * Public list of all current PneumaticCraft machine recipes.
  * <p>
- * <strong>Do not modify these directly!</strong>  Use {@link RegisterMachineRecipesEvent} to register new machine
- * recipes in code.
+ * <strong>Do not modify these directly!</strong>  Machine recipes are loaded from datapacks, or alternatively use
+ * {@link RegisterMachineRecipesEvent} to register new machine recipes in code.
  */
 public class PneumaticCraftRecipes {
     public static Map<ResourceLocation, IPressureChamberRecipe> pressureChamberRecipes;

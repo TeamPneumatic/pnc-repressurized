@@ -4,8 +4,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 
 /**
- * Not a true recipe; mainly for JEI purposes.
- * Maybe one day...
+ * TODO Not a true recipe type; here mainly as placeholder, and for JEI purposes.
  */
 public class UVLightBoxRecipe {
     private final Ingredient in;

@@ -1,0 +1,13 @@
+{
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "fluid": "pneumaticcraft:kerosene",
+    "amount": 100
+  },
+  "min_temp": 573,
+  "pressure": 2.0,
+  "fluid_output": {
+    "fluid": "pneumaticcraft:gasoline",
+    "amount": 80
+  }
+}

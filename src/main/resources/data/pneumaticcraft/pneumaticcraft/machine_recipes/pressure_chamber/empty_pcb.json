@@ -1,0 +1,16 @@
+{
+  "inputs": [
+    {
+      "item": "pneumaticcraft:ingot_iron_compressed"
+    },
+    {
+      "item": "pneumaticcraft:plastic"
+    }
+  ],
+  "pressure": 1.5,
+  "results": [
+    {
+      "item": "pneumaticcraft:empty_pcb"
+    }
+  ]
+}

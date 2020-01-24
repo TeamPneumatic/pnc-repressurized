@@ -4,9 +4,12 @@ import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.recipes.AbstractRecipeSerializer;
+import me.desht.pneumaticcraft.common.recipes.MachineRecipeHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
@@ -16,11 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
 public class ExplosionCraftingRecipe implements IExplosionCraftingRecipe {
     private static final NonNullList<ItemStack> EMPTY_RESULT = NonNullList.create();
-    public static final ResourceLocation RECIPE_TYPE = RL("explosion_crafting");
 
     private final ResourceLocation id;
     private final Ingredient input;
@@ -66,7 +66,7 @@ public class ExplosionCraftingRecipe implements IExplosionCraftingRecipe {
 
     @Override
     public ResourceLocation getRecipeType() {
-        return RECIPE_TYPE;
+        return MachineRecipeHandler.Category.EXPLOSION_CRAFTING.getId();
     }
 
     public static NonNullList<ItemStack> tryToCraft(ItemStack stack) {
@@ -107,7 +107,10 @@ public class ExplosionCraftingRecipe implements IExplosionCraftingRecipe {
     public static class Serializer extends AbstractRecipeSerializer<ExplosionCraftingRecipe> {
         @Override
         public ExplosionCraftingRecipe read(ResourceLocation recipeId, JsonObject json) {
-            return null;
+            Ingredient input = Ingredient.deserialize(json.get("input"));
+            ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
+            int loss_rate = JSONUtils.getInt(json,"loss_rate", 0);
+            return new ExplosionCraftingRecipe(recipeId, input, loss_rate, result);
         }
 
         @Nullable
@@ -120,7 +123,7 @@ public class ExplosionCraftingRecipe implements IExplosionCraftingRecipe {
                 l.add(buffer.readItemStack());
             }
             int lossRate = buffer.readVarInt();
-            return new ExplosionCraftingRecipe(recipeId, input,/* amount,*/ lossRate, l.toArray(new ItemStack[0]));
+            return new ExplosionCraftingRecipe(recipeId, input, lossRate, l.toArray(new ItemStack[0]));
         }
 
         @Override

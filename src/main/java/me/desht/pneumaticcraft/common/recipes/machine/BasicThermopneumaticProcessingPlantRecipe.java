@@ -1,32 +1,36 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.recipe.IThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.common.recipes.AbstractRecipeSerializer;
+import me.desht.pneumaticcraft.common.recipes.MachineRecipeHandler;
+import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
 public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumaticProcessingPlantRecipe {
-    public static final ResourceLocation RECIPE_TYPE = RL("thermopneumatic_processing_plant");
-
     private final ResourceLocation id;
-    private final FluidStack inputFluid, outputFluid;
+    private final FluidIngredient inputFluid;
+    private final FluidStack outputFluid;
     private final Ingredient inputItem;
     private final float requiredPressure;
     private final boolean exothermic;
     private final TemperatureRange operatingTemperature;
 
-    public BasicThermopneumaticProcessingPlantRecipe(ResourceLocation id, @Nonnull FluidStack inputFluid, @Nullable Ingredient inputItem,
-                                                     FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure, boolean exothermic) {
+    public BasicThermopneumaticProcessingPlantRecipe(
+            ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
+            FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure,
+            boolean exothermic)
+    {
         this.id = id;
         this.inputItem = inputItem;
         this.inputFluid = inputFluid;
@@ -38,7 +42,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
 
     @Override
     public boolean matches(FluidStack fluidStack, @Nonnull ItemStack stack) {
-        return (inputFluid.isEmpty() || (fluidStack.isFluidEqual(inputFluid) && fluidStack.getAmount() >= inputFluid.getAmount()))
+        return (inputFluid == null || inputFluid.testFluid(fluidStack))
                 && (inputItem == null || inputItem.test(stack));
     }
 
@@ -53,7 +57,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
     }
 
     @Override
-    public FluidStack getInputFluid() {
+    public FluidIngredient getInputFluid() {
         return inputFluid;
     }
 
@@ -80,13 +84,26 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
 
     @Override
     public ResourceLocation getRecipeType() {
-        return RECIPE_TYPE;
+        return MachineRecipeHandler.Category.THERMO_PLANT.getId();
     }
 
     public static class Serializer extends AbstractRecipeSerializer<BasicThermopneumaticProcessingPlantRecipe> {
         @Override
         public BasicThermopneumaticProcessingPlantRecipe read(ResourceLocation recipeId, JsonObject json) {
-            return null;
+            Ingredient itemInput = json.has("item_input") ?
+                    Ingredient.deserialize(json.get("item_input")) :
+                    Ingredient.EMPTY;
+            Ingredient fluidInput = json.has("fluid_input") ?
+                    FluidIngredient.deserialize(json.get("fluid_input")) :
+                    Ingredient.EMPTY;
+            FluidStack fluidOutput = ModCraftingHelper.fluidStackFromJSON(json.getAsJsonObject("fluid_output"));
+            int minTemp = JSONUtils.getInt(json, "min_temp", 373);
+            int maxTemp = JSONUtils.getInt(json, "max_temp", Integer.MAX_VALUE);
+            float pressure = JSONUtils.getFloat(json, "pressure", 0f);
+            boolean exothermic = JSONUtils.getBoolean(json, "exothermic", false);
+
+            return new BasicThermopneumaticProcessingPlantRecipe(recipeId, (FluidIngredient) fluidInput, itemInput,
+                    fluidOutput, TemperatureRange.of(minTemp, maxTemp), pressure, exothermic);
         }
 
         @Nullable
@@ -95,7 +112,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
             TemperatureRange range = TemperatureRange.of(buffer.readVarInt(), buffer.readVarInt());
             float pressure = buffer.readFloat();
             Ingredient input = Ingredient.read(buffer);
-            FluidStack fluidIn = FluidStack.readFromPacket(buffer);
+            FluidIngredient fluidIn = FluidIngredient.readFromPacket(buffer);
             FluidStack fluidOut = FluidStack.readFromPacket(buffer);
             boolean exothermic = buffer.readBoolean();
             return new BasicThermopneumaticProcessingPlantRecipe(recipeId, fluidIn, input, fluidOut, range, pressure, exothermic);

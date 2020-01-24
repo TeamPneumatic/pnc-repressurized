@@ -18,8 +18,8 @@ public interface IModRecipe {
 
     /**
      * Get the ID of this recipe type, used for serialization purposes.  A serializer must be registered for this
-     * ID with {@link IPneumaticRecipeRegistry#registerSerializer(ResourceLocation, Supplier)}.  A suitable time to do
-     * this is in an event handler for {@code RegistryEvent.Register<IRecipeSerializer<?>>}.
+     * ID with {@link IPneumaticRecipeRegistry#registerSerializer(ResourceLocation, Supplier)}.  An appropriate time
+     * to do this is in an event handler for {@code RegistryEvent.Register<IRecipeSerializer<?>>}.
      *
      * @return a resource location
      */

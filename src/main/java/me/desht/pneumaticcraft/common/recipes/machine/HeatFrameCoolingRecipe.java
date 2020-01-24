@@ -3,18 +3,17 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.recipe.IHeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.recipes.AbstractRecipeSerializer;
+import me.desht.pneumaticcraft.common.recipes.MachineRecipeHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
 public class HeatFrameCoolingRecipe implements IHeatFrameCoolingRecipe {
-    public static final ResourceLocation RECIPE_TYPE = RL("heat_frame_cooling");
-
     private final ResourceLocation id;
     public final Ingredient input;
     private final int temperature;
@@ -59,14 +58,16 @@ public class HeatFrameCoolingRecipe implements IHeatFrameCoolingRecipe {
 
     @Override
     public ResourceLocation getRecipeType() {
-        return RECIPE_TYPE;
+        return MachineRecipeHandler.Category.HEAT_FRAME_COOLING.getId();
     }
 
     public static class Serializer extends AbstractRecipeSerializer<HeatFrameCoolingRecipe> {
-
         @Override
         public HeatFrameCoolingRecipe read(ResourceLocation recipeId, JsonObject json) {
-            return null;
+            Ingredient input = Ingredient.deserialize(json.get("input"));
+            ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
+            int maxTemp = JSONUtils.getInt(json,"max_temp", 273);
+            return new HeatFrameCoolingRecipe(recipeId, input, maxTemp, result);
         }
 
         @Nullable

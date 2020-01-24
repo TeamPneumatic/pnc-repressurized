@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
+import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.recipes.machine.BasicThermopneumaticProcessingPlantRecipe;
@@ -75,7 +76,7 @@ public interface IThermopneumaticProcessingPlantRecipe extends IModRecipe {
 
     Ingredient getInputItem();
 
-    FluidStack getInputFluid();
+    FluidIngredient getInputFluid();
 
     FluidStack getOutputFluid();
 
@@ -100,8 +101,10 @@ public interface IThermopneumaticProcessingPlantRecipe extends IModRecipe {
      * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature
      * is required)
      */
-    static IThermopneumaticProcessingPlantRecipe basicRecipe(ResourceLocation id, @Nonnull FluidStack inputFluid, @Nullable Ingredient inputItem,
-                                                             FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure) {
+    static IThermopneumaticProcessingPlantRecipe basicRecipe(
+            ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
+            FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure)
+    {
         return new BasicThermopneumaticProcessingPlantRecipe(id, inputFluid, inputItem, outputFluid, operatingTemperature, requiredPressure, false);
     }
 
@@ -117,8 +120,10 @@ public interface IThermopneumaticProcessingPlantRecipe extends IModRecipe {
      * @param requiredPressure the minimum pressure required (pass 0 if no specific pressure is required)
      * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature is required)
      */
-    static IThermopneumaticProcessingPlantRecipe basicExothermicRecipe(ResourceLocation id, @Nonnull FluidStack inputFluid, @Nullable Ingredient inputItem,
-                                                             FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure) {
+    static IThermopneumaticProcessingPlantRecipe basicExothermicRecipe(
+            ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
+            FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure)
+    {
         return new BasicThermopneumaticProcessingPlantRecipe(id, inputFluid, inputItem, outputFluid, operatingTemperature, requiredPressure, true);
     }
 

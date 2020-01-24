@@ -366,9 +366,10 @@ public class EntityDrone extends EntityDroneBase implements
                 fallDistance = 0;
             }
             if (lifeUpgrades > 0) {
-                int interval = 10 / lifeUpgrades;
+                int interval = 50 / lifeUpgrades;
                 if (interval == 0 || ticksExisted % interval == 0) {
                     heal(1);
+                    airHandler.addAir(-lifeUpgrades);
                 }
             }
             if (!isSuffocating) {

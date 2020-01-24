@@ -29,6 +29,6 @@ public enum PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
 
     @Override
     public void registerSerializer(ResourceLocation recipeType, Supplier<IModRecipeSerializer<? extends IModRecipe>> serializer) {
-        ModCraftingHelper.registerSerializer(recipeType, serializer);
+        ModCraftingHelper.register(recipeType, serializer);
     }
 }

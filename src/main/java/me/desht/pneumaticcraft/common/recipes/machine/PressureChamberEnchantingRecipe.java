@@ -49,7 +49,10 @@ public class PressureChamberEnchantingRecipe implements IPressureChamberRecipe {
                 for (ItemStack enchantedBook : enchantedBooks) {
                     Map<Enchantment, Integer> bookMap = EnchantmentHelper.getEnchantments(enchantedBook);
                     for (Map.Entry<Enchantment, Integer> entry : bookMap.entrySet()) {
-                        if (entry.getKey().canApply(inputStack)) {
+                        // if the enchantment is applicable, AND the item doesn't have an existing enchantment of the
+                        // same type which is equal to or stronger than the book's enchantment level...
+                        if (entry.getKey().canApply(inputStack)
+                                && EnchantmentHelper.getEnchantmentLevel(entry.getKey(), inputStack) < entry.getValue()) {
                             return new ItemStack[]{ inputStack, enchantedBook};
                         }
                     }

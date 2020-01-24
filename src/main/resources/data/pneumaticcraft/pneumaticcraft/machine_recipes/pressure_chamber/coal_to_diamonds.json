@@ -1,0 +1,15 @@
+{
+  "inputs": [
+    {
+      "type": "pneumaticcraft:stacked_item",
+      "tag": "forge:storage_blocks/coal",
+      "count": 8
+    }
+  ],
+  "pressure": 4.0,
+  "results": [
+    {
+      "item": "minecraft:diamond"
+    }
+  ]
+}

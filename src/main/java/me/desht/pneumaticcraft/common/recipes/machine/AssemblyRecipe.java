@@ -2,13 +2,18 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.recipes.AbstractRecipeSerializer;
+import me.desht.pneumaticcraft.common.recipes.MachineRecipeHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,8 +24,6 @@ import java.util.Map;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class AssemblyRecipe implements IAssemblyRecipe {
-    public static final ResourceLocation RECIPE_TYPE = RL("assembly");
-
     private final ResourceLocation id;
     private final Ingredient input;
     private final ItemStack output;
@@ -60,7 +63,7 @@ public class AssemblyRecipe implements IAssemblyRecipe {
 
     @Override
     public ResourceLocation getRecipeType() {
-        return RECIPE_TYPE;
+        return MachineRecipeHandler.Category.ASSEMBLY.getId();
     }
 
     @Override
@@ -117,7 +120,16 @@ public class AssemblyRecipe implements IAssemblyRecipe {
     public static class Serializer extends AbstractRecipeSerializer<AssemblyRecipe> {
         @Override
         public AssemblyRecipe read(ResourceLocation recipeId, JsonObject json) {
-            return null;
+            Ingredient input = Ingredient.deserialize(json.get("input"));
+            ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
+            String program = JSONUtils.getString(json, "program").toUpperCase();
+            try {
+                AssemblyProgramType programType = AssemblyProgramType.valueOf(program);
+                Validate.isTrue(programType != AssemblyProgramType.DRILL_LASER, "'drill_laser' may not be used in recipe JSON!");
+                return new AssemblyRecipe(recipeId, input, result, programType);
+            } catch (IllegalArgumentException e) {
+                throw new JsonParseException(e.getMessage());
+            }
         }
 
         @Nullable

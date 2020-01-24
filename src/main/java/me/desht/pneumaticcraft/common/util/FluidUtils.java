@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
-import com.google.common.collect.Sets;
+import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IBucketPickupHandler;
@@ -280,13 +280,25 @@ public class FluidUtils {
         }
     }
 
-    public static boolean matchFluid(FluidStack fluid, FluidStack fluid2, boolean matchTags) {
-        return matchFluid(fluid.getFluid(), fluid2.getFluid(), matchTags);
+    public static boolean matchFluid(FluidIngredient fluidIngredient, FluidStack fluidStack, boolean matchTags) {
+        return fluidIngredient.testFluid(fluidStack);
     }
 
-    public static boolean matchFluid(Fluid fluid, Fluid fluid2, boolean matchTags) {
-        return fluid == fluid2 || matchTags && !Sets.intersection(fluid.getTags(), fluid2.getTags()).isEmpty();
+    public static boolean matchFluid(FluidIngredient fluidIngredient, Fluid fluid, boolean matchTags) {
+        return fluidIngredient.testFluid(fluid);
     }
+
+//    public static boolean matchFluid(FluidStack fluid, FluidStack fluid2, boolean matchTags) {
+//        return matchFluid(fluid.getFluid(), fluid2.getFluid(), matchTags);
+//    }
+//
+//    public static boolean matchFluid(Fluid fluid, Fluid fluid2, boolean matchTags) {
+//        return fluid == fluid2 || matchTags && !Sets.intersection(fluid.getTags(), fluid2.getTags()).isEmpty();
+//    }
+//
+//    public static boolean matchFluid(Fluid fluid, Fluid fluid2, boolean matchTags) {
+//        return fluid == fluid2 || matchTags && !Sets.intersection(fluid.getTags(), fluid2.getTags()).isEmpty();
+//    }
 
     public static FluidTank copyTank(IFluidTank tank) {
         FluidTank res = new FluidTank(tank.getCapacity());

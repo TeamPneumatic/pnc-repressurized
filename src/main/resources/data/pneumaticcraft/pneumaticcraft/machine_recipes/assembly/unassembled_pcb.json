@@ -1,0 +1,9 @@
+{
+  "input": {
+    "item": "pneumaticcraft:empty_pcb"
+  },
+  "result": {
+    "item": "pneumaticcraft:unassembled_pcb"
+  },
+  "program": "laser"
+}
