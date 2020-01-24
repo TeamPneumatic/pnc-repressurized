@@ -60,14 +60,14 @@ public class ItemMachineUpgrade extends ItemPneumatic {
     }
 
     @Override
-    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
+    public ActionResultType onItemUse(ItemUseContext context) {
         if (getUpgradeType() == EnumUpgrade.DISPENSER) {
             if (!context.getWorld().isRemote) {
                 setDirection(context.getPlayer(), context.getHand(), context.getFace());
             }
             return ActionResultType.SUCCESS;
         }
-        return super.onItemUseFirst(stack, context);
+        return super.onItemUse(context);
     }
 
     @Override
