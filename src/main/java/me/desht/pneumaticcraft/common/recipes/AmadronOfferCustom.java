@@ -113,8 +113,8 @@ public class AmadronOfferCustom extends AmadronOffer {
         if (pendingPayments > 0) {
             int paying = Math.min(pendingPayments, 50);
             paying = ContainerAmadron.capShoppingAmount(this, paying,
-                    AmadronOfferManager.getItemHandler(provider), AmadronOfferManager.getItemHandler(returning),
-                    AmadronOfferManager.getFluidHandler(provider), AmadronOfferManager.getFluidHandler(returning),
+                    null, AmadronOfferManager.getItemHandler(returning),
+                    null, AmadronOfferManager.getFluidHandler(returning),
                     null);
             if (paying > 0) {
                 pendingPayments -= paying;
