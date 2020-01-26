@@ -107,9 +107,9 @@ public class AmadronOfferCustom extends AmadronOffer {
         }
     }
 
-    void payout() {
+    boolean payout() {
+        boolean paid = false;
         TileEntity returning = getReturningTileEntity();
-        TileEntity provider = getProvidingTileEntity();
         if (pendingPayments > 0) {
             int paying = Math.min(pendingPayments, 50);
             paying = ContainerAmadron.capShoppingAmount(this, paying,
@@ -118,6 +118,7 @@ public class AmadronOfferCustom extends AmadronOffer {
                     null);
             if (paying > 0) {
                 pendingPayments -= paying;
+                paid = true;
                 if (getInput() instanceof ItemStack) {
                     ItemStack deliveringItems = (ItemStack) getInput();
                     int amount = deliveringItems.getCount() * paying;
@@ -136,6 +137,7 @@ public class AmadronOfferCustom extends AmadronOffer {
                 }
             }
         }
+        return paid;
     }
 
     public void returnStock() {

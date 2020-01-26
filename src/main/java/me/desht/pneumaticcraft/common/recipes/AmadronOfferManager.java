@@ -118,6 +118,7 @@ public class AmadronOfferManager {
     }
 
     public void tryRestockCustomOffers() {
+        boolean needSave = false;
         for (AmadronOffer offer : allOffers) {
             if (offer instanceof AmadronOfferCustom) {
                 AmadronOfferCustom custom = (AmadronOfferCustom) offer;
@@ -135,7 +136,14 @@ public class AmadronOfferManager {
                     }
                 }
                 custom.invert();
-                custom.payout();
+                if (custom.payout()) needSave = true;
+            }
+        }
+        if (needSave) {
+            try {
+                AmadronOfferStaticConfig.INSTANCE.writeToFile();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
