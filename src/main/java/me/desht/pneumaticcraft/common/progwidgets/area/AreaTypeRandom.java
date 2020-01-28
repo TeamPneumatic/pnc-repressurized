@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
+import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 
@@ -62,5 +63,10 @@ public class AreaTypeRandom extends AreaType{
     public void readFromNBT(CompoundNBT tag){
         super.readFromNBT(tag);
         pickedAmount = tag.getInt("pickedAmount");
+    }
+
+    @Override
+    public void convertFromLegacy(LegacyAreaWidgetConverter.EnumOldAreaType oldAreaType, int typeInfo){
+        pickedAmount = typeInfo;
     }
 }

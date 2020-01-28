@@ -4,9 +4,13 @@ import com.google.common.base.CaseFormat;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
+import me.desht.pneumaticcraft.common.progwidgets.area.AreaType;
 import me.desht.pneumaticcraft.common.util.JsonToNBTConverter;
+import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
+import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter.EnumOldAreaType;
 import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import me.desht.pneumaticcraft.common.util.PastebinHandler;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -187,18 +191,31 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
 
     /**
      * Handle legacy conversion: PNC 1.12.2 and older used a simple (mixed case) widget string
-     * but now ProgWidgets are registry entries and use a ResourceLocation
-     * @param outputTag the legacy data to convert
+     * but now ProgWidgets are registry entries and use a ResourceLocation.  Also, convert any
+     * Area widgets from the old-style format if necessary.
+     *
+     * @param nbt the legacy data to convert
      */
-    private void doLegacyConversion(CompoundNBT outputTag) {
-        ListNBT l = outputTag.getList("widgets", Constants.NBT.TAG_COMPOUND);
+    private void doLegacyConversion(CompoundNBT nbt) {
+        ListNBT l = nbt.getList("widgets", Constants.NBT.TAG_COMPOUND);
+        int areaConversions = 0;
         for (int i = 0; i < l.size(); i++) {
-            CompoundNBT tag = l.getCompound(i);
-            String newName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, tag.getString("name"));
-            tag.putString("name", Names.MOD_ID + ":" + newName);
+            CompoundNBT subTag = l.getCompound(i);
+            String newName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, subTag.getString("name"));
+            subTag.putString("name", Names.MOD_ID + ":" + newName);
+            if (newName.equals("area")) {
+                EnumOldAreaType oldType = EnumOldAreaType.values()[subTag.getInt("type")];
+                AreaType newType = LegacyAreaWidgetConverter.convertFromLegacyFormat(oldType, subTag.getInt("typeInfo"));
+                subTag.putString("type", newType.getName().toLowerCase());
+                newType.writeToNBT(subTag);
+                areaConversions++;
+            }
         }
-        outputTag.put(IProgrammable.NBT_WIDGETS, l);
-        outputTag.remove("widgets");
+        nbt.put(IProgrammable.NBT_WIDGETS, l);
+        nbt.remove("widgets");
+        if (areaConversions > 0) {
+            Log.info("Pastebin import: converted %d legacy area widgets", areaConversions);
+        }
     }
 
     @Override

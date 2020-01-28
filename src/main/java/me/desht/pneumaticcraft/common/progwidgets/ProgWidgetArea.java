@@ -38,10 +38,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     private IVariableProvider variableProvider;
     public AreaType type = new AreaTypeBox();
 
-    private static final Map<String, Supplier<? extends AreaType>> areaTypes = new LinkedHashMap<>(); //We want to preserve order in the GUI
+    public static final Map<String, Supplier<? extends AreaType>> areaTypes = new LinkedHashMap<>(); //We want to preserve order in the GUI
     private static final Map<Class<? extends AreaType>, String> typeToIDs = new HashMap<>();
 
-    static{
+    static {
         register(AreaTypeBox.ID, AreaTypeBox.class, AreaTypeBox::new);
         register(AreaTypeSphere.ID, AreaTypeSphere.class, AreaTypeSphere::new);
         register(AreaTypeLine.ID, AreaTypeLine.class, AreaTypeLine::new);
@@ -57,30 +57,30 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     private static <T extends AreaType> void register(String id, Class<T> clazz, Supplier<T> creator) {
-        if (areaTypes.containsKey(id)){
+        if (areaTypes.containsKey(id)) {
             throw new IllegalStateException("Area type " + clazz + " could not be registered, duplicate id: " + id);
         }
-        
+
         areaTypes.put(id, creator);
         typeToIDs.put(clazz, id);
     }
-   
-    public static List<AreaType> getAllAreaTypes(){
+
+    public static List<AreaType> getAllAreaTypes() {
         return areaTypes.values().stream().map(Supplier::get).collect(Collectors.toList());
     }
-    
-    public static ProgWidgetArea fromPosition(BlockPos p1){
+
+    public static ProgWidgetArea fromPosition(BlockPos p1) {
         return fromPositions(p1, p1);
     }
-    
-    public static ProgWidgetArea fromPosAndExpansions(BlockPos p1, int expX, int expY, int expZ){
+
+    public static ProgWidgetArea fromPosAndExpansions(BlockPos p1, int expX, int expY, int expZ) {
         int x = expX / 2;
         int y = expY / 2;
         int z = expZ / 2;
         return fromPositions(p1.add(-x, -y, -z), p1.add(x, y, z));
     }
-    
-    public static ProgWidgetArea fromPositions(BlockPos p1, BlockPos p2){
+
+    public static ProgWidgetArea fromPositions(BlockPos p1, BlockPos p2) {
         ProgWidgetArea area = new ProgWidgetArea();
         area.setP1(p1);
         area.setP2(p2);
@@ -121,13 +121,13 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
         addAreaTypeTooltip(curTooltip);
     }
-    
-    public void addAreaTypeTooltip(List<ITextComponent> curTooltip){
+
+    public void addAreaTypeTooltip(List<ITextComponent> curTooltip) {
         curTooltip.add(xlate("gui.progWidget.area.type").appendText(type.getName()));
-        
+
         List<AreaTypeWidget> widgets = new ArrayList<>();
         type.addUIWidgets(widgets);
-        for(AreaTypeWidget widget : widgets){
+        for (AreaTypeWidget widget : widgets) {
             curTooltip.add(xlate(widget.title).appendText(" ").appendText(widget.getCurValue()));
         }
     }
@@ -139,28 +139,28 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             curInfo.add(xlate("gui.progWidget.area.error.noArea"));
         }
     }
-    
-    public void setP1(BlockPos p){
+
+    public void setP1(BlockPos p) {
         x1 = p.getX();
         y1 = p.getY();
         z1 = p.getZ();
     }
-    
-    public void setP2(BlockPos p){
+
+    public void setP2(BlockPos p) {
         x2 = p.getX();
         y2 = p.getY();
         z2 = p.getZ();
     }
-    
-    public void setAreaPoint(BlockPos p, int index){
-        if(index == 0){
+
+    public void setAreaPoint(BlockPos p, int index) {
+        if (index == 0) {
             setP1(p);
-        }else{
+        } else {
             setP2(p);
         }
     }
-    
-    public BlockPos getRawAreaPoint(int index){
+
+    public BlockPos getRawAreaPoint(int index) {
         return index == 0 ? new BlockPos(x1, y1, z1) : new BlockPos(x2, y2, z2);
     }
 
@@ -207,7 +207,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_AREA;
     }
-    
+
     @Override
     public void getArea(Set<BlockPos> area) {
         getArea(area, type);
@@ -268,7 +268,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             areaType.addArea(addFunc, p1, p2, minX, minY, minZ, maxX, maxY, maxZ);
         } catch (AreaTooBigException ignored) {
         }
-    } 
+    }
 
     private AxisAlignedBB getAABB() {
         BlockPos[] areaPoints = getAreaPoints();
@@ -308,7 +308,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         tag.putInt("x2", x2);
         tag.putInt("y2", y2);
         tag.putInt("z2", z2);
-        
+
         String typeId = typeToIDs.get(type.getClass());
         if (typeId == null) {
             Log.error("No type id for area type " + type + "! Substituting Box.");
@@ -317,7 +317,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             type.writeToNBT(tag);
         }
         tag.putString("type", typeId);
-        
+
         tag.putString("coord1Variable", coord1Variable);
         tag.putString("coord2Variable", coord2Variable);
     }
@@ -334,16 +334,16 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
         type = createType(tag.getString("type"));
         type.readFromNBT(tag);
-        
+
         coord1Variable = tag.getString("coord1Variable");
         coord2Variable = tag.getString("coord2Variable");
     }
-    
-    private static AreaType createType(String id){
+
+    public static AreaType createType(String id) {
         Supplier<? extends AreaType> creator = areaTypes.get(id);
-        if(creator != null){
+        if (creator != null) {
             return creator.get();
-        }else{
+        } else {
             Log.error("No Area type found for id '" + id + "'! Substituting Box!");
             return new AreaTypeBox();
         }
@@ -380,8 +380,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         this.aiManager = aiManager;
         this.variableProvider = aiManager;
     }
-    
-    public void setVariableProvider(IVariableProvider variableProvider){
+
+    public void setVariableProvider(IVariableProvider variableProvider) {
         this.variableProvider = variableProvider;
     }
 

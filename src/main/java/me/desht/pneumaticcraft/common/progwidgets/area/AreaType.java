@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
+import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
@@ -10,21 +11,31 @@ import java.util.function.Supplier;
 
 public abstract class AreaType{
     private final String unlocalizedName;
-    
+
+    public enum EnumAxis {
+        X, Y, Z;
+    }
+
     public AreaType(String name){
         this.unlocalizedName = String.format("gui.progWidget.area.type.%s.name", name);
     }
-    
-    public enum EnumAxis{
-        X, Y, Z
-    }
-    
+
     public String getName(){
         return I18n.format(unlocalizedName);
     }
-    
+
     public abstract void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ);
-    
+
+    /**
+     * Called when loading old-style programs from pastebin etc.  Convert any old-fashioned area representations to
+     * their modern equivalents.
+     *
+     * @param oldType the old-style area type
+     * @param typeInfo extra integer type information used by some types
+     */
+    public void convertFromLegacy(LegacyAreaWidgetConverter.EnumOldAreaType oldType, int typeInfo) {
+    }
+
     /**
      * Whether or not the area added in addArea is deterministic (used to determine if stuff can be cached or not).
      * @return
