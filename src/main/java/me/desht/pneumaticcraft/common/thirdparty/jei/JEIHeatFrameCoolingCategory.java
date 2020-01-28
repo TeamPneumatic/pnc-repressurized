@@ -74,7 +74,7 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<IHeatFrameCo
     public List<String> getTooltipStrings(IHeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
         List<String> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.nei.recipe.heatFrameCooling", recipe.getTemperature() - 273), 32));
+            res.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.nei.recipe.heatFrameCooling", recipe.getTemperature() - 273), 32));
         }
         return res;
     }

@@ -1,43 +1,64 @@
 package me.desht.pneumaticcraft.api.crafting;
 
 import com.google.gson.JsonObject;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.JsonToNBTConverter;
 import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.Validate;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
  * Represents an Amadron trade resource. The input and output may be either an item or a fluid.
  */
 public class AmadronTradeResource {
-    public enum Type { ITEM, FLUID;}
+    public enum Type { ITEM, FLUID }
 
     private final Type type;
     private final ItemStack item;
     private final FluidStack fluid;
 
-    private AmadronTradeResource(ItemStack stack) {
+    private AmadronTradeResource(@Nonnull ItemStack stack) {
         item = stack;
         type = Type.ITEM;
         fluid = FluidStack.EMPTY;
     }
 
-    private AmadronTradeResource(FluidStack stack) {
+    private AmadronTradeResource(@Nonnull FluidStack stack) {
         item = ItemStack.EMPTY;
         type = Type.FLUID;
         fluid = stack;
+    }
+
+    /**
+     * Checks if these two resources are equivalent: same resource, but don't check amounts.
+     * @param other the trade resource to compare
+     * @return true if the two are equivalent, false if not
+     */
+    public boolean equivalentTo(AmadronTradeResource other) {
+        if (type != other.type) return false;
+        switch (type) {
+            case ITEM:
+                return getItem().getItem() == other.getItem().getItem();
+            case FLUID:
+                return getFluid().getFluid() == other.getFluid().getFluid();
+        }
+        return false;
     }
 
     public static AmadronTradeResource of(ItemStack stack) {
@@ -82,53 +103,47 @@ public class AmadronTradeResource {
         return type == Type.FLUID ? fluid : FluidStack.EMPTY;
     }
 
-    public int countTradesInInventory(IItemHandler inv) {
-        int count = 0;
-        for (int i = 0; i < inv.getSlots(); i++) {
-            if (ItemStack.areItemsEqual(inv.getStackInSlot(i), item)) {
-                count += inv.getStackInSlot(i).getCount();
-            }
-        }
-        return count / item.getCount();
+    public int countTradesInInventory(LazyOptional<IItemHandler> inv) {
+        return IOHelper.countItemsInHandler(item, inv) / item.getCount();
     }
 
-    public int countTradesInTank(IFluidHandler fluidHandler) {
-        FluidStack searchingFluid = fluid.copy();
-        searchingFluid.setAmount(Integer.MAX_VALUE);
-        FluidStack extracted = fluidHandler.drain(searchingFluid, IFluidHandler.FluidAction.SIMULATE);
-        return extracted.getAmount() / fluid.getAmount();
+    public int findSpaceInItemOutput(LazyOptional<IItemHandler> inv, int wantedTradeCount) {
+        return Math.min(wantedTradeCount, IOHelper.findSpaceInHandler(item, wantedTradeCount, inv));
     }
 
-    public int findSpaceInOutput(IItemHandler inv, int wantedTradeCount) {
-        ItemStack providingItem = ItemHandlerHelper.copyStackWithSize(item, item.getCount() * wantedTradeCount);
-        ItemStack remainder = ItemHandlerHelper.insertItem(inv, providingItem.copy(), true);
-        if (!remainder.isEmpty()) {
-            return (providingItem.getCount() - remainder.getCount()) / item.getCount();
-        } else {
-            return wantedTradeCount;
-        }
+    public int countTradesInTank(LazyOptional<IFluidHandler> lazy) {
+        return lazy.map(fluidHandler -> {
+            FluidStack searchingFluid = fluid.copy();
+            searchingFluid.setAmount(Integer.MAX_VALUE);
+            FluidStack extracted = fluidHandler.drain(searchingFluid, IFluidHandler.FluidAction.SIMULATE);
+            return extracted.getAmount() / fluid.getAmount();
+        }).orElse(0);
     }
 
-    public int findSpaceInOutput(IFluidHandler fluidHandler, int wantedTradeCount) {
-        FluidStack providingFluid = fluid.copy();
-        providingFluid.setAmount(providingFluid.getAmount() * wantedTradeCount);
-        int amountFilled = fluidHandler.fill(providingFluid, IFluidHandler.FluidAction.SIMULATE);
-        return amountFilled / fluid.getAmount();
+    public int findSpaceInFluidOutput(LazyOptional<IFluidHandler> lazy, int wantedTradeCount) {
+        return lazy.map(fluidHandler -> {
+            FluidStack providingFluid = fluid.copy();
+            providingFluid.setAmount(providingFluid.getAmount() * wantedTradeCount);
+            int amountFilled = fluidHandler.fill(providingFluid, IFluidHandler.FluidAction.SIMULATE);
+            return amountFilled / fluid.getAmount();
+        }).orElse(0);
     }
 
-    public void validate() {
+    public AmadronTradeResource validate() {
+        Validate.isTrue(item != null && fluid != null);
         switch (type) {
             case ITEM:
-                Validate.isTrue(!item.isEmpty());
+                Validate.isTrue(item != null && !item.isEmpty());
                 break;
             case FLUID:
-                Validate.isTrue(!fluid.isEmpty());
+                Validate.isTrue(fluid != null && !fluid.isEmpty());
                 break;
         }
+        return this;
     }
 
-    public static AmadronTradeResource fromJson(JsonObject obj) {
-        Type type = Type.valueOf(obj.get("type").getAsString());
+    public static AmadronTradeResource fromJson(JsonObject obj) throws CommandSyntaxException {
+        Type type = Type.valueOf(obj.get("type").getAsString().toUpperCase());
         ResourceLocation rl = new ResourceLocation(obj.get("id").getAsString());
         int amount = obj.get("amount").getAsInt();
         switch (type) {
@@ -136,7 +151,11 @@ public class AmadronTradeResource {
                 Item item = ForgeRegistries.ITEMS.getValue(rl);
                 ItemStack stack = new ItemStack(item, amount);
                 if (obj.has("nbt")) {
-                    stack.setTag(JsonToNBTConverter.getTag(obj.getAsJsonObject("nbt")));
+                    if (obj.get("nbt").isJsonObject()) {
+                        stack.setTag(JsonToNBTConverter.getTag(obj.getAsJsonObject("nbt")));
+                    } else if (obj.get("nbt").isJsonPrimitive()) {
+                        stack.setTag(JsonToNBT.getTagFromJson(JSONUtils.getString(obj, "nbt")));
+                    }
                 }
                 return new AmadronTradeResource(stack);
             case FLUID:

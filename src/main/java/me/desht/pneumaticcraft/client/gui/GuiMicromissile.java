@@ -144,7 +144,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(this, font,
-                    PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
+                    PneumaticCraftUtils.splitString(I18n.format("gui.entityFilter.helpText"), 60));
         } else if (textField.isHovered()) {
             String str = I18n.format("gui.entityFilter");
             font.drawString(str, guiLeft + (xSize - font.getStringWidth(str)) / 2f, guiTop + ySize + 5, 0x808080);

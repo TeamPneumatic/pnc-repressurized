@@ -61,7 +61,7 @@ public class ItemPneumatic extends Item {
         if (I18n.hasKey(info)) {
             if (ClientUtils.hasShiftDown()) {
                 String translatedInfo = TextFormatting.AQUA + I18n.format(info);
-                curInfo.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 50)));
+                curInfo.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(translatedInfo, 50)));
                 if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
                     curInfo.add(xlate("gui.tab.info.assistIGW"));
                 }

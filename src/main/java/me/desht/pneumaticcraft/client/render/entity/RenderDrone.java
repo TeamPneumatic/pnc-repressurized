@@ -13,6 +13,7 @@ public class RenderDrone extends MobRenderer<EntityDroneBase,ModelDrone> {
     public static final IRenderFactory<EntityDroneBase> REGULAR_FACTORY = RenderDrone::new;
     public static final IRenderFactory<EntityDroneBase> LOGISTICS_FACTORY = manager -> new RenderDrone(manager, 0xFFFF0000);
     public static final IRenderFactory<EntityDroneBase> HARVESTING_FACTORY = manager -> new RenderDrone(manager, 0xFF006102);
+    public static final IRenderFactory<EntityDroneBase> AMADRONE_FACTORY = manager -> new RenderDrone(manager, 0xFFFF8000);
 
     private RenderDrone(EntityRendererManager manager) {
         super(manager, new ModelDrone(), 0);

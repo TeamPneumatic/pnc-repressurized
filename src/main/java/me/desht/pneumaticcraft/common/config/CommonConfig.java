@@ -95,6 +95,8 @@ public class CommonConfig {
     }
 
     public class Amadron {
+        ForgeConfigSpec.IntValue numPeriodicOffers;
+        ForgeConfigSpec.IntValue reshuffleInterval;
         ForgeConfigSpec.IntValue maxTradesPerPlayer;
         ForgeConfigSpec.BooleanValue notifyOfTradeAddition;
         ForgeConfigSpec.BooleanValue notifyOfTradeRemoval;
@@ -429,6 +431,14 @@ public class CommonConfig {
         builder.pop();
 
         builder.push("Amadron");
+        amadron.numPeriodicOffers = builder
+                .comment("Number of periodic offers randomly selected for the 'live' offer list")
+                .translation("pneumaticcraft.config.server.amadron.num_periodic_offers")
+                .defineInRange("numPeriodicOffers", 20,0, Integer.MAX_VALUE);
+        amadron.reshuffleInterval = builder
+                .comment("Time in ticks between each periodic offer reshuffle (24000 ticks = one day)")
+                .translation("pneumaticcraft.config.server.amadron.reshuffle_interval")
+                .defineInRange("reshuffleInterval", 24000,1000, Integer.MAX_VALUE);
         amadron.maxTradesPerPlayer = builder
                 .comment("Max number of custom trades a player may add")
                 .translation("pneumaticcraft.config.server.amadron.max_trades_per_player")

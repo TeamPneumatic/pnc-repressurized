@@ -62,7 +62,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         int d = getTemperatureDifferential(Direction.NORTH) + getTemperatureDifferential(Direction.EAST);
         if (d == 0) {
             curInfo.add("\u00a7fNo temperature differential");
-            curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Place a hot block on any side of the compressor, and a cold block on the opposite side."));
+            curInfo.addAll(PneumaticCraftUtils.splitString("\u00a70Place a hot block on any side of the compressor, and a cold block on the opposite side."));
         }
     }
 
@@ -73,7 +73,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         int d = getTemperatureDifferential(Direction.NORTH) + getTemperatureDifferential(Direction.EAST);
         if (d > 0 && d < 20) {
             curInfo.add("\u00a7fPoor temperature differential");
-            curInfo.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Place a hot block on any side of the compressor, and a cold block on the opposite side."));
+            curInfo.addAll(PneumaticCraftUtils.splitString("\u00a70Place a hot block on any side of the compressor, and a cold block on the opposite side."));
         }
     }
 

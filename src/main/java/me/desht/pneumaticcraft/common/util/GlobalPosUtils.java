@@ -38,7 +38,7 @@ public class GlobalPosUtils {
 
     public static String prettyPrint(GlobalPos pos) {
         BlockPos p = pos.getPos();
-        return String.format("%s [%d,%d,%d]", pos.getDimension().toString(), p.getX(), p.getY(), p.getZ());
+        return String.format("%s [%d,%d,%d]", DimensionType.getKey(pos.getDimension()), p.getX(), p.getY(), p.getZ());
     }
 
     /**

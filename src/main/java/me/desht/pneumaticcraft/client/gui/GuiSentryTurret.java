@@ -51,7 +51,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
         font.drawString(I18n.format("gui.sentryTurret.targetFilter"), 80, 53, 0x404040);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(this, font,
-                    PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
+                    PneumaticCraftUtils.splitString(I18n.format("gui.entityFilter.helpText"), 60));
         } else if (x >= guiLeft + 76 && y >= guiTop + 51 && x <= guiLeft + 153 && y <= guiTop + 74) {
             // cursor inside the entity filter area
             String str = I18n.format("gui.entityFilter");

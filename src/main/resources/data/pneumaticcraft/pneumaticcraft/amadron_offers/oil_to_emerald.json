@@ -1,0 +1,13 @@
+{
+  "static": "true",
+  "input": {
+    "type": "fluid",
+    "id": "pneumaticcraft:oil",
+    "amount": 5000
+  },
+  "output": {
+    "type": "item",
+    "id": "minecraft:emerald",
+    "amount": 1
+  }
+}

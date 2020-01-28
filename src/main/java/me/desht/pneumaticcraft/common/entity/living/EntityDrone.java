@@ -30,8 +30,6 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -171,11 +169,6 @@ public class EntityDrone extends EntityDroneBase implements
     private boolean disabledByHacking;
     private boolean standby; // If true, the drone's propellors stop, the drone will fall down, and won't use pressure.
     private Minigun minigun;
-
-    private AmadronOffer handlingOffer;
-    private int offerTimes;
-    private ItemStack usedTablet;  // Tablet used to place the order.
-    private String buyingPlayer;
 
     private final DroneDebugList debugList = new DroneDebugList();
     private final Set<ServerPlayerEntity> syncedPlayers = new HashSet<>();  // players who receive debug data
@@ -866,16 +859,6 @@ public class EntityDrone extends EntityDroneBase implements
 
         fluidTank.writeToNBT(tag);
 
-        if (handlingOffer != null) {
-            CompoundNBT subTag = new CompoundNBT();
-            subTag.putBoolean("isCustom", handlingOffer instanceof AmadronOfferCustom);
-            handlingOffer.writeToNBT(subTag);
-            tag.put("amadronOffer", subTag);
-            tag.putInt("offerTimes", offerTimes);
-            if (!usedTablet.isEmpty()) usedTablet.write(subTag);
-            tag.putString("buyingPlayer", buyingPlayer);
-        }
-
         if (!displacedLiquids.isEmpty()) {
             ListNBT disp = new ListNBT();
             for (Map.Entry<BlockPos, BlockState> entry : displacedLiquids.entrySet()) {
@@ -893,6 +876,7 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public void readAdditional(CompoundNBT tag) {
         super.readAdditional(tag);
+
         progWidgets = TileEntityProgrammer.getWidgetsFromNBT(tag);
         naturallySpawned = tag.getBoolean("naturallySpawned");
         getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
@@ -915,18 +899,6 @@ public class EntityDrone extends EntityDroneBase implements
         fluidTank.readFromNBT(tag);
 
         energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
-
-        if (tag.contains("amadronOffer")) {
-            CompoundNBT subTag = tag.getCompound("amadronOffer");
-            handlingOffer = subTag.getBoolean("isCustom") ? AmadronOfferCustom.loadFromNBT(subTag) : AmadronOffer.loadFromNBT(subTag);
-            usedTablet = subTag.contains("id") ? ItemStack.read(subTag) : ItemStack.EMPTY;
-            buyingPlayer = subTag.getString("buyingPlayer");
-        } else {
-            handlingOffer = null;
-            usedTablet = ItemStack.EMPTY;
-            buyingPlayer = null;
-        }
-        offerTimes = tag.getInt("offerTimes");
 
         if (tag.contains("displacedLiquids")) {
             for (INBT inbt : tag.getList("displacedLiquids", Constants.NBT.TAG_LIST)) {
@@ -1261,29 +1233,6 @@ public class EntityDrone extends EntityDroneBase implements
             }
         }
         return -1;
-    }
-
-    public void setHandlingOffer(AmadronOffer offer, int times, @Nonnull ItemStack usedTablet, String buyingPlayer) {
-        handlingOffer = offer;
-        offerTimes = times;
-        this.usedTablet = usedTablet.copy();
-        this.buyingPlayer = buyingPlayer;
-    }
-
-    public AmadronOffer getHandlingOffer() {
-        return handlingOffer;
-    }
-
-    public int getOfferTimes() {
-        return offerTimes;
-    }
-
-    public ItemStack getUsedTablet() {
-        return usedTablet;
-    }
-
-    public String getBuyingPlayer() {
-        return buyingPlayer;
     }
 
     @Override

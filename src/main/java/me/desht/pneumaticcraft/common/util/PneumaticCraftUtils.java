@@ -125,8 +125,8 @@ public class PneumaticCraftUtils {
         }
     }
 
-    public static List<String> convertStringIntoList(String text) {
-        return convertStringIntoList(text, GuiConstants.MAX_CHAR_PER_LINE_LEFT);
+    public static List<String> splitString(String text) {
+        return splitString(text, GuiConstants.MAX_CHAR_PER_LINE_LEFT);
     }
 
     /**
@@ -135,7 +135,7 @@ public class PneumaticCraftUtils {
      * It also preserves color formats. '\n' can be used to force a carriage
      * return.
      */
-    public static List<String> convertStringIntoList(String text, int maxCharPerLine) {
+    public static List<String> splitString(String text, int maxCharPerLine) {
         StringTokenizer tok = new StringTokenizer(text, " ");
         StringBuilder output = new StringBuilder(text.length());
         List<String> textList = new ArrayList<>();
@@ -795,5 +795,9 @@ public class PneumaticCraftUtils {
         for (int i = 0; i < source.getSlots(); i++) {
             dest.setStackInSlot(i, source.getStackInSlot(i).copy());
         }
+    }
+
+    public static String posToString(BlockPos pos) {
+        return String.format("%d,%d,%d", pos.getX(), pos.getY(), pos.getZ());
     }
 }

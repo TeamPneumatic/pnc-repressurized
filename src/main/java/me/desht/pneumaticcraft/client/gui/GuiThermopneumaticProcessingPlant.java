@@ -56,7 +56,7 @@ public class GuiThermopneumaticProcessingPlant extends
 
         WidgetButtonExtended dumpButton = new WidgetButtonExtended(guiLeft + 12, guiTop + 81, 18, 20, "").withTag("dump");
         dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
-        dumpButton.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.thermopneumatic.dumpInput")));
+        dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.thermopneumatic.dumpInput")));
         addButton(dumpButton);
 
         nExposedFaces = HeatUtil.countExposedFaces(Collections.singletonList(te));

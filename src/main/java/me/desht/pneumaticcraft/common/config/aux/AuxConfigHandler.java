@@ -9,8 +9,7 @@ import java.io.IOException;
 
 public class AuxConfigHandler {
     private static final IAuxConfig[] EXTERNAL_CONFIGS = new IAuxConfig[] {
-            AmadronOfferStaticConfig.INSTANCE,
-            AmadronOfferPeriodicConfig.INSTANCE,
+            AmadronPlayerOffers.INSTANCE,
             ProgWidgetConfig.INSTANCE,
             ArmorFeatureStatus.INSTANCE,
             ThirdPartyConfig.INSTANCE,
@@ -20,8 +19,6 @@ public class AuxConfigHandler {
     };
 
     public static void preInit() {
-//        PneumaticCraftRepressurized.proxy.initConfig();
-
         File configDir = FMLPaths.CONFIGDIR.get().toFile();
         for (IAuxConfig subConfig : EXTERNAL_CONFIGS) {
             File subFolder = new File(configDir, Names.MOD_ID);

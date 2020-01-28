@@ -3,10 +3,7 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.EntityTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
-import me.desht.pneumaticcraft.api.drone.AmadronRetrievalEvent;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
-import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
-import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
@@ -14,20 +11,15 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.config.aux.AmadronOfferStaticConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.entity.HackableEnderman;
-import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketModWrenchBlock;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -53,7 +45,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -73,13 +64,9 @@ import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -265,95 +252,6 @@ public class EventHandlerPneumaticCraft {
         if (event.getTileEntity() instanceof TileEntityProgrammer) event.setCanceled(true);
     }
 
-    @SubscribeEvent
-    public void onDroneSuicide(DroneSuicideEvent event) {
-        if (event.drone instanceof EntityDrone) {
-            EntityDrone drone = (EntityDrone) event.drone;
-            AmadronOffer offer = drone.getHandlingOffer();
-            if (offer != null) {
-                int requiredCount = offer.getInput().getAmount() * drone.getOfferTimes();
-                switch (offer.getInput().getType()) {
-                    case ITEM:
-                        for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                            requiredCount -= drone.getInv().getStackInSlot(i).getCount();
-                        }
-                        if (requiredCount <= 0) {
-                            for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                                drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
-                            }
-                            MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
-                        }
-                        break;
-                    case FLUID:
-                        if (drone.getFluidTank().getFluidAmount() >= requiredCount) {
-                            MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
-                        }
-                        break;
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onAmadronSuccess(AmadronRetrievalEvent event) {
-        EntityDrone drone = (EntityDrone) event.drone;
-        AmadronOffer offer = drone.getHandlingOffer();
-
-        boolean shouldDeliver = false;
-        if (offer instanceof AmadronOfferCustom) {
-            boolean shouldSave = false;
-            AmadronOffer realOffer = AmadronOfferManager.getInstance().get(offer);
-            if (realOffer != null) {//If we find the non-inverted offer, that means the Drone just has completed trading with a different player.
-                ((AmadronOfferCustom) realOffer).addPayment(drone.getOfferTimes());
-                ((AmadronOfferCustom) realOffer).addStock(-drone.getOfferTimes());
-                realOffer.onTrade(drone.getOfferTimes(), drone.getBuyingPlayer());
-                shouldDeliver = true;
-                shouldSave = true;
-            }
-            realOffer = AmadronOfferManager.getInstance().get(((AmadronOfferCustom) offer).copy().invert());
-            if (realOffer != null) {//If we find the inverted offer, that means the Drone has just restocked.
-                ((AmadronOfferCustom) realOffer).addStock(drone.getOfferTimes());
-                shouldSave = true;
-            }
-            if (shouldSave) {
-                try {
-                    AmadronOfferStaticConfig.INSTANCE.writeToFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            shouldDeliver = true;
-        }
-        if (shouldDeliver) {
-            ItemStack usedTablet = drone.getUsedTablet();
-            switch (offer.getOutput().getType()) {
-                case ITEM:
-                    ItemStack offeringItems = offer.getOutput().getItem();
-                    int producedItems = offeringItems.getCount() * drone.getOfferTimes();
-                    List<ItemStack> stacks = new ArrayList<>();
-                    while (producedItems > 0) {
-                        ItemStack stack = offeringItems.copy();
-                        stack.setCount(Math.min(producedItems, stack.getMaxStackSize()));
-                        stacks.add(stack);
-                        producedItems -= stack.getCount();
-                    }
-                    GlobalPos pos = ItemAmadronTablet.getItemProvidingLocation(usedTablet);
-                    if (pos != null) {
-                        DroneRegistry.getInstance().deliverItemsAmazonStyle(pos, stacks.toArray(new ItemStack[0]));
-                    }
-                    break;
-                case FLUID:
-                    FluidStack offeringFluid = offer.getOutput().getFluid().copy();
-                    offeringFluid.setAmount(offeringFluid.getAmount() * drone.getOfferTimes());
-                    GlobalPos fpos = ItemAmadronTablet.getFluidProvidingLocation(usedTablet);
-                    if (fpos != null) {
-                        DroneRegistry.getInstance().deliverFluidAmazonStyle(fpos, offeringFluid);
-                    }
-                    break;
-            }
-        }
-    }
 
     @SubscribeEvent
     public void onLootTableLoad(LootTableLoadEvent event) {
@@ -372,7 +270,7 @@ public class EventHandlerPneumaticCraft {
                     case "village_blacksmith":
                         // todo 1.14 loot tables are in datapack
 //                        ILootGenerator entry = new TableLootEntry(RL("inject/simple_dungeon_loot"), 1, 0,  new ILootCondition[0], "pneumaticcraft_inject_entry");
-//                        LootPool pool = new LootPool(new ILootGenerator[]{entry}, new ILootCondition[0], new RandomValueRange(1), new RandomValueRange(0, 1), "pneumaticcraft_inject_pool");
+//                        LootPool pool = new LootPool(new LootEntry[0], new ILootCondition[0], new RandomValueRange(1), new RandomValueRange(0, 1), "pneumaticcraft_inject_pool");
 //                        event.getTable().addPool(pool);
                         break;
                     default:

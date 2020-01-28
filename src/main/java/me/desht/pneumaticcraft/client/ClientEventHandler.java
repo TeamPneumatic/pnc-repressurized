@@ -145,7 +145,7 @@ public class ClientEventHandler {
                 }
                 if (Screen.hasShiftDown()) {
                     String translatedInfo = TextFormatting.AQUA + I18n.format(key);
-                    event.getToolTip().addAll(PneumaticCraftUtils.convertStringIntoList(prefix + translatedInfo, 40).stream().map(StringTextComponent::new).collect(Collectors.toList()));
+                    event.getToolTip().addAll(PneumaticCraftUtils.splitString(prefix + translatedInfo, 40).stream().map(StringTextComponent::new).collect(Collectors.toList()));
                 } else {
                     event.getToolTip().add(xlate("gui.tooltip.sneakForInfo").applyTextStyles(TextFormatting.AQUA));
                 }

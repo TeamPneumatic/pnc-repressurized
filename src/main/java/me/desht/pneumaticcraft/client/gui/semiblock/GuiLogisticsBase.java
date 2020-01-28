@@ -73,7 +73,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             syncToServer();
         }).setChecked(logistics.isSemiblockInvisible()));
 
-        invisible.setTooltip(PneumaticCraftUtils.convertStringIntoList(
+        invisible.setTooltip(PneumaticCraftUtils.splitString(
                 I18n.format("gui.logistics_frame.invisible.tooltip"), 40));
 
         addButton(itemLabel = new WidgetLabel(guiLeft + 8, guiTop + 18, ""));
@@ -159,7 +159,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
                 b -> setFace(Direction.EAST)));
 
         facingTab.addSubWidget(new WidgetButtonExtended(36, 41, 20, 20,"")
-                .setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.logistics_frame.facing.tooltip")))
+                .setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.logistics_frame.facing.tooltip")))
                 .setRenderedIcon(Textures.GUI_INFO_LOCATION)
                 .setVisible(false)
         );

@@ -117,7 +117,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(this, font,
-                    PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
+                    PneumaticCraftUtils.splitString(I18n.format("gui.entityFilter.helpText"), 60));
         }
     }
 
@@ -282,7 +282,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         super.addWarnings(curInfo);
 
         if (!te.getPrimaryInventory().getStackInSlot(0).isEmpty() && te.outOfRange > 0) {
-            curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.universalSensor.outOfRange")));
+            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.universalSensor.outOfRange")));
         }
     }
 
@@ -291,10 +291,10 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         super.addProblems(curInfo);
 
         if (!te.lastSensorExceptionText.isEmpty()) {
-            curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.universalSensor.sensorException", te.lastSensorExceptionText)));
+            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.universalSensor.sensorException", te.lastSensorExceptionText)));
         }
         if (te.sensorStatus != SensorStatus.OK) {
-            curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(te.sensorStatus.getTranslationKey())));
+            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format(te.sensorStatus.getTranslationKey())));
         }
     }
 }

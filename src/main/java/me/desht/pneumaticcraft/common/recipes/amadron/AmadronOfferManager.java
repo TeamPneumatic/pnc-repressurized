@@ -1,268 +1,314 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
+import com.google.gson.JsonObject;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
-import me.desht.pneumaticcraft.common.config.aux.AmadronOfferPeriodicConfig;
-import me.desht.pneumaticcraft.common.config.aux.AmadronOfferStaticConfig;
-import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.aux.AmadronPlayerOffers;
+import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
+import me.desht.pneumaticcraft.common.util.DatapackHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.entity.merchant.villager.VillagerTrades;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.MerchantOffer;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraft.util.JSONUtils;
+import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.io.IOException;
 import java.util.*;
+import java.util.stream.IntStream;
 
 public enum AmadronOfferManager {
     INSTANCE;
-//    private static final AmadronOfferManager CLIENT_INSTANCE = new AmadronOfferManager();
-//    private static final AmadronOfferManager SERVER_INSTANCE = new AmadronOfferManager();
 
-    private final LinkedHashSet<AmadronOffer> staticOffers = new LinkedHashSet<>();
-    private final List<AmadronOffer> villagerTrades = new ArrayList<>();
-    private final List<AmadronOffer> periodicOffers = new ArrayList<>();  // a list due to random access needs
-    private final LinkedHashSet<AmadronOffer> selectedPeriodicOffers = new LinkedHashSet<>();
-    private final LinkedHashSet<AmadronOffer> allOffers = new LinkedHashSet<>();
+    private static final String STATIC_OFFERS = "pneumaticcraft/amadron_offers";
+
+    // static trades, always available: loaded from datapack
+    private final List<AmadronOffer> staticOffers = new ArrayList<>();
+    // periodic trades, randomly appear: loaded from datapack
+    private final Map<Integer,List<AmadronOffer>> periodicOffers = new HashMap<>();  // a list due to random access needs
+    // maps villager profession/level to list of trades
+    private Map<String,List<AmadronOffer>> villagerTrades = new HashMap<>();
+    // villager professions which actually have some trades
+    private List<VillagerProfession> validProfessions = new ArrayList<>();
+    // A complete collection of all known offers
+    private final Map<ResourceLocation, AmadronOffer> allOffers = new HashMap<>();
+    // And these are the offers which are actually available via the Amadron Tablet (and shown in JEI) at this time
+    private final Map<ResourceLocation, AmadronOffer> activeOffers = new LinkedHashMap<>();
 
     public static AmadronOfferManager getInstance() {
         return INSTANCE;
-//        return EffectiveSide.get() == LogicalSide.SERVER ? SERVER_INSTANCE : CLIENT_INSTANCE;
     }
 
-    public Collection<AmadronOffer> getStaticOffers() {
-        return staticOffers;
+    public AmadronOffer getOffer(ResourceLocation offerId) {
+        return allOffers.get(offerId);
     }
 
-    public Collection<AmadronOffer> getPeriodicOffers() {
-        return periodicOffers;
-    }
-
-    public LinkedHashSet<AmadronOffer> getSelectedPeriodicOffers() {
-        return selectedPeriodicOffers;
-    }
-
-    public Collection<AmadronOffer> getAllOffers() {
-        return allOffers;
-    }
-
-    public boolean addStaticOffer(AmadronOffer offer) {
-        allOffers.add(offer);
-        return staticOffers.add(offer);
-    }
-
-    public boolean removeStaticOffer(AmadronOffer offer) {
-        allOffers.remove(offer);
-        return staticOffers.remove(offer);
-    }
-
-    public boolean addPeriodicOffer(AmadronOffer offer) {
-        if (periodicOffers.contains(offer)) {
-            return false;
-        } else {
-            periodicOffers.add(offer);
-            return true;
-        }
-    }
-
-    public void removePeriodicOffer(AmadronOffer offer) {
-        periodicOffers.remove(offer);
-    }
-
-    public boolean hasOffer(AmadronOffer offer) {
-        return allOffers.contains(offer);
-    }
-
-    public void recompileOffers() {
-        allOffers.clear();
-        allOffers.addAll(staticOffers);
-        allOffers.addAll(selectedPeriodicOffers);
+    public Collection<AmadronOffer> getActiveOffers() {
+        return activeOffers.values();
     }
 
     /**
-     * Called client-side to sync up the offer list.  It is important that the offer references in allOffers point to
-     * the same objects in staticOffers after syncing, otherwise custom offer stock levels etc. will not be properly
-     * serialized in single-player instance.  While custom offers may seem pointless in a single-player world, this
-     * also applies to 'open to lan' worlds.
-     */
-    public void syncOffers(Collection<AmadronOffer> newStaticOffers, Collection<AmadronOffer> newSelectedPeriodicOffers) {
-        staticOffers.clear();
-        staticOffers.addAll(newStaticOffers);
-        selectedPeriodicOffers.clear();
-        selectedPeriodicOffers.addAll(newSelectedPeriodicOffers);
-        recompileOffers();
-        Log.info("Received " + allOffers.size() + " Amadron offers from server");
-    }
-
-    /**
-     * Gets the offer that equals() a copy.
+     * Try to add a player->player offer.
      *
-     * @param offer the wanted offer
-     * @return the actual offer that is in the offer manager
+     * @param offer the offer to add
+     * @return true if the offer was added, false if an equivalent offer already exists
      */
-    public AmadronOffer get(AmadronOffer offer) {
-        for (AmadronOffer o : allOffers) {
-            if (o.equals(offer)) return o;
+    public boolean addPlayerOffer(AmadronPlayerOffer offer) {
+        if (hasSimilarPlayerOffer(offer)) return false;
+
+        getPlayerOffers().put(offer.getOfferId(), offer);
+        addOffer(activeOffers, offer);
+        addOffer(allOffers, offer);
+        addOffer(allOffers, offer.getReversedOffer());
+        NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers());
+        saveAll();
+        return true;
+    }
+
+    public boolean removePlayerOffer(AmadronPlayerOffer offer) {
+        if (getPlayerOffers().remove(offer.getOfferId()) != null) {
+            activeOffers.remove(offer.getOfferId());
+            allOffers.remove(offer.getOfferId());
+            allOffers.remove(AmadronPlayerOffer.getReversedId(offer.getOfferId()));
+            NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers());
+            saveAll();
+            return true;
+        } else {
+            return false;
         }
-        return null;
+    }
+
+    public boolean hasSimilarPlayerOffer(AmadronPlayerOffer offer) {
+        for (AmadronPlayerOffer existing : getPlayerOffers().values()) {
+            if (existing.equivalentTo(offer)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Map<ResourceLocation, AmadronPlayerOffer> getPlayerOffers() {
+        return AmadronPlayerOffers.INSTANCE.getPlayerOffers();
+    }
+
+    /**
+     * Called client-side (from PacketSyncAmadronOffers) to sync up the active offer list.
+     */
+    public void syncOffers(Collection<AmadronOffer> newStaticOffers) {
+        activeOffers.clear();
+        newStaticOffers.forEach(offer -> addOffer(activeOffers, offer));
+        Log.info("Received " + activeOffers.size() + " active Amadron offers from server");
     }
 
     public int countOffers(String playerId) {
         int count = 0;
-        for (AmadronOffer offer : allOffers) {
-            if (offer instanceof AmadronOfferCustom && ((AmadronOfferCustom) offer).getPlayerId().equals(playerId))
+        for (AmadronOffer offer : activeOffers.values()) {
+            if (offer instanceof AmadronPlayerOffer && ((AmadronPlayerOffer) offer).getPlayerId().equals(playerId))
                 count++;
         }
         return count;
     }
 
-    public void tryRestockCustomOffers() {
-        for (AmadronOffer offer : allOffers) {
-            if (offer instanceof AmadronOfferCustom) {
-                AmadronOfferCustom custom = (AmadronOfferCustom) offer;
-                TileEntity input = custom.getProvidingTileEntity();
-                TileEntity output = custom.getReturningTileEntity();
-                int possiblePickups = ContainerAmadron.capShoppingAmount(custom.invert(), 50,
-                        getItemHandler(input), getItemHandler(output),
-                        getFluidHandler(input), getFluidHandler(output),
-                        null);
-                if (possiblePickups > 0) {
-                    EntityDrone drone = ContainerAmadron.retrieveOrderItems(custom, possiblePickups, custom.getProvidingPos(), custom.getProvidingPos());
-                    if (drone != null) {
-                        drone.setHandlingOffer(custom.copy(), possiblePickups, ItemStack.EMPTY, "Restock");
-                    }
-                }
-                custom.invert();
-                custom.payout();
+    /**
+     * Called every 30 seconds: Amadron will send drones to restock custom player offers, and also to pay out
+     * any pending payments for custom offers.
+     */
+    public void tryRestockPlayerOffers() {
+        boolean needSave = false;
+        for (AmadronPlayerOffer offer : getPlayerOffers().values()) {
+            AmadronPlayerOffer reversed = offer.getReversedOffer();
+            TileEntity provider = offer.getProvidingTileEntity();
+            int possiblePickups = 0;
+            switch (offer.getOutput().getType()) {
+                case ITEM:
+                    possiblePickups = offer.getOutput().countTradesInInventory(IOHelper.getInventoryForTE(provider));
+                    break;
+                case FLUID:
+                    possiblePickups = offer.getOutput().countTradesInTank(IOHelper.getFluidHandlerForTE(provider));
+                    break;
             }
+            if (possiblePickups > 0) {
+                EntityAmadrone drone = ContainerAmadron.retrieveOrderItems(offer.getReversedOffer(), possiblePickups,
+                        offer.getProvidingPos(), offer.getProvidingPos());
+                if (drone != null) {
+                    drone.setHandlingOffer(reversed.getOfferId(), possiblePickups, ItemStack.EMPTY,
+                            "Restock", EntityAmadrone.AmadronAction.RESTOCKING);
+                }
+            }
+            if (offer.payout()) needSave = true;
         }
+        if (needSave) saveAll();
     }
 
-    public static IItemHandler getItemHandler(TileEntity te) {
-        return IOHelper.getInventoryForTE(te).map(handler -> handler).orElse(null);
-    }
-
-    public static IFluidHandler getFluidHandler(TileEntity te) {
-        return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).map(handler -> handler).orElse(null);
-    }
-
-    public void shufflePeriodicOffers() {
-        Random rand = new Random();
-        selectedPeriodicOffers.clear();
-        int toBeSelected = Math.min(AmadronOfferPeriodicConfig.offersPer, periodicOffers.size());
-        while (selectedPeriodicOffers.size() < toBeSelected) {
-            selectedPeriodicOffers.add(periodicOffers.get(rand.nextInt(periodicOffers.size())));
-        }
-
-        recompileOffers();
-
-        // send the new trade list to all connected clients
-        NetworkHandler.sendToAll(new PacketSyncAmadronOffers());
+    /**
+     * Called on server start or /reload
+     *
+     * @param resourceManager the resource manager
+     */
+    public void initOffers(IResourceManager resourceManager) {
+        loadFromDatapack(resourceManager);
+        setupVillagerTrades();
+        compileActiveOffersList();
     }
 
     /**
      * Called when the server is stopping to ensure everything is serialized
      */
     public void saveAll() {
-        try {
-            AmadronOfferStaticConfig.INSTANCE.writeToFile();
-        } catch (IOException e) {
-            e.printStackTrace();
+        AmadronPlayerOffers.save();
+    }
+
+    private <T extends AmadronOffer> void addOffer(Map<ResourceLocation, T> map, T offer) {
+        map.put(offer.getOfferId(), offer);
+    }
+
+    /**
+     * Called by initOffers(), and periodically to shuffle new periodic offers in
+     */
+    public void compileActiveOffersList() {
+        activeOffers.clear();
+        allOffers.clear();
+
+        // static offers first
+        staticOffers.forEach(offer -> {
+            addOffer(activeOffers, offer);
+            addOffer(allOffers, offer);
+        });
+
+        // then some randomly-picked periodic & villager trades
+        periodicOffers.values().forEach(offers -> offers.forEach(offer -> addOffer(allOffers, offer)));
+        villagerTrades.values().forEach(offers -> offers.forEach(offer -> addOffer(allOffers, offer)));
+
+        int nProfessions = validProfessions.size() + (periodicOffers.isEmpty() ? 0 : 1);
+        Random rand = new Random();
+        for (int i = 0; i < PNCConfig.Common.Amadron.numPeriodicOffers; i++) {
+            int p = rand.nextInt(nProfessions);
+            AmadronOffer offer;
+            if (!periodicOffers.isEmpty() && p == validProfessions.size()) {
+                offer = pickRandomPeriodicTrade(rand);
+            } else {
+                if (p == validProfessions.size()) {
+                    p = rand.nextInt(validProfessions.size());
+                }
+                offer = pickRandomVillagerTrade(validProfessions.get(p), rand);
+            }
+            if (offer != null) {
+                addOffer(activeOffers, offer);
+            }
         }
-        try {
-            AmadronOfferPeriodicConfig.INSTANCE.writeToFile();
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        // finally, player->player trades
+        getPlayerOffers().forEach((id, playerOffer) -> {
+            addOffer(activeOffers, playerOffer);
+            addOffer(allOffers, playerOffer);
+            addOffer(allOffers, playerOffer.getReversedOffer());
+        });
+
+        // send active list to all clients (but not the local player for an integrated server)
+        NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers());
+    }
+
+    private AmadronOffer pickRandomPeriodicTrade(Random rand) {
+        int level = getWeightedTradeLevel();
+        do {
+            List<AmadronOffer> offers = periodicOffers.get(level);
+            if (offers != null && !offers.isEmpty()) {
+                int idx = rand.nextInt(offers.size());
+                return offers.get(idx);
+            } else {
+                level--;
+            }
+        } while (level > 0);
+        Log.debug("Amadron: no periodic offers of level %d or lower", level);
+        return null;
+    }
+
+    private AmadronOffer pickRandomVillagerTrade(VillagerProfession profession, Random rand) {
+        int level = getWeightedTradeLevel();
+        do {
+            String key = profession.toString() + "_" + level;
+            List<AmadronOffer> offers = villagerTrades.get(key);
+            if (offers != null && !offers.isEmpty()) {
+                int idx = rand.nextInt(offers.size());
+                return offers.get(idx);
+            } else {
+                level--;
+            }
+        } while (level > 0);
+        Log.warning("Amadron: failed to find any trades for profession %s ?", profession.toString());
+        return null;
+    }
+
+    private int getWeightedTradeLevel() {
+        // weighted villager trade level makes higher level trades much rarer
+        int n = new Random().nextInt(100);
+        if (n < 50) {
+            return 1;
+        } else if (n < 75) {
+            return 2;
+        } else if (n < 90) {
+            return 3;
+        } else if (n < 97) {
+            return 4;
+        } else {
+            return 5;
         }
     }
 
-    public void initOffers() {
+    private void loadFromDatapack(IResourceManager resourceManager) {
+        Map<ResourceLocation, JsonObject> map = DatapackHelper.loadJSONFiles(resourceManager, STATIC_OFFERS, "amadron offer");
+
         staticOffers.clear();
         periodicOffers.clear();
-
-        List<AmadronOffer> v = getVillagerTrades();
-        periodicOffers.addAll(v);
-
-        // TODO move to JSON
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
-                AmadronTradeResource.of(new ItemStack(ModItems.PCB_BLUEPRINT.get()))
-        ));
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
-                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL.get()))
-        ));
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
-                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_LASER.get()))
-        ));
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 14)),
-                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL_LASER.get()))
-        ));
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.OIL.get(), 5000)),
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 1))
-        ));
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.DIESEL.get(), 4000)),
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
-        ));
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.KEROSENE.get(), 3000)),
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
-        ));
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.GASOLINE.get(), 2000)),
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
-        ));
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new FluidStack(ModFluids.LPG.get(), 1000)),
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
-        ));
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD)),
-                AmadronTradeResource.of(new FluidStack(ModFluids.OIL.get(), 1000))
-        ));
-        addStaticOffer(new AmadronOffer(
-                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 5)),
-                AmadronTradeResource.of(new FluidStack(ModFluids.LUBRICANT.get(), 1000))
-        ));
-
-        shufflePeriodicOffers();  // does a recompile
+        map.forEach((id, json) -> {
+            if (!json.has("id")) {
+                json.addProperty("id", id.toString());
+            }
+            try {
+                if (JSONUtils.getBoolean(json, "static")) {
+                    staticOffers.add(AmadronOffer.fromJson(json));
+                } else {
+                    int level = JSONUtils.getInt(json, "level", 1);
+                    periodicOffers.computeIfAbsent(level, l -> new ArrayList<>()).add(AmadronOffer.fromJson(json));
+                }
+            } catch (CommandSyntaxException e) {
+                Log.error("Syntax error for offer id " + id + ": " + e.getMessage());
+                Log.error(ExceptionUtils.getStackTrace(e));
+            }
+        });
     }
 
-    private List<AmadronOffer> getVillagerTrades() {
+
+    private void setupVillagerTrades() {
+        // this only needs to be done once, on first-time data load
         if (villagerTrades.isEmpty()) {
+            Set<VillagerProfession> validSet = new HashSet<>();
             Random rand = new Random();
             VillagerTrades.VILLAGER_DEFAULT_TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
-                // cartographer map trades require a player entity so we'll ignore those
-                if (profession != VillagerProfession.CARTOGRAPHER) {
-                    for (VillagerTrades.ITrade trade : trades) {
-                        try {
-                            MerchantOffer offer = trade.getOffer(null, rand);
-                            villagerTrades.add(new AmadronOffer(
-                                    AmadronTradeResource.of(offer.getBuyingStackFirst()),
-                                    AmadronTradeResource.of(offer.getSellingStack())
-                            ));
-                        } catch (NullPointerException ignored) {
-                            // some offers need a non-null entity; all we can do is ignore those
-                        }
+                IntStream.range(0, trades.length).forEach(i -> {
+                    try {
+                        String key = profession.toString() + "_" + level;
+                        MerchantOffer offer = trades[i].getOffer(null, rand);
+                        ResourceLocation offerId = new ResourceLocation(profession.toString() + "_" + level + "_" + i);
+                        villagerTrades.computeIfAbsent(key, k -> new ArrayList<>()).add(new AmadronOffer(offerId,
+                                AmadronTradeResource.of(offer.getBuyingStackFirst()),
+                                AmadronTradeResource.of(offer.getSellingStack())
+                        ));
+                        validSet.add(profession);
+                    } catch (NullPointerException ignored) {
+                        // some offers need a non-null entity; all we can do is ignore those
                     }
-                }
+                });
             }));
+            validProfessions.addAll(validSet);
         }
-        return villagerTrades;
     }
 }

@@ -77,7 +77,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
         if (exportAnyButton.visible) {
             String textKey = "gui.pressureChamberInterface.export." + (te.exportAny ? "any" : "valid");
             exportAnyButton.setMessage(I18n.format(textKey));
-            exportAnyButton.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format(textKey + ".tooltip"), 35));
+            exportAnyButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format(textKey + ".tooltip"), 35));
         }
 
         statusStat.setText(ImmutableList.of(

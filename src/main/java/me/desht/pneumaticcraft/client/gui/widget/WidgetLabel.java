@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -14,6 +15,7 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
         LEFT, CENTRE, RIGHT
     }
 
+    private float scale = 1.0f;
     private int color;
     private Alignment alignment = Alignment.LEFT;
     private final List<String> tooltip = new ArrayList<>();
@@ -33,6 +35,11 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
         return this;
     }
 
+    public WidgetLabel setScale(float scale) {
+        this.scale = scale;
+        return this;
+    }
+
     @Override
     public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
         curTip.addAll(tooltip);
@@ -40,7 +47,7 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
 
     public void setTooltipText(String text) {
         tooltip.clear();
-        tooltip.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(text), 35));
+        tooltip.addAll(PneumaticCraftUtils.splitString(I18n.format(text), 35));
     }
 
     public void setColor(int color) {
@@ -65,13 +72,21 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
                     drawX = x;
                     break;
                 case CENTRE:
-                    drawX = x - fr.getStringWidth(getMessage()) / 2;
+                    drawX = x - (int)(fr.getStringWidth(getMessage()) / 2 * scale);
                     break;
                 case RIGHT:
-                    drawX = x - fr.getStringWidth(getMessage());
+                    drawX = x - (int)(fr.getStringWidth(getMessage()) * scale);
                     break;
             }
-            fr.drawString(getMessage(), drawX, y, color);
+            if (scale != 1.0f) {
+                GlStateManager.pushMatrix();
+                GlStateManager.scaled(scale, scale, scale);
+                GlStateManager.translated(drawX, y, 0);
+                fr.drawString(getMessage(), drawX, y, color);
+                GlStateManager.popMatrix();
+            } else {
+                fr.drawString(getMessage(), drawX, y, color);
+            }
         }
     }
 }

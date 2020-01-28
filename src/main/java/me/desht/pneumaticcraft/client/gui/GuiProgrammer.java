@@ -910,7 +910,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         List<String> localizedTooltip = new ArrayList<>();
         for (String s : tooltip) {
-            localizedTooltip.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(s), 40));
+            localizedTooltip.addAll(PneumaticCraftUtils.splitString(I18n.format(s), 40));
         }
         convertToRelativeButton.setTooltipText(localizedTooltip);
     }

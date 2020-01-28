@@ -19,7 +19,7 @@ public class ProcessorAmadronTrade implements IComponentProcessor {
         // TODO: only item->item trades supported right now
 
         ItemStack result = PatchouliAPI.instance.deserializeItemStack(iVariableProvider.get("item"));
-        for (AmadronOffer offer : AmadronOfferManager.getInstance().getAllOffers()) {
+        for (AmadronOffer offer : AmadronOfferManager.getInstance().getActiveOffers()) {
             if (offer.getInput().getType() == Type.ITEM && offer.getOutput().getType() == Type.ITEM) {
                 ItemStack outStack = offer.getOutput().getItem();
                 if (ItemStack.areItemsEqual(result, outStack)) {

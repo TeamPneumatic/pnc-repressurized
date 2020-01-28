@@ -1,15 +1,19 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
 import com.google.gson.JsonObject;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.JsonOps;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeNotifyDeal;
 import me.desht.pneumaticcraft.common.network.PacketUtil;
 import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -17,55 +21,66 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AmadronOfferCustom extends AmadronOffer {
+/**
+ * Extended Amadron offer used for player-player trading.
+ */
+public class AmadronPlayerOffer extends AmadronOffer {
     private final String offeringPlayerName;
     private String offeringPlayerId;
     private GlobalPos providingPos;
     private GlobalPos returningPos;
     private int inStock;
-    private int maxTrades = -1;
     private int pendingPayments;
     private TileEntity cachedInput, cachedOutput;
 
-    public AmadronOfferCustom(AmadronTradeResource input, AmadronTradeResource output, PlayerEntity offeringPlayer) {
-        this(input, output, offeringPlayer.getGameProfile().getName(), offeringPlayer.getGameProfile().getId().toString());
+    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, PlayerEntity offeringPlayer) {
+        this(id, input, output, offeringPlayer.getGameProfile().getName(), offeringPlayer.getGameProfile().getId().toString());
     }
 
-    public AmadronOfferCustom(AmadronTradeResource input, AmadronTradeResource output, String playerName, String playerId) {
-        super(input, output);
+    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, String playerId) {
+        super(id, input, output);
         offeringPlayerName = playerName;
         offeringPlayerId = playerId;
     }
 
-    public AmadronOfferCustom setProvidingPosition(GlobalPos pos) {
+    public AmadronPlayerOffer setProvidingPosition(GlobalPos pos) {
         providingPos = pos;
         cachedInput = null;
         return this;
     }
 
-    public AmadronOfferCustom setReturningPosition(GlobalPos pos) {
+    public AmadronPlayerOffer setReturningPosition(GlobalPos pos) {
         returningPos = pos;
         cachedOutput = null;
         return this;
     }
 
-    public AmadronOfferCustom invert() {
-        AmadronTradeResource temp = input;
-        input = output;
-        output = temp;
-        return this;
+    /**
+     * Create an offer which is the reverse of this offer.  Used for Amadron restocking and returning of unsold stock
+     * when a player offer is removed.  Note that the reversed offer has "_rev" appended to its ID; this new offer is
+     * available via {@link AmadronOfferManager#getOffer(ResourceLocation)} (assuming the original offer is) but will
+     * never appear in the active offers list.  If this is called on an already-reversed offer, the original offer will
+     * be returned.
+     * @return a new Amadron offer with the input and output swapped
+     */
+    public AmadronPlayerOffer getReversedOffer() {
+        ResourceLocation reversedId = getReversedId(getOfferId());
+        AmadronPlayerOffer reversed = new AmadronPlayerOffer(reversedId, getOutput(), getInput(), offeringPlayerName, offeringPlayerId);
+        reversed.providingPos = providingPos;
+        reversed.returningPos = returningPos;
+        reversed.inStock = this.inStock;
+        reversed.pendingPayments = this.pendingPayments;
+        return reversed;
     }
 
-    public AmadronOfferCustom copy() {
+    public AmadronPlayerOffer copy() {
         CompoundNBT tag = new CompoundNBT();
         writeToNBT(tag);
         return loadFromNBT(tag);
@@ -78,6 +93,10 @@ public class AmadronOfferCustom extends AmadronOffer {
 
     public void addStock(int stock) {
         inStock += stock;
+        if (inStock < 0) {
+            Log.warning("in-stock for " + this + " dropped to " + inStock + "? shouldn't happen!");
+            inStock = 0;
+        }
     }
 
     @Override
@@ -87,10 +106,6 @@ public class AmadronOfferCustom extends AmadronOffer {
 
     public void addPayment(int payment) {
         pendingPayments += payment;
-    }
-
-    public void setMaxTrades(int maxTrades) {
-        this.maxTrades = maxTrades;
     }
 
     @Override
@@ -110,17 +125,22 @@ public class AmadronOfferCustom extends AmadronOffer {
         }
     }
 
-    void payout() {
+    boolean payout() {
+        boolean madePayment = false;
         TileEntity returning = getReturningTileEntity();
-        TileEntity provider = getProvidingTileEntity();
         if (pendingPayments > 0) {
             int paying = Math.min(pendingPayments, 50);
-            paying = ContainerAmadron.capShoppingAmount(this, paying,
-                    AmadronOfferManager.getItemHandler(provider), AmadronOfferManager.getItemHandler(returning),
-                    AmadronOfferManager.getFluidHandler(provider), AmadronOfferManager.getFluidHandler(returning),
-                    null);
+            switch (getInput().getType()) {
+                case ITEM:
+                    paying = getInput().findSpaceInItemOutput(IOHelper.getInventoryForTE(returning), paying);
+                    break;
+                case FLUID:
+                    paying = getInput().findSpaceInFluidOutput(IOHelper.getFluidHandlerForTE(returning), paying);
+                    break;
+            }
             if (paying > 0) {
                 pendingPayments -= paying;
+                madePayment = true;
                 switch (getInput().getType()) {
                     case ITEM:
                         ItemStack deliveringItems = getInput().getItem();
@@ -141,46 +161,39 @@ public class AmadronOfferCustom extends AmadronOffer {
                 }
             }
         }
+        return madePayment;
     }
 
+    /**
+     * Return any unsold stock when an Amadron offer is removed.  If there's no space in the provider inventory
+     * or the inventory is gone, items will be dumped on the ground.
+     */
     public void returnStock() {
-        TileEntity provider = getProvidingTileEntity();
-        TileEntity returning = getReturningTileEntity();
-        invert();
         while (inStock > 0) {
-            int stock = Math.min(inStock, 50);
-            stock = ContainerAmadron.capShoppingAmount(this, stock,
-                    AmadronOfferManager.getItemHandler(returning), AmadronOfferManager.getItemHandler(provider),
-                    AmadronOfferManager.getFluidHandler(returning), AmadronOfferManager.getFluidHandler(provider),
-                    null);
-            if (stock > 0) {
-                inStock -= stock;
-                switch (getInput().getType()) {
-                    case ITEM:
-                        ItemStack deliveringItems = getInput().getItem();
-                        int amount = deliveringItems.getCount() * stock;
-                        List<ItemStack> stacks = new ArrayList<>();
-                        while (amount > 0) {
-                            ItemStack stack = deliveringItems.copy();
-                            stack.setCount(Math.min(amount, stack.getMaxStackSize()));
-                            stacks.add(stack);
-                            amount -= stack.getCount();
-                        }
-                        DroneRegistry.getInstance().deliverItemsAmazonStyle(providingPos, stacks.toArray(new ItemStack[0]));
-                        break;
-                    case FLUID:
-                        FluidStack deliveringFluid = getInput().getFluid().copy();
-                        deliveringFluid.setAmount(deliveringFluid.getAmount() * stock);
-                        DroneRegistry.getInstance().deliverFluidAmazonStyle(providingPos, deliveringFluid);
-                        break;
-                }
-            } else {
-                break;
+            int stock = Math.min(inStock, 64);
+            inStock -= stock;
+            switch (getOutput().getType()) {
+                case ITEM:
+                    ItemStack deliveringItems = getOutput().getItem();
+                    int amount = deliveringItems.getCount() * stock;
+                    List<ItemStack> stacks = new ArrayList<>();
+                    while (amount > 0) {
+                        ItemStack stack = ItemHandlerHelper.copyStackWithSize(deliveringItems, Math.min(amount, deliveringItems.getMaxStackSize()));
+                        stacks.add(stack);
+                        amount -= stack.getCount();
+                    }
+                    DroneRegistry.getInstance().deliverItemsAmazonStyle(providingPos, stacks.toArray(new ItemStack[0]));
+                    break;
+                case FLUID:
+                    FluidStack deliveringFluid = getOutput().getFluid().copy();
+                    deliveringFluid.setAmount(deliveringFluid.getAmount() * stock);
+                    DroneRegistry.getInstance().deliverFluidAmazonStyle(providingPos, deliveringFluid);
+                    break;
             }
         }
     }
 
-    public TileEntity getProvidingTileEntity() {
+    TileEntity getProvidingTileEntity() {
         if (cachedInput == null || cachedInput.isRemoved()) {
             if (providingPos != null) {
                 cachedInput = GlobalPosUtils.getTileEntity(providingPos);
@@ -189,7 +202,7 @@ public class AmadronOfferCustom extends AmadronOffer {
         return cachedInput;
     }
 
-    public TileEntity getReturningTileEntity() {
+    TileEntity getReturningTileEntity() {
         if (cachedOutput == null || cachedOutput.isRemoved()) {
             if (returningPos != null) {
                 cachedOutput = GlobalPosUtils.getTileEntity(returningPos);
@@ -198,12 +211,8 @@ public class AmadronOfferCustom extends AmadronOffer {
         return cachedOutput;
     }
 
-    public GlobalPos getProvidingPos() {
+    GlobalPos getProvidingPos() {
         return providingPos;
-    }
-
-    public GlobalPos getReturningPos() {
-        return returningPos;
     }
 
     @Override
@@ -212,7 +221,6 @@ public class AmadronOfferCustom extends AmadronOffer {
         tag.putString("offeringPlayerId", offeringPlayerId);
         tag.putString("offeringPlayerName", offeringPlayerName);
         tag.putInt("inStock", inStock);
-        tag.putInt("maxTrades", maxTrades);
         tag.putInt("pendingPayments", pendingPayments);
         if (providingPos != null) {
             tag.put("providingPos", GlobalPosUtils.serializeGlobalPos(providingPos));
@@ -222,11 +230,10 @@ public class AmadronOfferCustom extends AmadronOffer {
         }
     }
 
-    public static AmadronOfferCustom loadFromNBT(CompoundNBT tag) {
+    public static AmadronPlayerOffer loadFromNBT(CompoundNBT tag) {
         AmadronOffer offer = AmadronOffer.loadFromNBT(tag);
-        AmadronOfferCustom custom = new AmadronOfferCustom(offer.getInput(), offer.getOutput(), tag.getString("offeringPlayerName"), tag.getString("offeringPlayerId"));
+        AmadronPlayerOffer custom = new AmadronPlayerOffer(offer.getOfferId(), offer.getInput(), offer.getOutput(), tag.getString("offeringPlayerName"), tag.getString("offeringPlayerId"));
         custom.inStock = tag.getInt("inStock");
-        custom.maxTrades = tag.getInt("maxTrades");
         custom.pendingPayments = tag.getInt("pendingPayments");
         if (tag.contains("providingPos")) {
             custom.setProvidingPosition(GlobalPosUtils.deserializeGlobalPos(tag.getCompound("providingPos")));
@@ -249,13 +256,13 @@ public class AmadronOfferCustom extends AmadronOffer {
         if (returningPos != null) {
             PacketUtil.writeGlobalPos(buf, returningPos);
         }
-        buf.writeInt(inStock);
-        buf.writeInt(maxTrades);
-        buf.writeInt(pendingPayments);
+        buf.writeVarInt(inStock);
+        buf.writeVarInt(pendingPayments);
     }
 
-    public static AmadronOfferCustom loadFromBuf(PacketBuffer buf) {
-        AmadronOfferCustom offer = new AmadronOfferCustom(
+    public static AmadronPlayerOffer loadFromBuf(PacketBuffer buf) {
+        AmadronPlayerOffer offer = new AmadronPlayerOffer(
+                buf.readResourceLocation(),
                 AmadronTradeResource.fromPacketBuf(buf), AmadronTradeResource.fromPacketBuf(buf),
                 buf.readString(), buf.readString()
         );
@@ -265,9 +272,8 @@ public class AmadronOfferCustom extends AmadronOffer {
         if (buf.readBoolean()) {
             offer.setReturningPosition(PacketUtil.readGlobalPos(buf));
         }
-        offer.inStock = buf.readInt();
-        offer.maxTrades = buf.readInt();
-        offer.pendingPayments = buf.readInt();
+        offer.inStock = buf.readVarInt();
+        offer.pendingPayments = buf.readVarInt();
         return offer;
     }
 
@@ -277,42 +283,34 @@ public class AmadronOfferCustom extends AmadronOffer {
         json.addProperty("offeringPlayerName", offeringPlayerName);
         json.addProperty("offeringPlayerId", offeringPlayerId);
         json.addProperty("inStock", inStock);
-        json.addProperty("maxTrades", maxTrades);
         json.addProperty("pendingPayments", pendingPayments);
         if (providingPos != null) {
-            json.addProperty("providingDimension", providingPos.getDimension().getRegistryName().toString());
-            json.addProperty("providingX", providingPos.getPos().getX());
-            json.addProperty("providingY", providingPos.getPos().getY());
-            json.addProperty("providingZ", providingPos.getPos().getZ());
+            json.add("providingPos", providingPos.serialize(JsonOps.INSTANCE));
         }
         if (returningPos != null) {
-            json.addProperty("returningDimension", returningPos.getDimension().getRegistryName().toString());
-            json.addProperty("returningX", returningPos.getPos().getX());
-            json.addProperty("returningY", returningPos.getPos().getY());
-            json.addProperty("returningZ", returningPos.getPos().getZ());
+            json.add("returningPos", returningPos.serialize(JsonOps.INSTANCE));
         }
         return json;
     }
 
-    public static AmadronOfferCustom fromJson(JsonObject json) {
+    public static AmadronPlayerOffer fromJson(JsonObject json) throws CommandSyntaxException {
         AmadronOffer offer = AmadronOffer.fromJson(json);
-        if (offer != null) {
-            AmadronOfferCustom custom = new AmadronOfferCustom(offer.input, offer.output, json.get("offeringPlayerName").getAsString(), json.get("offeringPlayerId").getAsString());
-            custom.inStock = json.get("inStock").getAsInt();
-            custom.maxTrades = json.get("maxTrades").getAsInt();
-            custom.pendingPayments = json.get("pendingPayments").getAsInt();
-            if (json.has("providingDimension")) {
-                ResourceLocation rl = new ResourceLocation(json.get("providingDimension").getAsString());
-                custom.providingPos = GlobalPos.of(DimensionType.byName(rl), new BlockPos(json.get("providingX").getAsInt(), json.get("providingY").getAsInt(), json.get("providingZ").getAsInt()));
-            }
-            if (json.has("returningDimension")) {
-                ResourceLocation rl = new ResourceLocation(json.get("returningDimension").getAsString());
-                custom.providingPos = GlobalPos.of(DimensionType.byName(rl), new BlockPos(json.get("returningX").getAsInt(), json.get("returningY").getAsInt(), json.get("returningZ").getAsInt()));
-            }
-            return custom;
-        } else {
-            return null;
+        AmadronPlayerOffer custom = new AmadronPlayerOffer(offer.getOfferId(), offer.input, offer.output,
+                json.get("offeringPlayerName").getAsString(), json.get("offeringPlayerId").getAsString());
+        custom.inStock = json.get("inStock").getAsInt();
+        custom.pendingPayments = json.get("pendingPayments").getAsInt();
+        if (json.has("providingPos")) {
+            custom.providingPos = GlobalPos.deserialize(new Dynamic<>(JsonOps.INSTANCE, json.get("providingPos")));
         }
+        if (json.has("returningPos")) {
+            custom.returningPos = GlobalPos.deserialize(new Dynamic<>(JsonOps.INSTANCE, json.get("returningPos")));
+        }
+        return custom;
+    }
+
+    @Override
+    public boolean equivalentTo(AmadronPlayerOffer otherOffer) {
+        return super.equivalentTo(otherOffer) && offeringPlayerId.equals(otherOffer.offeringPlayerId);
     }
 
     @Override
@@ -322,8 +320,8 @@ public class AmadronOfferCustom extends AmadronOffer {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof AmadronOfferCustom) {
-            AmadronOfferCustom offer = (AmadronOfferCustom) o;
+        if (o instanceof AmadronPlayerOffer) {
+            AmadronPlayerOffer offer = (AmadronPlayerOffer) o;
             return super.equals(o) && offer.offeringPlayerId.equals(offeringPlayerId);
         } else {
             return false;
@@ -333,5 +331,12 @@ public class AmadronOfferCustom extends AmadronOffer {
     @Override
     public int hashCode() {
         return super.hashCode() * 31 + offeringPlayerId.hashCode();
+    }
+
+    public static ResourceLocation getReversedId(ResourceLocation id) {
+        String s = id.toString();
+        return s.endsWith("_rev") ?
+                new ResourceLocation(s.replaceFirst("_rev$", "")):
+                new ResourceLocation(s + "_rev");
     }
 }

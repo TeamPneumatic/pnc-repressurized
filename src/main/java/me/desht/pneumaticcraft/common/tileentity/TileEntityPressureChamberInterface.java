@@ -273,13 +273,13 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     public List<String> getProblemStat() {
         List<String> textList = new ArrayList<>();
         if (interfaceMode == InterfaceDirection.NONE) {
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a77The Interface can't work:"));
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70\u2022 The Interface is not in a properly formed Pressure Chamber, and/or"));
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70\u2022 The Interface is not adjacent to an air block of the Pressure Chamber, and/or"));
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70\u2022 The Interface isn't oriented properly"));
+            textList.addAll(PneumaticCraftUtils.splitString("\u00a77The Interface can't work:"));
+            textList.addAll(PneumaticCraftUtils.splitString("\u00a70\u2022 The Interface is not in a properly formed Pressure Chamber, and/or"));
+            textList.addAll(PneumaticCraftUtils.splitString("\u00a70\u2022 The Interface is not adjacent to an air block of the Pressure Chamber, and/or"));
+            textList.addAll(PneumaticCraftUtils.splitString("\u00a70\u2022 The Interface isn't oriented properly"));
         } else if (!enoughAir) {
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Not enough pressure in the Pressure Chamber to move the items."));
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList("\u00a70Apply more pressure to the Pressure Chamber. The required pressure is dependent on the amount of items being transported."));
+            textList.addAll(PneumaticCraftUtils.splitString("\u00a70Not enough pressure in the Pressure Chamber to move the items."));
+            textList.addAll(PneumaticCraftUtils.splitString("\u00a70Apply more pressure to the Pressure Chamber. The required pressure is dependent on the amount of items being transported."));
         }
         return textList;
     }

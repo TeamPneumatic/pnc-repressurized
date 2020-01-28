@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public interface IAuxConfig {
     /**
-     * Get the filename (within to the "pneumaticcraft/" folder in the top-level config directory) where this
+     * Get the filename (within the "pneumaticcraft/" folder in the top-level config directory) where this
      * config should be stored.
      *
      * @return the config file name

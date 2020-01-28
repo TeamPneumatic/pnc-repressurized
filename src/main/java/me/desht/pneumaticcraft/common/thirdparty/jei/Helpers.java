@@ -22,7 +22,7 @@ class Helpers {
     }
 
     static void drawTextAt(String translationKey, int x, int y) {
-        List<String> text = PneumaticCraftUtils.convertStringIntoList(I18n.format(translationKey), 30);
+        List<String> text = PneumaticCraftUtils.splitString(I18n.format(translationKey), 30);
         int h = Minecraft.getInstance().fontRenderer.FONT_HEIGHT;
         for (int i = 0; i < text.size(); i++) {
             Minecraft.getInstance().fontRenderer.drawString(text.get(i), x, y + i * h, 0xFF404040);

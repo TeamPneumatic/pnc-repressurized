@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerItemSearcher;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -35,7 +34,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class GuiItemSearcher extends DisplayEffectsScreen<ContainerItemSearcher> {
+public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
     private static final ResourceLocation GUI_TEXTURE = Textures.GUI_ITEM_SEARCHER_LOCATION;
     private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
     private static List<SearchEntry> cachedSearchEntries;
@@ -98,10 +97,11 @@ public class GuiItemSearcher extends DisplayEffectsScreen<ContainerItemSearcher>
         searchField.setMaxStringLength(15);
         searchField.setEnableBackgroundDrawing(true);
         searchField.setVisible(true);
-        searchField.setFocused2(true);
         searchField.setTextColor(16777215);
         searchField.setResponder(s -> updateCreativeSearch());
         addButton(searchField);
+        setFocused(searchField);
+        searchField.setFocused2(true);
 
         updateCreativeSearch();
     }

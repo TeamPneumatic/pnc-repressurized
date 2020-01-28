@@ -35,7 +35,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
         super.addProblems(textList);
         if (te.getPrimaryInventory().getStackInSlot(TileEntityUVLightBox.PCB_SLOT).isEmpty()) {
             textList.add(TextFormatting.GRAY + "No PCB to expose");
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList(TextFormatting.GRAY + "Insert an Empty PCB", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+            textList.addAll(PneumaticCraftUtils.splitString(TextFormatting.GRAY + "Insert an Empty PCB", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
         }
     }
 }

@@ -334,7 +334,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (I18n.hasKey(info)) {
             if (ClientUtils.hasShiftDown()) {
                 String translatedInfo = TextFormatting.AQUA + I18n.format(info).substring(2);  // strip out the leading text formatting
-                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 50).stream().map(StringTextComponent::new).collect(Collectors.toList()));
+                curInfo.addAll(PneumaticCraftUtils.splitString(translatedInfo, 50).stream().map(StringTextComponent::new).collect(Collectors.toList()));
                 if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
                     curInfo.add(xlate("gui.tab.info.assistIGW"));
                 }

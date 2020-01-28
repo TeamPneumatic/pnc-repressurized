@@ -19,12 +19,14 @@ package me.desht.pneumaticcraft.common.network;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,10 +121,10 @@ public class NetworkHandler {
 				PacketAmadronOrderUpdate::toBytes, PacketAmadronOrderUpdate::new, PacketAmadronOrderUpdate::handle);
 		registerMessage(PacketAmadronTradeAddCustom.class,
 				PacketAmadronTradeAddCustom::toBytes, PacketAmadronTradeAddCustom::new, PacketAmadronTradeAddCustom::handle);
-		registerMessage(PacketAmadronTradeAddPeriodic.class,
-				PacketAmadronTradeAddPeriodic::toBytes, PacketAmadronTradeAddPeriodic::new, PacketAmadronTradeAddPeriodic::handle);
-		registerMessage(PacketAmadronTradeAddStatic.class,
-				PacketAmadronTradeAddStatic::toBytes, PacketAmadronTradeAddStatic::new, PacketAmadronTradeAddStatic::handle);
+//		registerMessage(PacketAmadronTradeAddPeriodic.class,
+//				PacketAmadronTradeAddPeriodic::toBytes, PacketAmadronTradeAddPeriodic::new, PacketAmadronTradeAddPeriodic::handle);
+//		registerMessage(PacketAmadronTradeAddStatic.class,
+//				PacketAmadronTradeAddStatic::toBytes, PacketAmadronTradeAddStatic::new, PacketAmadronTradeAddStatic::handle);
 		registerMessage(PacketAmadronTradeNotifyDeal.class,
 				PacketAmadronTradeNotifyDeal::toBytes, PacketAmadronTradeNotifyDeal::new, PacketAmadronTradeNotifyDeal::handle);
 		registerMessage(PacketAmadronTradeRemoved.class,
@@ -232,6 +234,24 @@ public class NetworkHandler {
             NETWORK.sendToServer(message);
         }
     }
+
+	/**
+	 * Send a packet to all non-local players, which is everyone for a dedicated server, and everyone except the
+	 * server owner for an integrated server.
+	 * @param packet the packet to send
+	 */
+	public static void sendNonLocal(Object packet) {
+		MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+		if (server.isDedicatedServer()) {
+			NetworkHandler.sendToAll(packet);
+		} else {
+			for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
+				if (!player.getGameProfile().getName().equals(player.server.getServerOwner())) {
+					sendToPlayer(packet, player);
+				}
+			}
+		}
+	}
 
 	public static void sendNonLocal(ServerPlayerEntity player, Object packet) {
 		if (player.server.isDedicatedServer() || !player.getGameProfile().getName().equals(player.server.getServerOwner())) {

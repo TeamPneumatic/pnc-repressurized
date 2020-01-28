@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.common.entity.EntityRing;
+import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
@@ -23,6 +24,8 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<EntityDrone>> DRONE
             = register("drone", ModEntities::drone);
+    public static final RegistryObject<EntityType<EntityAmadrone>> AMADRONE
+            = register("amadrone", ModEntities::amadrone);
     public static final RegistryObject<EntityType<EntityLogisticsDrone>> LOGISTICS_DRONE
             = register("logistics_drone", ModEntities::logisticsDrone);
     public static final RegistryObject<EntityType<EntityHarvestingDrone>> HARVESTING_DRONE
@@ -79,6 +82,15 @@ public class ModEntities {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
+    private static EntityType.Builder<EntityAmadrone> amadrone() {
+        return EntityType.Builder.create(EntityAmadrone::create, EntityClassification.CREATURE)
+                .size(0.7f, 0.35f)
+                .setTrackingRange(32)
+                .setUpdateInterval(3)
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.AMADRONE.get().create(world)))
+                .setShouldReceiveVelocityUpdates(true);
+    }
+
     private static EntityType.Builder<EntityLogisticsDrone> logisticsDrone() {
         return EntityType.Builder.create(EntityLogisticsDrone::createLogisticsDrone, EntityClassification.CREATURE)
                 .size(0.7f, 0.35f)
@@ -131,7 +143,7 @@ public class ModEntities {
         return EntityType.Builder.create(EntityCropSupport::create, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
-                .setTrackingRange(2)
+                .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.CROP_SUPPORT.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
@@ -141,7 +153,7 @@ public class ModEntities {
         return EntityType.Builder.create(EntitySpawnerAgitator::create, EntityClassification.MISC)
                 .size(1F, 1F)
                 .immuneToFire()
-                .setTrackingRange(2)
+                .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.SPAWNER_AGITATOR.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
@@ -151,7 +163,7 @@ public class ModEntities {
         return EntityType.Builder.create(EntityHeatFrame::create, EntityClassification.MISC)
                 .size(1F, 1F)
                 .immuneToFire()
-                .setTrackingRange(2)
+                .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.HEAT_FRAME.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
@@ -161,7 +173,7 @@ public class ModEntities {
         return EntityType.Builder.create(EntityTransferGadget::create, EntityClassification.MISC)
                 .size(1F, 1F)
                 .immuneToFire()
-                .setTrackingRange(2)
+                .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.TRANSFER_GADGET.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
@@ -171,7 +183,7 @@ public class ModEntities {
         return EntityType.Builder.create(EntityLogisticsActiveProvider::create, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
-                .setTrackingRange(2)
+                .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_ACTIVE_PROVIDER.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
@@ -181,7 +193,7 @@ public class ModEntities {
         return EntityType.Builder.create(EntityLogisticsPassiveProvider::createPassive, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
-                .setTrackingRange(2)
+                .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_PASSIVE_PROVIDER.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
@@ -191,7 +203,7 @@ public class ModEntities {
         return EntityType.Builder.create(EntityLogisticsStorage::create, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
-                .setTrackingRange(2)
+                .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_STORAGE.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
@@ -201,7 +213,7 @@ public class ModEntities {
         return EntityType.Builder.create(EntityLogisticsDefaultStorage::createDefault, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
-                .setTrackingRange(2)
+                .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_DEFAULT_STORAGE.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
@@ -211,7 +223,7 @@ public class ModEntities {
         return EntityType.Builder.create(EntityLogisticsRequester::create, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
-                .setTrackingRange(2)
+                .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_REQUESTER.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);

@@ -2,8 +2,10 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerInventorySearcher;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -16,7 +18,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
-import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -26,15 +27,41 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     private final ItemStackHandler inventory = new ItemStackHandler(1);
     private final Screen parentScreen;
     private Predicate<ItemStack> stackPredicate = itemStack -> true;
+    private WidgetLabel label;
 
     public GuiInventorySearcher(ContainerInventorySearcher container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
 
         inv.player.openContainer = container;
         passEvents = true;
-        ySize = 176; //TODO change
+        ySize = 176;
         parentScreen = Minecraft.getInstance().currentScreen;
         container.init(inventory);
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        addButton(label = new WidgetLabel(guiLeft + 105, guiTop + 28, "", 0xFF404080))/*.setScale(0.5f))*/;
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        return true;
+    }
+
+    @Override
+    public void onClose() {
+        minecraft.keyboardListener.enableRepeatEvents(false);
+        if (parentScreen != null) {
+            minecraft.displayGuiScreen(parentScreen);
+            if (parentScreen instanceof ContainerScreen) {
+                minecraft.player.openContainer = ((ContainerScreen) parentScreen).getContainer();
+            }
+        } else {
+            super.onClose();
+        }
     }
 
     public void setStackPredicate(Predicate<ItemStack> predicate) {
@@ -53,6 +80,11 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     }
 
     @Override
+    public int getSlotColor(int index) {
+        return super.getSlotColor(index);
+    }
+
+    @Override
     protected void handleMouseClick(Slot par1Slot, int par2, int par3, ClickType par4) {
         if (par1Slot != null) {
             if (par1Slot.slotNumber == 36) {
@@ -64,54 +96,22 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            minecraft.displayGuiScreen(parentScreen);
-            onClose();
-            return true;
-        } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
-        }
-    }
+    public void tick() {
+        super.tick();
 
-    /**
-     * Draw the foreground layer for the GuiContainer (everything in front of the items)
-     */
-    @Override
-    protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-        font.drawString("Inventory", 7, 5, 4210752);
-        font.drawString("Searcher", 7, 15, 4210752);
-        font.drawString("Target", 71, 8, 4210752);
+        label.setMessage("");
         ItemStack stack = inventory.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
             List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(ClientUtils.getClientWorld(), stack);
             if (!posList.isEmpty()) {
                 BlockPos pos = posList.get(0);
                 if (pos != null) {
-                    float scale = 0.75F;
-                    GlStateManager.pushMatrix();
-                    GlStateManager.scaled(scale, scale, scale);
-                    GlStateManager.translated(140 * (1 - scale), 28 * (1 - scale), 0);
-                    font.drawString(String.format("%d, %d, %d", pos.getX(), pos.getY(), pos.getZ()), 105, 28, 0x404080);
-                    GlStateManager.popMatrix();
+                    label.setMessage(PneumaticCraftUtils.posToString(pos));
                 }
             }
         }
     }
 
-    /**
-     * Draws the screen and all the components in it.
-     */
-    @Override
-    public void render(int par1, int par2, float par3) {
-        super.render(par1, par2, par3);
-
-        renderHoveredToolTip(par1, par2);
-    }
-
-    /**
-     * Draw the background layer for the GuiContainer (everything behind the items)
-     */
     @Override
     protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
         renderBackground();
@@ -119,5 +119,34 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
         blit(xStart, yStart, 0, 0, xSize, ySize);
+    }
+
+    @Override
+    protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+        font.drawString("Inventory", 7, 5, 0x404040);
+        font.drawString("Searcher", 7, 15, 0x404040);
+        font.drawString("Target", 71, 8, 0x404040);
+
+        for (int i = 0; i < this.container.inventorySlots.size() - 1; ++i) {
+            Slot slot = this.container.inventorySlots.get(i);
+            if (!stackPredicate.test(slot.getStack())) {
+                GlStateManager.disableLighting();
+                GlStateManager.disableDepthTest();
+                int x = slot.xPos;
+                int y = slot.yPos;
+                GlStateManager.colorMask(true, true, true, false);
+                this.fillGradient(x, y, x + 16, y + 16, 0xC0202020, 0xC0202020);
+                GlStateManager.colorMask(true, true, true, true);
+                GlStateManager.enableLighting();
+                GlStateManager.enableDepthTest();
+            }
+        }
+    }
+
+    @Override
+    public void render(int par1, int par2, float par3) {
+        super.render(par1, par2, par3);
+
+        renderHoveredToolTip(par1, par2);
     }
 }

@@ -3,8 +3,6 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
 import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -18,23 +16,17 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -55,19 +47,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (!worldIn.isRemote) {
-//            NetworkHandler.sendToPlayer(new PacketSyncAmadronOffers(playerIn), (ServerPlayerEntity) playerIn);
-            NetworkHooks.openGui((ServerPlayerEntity) playerIn, new INamedContainerProvider() {
-                @Override
-                public ITextComponent getDisplayName() {
-                    return playerIn.getHeldItem(handIn).getDisplayName();
-                }
-
-                @Nullable
-                @Override
-                public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                    return new ContainerAmadron(windowId, playerInventory, handIn);
-                }
-            }, buf -> buf.writeBoolean(handIn == Hand.MAIN_HAND));
+            openGui(playerIn, handIn);
         }
         return ActionResult.newResult(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
     }
@@ -105,14 +85,14 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         super.addInformation(stack, worldIn, infoList, flag);
         GlobalPos gPos = getItemProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("gui.tooltip.amadronTablet.itemLocation", gPos.toString()));
+            infoList.add(xlate("gui.tooltip.amadronTablet.itemLocation", GlobalPosUtils.prettyPrint(gPos)).applyTextStyle(TextFormatting.YELLOW));
         } else {
             infoList.add(xlate("gui.tooltip.amadronTablet.selectItemLocation"));
         }
 
         gPos = getFluidProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("gui.tooltip.amadronTablet.fluidLocation", gPos));
+            infoList.add(xlate("gui.tooltip.amadronTablet.fluidLocation", GlobalPosUtils.prettyPrint(gPos)).applyTextStyle(TextFormatting.YELLOW));
         } else {
             infoList.add(xlate("gui.tooltip.amadronTablet.selectFluidLocation"));
         }
@@ -140,8 +120,8 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     public static LazyOptional<IFluidHandler> getFluidCapability(ItemStack tablet) {
         GlobalPos pos = getFluidProvidingLocation(tablet);
         if (pos != null) {
-            World world = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), pos.getDimension(), false, false);
-            return world == null ? LazyOptional.empty() : FluidUtil.getFluidHandler(world, pos.getPos(), null);
+            TileEntity te = GlobalPosUtils.getTileEntity(pos);
+            return IOHelper.getFluidHandlerForTE(te);
         }
         return LazyOptional.empty();
     }
@@ -156,28 +136,22 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         NBTUtil.setCompoundTag(tablet, "liquidPos", GlobalPosUtils.serializeGlobalPos(globalPos));
     }
 
-    public static Map<AmadronOffer, Integer> getShoppingCart(ItemStack tablet) {
-        Map<AmadronOffer, Integer> offers = new HashMap<>();
+    public static Map<ResourceLocation, Integer> loadShoppingCart(ItemStack tablet) {
+        Map<ResourceLocation, Integer> offers = new HashMap<>();
 
-        if (tablet.hasTag() && tablet.getTag().contains("shoppingCart")) {
-            ListNBT list = tablet.getTag().getList("shoppingCart", 10);
-            for (int i = 0; i < list.size(); i++) {
-                CompoundNBT tag = list.getCompound(i);
-                offers.put(tag.contains("inStock") ? AmadronOfferCustom.loadFromNBT(tag) : AmadronOffer.loadFromNBT(tag), tag.getInt("amount"));
+        CompoundNBT subTag = tablet.getChildTag("shoppingCart");
+        if (subTag != null) {
+            for (String key : subTag.keySet()) {
+                offers.put(new ResourceLocation(key), subTag.getInt(key));
             }
         }
         return offers;
     }
 
-    public static void setShoppingCart(ItemStack tablet, Map<AmadronOffer, Integer> cart) {
-        ListNBT list = new ListNBT();
-        for (Map.Entry<AmadronOffer, Integer> entry : cart.entrySet()) {
-            CompoundNBT tag = new CompoundNBT();
-            entry.getKey().writeToNBT(tag);
-            tag.putInt("amount", entry.getValue());
-            list.add(tag);
-        }
-        NBTUtil.setCompoundTag(tablet, "shoppingCart", list);
+    public static void saveShoppingCart(ItemStack tablet, Map<ResourceLocation, Integer> cart) {
+        CompoundNBT subTag = new CompoundNBT();
+        cart.forEach((key, value) -> subTag.putInt(key.toString(), value));
+        NBTUtil.setCompoundTag(tablet, "shoppingCart", subTag);
     }
 
     @Override
@@ -194,5 +168,20 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
             case 1: return 0x9000C0C0;  // liquid
             default: return -1;
         }
+    }
+
+    public static void openGui(PlayerEntity playerIn, Hand handIn) {
+        NetworkHooks.openGui((ServerPlayerEntity) playerIn, new INamedContainerProvider() {
+            @Override
+            public ITextComponent getDisplayName() {
+                return playerIn.getHeldItem(handIn).getDisplayName();
+            }
+
+            @Nullable
+            @Override
+            public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                return new ContainerAmadron(windowId, playerInventory, handIn);
+            }
+        }, buf -> buf.writeBoolean(handIn == Hand.MAIN_HAND));
     }
 }

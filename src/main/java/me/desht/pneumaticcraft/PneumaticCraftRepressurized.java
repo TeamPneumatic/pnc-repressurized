@@ -65,14 +65,11 @@ import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.server.permission.DefaultPermissionLevel;
-import net.minecraftforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
-//    public static final String MODVERSION = "@VERSION@";
     public static final Logger LOGGER = LogManager.getLogger();
 
     public PneumaticCraftRepressurized() {
@@ -116,6 +113,7 @@ public class PneumaticCraftRepressurized {
 
         MinecraftForge.EVENT_BUS.register(new TickHandlerPneumaticCraft());
         MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticCraft());
+        MinecraftForge.EVENT_BUS.register(new EventHandlerAmadron());
         MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticArmor());
         MinecraftForge.EVENT_BUS.register(new EventHandlerUniversalSensor());
         MinecraftForge.EVENT_BUS.register(new DroneSpecialVariableHandler());
@@ -142,7 +140,6 @@ public class PneumaticCraftRepressurized {
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();
         ModWorldGen.init();
-        registerPermissionNodes();
 
         ThirdPartyManager.instance().init();
 
@@ -177,13 +174,6 @@ public class PneumaticCraftRepressurized {
                 }
             }
         });
-    }
-
-    private void registerPermissionNodes() {
-        PermissionAPI.registerNode(Names.AMADRON_ADD_PERIODIC_TRADE, DefaultPermissionLevel.OP,
-                "Allow player to add a custom periodic offer via the Amadron Tablet");
-        PermissionAPI.registerNode(Names.AMADRON_ADD_STATIC_TRADE, DefaultPermissionLevel.OP,
-                "Allow player to add a custom static offer via the Amadron Tablet");
     }
 
     private void registerCapabilities() {

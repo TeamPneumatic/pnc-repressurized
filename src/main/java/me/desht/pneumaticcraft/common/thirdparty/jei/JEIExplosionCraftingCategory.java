@@ -79,7 +79,7 @@ public class JEIExplosionCraftingCategory implements IRecipeCategory<IExplosionC
     public List<String> getTooltipStrings(IExplosionCraftingRecipe recipe, double mouseX, double mouseY) {
         List<String> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.nei.recipe.explosionCrafting", recipe.getLossRate()), 32));
+            res.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.nei.recipe.explosionCrafting", recipe.getLossRate()), 32));
         }
         return res;
     }

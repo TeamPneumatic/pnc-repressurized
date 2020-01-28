@@ -130,8 +130,14 @@ public class ConfigHelper {
         PNCConfig.Common.BlockHeatDefaults.defaultFluidTotalHeat = common.blockHeatDefaults.fluidTotalHeatCapacity.get();
         PNCConfig.Common.BlockHeatDefaults.ambientTempBiomeModifier = common.blockHeatDefaults.ambientTemperatureBiomeModifier.get();
         PNCConfig.Common.BlockHeatDefaults.ambientTempHeightModifier = common.blockHeatDefaults.ambientTemperatureHeightModifier.get();
-    }
 
+        PNCConfig.Common.Amadron.numPeriodicOffers = common.amadron.numPeriodicOffers.get();
+        PNCConfig.Common.Amadron.reshuffleInterval = common.amadron.reshuffleInterval.get();
+        PNCConfig.Common.Amadron.maxTradesPerPlayer = common.amadron.maxTradesPerPlayer.get();
+        PNCConfig.Common.Amadron.notifyOfDealMade = common.amadron.notifyOfDealMade.get();
+        PNCConfig.Common.Amadron.notifyOfTradeAddition = common.amadron.notifyOfTradeAddition.get();
+        PNCConfig.Common.Amadron.notifyOfTradeRemoval = common.amadron.notifyOfTradeRemoval.get();
+    }
 
     private static void setValueAndSave(final net.minecraftforge.fml.config.ModConfig modConfig, final String path, final Object newValue) {
         modConfig.getConfigData().set(path, newValue);

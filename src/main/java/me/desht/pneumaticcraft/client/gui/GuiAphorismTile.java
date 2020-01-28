@@ -32,7 +32,7 @@ public class GuiAphorismTile extends Screen {
         this.tile = tile;
         textLines = tile.getTextLines();
         if (PNCConfig.Client.aphorismDrama && textLines.length == 1 && textLines[0].equals("")) {
-            List<String> l = PneumaticCraftUtils.convertStringIntoList(DramaSplash.getInstance().getSplash(), 20);
+            List<String> l = PneumaticCraftUtils.splitString(DramaSplash.getInstance().getSplash(), 20);
             tile.setTextLines(l.toArray(new String[0]));
         }
         NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
@@ -55,7 +55,7 @@ public class GuiAphorismTile extends Screen {
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(this, font,
-                    PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.aphorismTile.helpText"), 40));
+                    PneumaticCraftUtils.splitString(I18n.format("gui.aphorismTile.helpText"), 40));
         }
     }
 

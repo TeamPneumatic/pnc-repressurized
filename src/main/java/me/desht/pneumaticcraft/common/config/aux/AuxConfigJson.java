@@ -11,7 +11,7 @@ public abstract class AuxConfigJson implements IAuxConfig {
     protected File file;
     private final boolean inPreInit;
 
-    public AuxConfigJson(boolean inPreInit) {
+    AuxConfigJson(boolean inPreInit) {
         this.inPreInit = inPreInit;
     }
 
@@ -53,7 +53,7 @@ public abstract class AuxConfigJson implements IAuxConfig {
         FileUtils.write(file, gson.toJson(el), Charsets.UTF_8);
     }
 
-    protected void readFromFile() throws IOException {
+    private void readFromFile() throws IOException {
         JsonParser parser = new JsonParser();
         JsonObject root = (JsonObject) parser.parse(FileUtils.readFileToString(file, Charsets.UTF_8));
         readFromJson(root);

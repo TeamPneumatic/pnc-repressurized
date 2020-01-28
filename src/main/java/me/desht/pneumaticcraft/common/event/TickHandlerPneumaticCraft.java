@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.common.ai.DroneClaimManager;
-import me.desht.pneumaticcraft.common.config.aux.AmadronOfferPeriodicConfig;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketServerTickTime;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
@@ -29,11 +29,11 @@ public class TickHandlerPneumaticCraft {
     public void onServerTickEnd(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             int ticks = ServerLifecycleHooks.getCurrentServer().getTickCounter();
-            if (ticks % (24000 / AmadronOfferPeriodicConfig.timesPerDay) == 1) {
-                AmadronOfferManager.getInstance().shufflePeriodicOffers();
+            if (ticks % PNCConfig.Common.Amadron.reshuffleInterval == PNCConfig.Common.Amadron.reshuffleInterval - 1) {
+                AmadronOfferManager.getInstance().compileActiveOffersList();
             }
             if (ticks % 600 == 0) {
-                AmadronOfferManager.getInstance().tryRestockCustomOffers();
+                AmadronOfferManager.getInstance().tryRestockPlayerOffers();
             }
         }
     }

@@ -1,8 +1,6 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import me.desht.pneumaticcraft.api.crafting.*;
@@ -12,11 +10,11 @@ import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.network.PacketSyncRecipes;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
+import me.desht.pneumaticcraft.common.util.DatapackHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -32,8 +30,6 @@ import net.minecraftforge.resource.IResourceType;
 import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -41,7 +37,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class MachineRecipeHandler {
     private static final String MACHINE_RECIPES = "pneumaticcraft/machine_recipes/";
-    private static final int JSON_EXTENSION_LENGTH = ".json".length();
 
     public enum Category {
         PRESSURE_CHAMBER("pressure_chamber"),
@@ -65,8 +60,6 @@ public class MachineRecipeHandler {
     }
 
     public static class ReloadListener implements ISelectiveResourceReloadListener {
-        private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-
         private List<Map<ResourceLocation, JsonObject>> allRecipes = new ArrayList<>();
 
         @Override
@@ -101,53 +94,13 @@ public class MachineRecipeHandler {
             PneumaticCraftRecipes.refineryRecipes = ImmutableMap.copyOf(refinery);
             AssemblyRecipe.setupRecipeSubtypes(assembly.values());
 
-            AmadronOfferManager.getInstance().initOffers();
+            AmadronOfferManager.getInstance().initOffers(resourceManager);
 
             NetworkHandler.sendToAll(syncPacket());
         }
 
-        /**
-         * Load all JSON recipes for the given category, searching all known datapacks. If an empty recipe JSON is
-         * found for an existing recipe, it will be removed; this is how datapacks can disable default recipes.
-         *
-         * @param resourceManager the resource manager
-         * @param category a machine recipe category
-         * @return a map (recipeID -> json) of all discovered recipes for the category
-         */
         private Map<ResourceLocation, JsonObject> loadJSON(IResourceManager resourceManager, Category category) {
-            Map<ResourceLocation, JsonObject> map = new HashMap<>();
-            String folder = MACHINE_RECIPES + category.getName();
-            int l = folder.length() + 1;
-            for (ResourceLocation file : resourceManager.getAllResourceLocations(folder, r -> r.endsWith(".json"))) {
-                String path = file.getPath();
-                ResourceLocation id = new ResourceLocation(file.getNamespace(), path.substring(l, path.length() - JSON_EXTENSION_LENGTH));
-                Log.debug("loading %s recipe: %s", category.getName(), id);
-                try (IResource iresource = resourceManager.getResource(file);
-                     InputStream inputstream = iresource.getInputStream();
-                     Reader reader = new BufferedReader(new InputStreamReader(inputstream, StandardCharsets.UTF_8)))
-                {
-                    JsonObject jsonobject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
-                    if (jsonobject != null) {
-                        if (jsonobject.size() == 0) {
-                            if (map.containsKey(id)) {
-                                Log.debug("removing %s recipe ID %s (found empty recipe JSON)", category.getName(), id);
-                                map.remove(id);
-                            }
-                        } else {
-                            JsonObject j = map.put(id, jsonobject);
-                            if (j != null) {
-                                Log.error("duplicate data file ignored with ID " + id);
-                            }
-                        }
-                    } else {
-                        Log.error("can't load data file %s from %s as it's null or empty", id, file);
-                    }
-                } catch (IllegalArgumentException | IOException | JsonParseException e) {
-                    Log.error("can't parse data file %s (%s) - stack trace follows:", file, e.getMessage());
-                    Log.error(ExceptionUtils.getStackTrace(e));
-                }
-            }
-            return map;
+            return DatapackHelper.loadJSONFiles(resourceManager, MACHINE_RECIPES + category.getName(), category.getName() + " recipe");
         }
 
         /**

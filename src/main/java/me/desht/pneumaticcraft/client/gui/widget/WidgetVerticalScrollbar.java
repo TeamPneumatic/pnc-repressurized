@@ -40,6 +40,8 @@ public class WidgetVerticalScrollbar extends Widget {
 
     @Override
     public void onClick(double x, double y) {
+        currentScroll = (float) (y - 7 - this.y) / (height - 17);
+        currentScroll = MathHelper.clamp(currentScroll, 0, 1);
         dragging = true;
     }
 

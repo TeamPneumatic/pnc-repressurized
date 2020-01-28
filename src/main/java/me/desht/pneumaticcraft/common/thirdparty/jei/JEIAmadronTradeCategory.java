@@ -122,6 +122,6 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
     }
 
     static Collection<AmadronOffer> getAllRecipes() {
-        return AmadronOfferManager.getInstance().getAllOffers();
+        return AmadronOfferManager.getInstance().getActiveOffers();
     }
 }

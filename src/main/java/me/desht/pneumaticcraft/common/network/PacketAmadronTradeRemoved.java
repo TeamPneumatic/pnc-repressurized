@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferCustom;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -10,12 +10,12 @@ import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class PacketAmadronTradeRemoved extends PacketAbstractAmadronTrade<PacketAmadronTradeRemoved> {
+public class PacketAmadronTradeRemoved extends PacketAbstractAmadronTrade {
 
     public PacketAmadronTradeRemoved() {
     }
 
-    public PacketAmadronTradeRemoved(AmadronOfferCustom offer) {
+    public PacketAmadronTradeRemoved(AmadronPlayerOffer offer) {
         super(offer);
     }
 

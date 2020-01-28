@@ -159,7 +159,7 @@ public class GuiRedstoneModule extends GuiTubeModule {
         } else {
             s = I18n.format(key, dyeColorDesc(ourColor));
         }
-        List<String> l = PneumaticCraftUtils.convertStringIntoList(s, 30);
+        List<String> l = PneumaticCraftUtils.splitString(s, 30);
         int yBase = guiTop + ySize - l.size() * font.FONT_HEIGHT - 10;
         for (int i = 0; i < l.size(); i++) {
             font.drawString(l.get(i), guiLeft + 10, yBase + i * font.FONT_HEIGHT, 0xFF404040);

@@ -128,6 +128,8 @@ public class PNCConfig {
         }
 
         public static class Amadron {
+            public static int numPeriodicOffers;
+            public static int reshuffleInterval;
             public static int maxTradesPerPlayer;
             public static boolean notifyOfTradeAddition;
             public static boolean notifyOfTradeRemoval;

@@ -82,7 +82,7 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<IPressu
         recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
             String tooltipKey = recipe.getTooltipKey(input, slotIndex);
             if (!tooltipKey.isEmpty()) {
-                tooltip.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(tooltipKey)));
+                tooltip.addAll(PneumaticCraftUtils.splitString(I18n.format(tooltipKey)));
             }
         });
     }

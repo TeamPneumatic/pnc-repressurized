@@ -151,6 +151,7 @@ public class Textures {
     public static final ResourceLocation GUI_TEXT_WIDGET = guiTexture("gui_text_widget.png");
     public static final ResourceLocation GUI_MODULE_SIMPLE = guiTexture("gui_tube_module_simple.png");
     public static final ResourceLocation GUI_MICROMISSILE = guiTexture("gui_micromissile.png");
+    public static final ResourceLocation GUI_AMADRON_ADD_TRADE = guiTexture("gui_amadron_add_trade.png");
 
     // misc GUI Icons
     public static final ResourceLocation GUI_COPY_ICON_LOCATION = guiIconTexture("gui_copy.png");

@@ -122,8 +122,8 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     protected void addWarnings(List<String> textList) {
         super.addWarnings(textList);
         if (te.getMaxElevatorHeight() == te.extension) {
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList(TextFormatting.GRAY + "The elevator can't extend anymore.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList(TextFormatting.BLACK + "Add (more) Elevator Frames on top of the elevator", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+            textList.addAll(PneumaticCraftUtils.splitString(TextFormatting.GRAY + "The elevator can't extend anymore.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+            textList.addAll(PneumaticCraftUtils.splitString(TextFormatting.BLACK + "Add (more) Elevator Frames on top of the elevator", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
         }
     }
 }

@@ -1,0 +1,13 @@
+{
+  "static": "true",
+  "input": {
+    "type": "item",
+    "id": "minecraft:emerald",
+    "amount": 14
+  },
+  "output": {
+    "type": "item",
+    "id": "pneumaticcraft:assembly_program_drill_laser",
+    "amount": 1
+  }
+}

@@ -161,16 +161,16 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     @OnlyIn(Dist.CLIENT)
     public void addProblems(List<String> problemList) {
         if (curProgram == null) {
-            problemList.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.tab.problems.assembly_controller.no_program")));
+            problemList.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.assembly_controller.no_program")));
         } else {
             if (isMachineDuplicate) {
                 String key = I18n.format(duplicateMachine.getTranslationKey());
-                problemList.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.tab.problems.assembly_controller.duplicateMachine", key)));
+                problemList.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.assembly_controller.duplicateMachine", key)));
             } else if (!isMachineMissing) {
                 curProgram.addProgramProblem(problemList);
             } else {
                 String key = I18n.format(missingMachine.getTranslationKey());
-                problemList.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.tab.problems.assembly_controller.missingMachine", key)));
+                problemList.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.assembly_controller.missingMachine", key)));
             }
         }
     }

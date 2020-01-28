@@ -66,7 +66,7 @@ public class GuiEntityTrackOptions extends IOptionPage.SimpleToggleableOptions<E
         fontRenderer.drawString(I18n.format("gui.entityFilter"), 35, 50, 0xFFFFFFFF);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(Minecraft.getInstance().currentScreen, fontRenderer,
-                    PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
+                    PneumaticCraftUtils.splitString(I18n.format("gui.entityFilter.helpText"), 60));
         }
     }
 

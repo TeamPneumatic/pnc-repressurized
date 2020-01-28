@@ -1,10 +1,12 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
 import com.google.gson.JsonObject;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import org.apache.commons.lang3.Validate;
+import net.minecraft.util.JSONUtils;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -12,25 +14,18 @@ import java.util.Objects;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AmadronOffer {
-    public enum TradeType { PLAYER, PERIODIC, STATIC }
+    private final ResourceLocation offerId;  // unique offer identifier
+    protected final AmadronTradeResource input;
+    protected final AmadronTradeResource output;
 
-    protected AmadronTradeResource input;
-    protected AmadronTradeResource output;
-    // distinguishes base default trades vs. ones added later; only used server-side and only saved to JSON
-    private String addedBy = null;
-
-    public AmadronOffer(@Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output) {
-        this(input, output, null);
+    public AmadronOffer(ResourceLocation id, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output) {
+        this.offerId = id;
+        this.input = input.validate();
+        this.output = output.validate();
     }
 
-    public AmadronOffer(@Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output, String addedBy) {
-        Validate.notNull(input, "Input item/fluid can't be null!");
-        Validate.notNull(output, "Output item/fluid can't be null!");
-        input.validate();
-        output.validate();
-        this.input = input;
-        this.output = output;
-        this.addedBy = addedBy;
+    public ResourceLocation getOfferId() {
+        return offerId;
     }
 
     public AmadronTradeResource getInput() {
@@ -41,6 +36,10 @@ public class AmadronOffer {
         return output;
     }
 
+    public boolean equivalentTo(AmadronPlayerOffer offer) {
+        return input.equivalentTo(offer.getInput()) && output.equivalentTo(offer.getOutput());
+    }
+
     public String getVendor() {
         return xlate("gui.amadron").getFormattedText();
     }
@@ -49,58 +48,65 @@ public class AmadronOffer {
         return -1;
     }
 
-    public void setAddedBy(String addedBy) {
-        this.addedBy = addedBy;
-    }
-
     public boolean passesQuery(String query) {
         String queryLow = query.toLowerCase();
-        return getInput().getName().toLowerCase().contains(queryLow) || getVendor().toLowerCase().contains(queryLow);
+        return getInput().getName().toLowerCase().contains(queryLow)
+                || getOutput().getName().toLowerCase().contains(queryLow)
+                || getVendor().toLowerCase().contains(queryLow);
     }
 
     public void onTrade(int tradingAmount, String buyingPlayer) {
     }
 
     public void writeToNBT(CompoundNBT tag) {
+        tag.putString("id", offerId.toString());
         tag.put("input", input.writeToNBT());
         tag.put("output", output.writeToNBT());
     }
 
     public static AmadronOffer loadFromNBT(CompoundNBT tag) {
-        return new AmadronOffer(AmadronTradeResource.fromNBT(tag.getCompound("input")), AmadronTradeResource.fromNBT(tag.getCompound("output")));
+        return new AmadronOffer(
+                new ResourceLocation(tag.getString("id")),
+                AmadronTradeResource.fromNBT(tag.getCompound("input")),
+                AmadronTradeResource.fromNBT(tag.getCompound("output"))
+        );
     }
 
     public void writeToBuf(PacketBuffer buf) {
+        buf.writeResourceLocation(offerId);
         input.writeToBuf(buf);
         output.writeToBuf(buf);
     }
 
     public static AmadronOffer readFromBuf(PacketBuffer buf) {
-        return new AmadronOffer(AmadronTradeResource.fromPacketBuf(buf), AmadronTradeResource.fromPacketBuf(buf));
+        return new AmadronOffer(
+                buf.readResourceLocation(),
+                AmadronTradeResource.fromPacketBuf(buf),
+                AmadronTradeResource.fromPacketBuf(buf)
+        );
     }
 
     public JsonObject toJson() {
         JsonObject object = new JsonObject();
 
+        object.addProperty("id", offerId.toString());
         object.add("input", input.toJson());
         object.add("output", output.toJson());
-        if (addedBy != null) object.addProperty("addedBy", addedBy);
 
         return object;
     }
 
-    public static AmadronOffer fromJson(JsonObject object) {
-        String addedBy = object.has("addedBy") ? object.get("addedBy").getAsString() : null;
+    public static AmadronOffer fromJson(JsonObject object) throws CommandSyntaxException {
         return new AmadronOffer(
+                new ResourceLocation(JSONUtils.getString(object, "id")),
                 AmadronTradeResource.fromJson(object.getAsJsonObject("input")),
-                AmadronTradeResource.fromJson(object.getAsJsonObject("output")),
-                addedBy
+                AmadronTradeResource.fromJson(object.getAsJsonObject("output"))
         );
     }
 
     @Override
     public String toString() {
-        return String.format("[in = %s, out = %s]", input.toString(), output.toString());
+        return String.format("[id = %s, in = %s, out = %s]", offerId.toString(), input.toString(), output.toString());
     }
 
     @Override

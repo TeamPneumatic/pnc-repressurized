@@ -64,7 +64,7 @@ public class GuiAirGrateModule extends GuiTubeModule {
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(this, font,
-                    PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.entityFilter.helpText"), 60));
+                    PneumaticCraftUtils.splitString(I18n.format("gui.entityFilter.helpText"), 60));
         }
     }
 

@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
@@ -20,11 +21,12 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileEntityBase> {
     private WidgetTextField searchBar;
@@ -35,8 +37,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     private boolean hadProblem = false;
     private WidgetButtonExtended orderButton;
     private WidgetButtonExtended addTradeButton;
-    private WidgetButtonExtended addPeriodicButton;
-    private WidgetButtonExtended addStaticButton;
+    private WidgetAnimatedStat customTradesTab;
 
     public GuiAmadron(ContainerAmadron container, PlayerInventory inv, @SuppressWarnings("unused") ITextComponent displayString) {
         super(container, inv, new StringTextComponent(""));
@@ -57,38 +58,35 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
                 .setText("gui.tab.info.ghostSlotInteraction");
         addAnimatedStat("gui.tab.amadron.disclaimer.title", new ItemStack(Items.WRITABLE_BOOK), 0xFF0000FF, true)
                 .setText("gui.tab.amadron.disclaimer");
-        WidgetAnimatedStat customTrades = addAnimatedStat("gui.tab.amadron.customTrades", new ItemStack(Items.DIAMOND), 0xFFD07000, false);
-        customTrades.addPadding(3, 21);
+        customTradesTab = addAnimatedStat("gui.tab.amadron.customTrades", new ItemStack(Items.DIAMOND), 0xFFD07000, false);
+        customTradesTab.addPadding(6, 10);
         searchBar = new WidgetTextField(font, guiLeft + 79, guiTop + 40, 73, font.FONT_HEIGHT);
         searchBar.setFocused2(true);
-        searchBar.setResponder(s -> {
-            needsRefreshing = true;
-            scrollbar.setCurrentState(0);
-        });
+        searchBar.setResponder(s -> sendDelayed(8));
         addButton(searchBar);
+        setFocused(searchBar);
 
-        scrollbar = new WidgetVerticalScrollbar(guiLeft + 156, guiTop + 54, 142);
-        scrollbar.setStates(1);
-        scrollbar.setListening(true);
-        addButton(scrollbar);
+        addButton(scrollbar = new WidgetVerticalScrollbar(guiLeft + 156, guiTop + 54, 142).setStates(1).setListening(true));
 
-        List<String> tooltip = PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.order.tooltip"), 40);
+        List<String> tooltip = PneumaticCraftUtils.splitString(I18n.format("gui.amadron.button.order.tooltip"), 40);
         orderButton = new WidgetButtonExtended(guiLeft + 52, guiTop + 16, 72, 20, I18n.format("gui.amadron.button.order")).setTooltipText(tooltip).withTag("order");
         addButton(orderButton);
 
-        addTradeButton = new WidgetButtonExtended(16, 16, 20, 20, "")
-                .setRenderStacks(new ItemStack(Items.GOLD_INGOT)).withTag("addPlayerTrade");
-        customTrades.addSubWidget(addTradeButton);
-        int startX = 40;
-        addPeriodicButton = new WidgetButtonExtended(startX, 16, 20, 20, "")
-                .setRenderStacks(new ItemStack(Items.CLOCK)).setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addPeriodicTrade"), 40)).withTag("addPeriodicTrade");
-        customTrades.addSubWidget(addPeriodicButton);
-        startX += 24;
-        addStaticButton = new WidgetButtonExtended(startX, 16, 20, 20, "")
-                .setRenderStacks(new ItemStack(Items.EMERALD)).setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addStaticTrade"), 40)).withTag("addStaticTrade");
-        customTrades.addSubWidget(addStaticButton);
+        addTradeButton = new WidgetButtonExtended(16, 26, 20, 20, "")
+                .setRenderStacks(new ItemStack(Items.EMERALD)).withTag("addPlayerTrade");
+        tooltip = new ArrayList<>();
+        tooltip.add(I18n.format("gui.amadron.button.addTrade"));
+        tooltip.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.amadron.button.addTrade.tooltip"), 40));
+        addTradeButton.setTooltipText(tooltip);
+        customTradesTab.addSubWidget(addTradeButton);
 
         needsRefreshing = true;
+    }
+
+    @Override
+    protected void doDelayedAction() {
+        needsRefreshing = true;
+        scrollbar.setCurrentState(0);
     }
 
     @Override
@@ -114,7 +112,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
             setPage(scrollbar.getState());
         }
         for (WidgetAmadronOffer offer : widgetOffers) {
-            offer.setCanBuy(container.buyableOffers[container.offers.indexOf(offer.getOffer())]);
+            offer.setCanBuy(container.buyableOffers[container.activeOffers.indexOf(offer.getOffer())]);
             offer.setShoppingAmount(container.getShoppingCartAmount(offer.getOffer()));
         }
         if (!hadProblem && container.problemState != EnumProblemState.NO_PROBLEMS) {
@@ -123,13 +121,23 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         hadProblem = container.problemState != EnumProblemState.NO_PROBLEMS;
         orderButton.active = !container.isBasketEmpty();
         addTradeButton.active = container.currentOffers < container.maxOffers;
-        List<String> tooltip = new ArrayList<>();
-        tooltip.add(I18n.format("gui.amadron.button.addTrade"));
-        tooltip.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.amadron.button.addTrade.tooltip"), 40));
-        tooltip.add((addTradeButton.active ? TextFormatting.GRAY : TextFormatting.RED) + I18n.format("gui.amadron.button.addTrade.tooltip.offerCount", container.currentOffers, container.maxOffers == Integer.MAX_VALUE ? "\u221E" : container.maxOffers));
-        addTradeButton.setTooltipText(tooltip);
-        addPeriodicButton.setVisible(container.mayAddPeriodicTrades());
-        addStaticButton.setVisible(container.mayAddStaticTrades());
+        List<String> text = new ArrayList<>();
+        text.add(I18n.format("gui.amadron.button.addTrade.tooltip.offerCount",
+                container.currentOffers,
+                container.maxOffers == Integer.MAX_VALUE ? GuiConstants.INFINITY : container.maxOffers));
+        IntStream.range(0, 3).forEach(i -> text.add(" "));
+        customTradesTab.setText(text);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            minecraft.player.closeScreen();
+        }
+
+        return searchBar.keyPressed(keyCode, scanCode, modifiers)
+                || searchBar.func_212955_f()
+                || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     public void setPage(int page) {
@@ -145,8 +153,8 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         int skippedOffers = 0;
         int applicableOffers = 0;
 
-        for (int i = 0; i < container.offers.size(); i++) {
-            AmadronOffer offer = container.offers.get(i);
+        for (int i = 0; i < container.activeOffers.size(); i++) {
+            AmadronOffer offer = container.activeOffers.get(i);
             if (offer.passesQuery(searchBar.getText())) {
                 applicableOffers++;
                 if (skippedOffers < page * invSize) {

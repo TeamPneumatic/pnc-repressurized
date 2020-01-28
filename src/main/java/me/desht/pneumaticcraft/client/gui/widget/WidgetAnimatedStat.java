@@ -173,7 +173,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     public IGuiAnimatedStat setText(List<String> text) {
         textList.clear();
         for (String line : text) {
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(line), (int) (GuiConstants.MAX_CHAR_PER_LINE_LEFT / textScale)));
+            textList.addAll(PneumaticCraftUtils.splitString(I18n.format(line), (int) (GuiConstants.MAX_CHAR_PER_LINE_LEFT / textScale)));
         }
         onTextChange();
         return this;
@@ -182,7 +182,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     @Override
     public IGuiAnimatedStat setText(String text) {
         textList.clear();
-        textList.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(text), (int) (GuiConstants.MAX_CHAR_PER_LINE_LEFT / textScale)));
+        textList.addAll(PneumaticCraftUtils.splitString(I18n.format(text), (int) (GuiConstants.MAX_CHAR_PER_LINE_LEFT / textScale)));
         onTextChange();
         return this;
     }
@@ -197,7 +197,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     @Override
     public void appendText(List<String> text) {
         for (String line : text) {
-            textList.addAll(PneumaticCraftUtils.convertStringIntoList(I18n.format(line), (int) (GuiConstants.MAX_CHAR_PER_LINE_LEFT / textScale)));
+            textList.addAll(PneumaticCraftUtils.splitString(I18n.format(line), (int) (GuiConstants.MAX_CHAR_PER_LINE_LEFT / textScale)));
         }
         onTextChange();
     }
