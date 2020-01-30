@@ -8,7 +8,7 @@ import net.minecraft.util.ResourceLocation;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class HeatBehaviourFurnace extends HeatBehaviour<AbstractFurnaceTileEntity> {
-    private static final ResourceLocation ID = RL("furnace");
+    static final ResourceLocation ID = RL("furnace");
 
     @Override
     public ResourceLocation getId() {

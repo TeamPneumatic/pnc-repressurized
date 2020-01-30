@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -17,17 +16,23 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
-public class TileEntityThermalCompressor extends TileEntityPneumaticBase implements IHeatExchanger, IHeatTinted, IRedstoneControlled, INamedContainerProvider {
+public class TileEntityThermalCompressor extends TileEntityPneumaticBase
+        implements IHeatTinted, IRedstoneControlled, INamedContainerProvider {
     private static final double AIR_GEN_MULTIPLIER = 0.05;  // mL per degree of difference
 
     private double[] generated = new double[2];
 
     @GuiSynced
     private final IHeatExchangerLogic[] heatExchangers = new IHeatExchangerLogic[4];
+    private List<LazyOptional<IHeatExchangerLogic>> heatCaps = new ArrayList<>(4);
     private final IHeatExchangerLogic connector1;
     private final IHeatExchangerLogic connector2;
 
@@ -41,19 +46,20 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase impleme
     public TileEntityThermalCompressor() {
         super(ModTileEntities.THERMAL_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_THERMAL_COMPRESSOR, PneumaticValues.MAX_PRESSURE_THERMAL_COMPRESSOR, PneumaticValues.VOLUME_THERMAL_COMPRESSOR, 4);
 
-        for (int i = 0; i < heatExchangers.length; i++) {
-            heatExchangers[i] = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+        IntStream.range(0, heatExchangers.length).forEach(i -> {
+            heatExchangers[i] = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
             heatExchangers[i].setThermalCapacity(2);
-        }
+            heatCaps.add(LazyOptional.of(() -> heatExchangers[i]));
+        });
 
         connector1 = makeConnector(Direction.NORTH);
         connector2 = makeConnector(Direction.EAST);
 
-        dummyExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+        dummyExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     }
 
     private IHeatExchangerLogic makeConnector(Direction side) {
-        IHeatExchangerLogic connector = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+        IHeatExchangerLogic connector = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
         connector.setThermalResistance(PNCConfig.Common.Machines.thermalCompressorThermalResistance);
         connector.addConnectedExchanger(heatExchangers[side.getHorizontalIndex()]);
         connector.addConnectedExchanger(heatExchangers[side.getOpposite().getHorizontalIndex()]);
@@ -70,7 +76,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase impleme
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return null;
     }
 
@@ -120,14 +126,6 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase impleme
     @Override
     public boolean canConnectPneumatic(Direction side) {
         return side.getAxis() == Direction.Axis.Y;
-    }
-
-    @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
-        if (side == null)
-            return dummyExchanger;
-        else
-            return side.getAxis() == Direction.Axis.Y ? null : heatExchangers[side.getHorizontalIndex()];
     }
 
     @Override
@@ -185,5 +183,14 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase impleme
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerThermalCompressor(i, playerInventory, getPos());
+    }
+
+    @Override
+    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
+        if (side == null) {
+            return LazyOptional.of(() -> dummyExchanger);
+        } else {
+            return side.getAxis() == Direction.Axis.Y ? LazyOptional.empty() : heatCaps.get(side.getHorizontalIndex());
+        }
     }
 }

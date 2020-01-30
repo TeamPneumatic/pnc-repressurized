@@ -125,11 +125,12 @@ public class ConfigHelper {
         PNCConfig.Common.Recipes.coalToDiamondsRecipe = common.recipes.coalToDiamondsRecipe.get();
         PNCConfig.Common.Recipes.explosionCrafting = common.recipes.explosionCrafting.get();
 
-        PNCConfig.Common.BlockHeatDefaults.defaultBlockThermalResistance = common.blockHeatDefaults.blockThermalResistance.get();
-        PNCConfig.Common.BlockHeatDefaults.defaultFluidThermalResistance = common.blockHeatDefaults.fluidThermalResistance.get();
-        PNCConfig.Common.BlockHeatDefaults.defaultFluidTotalHeat = common.blockHeatDefaults.fluidTotalHeatCapacity.get();
-        PNCConfig.Common.BlockHeatDefaults.ambientTempBiomeModifier = common.blockHeatDefaults.ambientTemperatureBiomeModifier.get();
-        PNCConfig.Common.BlockHeatDefaults.ambientTempHeightModifier = common.blockHeatDefaults.ambientTemperatureHeightModifier.get();
+        PNCConfig.Common.Heat.defaultBlockThermalResistance = common.heat.blockThermalResistance.get();
+        PNCConfig.Common.Heat.defaultFluidThermalResistance = common.heat.fluidThermalResistance.get();
+        PNCConfig.Common.Heat.airThermalResistance = common.heat.airThermalResistance.get();
+        PNCConfig.Common.Heat.defaultFluidHeatCapacity = common.heat.defaultFluidHeatCapacity.get();
+        PNCConfig.Common.Heat.ambientTempBiomeModifier = common.heat.ambientTemperatureBiomeModifier.get();
+        PNCConfig.Common.Heat.ambientTempHeightModifier = common.heat.ambientTemperatureHeightModifier.get();
 
         PNCConfig.Common.Amadron.numPeriodicOffers = common.amadron.numPeriodicOffers.get();
         PNCConfig.Common.Amadron.reshuffleInterval = common.amadron.reshuffleInterval.get();

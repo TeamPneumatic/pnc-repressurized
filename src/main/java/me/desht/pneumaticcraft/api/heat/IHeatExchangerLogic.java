@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.api.heat;
 
-import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -8,11 +7,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 
 /**
- * DO NOT IMPLEMENT THIS CLASS YOURSELF! Create an instance via {@link IHeatRegistry#getHeatExchangerLogic()}
- * and store it as a field in your tile entity.
+ * Represents a heat exchanger owned by a tile entity. Retrieve instances of this via capability lookup; you
+ * can use {@link me.desht.pneumaticcraft.api.PNCCapabilities#HEAT_EXCHANGER_CAPABILITY} or get your own
+ * instance with {@code @CapabilityInject}.
+ * <p>
+ * <strong>Do not implement this interface yourself!</strong> You can create instances of it for your tile entities
+ * with {@link IHeatRegistry#makeHeatExchangerLogic()} and store those as fields in your tile entities.
  *
- * @author MineMaarten
- *         www.minemaarten.com
+ * @author MineMaarten, desht
  */
 public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
 
@@ -22,24 +24,26 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
     void tick();
 
     /**
-     * When called (preferably on tile entity load and neighbor block/tile entity change) this will add all IHeatExchanger
-     * neighbor TileEntities as connected heat exchangers.  It will also take care of neighbouring blocks with heat
+     * When called (preferably on tile entity load and neighbor block updates), this will add all heat
+     * exchanging neighbor tile entities as connected heat exchangers (i.e. tile entities who provide the
+     * {@link IHeatExchangerLogic} capability on that side).  It will also account for neighbouring blocks with heat
      * properties, like Magma or Lava.
      * <p>
-     * You don't <i>have</i> to call this method if this heat exchanger is not connected to the outside world (for example
-     * the heat of the liquid plastic in the Plastic Mixer).
+     * You don't need to call this method if this heat exchanger is not connected to the outside world (e.g.
+     * the connecting heat exchanger inside a Vortex Tube).
      *
      * @param world the world
      * @param pos  the position
+     * @param loseHeatToAir true if heat will be lost to adjacent air blocks, false otherwise
      * @param validSides an array of sides to check for heat exchanging neighbours
      */
-    void initializeAsHull(World world, BlockPos pos, Direction... validSides);
+    void initializeAsHull(World world, BlockPos pos, boolean loseHeatToAir, Direction... validSides);
 
     /**
      * Initialize this heat exchanger's ambient temperature based on the given world & position.  You don't need to call
-     * this method if your heat exchanger is a hull exchanger (i.e. returned by
-     * {@link me.desht.pneumaticcraft.api.tileentity.IHeatExchanger#getHeatExchangerLogic(Direction)}), as hulls
-     * are automatically initialized by {@link IHeatExchangerLogic#initializeAsHull(World, BlockPos, Direction...)}
+     * this method if your heat exchanger is a hull exchanger (i.e. provides an {@link IHeatExchangerLogic} object via
+     * capability lookup), as hulls are automatically initialized by
+     * {@link IHeatExchangerLogic#initializeAsHull(World, BlockPos, boolean, Direction...)}
      *
      * @param world the world
      * @param pos the position
@@ -47,7 +51,8 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
     void initializeAmbientTemperature(World world, BlockPos pos);
 
     /**
-     * When called, this will connect these two heat exchangers. You should only call this on one of the two heat exchangers.
+     * When called, this will connect these two heat exchangers. You should only call this on one of the two heat
+     * exchangers.
      *
      * @param exchanger the other heat exchanger
      */
@@ -99,7 +104,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
      * resistance plus the neighbour's resistance; if both exchangers have a resistance of 1, heat will equalize in
      * a single tick under normal circumstances.
      *
-     * @param thermalResistance the thermal resistance, higher resistance means slower heat transfer
+     * @param thermalResistance the thermal resistance; higher resistance means slower heat transfer
      */
     void setThermalResistance(double thermalResistance);
 
@@ -107,15 +112,16 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
      * Get this heat exchanger's thermal resistance.  See {@link #setThermalResistance(double)} for more information
      * on thermal resistance.
      *
-     * @return the thermal resistance, higher resistance means slower heat transfer
+     * @return the thermal resistance; higher resistance means slower heat transfer
      */
     double getThermalResistance();
 
     /**
      * Set this heat exchanger's thermal capacity.
      * <p>
-     * The higher the capacity, the more heat can be 'stored'. This means that an object with a high capacity can heat
-     * up an object with a lower capacity without losing any significant amount of temperature.
+     * The higher the capacity, the more heat can be 'stored'. E.g. an object with a heat capacity of double the heat
+     * capacity of another object will require twice as much heat gain or loss to adjust the temperature by the same
+     * amount.
      *
      * @param capacity the thermal capacity
      */

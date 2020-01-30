@@ -11,7 +11,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.List;
 
@@ -77,7 +77,7 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return null;
     }
 

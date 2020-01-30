@@ -1,7 +1,8 @@
 package me.desht.pneumaticcraft.common.heat.behaviour;
 
+import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.config.aux.BlockHeatPropertiesConfig;
+import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,18 +15,20 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
+import static me.desht.pneumaticcraft.common.heat.BlockHeatProperties.CustomHeatEntry;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
-    private static final ResourceLocation ID = RL("custom_transition");
+    static final ResourceLocation ID = RL("custom_transition");
 
-    private BlockHeatPropertiesConfig.CustomHeatEntry heatEntry;
+    private CustomHeatEntry heatEntry;
 
     @Override
-    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public HeatBehaviour initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         super.initialize(connectedHeatLogic, world, pos, direction);
 
-        heatEntry = BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntry(getBlockState().getBlock());
+        heatEntry = BlockHeatProperties.getInstance().getCustomHeatEntry(getBlockState().getBlock());
+        return this;
     }
 
     @Override
@@ -37,39 +40,45 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
     public boolean isApplicable() {
         if (!super.isApplicable()) return false;
 
-        return heatEntry != null && heatEntry.getTotalHeatCapacity() != 0;
+        return heatEntry != null && heatEntry.getHeatCapacity() != 0;
     }
 
     @Override
     protected int getMaxExchangedHeat() {
-        return getHeatEntry().getTotalHeatCapacity();
+        return getHeatEntry().getHeatCapacity();
     }
 
     @Override
     protected boolean transformBlockHot() {
         Block hot = getHeatEntry().getTransformHot();
-        if (hot == null) return false;
-        if (getFluid() != null) {
-            transformFluidBlocks(hot.getDefaultState(), getHeatEntry().getTransformHotFlowing().getDefaultState());
-            return true;
+        if (hot != null) {
+            if (getFluid() != null) {
+                transformFluidBlocks(hot.getDefaultState(), getHeatEntry().getTransformHotFlowing().getDefaultState());
+                return true;
+            } else {
+                return getWorld().setBlockState(getPos(), hot.getDefaultState());
+            }
         } else {
-            return getWorld().setBlockState(getPos(), hot.getDefaultState());
+            return false;
         }
     }
 
     @Override
     protected boolean transformBlockCold() {
         Block cold = getHeatEntry().getTransformCold();
-        if (cold == null) return false;
-        if (getFluid() != null) {
-            transformFluidBlocks(cold.getDefaultState(), getHeatEntry().getTransformColdFlowing().getDefaultState());
-            return true;
+        if (cold != null) {
+            if (getFluid() != null) {
+                transformFluidBlocks(cold.getDefaultState(), getHeatEntry().getTransformColdFlowing().getDefaultState());
+                return true;
+            } else {
+                return getWorld().setBlockState(getPos(), cold.getDefaultState());
+            }
         } else {
-            return getWorld().setBlockState(getPos(), cold.getDefaultState());
+            return false;
         }
     }
 
-    private BlockHeatPropertiesConfig.CustomHeatEntry getHeatEntry() {
+    private CustomHeatEntry getHeatEntry() {
         return heatEntry;
     }
 
@@ -93,7 +102,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
                 for (Direction d : Direction.VALUES) {
                     BlockPos newPos = pos.offset(d);
                     Block checkingBlock = getWorld().getBlockState(newPos).getBlock();
-                    if (blocksSame(checkingBlock, getBlockState().getBlock()) && traversed.add(newPos)) {
+                    if (checkingBlock == getBlockState().getBlock() && traversed.add(newPos)) {
                         if (FluidUtils.isSourceBlock(getWorld(), newPos)) {
                             getWorld().setBlockState(newPos, turningBlockSource);
                             onTransition(newPos);
@@ -107,13 +116,5 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
                 }
             }
         }
-    }
-
-    private boolean blocksSame(Block b1, Block b2) {
-        return b1 == b2;
-//                || b1 == Blocks.FLOWING_LAVA && b2 == Blocks.LAVA
-//                || b1 == Blocks.LAVA && b2 == Blocks.FLOWING_LAVA
-//                || b1 == Blocks.FLOWING_WATER && b2 == Blocks.WATER
-//                || b1 == Blocks.WATER && b2 == Blocks.FLOWING_WATER;
     }
 }

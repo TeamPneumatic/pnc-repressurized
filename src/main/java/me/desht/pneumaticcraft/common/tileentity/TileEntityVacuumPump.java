@@ -21,7 +21,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -75,7 +75,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return null;
     }
 

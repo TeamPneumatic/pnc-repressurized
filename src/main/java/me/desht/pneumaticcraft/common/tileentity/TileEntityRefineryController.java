@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.recipe.IRefineryRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
@@ -32,7 +31,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TileEntityRefineryController extends TileEntityTickableBase
-        implements IHeatExchanger, IRedstoneControlled, IComparatorSupport, ISerializableTanks, ISmartFluidSync, INamedContainerProvider {
+        implements IRedstoneControlled, IComparatorSupport, ISerializableTanks, ISmartFluidSync, INamedContainerProvider {
 
     @GuiSynced
     @DescSynced
@@ -53,7 +52,8 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     @GuiSynced
     public final FluidTank[] outputsSynced = new FluidTank[IRefineryRecipe.MAX_OUTPUTS];  // purely for GUI syncing
     @GuiSynced
-    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
+    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
     @GuiSynced
     private int redstoneMode;
     @GuiSynced
@@ -277,7 +277,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return null;
     }
 
@@ -305,11 +305,6 @@ public class TileEntityRefineryController extends TileEntityTickableBase
         inputAmountScaled = inputTank.getScaledFluidAmount();
 
         redstoneMode = tag.getByte("redstoneMode");
-    }
-
-    @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
-        return heatExchanger;
     }
 
     @Override
@@ -373,6 +368,11 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerRefinery(i, playerInventory, getPos());
+    }
+
+    @Override
+    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
+        return heatCap;
     }
 
     private class RefineryInputTank extends SmartSyncTank {

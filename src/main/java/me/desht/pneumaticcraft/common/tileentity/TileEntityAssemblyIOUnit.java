@@ -17,7 +17,6 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Collection;
@@ -31,7 +30,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     public float oldClawProgress;
     @DescSynced
     private final RenderedItemStackHandler itemHandler = new RenderedItemStackHandler(this);
-    private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> itemHandler);
+    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
 
     private Collection<IAssemblyRecipe> recipeList;
     private ItemStack searchedItemStack = ItemStack.EMPTY;
@@ -110,7 +109,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return inventoryCap;
     }
 
@@ -452,7 +451,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return itemHandler;
     }
 

@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -33,12 +35,15 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     public void init() {
         super.init();
 
-        widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 20, 273, 673, te.getHeatExchangerLogic(null)) {
+        widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 20, 273, 673,
+                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY))
+        {
             @Override
             public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
                 if (te.minTemp > 0) {
-                    TextFormatting tf = te.minTemp < te.getHeatExchangerLogic(null).getTemperatureAsInt() ? TextFormatting.GREEN : TextFormatting.GOLD;
+                    int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
+                    TextFormatting tf = te.minTemp < temp ? TextFormatting.GREEN : TextFormatting.GOLD;
                     curTip.add(tf + "Required Temperature: " + (te.minTemp - 273) + "\u00b0C");
                 }
             }
@@ -123,7 +128,9 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     public void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
 
-        if (te.getHeatExchangerLogic(null).getTemperatureAsInt() < te.minTemp) {
+        int temp = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+                .map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
+        if (temp < te.minTemp) {
             curInfo.add("gui.tab.problems.notEnoughHeat");
         }
         if (te.getInputTank().getFluidAmount() < 10) {

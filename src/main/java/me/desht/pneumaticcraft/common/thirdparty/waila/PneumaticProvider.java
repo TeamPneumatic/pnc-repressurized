@@ -6,10 +6,13 @@ import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -37,6 +40,10 @@ public class PneumaticProvider {
             if (teInfo != null) {
                 teInfo.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
                         .ifPresent(h -> compoundNBT.putFloat("pressure", h.getPressure()));
+
+                if (teInfo.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
+                    compoundNBT.put("heatData", new TemperatureData(teInfo).toNBT());
+                }
             }
         }
     }
@@ -56,10 +63,26 @@ public class PneumaticProvider {
                         addTipToMachine(tooltip, (MachineAirHandler) h, tag.getFloat("pressure"));
                     }
                 });
+                handleHeatData(tooltip, tag);
             }
         }
 
-        private static void addTipToMachine(List<ITextComponent> tooltip, MachineAirHandler airHandler, float pressure) {
+        private void handleHeatData(List<ITextComponent> tooltip, CompoundNBT tag) {
+            if (tag.contains("heatData")) {
+                TemperatureData tempData = TemperatureData.fromNBT(tag.getCompound("heatData"));
+                if (tempData.isMultisided()) {
+                    for (Direction face : Direction.VALUES) {
+                        if (tempData.hasData(face)) {
+                            tooltip.add(HeatUtil.formatHeatString(face, (int) tempData.getTemperature(face)));
+                        }
+                    }
+                } else if (tempData.hasData(null)) {
+                    tooltip.add(HeatUtil.formatHeatString((int) tempData.getTemperature(null)));
+                }
+            }
+        }
+
+        private void addTipToMachine(List<ITextComponent> tooltip, MachineAirHandler airHandler, float pressure) {
             Map<String, String> values = new HashMap<>();
 
             values.put("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1));

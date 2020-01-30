@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityAphorismTile extends TileEntityBase {
     private String[] textLines = new String[]{""};
@@ -28,7 +28,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return null;
     }
 

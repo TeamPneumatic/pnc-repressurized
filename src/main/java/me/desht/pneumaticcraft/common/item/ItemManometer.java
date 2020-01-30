@@ -1,10 +1,8 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,30 +40,23 @@ public class ItemManometer extends ItemPressurizable {
                 TileEntity te = world.getTileEntity(context.getPos());
 
                 List<ITextComponent> curInfo = new ArrayList<>();
-                te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, side).ifPresent(h2 -> {
-                    if (h2 instanceof MachineAirHandler) ((MachineAirHandler) h2).printManometerMessage(player, curInfo);
-                });
+                te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, side)
+                        .ifPresent(teAirHandler -> teAirHandler.printManometerMessage(player, curInfo));
+
                 if (te instanceof IManoMeasurable) {
                     ((IManoMeasurable) te).printManometerMessage(player, curInfo);
                 }
-                if (te instanceof IHeatExchanger) {
-                    IHeatExchangerLogic exchanger = ((IHeatExchanger) te).getHeatExchangerLogic(side);
-                    if (exchanger != null) {
-                        curInfo.add(xlate("waila.temperature", (int) exchanger.getTemperature() - 273));
-                    } else {
-                        for (Direction d : Direction.VALUES) {
-                            exchanger = ((IHeatExchanger) te).getHeatExchangerLogic(d);
-                            if (exchanger != null) {
-                                curInfo.add(xlate("waila.temperature." + d.toString().toLowerCase(), (int) exchanger.getTemperature() - 273));
-                            }
-                        }
-                    }
+
+                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+                        .ifPresent(exchanger -> curInfo.add(HeatUtil.formatHeatString(exchanger.getTemperatureAsInt())));
+                for (Direction d : Direction.VALUES) {
+                    te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, d)
+                            .ifPresent(exchanger -> curInfo.add(HeatUtil.formatHeatString(exchanger.getTemperatureAsInt())));
                 }
+
                 if (curInfo.size() > 0) {
                     h.addAir(-30);
-                    for (ITextComponent s : curInfo) {
-                        player.sendStatusMessage(s, false);
-                    }
+                    curInfo.forEach(s -> player.sendStatusMessage(s, false));
                 }
                 return ActionResultType.SUCCESS;
             } else {

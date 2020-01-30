@@ -37,7 +37,6 @@ import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
@@ -57,7 +56,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public int redstoneMode;
 
     private final ProgrammerItemHandler inventory = new ProgrammerItemHandler();
-    private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventory);
+    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     // Client side variables that are used to prevent resetting.
     public double translatedX;
@@ -132,7 +131,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return invCap;
     }
 
@@ -264,7 +263,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return inventory;
     }
 

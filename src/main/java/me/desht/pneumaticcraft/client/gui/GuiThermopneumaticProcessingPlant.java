@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -9,6 +11,7 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -42,13 +45,15 @@ public class GuiThermopneumaticProcessingPlant extends
         addButton(new WidgetTank(guiLeft + 13, guiTop + 15, te.getInputTank()));
         addButton(new WidgetTank(guiLeft + 79, guiTop + 15, te.getOutputTank()));
 
-        tempWidget = new WidgetTemperature(guiLeft + 98, guiTop + 15, 273, 673, te.getHeatExchangerLogic(null), (int) te.minTemperature) {
+        tempWidget = new WidgetTemperature(guiLeft + 98, guiTop + 15, 273, 673,
+                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY), (int) te.minTemperature) {
             @Override
             public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
                 if (te.minTemperature > 0) {
-                    TextFormatting tf = te.minTemperature < te.getHeatExchangerLogic(null).getTemperatureAsInt() ? TextFormatting.GREEN : TextFormatting.GOLD;
-                    curTip.add(tf + "Required Temperature: " + (te.minTemperature - 273) + "\u00b0C");
+                    int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
+                    TextFormatting tf = te.minTemperature < temp ? TextFormatting.GREEN : TextFormatting.GOLD;
+                    curTip.add(tf + "Required Temperature: " + (te.minTemperature - 273) + GuiConstants.DEGREES + "C");
                 }
             }
         };
@@ -107,8 +112,12 @@ public class GuiThermopneumaticProcessingPlant extends
 
         if (!te.hasRecipe) {
             curInfo.add("gui.tab.problems.thermopneumaticProcessingPlant.noSufficientIngredients");
-        } else if (te.getHeatExchangerLogic(null).getTemperatureAsInt() < te.minTemperature) {
-            curInfo.add("gui.tab.problems.notEnoughHeat");
+        } else {
+            int temp = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+                    .map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
+            if (temp < te.minTemperature) {
+                curInfo.add("gui.tab.problems.notEnoughHeat");
+            }
         }
     }
 

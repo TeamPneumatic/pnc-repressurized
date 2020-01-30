@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -20,7 +20,8 @@ public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
     @Override
     public void init() {
         super.init();
-        addButton(new WidgetTemperature(guiLeft + 92, guiTop + 20, 273, 675, ((IHeatExchanger) te).getHeatExchangerLogic(null), 325, 625));
+        addButton(new WidgetTemperature(guiLeft + 92, guiTop + 20, 273, 675,
+                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY), 325, 625));
     }
 
     @Override
@@ -31,6 +32,7 @@ public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
     @Override
     public void addWarnings(List<String> curInfo) {
         super.addWarnings(curInfo);
+
         if (te.getEfficiency() < 100) {
             curInfo.add(I18n.format("gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
         }

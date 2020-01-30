@@ -23,8 +23,7 @@ import me.desht.pneumaticcraft.common.event.*;
 import me.desht.pneumaticcraft.common.fluid.FluidFuelManager;
 import me.desht.pneumaticcraft.common.fluid.FluidSetup;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
-import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
-import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
+import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -158,8 +157,8 @@ public class PneumaticCraftRepressurized {
             DispenserBlock.registerDispenseBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());
 
             ModNameCache.init();
-            HeatBehaviourManager.getInstance().onPostInit();
-            HeatExchangerManager.getInstance().onPostInit();
+//            HeatBehaviourManager.getInstance().onPostInit();
+//            HeatExchangerManager.getInstance().onPostInit();
             FluidFuelManager.registerFuels();
             ThirdPartyManager.instance().postInit();
 
@@ -184,6 +183,7 @@ public class PneumaticCraftRepressurized {
 
     private void serverAboutToStart(FMLServerAboutToStartEvent event) {
         event.getServer().getResourceManager().addReloadListener(new MachineRecipeHandler.ReloadListener());
+        event.getServer().getResourceManager().addReloadListener(new BlockHeatProperties.ReloadListener());
     }
 
     private void serverStarting(FMLServerStartingEvent event) {

@@ -25,7 +25,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
@@ -43,7 +43,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
             return itemStack.isEmpty() || itemStack.getItem() instanceof ItemAssemblyProgram;
         }
     };
-    private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> itemHandler);
+    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
 
     private AssemblyProgram curProgram;
     @GuiSynced
@@ -66,12 +66,12 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return inventoryCap;
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return itemHandler;
     }
 

@@ -34,7 +34,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -82,7 +82,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
 //    private final CopyOnWriteArrayList<IComputerAccess> attachedComputers = new CopyOnWriteArrayList<>();
 
     private final ItemStackHandler itemHandler = new UniversalSensorItemHandler();
-    private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> itemHandler);
+    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
     @GuiSynced
     public int outOfRange;
 
@@ -502,13 +502,13 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return itemHandler;
     }
 
     @Nonnull
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return inventoryCap;
     }
 

@@ -1,167 +1,70 @@
 package me.desht.pneumaticcraft.common.heat;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
-import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
-import me.desht.pneumaticcraft.common.config.aux.BlockHeatPropertiesConfig;
-import me.desht.pneumaticcraft.common.config.aux.BlockHeatPropertiesConfig.CustomHeatEntry;
+import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
+import me.desht.pneumaticcraft.common.heat.BlockHeatProperties.CustomHeatEntry;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.common.util.LazyOptional;
 
-import java.util.*;
+import javax.annotation.Nonnull;
+import java.util.function.Supplier;
 
-public class HeatExchangerManager implements IHeatRegistry {
-    // Used to add thermal properties to vanilla blocks or non-tile-entity modded blocks
-    private final Map<Block, IHeatExchanger> specialBlockExchangers = new HashMap<>();
-
-    private static final HeatExchangerManager INSTANCE = new HeatExchangerManager();
+public enum HeatExchangerManager implements IHeatRegistry {
+    INSTANCE;
 
     public static HeatExchangerManager getInstance() {
         return INSTANCE;
     }
 
-    public void onPostInit() {
-        // todo datapack?
-        BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntries().values().forEach(this::registerCustomHeatEntry);
-
-        for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
-            Block b = fluid.getDefaultState().getBlockState().getBlock();
-            if (b == null || specialBlockExchangers.containsKey(b)) continue;
-            CustomHeatEntry entry = BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntry(b);
-            if (entry != null) {
-                registerBlockExchanger(b, entry.getTemperature(), entry.getThermalResistance());
-            } else {
-                Log.warning("unable to retrieve custom heat entry for fluid " + fluid.getRegistryName() + " - block: " + b.getRegistryName());
-            }
-        }
-
-//        Map<String, Fluid> fluids = FluidRegistry.getRegisteredFluids();
-//        for (Fluid fluid : fluids.values()) {
-//            if (fluid.getBlock() != null && !specialBlockExchangers.containsKey(fluid.getBlock())) {
-//                CustomHeatEntry entry = BlockHeatPropertiesConfig.INSTANCE.getCustomHeatEntry(fluid.getBlock().getDefaultState());
-//                if (entry != null) {
-//                    registerBlockExchanger(fluid.getBlock(), entry.getTemperature(), entry.getThermalResistance());
-//                } else {
-//                    Log.warning("unable to retrieve custom heat entry for fluid " + fluid.getName() + " - block: " + fluid.getBlock());
-//                }
-//            }
-//        }
-//        // the vanilla flowing blocks aren't in the forge fluid registry...
-//        registerBlockExchanger(Blocks.FLOWING_LAVA, specialBlockExchangers.get(Blocks.LAVA));
-//        registerBlockExchanger(Blocks.FLOWING_WATER, specialBlockExchangers.get(Blocks.WATER));
+    @Nonnull
+    public LazyOptional<IHeatExchangerLogic> getLogic(World world, BlockPos pos, Direction side) {
+        return getLogic(world, pos, side, true);
     }
 
-
-    private void registerCustomHeatEntry(CustomHeatEntry rec) {
-        registerBlockExchanger(rec.getBlock().getBlock(), rec.getTemperature(), rec.getThermalResistance());
-    }
-
-    public IHeatExchangerLogic getLogic(World world, BlockPos pos, Direction side) {
-        if (!world.isAreaLoaded(pos, 0)) return null;
+    @Nonnull
+    public LazyOptional<IHeatExchangerLogic> getLogic(World world, BlockPos pos, Direction side, boolean loseHeatToAir) {
+        if (!world.isAreaLoaded(pos, 0)) return LazyOptional.empty();
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof IHeatExchanger) {
-            return ((IHeatExchanger) te).getHeatExchangerLogic(side);
+        if (te != null && te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side).isPresent()) {
+            return te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side);
         } else {
             if (world.isAirBlock(pos)) {
-                return HeatExchangerLogicAmbient.atPosition(world, pos);
+                return loseHeatToAir ?
+                        LazyOptional.of(() -> HeatExchangerLogicAmbient.atPosition(world, pos)) :
+                        LazyOptional.empty();
             } else {
                 BlockState state = world.getBlockState(pos);
-                Block block = state.getBlock();
-                // TODO 1.14 capability
-                if (block instanceof IHeatExchanger) {
-                    return ((IHeatExchanger) block).getHeatExchangerLogic(side);
+                CustomHeatEntry entry = BlockHeatProperties.getInstance().getCustomHeatEntry(state.getBlock());
+                if (entry != null && entry.testPredicates(state)) {
+                    return LazyOptional.of(entry::getLogic);
                 } else {
-                    IHeatExchanger exchanger = specialBlockExchangers.get(state.getBlock());
-                    return exchanger == null ? null : exchanger.getHeatExchangerLogic(side);
+                    return LazyOptional.empty();
                 }
             }
         }
-    }
-
-    private void registerBlockExchanger(Block block, IHeatExchanger heatExchanger) {
-        if (block == null)
-            throw new IllegalArgumentException("block is null when trying to register a heat exchanger!");
-        if (block instanceof IHeatExchanger)
-            Log.warning("The block " + block.getTranslationKey() + " is implementing IHeatExchanger. Therefore you don't need to register it as such");
-        if (specialBlockExchangers.containsKey(block)) {
-            Log.error("The block " + block.getTranslationKey() + " was registered as heat exchanger already! It won't be added!");
-        } else {
-            specialBlockExchangers.put(block, heatExchanger);
-        }
-    }
-
-    private void registerBlockExchanger(Block block, IHeatExchangerLogic heatExchangerLogic) {
-        registerBlockExchanger(block, new SimpleHeatExchanger(heatExchangerLogic));
     }
 
     @Override
     public void registerBlockExchanger(Block block, double temperature, double thermalResistance) {
-        registerBlockExchanger(block, new HeatExchangerLogicConstant(temperature, thermalResistance));
+        BlockHeatProperties.getInstance().register(block.getRegistryName(), new CustomHeatEntry(block, (int) temperature, thermalResistance));
     }
 
     @Override
-    public void registerHeatBehaviour(Class<? extends HeatBehaviour> heatBehaviour) {
-        HeatBehaviourManager.getInstance().registerBehaviour(heatBehaviour);
+    public void registerHeatBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour> heatBehaviour) {
+        HeatBehaviourManager.getInstance().registerBehaviour(id, heatBehaviour);
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic() {
+    public IHeatExchangerLogic makeHeatExchangerLogic() {
         return new HeatExchangerLogicTicking();
-    }
-
-    public static class TemperatureData {
-        private final Double[] temp = new Double[7];
-
-        private boolean isMultisided = true;
-
-        public TemperatureData(IHeatExchanger heatExchanger) {
-            Arrays.fill(temp, null);
-
-            Set<IHeatExchangerLogic> heatExchangers = new HashSet<>();
-            IHeatExchangerLogic logic = null;
-            for (Direction face : Direction.VALUES) {
-                logic = heatExchanger.getHeatExchangerLogic(face);
-                if (logic != null) {
-                    if (heatExchangers.contains(logic)) {
-                        isMultisided = false;
-                        break;
-                    } else {
-                        heatExchangers.add(logic);
-                    }
-                }
-            }
-
-            if (isMultisided) {
-                for (Direction face : Direction.VALUES) {
-                    logic = heatExchanger.getHeatExchangerLogic(face);
-                    if (logic != null) {
-                        temp[face.ordinal()] = logic.getTemperature();
-                    }
-                }
-            } else if (logic != null) {
-                temp[6] = logic.getTemperature();
-            }
-        }
-
-        public boolean isMultisided() {
-            return isMultisided;
-        }
-
-        public double getTemperature(Direction face) {
-            return face == null ? temp[6] : temp[face.ordinal()];
-        }
-
-        public boolean hasData(Direction face) {
-            return face == null ? temp[6] != null : temp[face.ordinal()] != null;
-        }
     }
 }

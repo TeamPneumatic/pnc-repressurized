@@ -1,12 +1,11 @@
 package me.desht.pneumaticcraft.api.item;
 
-import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
-
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public enum EnumUpgrade {
     VOLUME("volume"),
@@ -69,8 +68,7 @@ public enum EnumUpgrade {
     }
 
     public Item getItem(int tier) {
-        if (tier > maxTier) return null;
-        return ForgeRegistries.ITEMS.getValue(RL(getItemName(tier)));
+        return tier > maxTier ? Items.AIR : ForgeRegistries.ITEMS.getValue(PneumaticRegistry.getInstance().RL(getItemName(tier)));
     }
 
     public Item getItem() {
@@ -88,6 +86,6 @@ public enum EnumUpgrade {
     }
 
     public static EnumUpgrade from(ItemStack stack) {
-        return stack.getItem() instanceof ItemMachineUpgrade ? ((ItemMachineUpgrade) stack.getItem()).getUpgradeType() : null;
+        return stack.getItem() instanceof IUpgradeItem ? ((IUpgradeItem) stack.getItem()).getUpgradeType() : null;
     }
 }

@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * Used for block like lava/ice, which output a constant heat.
+ * Used for blocks like lava/ice, which have a constant heat.
  */
 public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     private final double temperature;
@@ -27,7 +27,7 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     }
 
     @Override
-    public void initializeAsHull(World world, BlockPos pos, Direction... validSides) {
+    public void initializeAsHull(World world, BlockPos pos, boolean loseHeatToAir, Direction... validSides) {
     }
 
     @Override

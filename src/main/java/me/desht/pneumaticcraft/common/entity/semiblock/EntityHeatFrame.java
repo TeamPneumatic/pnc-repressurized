@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -20,6 +21,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -40,7 +42,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     private static final byte COOKING = 1;
     private static final byte COOLING = 2;
 
-    private final IHeatExchangerLogic logic = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+    private final IHeatExchangerLogic logic = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap;
 
     private int lastValidSlot; // cache the current cooking slot for performance boost
@@ -266,18 +268,31 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     @Override
     public CompoundNBT serializeNBT(CompoundNBT tag) {
         tag.putInt("temperature", getHeatExchangerLogic().getTemperatureAsInt());
+        tag.putInt("cookingProgress", cookingProgress);
+        tag.putInt("coolingProgress", coolingProgress);
 
         return super.serializeNBT(tag);
     }
 
     @Override
     public void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
+        int cook, cool, temp;
         if (!world.isRemote) {
             // TOP
-            curInfo.add(HeatUtil.formatHeatString(getHeatExchangerLogic().getTemperatureAsInt()));
+            temp = getHeatExchangerLogic().getTemperatureAsInt();
+            cook = cookingProgress;
+            cool = coolingProgress;
         } else {
             // Waila
-            curInfo.add(HeatUtil.formatHeatString(tag.getInt("temperature")));
+            temp = tag.getInt("temperature");
+            cook = tag.getInt("cookingProgress");
+            cool = tag.getInt("coolingProgress");
         }
+
+        if (getStatus() != COOKING && cook >= 100) cook = 0;
+        if (getStatus() != COOLING && cool >= 100) cool = 0;
+        curInfo.add(HeatUtil.formatHeatString(temp));
+        curInfo.add(PneumaticCraftUtils.xlate("waila.heatFrame.cooking", cook).applyTextStyle(TextFormatting.GRAY));
+        curInfo.add(PneumaticCraftUtils.xlate("waila.heatFrame.cooling", cool).applyTextStyle(TextFormatting.GRAY));
     }
 }

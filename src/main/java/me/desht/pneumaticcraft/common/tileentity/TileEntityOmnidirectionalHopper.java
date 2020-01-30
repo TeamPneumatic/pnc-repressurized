@@ -18,7 +18,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
@@ -27,7 +26,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
     public static final int INVENTORY_SIZE = 5;
 
     private final ComparatorItemStackHandler itemHandler = new ComparatorItemStackHandler(this, getInvSize());
-    private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> itemHandler);
+    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> itemHandler);
 
     public TileEntityOmnidirectionalHopper() {
         super(ModTileEntities.OMNIDIRECTIONAL_HOPPER.get());
@@ -38,7 +37,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return invCap;
     }
 
@@ -167,7 +166,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return itemHandler;
     }
 

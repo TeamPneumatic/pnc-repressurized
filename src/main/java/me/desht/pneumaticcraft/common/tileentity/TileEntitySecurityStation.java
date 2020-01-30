@@ -30,7 +30,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     private static final int INVENTORY_SIZE = INV_ROWS * INV_COLS;
 
     private final SecurityStationHandler inventory = new SecurityStationHandler();
-    private LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventory);
+    private LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     public final List<GameProfile> hackedUsers = new ArrayList<>(); // Stores all the users that have hacked this Security Station.
     public final List<GameProfile> sharedUsers = new ArrayList<>(); // Stores all the users that have been allowed by the stationOwner.
@@ -135,7 +135,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return invCap;
     }
 
@@ -449,7 +449,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return inventory;
     }
 

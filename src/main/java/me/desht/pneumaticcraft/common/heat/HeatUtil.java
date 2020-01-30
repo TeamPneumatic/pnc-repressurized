@@ -56,8 +56,8 @@ public class HeatUtil {
     }
 
     /**
-     * Get the efficiency of an advanced compressor based on its temperature.
-     * @param temperature the temperature
+     * Get the efficiency of a heat-using machine based on its temperature.
+     * @param temperature the temperature, in Kelvin
      * @return efficiency percentage
      */
     public static int getEfficiency(int temperature) {

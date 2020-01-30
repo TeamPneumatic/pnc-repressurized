@@ -50,7 +50,7 @@ import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
@@ -67,7 +67,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     );
 
     private final AirCannonStackHandler itemHandler = new AirCannonStackHandler(this);
-    private final LazyOptional<IItemHandlerModifiable> inventory = LazyOptional.of(() -> itemHandler);
+    private final LazyOptional<IItemHandler> inventory = LazyOptional.of(() -> itemHandler);
 
     @DescSynced
     @LazySynced
@@ -791,12 +791,12 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return inventory;
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return itemHandler;
     }
 

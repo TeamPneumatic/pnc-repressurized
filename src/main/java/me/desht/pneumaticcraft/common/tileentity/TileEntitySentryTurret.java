@@ -32,7 +32,7 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -45,7 +45,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     private static final int INVENTORY_SIZE = 4;
 
     private final ItemStackHandler inventory = new TurretItemStackHandler(this);
-    private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventory);
+    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     @GuiSynced
     private String entityFilter = "";
@@ -186,7 +186,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return inventory;
     }
 
@@ -244,7 +244,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return invCap;
     }
 

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.heat.behaviour;
 
+import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.HeatExtractionTracker;
@@ -12,24 +13,27 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
 
 public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
     private double maxExchangedHeat;
     private double blockTemp = -1;
-    private IHeatExchangerLogic logic;
+    private LazyOptional<IHeatExchangerLogic> logic;
     private HeatExtractionTracker tracker;
 
     @Override
     public boolean isApplicable() {
         logic = HeatExchangerManager.getInstance().getLogic(getWorld(), getPos(), null);
-        return logic != null;
+        return logic.isPresent();
     }
 
     @Override
-    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public HeatBehaviour initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         super.initialize(connectedHeatLogic, world, pos, direction);
 
         tracker = HeatExtractionTracker.getInstance(getWorld());
+
+        return this;
     }
 
     protected abstract int getMaxExchangedHeat();
@@ -40,10 +44,15 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
 
     @Override
     public void tick() {
-        if (blockTemp == -1) {
-            blockTemp = logic.getTemperature();
-            maxExchangedHeat = getMaxExchangedHeat() * (logic.getThermalResistance() + getHeatExchanger().getThermalResistance());
-        }
+        logic.ifPresent(exchanger -> {
+            // should always be present, we validated that in isApplicable()
+            if (blockTemp == -1) {
+                // first run
+                blockTemp = exchanger.getTemperature();
+                maxExchangedHeat = getMaxExchangedHeat() * (exchanger.getThermalResistance() + getHeatExchanger().getThermalResistance());
+            }
+        });
+
         double extractedHeat = tracker.getHeatExtracted(getPos());
         if (extractedHeat < Math.abs(maxExchangedHeat)) {
             double toExtract = blockTemp - getHeatExchanger().getTemperature();

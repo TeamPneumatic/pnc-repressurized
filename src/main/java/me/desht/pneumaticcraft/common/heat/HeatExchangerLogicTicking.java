@@ -26,10 +26,12 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private int temperatureInt = (int) HeatExchangerLogicAmbient.BASE_AMBIENT_TEMP;
     private double thermalResistance = 1;
     private double thermalCapacity = 1;
+
+    // prevent infinite recursion when adding/removing a connected exchanger
     private static boolean isAddingOrRemovingLogic;
 
     @Override
-    public void initializeAsHull(World world, BlockPos pos, Direction... validSides) {
+    public void initializeAsHull(World world, BlockPos pos, boolean loseHeatToAir, Direction... validSides) {
         if (ambientTemperature < 0) {
             initializeAmbientTemperature(world, pos);
         }
@@ -43,11 +45,10 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         newBehaviours = new ArrayList<>();
         for (Direction dir : validSides) {
             HeatBehaviourManager.getInstance().addHeatBehaviours(world, pos.offset(dir), dir, this, newBehaviours);
-            IHeatExchangerLogic logic = HeatExchangerManager.getInstance().getLogic(world, pos.offset(dir), dir.getOpposite());
-            if (logic != null) {
+            HeatExchangerManager.getInstance().getLogic(world, pos.offset(dir), dir.getOpposite(), loseHeatToAir).ifPresent(logic -> {
                 hullExchangers.add(logic);
                 addConnectedExchanger(logic);
-            }
+            });
         }
     }
 
@@ -131,7 +132,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         ListNBT tagList = nbt.getList("behaviours", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
             CompoundNBT t = tagList.getCompound(i);
-            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().makeNewBehaviourForId(new ResourceLocation(t.getString("id")));
+            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().createBehaviour(new ResourceLocation(t.getString("id")));
             if (behaviour != null) {
                 behaviour.deserializeNBT(t);
                 behaviours.add(behaviour);
@@ -151,7 +152,8 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
             List<HeatBehaviour> oldBehaviours = behaviours;
             behaviours = newBehaviours;
             newBehaviours = null;
-            for (HeatBehaviour oldBehaviour : oldBehaviours) {//Transfer over equal heat behaviour's info.
+            // Transfer over equal heat behaviour's info.
+            for (HeatBehaviour oldBehaviour : oldBehaviours) {
                 int equalBehaviourIndex = behaviours.indexOf(oldBehaviour);
                 if (equalBehaviourIndex >= 0) {
                     behaviours.get(equalBehaviourIndex).deserializeNBT(oldBehaviour.serializeNBT());
@@ -216,5 +218,4 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     public void addHeat(double amount) {
         setTemperature(MathHelper.clamp(temperature + amount / getThermalCapacity(), 0, 2273));
     }
-
 }

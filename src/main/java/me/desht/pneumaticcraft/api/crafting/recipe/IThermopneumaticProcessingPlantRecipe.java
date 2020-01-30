@@ -2,15 +2,9 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
-import me.desht.pneumaticcraft.common.recipes.machine.BasicThermopneumaticProcessingPlantRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public interface IThermopneumaticProcessingPlantRecipe extends IModRecipe {
     /**
@@ -42,23 +36,23 @@ public interface IThermopneumaticProcessingPlantRecipe extends IModRecipe {
      * the machine's current heat.  This could be negative if the recipe is an exothermic recipe, i.e. it produces
      * heat; see {@link #isExothermic()}.
      *
+     * @param ambientTemperature the machine's ambient temperature
      * @return heat used
      */
-    default double heatUsed() {
+    default double heatUsed(double ambientTemperature) {
         TemperatureRange range = getOperatingTemperature();
         if (range.isAny()) return 0;  // don't care about temperature; don't consume or produce heat
 
-        double ambient = HeatExchangerLogicAmbient.BASE_AMBIENT_TEMP; // TODO get the actual machine's ambient temp
         double used;
-        if (range.getMin() > ambient) {
-            used = (range.getMin() - ambient) / 10D;
-        } else if (range.getMax() < ambient) {
-            used = (ambient - range.getMax()) / 10D;
+        if (range.getMin() > ambientTemperature) {
+            used = (range.getMin() - ambientTemperature) / 10D;
+        } else if (range.getMax() < ambientTemperature) {
+            used = (ambientTemperature - range.getMax()) / 10D;
         } else {
             if (isExothermic()) {
-                used = (range.getMax() - ambient) / 10D;
+                used = (range.getMax() - ambientTemperature) / 10D;
             } else {
-                used = (ambient - range.getMin()) / 10D;
+                used = (ambientTemperature - range.getMin()) / 10D;
             }
         }
         return isExothermic() ? -used : used;
@@ -87,44 +81,4 @@ public interface IThermopneumaticProcessingPlantRecipe extends IModRecipe {
      * @return true if this is an exothermic recipe.
      */
     boolean isExothermic();
-
-    /**
-     * Create a standard Thermopneumatic Processing Plant recipe.  Such recipes generally have a minimum temperature
-     * requirement.
-     *
-     * @param id a unique ID for this recipe
-     * @param inputFluid the input fluid
-     * @param inputItem the input ingredient, may be null
-     * @param outputFluid the output fluid
-     * @param operatingTemperature the operating temperature range
-     * @param requiredPressure the minimum pressure required (pass 0 if no specific pressure is required)
-     * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature
-     * is required)
-     */
-    static IThermopneumaticProcessingPlantRecipe basicRecipe(
-            ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
-            FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure)
-    {
-        return new BasicThermopneumaticProcessingPlantRecipe(id, inputFluid, inputItem, outputFluid, operatingTemperature, requiredPressure, false);
-    }
-
-    /**
-     * Create a standard exothermic Thermopneumatic Processing Plant recipe.  Exothermic recipes produce heat rather than
-     * consume it.  See {@link #isExothermic()}.
-     *
-     * @param id a unique ID for this recipe
-     * @param inputFluid the input fluid
-     * @param inputItem the input ingredient, may be null
-     * @param outputFluid the output fluid
-     * @param operatingTemperature the operating temperature range
-     * @param requiredPressure the minimum pressure required (pass 0 if no specific pressure is required)
-     * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature is required)
-     */
-    static IThermopneumaticProcessingPlantRecipe basicExothermicRecipe(
-            ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
-            FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure)
-    {
-        return new BasicThermopneumaticProcessingPlantRecipe(id, inputFluid, inputItem, outputFluid, operatingTemperature, requiredPressure, true);
-    }
-
 }

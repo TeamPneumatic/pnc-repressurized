@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -21,12 +20,12 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, IHeatExchanger, INamedContainerProvider {
+public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, INamedContainerProvider {
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
@@ -37,7 +36,8 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     @GuiSynced
     private int redstoneMode;
     @GuiSynced
-    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
+    private LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     public TileEntityFluxCompressor() {
         super(ModTileEntities.FLUX_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_FLUX_COMPRESSOR,
@@ -115,13 +115,13 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return null;
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
-        return heatExchanger;
+    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
+        return heatCap;
     }
 
     public int getInfoEnergyPerTick() {

@@ -76,7 +76,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private static final UUID FALLBACK_UUID = UUID.nameUUIDFromBytes(FALLBACK_NAME.getBytes());
 
     private final ProgrammableItemStackHandler inventory = new ProgrammableItemStackHandler(this);
-    private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventory);
+    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     private final FluidTank tank = new FluidTank(16000);
     private final LazyOptional<IFluidTank> tankCap = LazyOptional.of(() -> tank);
@@ -242,12 +242,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return inventory;
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return invCap;
     }
 

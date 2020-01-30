@@ -19,6 +19,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import org.apache.commons.lang3.Validate;
 
@@ -51,7 +52,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     public final LightBoxItemHandlerInternal inventory = new LightBoxItemHandlerInternal();
     private final LightBoxItemHandlerExternal inventoryExt = new LightBoxItemHandlerExternal(inventory);
-    private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventoryExt);
+    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventoryExt);
     public int ticksExisted;
     private boolean oldRedstoneStatus;
 
@@ -160,7 +161,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return inventory;
     }
 
@@ -178,7 +179,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return invCap;
     }
 

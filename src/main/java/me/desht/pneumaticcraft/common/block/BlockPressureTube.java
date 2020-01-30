@@ -80,6 +80,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
     private static final EnumProperty<ConnectionType> EAST_3 = EnumProperty.create("east", ConnectionType.class);
     private static final EnumProperty<ConnectionType> SOUTH_3 = EnumProperty.create("south", ConnectionType.class);
     private static final EnumProperty<ConnectionType> WEST_3 = EnumProperty.create("west", ConnectionType.class);
+    @SuppressWarnings("unchecked")
     private static final EnumProperty<ConnectionType>[] CONNECTION_PROPERTIES_3 = new EnumProperty[]{
             DOWN_3, UP_3, NORTH_3, SOUTH_3, WEST_3, EAST_3
     };

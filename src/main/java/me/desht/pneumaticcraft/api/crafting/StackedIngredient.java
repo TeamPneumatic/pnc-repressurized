@@ -22,8 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
 /**
  * Like a vanilla Ingredient, but also compares the size of the input ingredient.  Useful for machine recipes which
  * can take multiples of an input item.
@@ -96,7 +94,7 @@ public class StackedIngredient extends Ingredient {
 
     public static class Serializer implements IIngredientSerializer<StackedIngredient> {
         public static final Serializer INSTANCE  = new Serializer();
-        public static final ResourceLocation ID = RL("stacked_item");
+        public static final ResourceLocation ID = new ResourceLocation("pneumaticcraft:stacked_item");
 
         @Override
         public StackedIngredient parse(PacketBuffer buffer) {

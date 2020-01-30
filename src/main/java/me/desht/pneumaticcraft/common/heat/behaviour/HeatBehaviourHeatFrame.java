@@ -15,14 +15,15 @@ import net.minecraft.world.World;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class HeatBehaviourHeatFrame extends HeatBehaviour<TileEntity> {
-    private static final ResourceLocation ID = RL("heat_frame");
+    static final ResourceLocation ID = RL("heat_frame");
 
     private EntityHeatFrame semiBlock;
 
     @Override
-    public void initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public HeatBehaviour initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         super.initialize(connectedHeatLogic, world, pos, direction);
         semiBlock = null;
+        return this;
     }
 
     @Override

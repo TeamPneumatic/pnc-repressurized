@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
 /**
  * A fluid ingredient matcher, with fluid tag support.  Can also match items; it checks if the item contains the
  * desired fluid.
@@ -129,7 +127,7 @@ public class FluidIngredient extends Ingredient {
 
     public static class Serializer implements IIngredientSerializer<FluidIngredient> {
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = RL("fluid");
+        public static final ResourceLocation ID = new ResourceLocation("pneumaticcraft:fluid");
 
         @Override
         public FluidIngredient parse(PacketBuffer buffer) {

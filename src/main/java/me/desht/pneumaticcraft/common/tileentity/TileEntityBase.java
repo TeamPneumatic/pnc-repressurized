@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -42,7 +42,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -178,12 +178,12 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         upgradeCache.validate();
 
         if (!world.isRemote) {
-            if (this instanceof IHeatExchanger) {
-                ((IHeatExchanger) this).getHeatExchangerLogic(null).tick();
+            getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).ifPresent(logic -> {
+                logic.tick();
                 for (IHeatDisperser disperser : moddedDispersers) {
                     disperser.disperseHeat(this, tileCache);
                 }
-            }
+            });
 
             if (this instanceof IAutoFluidEjecting && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
                 ((IAutoFluidEjecting) this).autoExportFluid(this);
@@ -208,6 +208,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         super.remove();
 
         if (getInventoryCap().isPresent()) getInventoryCap().invalidate();
+        if (getHeatCap(null).isPresent()) getHeatCap(null).invalidate();
     }
 
     protected void onFirstServerUpdate() {
@@ -271,9 +272,10 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         if (getUpgradeHandler().getSlots() > 0) {
             tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, getUpgradeHandler().serializeNBT());
         }
-        if (this instanceof IHeatExchanger) {
-            tag.put(NBTKeys.NBT_HEAT_EXCHANGER, ((IHeatExchanger) this).getHeatExchangerLogic(null).serializeNBT());
-        }
+
+        getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+                .ifPresent(logic -> tag.put(NBTKeys.NBT_HEAT_EXCHANGER, logic.serializeNBT()));
+
         if (this instanceof ISerializableTanks) {
             tag.put(NBTKeys.NBT_SAVED_TANKS, ((ISerializableTanks) this).serializeTanks());
         }
@@ -289,9 +291,10 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
             getUpgradeHandler().deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
         }
-        if (this instanceof IHeatExchanger) {
-            ((IHeatExchanger) this).getHeatExchangerLogic(null).deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER));
-        }
+
+        getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+                .ifPresent(logic -> logic.deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER)));
+
         if (this instanceof ISerializableTanks) {
             ((ISerializableTanks) this).deserializeTanks(tag.getCompound(NBTKeys.NBT_SAVED_TANKS));
         }
@@ -411,13 +414,20 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     protected void initializeIfHeatExchanger() {
-        if (this instanceof IHeatExchanger) {
-            initializeHeatExchanger(((IHeatExchanger) this).getHeatExchangerLogic(null), getConnectedHeatExchangerSides());
-        }
+        getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+                .ifPresent(logic -> initializeHeatExchanger(logic, getConnectedHeatExchangerSides()));
     }
 
     void initializeHeatExchanger(IHeatExchangerLogic heatExchanger, Direction... connectedSides) {
-        heatExchanger.initializeAsHull(getWorld(), getPos(), connectedSides);
+        heatExchanger.initializeAsHull(getWorld(), getPos(), shouldLoseHeatToAir(), connectedSides);
+    }
+
+    /**
+     * Should this (heat-using) machine lose heat to the surrounding air blocks? Most blocks do.
+     * @return true if heat will be lost to the air on exposed faces, false otherwise
+     */
+    protected boolean shouldLoseHeatToAir() {
+        return true;
     }
 
     /**
@@ -483,18 +493,15 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     protected void addLuaMethods(LuaMethodRegistry registry) {
-        if (this instanceof IHeatExchanger) {
-            final IHeatExchanger exchanger = (IHeatExchanger) this;
+        if (getHeatCap(null).isPresent()) {
             registry.registerLuaMethod(new LuaMethod("getTemperature") {
                 @Override
                 public Object[] call(Object[] args) {
                     requireArgs(args, 0, 1, "face? (down/up/north/south/west/east)");
-                    if (args.length == 0) {
-                        return new Object[]{exchanger.getHeatExchangerLogic(null).getTemperature()};
-                    } else  {
-                        IHeatExchangerLogic logic = exchanger.getHeatExchangerLogic(getDirForString((String) args[0]));
-                        return new Object[]{logic != null ? logic.getTemperature() : 0};
-                    }
+                    Direction dir = args.length == 0 ? null : getDirForString((String) args[0]);
+                    return new Object[]{
+                            getHeatCap(dir).map(IHeatExchangerLogic::getTemperature).orElseThrow(RuntimeException::new)
+                    };
                 }
             });
         }
@@ -560,7 +567,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 //        return false;
 //    }
 
-    public abstract IItemHandlerModifiable getPrimaryInventory();
+    public abstract IItemHandler getPrimaryInventory();
 
     @Override
     public UpgradeHandler getUpgradeHandler() {
@@ -568,7 +575,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     @Nonnull
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         // for internal use only!
         return LazyOptional.empty();
     }
@@ -577,13 +584,18 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return getInventoryCap().cast();
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, getInventoryCap());
+        } else if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
+            return PNCCapabilities.HEAT_EXCHANGER_CAPABILITY.orEmpty(cap, getHeatCap(side));
 //        } else if (cap == Mekanism.CAPABILITY_HEAT_TRANSFER && this instanceof IHeatExchanger) {
 //            return Mekanism.getHeatAdapter(this, side).cast();
         }
         return super.getCapability(cap, side);
     }
 
+    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
+        return LazyOptional.empty();
+    }
 
     /**
      * Collect all items which should be dropped when this TE is broken.  Override and extend this in subclassing

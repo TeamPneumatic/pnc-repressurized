@@ -7,16 +7,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.List;
 
 public class WidgetTemperature extends Widget implements ITooltipProvider {
 
     private int[] scales;
-    protected final IHeatExchangerLogic logic;
+    protected final LazyOptional<IHeatExchangerLogic> logic;
     private final int minTemp, maxTemp;
 
-    public WidgetTemperature(int x, int y, int minTemp, int maxTemp, IHeatExchangerLogic logic, int... scales) {
+    public WidgetTemperature(int x, int y, int minTemp, int maxTemp, LazyOptional<IHeatExchangerLogic> logic, int... scales) {
         super(x, y, 13, 50, "");
         this.scales = scales;
         this.logic = logic;
@@ -32,8 +33,8 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         return scales;
     }
 
-    public IHeatExchangerLogic getHeatExchanger() {
-        return logic;
+    public void setTemperature(double temp) {
+        logic.ifPresent(h -> h.setTemperature(temp));
     }
 
     @Override
@@ -44,7 +45,8 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
             GlStateManager.color4f(1, 1, 1, 1);
             AbstractGui.blit(x + 6, y, 6, 0, 7, 50, 18, 50);
 
-            int barLength = (logic.getTemperatureAsInt() - minTemp) * 48 / maxTemp;
+            int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
+            int barLength = (temp - minTemp) * 48 / maxTemp;
             barLength = MathHelper.clamp(barLength, 0, 48);
             AbstractGui.blit(x + 7, y + 1 + 48 - barLength, 13, 48 - barLength, 5, barLength, 18, 50);
 
@@ -59,6 +61,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
 
     @Override
     public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
-        curTip.add("Temperature: " + (logic.getTemperatureAsInt() - 273) + "\u00b0C");
+        int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
+        curTip.add("Temperature: " + (temp - 273) + "\u00b0C");
     }
 }

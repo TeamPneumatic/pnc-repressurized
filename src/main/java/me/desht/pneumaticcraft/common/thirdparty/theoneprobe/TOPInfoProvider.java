@@ -2,13 +2,12 @@ package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
 import mcjty.theoneprobe.api.*;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
@@ -45,13 +44,13 @@ public class TOPInfoProvider {
             if (te == null) return;
         }
 
-        if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
+        if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, data.getSideHit()).isPresent()) {
             TOPInfoProvider.handlePneumatic(mode, probeInfo, te);
         }
-        if (te instanceof IHeatExchanger) {
-            TOPInfoProvider.handleHeat(mode, probeInfo, (IHeatExchanger) te);
+        if (te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
+            TOPInfoProvider.handleHeat(mode, probeInfo, te);
         }
-        if (PNCConfig.Client.topShowsFluids && te != null) {
+        if (PNCConfig.Client.topShowsFluids) {
             te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, data.getSideHit())
                     .ifPresent(handler -> TOPInfoProvider.handleFluidTanks(mode, probeInfo, handler));
         }
@@ -85,8 +84,8 @@ public class TOPInfoProvider {
         });
     }
 
-    private static void handleHeat(ProbeMode mode, IProbeInfo probeInfo, IHeatExchanger heatExchanger) {
-        HeatExchangerManager.TemperatureData tempData = new HeatExchangerManager.TemperatureData(heatExchanger);
+    private static void handleHeat(ProbeMode mode, IProbeInfo probeInfo, TileEntity heatExchanger) {
+        TemperatureData tempData = new TemperatureData(heatExchanger);
         if (tempData.isMultisided()) {
             for (Direction face : Direction.VALUES) {
                 if (tempData.hasData(face)) {

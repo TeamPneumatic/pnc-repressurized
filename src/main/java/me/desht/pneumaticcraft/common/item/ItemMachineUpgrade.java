@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.IUpgradeItem;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
@@ -23,7 +24,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ItemMachineUpgrade extends ItemPneumatic {
+public class ItemMachineUpgrade extends ItemPneumatic implements IUpgradeItem {
     public static final String NBT_DIRECTION = "Facing";
     private final EnumUpgrade upgrade;
     private final int tier;

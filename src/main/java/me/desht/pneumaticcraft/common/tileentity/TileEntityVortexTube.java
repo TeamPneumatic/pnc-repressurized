@@ -2,18 +2,20 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.IItemHandler;
 
-public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatExchanger, IHeatTinted {
-    private final IHeatExchangerLogic coldHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
-    private final IHeatExchangerLogic hotHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
-    private final IHeatExchangerLogic connectingExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatTinted {
+    private final IHeatExchangerLogic coldHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
+    private LazyOptional<IHeatExchangerLogic> coldHeatCap = LazyOptional.of(() -> coldHeatExchanger);
+    private final IHeatExchangerLogic hotHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
+    private LazyOptional<IHeatExchangerLogic> hotHeatCap = LazyOptional.of(() -> hotHeatExchanger);
+    private final IHeatExchangerLogic connectingExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private int visualizationTimer = 30;
 
     @DescSynced
@@ -31,13 +33,13 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
+    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
         if (side == null || side == getRotation().getOpposite()) {
-            return hotHeatExchanger;
+            return hotHeatCap;
         } else if (side == getRotation()) {
-            return coldHeatExchanger;
+            return coldHeatCap;
         } else {
-            return null;
+            return LazyOptional.empty();
         }
     }
 
@@ -47,7 +49,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return null;
     }
 
@@ -89,7 +91,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     public void tick() {
         super.tick();
         if (!getWorld().isRemote) {
-            // Only update the cold and connecting side, the hot side is handled in TileEntityBase.
+            // Only update the cold and connecting side; the hot side is handled in the superclass
             connectingExchanger.tick();
             coldHeatExchanger.tick();
             int usedAir = (int) (getPressure() * 10);

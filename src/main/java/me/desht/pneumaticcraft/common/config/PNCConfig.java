@@ -136,10 +136,11 @@ public class PNCConfig {
             public static boolean notifyOfDealMade;
         }
 
-        public static class BlockHeatDefaults {
+        public static class Heat {
             public static double defaultBlockThermalResistance;
             public static double defaultFluidThermalResistance;
-            public static int defaultFluidTotalHeat;
+            public static double airThermalResistance;
+            public static int defaultFluidHeatCapacity;
             public static double ambientTempBiomeModifier;
             public static double ambientTempHeightModifier;
         }

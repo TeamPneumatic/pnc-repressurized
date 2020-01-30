@@ -1,0 +1,8 @@
+{
+  "block": "quark:icy_stone",
+  "temperature": 223,
+  "totalHeatCapacity": 5000,
+  "transformCold": {
+    "block": "minecraft:cobblestone"
+  }
+}

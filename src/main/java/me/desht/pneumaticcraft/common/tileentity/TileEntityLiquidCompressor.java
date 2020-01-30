@@ -27,7 +27,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -48,7 +48,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
             return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack) != null;
         }
     };
-    private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> itemHandler);
+    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
 
     @GuiSynced
@@ -156,7 +156,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return itemHandler;
     }
 
@@ -177,7 +177,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
 
     @Nonnull
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return inventoryCap;
     }
 

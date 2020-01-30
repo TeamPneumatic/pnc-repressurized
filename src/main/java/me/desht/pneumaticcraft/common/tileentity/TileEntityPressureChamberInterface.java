@@ -27,7 +27,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -43,7 +43,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @DescSynced
     private final PressureChamberInterfaceHandler inventory = new PressureChamberInterfaceHandler();
-    private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> inventory);
+    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
     @DescSynced
     private float doorSpeed = 0f;
     @DescSynced
@@ -319,7 +319,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return inventory;
     }
 
@@ -340,7 +340,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return invCap;
     }
 

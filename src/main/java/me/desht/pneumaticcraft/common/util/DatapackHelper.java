@@ -34,17 +34,17 @@ public class DatapackHelper {
         for (ResourceLocation file : resourceManager.getAllResourceLocations(folder, r -> r.endsWith(".json"))) {
             String path = file.getPath();
             ResourceLocation id = new ResourceLocation(file.getNamespace(), path.substring(folder.length() + 1, path.length() - JSON_EXTENSION_LENGTH));
-            Log.debug("loading %s: %s", tag, id);
-            try (IResource iresource = resourceManager.getResource(file);
+           try (IResource iresource = resourceManager.getResource(file);
                  InputStream inputstream = iresource.getInputStream();
                  Reader reader = new BufferedReader(new InputStreamReader(inputstream, StandardCharsets.UTF_8))) {
                 JsonObject jsonobject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
                 if (jsonobject != null) {
                     if (jsonobject.size() == 0) {
-                        Log.debug("skipping %s '%s' (empty JSON object)", tag, id);
+                        Log.debug("skipped %s '%s' (empty JSON object)", tag, id);
                         map.remove(id);  // shouldn't be present already, but doesn't hurt to do this
                     } else {
                         JsonObject j = map.put(id, jsonobject);
+                        Log.debug("loaded %s: %s", tag, id);
                         if (j != null) {
                             Log.error("duplicate %s discovered with ID %s", tag, id);
                         }

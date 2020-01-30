@@ -83,8 +83,8 @@ public class ModTileEntities {
             = register("drone_redstone_emitter", () -> new TileEntityType<>(TileEntityDroneRedstoneEmitter::new, ImmutableSet.of(ModBlocks.DRONE_REDSTONE_EMITTER.get()), null));
     public static final RegistryObject<TileEntityType<TileEntityCompressedIronBlock>> COMPRESSED_IRON_BLOCK
             = register("compressed_iron_block", () -> new TileEntityType<>(TileEntityCompressedIronBlock::new, ImmutableSet.of(ModBlocks.COMPRESSED_IRON_BLOCK.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityHeatSink>> HEAT_SINK
-            = register("heat_sink", () -> new TileEntityType<>(TileEntityHeatSink::new, ImmutableSet.of(ModBlocks.HEAT_SINK.get()), null));
+    public static final RegistryObject<TileEntityType<TileEntityHasHeatSink>> HEAT_SINK
+            = register("heat_sink", () -> new TileEntityType<>(TileEntityHasHeatSink::new, ImmutableSet.of(ModBlocks.HEAT_SINK.get()), null));
     public static final RegistryObject<TileEntityType<TileEntityVortexTube>> VORTEX_TUBE
             = register("vortex_tube", () -> new TileEntityType<>(TileEntityVortexTube::new, ImmutableSet.of(ModBlocks.VORTEX_TUBE.get()), null));
     public static final RegistryObject<TileEntityType<TileEntityProgrammableController>> PROGRAMMABLE_CONTROLLER

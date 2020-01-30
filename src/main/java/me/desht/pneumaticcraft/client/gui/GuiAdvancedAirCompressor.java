@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -22,7 +22,7 @@ public class GuiAdvancedAirCompressor extends GuiAirCompressor {
         super.init();
 
         addButton(new WidgetTemperature(guiLeft + 87, guiTop + 20, 273, 675,
-                ((IHeatExchanger) te).getHeatExchangerLogic(null), 325, 625));
+                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY), 325, 625));
     }
 
     @Override

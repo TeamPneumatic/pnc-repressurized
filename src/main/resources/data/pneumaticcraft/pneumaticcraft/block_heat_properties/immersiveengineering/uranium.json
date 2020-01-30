@@ -1,0 +1,9 @@
+{
+  "block": "immersiveengineering:storage_uranium",
+  "temperature": 438,
+  "thermalResistance": 500,
+  "transformCold": {
+    "block": "immersiveengineering:storage_lead"
+  },
+  "totalHeatCapacity": 250000
+}

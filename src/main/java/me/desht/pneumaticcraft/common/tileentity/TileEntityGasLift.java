@@ -33,7 +33,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -67,7 +67,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
             return itemStack.isEmpty() || itemStack.getItem() == ModBlocks.DRILL_PIPE.get().asItem();
         }
     };
-    private final LazyOptional<IItemHandlerModifiable> inventoryCap = LazyOptional.of(() -> inventory);
+    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
     @GuiSynced
     public int currentDepth;
     @GuiSynced
@@ -91,7 +91,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return inventory;
     }
 
@@ -306,7 +306,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return inventoryCap;
     }
 

@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityHasHeatSink;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -39,7 +39,7 @@ public class BlockHeatSink extends BlockPneumaticCraft {
 
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityHeatSink.class;
+        return TileEntityHasHeatSink.class;
     }
 
     @Override
@@ -66,23 +66,24 @@ public class BlockHeatSink extends BlockPneumaticCraft {
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos,Entity entity) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityHeatSink && entity instanceof LivingEntity) {
+        if (te instanceof TileEntityHasHeatSink && entity instanceof LivingEntity) {
             if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative()) return;
-            IHeatExchangerLogic heat = ((TileEntityHeatSink) te).getHeatExchangerLogic(null);
-            int temp = (int) ((TileEntityHeatSink) te).getHeatExchangerLogic(null).getTemperature();
-            if (temp > 323) { // +50C
-                entity.attackEntityFrom(DamageSource.HOT_FLOOR, 2);
-                if (temp > 373) { // +100C
-                    entity.setFire(3);
+            te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).ifPresent(heatExchanger -> {
+                double temp = heatExchanger.getTemperature();
+                if (temp > 323) { // +50C
+                    entity.attackEntityFrom(DamageSource.HOT_FLOOR, 2);
+                    if (temp > 373) { // +100C
+                        entity.setFire(3);
+                    }
+                } else if (temp < 243) { // -30C
+                    int durationTicks = (int) ((243 - temp) * 2);
+                    int amplifier = (int) ((243 - temp) / 20);
+                    ((LivingEntity) entity).addPotionEffect(new EffectInstance(Effects.SLOWNESS, durationTicks, amplifier));
+                    if (temp < 213) { // -60C
+                        entity.attackEntityFrom(DamageSourcePneumaticCraft.FREEZING, 2);
+                    }
                 }
-            } else if (temp < 243) { // -30C
-                int durationTicks = (243 - (int)heat.getTemperature()) * 2;
-                int amplifier = (243 - (int) heat.getTemperature()) / 20;
-                ((LivingEntity) entity).addPotionEffect(new EffectInstance(Effects.SLOWNESS, durationTicks, amplifier));
-                if (temp < 213) { // -60C
-                    entity.attackEntityFrom(DamageSourcePneumaticCraft.FREEZING, 2);
-                }
-            }
+            });
         }
     }
 }

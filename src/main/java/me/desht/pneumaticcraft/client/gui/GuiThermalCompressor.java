@@ -1,8 +1,10 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -11,7 +13,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -51,8 +52,11 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     }
 
     private int getTemperatureDifferential(Direction side) {
-        return Math.abs(te.getHeatExchangerLogic(side).getTemperatureAsInt()
-                - te.getHeatExchangerLogic(side.getOpposite()).getTemperatureAsInt());
+        int temp1 = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side)
+                .map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
+        int temp2 = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side.getOpposite())
+                .map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
+        return Math.abs(temp1 - temp2);
     }
 
     @Override
@@ -78,16 +82,15 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     }
 
     private class WidgetTemperatureSided extends WidgetTemperature {
-        private final Direction side;
 
         WidgetTemperatureSided(Direction side, int x) {
-            super(guiLeft + x, guiTop + 20, 0, 2000, ((IHeatExchanger) te).getHeatExchangerLogic(side));
-            this.side = side;
+            super(guiLeft + x, guiTop + 20, 0, 2000, te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side));
         }
 
         @Override
         public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
-            curTip.add(StringUtils.capitalize(side.getName()) + " Temperature: " + (logic.getTemperatureAsInt() - 273) + "\u00b0C");
+            int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
+            curTip.add(HeatUtil.formatHeatString(temp).getFormattedText());
         }
     }
 }

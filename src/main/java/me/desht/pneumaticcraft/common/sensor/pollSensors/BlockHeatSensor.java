@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSensor;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import net.minecraft.client.gui.FontRenderer;
@@ -55,12 +55,9 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
         double temperature = Double.MIN_VALUE;
         for (BlockPos p : positions) {
             TileEntity te = world.getTileEntity(p);
-            if (te instanceof IHeatExchanger) {
-                IHeatExchanger exchanger = (IHeatExchanger) te;
-                for (Direction d : Direction.VALUES) {
-                    IHeatExchangerLogic logic = exchanger.getHeatExchangerLogic(d);
-                    if (logic != null) temperature = Math.max(temperature, logic.getTemperature());
-                }
+            for (Direction d : Direction.VALUES) {
+                temperature = Math.max(temperature, te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, d)
+                        .map(IHeatExchangerLogic::getTemperature).orElse(0d));
             }
         }
         return NumberUtils.isCreatable(textBoxText) ?

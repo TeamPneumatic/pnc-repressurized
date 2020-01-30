@@ -1180,9 +1180,10 @@
   "waila.redstoneModule.receiving": "Receiving redstone: §e%d",
   "waila.redstoneModule.op": "Operation: §e%s",
   "waila.redstoneModule.inverted": "§cOutput inverted",
-
   "waila.interface.mode.import": "Importing Items",
   "waila.interface.mode.export": "Exporting Items",
+  "waila.heatFrame.cooking": "Cooking: §f%d%%",
+  "waila.heatFrame.cooling": "Cooling: §f%d%%",
 
   "_comment": "Misc",
   "message.vacuum_pump.manometer": "Input Pressure: %s bar. Vacuum Pressure: %s bar.",

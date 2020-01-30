@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -76,8 +75,10 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
                 addRedstoneTab();
             }
-            if (te instanceof IHeatExchanger) {
-                addAnimatedStat("gui.tab.info.heat.title", new ItemStack(Items.BLAZE_POWDER), 0xFFFF5500, false).setText("gui.tab.info.heat");
+            if (te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
+                addAnimatedStat("gui.tab.info.heat.title",
+                        new ItemStack(Items.BLAZE_POWDER), 0xFFFF5500, false)
+                        .setText("gui.tab.info.heat");
             }
             if (shouldAddUpgradeTab()) {
                 addUpgradeTab();

@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
@@ -161,10 +160,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         super.onBlockPlacedBy(world, pos, state, entity, stack);
 
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof IHeatExchanger) {
-            double ambient = HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature();
-            ((IHeatExchanger) te).getHeatExchangerLogic(null).setTemperature(ambient);
-        }
+        te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+                .ifPresent(logic -> logic.setTemperature(HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature()));
     }
 
     DirectionProperty directionProperty() { return canRotateToTopOrBottom() ? FACING : HORIZONTAL_FACING; }

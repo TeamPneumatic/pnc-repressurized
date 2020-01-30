@@ -60,6 +60,8 @@ public class CommonArmorHandler {
     private static final CommonArmorHandler clientHandler = new CommonArmorHandler(null);
     private static final CommonArmorHandler serverHandler = new CommonArmorHandler(null);
 
+    private static final Vec3d FORWARD = new Vec3d(0, 0, 1);
+
     private final HashMap<UUID, CommonArmorHandler> playerHudHandlers = new HashMap<>();
     private PlayerEntity player;
     private int magnetRadius;
@@ -293,8 +295,6 @@ public class CommonArmorHandler {
         }
     }
 
-    private static final Vec3d FORWARD = new Vec3d(0, 0, 1);
-
     // track player movement across ticks on the server - very transient, a capability would be overkill here
 
     private static final Map<UUID,Vec3d> moveMap = new HashMap<>();
@@ -304,7 +304,7 @@ public class CommonArmorHandler {
             // doing this client-side only appears to be effective
             if (player.moveForward > 0) {
                 if (!player.onGround && isJetBootsEnabled() && jetBootsBuilderMode) {
-                    player.moveRelative(getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) / 250f, new Vec3d(0, 0, 1));
+                    player.moveRelative(getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) / 250f, FORWARD);
                 }
                 if (player.onGround && !player.isInWater()) {
                     player.moveRelative((float) speedBoost, FORWARD);

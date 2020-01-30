@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerAdvancedAirCompressor;
@@ -12,22 +11,19 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.util.Direction;
+import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 
-public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor implements IHeatExchanger {
+public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor {
 
     @GuiSynced
-    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
+    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     public TileEntityAdvancedAirCompressor() {
         super(ModTileEntities.ADVANCED_AIR_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_TIER_TWO, PneumaticValues.MAX_PRESSURE_TIER_TWO, PneumaticValues.VOLUME_ADVANCED_AIR_COMPRESSOR);
         heatExchanger.setThermalCapacity(100);
-    }
-
-    @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
-        return heatExchanger;
     }
 
     @Override
@@ -51,4 +47,8 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
         return new ContainerAdvancedAirCompressor(i, playerInventory, getPos());
     }
 
+    @Override
+    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
+        return heatCap;
+    }
 }

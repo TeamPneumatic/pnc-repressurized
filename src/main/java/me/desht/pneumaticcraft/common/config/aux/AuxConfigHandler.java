@@ -14,7 +14,6 @@ public class AuxConfigHandler {
             ArmorFeatureStatus.INSTANCE,
             ThirdPartyConfig.INSTANCE,
             MicromissileDefaults.INSTANCE,
-            BlockHeatPropertiesConfig.INSTANCE,
             ArmorHUDLayout.INSTANCE
     };
 

@@ -1,12 +1,8 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
-import me.desht.pneumaticcraft.api.crafting.RegisterMachineRecipesEvent;
-import me.desht.pneumaticcraft.api.crafting.StackedIngredient;
-import me.desht.pneumaticcraft.common.recipes.machine.BasicPressureChamberRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -78,19 +74,5 @@ public interface IPressureChamberRecipe extends IModRecipe {
      */
     default String getTooltipKey(boolean input, int slot) {
         return "";
-    }
-
-    /**
-     * Create a standard Pressure Chamber recipe. See also {@link StackedIngredient}, which may be helpful if you
-     * want to add a recipe taking multiples of the same input item.
-     *
-     * @param id unique recipe ID
-     * @param inputs a list of input ingredients
-     * @param pressureRequired the pressure require (this is a minimum if positive, and a maximum if negative)
-     * @param outputs the output item(s)
-     * @return a recipe suitable for adding via {@link RegisterMachineRecipesEvent#getPressureChamber()}
-     */
-    static IPressureChamberRecipe basicRecipe(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs) {
-        return new BasicPressureChamberRecipe(id, inputs, pressureRequired, outputs);
     }
 }

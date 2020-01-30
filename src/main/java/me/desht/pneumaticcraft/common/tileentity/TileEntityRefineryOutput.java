@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
@@ -25,14 +24,14 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
 public class TileEntityRefineryOutput extends TileEntityTickableBase
-        implements IHeatExchanger, IRedstoneControlled, IComparatorSupport, ISerializableTanks, ISmartFluidSync, INamedContainerProvider {
+        implements IRedstoneControlled, IComparatorSupport, ISerializableTanks, ISmartFluidSync, INamedContainerProvider {
 
     private TileEntityRefineryController controllerTE = null;
 
@@ -45,18 +44,14 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
     private int outputAmountScaled;  // just present to cause a TE sync when fluid changes
 
     @GuiSynced
-    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
+    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> outputTank);
     private final LazyOptional<IFluidHandler> fluidCapWrapped = LazyOptional.of(() -> new TankWrapper(outputTank));
 
     public TileEntityRefineryOutput() {
         super(ModTileEntities.REFINERY_OUTPUT.get());
-    }
-
-    @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
-        return heatExchanger;
     }
 
     @Override
@@ -83,7 +78,7 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return null;
     }
 
@@ -141,6 +136,11 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
         super.remove();
 
         fluidCap.invalidate();
+    }
+
+    @Override
+    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
+        return heatCap;
     }
 
     private class TankWrapper implements IFluidHandler {

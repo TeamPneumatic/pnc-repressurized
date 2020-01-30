@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.gui.drawable.IDrawable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
+import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.List;
 
@@ -30,7 +31,8 @@ class Helpers {
     }
 
     static WidgetTemperature makeTemperatureWidget(int x, int y, int temperature) {
-        return new WidgetTemperature(x, y, 273, 673, PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic(), temperature);
+        return new WidgetTemperature(x, y, 273, 673,
+                LazyOptional.of(() -> PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic()), temperature);
     }
 
     static IDrawable makeTankOverlay(int height) {

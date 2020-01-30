@@ -107,7 +107,7 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
 
         WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
                 id -> Helpers.makeTemperatureWidget(92, 12, recipe.getOperatingTemperature().getMin()));
-        w.getHeatExchanger().setTemperature(tickTimer.getValue() * (w.getScales()[0] - 273.0) / tickTimer.getMaxValue() + 273.0);
+        w.setTemperature(tickTimer.getValue() * (w.getScales()[0] - 273.0) / tickTimer.getMaxValue() + 273.0);
         w.render((int)mouseX, (int)mouseY, 0f);
     }
 

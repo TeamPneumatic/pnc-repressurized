@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -29,7 +30,8 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<ContainerFluxCo
 
         inputStat = addAnimatedStat("Input", Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
         te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addButton(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage)));
-        addButton(new WidgetTemperature(guiLeft + 87, guiTop + 20, 273, 675, te.getHeatExchangerLogic(null), 325, 625));
+        addButton(new WidgetTemperature(guiLeft + 87, guiTop + 20, 273, 675,
+                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY), 325, 625));
     }
 
     @Override

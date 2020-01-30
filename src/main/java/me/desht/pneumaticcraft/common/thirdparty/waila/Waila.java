@@ -4,7 +4,6 @@ import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
@@ -22,7 +21,6 @@ public class Waila implements IWailaPlugin, IThirdParty {
     @Override
     public void register(IRegistrar iRegistrar) {
         iRegistrar.registerBlockDataProvider(new PneumaticProvider.Data(), TileEntity.class);
-        iRegistrar.registerBlockDataProvider(new HeatProvider.Data(), IHeatExchanger.class);
         iRegistrar.registerBlockDataProvider(new SemiblockProvider.Data(), Block.class);
         iRegistrar.registerBlockDataProvider(new RedstoneControlProvider.Data(), IRedstoneControl.class);
         iRegistrar.registerBlockDataProvider(new TubeModuleProvider.Data(), TileEntityPressureTube.class);
@@ -30,7 +28,6 @@ public class Waila implements IWailaPlugin, IThirdParty {
         iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), EntitySemiblockBase.class);
 
         iRegistrar.registerComponentProvider(new PneumaticProvider.Component(), TooltipPosition.BODY, TileEntity.class);
-        iRegistrar.registerComponentProvider(new HeatProvider.Component(), TooltipPosition.BODY, IHeatExchanger.class);
         iRegistrar.registerComponentProvider(new SemiblockProvider.Component(), TooltipPosition.BODY, Block.class);
         iRegistrar.registerComponentProvider(new RedstoneControlProvider.Component(), TooltipPosition.BODY, IRedstoneControl.class);
         iRegistrar.registerComponentProvider(new TubeModuleProvider.Component(), TooltipPosition.BODY, TileEntityPressureTube.class);

@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.tileentity.IHeatExchanger;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
@@ -31,7 +30,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -39,8 +38,8 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumaticBase
-        implements IHeatExchanger, IMinWorkingPressure, IRedstoneControlled,
-        ISerializableTanks, ISmartFluidSync, IAutoFluidEjecting, INamedContainerProvider {
+        implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks,
+        ISmartFluidSync, IAutoFluidEjecting, INamedContainerProvider {
 
     private static final int INVENTORY_SIZE = 1;
     private static final int CRAFTING_TIME = 60 * 100;
@@ -55,7 +54,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     @LazySynced
     private final ThermopneumaticFluidTankOutput outputTank = new ThermopneumaticFluidTankOutput(PneumaticValues.NORMAL_TANK_CAPACITY);
     @GuiSynced
-    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().getHeatExchangerLogic();
+    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
+    private LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
     @GuiSynced
     public int redstoneMode;
     @GuiSynced
@@ -89,7 +89,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
             searchForRecipe = true;
         }
     };
-    private final LazyOptional<IItemHandlerModifiable> invCap = LazyOptional.of(() -> itemHandler);
+    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> itemHandler);
 
     private final ThermopneumaticFluidHandler fluidHandler = new ThermopneumaticFluidHandler();
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> fluidHandler);
@@ -129,7 +129,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                         inputTank.drain(currentRecipe.getInputFluid().getAmount(), FluidAction.EXECUTE);
                         itemHandler.extractItem(0, 1, false);
                         addAir(-currentRecipe.airUsed());
-                        heatExchanger.addHeat(-currentRecipe.heatUsed() * inc * 0.75);
+                        heatExchanger.addHeat(-currentRecipe.heatUsed(heatExchanger.getAmbientTemperature()) * inc * 0.75);
                         craftingProgress -= CRAFTING_TIME;
                     }
                     didWork = true;
@@ -165,7 +165,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     @Override
-    protected LazyOptional<IItemHandlerModifiable> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap() {
         return invCap;
     }
 
@@ -214,8 +214,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     @Override
-    public IHeatExchangerLogic getHeatExchangerLogic(Direction side) {
-        return heatExchanger;
+    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
+        return heatCap;
     }
 
     @Override
@@ -229,7 +229,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
+    public IItemHandler getPrimaryInventory() {
         return itemHandler;
     }
 
