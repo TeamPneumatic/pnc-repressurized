@@ -133,7 +133,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
         int i = 0;
         for (Supplier<? extends ProgWidgetType> type : ModProgWidgets.WIDGET_LIST) {
-            IProgWidget widget = type.get().create();
+            IProgWidget widget = IProgWidget.create(type.get());
             if (difficulty >= widget.getDifficulty().ordinal()) {
                 widget.setY(y + 40);
                 widget.setX(showAllWidgets ? x : getWidgetTrayRight());

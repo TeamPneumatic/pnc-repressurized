@@ -2,9 +2,6 @@ package me.desht.pneumaticcraft.api.crafting;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.JsonToNBTConverter;
-import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,11 +14,13 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * Represents an Amadron trade resource. The input and output may be either an item or a fluid.
@@ -104,11 +103,11 @@ public class AmadronTradeResource {
     }
 
     public int countTradesInInventory(LazyOptional<IItemHandler> inv) {
-        return IOHelper.countItemsInHandler(item, inv) / item.getCount();
+        return countItemsInHandler(item, inv) / item.getCount();
     }
 
     public int findSpaceInItemOutput(LazyOptional<IItemHandler> inv, int wantedTradeCount) {
-        return Math.min(wantedTradeCount, IOHelper.findSpaceInHandler(item, wantedTradeCount, inv));
+        return Math.min(wantedTradeCount, findSpaceInHandler(item, wantedTradeCount, inv));
     }
 
     public int countTradesInTank(LazyOptional<IFluidHandler> lazy) {
@@ -151,11 +150,7 @@ public class AmadronTradeResource {
                 Item item = ForgeRegistries.ITEMS.getValue(rl);
                 ItemStack stack = new ItemStack(item, amount);
                 if (obj.has("nbt")) {
-                    if (obj.get("nbt").isJsonObject()) {
-                        stack.setTag(JsonToNBTConverter.getTag(obj.getAsJsonObject("nbt")));
-                    } else if (obj.get("nbt").isJsonPrimitive()) {
-                        stack.setTag(JsonToNBT.getTagFromJson(JSONUtils.getString(obj, "nbt")));
-                    }
+                    stack.setTag(JsonToNBT.getTagFromJson(JSONUtils.getString(obj, "nbt")));
                 }
                 return new AmadronTradeResource(stack);
             case FLUID:
@@ -176,7 +171,7 @@ public class AmadronTradeResource {
                 res.addProperty("id", name == null ? "" : name.toString());
                 res.addProperty("amount", item.getCount());
                 if (item.hasTag()) {
-                    res.add("nbt", NBTToJsonConverter.getObject(item.getTag()));
+                    res.addProperty("nbt", item.getTag().toString()); //NBTToJsonConverter.getObject(item.getTag()));
                 }
                 break;
             case FLUID:
@@ -249,5 +244,42 @@ public class AmadronTradeResource {
                 return fluid.getAmount() + "mB " + fluid.getDisplayName().getFormattedText();
         }
         return super.toString();
+    }
+
+    /**
+     * Get the total number of matching items in the given (lazy) item handler. "Matching" means that the items
+     * can stack together.
+     *
+     * @param item the item to look for
+     * @param lazy the LazyOptional item handler
+     * @return the total number of matching items
+     */
+    private static int countItemsInHandler(ItemStack item, LazyOptional<IItemHandler> lazy) {
+        return lazy.map(handler -> IntStream.range(0, handler.getSlots())
+                .filter(i -> ItemHandlerHelper.canItemStacksStack(handler.getStackInSlot(i), item))
+                .map(i -> handler.getStackInSlot(i).getCount())
+                .sum()
+        ).orElse(0);
+    }
+
+    /**
+     * Check how many time we can insert the given itemstack into the (lazy) item handler.
+     *
+     * @param item the item stack, whose size may be > 1
+     * @param multiplier the number of times we want to insert it
+     * @param lazy the LazyOptional item handler
+     * @return the number of times the stack can actually be inserted
+     */
+    private static int findSpaceInHandler(ItemStack item, int multiplier, LazyOptional<IItemHandler> lazy) {
+        final int totalItems = item.getCount() * multiplier;
+        return lazy.map(inv -> {
+            int remaining = totalItems;
+            for (int i = 0; i < inv.getSlots() && remaining > 0; i++) {
+                if (inv.getStackInSlot(i).isEmpty() || ItemHandlerHelper.canItemStacksStack(inv.getStackInSlot(i), item)) {
+                    remaining -= item.getMaxStackSize() - inv.getStackInSlot(i).getCount();
+                }
+            }
+            return (totalItems - remaining) / item.getCount();
+        }).orElse(0);
     }
 }

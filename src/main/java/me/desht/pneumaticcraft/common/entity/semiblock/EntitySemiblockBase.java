@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.event.SemiblockEvent;
+import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
+import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
+import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.semiblock.IDirectionalSemiblock;
-import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.lib.Log;
@@ -270,7 +270,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         if (!world.isRemote) {
             Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
             if (SemiblockTracker.getInstance().putSemiblock(world, blockPos, this)) {
-                MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(world.getWorld(), blockPos, dir));
+                MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(world.getWorld(), blockPos, this));
             } else {
                 Log.error("found existing semiblock at %s, pos=%s, dir=%s", world, blockPos, dir);
             }
@@ -284,7 +284,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         if (!world.isRemote) {
             Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
             SemiblockTracker.getInstance().clearSemiblock(world, blockPos, dir);
-            MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(world.getWorld(), blockPos, dir));
+            MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(world.getWorld(), blockPos, this));
         }
 
         onBroken();

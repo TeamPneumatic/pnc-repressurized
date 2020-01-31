@@ -9,8 +9,8 @@ import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.api.event.SemiblockEvent;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.render.RenderDroneHeldItem;
@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -202,8 +203,10 @@ public class EntityDrone extends EntityDroneBase implements
 
     @SubscribeEvent
     public void onSemiblockEvent(SemiblockEvent event) {
-        // TODO be smarter: at least check if it's a logistics frame
-        if (!event.getWorld().isRemote && event.getWorld() == getEntityWorld()) {
+        if (!event.getWorld().isRemote && event.getWorld() == getEntityWorld()
+                && event.getSemiblock() instanceof EntityLogisticsFrame) {
+            // semiblock has been added or removed; clear the cached logistics manager
+            // next DroneAILogistics operation will search the area again
             logisticsManager = null;
         }
     }

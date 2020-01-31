@@ -149,7 +149,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             if (!ProgWidgetConfig.blacklistedPieces.contains(typeID)) {
                 ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
                 if (type != null) {
-                    IProgWidget addedWidget = type.create();
+                    IProgWidget addedWidget = IProgWidget.create(type);
                     addedWidget.readFromNBT(widgetTag);
                     progWidgets.add(addedWidget);
                 } else {

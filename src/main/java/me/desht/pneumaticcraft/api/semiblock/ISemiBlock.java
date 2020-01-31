@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.semiblock;
+package me.desht.pneumaticcraft.api.semiblock;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -16,17 +16,30 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
+/**
+ * Represents a "semiblock" - an attachable gadget which sits on a real block, such as a logistics frame or
+ * crop support.
+ * <p>
+ * While semiblocks are implemented as entities, this is an implementation detail which should not be relied upon.
+ */
 public interface ISemiBlock {
     /**
-     * Get an ID for this semiblock, which should match the corresponding item's registry name.
+     * Get a unique ID for this semiblock, which should match the corresponding item's registry name.
      * @return a semiblock ID
      */
     ResourceLocation getId();
 
+    /**
+     * Get the displayed name for this semiblock.
+     *
+     * @return the name
+     */
     ITextComponent getDisplayName();
 
-    TileEntity getCachedTileEntity();
-
+    /**
+     * Get the world this semiblock is in.
+     * @return the world
+     */
     World getWorld();
 
     /**
@@ -35,6 +48,12 @@ public interface ISemiBlock {
      * @return the block pos
      */
     BlockPos getBlockPos();
+
+    /**
+     * Get the tile entity at the semiblock's position.  This is cached for performance.
+     * @return the tile entity, or null if there is none
+     */
+    TileEntity getCachedTileEntity();
 
     /**
      * Written to the dropped item (under the "EntityTag" subtag) when the semiblock is broken, to persisted entity
@@ -87,7 +106,7 @@ public interface ISemiBlock {
      * Called when a semiblock is right-clicked with a Logistics Configurator
      * @param player the player
      * @param side the side of the block being clicked
-     * @return true if something was done, false if the semiblock isn't interested
+     * @return true if something was done, false if the semiblock doesn't care about being clicked
      */
     default boolean onRightClickWithConfigurator(PlayerEntity player, Direction side) {
         return false;
@@ -117,7 +136,7 @@ public interface ISemiBlock {
     void removeSemiblock(PlayerEntity player);
 
     /**
-     * Add tooltip information for this semiblock. This info is for display by info mods (TOP, Waila...)
+     * Add tooltip information for this semiblock. This info is used by info mods such as Waila or TOP.
      *
      * @param curInfo append info to this list
      * @param player the player looking at the entity or item
@@ -127,8 +146,16 @@ public interface ISemiBlock {
     default void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
     }
 
+    /**
+     * Write this semiblock to network buffer for server<->client sync purposes.
+     * @param payload the buffer
+     */
     void writeToBuf(PacketBuffer payload);
 
+    /**
+     * Read this semiblock from network buffer for server<->client sync purposes.
+     * @param payload the buffer
+     */
     void readFromBuf(PacketBuffer payload);
 
     /**
@@ -137,6 +164,12 @@ public interface ISemiBlock {
      */
     default int getColor() { return 0xFF808080; }
 
+    /**
+     * Retrieve a semiblock by tracking ID.  This is generally used for client/server sync purposes.
+     * @param world the world
+     * @param id the tracking ID
+     * @return a semiblock, or null if ID is not valid
+     */
     static ISemiBlock byTrackingId(World world, int id) {
         Entity e = world.getEntityByID(id);
         return e instanceof ISemiBlock ? (ISemiBlock) e : null;

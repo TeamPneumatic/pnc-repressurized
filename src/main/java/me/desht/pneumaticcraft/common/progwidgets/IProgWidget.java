@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidgetBase;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import net.minecraft.client.resources.I18n;
@@ -8,12 +9,13 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public interface IProgWidget {
+public interface IProgWidget extends IProgWidgetBase {
     int getX();
 
     int getY();
@@ -135,5 +137,17 @@ public interface IProgWidget {
         public String getTranslationKey() {
             return I18n.format("gui.progWidget.difficulty." + name);
         }
+    }
+
+    /**
+     * Cast from the API interface to our internal interface.  Should always succeed!
+     *
+     * @param type type of the progwidget
+     * @return the internal non-API progwidget type
+     */
+    static IProgWidget create(ProgWidgetType type) {
+        IProgWidgetBase base = type.create();
+        Validate.isTrue(base instanceof IProgWidget);
+        return (IProgWidget) base;
     }
 }

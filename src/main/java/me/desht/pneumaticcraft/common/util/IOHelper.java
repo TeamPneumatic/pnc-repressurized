@@ -14,7 +14,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /*
  * This file is part of Blue Power.
@@ -171,40 +170,4 @@ public class IOHelper {
         return false;
     }
 
-    /**
-     * Get the total number of matching items in the given (lazy) item handler. "Matching" means that the items
-     * can stack together.
-     *
-     * @param item the item to look for
-     * @param lazy the LazyOptional item handler
-     * @return the total number of matching items
-     */
-    public static int countItemsInHandler(ItemStack item, LazyOptional<IItemHandler> lazy) {
-        return lazy.map(handler -> IntStream.range(0, handler.getSlots())
-                .filter(i -> ItemHandlerHelper.canItemStacksStack(handler.getStackInSlot(i), item))
-                .map(i -> handler.getStackInSlot(i).getCount())
-                .sum()
-        ).orElse(0);
-    }
-
-    /**
-     * Check how many time we can insert the given itemstack into the (lazy) item handler.
-     *
-     * @param item the item stack, whose size may be > 1
-     * @param multiplier the number of times we want to insert it
-     * @param lazy the LazyOptional item handler
-     * @return the number of times the stack can actually be inserted
-     */
-    public static int findSpaceInHandler(ItemStack item, int multiplier, LazyOptional<IItemHandler> lazy) {
-        final int totalItems = item.getCount() * multiplier;
-        return lazy.map(inv -> {
-            int remaining = totalItems;
-            for (int i = 0; i < inv.getSlots() && remaining > 0; i++) {
-                if (inv.getStackInSlot(i).isEmpty() || ItemHandlerHelper.canItemStacksStack(inv.getStackInSlot(i), item)) {
-                    remaining -= item.getMaxStackSize() - inv.getStackInSlot(i).getCount();
-                }
-            }
-            return (totalItems - remaining) / item.getCount();
-        }).orElse(0);
-    }
 }

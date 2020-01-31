@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
-import me.desht.pneumaticcraft.common.semiblock.IDirectionalSemiblock;
+import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;

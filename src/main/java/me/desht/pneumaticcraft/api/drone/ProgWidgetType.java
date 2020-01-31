@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.api.drone;
 
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.function.Supplier;
@@ -8,7 +7,7 @@ import java.util.function.Supplier;
 /**
  * Represents the type of a programming widget. You do not need to use this directly.
  */
-public class ProgWidgetType<P extends IProgWidget> extends ForgeRegistryEntry<ProgWidgetType<?>> {
+public class ProgWidgetType<P extends IProgWidgetBase> extends ForgeRegistryEntry<ProgWidgetType<?>> {
     private final Supplier<? extends P> factory;
 
     public ProgWidgetType(Supplier<P> factory) {

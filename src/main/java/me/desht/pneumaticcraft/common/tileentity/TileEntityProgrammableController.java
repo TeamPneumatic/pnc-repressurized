@@ -5,9 +5,9 @@ import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.api.event.SemiblockEvent;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
+import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
+import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammableController;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -134,7 +135,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @SubscribeEvent
     public void onSemiblockEvent(SemiblockEvent event) {
-        if (!event.getWorld().isRemote && event.getWorld() == getWorld()) {
+        if (!event.getWorld().isRemote && event.getWorld() == getWorld() && event.getSemiblock() instanceof EntityLogisticsFrame) {
             logisticsManager = null;
         }
     }
@@ -142,8 +143,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public void tick() {
         super.tick();
-
-        droneItemHandler.setFakePlayerReady();
 
         if (!getWorld().isRemote && updateNeighbours) {
             updateNeighbours();
@@ -223,15 +222,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     private void initializeFakePlayer() {
-//        fakePlayer = new DroneFakePlayer((ServerWorld) getWorld(), new GameProfile(getOwnerUUID(), ownerName.getFormattedText()), this);
         fakePlayer = new DroneFakePlayer((ServerWorld) getWorld(), new GameProfile(getOwnerUUID(), "test"), this);
         fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
-//        fakePlayer.inventory = new InventoryFakePlayer(fakePlayer) {
-//            @Override
-//            public IItemHandlerModifiable getUnderlyingItemHandler() {
-//                return droneInventory;
-//            }
-//        };
     }
 
     @Override
@@ -395,6 +387,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     protected void onFirstServerUpdate() {
         super.onFirstServerUpdate();
+
+        droneItemHandler.setFakePlayerReady();
+
         calculateUpgrades();
         inventory.onContentsChanged(0);  // force initial read of any installed drone/network api
         curX = targetX = getPos().getX() + 0.5;

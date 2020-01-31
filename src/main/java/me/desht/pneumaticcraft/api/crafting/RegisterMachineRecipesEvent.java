@@ -8,12 +8,13 @@ import java.util.function.Consumer;
 /**
  * This event is fired when PneumaticCraft machine recipes should be registered, which is when the server starts up
  * or is reloaded with the /reload command.  There are consumers for each machine type; use
- * <code>getType().accept(recipe)</code> to register a recipe.  Each recipe type has one or more convenience methods to
- * create a default recipe implementation, so you can say e.g.
- * <p>
- *     <code>event.getPressureChamber().accept(IPressureChamberRecipe.basicRecipe(...))</code>
- * </p>
- * Consider whether you need to use this event; adding or removing recipes via datapacks is to be preferred.
+ * <code>getType().accept(recipe)</code> to register a recipe. {@link IPneumaticRecipeRegistry} has convenience methods
+ * to create recipe implementations for each machine type, so you can say e.g.
+ *     <pre>{@code
+ *     IPneumaticRecipeRegistry recipeRegistry = PneumaticRegistry.getRecipeRegistry();
+ *     event.getPressureChamber().accept(recipeRegistry.pressureChamberRecipe(...));
+ *     }</pre>
+ * Consider whether you really need to use this event; adding or removing recipes via datapacks is preferable.
  */
 public class RegisterMachineRecipesEvent extends Event {
     private final Consumer<IPressureChamberRecipe> pressureChamber;

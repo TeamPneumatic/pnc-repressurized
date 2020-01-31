@@ -21,10 +21,10 @@ import java.util.function.Predicate;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
- * Base class for widgets which use Area widgets
+ * Base class for widgets which use Area and Item Filter widgets
  */
-public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IAreaProvider, IEntityProvider,
-        IItemFiltering, IVariableWidget {
+public abstract class ProgWidgetAreaItemBase extends ProgWidget
+        implements IAreaProvider, IEntityProvider, IItemFiltering, IVariableWidget {
     private List<BlockPos> areaListCache;
     private Set<BlockPos> areaSetCache;
     private Map<String, BlockPos> areaVariableStates;

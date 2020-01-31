@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * Get an instance of this via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getRecipeRegistry()}.
  * <p>
- * Note that machine recipes are now loaded from datapack, as well as via an event: {@link RegisterMachineRecipesEvent}.
+ * Note that machine recipes are now loaded from datapacks, and via an event: {@link RegisterMachineRecipesEvent}.
  *
  * @author MineMaarten, desht
  */
@@ -38,7 +38,7 @@ public interface IPneumaticRecipeRegistry {
      * @param output the output item
      * @return a lasering recipe
      */
-    IAssemblyRecipe basicLaserRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output);
+    IAssemblyRecipe assemblyLaserRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output);
 
     /**
      * Create a standard item drilling recipe.  See {@link me.desht.pneumaticcraft.api.crafting.StackedIngredient} if
@@ -49,7 +49,7 @@ public interface IPneumaticRecipeRegistry {
      * @param output the output item
      * @return a drilling recipe
      */
-    IAssemblyRecipe basicDrillRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output);
+    IAssemblyRecipe assemblyDrillRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output);
 
     /**
      * Create a basic explosion crafting recipe.  This uses in-world explosions to convert nearby items on the ground
@@ -62,7 +62,7 @@ public interface IPneumaticRecipeRegistry {
      * @param outputs the output items
      * @return a basic Explosion Crafting recipe
      */
-    IExplosionCraftingRecipe basicRecipe(ResourceLocation id, Ingredient input, int lossRate, ItemStack... outputs);
+    IExplosionCraftingRecipe explosionCraftingRecipe(ResourceLocation id, Ingredient input, int lossRate, ItemStack... outputs);
 
     /**
      * Create a standard Heat Frame cooling recipe.
@@ -73,7 +73,7 @@ public interface IPneumaticRecipeRegistry {
      * @param output the output item
      * @return a basic Heat Frame cooling recipe
      */
-    IHeatFrameCoolingRecipe basicRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output);
+    IHeatFrameCoolingRecipe heatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output);
 
     /**
      * Create a standard Pressure Chamber recipe. See also {@link StackedIngredient}, which may be helpful if you
@@ -85,7 +85,7 @@ public interface IPneumaticRecipeRegistry {
      * @param outputs the output item(s)
      * @return a recipe suitable for adding via {@link RegisterMachineRecipesEvent#getPressureChamber()}
      */
-    IPressureChamberRecipe basicRecipe(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs);
+    IPressureChamberRecipe pressureChamberRecipe(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs);
 
     /**
      * Create a standard Refinery recipe.  Note that multiple recipes with the same input fluid may exist, provided that
@@ -98,7 +98,7 @@ public interface IPneumaticRecipeRegistry {
      * @param outputs the output fluids
      * @return a basic Refinery recipe
      */
-    IRefineryRecipe basicRecipe(ResourceLocation id, FluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs);
+    IRefineryRecipe refineryRecipe(ResourceLocation id, FluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs);
 
     /**
      * Create a standard Thermopneumatic Processing Plant recipe.  Such recipes generally have a minimum temperature
@@ -113,7 +113,7 @@ public interface IPneumaticRecipeRegistry {
      * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature
      * is required)
      */
-    IThermopneumaticProcessingPlantRecipe basicRecipe(
+    IThermopneumaticProcessingPlantRecipe thermoPlantRecipe(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
             FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure);
 
@@ -129,7 +129,7 @@ public interface IPneumaticRecipeRegistry {
      * @param requiredPressure the minimum pressure required (pass 0 if no specific pressure is required)
      * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature is required)
      */
-    IThermopneumaticProcessingPlantRecipe basicExothermicRecipe(
+    IThermopneumaticProcessingPlantRecipe exothermicThermoPlantRecipe(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
             FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure);
 }

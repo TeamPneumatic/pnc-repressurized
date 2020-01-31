@@ -30,42 +30,42 @@ public enum PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     }
 
     @Override
-    public IAssemblyRecipe basicLaserRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
+    public IAssemblyRecipe assemblyLaserRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
         return new AssemblyRecipe(id, input, output, AssemblyProgramType.LASER);
     }
 
     @Override
-    public IAssemblyRecipe basicDrillRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
+    public IAssemblyRecipe assemblyDrillRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
         return new AssemblyRecipe(id, input, output, AssemblyProgramType.DRILL);
     }
 
     @Override
-    public IExplosionCraftingRecipe basicRecipe(ResourceLocation id, Ingredient input, int lossRate, ItemStack... outputs) {
+    public IExplosionCraftingRecipe explosionCraftingRecipe(ResourceLocation id, Ingredient input, int lossRate, ItemStack... outputs) {
         return new ExplosionCraftingRecipe(id, input, lossRate, outputs);
     }
 
     @Override
-    public IHeatFrameCoolingRecipe basicRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output) {
+    public IHeatFrameCoolingRecipe heatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output) {
         return new HeatFrameCoolingRecipe(id, input, temperature, output);
     }
 
     @Override
-    public IPressureChamberRecipe basicRecipe(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs) {
+    public IPressureChamberRecipe pressureChamberRecipe(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs) {
         return new BasicPressureChamberRecipe(id, inputs, pressureRequired, outputs);
     }
 
     @Override
-    public IRefineryRecipe basicRecipe(ResourceLocation id, FluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs) {
+    public IRefineryRecipe refineryRecipe(ResourceLocation id, FluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs) {
         return new RefineryRecipe(id, input, operatingTemp, outputs);
     }
 
     @Override
-    public IThermopneumaticProcessingPlantRecipe basicRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure) {
+    public IThermopneumaticProcessingPlantRecipe thermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure) {
         return new BasicThermopneumaticProcessingPlantRecipe(id, inputFluid, inputItem, outputFluid, operatingTemperature, requiredPressure, false);
     }
 
     @Override
-    public IThermopneumaticProcessingPlantRecipe basicExothermicRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure) {
+    public IThermopneumaticProcessingPlantRecipe exothermicThermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure) {
         return new BasicThermopneumaticProcessingPlantRecipe(id, inputFluid, inputItem, outputFluid, operatingTemperature, requiredPressure, true);
     }
 }

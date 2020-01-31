@@ -244,7 +244,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public IProgWidget copy() {
-        IProgWidget copy = getType().create();
+        IProgWidget copy = IProgWidget.create(getType());
         CompoundNBT tag = new CompoundNBT();
         writeToNBT(tag);
         copy.readFromNBT(tag);

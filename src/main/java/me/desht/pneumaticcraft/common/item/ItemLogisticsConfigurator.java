@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.semiblock.IDirectionalSemiblock;
-import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
+import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
+import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;

@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
+import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
+import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;

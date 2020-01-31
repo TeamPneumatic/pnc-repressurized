@@ -2,9 +2,9 @@ package me.desht.pneumaticcraft.common.heat.behaviour;
 
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityHeatFrame;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicTicking;
-import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;

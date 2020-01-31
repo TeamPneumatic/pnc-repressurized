@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
 import mcjty.theoneprobe.api.*;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
-import me.desht.pneumaticcraft.common.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;

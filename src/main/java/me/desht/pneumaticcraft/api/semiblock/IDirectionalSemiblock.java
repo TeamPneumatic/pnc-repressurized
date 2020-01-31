@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.semiblock;
+package me.desht.pneumaticcraft.api.semiblock;
 
 import net.minecraft.util.Direction;
 

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
+import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
 import me.desht.pneumaticcraft.common.item.ItemPneumatic;

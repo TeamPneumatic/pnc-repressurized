@@ -40,7 +40,7 @@ public class DatapackHelper {
                 JsonObject jsonobject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
                 if (jsonobject != null) {
                     if (jsonobject.size() == 0) {
-                        Log.debug("skipped %s '%s' (empty JSON object)", tag, id);
+                        Log.debug("skipped %s: %s (empty JSON object)", tag, id);
                         map.remove(id);  // shouldn't be present already, but doesn't hurt to do this
                     } else {
                         JsonObject j = map.put(id, jsonobject);
