@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.9-383 (31 Jan 2020)
+#### Fixes
+* Fixed Amadron player-player trades not always paying out to the selling player.
+* Fixed crash in Minigun magazine GUI if middle-clicking the wrong slot.
+
 ### 0.11.8-380 (12 Jan 2020)
 #### Fixes
 * Performance improvement for Charging Module when charging Pneumatic Armor, e.g. via Aerial Interface.
