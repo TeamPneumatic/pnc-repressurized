@@ -143,10 +143,12 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     private List<IAirHandler> findChargeable() {
         List<IAirHandler> res = new ArrayList<>();
 
-        getChargingStack().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
-            res.add(h);
-            chargingItemPressure = h.getPressure();
-        });
+        if (!getChargingStack().isEmpty()) {
+            getChargingStack().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
+                res.add(h);
+                chargingItemPressure = h.getPressure();
+            });
+        }
 
         if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             List<Entity> entitiesOnPad = getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(getPos().up()));

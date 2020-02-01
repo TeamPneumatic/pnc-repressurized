@@ -25,22 +25,22 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
         if (showSides()) {
             for (Direction dir : Direction.VALUES) {
                 String sideName = PneumaticCraftUtils.getOrientationName(dir);
-                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 4, guiTop + 30 + dir.getIndex() * 12, 0xFF404040,
+                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 32 + dir.getIndex() * 12, 0xFF404040,
                         sideName, b -> progWidget.getSides()[dir.getIndex()] = b.checked);
                 checkBox.checked = progWidget.getSides()[dir.getIndex()];
                 addButton(checkBox);
             }
         }
 
-        WidgetCheckBox useItemCount = new WidgetCheckBox(guiLeft + 4, guiTop + (showSides() ? 115 : 30), 0xFF404040,
+        WidgetCheckBox useItemCount = new WidgetCheckBox(guiLeft + 8, guiTop + (showSides() ? 115 : 30), 0xFF404040,
                 I18n.format("gui.progWidget.itemFilter.useItemCount"),
-                b -> progWidget.setUseCount(b.checked)
+                b -> { progWidget.setUseCount(b.checked); textField.setEnabled(b.checked); }
         );
         useItemCount.setTooltip("gui.progWidget.itemFilter.useItemCount.tooltip");
         useItemCount.checked = progWidget.useCount();
         addButton(useItemCount);
 
-        textField = new WidgetTextFieldNumber(font, guiLeft + 7, guiTop + (showSides() ? 128 : 43), 50, 11);
+        textField = new WidgetTextFieldNumber(font, guiLeft + 10, guiTop + (showSides() ? 128 : 43), 50, 11);
         textField.setValue(progWidget.getCount());
         textField.setEnabled(useItemCount.checked);
         textField.setResponder(s -> progWidget.setCount(textField.getValue()));
@@ -55,7 +55,7 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
         if (showSides()) {
-            font.drawString("Accessing sides:", guiLeft + 4, guiTop + 20, 0xFF404060);
+            font.drawString(I18n.format("gui.progWidget.inventory.accessingSides"), guiLeft + 6, guiTop + 20, 0xFF404060);
         }
     }
 

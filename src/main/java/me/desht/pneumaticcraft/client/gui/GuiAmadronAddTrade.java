@@ -64,14 +64,11 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         super.init();
 
         if (searchGui != null) {
-            fluidFilters[settingSlot].setFluid(Fluids.EMPTY);
-            container.setStack(settingSlot, searchGui.getSearchStack());
+            setStack(settingSlot, searchGui.getSearchStack());
         } else if (invSearchGui != null) {
-            fluidFilters[settingSlot].setFluid(Fluids.EMPTY);
-            container.setStack(settingSlot, invSearchGui.getSearchStack());
+            setStack(settingSlot, invSearchGui.getSearchStack());
         } else if (fluidGui != null) {
-            container.setStack(settingSlot, ItemStack.EMPTY);
-            fluidFilters[settingSlot].setFluid(fluidGui.getFilter());
+            setFluid(settingSlot, fluidGui.getFilter());
         } else if (gpsSearchGui != null) {
             positions[settingSlot] = gpsSearchGui.getSearchStack().isEmpty() ?
                     null : ItemGPSTool.getGPSLocation(gpsSearchGui.getSearchStack());
@@ -85,6 +82,18 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         initSide(OUTPUT_SLOT);
         setFocused(amountFields[INPUT_SLOT]);
         addButton(addButton = new Button(guiLeft + 50, guiTop + 171, 85, 20, "Add Trade", b -> addTrade()));
+
+        addJeiFilterInfoTab();
+    }
+
+    public void setStack(int slot, ItemStack stack) {
+        fluidFilters[slot].setFluid(Fluids.EMPTY);
+        container.setStack(slot, stack);
+    }
+
+    public void setFluid(int slot, Fluid stack) {
+        container.setStack(slot, ItemStack.EMPTY);
+        fluidFilters[slot].setFluid(stack);
     }
 
     private void initSide(int slot) {

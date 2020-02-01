@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
-import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
@@ -29,13 +28,15 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
 
     public GuiRefineryController(ContainerRefinery container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
+
+        ySize = 189;
     }
 
     @Override
     public void init() {
         super.init();
 
-        widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 20, 273, 673,
+        widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 32, 273, 673,
                 te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY))
         {
             @Override
@@ -44,16 +45,16 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
                 if (te.minTemp > 0) {
                     int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
                     TextFormatting tf = te.minTemp < temp ? TextFormatting.GREEN : TextFormatting.GOLD;
-                    curTip.add(tf + "Required Temperature: " + (te.minTemp - 273) + "\u00b0C");
+                    curTip.add(tf + I18n.format("gui.misc.requiredTemperature", te.minTemp - 273));
                 }
             }
         };
         addButton(widgetTemperature);
 
-        addButton(new WidgetTank(guiLeft + 8, guiTop + 13, te.getInputTank()));
+        addButton(new WidgetTank(guiLeft + 8, guiTop + 25, te.getInputTank()));
 
         int x = guiLeft + 95;
-        int y = guiTop + 17;
+        int y = guiTop + 29;
 
         // "te" always refers to the master refinery; the bottom block of the stack
         outputs = new ArrayList<>();
@@ -112,16 +113,6 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     @Override
     protected ResourceLocation getGuiTexture() {
         return Textures.GUI_REFINERY;
-    }
-
-    @Override
-    protected PointXY getInvNameOffset() {
-        return new PointXY(-36, 0);
-    }
-
-    @Override
-    protected PointXY getInvTextOffset() {
-        return new PointXY(20, -1);
     }
 
     @Override

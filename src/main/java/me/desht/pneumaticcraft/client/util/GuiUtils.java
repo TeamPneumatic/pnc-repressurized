@@ -247,6 +247,8 @@ public class GuiUtils {
 
     public static void drawTexture(ResourceLocation texture, int x, int y) {
         Minecraft.getInstance().getTextureManager().bindTexture(texture);
+        GlStateManager.enableTexture();
+        GlStateManager.color4f(1, 1, 1, 1);
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         wr.pos(x, y + 16, 0).tex(0.0, 1.0).endVertex();

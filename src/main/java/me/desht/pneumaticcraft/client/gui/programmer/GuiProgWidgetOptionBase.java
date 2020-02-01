@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends GuiPneumaticScreenBase {
@@ -27,7 +26,7 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
     @Override
     public void init() {
         super.init();
-        String title = TextFormatting.UNDERLINE + I18n.format(progWidget.getTranslationKey());
+        String title = I18n.format(progWidget.getTranslationKey());
         addLabel(title, width / 2 - font.getStringWidth(title) / 2, guiTop + 5);
     }
 

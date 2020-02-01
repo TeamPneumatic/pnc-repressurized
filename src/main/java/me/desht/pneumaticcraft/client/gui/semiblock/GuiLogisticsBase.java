@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
@@ -29,6 +30,8 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumaticContainerBase<ContainerLogistics,TileEntityBase> {
@@ -40,6 +43,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     private WidgetAnimatedStat facingTab;
     private WidgetLabel itemLabel;
     private WidgetLabel fluidLabel;
+    private final List<WidgetFluidStack> fluidWidgets = new ArrayList<>();
 
     public GuiLogisticsBase(ContainerLogistics container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -53,16 +57,12 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         super.init();
 
         if (itemSearchGui != null) {
-            container.getSlot(editingSlot).putStack(itemSearchGui.getSearchStack());
-            logistics.setItemFilter(editingSlot, itemSearchGui.getSearchStack());
-            syncToServer();
+            updateItemFilter(editingSlot, itemSearchGui.getSearchStack());
             itemSearchGui = null;
         }
 
         if (fluidSearchGui != null && fluidSearchGui.getFilter() != null) {
-            FluidStack filter = new FluidStack(fluidSearchGui.getFilter(), 1000);
-            logistics.setFluidFilter(editingSlot, filter);
-            syncToServer();
+            updateFluidFilter(editingSlot, new FluidStack(fluidSearchGui.getFilter(), 1000));
             fluidSearchGui = null;
         }
 
@@ -82,14 +82,33 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
 
         IntStream.range(0, EntityLogisticsFrame.FLUID_FILTER_SLOTS).forEach(i -> {
             FluidStack stack = logistics.getFluidFilter(i);
-            addButton(new WidgetFluidStack(guiLeft + i * 18 + 8, guiTop + 101, stack.copy(), w -> fluidClicked((WidgetFluidStack) w, i)));
+            PointXY p = getFluidSlotPos(i);
+            fluidWidgets.add(new WidgetFluidStack(p.x, p.y, stack.copy(), w -> fluidClicked((WidgetFluidStack) w, i)));
         });
+        fluidWidgets.forEach(this::addButton);
 
         addInfoTab(I18n.format("gui.tooltip.item.pneumaticcraft." + logistics.getId().getPath()));
         addFilterTab();
         if (!container.isItemContainer()) {
             addFacingTab();
         }
+        addJeiFilterInfoTab();
+    }
+
+    public void updateItemFilter(int slot, ItemStack stack) {
+        container.getSlot(slot).putStack(stack);
+        logistics.setItemFilter(slot, stack);
+        syncToServer();
+    }
+
+    public void updateFluidFilter(int slot, FluidStack stack) {
+        logistics.setFluidFilter(slot, stack);
+        if (!fluidWidgets.isEmpty()) fluidWidgets.get(slot).setFluidStack(stack);
+        syncToServer();
+    }
+
+    public PointXY getFluidSlotPos(int slot) {
+        return new PointXY(guiLeft + slot * 18 + 8, guiTop + 101);
     }
 
     private void updateLabels() {

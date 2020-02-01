@@ -17,7 +17,7 @@ public class GuiProgWidgetAreaShow<P extends IProgWidget> extends GuiProgWidgetO
         super.init();
 
         if (displayShowAreaButtons()) {
-            addButton(new WidgetCheckBox(guiLeft + xSize / 2 - 50, guiTop + 150, 0x404040,
+            addButton(new WidgetCheckBox(guiLeft + 8, guiTop + ySize - (font.FONT_HEIGHT + 8), 0x404040,
                     I18n.format("gui.programmer.button.showArea"), this::previewArea)
                     .setChecked(AreaShowManager.getInstance().isShowing(guiProgrammer.te)));
         }

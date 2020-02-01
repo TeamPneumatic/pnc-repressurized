@@ -1,10 +1,9 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.client.gui.GuiAssemblyController;
-import me.desht.pneumaticcraft.client.gui.GuiPressureChamber;
-import me.desht.pneumaticcraft.client.gui.GuiRefineryController;
-import me.desht.pneumaticcraft.client.gui.GuiThermopneumaticProcessingPlant;
+import me.desht.pneumaticcraft.client.gui.*;
+import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetItemFilter;
+import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsBase;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -13,6 +12,9 @@ import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.recipes.special.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.thirdparty.jei.extension.HelmetOneProbeExtension;
 import me.desht.pneumaticcraft.common.thirdparty.jei.extension.PatchouliBookExtension;
+import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.AmadronAddTradeGhost;
+import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.LogisticsFilterGhost;
+import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.ProgWidgetItemFilterGhost;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -108,10 +110,16 @@ public class JEIPlugin implements IModPlugin {
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(GuiAssemblyController.class, 110, 10, 50, 50, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registration.addRecipeClickArea(GuiPressureChamber.class, 100, 7, 60, 60, ModCategoryUid.PRESSURE_CHAMBER);
-        registration.addRecipeClickArea(GuiRefineryController.class, 47, 21, 27, 47, ModCategoryUid.REFINERY);
+        registration.addRecipeClickArea(GuiRefineryController.class, 47, 33, 27, 47, ModCategoryUid.REFINERY);
         registration.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 31, 48, 20, ModCategoryUid.THERMO_PNEUMATIC);
 
         registration.addGlobalGuiHandler(new GuiTabHandler());
+
+        registration.addGuiScreenHandler(GuiProgWidgetItemFilter.class, Helpers::getGuiProperties);
+
+        registration.addGhostIngredientHandler(GuiAmadronAddTrade.class, new AmadronAddTradeGhost());
+        registration.addGhostIngredientHandler(GuiLogisticsBase.class, new LogisticsFilterGhost());
+        registration.addGhostIngredientHandler(GuiProgWidgetItemFilter.class, new ProgWidgetItemFilterGhost());
     }
 
     @Override

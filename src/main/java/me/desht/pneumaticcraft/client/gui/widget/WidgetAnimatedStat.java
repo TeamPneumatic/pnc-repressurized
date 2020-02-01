@@ -26,7 +26,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -34,6 +33,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -43,6 +43,9 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     private static final int ANIMATED_STAT_SPEED = 30;
     private static final int MIN_WIDTH_HEIGHT = 17;
     private static final int MAX_LINES = 12;
+
+    // avoid drop shadows on dark coloured text, because it looks terrible
+    private static final Pattern DARK_FORMATTING = Pattern.compile("\\u00A7[0123458]");
 
     private IGuiAnimatedStat affectingStat;
 
@@ -428,7 +431,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
                 fontRenderer.drawStringWithShadow(title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, 0xFFFF00);
             }
             for (int i = curScroll; i < textList.size() && i < curScroll + MAX_LINES; i++) {
-                if (textList.get(i).contains("\u00a70") || textList.get(i).contains(TextFormatting.DARK_RED.toString())) {
+                if (DARK_FORMATTING.matcher(textList.get(i)).find()) {
                     fontRenderer.drawString(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF);
                 } else {
                     fontRenderer.drawStringWithShadow(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF);

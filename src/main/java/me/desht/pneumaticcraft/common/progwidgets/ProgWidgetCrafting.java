@@ -116,13 +116,13 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
     private ItemStack getRecipeResult(World world) {
         CraftingInventory grid = getCraftingGrid();
-        Optional<ICraftingRecipe> recipe = world.getServer().getRecipeManager().getRecipe(IRecipeType.CRAFTING, grid, world);
+        Optional<ICraftingRecipe> recipe = world.getRecipeManager().getRecipe(IRecipeType.CRAFTING, grid, world);
         return recipe.map(r -> r.getCraftingResult(grid)).orElse(ItemStack.EMPTY);
     }
 
     private static IRecipe<CraftingInventory> getRecipe(World world, ICraftingWidget widget) {
         CraftingInventory grid = widget.getCraftingGrid();
-        return world.getServer().getRecipeManager().getRecipe(IRecipeType.CRAFTING, grid, world).orElse(null);
+        return world.getRecipeManager().getRecipe(IRecipeType.CRAFTING, grid, world).orElse(null);
     }
 
     @Override

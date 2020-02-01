@@ -34,18 +34,18 @@ public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> 
             radioButton.otherChoices = radioButtons;
         }
 
-        WidgetCheckBox useMaxActions = new WidgetCheckBox(guiLeft + (moveActionsToSide() ? 54 : 4), guiTop + 115, 0xFF404040,
+        WidgetCheckBox useMaxActions = new WidgetCheckBox(guiLeft + (moveActionsToSide() ? 60 : 4), guiTop + 115, 0xFF404040,
                 I18n.format("gui.progWidget.digAndPlace.useMaxActions"), b -> {
             progWidget.setUseMaxActions(b.checked);
-            textField.setVisible(progWidget.useMaxActions());
+            textField.setEnabled(progWidget.useMaxActions());
         });
         useMaxActions.setTooltip("gui.progWidget.digAndPlace.useMaxActions.tooltip");
         useMaxActions.checked = progWidget.useMaxActions();
         addButton(useMaxActions);
 
-        textField = new WidgetTextFieldNumber(font, guiLeft + (moveActionsToSide() ? 57 : 7), guiTop + 128, 50, 11);
+        textField = new WidgetTextFieldNumber(font, guiLeft + (moveActionsToSide() ? 63 : 7), guiTop + 128, 50, 11);
         textField.setValue(progWidget.getMaxActions());
-        textField.setVisible(useMaxActions.checked);
+        textField.setEnabled(useMaxActions.checked);
         addButton(textField);
     }
 

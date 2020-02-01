@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
@@ -135,11 +136,7 @@ public class WidgetButtonExtended extends GuiButtonExt implements ITaggedWidget,
                 GlStateManager.disableRescaleNormal();
             }
             if (resLoc != null) {
-//                GuiUtils.drawTexture(resLoc, this.x + width / 2 - 8, this.y + 2);
-                GlStateManager.enableLighting();
-                Minecraft.getInstance().getTextureManager().bindTexture(resLoc);
-                blit(this.x + width / 2 - 8, this.y + 2, 0, 0, 16, 16, 16, 16);
-                GlStateManager.disableLighting();
+                GuiUtils.drawTexture(resLoc, this.x + width / 2 - 8, this.y + 2);
             }
             if (active && !thisVisible && x >= this.x && y >= this.y && x < this.x + width && y < this.y + height) {
                 AbstractGui.fill(this.x, this.y, this.x + width, this.y + height, invisibleHoverColor);

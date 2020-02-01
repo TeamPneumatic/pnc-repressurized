@@ -33,6 +33,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -146,25 +147,12 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         redstoneTab.addSubWidget(redstoneButton);
     }
 
-//    private void addUpgradeTab() {
-//        String upgrades = "gui.tab.upgrades.tile." + te.getType().getRegistryName().getPath();
-//        String translatedUpgrades = I18n.format(upgrades);
-//        List<String> upgradeText = new ArrayList<>();
-//        if (te instanceof TileEntityPneumaticBase) {
-//            upgradeText.add("gui.tab.upgrades.volume");
-//            upgradeText.add("gui.tab.upgrades.security");
-//        }
-//        if (te instanceof IHeatExchanger) {
-//            upgradeText.add("gui.tab.upgrades.volumeCapacity");
-//        }
-//        if (!translatedUpgrades.equals(upgrades)) upgradeText.add(upgrades);
-//
-//        addExtraUpgradeText(upgradeText);
-//
-//        if (upgradeText.size() > 0)
-//            addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(upgradeText);
-//    }
-
+    protected void addJeiFilterInfoTab() {
+        if (ModList.get().isLoaded("jei")) {
+            addAnimatedStat("JEI", Textures.GUI_JEI_LOGO, 0xFFCEEDCE, true)
+                    .setText(TextFormatting.DARK_GRAY + I18n.format("gui.jei.filterDrag"));
+        }
+    }
 
     private void addUpgradeTab() {
         List<String> text = new ArrayList<>();

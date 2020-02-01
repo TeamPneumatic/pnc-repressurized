@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
@@ -76,6 +77,7 @@ public abstract class GuiPneumaticScreenBase extends Screen {
                 }
             }
             renderTooltip(localizedTooltip, x, y, font);
+            RenderHelper.enableGUIStandardItemLighting();
         }
         GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1.0f);
     }

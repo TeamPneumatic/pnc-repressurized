@@ -29,7 +29,7 @@ public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery
             refinery.onNeighborTileUpdate();
         }
 
-        addPlayerSlots(playerInventory, 84);
+        addPlayerSlots(playerInventory, 108);
     }
 
     @Override

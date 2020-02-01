@@ -23,8 +23,8 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityB
     ContainerAmadronAddTrade(int windowId, PlayerInventory playerInventory) {
         super(ModContainers.AMADRON_ADD_TRADE.get(), windowId, playerInventory);
 
-        addSlot(new SlotUntouchable(inv, INPUT_SLOT, 37, 90));
-        addSlot(new SlotUntouchable(inv, OUTPUT_SLOT, 126, 90));
+        addSlot(new SlotPhantomUnstackable(inv, INPUT_SLOT, 37, 90));
+        addSlot(new SlotPhantomUnstackable(inv, OUTPUT_SLOT, 126, 90));
     }
 
     public ContainerAmadronAddTrade(int windowId, PlayerInventory invPlayer, PacketBuffer extraData) {
