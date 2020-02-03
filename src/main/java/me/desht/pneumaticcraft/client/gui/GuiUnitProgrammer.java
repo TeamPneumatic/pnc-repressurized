@@ -129,23 +129,11 @@ public class GuiUnitProgrammer extends GuiScreen {
     public void render(int x, int y, boolean showFlow, boolean showInfo, boolean translate) {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-        int origX = x;
-        int origY = y;
-        x -= translatedX;
-        y -= translatedY;
-        float scale = getScale();
-        x = (int) (x / scale);
-        y = (int) (y / scale);
-
         if (scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
-            if (new Rectangle(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(origX, origY) && !scaleScroll.isDragging()) {
-                translatedX += shift * x;
-                translatedY += shift * y;
-            } else {
-                translatedX += areaWidth / 2 * shift;
-                translatedY += areaHeight / 2 * shift;
-            }
+            float prevScale = 2.0F - lastZoom * SCALE_PER_STEP;
+            translatedX += shift * (x - translatedX) / prevScale;
+            translatedY += shift * (y - translatedY) / prevScale;
         }
         lastZoom = scaleScroll.getState();
 
@@ -155,7 +143,7 @@ public class GuiUnitProgrammer extends GuiScreen {
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(translatedX, translatedY, 0);
-
+        float scale = getScale();
         GlStateManager.scale(scale, scale, 1);
 
         if (showFlow) showFlow();
@@ -202,14 +190,14 @@ public class GuiUnitProgrammer extends GuiScreen {
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
         boolean isLeftClicking = Mouse.isButtonDown(0);
-        if (translate && isLeftClicking && wasClicking && !scaleScroll.isDragging() && new Rectangle(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(origX, origY)) {
-            translatedX += origX - lastMouseX;
-            translatedY += origY - lastMouseY;
+        if (translate && isLeftClicking && wasClicking && !scaleScroll.isDragging() && new Rectangle(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(x, y)) {
+            translatedX += x - lastMouseX;
+            translatedY += y - lastMouseY;
         }
 
         wasClicking = isLeftClicking;
-        lastMouseX = origX;
-        lastMouseY = origY;
+        lastMouseX = x;
+        lastMouseY = y;
     }
 
     protected void renderAdditionally() {
