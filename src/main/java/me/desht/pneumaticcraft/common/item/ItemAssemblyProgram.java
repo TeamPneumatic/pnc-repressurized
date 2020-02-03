@@ -2,11 +2,13 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.ProgramDrill;
 import me.desht.pneumaticcraft.common.recipes.assembly.ProgramDrillLaser;
 import me.desht.pneumaticcraft.common.recipes.assembly.ProgramLaser;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -20,7 +22,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ItemAssemblyProgram extends ItemPneumatic {
+public class ItemAssemblyProgram extends Item {
     private static final AssemblyProgram[] PROGRAMS = new AssemblyProgram[AssemblyProgramType.values().length];
     static {
         PROGRAMS[AssemblyProgramType.DRILL.ordinal()] = new ProgramDrill();
@@ -31,7 +33,7 @@ public class ItemAssemblyProgram extends ItemPneumatic {
     private final AssemblyProgramType programType;
 
     public ItemAssemblyProgram(AssemblyProgramType programType) {
-        super();
+        super(ModItems.defaultProps());
         this.programType = programType;
     }
 

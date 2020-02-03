@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import com.google.common.base.Strings;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.client.ClientEventHandler;
+import me.desht.pneumaticcraft.client.event.ClientEventHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;

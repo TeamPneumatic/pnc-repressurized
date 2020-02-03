@@ -4,13 +4,14 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiSecurityStationHacking;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 import java.util.List;
 
-public class ItemNetworkComponent extends ItemPneumatic implements IProgrammable {
+public class ItemNetworkComponent extends Item implements IProgrammable {
     private final NetworkComponentType type;
 
     public enum NetworkComponentType {

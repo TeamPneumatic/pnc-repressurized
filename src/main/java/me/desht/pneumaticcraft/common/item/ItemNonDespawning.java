@@ -14,11 +14,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ItemNonDespawning extends ItemPneumatic {
-    public ItemNonDespawning(Item.Properties props) {
-        super(props);
-    }
-
+public class ItemNonDespawning extends Item {
     public ItemNonDespawning() {
         super(ModItems.defaultProps());
     }

@@ -116,8 +116,6 @@ public class ItemPneumaticArmor extends ArmorItem
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        ItemPneumatic.addStandardTooltip(stack, worldIn, tooltip, flagIn);
-
         if (slot == EquipmentSlotType.HEAD) {
             addHelmetInformation(stack, worldIn, tooltip, flagIn);
         }

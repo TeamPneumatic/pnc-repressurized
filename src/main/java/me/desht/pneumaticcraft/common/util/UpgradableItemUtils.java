@@ -10,7 +10,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -32,12 +31,10 @@ public class UpgradableItemUtils {
      * Add a standardized tooltip listing the installed upgrades in the given item.
      *
      * @param iStack the item
-     * @param world the world
      * @param textList list of text to append tooltip too
      * @param flag tooltip flag
-     * @return number of (unique) upgrades in the item
      */
-    public static int addUpgradeInformation(ItemStack iStack, IBlockReader world, List<ITextComponent> textList, ITooltipFlag flag) {
+    public static void addUpgradeInformation(ItemStack iStack, List<ITextComponent> textList, ITooltipFlag flag) {
         ItemStack[] inventoryStacks = getUpgradeStacks(iStack);
         boolean isItemEmpty = true;
         for (ItemStack stack : inventoryStacks) {
@@ -54,7 +51,6 @@ public class UpgradableItemUtils {
             textList.add(xlate("gui.tooltip.upgrades.not_empty").applyTextStyle(TextFormatting.GREEN));
             PneumaticCraftUtils.sortCombineItemStacksAndToString(textList, inventoryStacks);
         }
-        return inventoryStacks.length;
     }
 
     /**

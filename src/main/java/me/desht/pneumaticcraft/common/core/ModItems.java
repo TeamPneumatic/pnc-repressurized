@@ -27,23 +27,23 @@ import java.util.stream.IntStream;
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, Names.MOD_ID);
 
-    public static final RegistryObject<ItemPneumatic> INGOT_IRON_COMPRESSED = register("ingot_iron_compressed");
-    public static final RegistryObject<ItemPneumatic> PRESSURE_GAUGE = register("pressure_gauge");
-    public static final RegistryObject<ItemPneumatic> STONE_BASE = register("stone_base");
-    public static final RegistryObject<ItemPneumatic> CANNON_BARREL = register("cannon_barrel");
-    public static final RegistryObject<ItemPneumatic> TURBINE_BLADE = register("turbine_blade");
-    public static final RegistryObject<ItemPneumatic> PLASTIC = register("plastic");
-    public static final RegistryObject<ItemPneumatic> PNEUMATIC_CYLINDER = register("pneumatic_cylinder");
-    public static final RegistryObject<ItemPneumatic> TURBINE_ROTOR = register("turbine_rotor");
-    public static final RegistryObject<ItemPneumatic> PCB_BLUEPRINT = register("pcb_blueprint");
-    public static final RegistryObject<ItemPneumatic> TRANSISTOR = register("transistor");
-    public static final RegistryObject<ItemPneumatic> CAPACITOR = register("capacitor");
-    public static final RegistryObject<ItemPneumatic> PRINTED_CIRCUIT_BOARD = register("printed_circuit_board");
-    public static final RegistryObject<ItemPneumatic> STOP_WORM = register("stop_worm");
-    public static final RegistryObject<ItemPneumatic> NUKE_VIRUS = register("nuke_virus");
-    public static final RegistryObject<ItemPneumatic> COMPRESSED_IRON_GEAR = register("compressed_iron_gear");
-    public static final RegistryObject<ItemPneumatic> PROGRAMMING_PUZZLE = register("programming_puzzle");
-    public static final RegistryObject<ItemPneumatic> ADVANCED_PCB = register("advanced_pcb");
+    public static final RegistryObject<Item> INGOT_IRON_COMPRESSED = register("ingot_iron_compressed");
+    public static final RegistryObject<Item> PRESSURE_GAUGE = register("pressure_gauge");
+    public static final RegistryObject<Item> STONE_BASE = register("stone_base");
+    public static final RegistryObject<Item> CANNON_BARREL = register("cannon_barrel");
+    public static final RegistryObject<Item> TURBINE_BLADE = register("turbine_blade");
+    public static final RegistryObject<Item> PLASTIC = register("plastic");
+    public static final RegistryObject<Item> PNEUMATIC_CYLINDER = register("pneumatic_cylinder");
+    public static final RegistryObject<Item> TURBINE_ROTOR = register("turbine_rotor");
+    public static final RegistryObject<Item> PCB_BLUEPRINT = register("pcb_blueprint");
+    public static final RegistryObject<Item> TRANSISTOR = register("transistor");
+    public static final RegistryObject<Item> CAPACITOR = register("capacitor");
+    public static final RegistryObject<Item> PRINTED_CIRCUIT_BOARD = register("printed_circuit_board");
+    public static final RegistryObject<Item> STOP_WORM = register("stop_worm");
+    public static final RegistryObject<Item> NUKE_VIRUS = register("nuke_virus");
+    public static final RegistryObject<Item> COMPRESSED_IRON_GEAR = register("compressed_iron_gear");
+    public static final RegistryObject<Item> PROGRAMMING_PUZZLE = register("programming_puzzle");
+    public static final RegistryObject<Item> ADVANCED_PCB = register("advanced_pcb");
 
     public static final RegistryObject<ItemGPSTool> GPS_TOOL = register("gps_tool",
             ItemGPSTool::new);
@@ -204,8 +204,8 @@ public class ModItems {
         return register(type.getRegistryName(), () -> new ItemAssemblyProgram(type));
     }
 
-    private static RegistryObject<ItemPneumatic> register(final String name) {
-        return register(name, ItemPneumatic::new);
+    private static RegistryObject<Item> register(final String name) {
+        return register(name, () -> new Item(ModItems.defaultProps()));
     }
 
     private static RegistryObject<ItemBucketPneumaticCraft> registerBucket(String name, Supplier<? extends Fluid> sup) {

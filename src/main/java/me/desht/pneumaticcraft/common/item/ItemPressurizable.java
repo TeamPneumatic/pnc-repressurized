@@ -4,22 +4,16 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-
-public class ItemPressurizable extends ItemPneumatic {
+public class ItemPressurizable extends Item {
     private final int volume;
     private final float maxPressure;
 
@@ -54,21 +48,6 @@ public class ItemPressurizable extends ItemPneumatic {
         return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(h -> 1 - (h.getPressure() / h.maxPressure()))
                 .orElse(1f);
-    }
-
-    static void addPressureTooltip(ItemStack stack, List<ITextComponent> textList) {
-        stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
-            float f = airHandler.getPressure() / airHandler.maxPressure();
-            TextFormatting color;
-            if (f < 0.1f) {
-                color = TextFormatting.RED;
-            } else if (f < 0.5f) {
-                color = TextFormatting.GOLD;
-            } else {
-                color = TextFormatting.DARK_GREEN;
-            }
-            textList.add(xlate("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1)).applyTextStyle(color));
-        });
     }
 
     public static int getPressureDurabilityColor(ItemStack stack) {

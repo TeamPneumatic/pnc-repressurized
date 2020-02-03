@@ -1,7 +1,8 @@
-package me.desht.pneumaticcraft.client;
+package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChestplateLauncher;

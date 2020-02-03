@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client;
+package me.desht.pneumaticcraft.client.event;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.gui.INeedTickUpdate;

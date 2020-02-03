@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
-import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.IComparatorSupport;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
@@ -19,7 +18,6 @@ import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -60,7 +58,6 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
@@ -302,7 +299,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                 curInfo.add(new StringTextComponent("Stored Air: " + savedAir + "mL").applyTextStyle(TextFormatting.GREEN));
             }
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IUpgradeAcceptor) {
-                UpgradableItemUtils.addUpgradeInformation(stack, world, curInfo, flag);
+                UpgradableItemUtils.addUpgradeInformation(stack, curInfo, flag);
             }
             CompoundNBT subTag = stack.getChildTag("BlockEntityTag");
             if (subTag != null && subTag.contains(NBTKeys.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
@@ -324,19 +321,6 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (te instanceof TileEntityPneumaticBase) {
                 float pressure = ((TileEntityPneumaticBase) te).dangerPressure;
                 curInfo.add(xlate("gui.tooltip.maxPressure", pressure).applyTextStyle(TextFormatting.YELLOW));
-            }
-        }
-
-        String info = "gui.tooltip." + stack.getTranslationKey();
-        if (I18n.hasKey(info)) {
-            if (ClientUtils.hasShiftDown()) {
-                String translatedInfo = TextFormatting.AQUA + I18n.format(info).substring(2);  // strip out the leading text formatting
-                curInfo.addAll(PneumaticCraftUtils.splitString(translatedInfo, 50).stream().map(StringTextComponent::new).collect(Collectors.toList()));
-                if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
-                    curInfo.add(xlate("gui.tab.info.assistIGW"));
-                }
-            } else {
-                curInfo.add(xlate("gui.tooltip.sneakForInfo").applyTextStyle(TextFormatting.AQUA));
             }
         }
     }

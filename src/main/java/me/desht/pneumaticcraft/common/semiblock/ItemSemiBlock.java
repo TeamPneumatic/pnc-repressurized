@@ -3,12 +3,12 @@ package me.desht.pneumaticcraft.common.semiblock;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
-import me.desht.pneumaticcraft.common.item.ItemPneumatic;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ItemSemiBlock extends ItemPneumatic {
+public class ItemSemiBlock extends Item {
     public ItemSemiBlock() {
         super(ModItems.defaultProps());
     }

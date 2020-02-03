@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client;
+package me.desht.pneumaticcraft.client.event;
 
 import me.desht.pneumaticcraft.client.model.BakedMinigunWrapper;
 import me.desht.pneumaticcraft.client.model.CamoModel;

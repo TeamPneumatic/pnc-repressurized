@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -15,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
-public class ItemSeismicSensor extends ItemPneumatic {
+public class ItemSeismicSensor extends Item {
     public ItemSeismicSensor() {
         super(ModItems.defaultProps().maxStackSize(1));
     }

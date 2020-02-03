@@ -11,6 +11,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.entity.projectile.DamagingProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.IParticleData;
@@ -29,7 +30,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class ItemGunAmmo extends ItemPneumatic implements ITintableItem {
+public abstract class ItemGunAmmo extends Item implements ITintableItem {
 
     public ItemGunAmmo() {
         super(ModItems.defaultProps().maxStackSize(1).setNoRepair());

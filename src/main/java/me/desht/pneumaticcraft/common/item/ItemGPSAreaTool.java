@@ -11,6 +11,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.network.play.server.SHeldItemChangePacket;
@@ -36,7 +37,11 @@ import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ItemGPSAreaTool extends ItemPneumatic implements IPositionProvider {
+public class ItemGPSAreaTool extends Item implements IPositionProvider {
+    public ItemGPSAreaTool() {
+        super(ModItems.defaultProps());
+    }
+
     @Override
     public ActionResultType onItemUse(ItemUseContext ctx) {
         setGPSPosAndNotify(ctx.getPlayer(), ctx.getPos(), ctx.getHand(), 0);

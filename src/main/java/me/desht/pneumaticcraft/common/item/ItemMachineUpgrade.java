@@ -8,10 +8,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.item.Rarity;
+import net.minecraft.item.*;
 import net.minecraft.util.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -24,7 +21,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ItemMachineUpgrade extends ItemPneumatic implements IUpgradeItem {
+public class ItemMachineUpgrade extends Item implements IUpgradeItem {
     public static final String NBT_DIRECTION = "Facing";
     private final EnumUpgrade upgrade;
     private final int tier;

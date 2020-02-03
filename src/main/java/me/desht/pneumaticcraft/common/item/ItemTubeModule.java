@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -13,11 +15,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.List;
 import java.util.function.Function;
 
-public class ItemTubeModule extends ItemPneumatic {
+public class ItemTubeModule extends Item {
     private final Function<ItemTubeModule, TubeModule> moduleFactory;
 
     public ItemTubeModule(Function<ItemTubeModule, TubeModule> moduleFactory) {
-        super();
+        super(ModItems.defaultProps());
         this.moduleFactory = moduleFactory;
     }
 

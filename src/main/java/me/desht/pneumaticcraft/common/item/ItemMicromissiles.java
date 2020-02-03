@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
@@ -26,7 +27,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ItemMicromissiles extends ItemPneumatic {
+public class ItemMicromissiles extends Item {
     public static final String NBT_TOP_SPEED = "topSpeed";
     public static final String NBT_TURN_SPEED = "turnSpeed";
     public static final String NBT_DAMAGE = "damage";

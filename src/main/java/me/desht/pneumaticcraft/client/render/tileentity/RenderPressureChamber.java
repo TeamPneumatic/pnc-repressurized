@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.ClientTickHandler;
+import me.desht.pneumaticcraft.client.event.ClientTickHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import net.minecraft.client.Minecraft;
