@@ -8,11 +8,16 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
 public class BlockAirCompressor extends BlockPneumaticCraft {
+    private static final VoxelShape S1 = Block.makeCuboidShape(0, 0, 2, 16, 16, 14);
+    private static final VoxelShape S2 = Block.makeCuboidShape(2, 0, 0, 14, 16, 16);
+    private static final VoxelShape CROSS_SHAPE = VoxelShapes.combineAndSimplify(S1, S2, IBooleanFunction.OR);
 
     public static final BooleanProperty ON = BooleanProperty.create("on");
 
@@ -39,6 +44,6 @@ public class BlockAirCompressor extends BlockPneumaticCraft {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return ALMOST_FULL_SHAPE;
+        return CROSS_SHAPE;
     }
 }
