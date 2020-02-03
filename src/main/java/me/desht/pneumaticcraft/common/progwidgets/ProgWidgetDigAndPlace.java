@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockInteraction;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -48,6 +49,22 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
         order = EnumOrder.values()[tag.getInt("order")];
         useMaxActions = tag.getBoolean("useMaxActions");
         maxActions = tag.getInt("maxActions");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeByte(order.ordinal());
+        buf.writeBoolean(useMaxActions);
+        buf.writeVarInt(maxActions);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        order = EnumOrder.values()[buf.readByte()];
+        useMaxActions = buf.readBoolean();
+        maxActions = buf.readVarInt();
     }
 
     @Override

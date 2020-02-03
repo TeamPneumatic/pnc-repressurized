@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.BlockState;
@@ -16,6 +17,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -148,7 +150,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        if (filter != null) {
+        if (!filter.isEmpty()) {
             filter.write(tag);
         }
         tag.putBoolean("useMetadata", useItemDurability);
@@ -169,6 +171,30 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         useModSimilarity = tag.getBoolean("useModSimilarity");
         matchBlock = tag.getBoolean("matchBlock");
         variable = tag.getString("variable");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeItemStack(filter);
+        buf.writeBoolean(useItemDurability);
+        buf.writeBoolean(useNBT);
+        buf.writeBoolean(useItemTags);
+        buf.writeBoolean(useModSimilarity);
+        buf.writeBoolean(matchBlock);
+        buf.writeString(variable);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        filter = buf.readItemStack();
+        useItemDurability = buf.readBoolean();
+        useNBT = buf.readBoolean();
+        useItemTags = buf.readBoolean();
+        useModSimilarity = buf.readBoolean();
+        matchBlock = buf.readBoolean();
+        variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     public static boolean isItemValidForFilters(ItemStack item, List<ProgWidgetItemFilter> whitelist, List<ProgWidgetItemFilter> blacklist, BlockState blockState) {

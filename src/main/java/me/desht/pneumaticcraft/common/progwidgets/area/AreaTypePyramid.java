@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets.area;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -158,6 +159,20 @@ public class AreaTypePyramid extends AreaType {
         super.readFromNBT(tag);
         axis = EnumAxis.values()[tag.getByte("axis")];
         pyramidType = EnumAreaTypePyramid.values()[tag.getByte("pyramidType")];
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buffer) {
+        super.writeToPacket(buffer);
+        buffer.writeByte(axis.ordinal());
+        buffer.writeByte(pyramidType.ordinal());
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        axis = EnumAxis.values()[buf.readByte()];
+        pyramidType = EnumAreaTypePyramid.values()[buf.readByte()];
     }
 
     @Override

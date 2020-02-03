@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ICondition.Operator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -20,7 +21,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
 
     public final boolean[] checkingAxis = new boolean[3];
-    private Operator operator = Operator.HIGHER_THAN_EQUALS;
+    private Operator operator = Operator.GE;
 
     public ProgWidgetCoordinateCondition() {
         super(ModProgWidgets.CONDITION_COORDINATE.get());
@@ -81,6 +82,24 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
         checkingAxis[1] = tag.getBoolean("checkY");
         checkingAxis[2] = tag.getBoolean("checkZ");
         operator = Operator.values()[tag.getByte("operator")];
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(checkingAxis[0]);
+        buf.writeBoolean(checkingAxis[1]);
+        buf.writeBoolean(checkingAxis[2]);
+        buf.writeByte(operator.ordinal());
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        checkingAxis[0] = buf.readBoolean();
+        checkingAxis[1] = buf.readBoolean();
+        checkingAxis[2] = buf.readBoolean();
+        operator = Operator.values()[buf.readByte()];
     }
 
     @Override

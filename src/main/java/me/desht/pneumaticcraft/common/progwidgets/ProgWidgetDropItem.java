@@ -9,6 +9,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
@@ -52,6 +53,18 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         dropStraight = tag.getBoolean("dropStraight");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(dropStraight);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        dropStraight = buf.readBoolean();
     }
 
     @Override

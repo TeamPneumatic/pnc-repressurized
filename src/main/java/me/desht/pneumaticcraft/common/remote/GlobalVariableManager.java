@@ -21,6 +21,8 @@ import java.util.Set;
  * Manages global variables. These are prefixed with '#'.
  */
 public class GlobalVariableManager extends WorldSavedData {
+    public static final int MAX_VARIABLE_LEN = 64;
+
     private static final String DATA_KEY = "PneumaticCraftGlobalVariables";
     private static final GlobalVariableManager CLIENT_INSTANCE = new GlobalVariableManager();
 

@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
@@ -64,4 +65,17 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
         checkingForLiquids = tag.getBoolean("checkingForLiquids");
     }
 
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(checkingForAir);
+        buf.writeBoolean(checkingForLiquids);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        checkingForAir = buf.readBoolean();
+        checkingForLiquids = buf.readBoolean();
+    }
 }

@@ -9,6 +9,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -62,13 +63,27 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     @Override
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("fluid")));
+        fluid = tag.contains("fluid") ?
+                ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("fluid"))) :
+                Fluids.EMPTY;
     }
 
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        if (fluid != null) tag.putString("fluid", fluid.getRegistryName().toString());
+        if (fluid != Fluids.EMPTY) tag.putString("fluid", fluid.getRegistryName().toString());
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeFluidStack(new FluidStack(fluid, 1000));
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        fluid = buf.readFluidStack().getFluid();
     }
 
     @Override

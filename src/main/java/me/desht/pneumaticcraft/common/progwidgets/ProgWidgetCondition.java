@@ -8,6 +8,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
 
     private DroneAIBlockCondition evaluator;
     private boolean isAndFunction;
-    private ICondition.Operator operator = ICondition.Operator.HIGHER_THAN_EQUALS;
+    private ICondition.Operator operator = ICondition.Operator.GE;
 
     public ProgWidgetCondition(ProgWidgetType<?> type) {
         super(type);
@@ -124,6 +125,20 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         super.readFromNBT(tag);
         isAndFunction = tag.getBoolean("isAndFunction");
         operator = ICondition.Operator.values()[tag.getByte("operator")];
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(isAndFunction);
+        buf.writeByte(operator.ordinal());
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        isAndFunction = buf.readBoolean();
+        operator = Operator.values()[buf.readByte()];
     }
 
     @Override

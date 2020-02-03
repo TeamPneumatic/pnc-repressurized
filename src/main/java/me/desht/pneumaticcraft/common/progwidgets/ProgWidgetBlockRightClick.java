@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
 public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlockRightClicker {
@@ -46,4 +47,15 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
         sneaking = tag.getBoolean("sneaking");
     }
 
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(sneaking);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        sneaking = buf.readBoolean();
+    }
 }

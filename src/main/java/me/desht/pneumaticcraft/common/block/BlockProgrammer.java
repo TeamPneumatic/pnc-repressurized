@@ -1,10 +1,13 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -39,10 +42,10 @@ public class BlockProgrammer extends BlockPneumaticCraft {
 
     @Override
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (!world.isRemote) {
+        if (!world.isRemote && !player.isSneaking()) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityProgrammer) {
-                ((TileEntityProgrammer) te).sendDescriptionPacket();
+                NetworkHandler.sendToPlayer(new PacketProgrammerUpdate((TileEntityProgrammer) te), (ServerPlayerEntity) player);
             }
         }
         return super.onBlockActivated(state, world, pos, player, hand, brtr);

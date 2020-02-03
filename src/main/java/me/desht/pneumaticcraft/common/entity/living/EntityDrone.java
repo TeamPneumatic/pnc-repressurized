@@ -848,7 +848,7 @@ public class EntityDrone extends EntityDroneBase implements
     public void writeAdditional(CompoundNBT tag) {
         super.writeAdditional(tag);
 
-        TileEntityProgrammer.setWidgetsToNBT(progWidgets, tag);
+        TileEntityProgrammer.putWidgetsToNBT(progWidgets, tag);
         tag.putBoolean("naturallySpawned", naturallySpawned);
         tag.put("airHandler", getAirHandler().serializeNBT());
         tag.putFloat("propSpeed", propSpeed);

@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
@@ -57,6 +58,18 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         placeFluidBlocks = tag.getBoolean("placeFluidBlocks");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(placeFluidBlocks);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        placeFluidBlocks = buf.readBoolean();
     }
 
     @Override

@@ -95,7 +95,7 @@ public class ClientEventHandler {
     public static void onItemTooltip(ItemTooltipEvent event) {
         if (event.getItemStack().getItem() instanceof IProgrammable) {
             handleProgrammableTooltip(event);
-        } else if (event.getItemStack().getItem() instanceof BucketItem/* || event.getItemStack().getItem() instanceof UniversalBucket*/) {
+        } else if (event.getItemStack().getItem() instanceof BucketItem) {
             handleFluidContainerTooltip(event);
         }
     }
@@ -126,7 +126,9 @@ public class ClientEventHandler {
             }
             addedEntries.sort(Comparator.comparing(ITextComponent::getFormattedText));
             event.getToolTip().addAll(addedEntries);
-            event.getToolTip().add(xlate("gui.tooltip.programmable.requiredPieces", widgets.size()).applyTextStyles(TextFormatting.GREEN));
+            if (ClientUtils.hasShiftDown() && !widgets.isEmpty()) {
+                event.getToolTip().add(xlate("gui.tooltip.programmable.requiredPieces", widgets.size()).applyTextStyles(TextFormatting.GREEN));
+            }
         }
     }
 

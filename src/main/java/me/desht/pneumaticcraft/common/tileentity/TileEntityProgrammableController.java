@@ -86,7 +86,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private DroneAIManager aiManager;
     private DroneFakePlayer fakePlayer;
     private DroneItemHandler droneItemHandler;
-    private List<IProgWidget> progWidgets = new ArrayList<>();
+    private final List<IProgWidget> progWidgets = new ArrayList<>();
     private final int[] redstoneLevels = new int[6];
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
 
@@ -278,10 +278,10 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
             ItemStack stack = getStackInSlot(slot);
+            progWidgets.clear();
             if (!stack.isEmpty() && isProgrammableAndValidForDrone(TileEntityProgrammableController.this, stack)) {
-                progWidgets = TileEntityProgrammer.getProgWidgets(stack);
+                progWidgets.addAll(TileEntityProgrammer.getProgWidgets(stack));
             } else {
-                progWidgets.clear();
                 setDugBlock(null);
                 targetX = getPos().getX() + 0.5;
                 targetY = getPos().getY() + 0.6;

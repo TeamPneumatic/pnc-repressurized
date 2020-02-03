@@ -36,7 +36,7 @@ public class PacketSyncDroneEntityProgWidgets {
     }
 
     public void toBytes(PacketBuffer buf) {
-        buf.writeCompoundTag(TileEntityProgrammer.setWidgetsToNBT(progWidgets, new CompoundNBT()));
+        buf.writeCompoundTag(TileEntityProgrammer.putWidgetsToNBT(progWidgets, new CompoundNBT()));
         buf.writeInt(entityId);
     }
 

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -120,5 +121,25 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
         }
         useCount = tag.getBoolean("useCount");
         count = tag.getInt("count");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        for (int i = 0; i < 6; i++) {
+            buf.writeBoolean(accessingSides[i]);
+        }
+        buf.writeBoolean(useCount);
+        buf.writeVarInt(count);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        for (int i = 0; i < 6; i++) {
+            accessingSides[i] = buf.readBoolean();
+        }
+        useCount = buf.readBoolean();
+        count = buf.readVarInt();
     }
 }

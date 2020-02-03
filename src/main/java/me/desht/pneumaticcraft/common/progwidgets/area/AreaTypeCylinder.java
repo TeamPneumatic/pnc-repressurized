@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
@@ -140,6 +141,20 @@ public class AreaTypeCylinder extends AreaType {
         super.readFromNBT(tag);
         axis = EnumAxis.values()[tag.getByte("axis")];
         cylinderType = EnumCylinderType.values()[tag.getByte("cylinderType")];
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buffer) {
+        super.writeToPacket(buffer);
+        buffer.writeByte(axis.ordinal());
+        buffer.writeByte(cylinderType.ordinal());
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        axis = EnumAxis.values()[buf.readByte()];
+        cylinderType = EnumCylinderType.values()[buf.readByte()];
     }
 
     @Override

@@ -5,11 +5,12 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 
 public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase implements ICondition {
 
     private boolean isAndFunction;
-    private ICondition.Operator operator = ICondition.Operator.HIGHER_THAN_EQUALS;
+    private ICondition.Operator operator = ICondition.Operator.GE;
     private int requiredCount = 1;
 
     public ProgWidgetDroneCondition(ProgWidgetType<?> type) {
@@ -79,20 +80,25 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         isAndFunction = tag.getBoolean("isAndFunction");
-        operator = ICondition.Operator.values()[tag.getByte("operator")];
+        operator = Operator.values()[tag.getByte("operator")];
         requiredCount = tag.getInt("requiredCount");
     }
 
-//    @Override
-//    @SideOnly(Side.CLIENT)
-//    public Screen getOptionWindow(GuiProgrammer guiProgrammer) {
-//        return new GuiProgWidgetCondition(this, guiProgrammer) {
-//            @Override
-//            protected boolean isUsingAndOr() {
-//                return false;
-//            }
-//        };
-//    }
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(isAndFunction);
+        buf.writeByte(operator.ordinal());
+        buf.writeVarInt(requiredCount);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        isAndFunction = buf.readBoolean();
+        operator = Operator.values()[buf.readByte()];
+        requiredCount = buf.readVarInt();
+    }
 
     @Override
     public String getExtraStringInfo() {

@@ -5,9 +5,11 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -173,6 +175,20 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
         variable = tag.getString("variable");
         byte operatorValue = tag.contains("multiplyDivide") ? tag.getByte("multiplyDivide") : tag.getByte("operator");
         operator = EnumOperator.values()[operatorValue];
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeString(variable);
+        buf.writeByte(operator.ordinal());
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
+        operator = EnumOperator.values()[buf.readByte()];
     }
 
     public EnumOperator getOperator() {

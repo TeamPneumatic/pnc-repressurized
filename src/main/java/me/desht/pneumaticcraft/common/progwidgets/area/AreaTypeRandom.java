@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.HashSet;
@@ -63,6 +64,18 @@ public class AreaTypeRandom extends AreaType{
     public void readFromNBT(CompoundNBT tag){
         super.readFromNBT(tag);
         pickedAmount = tag.getInt("pickedAmount");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buffer) {
+        super.writeToPacket(buffer);
+        buffer.writeVarInt(pickedAmount);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        pickedAmount = buf.readVarInt();
     }
 
     @Override

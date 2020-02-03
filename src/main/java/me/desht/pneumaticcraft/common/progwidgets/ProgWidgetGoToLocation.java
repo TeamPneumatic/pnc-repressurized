@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -94,6 +95,18 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         doneWhenDeparting = tag.getBoolean("doneWhenDeparting");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(doneWhenDeparting);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        doneWhenDeparting = buf.readBoolean();
     }
 
     @Override

@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
+import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.StringTextComponent;
@@ -89,6 +90,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
         variableField = new WidgetComboBox(font, guiLeft + 90, guiTop + 60, 80, font.FONT_HEIGHT + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
+        variableField.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         variableField.setText(progWidget.getVariable());
 
         if (PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED) {

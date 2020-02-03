@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -297,6 +298,36 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     List<Entity> getEntitiesWithinArea(World world, Predicate<? super Entity> predicate) {
         AxisAlignedBB aabb = getAABB();
         return aabb != null ? world.getEntitiesInAABBexcluding(null, aabb, predicate) : new ArrayList<>();
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeInt(x1);
+        buf.writeInt(y1);
+        buf.writeInt(z1);
+        buf.writeInt(x2);
+        buf.writeInt(y2);
+        buf.writeInt(z2);
+        buf.writeString(typeToIDs.get(type.getClass()));
+        type.writeToPacket(buf);
+        buf.writeString(coord1Variable);
+        buf.writeString(coord2Variable);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        x1 = buf.readInt();
+        y1 = buf.readInt();
+        z1 = buf.readInt();
+        x2 = buf.readInt();
+        y2 = buf.readInt();
+        z2 = buf.readInt();
+        type = createType(buf.readString(32));
+        type.readFromPacket(buf);
+        coord1Variable = buf.readString(256);
+        coord2Variable = buf.readString(256);
     }
 
     @Override

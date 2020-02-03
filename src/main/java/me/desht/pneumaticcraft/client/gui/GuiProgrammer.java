@@ -289,11 +289,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         updateVisibleProgWidgets();
 
-        for (IProgWidget widget : te.progWidgets) {
-            if (!programmerUnit.isOutsideProgrammingArea(widget)) {
-                return;
-            }
-        }
+//        for (IProgWidget widget : te.progWidgets) {
+//            if (!programmerUnit.isOutsideProgrammingArea(widget)) {
+//                return;
+//            }
+//        }
         programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
     }
 
@@ -819,6 +819,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     showingWidgetProgress = maxProgress;
                     updateVisibleProgWidgets();
                 }
+            } else {
+                setFocused(filterField);
             }
         } else {
             showingWidgetProgress -= 60;
@@ -861,7 +863,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             if (required > 0) {
                 exportButtonTooltip.add(I18n.format("gui.tooltip.programmable.requiredPieces", r));
             } else if (required < 0) {
-                exportButtonTooltip.add(I18n.format("gui.tooltip.programmable.returnedPieces", r));
+                exportButtonTooltip.add(I18n.format("gui.tooltip.programmable.returnedPieces", -r));
             }
             if (required != 0 && minecraft.player.isCreative()) exportButtonTooltip.add("(Creative mode)");
         } else {
@@ -1045,7 +1047,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         te.zoomState = programmerUnit.getLastZoom();
         te.showFlow = showFlow.checked;
         te.showInfo = showInfo.checked;
-//        super.onClose();
     }
 
     public static IProgWidget findWidget(List<IProgWidget> widgets, Class<? extends IProgWidget> cls) {

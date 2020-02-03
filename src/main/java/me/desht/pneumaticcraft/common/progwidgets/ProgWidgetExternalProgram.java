@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
@@ -50,6 +51,18 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         shareVariables = tag.getBoolean("shareVariables");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(shareVariables);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        shareVariables = buf.readBoolean();
     }
 
     @Override

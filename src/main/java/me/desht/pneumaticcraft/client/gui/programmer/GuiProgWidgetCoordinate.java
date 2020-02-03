@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinate;
+import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -69,6 +70,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
 
         variableField = new WidgetComboBox(font, guiLeft + 90, guiTop + 112, 80, font.FONT_HEIGHT + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
+        variableField.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         addButton(variableField);
         variableField.setText(progWidget.getVariable());
         variableField.setEnabled(progWidget.isUsingVariable());

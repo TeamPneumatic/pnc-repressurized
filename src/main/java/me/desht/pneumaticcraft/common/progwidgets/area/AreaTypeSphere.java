@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets.area;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
@@ -68,7 +69,19 @@ public class AreaTypeSphere extends AreaType{
         super.writeToNBT(tag);
         tag.putByte("sphereType", (byte)sphereType.ordinal());
     }
-    
+
+    @Override
+    public void writeToPacket(PacketBuffer buffer) {
+        super.writeToPacket(buffer);
+        buffer.writeByte(sphereType.ordinal());
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        sphereType = EnumSphereType.values()[buf.readByte()];
+    }
+
     @Override
     public void readFromNBT(CompoundNBT tag){
         super.readFromNBT(tag);

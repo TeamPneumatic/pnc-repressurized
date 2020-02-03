@@ -1,53 +1,45 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.Unpooled;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Received on: SERVER
- * Sent by clientside programmer GUI to push the current program to the server-side TE
+ * Received on: BOTH
+ *
+ * Sent by server when programmer GUI is being opened
+ * Sent by client programmer GUI to push the current program to the server-side TE
  */
 public class PacketProgrammerUpdate extends LocationIntPacket implements ILargePayload {
-    private CompoundNBT progWidgets;
+    private List<IProgWidget> widgets;
+    private TileEntityProgrammer te;
 
     public PacketProgrammerUpdate() {
     }
 
-    // TODO: serializing to PacketBuffer would be way more efficient here
-
     public PacketProgrammerUpdate(TileEntityProgrammer te) {
         super(te.getPos());
-        progWidgets = new CompoundNBT();
-        te.writeProgWidgetsToNBT(progWidgets);
+        this.te = te;
     }
 
     public PacketProgrammerUpdate(PacketBuffer buffer) {
         super(buffer);
-        try {
-            progWidgets = buffer.readCompoundTag();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        widgets = TileEntityProgrammer.readWidgetsFromPacket(buffer);
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        try {
-            buffer.writeCompoundTag(progWidgets);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        te.writeProgWidgetsToPacket(buffer);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -56,22 +48,10 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
     }
 
     private void updateTE(PlayerEntity player) {
-        TileEntity te = player.world.getTileEntity(pos);
+        World world = player == null ? ClientUtils.getClientWorld() : player.world;
+        TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityProgrammer) {
-            ((TileEntityProgrammer) te).readProgWidgetsFromNBT(progWidgets);
-            ((TileEntityProgrammer) te).saveToHistory();
-            if (!te.getWorld().isRemote) {
-                updateOtherWatchingPlayers((TileEntityProgrammer) te, player);
-            }
-        }
-    }
-
-    private void updateOtherWatchingPlayers(TileEntityProgrammer te, PlayerEntity changingPlayer) {
-        List<ServerPlayerEntity> players = changingPlayer.world.getEntitiesWithinAABB(ServerPlayerEntity.class, new AxisAlignedBB(pos.add(-5, -5, -5), pos.add(6, 6, 6)));
-        for (ServerPlayerEntity player : players) {
-            if (player != changingPlayer) {
-                NetworkHandler.sendToPlayer(new PacketProgrammerUpdate(te), player);
-            }
+            ((TileEntityProgrammer) te).setProgWidgets(widgets, player);
         }
     }
 

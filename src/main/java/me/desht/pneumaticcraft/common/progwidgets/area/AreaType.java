@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets.area;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
@@ -14,12 +15,12 @@ public abstract class AreaType{
 
     public enum EnumAxis {
         X, Y, Z;
-    }
 
+
+    }
     public AreaType(String name){
         this.unlocalizedName = String.format("gui.progWidget.area.type.%s.name", name);
     }
-
     public String getName(){
         return I18n.format(unlocalizedName);
     }
@@ -43,11 +44,19 @@ public abstract class AreaType{
     public boolean isDeterministic(){
         return true;
     }
-    
-    public void writeToNBT(CompoundNBT tag){
-        
+
+    public void writeToPacket(PacketBuffer buffer) {
+
     }
-    
+
+    public void readFromPacket(PacketBuffer buf) {
+
+    }
+
+    public void writeToNBT(CompoundNBT tag){
+
+    }
+
     public void readFromNBT(CompoundNBT tag){
         
     }

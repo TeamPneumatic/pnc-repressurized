@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableSetWidget;
+import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import net.minecraft.client.resources.I18n;
 
 public class GuiProgWidgetForEach<W extends IProgWidget & IVariableSetWidget> extends GuiProgWidgetAreaShow<W> {
@@ -20,6 +21,7 @@ public class GuiProgWidgetForEach<W extends IProgWidget & IVariableSetWidget> ex
 
         variableField = new WidgetComboBox(font, guiLeft + 10, guiTop + 42, 160, font.FONT_HEIGHT + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
+        variableField.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         addButton(variableField);
         variableField.setText(progWidget.getVariable());
         variableField.setFocused2(true);

@@ -18,6 +18,7 @@ import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
@@ -308,5 +309,19 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
         super.readFromNBT(tag);
         useCount = tag.getBoolean("useCount");
         count = tag.getInt("count");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(useCount);
+        buf.writeVarInt(count);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        useCount = buf.readBoolean();
+        count = buf.readVarInt();
     }
 }

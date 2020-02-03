@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.Unpooled;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -47,7 +48,8 @@ public class PacketMultiHeader {
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 if (cl == null) cl = PacketMultiHeader.class.getClassLoader(); // fallback
                 Class<?> clazz = cl.loadClass(className);
-                payloadBuffers.put(ctx.get().getSender().getUniqueID(), new PayloadBuffer(clazz.asSubclass(ILargePayload.class), length));
+                UUID id = ctx.get().getSender() == null ? ClientUtils.getClientPlayer().getUniqueID() : ctx.get().getSender().getUniqueID();
+                payloadBuffers.put(id, new PayloadBuffer(clazz.asSubclass(ILargePayload.class), length));
             } catch (ClassNotFoundException|ClassCastException e) {
                 e.printStackTrace();
             }
@@ -56,7 +58,8 @@ public class PacketMultiHeader {
     }
 
     static void receivePayload(PlayerEntity player, byte[] payload) {
-        PayloadBuffer buffer = payloadBuffers.get(player.getUniqueID());
+        UUID id = player == null ? ClientUtils.getClientPlayer().getUniqueID() : player.getUniqueID();
+        PayloadBuffer buffer = payloadBuffers.get(id);
         if (buffer != null) {
             System.arraycopy(payload, 0, buffer.payload, buffer.offset, payload.length);
             buffer.offset += ILargePayload.MAX_PAYLOAD_SIZE;
@@ -66,7 +69,7 @@ public class PacketMultiHeader {
                     Constructor<? extends ILargePayload> ctor = buffer.clazz.getConstructor(PacketBuffer.class);
                     ILargePayload packet = ctor.newInstance(new PacketBuffer(Unpooled.wrappedBuffer(buffer.payload)));
                     packet.handleLargePayload(player);
-                    payloadBuffers.remove(player.getUniqueID());
+                    payloadBuffers.remove(id);
                 } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                     e.printStackTrace();
                 }

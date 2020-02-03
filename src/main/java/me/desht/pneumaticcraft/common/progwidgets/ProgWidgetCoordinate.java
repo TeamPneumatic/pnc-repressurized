@@ -5,10 +5,12 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -94,6 +96,26 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         z = tag.getInt("posZ");
         variable = tag.getString("variable");
         useVariable = tag.getBoolean("useVariable");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeInt(x);
+        buf.writeInt(y);
+        buf.writeInt(z);
+        buf.writeString(variable);
+        buf.writeBoolean(useVariable);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        x = buf.readInt();
+        y = buf.readInt();
+        z = buf.readInt();
+        variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
+        useVariable = buf.readBoolean();
     }
 
     @Override

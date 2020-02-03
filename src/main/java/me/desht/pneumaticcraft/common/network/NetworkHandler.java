@@ -200,11 +200,19 @@ public class NetworkHandler {
 	}
 
     public static void sendToAll(Object message) {
-        NETWORK.send(PacketDistributor.ALL.noArg(), message);
+		if (message instanceof ILargePayload) {
+			getSplitMessages((ILargePayload) message).forEach(part -> NETWORK.send(PacketDistributor.ALL.noArg(), part));
+		} else {
+			NETWORK.send(PacketDistributor.ALL.noArg(), message);
+		}
     }
 
     public static void sendToPlayer(Object message, ServerPlayerEntity player) {
-        NETWORK.send(PacketDistributor.PLAYER.with(() -> player), message);
+		if (message instanceof ILargePayload) {
+			getSplitMessages((ILargePayload) message).forEach(part -> NETWORK.send(PacketDistributor.PLAYER.with(() -> player), part));
+		} else {
+			NETWORK.send(PacketDistributor.PLAYER.with(() -> player), message);
+		}
     }
 
     public static void sendToAllAround(LocationIntPacket message, World world, double distance) {
@@ -220,11 +228,19 @@ public class NetworkHandler {
     }
 
     public static void sendToAllAround(Object message, PacketDistributor.TargetPoint point) {
-        NETWORK.send(PacketDistributor.NEAR.with(() -> point), message);
+		if (message instanceof ILargePayload) {
+			getSplitMessages((ILargePayload) message).forEach(part -> NETWORK.send(PacketDistributor.NEAR.with(() -> point), part));
+		} else {
+			NETWORK.send(PacketDistributor.NEAR.with(() -> point), message);
+		}
     }
 
     public static void sendToDimension(Object message, DimensionType type) {
-        NETWORK.send(PacketDistributor.DIMENSION.with(() -> type), message);
+		if (message instanceof ILargePayload) {
+			getSplitMessages((ILargePayload) message).forEach(part -> NETWORK.send(PacketDistributor.DIMENSION.with(() -> type), part));
+		} else {
+			NETWORK.send(PacketDistributor.DIMENSION.with(() -> type), message);
+		}
     }
 
     public static void sendToServer(Object message) {
@@ -253,6 +269,11 @@ public class NetworkHandler {
 		}
 	}
 
+	/**
+	 * Send a packet to the player, unless the player is local (i.e. player owner of the integrated server)
+	 * @param player the player
+	 * @param packet the packet to send
+	 */
 	public static void sendNonLocal(ServerPlayerEntity player, Object packet) {
 		if (player.server.isDedicatedServer() || !player.getGameProfile().getName().equals(player.server.getServerOwner())) {
 			sendToPlayer(packet, player);
@@ -260,9 +281,10 @@ public class NetworkHandler {
 	}
 
     private static List<Object> getSplitMessages(ILargePayload message) {
+		// see PacketMultiHeader#receivePayload for message reassembly
 		PacketBuffer buf = message.dumpToBuffer();
         byte[] bytes = buf.array();
-        if (bytes.length < MAX_PAYLOAD_SIZE) {
+        if (buf.writerIndex() < MAX_PAYLOAD_SIZE) {
             return Collections.singletonList(message);
         } else {
             List<Object> messages = new ArrayList<>();

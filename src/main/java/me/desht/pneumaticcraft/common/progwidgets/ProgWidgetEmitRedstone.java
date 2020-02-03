@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -121,6 +122,22 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
         super.readFromNBT(tag);
         for (int i = 0; i < 6; i++) {
             accessingSides[i] = tag.getBoolean(Direction.byIndex(i).name());
+        }
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        for (int i = 0; i < 6; i++) {
+            buf.writeBoolean(accessingSides[i]);
+        }
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        for (int i = 0; i < 6; i++) {
+            accessingSides[i] = buf.readBoolean();
         }
     }
 

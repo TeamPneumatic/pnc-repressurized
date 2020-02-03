@@ -7,6 +7,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.Validate;
@@ -124,6 +125,10 @@ public interface IProgWidget extends IProgWidgetBase {
     WidgetDifficulty getDifficulty();
 
     ProgWidgetType getType();
+
+    void readFromPacket(PacketBuffer buf);
+
+    void writeToPacket(PacketBuffer buf);
 
     enum WidgetDifficulty {
         EASY("easy"), MEDIUM("medium"), ADVANCED("advanced");

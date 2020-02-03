@@ -11,8 +11,10 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.item.ItemProgrammingPuzzle;
-import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableWidget;
@@ -26,10 +28,12 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -42,10 +46,7 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TileEntityProgrammer extends TileEntityTickableBase implements IGUITextFieldSensitive, INamedContainerProvider {
     private static final int PROGRAM_SLOT = 0;
@@ -64,11 +65,12 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public int zoomState;
     public boolean showInfo = true, showFlow = true;
     @GuiSynced
-    public boolean canUndo, canRedo;
+    public boolean canUndo;
+    @GuiSynced
+    public boolean canRedo;
     private ListNBT history = new ListNBT();//Used to undo/redo.
     private int historyIndex;
-    @DescSynced
-    @LazySynced
+    @GuiSynced
     public boolean recentreStartPiece = false;
 
     public TileEntityProgrammer() {
@@ -84,13 +86,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         inventory.deserializeNBT(tag.getCompound("Items"));
         history = tag.getList("history", 10);
         if (history.size() == 0) saveToHistory();
-    }
-
-    @Override
-    public void readFromPacket(CompoundNBT tag) {
-        super.readFromPacket(tag);
         readProgWidgetsFromNBT(tag);
-        recentreStartPiece = tag.getBoolean("recentreStartPiece");
     }
 
     @Override
@@ -104,24 +100,18 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         tag.putInt("redstoneMode", redstoneMode);
         tag.put("Items", inventory.serializeNBT());
         tag.put("history", history);
-        return tag;
-    }
-
-    @Override
-    public void writeToPacket(CompoundNBT tag) {
-        super.writeToPacket(tag);
         writeProgWidgetsToNBT(tag);
-        tag.putBoolean("recentreStartPiece", recentreStartPiece);
-        recentreStartPiece = false;
+        return tag;
     }
 
     public void readProgWidgetsFromNBT(CompoundNBT tag) {
         progWidgets.clear();
         getWidgetsFromNBT(tag, progWidgets);
+        updatePuzzleConnections(progWidgets);
     }
 
     public CompoundNBT writeProgWidgetsToNBT(CompoundNBT tag) {
-        setWidgetsToNBT(progWidgets, tag);
+        putWidgetsToNBT(progWidgets, tag);
         return tag;
     }
 
@@ -133,6 +123,34 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     @Override
     protected LazyOptional<IItemHandler> getInventoryCap() {
         return invCap;
+    }
+
+    public static List<IProgWidget> readWidgetsFromPacket(PacketBuffer buf) {
+        List<IProgWidget> widgets = new ArrayList<>();
+        int nWidgets = buf.readVarInt();
+        for (int i = 0; i < nWidgets; i++) {
+            ResourceLocation typeID = buf.readResourceLocation();
+            if (!ProgWidgetConfig.blacklistedPieces.contains(typeID)) {
+                ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
+                if (type != null) {
+                    IProgWidget newWidget = IProgWidget.create(type);
+                    newWidget.readFromPacket(buf);
+                    widgets.add(newWidget);
+                } else {
+                    Log.warning("unknown widget type found: " + typeID);
+                }
+            } else {
+                Log.warning("ignoring blacklisted widget type: " + typeID);
+            }
+        }
+        return widgets;
+    }
+
+    public void writeProgWidgetsToPacket(PacketBuffer buf) {
+        buf.writeVarInt(progWidgets.size());
+        for (IProgWidget progWidget : progWidgets) {
+            progWidget.writeToPacket(buf);
+        }
     }
 
     public static List<IProgWidget> getWidgetsFromNBT(CompoundNBT tag) {
@@ -159,10 +177,9 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                 Log.warning("ignoring blacklisted widget type: " + typeID);
             }
         }
-        updatePuzzleConnections(progWidgets);
     }
 
-    public static CompoundNBT setWidgetsToNBT(List<IProgWidget> widgets, CompoundNBT tag) {
+    public static CompoundNBT putWidgetsToNBT(List<IProgWidget> widgets, CompoundNBT tag) {
         ListNBT widgetTags = new ListNBT();
         for (IProgWidget widget : widgets) {
             CompoundNBT widgetTag = new CompoundNBT();
@@ -243,10 +260,10 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                 ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
                 CompoundNBT nbt = stack.isEmpty() ? null : stack.getTag();
                 if (nbt != null) {
-                    readProgWidgetsFromNBT(nbt);
-                    recentreStartPiece = true;
+                    List<IProgWidget> widgets = getProgWidgets(stack);
+                    setProgWidgets(widgets, null);
                 } else {
-                    progWidgets.clear();
+                    setProgWidgets(Collections.emptyList(), null);
                 }
                 break;
             case "export":
@@ -286,26 +303,48 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             if (player == null || !player.isCreative()) {
                 int required = getRequiredPuzzleCount();
                 if (required > 0) {
-                    if (!takePuzzleStacks(player, true)) return;
-                    takePuzzleStacks(player, false);
-                } else if (required < 0) {
-                    ItemStack stack = new ItemStack(ModItems.PROGRAMMING_PUZZLE.get());
-                    while (required < 0) {
-                        int size = Math.min(required, stack.getMaxStackSize());
-                        ItemHandlerHelper.giveItemToPlayer(player, ItemHandlerHelper.copyStackWithSize(stack, size));
-                        required += size;
+                    if (!takePuzzlePieces(player, true)) {
+                        NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.BLOCKS, getPos(), 1.0f, 1.5f, false), (ServerPlayerEntity) player);
+                        return;
                     }
+                    takePuzzlePieces(player, false);
+                } else if (required < 0) {
+                    returnPuzzlePieces(player, -required);
                 }
             }
             ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
-            if (!stack.hasTag()) {
-                stack.setTag(new CompoundNBT());
-            }
-            writeProgWidgetsToNBT(stack.getTag());
+            writeProgWidgetsToNBT(stack.getOrCreateTag());
             if (player != null) {
                 NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundCategory.BLOCKS, getPos(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
                 AdvancementTriggers.PROGRAM_DRONE.trigger((ServerPlayerEntity) player);
             }
+        }
+    }
+
+    private void returnPuzzlePieces(PlayerEntity player, int count) {
+        ItemStack stack = new ItemStack(ModItems.PROGRAMMING_PUZZLE.get());
+
+        // try to insert puzzle pieces into adjacent inventory(s)
+        for (Direction d : Direction.VALUES) {
+            TileEntity te = getCachedNeighbor(d);
+            if (te != null) {
+                while (count > 0) {
+                    int toInsert = Math.min(count, stack.getMaxStackSize());
+                    int inserted = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).map(h -> {
+                        ItemStack excess = ItemHandlerHelper.insertItem(h, ItemHandlerHelper.copyStackWithSize(stack, toInsert), false);
+                        return toInsert - excess.getCount();
+                    }).orElse(0);
+                    if (inserted == 0) break;
+                    count -= inserted;
+                }
+            }
+            if (count <= 0) return;
+        }
+        // give any remaining to player directly (excess dropped on ground)
+        while (count > 0) {
+            int size = Math.min(count, stack.getMaxStackSize());
+            ItemHandlerHelper.giveItemToPlayer(player, ItemHandlerHelper.copyStackWithSize(stack, size));
+            count -= size;
         }
     }
 
@@ -340,7 +379,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
      * @param simulate true if extraction should only be simulated
      * @return true if enough stacks to fulfill the current programming required are available
      */
-    private boolean takePuzzleStacks(@Nullable PlayerEntity player, final boolean simulate) {
+    private boolean takePuzzlePieces(@Nullable PlayerEntity player, final boolean simulate) {
         int required = getRequiredPuzzleCount();
         if (required <= 0) return true;
 
@@ -371,8 +410,8 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         int n = 0;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stackInSlot = handler.getStackInSlot(i);
-            if (stackInSlot.getItem() instanceof ItemProgrammingPuzzle) {
-                ItemStack extracted = handler.extractItem(i, Math.min(max, stackInSlot.getMaxStackSize()), simulate);
+            if (stackInSlot.getItem() == ModItems.PROGRAMMING_PUZZLE.get()) {
+                ItemStack extracted = handler.extractItem(i, Math.min(max - n, stackInSlot.getMaxStackSize()), simulate);
                 n += extracted.getCount();
                 if (n >= max) return n;
             }
@@ -402,16 +441,9 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             ((IAreaProvider) progWidget).getArea(area);
             AreaShowManager.getInstance().showArea(area, 0x9000FF00, this);
         }
-//        for (IProgWidget w : progWidgets) {
-//            if (w.getX() == widgetX && w.getY() == widgetY && w instanceof IAreaProvider) {
-//                Set<BlockPos> area = new HashSet<>();
-//                ((IAreaProvider) w).getArea(area);
-//                AreaShowManager.getInstance().showArea(area, 0x9000FF00, this);
-//            }
-//        }
     }
 
-    public void saveToHistory() {
+    private void saveToHistory() {
         CompoundNBT tag = new CompoundNBT();
         writeProgWidgetsToNBT(tag);
         if (history.size() == 0 || !history.getCompound(historyIndex).equals(tag)) {
@@ -419,7 +451,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                 history.remove(historyIndex + 1);
             }
             history.add(tag);
-            if (history.size() > 20) history.remove(0);//Only save up to 20 steps back.
+            if (history.size() > 20) history.remove(0); // Only save up to 20 steps back.
             historyIndex = history.size() - 1;
             updateUndoRedoState();
         }
@@ -430,6 +462,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             historyIndex--;
             readProgWidgetsFromNBT(history.getCompound(historyIndex));
             updateUndoRedoState();
+            syncToClient(null);
         }
     }
 
@@ -438,6 +471,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             historyIndex++;
             readProgWidgetsFromNBT(history.getCompound(historyIndex));
             updateUndoRedoState();
+            syncToClient(null);
         }
     }
 
@@ -455,6 +489,39 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerProgrammer(i, playerInventory, getPos());
+    }
+
+    /**
+     * Replace the prog widget list when an update packet is received or an import is done.
+     *
+     * @param widgets the new widget list
+     * @param player player who just made this change, may be null
+     */
+    public void setProgWidgets(List<IProgWidget> widgets, PlayerEntity player) {
+        progWidgets.clear();
+        progWidgets.addAll(widgets);
+        updatePuzzleConnections(progWidgets);
+        if (!world.isRemote) {
+            saveToHistory();
+            syncToClient(player);
+        }
+    }
+
+    /**
+     * Send a sync packet to all interested clients, which may or may not include the player who caused the sync
+     * (if the sync is due to a change they made, they don't need to be synced).
+     *
+     * @param updatingPlayer the player doing the updating; if non-null, sync packet will not be sent to this player
+     */
+    private void syncToClient(PlayerEntity updatingPlayer) {
+        if (!getWorld().isRemote) {
+            List<ServerPlayerEntity> players = world.getEntitiesWithinAABB(ServerPlayerEntity.class, new AxisAlignedBB(pos).grow(5));
+            for (ServerPlayerEntity player : players) {
+                if (player != updatingPlayer && player.openContainer instanceof ContainerProgrammer) {
+                    NetworkHandler.sendToPlayer(new PacketProgrammerUpdate(this), player);
+                }
+            }
+        }
     }
 
     private class ProgrammerItemHandler extends BaseItemStackHandler {

@@ -24,7 +24,7 @@ public interface ICondition {
     boolean evaluate(IDroneBase drone, IProgWidget widget);
 
     enum Operator {
-        EQUALS("="), HIGHER_THAN_EQUALS(">="), LESS_THAN_EQUALS("<=");
+        EQ("="), GE(">="), LE("<=");
 
         private final String symbol;
 
@@ -34,18 +34,18 @@ public interface ICondition {
 
         public boolean evaluate(int count1, int count2) {
             switch (this) {
-                case EQUALS: return count1 == count2;
-                case HIGHER_THAN_EQUALS: return count1 >= count2;
-                case LESS_THAN_EQUALS: return count1 <= count2;
+                case EQ: return count1 == count2;
+                case GE: return count1 >= count2;
+                case LE: return count1 <= count2;
             }
             return false;
         }
 
         public boolean evaluate(float count1, float count2) {
             switch (this) {
-                case EQUALS: return count1 == count2;
-                case HIGHER_THAN_EQUALS: return count1 >= count2;
-                case LESS_THAN_EQUALS: return count1 <= count2;
+                case EQ: return count1 == count2;
+                case GE: return count1 >= count2;
+                case LE: return count1 <= count2;
             }
             return false;
         }

@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemAssign;
+import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 
 public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetItemAssign> {
     private WidgetComboBox textfield;
@@ -18,7 +19,7 @@ public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetI
 
         textfield = new WidgetComboBox(font, guiLeft + 10, guiTop + 40, 160, 10);
         textfield.setElements(guiProgrammer.te.getAllVariables());
-        textfield.setMaxStringLength(1000);
+        textfield.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         textfield.setText(progWidget.getVariable());
         addButton(textfield);
 

@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -262,6 +263,19 @@ public abstract class ProgWidget implements IProgWidget {
     public void readFromNBT(CompoundNBT tag) {
         x = tag.getInt("x");
         y = tag.getInt("y");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        buf.writeResourceLocation(getTypeID());
+        buf.writeVarInt(x);
+        buf.writeVarInt(y);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        x = buf.readVarInt();
+        y = buf.readVarInt();
     }
 
     static List getConnectedWidgetList(IProgWidget widget, int parameterIndex) {
