@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetDropItem;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
@@ -19,14 +20,14 @@ public class GuiProgWidgetDropItem extends GuiProgWidgetImportExport<ProgWidgetD
         super.init();
 
         List<WidgetRadioButton> radioButtons = new ArrayList<>();
-        WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 4, guiTop + 80, 0xFF404040,
+        WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 8, guiTop + 82, 0xFF404040,
                 "Random", b -> progWidget.setDropStraight(false));
         radioButton.checked = !progWidget.dropStraight();
         addButton(radioButton);
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
 
-        WidgetRadioButton radioButton2 = new WidgetRadioButton(guiLeft + 4, guiTop + 94, 0xFF404040,
+        WidgetRadioButton radioButton2 = new WidgetRadioButton(guiLeft + 8, guiTop + 94, 0xFF404040,
                 "Straight", b -> progWidget.setDropStraight(true));
         radioButton2.checked = progWidget.dropStraight();
         addButton(radioButton2);
@@ -43,6 +44,6 @@ public class GuiProgWidgetDropItem extends GuiProgWidgetImportExport<ProgWidgetD
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
 
-        font.drawString(TextFormatting.UNDERLINE + "Drop method", guiLeft + 8, guiTop + 70, 0xFF404060);
+        font.drawString(TextFormatting.UNDERLINE + I18n.format("gui.progWidget.drop.dropMethod"), guiLeft + 8, guiTop + 70, 0xFF404060);
     }
 }

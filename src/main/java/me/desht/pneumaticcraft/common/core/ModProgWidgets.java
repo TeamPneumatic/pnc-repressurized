@@ -113,8 +113,8 @@ public class ModProgWidgets {
             = register("condition_entity", ProgWidgetEntityCondition::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetPressureCondition>> CONDITION_PRESSURE
             = register("condition_pressure", ProgWidgetPressureCondition::new);
-    public static final RegistryObject<ProgWidgetType<ProgWidgetItemCondition>> CONDTION_ITEM
-            = register("condtion_item", ProgWidgetItemCondition::new);
+    public static final RegistryObject<ProgWidgetType<ProgWidgetItemCondition>> CONDITION_ITEM
+            = register("condition_item", ProgWidgetItemCondition::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetDroneConditionItem>> DRONE_CONDITION_ITEM
             = register("drone_condition_item", ProgWidgetDroneConditionItem::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetDroneConditionFluid>> DRONE_CONDITION_LIQUID

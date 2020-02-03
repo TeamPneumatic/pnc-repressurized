@@ -1,6 +1,6 @@
 {
   "name": "Rename Widget",
-  "icon": "pneumaticcraft:textures/item/progwidgets/rename_piece.png",
+  "icon": "pneumaticcraft:textures/progwidgets/rename_piece.png",
   "category": "widget_other",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -16,7 +16,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/item/progwidgets/rename_piece.png"
+        "pneumaticcraft:textures/progwidgets/rename_piece.png"
       ],
       "text": "$(italic)Who are you again?/$"
     }

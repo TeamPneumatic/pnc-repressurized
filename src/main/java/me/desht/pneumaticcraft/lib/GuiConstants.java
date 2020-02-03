@@ -13,4 +13,6 @@ public class GuiConstants {
     public static final String TRIANGLE_RIGHT = "\u25b6";
     public static final String DEGREES = "\u00b0";
     public static final String INFINITY = "\u221E";
+    public static final String TRIANGLE_UP_LEFT = "\u25e4";
+    public static final String TRIANGLE_DOWN_RIGHT = "\u25e2";
 }

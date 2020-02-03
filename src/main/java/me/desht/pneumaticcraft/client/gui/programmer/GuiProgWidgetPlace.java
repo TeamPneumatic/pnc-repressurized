@@ -20,7 +20,7 @@ public class GuiProgWidgetPlace<P extends ProgWidgetPlace> extends GuiProgWidget
         super.init();
         List<WidgetRadioButton> radioButtons = new ArrayList<>();
         for (Direction dir : Direction.VALUES) {
-            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 4, guiTop + 80 + dir.getIndex() * 12, 0xFF404040,
+            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 8, guiTop + 80 + dir.getIndex() * 12, 0xFF404040,
                     PneumaticCraftUtils.getOrientationName(dir), b -> progWidget.placeDir = dir);
             radioButton.checked = progWidget.placeDir == dir;
             addButton(radioButton);

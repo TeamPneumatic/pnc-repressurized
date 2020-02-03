@@ -15,11 +15,10 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
-import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.progwidgets.IVariableWidget;
+import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -102,6 +101,53 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         tag.put("history", history);
         writeProgWidgetsToNBT(tag);
         return tag;
+    }
+
+    public void mergeProgWidgetsFromNBT(CompoundNBT tag) {
+        List<IProgWidget> mergedWidgets = getWidgetsFromNBT(tag);
+
+        if (!progWidgets.isEmpty() && !mergedWidgets.isEmpty()) {
+            // move merged widgets so they definitely don't overlap any existing widgets
+            Rectangle2d extents1 = getExtents(progWidgets);
+            Rectangle2d extents2 = getExtents(mergedWidgets);
+            for (IProgWidget w : mergedWidgets) {
+                w.setX(w.getX() - extents2.getX() + extents1.getX() + extents1.getWidth() + 10);
+                w.setY(w.getY() - extents2.getY() + extents1.getY());
+            }
+        }
+
+        mergedWidgets.forEach(w -> {
+            if (w instanceof ProgWidgetStart) {
+                // any start widget in the merged import is replaced with a label widget
+                ProgWidgetLabel lab = new ProgWidgetLabel();
+                lab.setX(w.getX());
+                lab.setY(w.getY());
+                progWidgets.add(lab);
+                ProgWidgetText text = new ProgWidgetText();
+                text.string = "Merge #" + world.getGameTime();
+                text.setX(lab.getX() + lab.getWidth() / 2);
+                text.setY(lab.getY());
+                progWidgets.add(text);
+            } else {
+                progWidgets.add(w);
+            }
+        });
+
+        updatePuzzleConnections(progWidgets);
+    }
+
+    private Rectangle2d getExtents(List<IProgWidget> widgets) {
+        int minX = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        for (IProgWidget w : widgets) {
+            minX = Math.min(minX, w.getX());
+            maxX = Math.max(maxX, w.getX() + w.getWidth());
+            minY = Math.min(minY, w.getY());
+            maxY = Math.max(maxY, w.getY() + w.getHeight());
+        }
+        return new Rectangle2d(minX, minY, maxX - minX, maxY - minY);
     }
 
     public void readProgWidgetsFromNBT(CompoundNBT tag) {

@@ -1,6 +1,6 @@
 {
   "name": "Right Click Block Widget",
-  "icon": "pneumaticcraft:textures/item/progwidgets/block_right_click_piece.png",
+  "icon": "pneumaticcraft:textures/progwidgets/block_right_click_piece.png",
   "category": "widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -15,7 +15,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/item/progwidgets/block_right_click_piece.png"
+        "pneumaticcraft:textures/progwidgets/block_right_click_piece.png"
       ],
       "text": "$(italic)Right-click Block Widget/$"
     }

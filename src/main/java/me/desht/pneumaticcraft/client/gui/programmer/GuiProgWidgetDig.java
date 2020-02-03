@@ -15,7 +15,7 @@ public class GuiProgWidgetDig extends GuiProgWidgetDigAndPlace<ProgWidgetDig>{
     public void init() {
         super.init();
 
-        WidgetCheckBox requiresDiggingTool = new WidgetCheckBox(guiLeft + 4, guiTop + 85, 0xFF404040,
+        WidgetCheckBox requiresDiggingTool = new WidgetCheckBox(guiLeft + 8, guiTop + 85, 0xFF404040,
                 I18n.format("gui.progWidget.dig.requiresDiggingTool"), b -> progWidget.setRequiresTool(b.checked));
         requiresDiggingTool.setTooltip("gui.progWidget.dig.requiresDiggingTool.tooltip");
         requiresDiggingTool.checked = progWidget.requiresTool();

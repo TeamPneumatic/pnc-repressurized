@@ -3,13 +3,11 @@ package me.desht.pneumaticcraft.client.gui;
 import com.google.common.base.CaseFormat;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType;
-import me.desht.pneumaticcraft.common.util.JsonToNBTConverter;
-import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
+import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter.EnumOldAreaType;
-import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
-import me.desht.pneumaticcraft.common.util.PastebinHandler;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -27,10 +25,13 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     private WidgetTextField usernameBox, passwordBox;
     private WidgetTextField pastebinBox;
     private final String pastingString;
-    CompoundNBT outputTag;
     private final Screen parentScreen;
-    private String statusMessage;
+    private String statusMessage = "";
+    private String lastMessage = "";
+    private int messageTimer;
     private EnumState state = EnumState.NONE;
+    CompoundNBT outputTag;
+    boolean shouldMerge;
 
     private enum EnumState {
         NONE, GETTING, PUTTING, LOGIN, LOGOUT
@@ -98,6 +99,12 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
         retrieveFromClipboard.setTooltipText(I18n.format("gui.pastebin.button.loadFromClipboard"));
         addButton(retrieveFromClipboard);
 
+        WidgetCheckBox cb = new WidgetCheckBox(0, guiTop + 115, 0xFF404040, I18n.format("gui.pastebin.merge"),
+                b -> shouldMerge = b.checked);
+        cb.x = guiLeft + (170 - cb.getWidth());
+        cb.setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.pastebin.merge.tooltip")));
+        addButton(cb);
+
         addLabel(I18n.format("gui.pastebin.pastebinLink"), guiLeft + 10, guiTop + 120);
     }
 
@@ -162,6 +169,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
                         if (pastebinText == null) pastebinText = "<ERROR>";
                         if (pastebinText.contains("pastebin.com")) {
                             pastebinBox.setText(pastebinText);
+                            setTempMessage(I18n.format("gui.pastebin.uploadedToPastebin"));
                         } else {
                             statusMessage = pastebinText;
                         }
@@ -175,6 +183,14 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             }
             state = EnumState.NONE;
         }
+        if (messageTimer > 0 && --messageTimer <= 0) {
+            lastMessage = "";
+        }
+    }
+
+    private void setTempMessage(String msg) {
+        lastMessage = msg;
+        messageTimer = 60;
     }
 
     private void readFromString(String string) {
@@ -183,6 +199,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             if (outputTag.contains("widgets")) {
                 doLegacyConversion(outputTag);
             }
+            setTempMessage(I18n.format("gui.pastebin.retrievedFromPastebin"));
         } catch (Exception e) {
             e.printStackTrace();
             statusMessage = I18n.format("gui.pastebin.invalidFormattedPastebin");
@@ -224,8 +241,10 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
 
         super.render(x, y, partialTicks);
 
-        if (statusMessage != null && !statusMessage.isEmpty()) {
-            font.drawString(statusMessage, guiLeft + 5, guiTop + 5, 0xFFFF0000);
+        if (!statusMessage.isEmpty()) {
+            font.drawStringWithShadow(statusMessage, guiLeft + 5, guiTop + 5, 0xFFFFFF00);
+        } else if (!lastMessage.isEmpty()) {
+            font.drawStringWithShadow(lastMessage, guiLeft + 5, guiTop + 5, 0xFF00FF00);
         }
     }
 

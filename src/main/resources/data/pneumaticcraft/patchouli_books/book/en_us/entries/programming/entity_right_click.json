@@ -1,6 +1,6 @@
 {
   "name": "Right Click Entity Widget",
-  "icon": "pneumaticcraft:textures/item/progwidgets/entity_right_click_piece.png",
+  "icon": "pneumaticcraft:textures/progwidgets/entity_right_click_piece.png",
   "category": "widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -11,7 +11,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/item/progwidgets/entity_right_click_piece.png"
+        "pneumaticcraft:textures/progwidgets/entity_right_click_piece.png"
       ],
       "text": "$(italic)Right-click Entity Widget/$"
     }

@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -31,7 +32,6 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -39,6 +39,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -50,8 +51,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer,TileEntityProgrammer> {
-    private final boolean[] mouseButtons = new boolean[5];
-
     private GuiPastebin pastebinGui;
 
     private WidgetButtonExtended importButton;
@@ -64,15 +63,17 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private WidgetButtonExtended undoButton, redoButton;
     private WidgetButtonExtended convertToRelativeButton;
 
+    // those widgets currently visible in the tray
     private final List<IProgWidget> visibleSpawnWidgets = new ArrayList<>();
+    // widgets being deleted (visual only)
+    private final List<RemovingWidget> removingWidgets = new ArrayList<>();
     private BitSet filteredSpawnWidgets;
 
     private GuiUnitProgrammer programmerUnit;
-    private boolean wasClicking;
     private IProgWidget draggingWidget;
     private int lastMouseX, lastMouseY;
-    private int dragMouseStartX, dragMouseStartY;
-    private int dragWidgetStartX, dragWidgetStartY;
+    private double dragMouseStartX, dragMouseStartY;
+    private double dragWidgetStartX, dragWidgetStartY;
     private static final int FAULT_MARGIN = 4;
     private int widgetPage;
     private int maxPage;
@@ -90,10 +91,127 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     public GuiProgrammer(ContainerProgrammer container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
-        
+
         hiRes = container.isHiRes();
         xSize = hiRes ? 700 : 350;
         ySize = hiRes ? 512 : 256;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        if (pastebinGui != null && pastebinGui.outputTag != null) {
+            if (pastebinGui.shouldMerge) {
+                te.mergeProgWidgetsFromNBT(pastebinGui.outputTag);
+            } else {
+                te.readProgWidgetsFromNBT(pastebinGui.outputTag);
+            }
+            pastebinGui = null;
+            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            te.recentreStartPiece = true;
+        }
+
+        if (programmerUnit != null) {
+            te.translatedX = programmerUnit.getTranslatedX();
+            te.translatedY = programmerUnit.getTranslatedY();
+            te.zoomState = programmerUnit.getLastZoom();
+        }
+
+        Rectangle2d bounds = getProgrammerBounds();
+        programmerUnit = new GuiUnitProgrammer(te.progWidgets, font, guiLeft, guiTop, width, height,
+                bounds, te.translatedX, te.translatedY, te.zoomState);
+        addButton(programmerUnit.getScrollBar());
+
+        int xStart = (width - xSize) / 2;
+        int yStart = (height - ySize) / 2;
+
+        // right and bottom edges of the programming area
+        int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
+        int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight() + 3; // 171 or 427
+
+        importButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 3, 20, 15, GuiConstants.ARROW_LEFT).withTag("import");
+        importButton.setTooltipText("Import program");
+        addButton(importButton);
+
+        exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, GuiConstants.ARROW_RIGHT).withTag("export");
+        addButton(exportButton);
+
+        addButton(new WidgetButtonExtended(xStart + xRight - 3, yStart + yBottom, 13, 10, GuiConstants.TRIANGLE_LEFT, b -> adjustPage(-1)));
+        addButton(new WidgetButtonExtended(xStart + xRight + 34, yStart + yBottom, 13, 10, GuiConstants.TRIANGLE_RIGHT, b -> adjustPage(1)));
+
+        allWidgetsButton = new WidgetButtonExtended(xStart + xRight + 22, yStart + yBottom - 16, 10, 10, GuiConstants.TRIANGLE_UP_LEFT, b -> toggleShowWidgets());
+        allWidgetsButton.setTooltipText(I18n.format("gui.programmer.button.openPanel.tooltip"));
+        addButton(allWidgetsButton);
+
+        difficultyButtons = new ArrayList<>();
+        for (WidgetDifficulty difficulty : WidgetDifficulty.values()) {
+            DifficultyButton dButton = new DifficultyButton(xStart + xRight - 36, yStart + yBottom + 29 + difficulty.ordinal() * 12,
+                    0xFF404040, difficulty, b -> updateDifficulty(difficulty));
+            dButton.checked = difficulty == PNCConfig.Client.programmerDifficulty;
+            addButton(dButton);
+            difficultyButtons.add(dButton);
+            dButton.otherChoices = difficultyButtons;
+            dButton.setTooltip("gui.programmer.difficulty." + difficulty.toString().toLowerCase() + ".tooltip");
+        }
+
+        addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 4, 87, 20,
+                I18n.format("gui.programmer.button.showStart"), b -> gotoStart())
+                .setTooltipText(I18n.format("gui.programmer.button.showStart.tooltip")));
+        addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 26, 87, 20,
+                I18n.format("gui.programmer.button.showLatest"), b -> gotoLatest())
+                .setTooltipText(I18n.format("gui.programmer.button.showLatest.tooltip")));
+        addButton(showInfo = new WidgetCheckBox(xStart + 5, yStart + yBottom + 49, 0xFF404040,
+                "gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
+        addButton(showFlow = new WidgetCheckBox(xStart + 5, yStart + yBottom + 61, 0xFF404040,
+                "gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
+
+        WidgetButtonExtended pastebinButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 44, 20, 20, "",
+                b -> pastebin());
+        pastebinButton.setTooltipText(I18n.format("gui.remote.button.pastebinButton"));
+        pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
+        addButton(pastebinButton);
+
+        undoButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 2, 20, 20, "").withTag("undo");
+        redoButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 23, 20, 20, "").withTag("redo");
+        WidgetButtonExtended clearAllButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 65, 20, 20, "", b -> clear());
+        convertToRelativeButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 86, 20, 20, "Rel", b -> convertToRelative());
+
+        undoButton.setRenderedIcon(Textures.GUI_UNDO_ICON_LOCATION);
+        redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);
+        clearAllButton.setRenderedIcon(Textures.GUI_DELETE_ICON_LOCATION);
+
+        undoButton.setTooltipText(I18n.format("gui.programmer.button.undoButton.tooltip"));
+        redoButton.setTooltipText(I18n.format("gui.programmer.button.redoButton.tooltip"));
+        clearAllButton.setTooltipText(I18n.format("gui.programmer.button.clearAllButton.tooltip"));
+
+        addButton(undoButton);
+        addButton(redoButton);
+        addButton(clearAllButton);
+        addButton(convertToRelativeButton);
+
+        addLabel(title.getFormattedText(), guiLeft + 7, guiTop + 5, 0xFF404040);
+
+        nameField = new WidgetTextField(font, guiLeft + xRight - 99, guiTop + 5, 98, font.FONT_HEIGHT);
+        nameField.setResponder(s -> updateDroneName());
+        addButton(nameField);
+
+        filterField = new FilterTextField(font, guiLeft + 78, guiTop + 26, 100, font.FONT_HEIGHT);
+        filterField.setResponder(s -> filterSpawnWidgets());
+
+        addButton(filterField);
+
+        String name = I18n.format("gui.programmer.name");
+        addLabel(name, guiLeft + xRight - 102 - font.getStringWidth(name), guiTop + 5, 0xFF404040);
+
+        updateVisibleProgWidgets();
+
+        for (IProgWidget widget : te.progWidgets) {
+            if (!programmerUnit.isOutsideProgrammingArea(widget)) {
+                return;
+            }
+        }
+        programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
     }
 
     public static void onCloseFromContainer() {
@@ -182,121 +300,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         return false;
     }
 
-    @Override
-    public void init() {
-        boolean pastebinLoaded = false;
-
-        if (pastebinGui != null && pastebinGui.outputTag != null) {
-            te.readProgWidgetsFromNBT(pastebinGui.outputTag);
-            pastebinGui = null;
-            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
-            pastebinLoaded = true;
-        }
-
-        super.init();
-
-        if (programmerUnit != null) {
-            te.translatedX = programmerUnit.getTranslatedX();
-            te.translatedY = programmerUnit.getTranslatedY();
-            te.zoomState = programmerUnit.getLastZoom();
-            if (pastebinLoaded) {
-                programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
-            }
-        }
-
-        Rectangle2d bounds = getProgrammerBounds();
-        programmerUnit = new GuiUnitProgrammer(te.progWidgets, font, guiLeft, guiTop, width, height,
-                bounds, te.translatedX, te.translatedY, te.zoomState);
-        addButton(programmerUnit.getScrollBar());
-
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-
-        // right and bottom edges of the programming area
-        int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
-        int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight() + 3; // 171 or 427
-
-        importButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 3, 20, 15, GuiConstants.ARROW_LEFT).withTag("import");
-        importButton.setTooltipText("Import program");
-        addButton(importButton);
-
-        exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, GuiConstants.ARROW_RIGHT).withTag("export");
-        addButton(exportButton);
-
-        addButton(new Button(xStart + xRight - 3, yStart + yBottom, 10, 10, GuiConstants.TRIANGLE_LEFT,
-                b -> adjustPage(-1)));
-        addButton(new Button(xStart + xRight + 38, yStart + yBottom, 10, 10, GuiConstants.TRIANGLE_RIGHT,
-                b -> adjustPage(1)));
-
-        allWidgetsButton = new WidgetButtonExtended(xStart + xRight + 22, yStart + yBottom - 16, 10, 10, "\u25e4",
-                b -> toggleShowWidgets());
-        allWidgetsButton.setTooltipText(I18n.format("gui.programmer.button.openPanel.tooltip"));
-        addButton(allWidgetsButton);
-
-        difficultyButtons = new ArrayList<>();
-        for (WidgetDifficulty difficulty : WidgetDifficulty.values()) {
-            DifficultyButton dButton = new DifficultyButton(xStart + xRight - 36, yStart + yBottom + 29 + difficulty.ordinal() * 12,
-                    0xFF404040, difficulty, b -> updateDifficulty(difficulty));
-            dButton.checked = difficulty == PNCConfig.Client.programmerDifficulty;
-            addButton(dButton);
-            difficultyButtons.add(dButton);
-            dButton.otherChoices = difficultyButtons;
-            dButton.setTooltip("gui.programmer.difficulty." + difficulty.toString().toLowerCase() + ".tooltip");
-        }
-
-        addButton(new Button(xStart + 5, yStart + yBottom + 4, 87, 20, I18n.format("gui.programmer.button.showStart"), b -> gotoStart()));
-        addButton(new Button(xStart + 5, yStart + yBottom + 26, 87, 20, I18n.format("gui.programmer.button.showLatest"), b -> gotoLatest()));
-        addButton(showInfo = new WidgetCheckBox(xStart + 5, yStart + yBottom + 49, 0xFF404040, "gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
-        addButton(showFlow = new WidgetCheckBox(xStart + 5, yStart + yBottom + 61, 0xFF404040, "gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
-
-        WidgetButtonExtended pastebinButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 44, 20, 20, "",
-                b -> pastebin());
-        pastebinButton.setTooltipText(I18n.format("gui.remote.button.pastebinButton"));
-        pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
-        addButton(pastebinButton);
-
-        undoButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 2, 20, 20, "").withTag("undo");
-        redoButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 23, 20, 20, "").withTag("redo");
-        WidgetButtonExtended clearAllButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 65, 20, 20, "", b -> clear());
-        convertToRelativeButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 86, 20, 20, "Rel", b -> convertToRelative());
-
-        undoButton.setRenderedIcon(Textures.GUI_UNDO_ICON_LOCATION);
-        redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);
-        clearAllButton.setRenderedIcon(Textures.GUI_DELETE_ICON_LOCATION);
-
-        undoButton.setTooltipText(I18n.format("gui.programmer.button.undoButton.tooltip"));
-        redoButton.setTooltipText(I18n.format("gui.programmer.button.redoButton.tooltip"));
-        clearAllButton.setTooltipText(I18n.format("gui.programmer.button.clearAllButton.tooltip"));
-
-        addButton(undoButton);
-        addButton(redoButton);
-        addButton(clearAllButton);
-        addButton(convertToRelativeButton);
-
-        addLabel(title.getFormattedText(), guiLeft + 7, guiTop + 5, 0xFF404040);
-
-        nameField = new WidgetTextField(font, guiLeft + xRight - 99, guiTop + 5, 98, font.FONT_HEIGHT);
-        nameField.setResponder(s -> updateDroneName());
-        addButton(nameField);
-
-        filterField = new FilterTextField(font, guiLeft + 78, guiTop + 26, 100, font.FONT_HEIGHT);
-        filterField.setResponder(s -> filterSpawnWidgets());
-
-        addButton(filterField);
-
-        String name = I18n.format("gui.programmer.name");
-        addLabel(name, guiLeft + xRight - 102 - font.getStringWidth(name), guiTop + 5, 0xFF404040);
-
-        updateVisibleProgWidgets();
-
-//        for (IProgWidget widget : te.progWidgets) {
-//            if (!programmerUnit.isOutsideProgrammingArea(widget)) {
-//                return;
-//            }
-//        }
-        programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
-    }
-
     private void updateDroneName() {
         ItemStack stack = te.getItemInProgrammingSlot();
         if (stack != ItemStack.EMPTY && !stack.getDisplayName().getUnformattedComponentText().equals(nameField.getText())) {
@@ -319,7 +322,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     private void toggleShowWidgets() {
         showingAllWidgets = !showingAllWidgets;
-        allWidgetsButton.setMessage(showingAllWidgets ? "\u25e2" : "\u25e4");
+        allWidgetsButton.setMessage(showingAllWidgets ? GuiConstants.TRIANGLE_DOWN_RIGHT : GuiConstants.TRIANGLE_UP_LEFT);
         updateVisibleProgWidgets();
         filterField.setFocused2(showingAllWidgets);
     }
@@ -346,6 +349,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     private void clear() {
+        te.progWidgets.forEach(w -> removingWidgets.add(new RemovingWidget(w)));
         te.progWidgets.clear();
         NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
     }
@@ -406,100 +410,28 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) return super.keyPressed(keyCode, scanCode, modifiers);
-
-        if (nameField.isFocused()) {
-            return nameField.keyPressed(keyCode, scanCode, modifiers);
-        } else if (filterField.isFocused() && keyCode != GLFW.GLFW_KEY_TAB) {
-            return filterField.keyPressed(keyCode, scanCode, modifiers);
-        }
-
-        switch (keyCode) {
-            case GLFW.GLFW_KEY_I:
-                showWidgetDocs();
-                return true;
-            case GLFW.GLFW_KEY_R:
-                if (exportButton.isHovered()) {
-                    NetworkHandler.sendToServer(new PacketGuiButton("redstone"));
-                }
-                return true;
-            case GLFW.GLFW_KEY_SPACE:
-            case GLFW.GLFW_KEY_TAB:
-                toggleShowWidgets();
-                return true;
-            case GLFW.GLFW_KEY_DELETE:
-                IProgWidget widget = programmerUnit.getHoveredWidget(lastMouseX, lastMouseY);
-                if (widget != null) {
-                    te.progWidgets.remove(widget);
-                    NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
-                }
-                return true;
-            case GLFW.GLFW_KEY_Z:
-                NetworkHandler.sendToServer(new PacketGuiButton("undo"));
-                return true;
-            case GLFW.GLFW_KEY_Y:
-                NetworkHandler.sendToServer(new PacketGuiButton("redo"));
-                return true;
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    private void showWidgetDocs() {
-        int x = lastMouseX;
-        int y = lastMouseY;
-
-        IProgWidget hoveredWidget = programmerUnit.getHoveredWidget(x, y);
-        ThirdPartyManager.instance().docsProvider.showWidgetDocs(getWidgetId(hoveredWidget));
-        for (IProgWidget widget : visibleSpawnWidgets) {
-            if (widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
-                ThirdPartyManager.instance().docsProvider.showWidgetDocs(getWidgetId(widget));
-                break;
-            }
-        }
-    }
-
-    private String getWidgetId(IProgWidget w) {
-        if (w == null) return null;
-        return w.getTypeID().getPath();
-//        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, w.getWidgetString());
-    }
-
-    @Override
-    protected boolean shouldDrawBackground() {
-        return false;
-    }
-
-    @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         renderBackground();
         bindGuiTexture();
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
         blit(xStart, yStart, 0, 0, xSize, ySize, xSize, ySize);
-
-        programmerUnit.getScrollBar().visible = showingWidgetProgress == 0;
         super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
-        if (showingWidgetProgress > 0) programmerUnit.getScrollBar().setCurrentState(programmerUnit.getLastZoom());
 
-        programmerUnit.render(mouseX, mouseY, showFlow.checked, showInfo.checked && showingWidgetProgress == 0, draggingWidget == null);
+        programmerUnit.render(mouseX, mouseY, showFlow.checked, showInfo.checked && showingWidgetProgress == 0);
 
-        int origX = mouseX;
-        int origY = mouseY;
-        mouseX -= programmerUnit.getTranslatedX();
-        mouseY -= programmerUnit.getTranslatedY();
-        float scale = programmerUnit.getScale();
-        mouseX = (int) (mouseX / scale);
-        mouseY = (int) (mouseY / scale);
-
+        // draw expanding widget tray
         if (showingWidgetProgress > 0) {
             int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
             int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight(); // 171 or 427
 
             GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             bindGuiTexture();
-            int width = oldShowingWidgetProgress + (int) ((showingWidgetProgress - oldShowingWidgetProgress) * partialTicks);
+            int width = (int)MathHelper.lerp(partialTicks, (float)oldShowingWidgetProgress, (float)showingWidgetProgress);
             for (int i = 0; i < width; i++) {
                 blit(xStart + xRight + 21 - i, yStart + 36, xRight + 24, 36, 1, yBottom - 35, xSize, ySize);
             }
@@ -507,6 +439,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
             if (showingAllWidgets && draggingWidget != null) toggleShowWidgets();
         }
+        // draw widgets in the widget tray
         GlStateManager.enableTexture();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -525,6 +458,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
         GlStateManager.disableBlend();
 
+        // draw the widget currently being dragged, if any
+        float scale = programmerUnit.getScale();
         GlStateManager.pushMatrix();
         GlStateManager.translated(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
         GlStateManager.scaled(scale, scale, 1);
@@ -537,120 +472,115 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
         GlStateManager.popMatrix();
 
-        boolean isLeftClicking = mouseButtons[0];
-        boolean isMiddleClicking = mouseButtons[2];
+        if (!removingWidgets.isEmpty()) drawRemovingWidgets();
+    }
 
-        if (draggingWidget != null) {
-            setConnectingWidgetsToXY(draggingWidget, mouseX - dragMouseStartX + dragWidgetStartX - guiLeft, mouseY - dragMouseStartY + dragWidgetStartY - guiTop);
-        }
-
-        if (isLeftClicking && !wasClicking) {
-            for (IProgWidget widget : visibleSpawnWidgets) {
-                if (origX >= widget.getX() + guiLeft && origY >= widget.getY() + guiTop && origX <= widget.getX() + guiLeft + widget.getWidth() / 2 && origY <= widget.getY() + guiTop + widget.getHeight() / 2) {
-                    draggingWidget = widget.copy();
-                    te.progWidgets.add(draggingWidget);
-                    dragMouseStartX = mouseX - (int) (guiLeft / scale);
-                    dragMouseStartY = mouseY - (int) (guiTop / scale);
-                    dragWidgetStartX = (int) ((widget.getX() - programmerUnit.getTranslatedX()) / scale);
-                    dragWidgetStartY = (int) ((widget.getY() - programmerUnit.getTranslatedY()) / scale);
-                    break;
-                }
-            }
-
-            // create area widgets straight from GPS Area Tools
-            ItemStack heldItem = minecraft.player.inventory.getItemStack();
-            ProgWidgetArea areaToolWidget = heldItem.getItem() instanceof ItemGPSAreaTool ? ItemGPSAreaTool.getArea(heldItem) : null;
-
-            if (draggingWidget == null && showingWidgetProgress == 0) {
-                IProgWidget widget = programmerUnit.getHoveredWidget(origX, origY);
-                if (widget != null) {
-                    draggingWidget = widget;
-                    dragMouseStartX = mouseX - guiLeft;
-                    dragMouseStartY = mouseY - guiTop;
-                    dragWidgetStartX = widget.getX();
-                    dragWidgetStartY = widget.getY();
-
-                    if (areaToolWidget != null && widget instanceof ProgWidgetArea) {
-                        CompoundNBT tag = new CompoundNBT();
-                        areaToolWidget.writeToNBT(tag);
-                        widget.readFromNBT(tag);
-                    } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
-                        if (widget instanceof ProgWidgetCoordinate) {
-                            ((ProgWidgetCoordinate) widget).loadFromGPSTool(heldItem);
-                        } else if (widget instanceof ProgWidgetArea) {
-                            BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
-                            String var = ItemGPSTool.getVariable(heldItem);
-                            if (pos != null) ((ProgWidgetArea) widget).setP1(pos);
-                            ((ProgWidgetArea) widget).setP2(BlockPos.ZERO);
-                            ((ProgWidgetArea) widget).setCoord1Variable(var);
-                            ((ProgWidgetArea) widget).setCoord2Variable("");
-                        }
-                    }
-                }
-            }
-
-            // Create a new widget from a GPS Area tool when nothing was selected
-            if (draggingWidget == null) {
-                if (areaToolWidget != null) {
-                    draggingWidget = areaToolWidget;
-                } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
-                    if (Screen.hasShiftDown()) {
-                        BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
-                        ProgWidgetArea areaWidget = ProgWidgetArea.fromPositions(pos, BlockPos.ZERO);
-                        String var = ItemGPSTool.getVariable(heldItem);
-                        if (!var.isEmpty()) areaWidget.setCoord1Variable(var);
-                        draggingWidget = areaWidget;
-                    } else {
-                        ProgWidgetCoordinate coordWidget = new ProgWidgetCoordinate();
-                        draggingWidget = coordWidget;
-                        coordWidget.loadFromGPSTool(heldItem);
-                    }
-                }
-
-                if (draggingWidget != null) {
-                    draggingWidget.setX(Integer.MAX_VALUE);
-                    draggingWidget.setY(Integer.MAX_VALUE);
-                    te.progWidgets.add(draggingWidget);
-                    dragMouseStartX = draggingWidget.getWidth() / 3;
-                    dragMouseStartY = draggingWidget.getHeight() / 4;
-                    dragWidgetStartX = 0;
-                    dragWidgetStartY = 0;
-                }
-            }
-        } else if (isMiddleClicking && !wasClicking && showingWidgetProgress == 0) {
-            IProgWidget widget = programmerUnit.getHoveredWidget(origX, origY);
-            if (widget != null) {
-                draggingWidget = widget.copy();
-                te.progWidgets.add(draggingWidget);
-                dragMouseStartX = 0;
-                dragMouseStartY = 0;
-                dragWidgetStartX = widget.getX() - (mouseX - guiLeft);
-                dragWidgetStartY = widget.getY() - (mouseY - guiTop);
-                if (Screen.hasShiftDown()) copyAndConnectConnectingWidgets(widget, draggingWidget);
-            }
-        } else if (isMiddleClicking && showingAllWidgets) {
-            showWidgetDocs();
-        }
-
-        if (!isLeftClicking && !isMiddleClicking && draggingWidget != null) {
-            if (programmerUnit.isOutsideProgrammingArea(draggingWidget)) {
-                deleteConnectingWidgets(draggingWidget);
+    /**
+     * This doesn't achieve much other than look really cool.
+     */
+    private void drawRemovingWidgets() {
+        Iterator<RemovingWidget> iter = removingWidgets.iterator();
+        int h = minecraft.mainWindow.getScaledHeight();
+        float scale = programmerUnit.getScale();
+        GlStateManager.pushMatrix();
+        GlStateManager.translated(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
+        GlStateManager.scaled(scale, scale, 1);
+        while (iter.hasNext()) {
+            RemovingWidget rw = iter.next();
+            IProgWidget w = rw.widget;
+            if (w.getY() + rw.ty > h / scale) {
+                iter.remove();
             } else {
-                handlePuzzleMargins();
-                if (!isValidPlaced(draggingWidget)) {
-                    setConnectingWidgetsToXY(draggingWidget, dragWidgetStartX, dragWidgetStartY);
-                    if (programmerUnit.isOutsideProgrammingArea(draggingWidget))
-                        deleteConnectingWidgets(draggingWidget);
+                GlStateManager.pushMatrix();
+                GlStateManager.translated(w.getX() + rw.tx + guiLeft, w.getY() + rw.ty + guiTop, 0);
+                GlStateManager.scaled(0.5, 0.5, 1);
+                w.render();
+                GlStateManager.popMatrix();
+                rw.ty += rw.velY;
+                rw.tx += rw.velX;
+                rw.velY += 0.3;
+
+            }
+        }
+        GlStateManager.popMatrix();
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) return super.keyPressed(keyCode, scanCode, modifiers);
+
+        if (nameField.isFocused()) {
+            return nameField.keyPressed(keyCode, scanCode, modifiers);
+        } else if (filterField.isFocused() && keyCode != GLFW.GLFW_KEY_TAB) {
+            return filterField.keyPressed(keyCode, scanCode, modifiers);
+        }
+
+        switch (keyCode) {
+            case GLFW.GLFW_KEY_I:
+                return showWidgetDocs();
+            case GLFW.GLFW_KEY_R:
+                if (exportButton.isHovered()) {
+                    NetworkHandler.sendToServer(new PacketGuiButton("redstone"));
+                }
+                return true;
+            case GLFW.GLFW_KEY_TAB:
+                toggleShowWidgets();
+                return true;
+            case GLFW.GLFW_KEY_DELETE:
+                if (ClientUtils.hasShiftDown()) {
+                    clear();
+                } else {
+                    IProgWidget widget = programmerUnit.getHoveredWidget(lastMouseX, lastMouseY);
+                    if (widget != null) {
+                        removingWidgets.add(new RemovingWidget(widget));
+                        te.progWidgets.remove(widget);
+                        NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+                    }
+                }
+                return true;
+            case GLFW.GLFW_KEY_Z:
+                NetworkHandler.sendToServer(new PacketGuiButton("undo"));
+                return true;
+            case GLFW.GLFW_KEY_Y:
+                NetworkHandler.sendToServer(new PacketGuiButton("redo"));
+                return true;
+            case GLFW.GLFW_KEY_HOME:
+                gotoStart();
+                break;
+            case GLFW.GLFW_KEY_END:
+                gotoLatest();
+                break;
+
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private boolean showWidgetDocs() {
+        int x = lastMouseX;
+        int y = lastMouseY;
+
+        IProgWidget hoveredWidget = programmerUnit.getHoveredWidget(x, y);
+        if (hoveredWidget != null) {
+            ThirdPartyManager.instance().docsProvider.showWidgetDocs(getWidgetId(hoveredWidget));
+            return true;
+        } else {
+            for (IProgWidget widget : visibleSpawnWidgets) {
+                if (widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
+                    ThirdPartyManager.instance().docsProvider.showWidgetDocs(getWidgetId(widget));
+                    return true;
                 }
             }
-            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
-            TileEntityProgrammer.updatePuzzleConnections(te.progWidgets);
-
-            draggingWidget = null;
         }
-        wasClicking = isLeftClicking || isMiddleClicking;
-        lastMouseX = origX;
-        lastMouseY = origY;
+        return false;
+    }
+
+    private String getWidgetId(IProgWidget w) {
+        return w == null ? null : w.getTypeID().getPath();
+    }
+
+    @Override
+    protected boolean shouldDrawBackground() {
+        return false;
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -671,8 +601,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         return !(outputWidget != null && !isValidPlaced(outputWidget));
     }
 
+    /**
+     * Here's where we "snap together" nearby widgets which can connect.  Called when a widget is placed (on mouse release).
+     */
     private void handlePuzzleMargins() {
-        //Check for connection to the left of the dragged widget.
+        // Check for connection to the left of the dragged widget.
         ProgWidgetType returnValue = draggingWidget.returnType();
         if (returnValue != null) {
             for (IProgWidget widget : te.progWidgets) {
@@ -689,7 +622,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
         }
 
-        //check for connection to the right of the dragged widget.
+        // check for connection to the right of the dragged widget.
         List<ProgWidgetType> parameters = draggingWidget.getParameters();
         if (!parameters.isEmpty()) {
             for (IProgWidget widget : te.progWidgets) {
@@ -718,7 +651,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
         }
 
-        //check for connection to the top of the dragged widget.
+        // check for connection to the top of the dragged widget.
         if (draggingWidget.hasStepInput()) {
             for (IProgWidget widget : te.progWidgets) {
                 if (widget.hasStepOutput() && Math.abs(widget.getX() - draggingWidget.getX()) <= FAULT_MARGIN && Math.abs(widget.getY() + widget.getHeight() / 2 - draggingWidget.getY()) <= FAULT_MARGIN) {
@@ -727,7 +660,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
         }
 
-        //check for connection to the bottom of the dragged widget.
+        // check for connection to the bottom of the dragged widget.
         if (draggingWidget.hasStepOutput()) {
             for (IProgWidget widget : te.progWidgets) {
                 if (widget.hasStepInput() && Math.abs(widget.getX() - draggingWidget.getX()) <= FAULT_MARGIN && Math.abs(widget.getY() - draggingWidget.getY() - draggingWidget.getHeight() / 2) <= FAULT_MARGIN) {
@@ -737,6 +670,14 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
     }
 
+    /**
+     * Set the position of the given widget and (recursively) all widgets which connect to it on the side or below
+     * (but not above).
+     *
+     * @param widget the widget
+     * @param x new X pos
+     * @param y new Y pos
+     */
     private void setConnectingWidgetsToXY(IProgWidget widget, int x, int y) {
         widget.setX(x);
         widget.setY(y);
@@ -762,6 +703,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         if (outputWidget != null) setConnectingWidgetsToXY(outputWidget, x, y + widget.getHeight() / 2);
     }
 
+    /**
+     * Called when shift + middle-clicking: copy this widget and all connecting widgets to the side or below (but not
+     * above).
+     * @param original original widget being copied
+     * @param copy new copy of the widget
+     */
     private void copyAndConnectConnectingWidgets(IProgWidget original, IProgWidget copy) {
         IProgWidget[] connectingWidgets = original.getConnectedParameters();
         if (connectingWidgets != null) {
@@ -783,8 +730,14 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
     }
 
+    /**
+     * Called when a widget is placed outside the programming area: delete it and any connected widgets.
+     *
+     * @param widget the widget
+     */
     private void deleteConnectingWidgets(IProgWidget widget) {
         te.progWidgets.remove(widget);
+        removingWidgets.add(new RemovingWidget(widget));
         IProgWidget[] connectingWidgets = widget.getConnectedParameters();
         if (connectingWidgets != null) {
             for (IProgWidget widg : connectingWidgets) {
@@ -804,6 +757,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             te.recentreStartPiece = false;
         }
 
+        programmerUnit.getScrollBar().visible = showingWidgetProgress == 0;
+        if (showingWidgetProgress > 0) {
+            programmerUnit.getScrollBar().setCurrentState(programmerUnit.getLastZoom());
+        }
+
         undoButton.active = te.canUndo;
         redoButton.active = te.canRedo;
 
@@ -811,10 +769,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         ItemStack programmedItem = te.getItemInProgrammingSlot();
         oldShowingWidgetProgress = showingWidgetProgress;
+        int maxProgress = maxPage * WIDGET_X_SPACING;
         if (showingAllWidgets) {
-            int maxProgress = maxPage * WIDGET_X_SPACING;
             if (showingWidgetProgress < maxProgress) {
-                showingWidgetProgress += 60;
+                showingWidgetProgress += maxProgress / 5;
                 if (showingWidgetProgress >= maxProgress) {
                     showingWidgetProgress = maxProgress;
                     updateVisibleProgWidgets();
@@ -823,7 +781,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 setFocused(filterField);
             }
         } else {
-            showingWidgetProgress -= 60;
+            showingWidgetProgress -= maxProgress / 5;
             if (showingWidgetProgress < 0) showingWidgetProgress = 0;
         }
 
@@ -1007,10 +965,115 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button >= 0 && button < mouseButtons.length) mouseButtons[button] = true;
+        double origX = mouseX;
+        double origY = mouseY;
 
-        if (button == 1 && showingWidgetProgress == 0) {
-            IProgWidget widget = programmerUnit.getHoveredWidget((int)mouseX, (int)mouseY);
+        float scale = programmerUnit.getScale();
+        mouseX = (mouseX - programmerUnit.getTranslatedX()) / scale;
+        mouseY = (mouseY - programmerUnit.getTranslatedY()) / scale;
+
+        if (button == 0) {
+            // left-click
+            IProgWidget hovered = programmerUnit.getHoveredWidget((int) origX, (int) origY);
+
+            // first check if we're clicking with a gps tool in hand
+            ItemStack heldItem = minecraft.player.inventory.getItemStack();
+            if (heldItem.getItem() instanceof IPositionProvider) {
+                ProgWidgetArea areaToolWidget = heldItem.getItem() instanceof ItemGPSAreaTool ? ItemGPSAreaTool.getArea(heldItem) : null;
+                if (hovered != null) {
+                    // clicked an existing widget: update any area or coordinate widgets from the held item
+                    if (areaToolWidget != null && hovered instanceof ProgWidgetArea) {
+                        CompoundNBT tag = new CompoundNBT();
+                        areaToolWidget.writeToNBT(tag);
+                        hovered.readFromNBT(tag);
+                    } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
+                        if (hovered instanceof ProgWidgetCoordinate) {
+                            ((ProgWidgetCoordinate) hovered).loadFromGPSTool(heldItem);
+                        } else if (hovered instanceof ProgWidgetArea) {
+                            BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
+                            String var = ItemGPSTool.getVariable(heldItem);
+                            ProgWidgetArea areaHovered = (ProgWidgetArea) hovered;
+                            if (pos != null) areaHovered.setP1(pos);
+                            areaHovered.setP2(BlockPos.ZERO);
+                            areaHovered.setCoord1Variable(var);
+                            areaHovered.setCoord2Variable("");
+                        }
+                    }
+                } else {
+                    // clicked on an empty area: create a new area or coordinate widget
+                    ProgWidget toCreate = null;
+                    if (areaToolWidget != null) {
+                        toCreate = areaToolWidget;
+                    } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
+                        if (Screen.hasShiftDown()) {
+                            BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
+                            ProgWidgetArea areaWidget = ProgWidgetArea.fromPositions(pos, BlockPos.ZERO);
+                            String var = ItemGPSTool.getVariable(heldItem);
+                            if (!var.isEmpty()) areaWidget.setCoord1Variable(var);
+                            toCreate = areaWidget;
+                        } else {
+                            ProgWidgetCoordinate coordWidget = new ProgWidgetCoordinate();
+                            coordWidget.loadFromGPSTool(heldItem);
+                            toCreate = coordWidget;
+                        }
+                    }
+                    if (toCreate != null) {
+                        toCreate.setX((int) (mouseX - guiLeft - toCreate.getWidth() / 3d));
+                        toCreate.setY((int) (mouseY - guiTop - toCreate.getHeight() / 4d));
+                        if (!programmerUnit.isOutsideProgrammingArea(toCreate)) {
+                            te.progWidgets.add(toCreate);
+                        }
+                    }
+                }
+                return true;
+            } else {
+                // just a regular click, nothing of interest held
+                if (hovered != null) {
+                    // clicking on a widget in the main area
+                    draggingWidget = hovered;
+                    dragMouseStartX = mouseX - guiLeft;
+                    dragMouseStartY = mouseY - guiTop;
+                    dragWidgetStartX = hovered.getX();
+                    dragWidgetStartY = hovered.getY();
+                    return true;
+                } else {
+                    // clicking on a widget in the tray?
+                    for (IProgWidget widget : visibleSpawnWidgets) {
+                        if (origX >= widget.getX() + guiLeft
+                                && origY >= widget.getY() + guiTop
+                                && origX <= widget.getX() + guiLeft + widget.getWidth() / 2
+                                && origY <= widget.getY() + guiTop + widget.getHeight() / 2)
+                        {
+                            draggingWidget = widget.copy();
+                            te.progWidgets.add(draggingWidget);
+                            dragMouseStartX = mouseX - (int) (guiLeft / scale);
+                            dragMouseStartY = mouseY - (int) (guiTop / scale);
+                            dragWidgetStartX = (int) ((widget.getX() - programmerUnit.getTranslatedX()) / scale);
+                            dragWidgetStartY = (int) ((widget.getY() - programmerUnit.getTranslatedY()) / scale);
+                            return true;
+                        }
+                    }
+                }
+            }
+        } else if (button == 2) {
+            // middle-click: copy widget, or show docs if clicked on widget tray
+            if (showingWidgetProgress == 0) {
+                IProgWidget widget = programmerUnit.getHoveredWidget((int) origX, (int) origY);
+                if (widget != null) {
+                    draggingWidget = widget.copy();
+                    te.progWidgets.add(draggingWidget);
+                    dragMouseStartX = mouseX - guiLeft;
+                    dragMouseStartY = mouseY - guiTop;
+                    dragWidgetStartX = widget.getX();// - (mouseX - guiLeft);
+                    dragWidgetStartY = widget.getY();// - (mouseY - guiTop);
+                    if (Screen.hasShiftDown()) copyAndConnectConnectingWidgets(widget, draggingWidget);
+                    return true;
+                }
+            } else {
+                return showWidgetDocs();
+            }
+        } else if (button == 1 && showingWidgetProgress == 0) {
+            IProgWidget widget = programmerUnit.getHoveredWidget((int)origX, (int)origY);
             if (widget != null) {
                 // right click a prog widget: show its options screen, if any
                 GuiProgWidgetOptionBase gui = ProgWidgetGuiManager.getGui(widget, this);
@@ -1020,13 +1083,26 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(origX, origY, button);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button >= 0 && button < mouseButtons.length) mouseButtons[button] = false;
-
+        if (draggingWidget != null) {
+            if (programmerUnit.isOutsideProgrammingArea(draggingWidget)) {
+                deleteConnectingWidgets(draggingWidget);
+            } else {
+                handlePuzzleMargins();
+                if (!isValidPlaced(draggingWidget)) {
+                    setConnectingWidgetsToXY(draggingWidget, (int)dragWidgetStartX, (int)dragWidgetStartY);
+                    if (programmerUnit.isOutsideProgrammingArea(draggingWidget) || !isValidPlaced(draggingWidget))
+                        deleteConnectingWidgets(draggingWidget);
+                }
+            }
+            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            TileEntityProgrammer.updatePuzzleConnections(te.progWidgets);
+            draggingWidget = null;
+        }
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
@@ -1037,7 +1113,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
-        return programmerUnit.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
+        if (draggingWidget != null) {
+            mouseX = (mouseX - programmerUnit.getTranslatedX()) / programmerUnit.getScale();
+            mouseY = (mouseY - programmerUnit.getTranslatedY()) / programmerUnit.getScale();
+            setConnectingWidgetsToXY(draggingWidget,
+                    (int)(mouseX - dragMouseStartX + dragWidgetStartX - guiLeft),
+                    (int)(mouseY - dragMouseStartY + dragWidgetStartY - guiTop));
+            return true;
+        } else {
+            return programmerUnit.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
+        }
     }
 
     @Override
@@ -1080,4 +1165,15 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
     }
 
+    private class RemovingWidget {
+        final IProgWidget widget;
+        double ty = 0;
+        double tx = 0;
+        double velX = (Minecraft.getInstance().world.rand.nextDouble() - 0.5) * 3;
+        double velY = -4;
+
+        private RemovingWidget(IProgWidget widget) {
+            this.widget = widget;
+        }
+    }
 }

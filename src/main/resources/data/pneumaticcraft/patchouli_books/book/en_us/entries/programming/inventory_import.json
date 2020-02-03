@@ -1,6 +1,6 @@
 {
   "name": "Inventory Import Widget",
-  "icon": "pneumaticcraft:textures/item/progwidgets/inventory_import_piece.png",
+  "icon": "pneumaticcraft:textures/progwidgets/inventory_import_piece.png",
   "category": "widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -15,7 +15,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/item/progwidgets/inventory_import_piece.png"
+        "pneumaticcraft:textures/progwidgets/inventory_import_piece.png"
       ],
       "text": "$(italic)I'll have that, thanks/$"
     }

@@ -25,14 +25,14 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
         if (isSidedWidget()) {
             for (Direction dir : Direction.VALUES) {
                 String sideName = PneumaticCraftUtils.getOrientationName(dir);
-                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 4, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
+                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
                         b -> ((ISidedWidget) progWidget).getSides()[dir.getIndex()] = b.checked);
                 checkBox.checked = ((ISidedWidget) progWidget).getSides()[dir.getIndex()];
                 addButton(checkBox);
             }
         }
 
-        int baseX = isSidedWidget() ? 90 : 4;
+        int baseX = isSidedWidget() ? 94 : 8;
         int baseY = isUsingAndOr() ? 60 : 30;
 
         List<WidgetRadioButton> radioButtons;

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,7 +16,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
@@ -51,7 +51,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
-        curTooltip.add(xlate(getTranslationKey()).applyTextStyle(TextFormatting.DARK_AQUA));
+        curTooltip.add(xlate(getTranslationKey()).applyTextStyles(TextFormatting.DARK_AQUA, TextFormatting.UNDERLINE));
     }
 
     public String getExtraStringInfo() {
@@ -153,13 +153,13 @@ public abstract class ProgWidget implements IProgWidget {
             GlStateManager.pushMatrix();
             GlStateManager.scaled(0.5, 0.5, 0.5);
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            String[] splittedInfo = WordUtils.wrap(getExtraStringInfo(), 40).split(System.getProperty("line.separator"));
-            for (int i = 0; i < splittedInfo.length; i++) {
-                int stringLength = fr.getStringWidth(splittedInfo[i]);
+            List<String> splittedInfo = PneumaticCraftUtils.splitString(getExtraStringInfo(), 20);
+            for (int i = 0; i < splittedInfo.size(); i++) {
+                int stringLength = fr.getStringWidth(splittedInfo.get(i));
                 int startX = getWidth() / 2 - stringLength / 4;
-                int startY = getHeight() / 2 - (fr.FONT_HEIGHT + 1) * (splittedInfo.length - 1) / 4 + (fr.FONT_HEIGHT + 1) * i / 2 - fr.FONT_HEIGHT / 4;
+                int startY = getHeight() / 2 - (fr.FONT_HEIGHT + 1) * (splittedInfo.size() - 1) / 4 + (fr.FONT_HEIGHT + 1) * i / 2 - fr.FONT_HEIGHT / 4;
                 AbstractGui.fill(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
-                fr.drawString(splittedInfo[i], startX * 2, startY * 2, 0xFF000000);
+                fr.drawString(splittedInfo.get(i), startX * 2, startY * 2, 0xFF000000);
             }
             GlStateManager.popMatrix();
             GlStateManager.color4f(1, 1, 1, 1);

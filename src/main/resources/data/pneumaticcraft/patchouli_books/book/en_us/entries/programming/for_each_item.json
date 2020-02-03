@@ -1,6 +1,6 @@
 {
   "name": "For Each Item Widget",
-  "icon": "pneumaticcraft:textures/item/progwidgets/for_each_item.png",
+  "icon": "pneumaticcraft:textures/progwidgets/for_each_item.png",
   "category": "widget_flow",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -16,7 +16,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/item/progwidgets/for_each_item.png"
+        "pneumaticcraft:textures/progwidgets/for_each_item.png"
       ],
       "text": "$(italic)For Each Item Widget/$"
     }

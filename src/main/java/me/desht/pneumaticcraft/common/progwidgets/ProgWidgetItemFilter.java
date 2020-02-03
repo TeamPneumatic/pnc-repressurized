@@ -94,9 +94,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         RenderHelper.enableGUIStandardItemLighting();
         GlStateManager.pushMatrix();
         Minecraft mc = Minecraft.getInstance();
-        GlStateManager.translated(0.0F, 0.0F, 32.0F);
         if (itemRender == null) itemRender = Minecraft.getInstance().getItemRenderer();
-        itemRender.zLevel = 200.0F;
         FontRenderer font = null;
         if (!stack.isEmpty()) font = stack.getItem().getFontRenderer(stack);
         if (font == null) font = mc.fontRenderer;

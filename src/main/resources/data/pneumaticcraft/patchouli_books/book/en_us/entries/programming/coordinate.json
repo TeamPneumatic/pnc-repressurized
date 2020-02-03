@@ -1,6 +1,6 @@
 {
   "name": "Coordinate Widget",
-  "icon": "pneumaticcraft:textures/item/progwidgets/coordinate_piece.png",
+  "icon": "pneumaticcraft:textures/progwidgets/coordinate_piece.png",
   "category": "widget_other",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
@@ -15,7 +15,7 @@
     {
       "type": "image",
       "images": [
-        "pneumaticcraft:textures/item/progwidgets/coordinate_piece.png"
+        "pneumaticcraft:textures/progwidgets/coordinate_piece.png"
       ],
       "text": "$(italic)Coordinate Widget/$"
     }

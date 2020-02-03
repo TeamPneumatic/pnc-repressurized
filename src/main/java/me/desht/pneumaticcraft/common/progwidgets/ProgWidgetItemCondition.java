@@ -15,7 +15,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
 
     public ProgWidgetItemCondition() {
-        super(ModProgWidgets.CONDTION_ITEM.get());
+        super(ModProgWidgets.CONDITION_ITEM.get());
     }
 
     @Override

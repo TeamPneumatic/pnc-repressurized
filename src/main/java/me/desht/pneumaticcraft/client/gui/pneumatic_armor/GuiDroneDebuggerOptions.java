@@ -122,7 +122,7 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
         }
 
         GlStateManager.translated(0, 0, 300);
-        programmerUnit.render(x, y, true, true, true);
+        programmerUnit.render(x, y, true, true);
         programmerUnit.renderForeground(x, y, null);
         GlStateManager.translated(0, 0, -300);
 

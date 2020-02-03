@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -16,7 +17,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -26,16 +26,15 @@ import java.util.stream.Collectors;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiUnitProgrammer extends Screen {
+    private static final float SCALE_PER_STEP = 0.2F;
+
     private final FontRenderer fontRenderer;
     private final List<IProgWidget> progWidgets;
     private final int guiLeft, guiTop;
     private final int startX, startY, areaWidth, areaHeight;
+    private final WidgetVerticalScrollbar scaleScroll;
     private double translatedX, translatedY;
     private int lastZoom;
-
-    private final WidgetVerticalScrollbar scaleScroll;
-    private static final float SCALE_PER_STEP = 0.2F;
-    private boolean allowDragging;
 
     public GuiUnitProgrammer(List<IProgWidget> progWidgets, FontRenderer fontRenderer, int guiLeft, int guiTop,
                              int width, int height, Rectangle2d bounds, double translatedX,
@@ -85,26 +84,20 @@ public class GuiUnitProgrammer extends Screen {
             List<ITextComponent> errors = new ArrayList<>();
             progWidget.addErrors(errors, progWidgets);
             if (errors.size() > 0) {
-                tooltip.add(xlate("gui.programmer.errors").applyTextStyle(TextFormatting.RED));
-                for (ITextComponent s : errors) {
-                    String msg = s.getFormattedText();
-                    String[] lines = WordUtils.wrap("- " + msg, 35).split(System.getProperty("line.separator"));
-                    for (String line : lines) {
-                        tooltip.add(new StringTextComponent(line).applyTextStyle(TextFormatting.RED));
-                    }
+                tooltip.add(xlate("gui.programmer.errors").applyTextStyles(TextFormatting.RED, TextFormatting.UNDERLINE));
+                for (ITextComponent error : errors) {
+                    PneumaticCraftUtils.splitString(error.getFormattedText(), 40)
+                            .forEach(str -> tooltip.add(new StringTextComponent(str).applyTextStyle(TextFormatting.RED)));
                 }
             }
 
             List<ITextComponent> warnings = new ArrayList<>();
             progWidget.addWarnings(warnings, progWidgets);
             if (warnings.size() > 0) {
-                tooltip.add(xlate("gui.programmer.warnings").applyTextStyle(TextFormatting.YELLOW));
-                for (ITextComponent s : warnings) {
-                    String msg = s.getFormattedText();
-                    String[] lines = WordUtils.wrap("- " + msg, 35).split(System.getProperty("line.separator"));
-                    for (String line : lines) {
-                        tooltip.add(new StringTextComponent(line).applyTextStyle(TextFormatting.YELLOW));
-                    }
+                tooltip.add(xlate("gui.programmer.warnings").applyTextStyles(TextFormatting.YELLOW, TextFormatting.UNDERLINE));
+                for (ITextComponent warning : warnings) {
+                    PneumaticCraftUtils.splitString(warning.getFormattedText(), 40)
+                            .forEach(str -> tooltip.add(new StringTextComponent(str).applyTextStyle(TextFormatting.YELLOW)));
                 }
             }
             addAdditionalInfoToTooltip(progWidget, tooltip);
@@ -135,28 +128,14 @@ public class GuiUnitProgrammer extends Screen {
         ThirdPartyManager.instance().docsProvider.addTooltip(tooltip, false);
     }
 
-    public void render(int x, int y, boolean showFlow, boolean showInfo, boolean allowDragging) {
-        this.allowDragging = allowDragging;
-
+    public void render(int x, int y, boolean showFlow, boolean showInfo) {
         GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-        int origX = x;
-        int origY = y;
-        x -= translatedX;
-        y -= translatedY;
-        float scale = getScale();
-        x = (int) (x / scale);
-        y = (int) (y / scale);
 
         if (scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
-            if (new Rectangle2d(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains(origX, origY) && !scaleScroll.isDragging()) {
-                translatedX += shift * x;
-                translatedY += shift * y;
-            } else {
-                translatedX += areaWidth / 2d * shift;
-                translatedY += areaHeight / 2d * shift;
-            }
+            float prevScale = 2.0F - lastZoom * SCALE_PER_STEP;
+            translatedX += shift * (x - translatedX) / prevScale;
+            translatedY += shift * (y - translatedY) / prevScale;
         }
         lastZoom = scaleScroll.getState();
 
@@ -168,6 +147,7 @@ public class GuiUnitProgrammer extends Screen {
         GlStateManager.pushMatrix();
         GlStateManager.translated(translatedX, translatedY, 0);
 
+        float scale = getScale();
         GlStateManager.scaled(scale, scale, 1);
 
         if (showFlow) showFlow();
@@ -216,7 +196,7 @@ public class GuiUnitProgrammer extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dx, double dy) {
-        if (mouseButton == 0 && allowDragging && !scaleScroll.isDragging() && new Rectangle2d(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains((int)mouseX, (int)mouseY)) {
+        if (mouseButton == 0 && !scaleScroll.isDragging() && new Rectangle2d(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains((int)mouseX, (int)mouseY)) {
             translatedX += dx;
             translatedY += dy;
             return true;
