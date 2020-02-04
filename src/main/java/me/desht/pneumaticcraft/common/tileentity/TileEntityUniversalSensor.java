@@ -285,7 +285,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         if (tag.equals("back")) {
             // the 'back' button
             String[] folders = getSensorSetting().split("/");

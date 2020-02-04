@@ -43,7 +43,7 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         try {
             pressureSetpoint += Float.parseFloat(tag);
             if (pressureSetpoint > 30) pressureSetpoint = 30;

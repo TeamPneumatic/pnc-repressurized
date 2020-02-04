@@ -103,7 +103,7 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase im
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         switch (tag) {
             case IGUIButtonSensitive.REDSTONE_TAG:
                 redstoneMode++;

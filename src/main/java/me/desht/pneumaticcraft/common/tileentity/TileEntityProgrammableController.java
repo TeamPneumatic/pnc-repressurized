@@ -227,7 +227,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         if (itemHandlerSideConfigurator.handleButtonPress(tag)) {
             updateNeighbours = true;
         }

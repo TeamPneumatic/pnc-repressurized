@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -54,7 +55,7 @@ public class GuiUnitProgrammer extends Screen {
         this.lastZoom = lastZoom;
 
         scaleScroll = new WidgetVerticalScrollbar(guiLeft + areaWidth + 8, guiTop + 40, areaHeight - 25)
-                .setStates(9)
+                .setStates((int)((2.0F / SCALE_PER_STEP) - 1))
                 .setCurrentState(lastZoom)
                 .setListening(true);
     }
@@ -86,7 +87,7 @@ public class GuiUnitProgrammer extends Screen {
             if (errors.size() > 0) {
                 tooltip.add(xlate("gui.programmer.errors").applyTextStyles(TextFormatting.RED, TextFormatting.UNDERLINE));
                 for (ITextComponent error : errors) {
-                    PneumaticCraftUtils.splitString(error.getFormattedText(), 40)
+                    PneumaticCraftUtils.splitString(GuiConstants.TRIANGLE_RIGHT + " " + error.getFormattedText(), 40)
                             .forEach(str -> tooltip.add(new StringTextComponent(str).applyTextStyle(TextFormatting.RED)));
                 }
             }
@@ -96,7 +97,7 @@ public class GuiUnitProgrammer extends Screen {
             if (warnings.size() > 0) {
                 tooltip.add(xlate("gui.programmer.warnings").applyTextStyles(TextFormatting.YELLOW, TextFormatting.UNDERLINE));
                 for (ITextComponent warning : warnings) {
-                    PneumaticCraftUtils.splitString(warning.getFormattedText(), 40)
+                    PneumaticCraftUtils.splitString(GuiConstants.TRIANGLE_RIGHT + " " + warning.getFormattedText(), 40)
                             .forEach(str -> tooltip.add(new StringTextComponent(str).applyTextStyle(TextFormatting.YELLOW)));
                 }
             }
@@ -109,13 +110,15 @@ public class GuiUnitProgrammer extends Screen {
         }
     }
 
-    public IProgWidget getHoveredWidget(int x, int y) {
+    public IProgWidget getHoveredWidget(int mouseX, int mouseY) {
         float scale = getScale();
         for (IProgWidget widget : progWidgets) {
-            if (!isOutsideProgrammingArea(widget)) {
-                if ((x - translatedX) / scale - guiLeft >= widget.getX() && (y - translatedY) / scale - guiTop >= widget.getY() && (x - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2 && (y - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
-                    return widget;
-                }
+            if (!isOutsideProgrammingArea(widget)
+                    && (mouseX - translatedX) / scale - guiLeft >= widget.getX()
+                    && (mouseY - translatedY) / scale - guiTop >= widget.getY()
+                    && (mouseX - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2
+                    && (mouseY - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
+                return widget;
             }
         }
         return null;
@@ -205,12 +208,12 @@ public class GuiUnitProgrammer extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double p_mouseScrolled_1_, double p_mouseScrolled_3_, double p_mouseScrolled_5_) {
-        return scaleScroll.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_);
+    public boolean mouseScrolled(double mouseX, double mouseY, double dir) {
+        return scaleScroll.mouseScrolled(mouseX, mouseY, dir);
     }
 
     protected void renderAdditionally() {
-        // nothing; override this
+        // nothing; to be overridden
     }
 
     protected void drawBorder(IProgWidget widget, int color) {
@@ -235,34 +238,28 @@ public class GuiUnitProgrammer extends Screen {
 
         for (IProgWidget widget : progWidgets) {
             if (widget instanceof IJump) {
-                List<String> jumpLocations = ((IJump) widget).getPossibleJumpLocations();
-                if (jumpLocations != null) {
-                    for (String jumpLocation : jumpLocations) {
-                        if (jumpLocation != null) {
-                            for (IProgWidget w : progWidgets) {
-                                if (w instanceof ILabel) {
-                                    String label = ((ILabel) w).getLabel();
-                                    if (jumpLocation.equals(label)) {
-                                        int x1 = widget.getX() + widget.getWidth() / 4;
-                                        int y1 = widget.getY() + widget.getHeight() / 4;
-                                        int x2 = w.getX() + w.getWidth() / 4;
-                                        int y2 = w.getY() + w.getHeight() / 4;
-                                        float midX = (x2 + x1) / 2F;
-                                        float midY = (y2 + y1) / 2F;
-                                        GlStateManager.vertex3f(guiLeft + x1, guiTop + y1, 0.0f);
-                                        GlStateManager.vertex3f(guiLeft + x2, guiTop + y2, 0.0f);
-                                        Vec3d arrowVec = new Vec3d(x1 - x2, y1 - y2, 0).normalize();
-                                        float arrowAngle = (float) Math.toRadians(30);
-                                        float arrowSize = 5;
-                                        arrowVec = new Vec3d(arrowVec.x * arrowSize, 0, arrowVec.y * arrowSize);
-                                        arrowVec = arrowVec.rotateYaw(arrowAngle);
-                                        GlStateManager.vertex3f(guiLeft + midX, guiTop + midY, 0.0f);
-                                        GlStateManager.vertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
-                                        arrowVec = arrowVec.rotateYaw(-2 * arrowAngle);
-                                        GlStateManager.vertex3f(guiLeft + midX, guiTop + midY, 0.0f);
-                                        GlStateManager.vertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
-                                    }
-                                }
+                for (String jumpLocation : ((IJump) widget).getPossibleJumpLocations()) {
+                    if (jumpLocation != null) {
+                        for (IProgWidget w : progWidgets) {
+                            if (w instanceof ILabel && jumpLocation.equals(((ILabel) w).getLabel())) {
+                                int x1 = widget.getX() + widget.getWidth() / 4;
+                                int y1 = widget.getY() + widget.getHeight() / 4;
+                                int x2 = w.getX() + w.getWidth() / 4;
+                                int y2 = w.getY() + w.getHeight() / 4;
+                                float midX = (x2 + x1) / 2F;
+                                float midY = (y2 + y1) / 2F;
+                                GlStateManager.vertex3f(guiLeft + x1, guiTop + y1, 0.0f);
+                                GlStateManager.vertex3f(guiLeft + x2, guiTop + y2, 0.0f);
+                                Vec3d arrowVec = new Vec3d(x1 - x2, y1 - y2, 0).normalize();
+                                float arrowAngle = (float) Math.toRadians(30);
+                                float arrowSize = 5;
+                                arrowVec = new Vec3d(arrowVec.x * arrowSize, 0, arrowVec.y * arrowSize);
+                                arrowVec = arrowVec.rotateYaw(arrowAngle);
+                                GlStateManager.vertex3f(guiLeft + midX, guiTop + midY, 0.0f);
+                                GlStateManager.vertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
+                                arrowVec = arrowVec.rotateYaw(-2 * arrowAngle);
+                                GlStateManager.vertex3f(guiLeft + midX, guiTop + midY, 0.0f);
+                                GlStateManager.vertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
                             }
                         }
                     }
@@ -285,7 +282,8 @@ public class GuiUnitProgrammer extends Screen {
         x += translatedX - guiLeft;
         y += translatedY - guiTop;
 
-        return x < startX || x + widget.getWidth() * scale / 2 > startX + areaWidth || y < startY || y + widget.getHeight() * scale / 2 > startY + areaHeight;
+        return x < startX || x + widget.getWidth() * scale / 2 > startX + areaWidth
+                || y < startY || y + widget.getHeight() * scale / 2 > startY + areaHeight;
     }
 
     public void gotoPiece(IProgWidget widget) {

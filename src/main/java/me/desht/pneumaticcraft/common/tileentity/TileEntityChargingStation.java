@@ -175,7 +175,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         switch (tag) {
             case IGUIButtonSensitive.REDSTONE_TAG:
                 redstoneMode++;

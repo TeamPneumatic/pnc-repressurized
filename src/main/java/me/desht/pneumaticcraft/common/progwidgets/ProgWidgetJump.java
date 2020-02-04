@@ -119,7 +119,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
         if (jumpedLabel != null) {
             return Collections.singletonList(jumpedLabel.string);
         }
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

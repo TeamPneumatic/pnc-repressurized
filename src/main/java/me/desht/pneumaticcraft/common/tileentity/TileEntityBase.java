@@ -369,7 +369,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
     }
 
     public boolean isGuiUseableByPlayer(PlayerEntity player) {

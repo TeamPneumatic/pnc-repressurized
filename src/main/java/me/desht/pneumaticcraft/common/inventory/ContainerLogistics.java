@@ -75,10 +75,10 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
-        super.handleGUIButtonPress(tag, player);
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+        super.handleGUIButtonPress(tag, shiftHeld, player);
         if (logistics != null) {
-            logistics.handleGUIButtonPress(tag, player);
+            logistics.handleGUIButtonPress(tag, shiftHeld, player);
         }
     }
 

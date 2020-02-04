@@ -162,7 +162,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(String guiID, PlayerEntity player) {
+    public void handleGUIButtonPress(String guiID, boolean shiftHeld, PlayerEntity player) {
         if (guiID.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;

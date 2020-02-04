@@ -243,8 +243,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
-        super.handleGUIButtonPress(tag, player);
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+        super.handleGUIButtonPress(tag, shiftHeld, player);
         if (tag.equals("order")) {
             boolean placed = false;
             for (int i = 0; i < shoppingItems.length; i++) {

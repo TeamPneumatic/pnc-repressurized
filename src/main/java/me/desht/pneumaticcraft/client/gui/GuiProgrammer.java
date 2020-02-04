@@ -103,7 +103,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         if (pastebinGui != null && pastebinGui.outputTag != null) {
             if (pastebinGui.shouldMerge) {
-                te.mergeProgWidgetsFromNBT(pastebinGui.outputTag);
+                List<IProgWidget> newWidgets = te.mergeWidgetsFromNBT(pastebinGui.outputTag);
+                TileEntityProgrammer.updatePuzzleConnections(newWidgets);
+                te.setProgWidgets(newWidgets, ClientUtils.getClientPlayer());
             } else {
                 te.readProgWidgetsFromNBT(pastebinGui.outputTag);
             }
@@ -131,7 +133,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight() + 3; // 171 or 427
 
         importButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 3, 20, 15, GuiConstants.ARROW_LEFT).withTag("import");
-        importButton.setTooltipText("Import program");
+        importButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.programmer.button.import"), 40));
         addButton(importButton);
 
         exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, GuiConstants.ARROW_RIGHT).withTag("export");
@@ -811,7 +813,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     private void updateExportButtonTooltip(ItemStack programmedItem, List<ITextComponent> errors, List<ITextComponent> warnings) {
         List<String> exportButtonTooltip = new ArrayList<>();
-        exportButtonTooltip.add("Export program");
+        exportButtonTooltip.add(I18n.format("gui.programmer.button.export"));
         exportButtonTooltip.add(I18n.format("gui.programmer.button.export.programmingWhen", I18n.format("gui.programmer.button.export." + (te.redstoneMode == 0 ? "pressingButton" : "onItemInsert"))));
         exportButtonTooltip.add(I18n.format("gui.programmer.button.export.pressRToChange"));
         if (!programmedItem.isEmpty()) {
@@ -825,7 +827,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
             if (required != 0 && minecraft.player.isCreative()) exportButtonTooltip.add("(Creative mode)");
         } else {
-            exportButtonTooltip.add(TextFormatting.GOLD + "No programmable item inserted.");
+            exportButtonTooltip.add(TextFormatting.GOLD + I18n.format("gui.programmer.button.export.noProgrammableItem"));
         }
 
         if (errors.size() > 0)

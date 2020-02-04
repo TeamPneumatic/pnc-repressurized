@@ -191,7 +191,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 1) redstoneMode = 0;
@@ -199,7 +199,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             if (multiElevators != null) {
                 for (TileEntityElevatorBase base : multiElevators) {
                     while (base.redstoneMode != redstoneMode) {
-                        base.handleGUIButtonPress(tag, player);
+                        base.handleGUIButtonPress(tag, shiftHeld, player);
                     }
                 }
             }
@@ -471,7 +471,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
     public void goToFloor(int floor) {
         if (getCoreElevator().isControlledByRedstone()) {
-            getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, null);
+            getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, false, null);
         }
         if (floor >= 0 && floor < floorHeights.length) {
             setTargetHeight(floorHeights[floor]);
@@ -595,7 +595,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 requireArgs(args, 1, "height (in blocks)");
                 setTargetHeight(((Double) args[0]).floatValue());
                 if (getCoreElevator().isControlledByRedstone()) {
-                    getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, null);
+                    getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, false, null);
                 }
                 getCoreElevator().sendDescPacketFromAllElevators();
                 return null;
@@ -623,7 +623,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 requireArgs(args, 1, "true/false");
                 if ((Boolean) args[0] && getCoreElevator().isControlledByRedstone()
                         || !(Boolean) args[0] && !getCoreElevator().isControlledByRedstone()) {
-                    getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, null);
+                    getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, false, null);
                 }
                 return null;
             }

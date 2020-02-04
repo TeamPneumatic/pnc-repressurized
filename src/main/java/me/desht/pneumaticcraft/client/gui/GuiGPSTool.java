@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 
 public class GuiGPSTool extends GuiPneumaticScreenBase {
 
@@ -26,16 +27,21 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
     private final int metadata;
 
     public GuiGPSTool(Hand hand, BlockPos gpsLoc, String oldVarName, int metadata) {
-        super(new ItemStack(ModItems.GPS_TOOL.get()).getDisplayName());
+        super(makeTitle(metadata));
 
         this.hand = hand;
         this.oldGPSLoc = gpsLoc;
         this.oldVarName = oldVarName;
         this.metadata = metadata;
     }
-    
+
     private GuiGPSTool(Hand hand, BlockPos gpsLoc, String oldVarName) {
         this(hand, gpsLoc, oldVarName, -1);
+    }
+
+    private static ITextComponent makeTitle(int index) {
+        ITextComponent text = new ItemStack(ModItems.GPS_TOOL.get()).getDisplayName();
+        return index < 0 ? text : text.appendText(" (P" + (index + 1) + ")");
     }
 
     public static void showGUI(ItemStack stack, Hand handIn, BlockPos pos) {

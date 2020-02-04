@@ -60,7 +60,7 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityB
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity playerIn) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity playerIn) {
        if (tag.equals("showAmadron")) {
            ItemAmadronTablet.openGui(playerIn, getHand(playerIn));
        }

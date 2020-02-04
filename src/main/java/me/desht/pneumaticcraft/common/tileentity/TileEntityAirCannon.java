@@ -498,7 +498,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         int oldForceMult = forceMult;
         switch (tag) {
             case IGUIButtonSensitive.REDSTONE_TAG:

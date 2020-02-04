@@ -63,14 +63,15 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public double translatedY;
     public int zoomState;
     public boolean showInfo = true, showFlow = true;
+
+    @GuiSynced
+    public boolean recentreStartPiece = false;
     @GuiSynced
     public boolean canUndo;
     @GuiSynced
     public boolean canRedo;
-    private ListNBT history = new ListNBT();//Used to undo/redo.
+    private ListNBT history = new ListNBT(); //Used to undo/redo.
     private int historyIndex;
-    @GuiSynced
-    public boolean recentreStartPiece = false;
 
     public TileEntityProgrammer() {
         super(ModTileEntities.PROGRAMMER.get());
@@ -103,13 +104,14 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         return tag;
     }
 
-    public void mergeProgWidgetsFromNBT(CompoundNBT tag) {
+    public List<IProgWidget> mergeWidgetsFromNBT(CompoundNBT tag) {
         List<IProgWidget> mergedWidgets = getWidgetsFromNBT(tag);
+        List<IProgWidget> result = new ArrayList<>(progWidgets);
 
         if (!progWidgets.isEmpty() && !mergedWidgets.isEmpty()) {
             // move merged widgets so they definitely don't overlap any existing widgets
-            Rectangle2d extents1 = getExtents(progWidgets);
-            Rectangle2d extents2 = getExtents(mergedWidgets);
+            Rectangle2d extents1 = getPuzzleExtents(progWidgets);
+            Rectangle2d extents2 = getPuzzleExtents(mergedWidgets);
             for (IProgWidget w : mergedWidgets) {
                 w.setX(w.getX() - extents2.getX() + extents1.getX() + extents1.getWidth() + 10);
                 w.setY(w.getY() - extents2.getY() + extents1.getY());
@@ -118,25 +120,32 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
 
         mergedWidgets.forEach(w -> {
             if (w instanceof ProgWidgetStart) {
-                // any start widget in the merged import is replaced with a label widget
+                // any start widget in the merged import is replaced with a label/text widget pair
                 ProgWidgetLabel lab = new ProgWidgetLabel();
                 lab.setX(w.getX());
                 lab.setY(w.getY());
-                progWidgets.add(lab);
+                result.add(lab);
                 ProgWidgetText text = new ProgWidgetText();
                 text.string = "Merge #" + world.getGameTime();
                 text.setX(lab.getX() + lab.getWidth() / 2);
                 text.setY(lab.getY());
-                progWidgets.add(text);
+                result.add(text);
             } else {
-                progWidgets.add(w);
+                result.add(w);
             }
         });
 
-        updatePuzzleConnections(progWidgets);
+        return result;
     }
 
-    private Rectangle2d getExtents(List<IProgWidget> widgets) {
+    /**
+     * Get the smallest bounding box which fully encloses the widgets in the given list.
+     * Used when merging widget lists.
+     *
+     * @param widgets the widget list
+     * @return a bounding box
+     */
+    private Rectangle2d getPuzzleExtents(List<IProgWidget> widgets) {
         int minX = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
         int minY = Integer.MAX_VALUE;
@@ -152,23 +161,13 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
 
     public void readProgWidgetsFromNBT(CompoundNBT tag) {
         progWidgets.clear();
-        getWidgetsFromNBT(tag, progWidgets);
+        progWidgets.addAll(getWidgetsFromNBT(tag));
         updatePuzzleConnections(progWidgets);
     }
 
     public CompoundNBT writeProgWidgetsToNBT(CompoundNBT tag) {
         putWidgetsToNBT(progWidgets, tag);
         return tag;
-    }
-
-    @Nonnull
-    public ItemStack getItemInProgrammingSlot() {
-        return inventory.getStackInSlot(PROGRAM_SLOT);
-    }
-
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
-        return invCap;
     }
 
     public static List<IProgWidget> readWidgetsFromPacket(PacketBuffer buf) {
@@ -200,12 +199,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     public static List<IProgWidget> getWidgetsFromNBT(CompoundNBT tag) {
-        List<IProgWidget> progWidgets = new ArrayList<>();
-        getWidgetsFromNBT(tag, progWidgets);
-        return progWidgets;
-    }
-
-    private static void getWidgetsFromNBT(CompoundNBT tag, List<IProgWidget> progWidgets) {
+        List<IProgWidget> newWidgets = new ArrayList<>();
         ListNBT widgetTags = tag.getList(IProgrammable.NBT_WIDGETS, NBT.TAG_COMPOUND);
         for (int i = 0; i < widgetTags.size(); i++) {
             CompoundNBT widgetTag = widgetTags.getCompound(i);
@@ -215,7 +209,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                 if (type != null) {
                     IProgWidget addedWidget = IProgWidget.create(type);
                     addedWidget.readFromNBT(widgetTag);
-                    progWidgets.add(addedWidget);
+                    newWidgets.add(addedWidget);
                 } else {
                     Log.warning("unknown widget type found: " + typeID);
                 }
@@ -223,6 +217,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                 Log.warning("ignoring blacklisted widget type: " + typeID);
             }
         }
+        return newWidgets;
     }
 
     public static CompoundNBT putWidgetsToNBT(List<IProgWidget> widgets, CompoundNBT tag) {
@@ -245,14 +240,18 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             }
             if (widget.hasStepOutput()) widget.setOutputWidget(null);
         }
+
         for (IProgWidget checkedWidget : progWidgets) {
-            //check for connection to the right of the checked widget.
+            // check for connection to the right of the checked widget.
             List<ProgWidgetType> parameters = checkedWidget.getParameters();
             if (!parameters.isEmpty()) {
                 for (IProgWidget widget : progWidgets) {
                     if (widget != checkedWidget && checkedWidget.getX() + checkedWidget.getWidth() / 2 == widget.getX()) {
                         for (int i = 0; i < parameters.size(); i++) {
-                            if (checkedWidget.canSetParameter(i) && parameters.get(i) == widget.returnType() && checkedWidget.getY() + i * 11 == widget.getY()) {
+                            if (checkedWidget.canSetParameter(i)
+                                    && parameters.get(i) == widget.returnType()
+                                    && checkedWidget.getY() + i * 11 == widget.getY())
+                            {
                                 checkedWidget.setParameter(i, widget);
                                 widget.setParent(checkedWidget);
                             }
@@ -261,33 +260,36 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                 }
             }
 
-            //check for connection to the bottom of the checked widget.
+            // check for connection to the bottom of the checked widget.
             if (checkedWidget.hasStepOutput()) {
                 for (IProgWidget widget : progWidgets) {
-                    if (widget.hasStepInput() && widget.getX() == checkedWidget.getX() && widget.getY() == checkedWidget.getY() + checkedWidget.getHeight() / 2) {
+                    if (widget.hasStepInput()
+                            && widget.getX() == checkedWidget.getX()
+                            && widget.getY() == checkedWidget.getY() + checkedWidget.getHeight() / 2)
+                    {
                         checkedWidget.setOutputWidget(widget);
                     }
                 }
             }
         }
 
-        //go again for the blacklist (as those are mirrored)
+        // go again for the blacklist (as those are mirrored)
         for (IProgWidget checkedWidget : progWidgets) {
-            if (checkedWidget.returnType() == null) { //if it's a program (import/export inventory, attack entity) rather than a parameter (area, item filter).
+            if (checkedWidget.returnType() == null) {
+                // this is a program widget rather than a parameter widget (area, item filter).
                 List<ProgWidgetType> parameters = checkedWidget.getParameters();
-                if (!parameters.isEmpty()) {
-                    for (int i = 0; i < parameters.size(); i++) {
-                        if (checkedWidget.canSetParameter(i)) {
-                            for (IProgWidget widget : progWidgets) {
-                                if (parameters.get(i) == widget.returnType()) {
-                                    if (widget != checkedWidget && widget.getX() + widget.getWidth() / 2 == checkedWidget.getX() && widget.getY() == checkedWidget.getY() + i * 11) {
-                                        IProgWidget root = widget;
-                                        while (root.getParent() != null) {
-                                            root = root.getParent();
-                                        }
-                                        checkedWidget.setParameter(i + parameters.size(), root);
-                                    }
+                for (int i = 0; i < parameters.size(); i++) {
+                    if (checkedWidget.canSetParameter(i)) {
+                        for (IProgWidget widget : progWidgets) {
+                            if (parameters.get(i) == widget.returnType()
+                                    && widget != checkedWidget
+                                    && widget.getX() + widget.getWidth() / 2 == checkedWidget.getX()
+                                    && widget.getY() == checkedWidget.getY() + i * 11) {
+                                IProgWidget root = widget;
+                                while (root.getParent() != null) {
+                                    root = root.getParent();
                                 }
+                                checkedWidget.setParameter(i + parameters.size(), root);
                             }
                         }
                     }
@@ -297,20 +299,13 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         switch (tag) {
             case IGUIButtonSensitive.REDSTONE_TAG:
                 if (++redstoneMode > 1) redstoneMode = 0;
                 break;
             case "import":
-                ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
-                CompoundNBT nbt = stack.isEmpty() ? null : stack.getTag();
-                if (nbt != null) {
-                    List<IProgWidget> widgets = getProgWidgets(stack);
-                    setProgWidgets(widgets, null);
-                } else {
-                    setProgWidgets(Collections.emptyList(), null);
-                }
+                tryImport(shiftHeld);
                 break;
             case "export":
                 tryProgramDrone(player);
@@ -323,6 +318,16 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                 break;
         }
         sendDescriptionPacket();
+    }
+
+    @Nonnull
+    public ItemStack getItemInProgrammingSlot() {
+        return inventory.getStackInSlot(PROGRAM_SLOT);
+    }
+
+    @Override
+    protected LazyOptional<IItemHandler> getInventoryCap() {
+        return invCap;
     }
 
     @Override
@@ -342,6 +347,17 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     @Override
     public String getText(int textFieldID) {
         return inventory.getStackInSlot(PROGRAM_SLOT).getDisplayName().getFormattedText();
+    }
+
+    private void tryImport(boolean merge) {
+        ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
+        CompoundNBT nbt = stack.isEmpty() ? null : stack.getTag();
+        if (nbt != null) {
+            List<IProgWidget> widgets = merge ? mergeWidgetsFromNBT(nbt) : getWidgetsFromNBT(nbt);
+            setProgWidgets(widgets, null);
+        } else {
+            if (!merge) setProgWidgets(Collections.emptyList(), null);
+        }
     }
 
     private void tryProgramDrone(PlayerEntity player) {
@@ -541,7 +557,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
      * Replace the prog widget list when an update packet is received or an import is done.
      *
      * @param widgets the new widget list
-     * @param player player who just made this change, may be null
+     * @param player player who just made this change, may be null (used for syncing - ignored clientside)
      */
     public void setProgWidgets(List<IProgWidget> widgets, PlayerEntity player) {
         progWidgets.clear();

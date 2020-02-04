@@ -160,7 +160,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
             if (redstoneMode > 1) redstoneMode = 0;

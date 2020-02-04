@@ -360,7 +360,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         // nothing
     }
 

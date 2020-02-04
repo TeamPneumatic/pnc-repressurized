@@ -9,5 +9,5 @@ import net.minecraft.entity.player.PlayerEntity;
 public interface IGUIButtonSensitive {
     String REDSTONE_TAG = "redstone";
 
-    void handleGUIButtonPress(String tag, PlayerEntity player);
+    void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player);
 }
