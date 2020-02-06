@@ -1,110 +1,22 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "uvlock": false
-  },
-  "variants": {
-    "down": {
-      "open": {
-        "submodel": {
-          "down": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 180 }
-        }
-      },
-      "connected": {
-        "submodel": {
-          "down": { "model": "pneumaticcraft:block/pressure_tube_connected",  "x": 180 }
-        }
-      },
-      "closed": {
-        "submodel": {
-          "down": { "model": "pneumaticcraft:block/pressure_tube_closed",  "x": 180 }
-        }
-      }
-    },
-    "up": {
-      "open": {
-        "submodel": {
-          "up": { "model": "pneumaticcraft:block/pressure_tube_disconnected" }
-        }
-      },
-      "connected": {
-        "submodel": {
-          "up": { "model": "pneumaticcraft:block/pressure_tube_connected" }
-        }
-      },
-      "closed": {
-        "submodel": {
-          "up": { "model": "pneumaticcraft:block/pressure_tube_closed" }
-        }
-      }
-    },
-    "north": {
-      "open": {
-        "submodel": {
-          "north": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90 }
-        }
-      },
-      "connected": {
-        "submodel": {
-          "north": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90 }
-        }
-      },
-      "closed": {
-        "submodel": {
-          "north": { "model": "pneumaticcraft:block/pressure_tube_closed", "x": 90 }
-        }
-      }
-    },
-    "south": {
-      "open": {
-        "submodel": {
-          "south": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90, "y": 180 }
-        }
-      },
-      "connected": {
-        "submodel": {
-          "south": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 180 }
-        }
-      },
-      "closed": {
-        "submodel": {
-          "south": { "model": "pneumaticcraft:block/pressure_tube_closed", "x": 90, "y": 180 }
-        }
-      }
-    },
-    "west": {
-      "open": {
-        "submodel": {
-          "west": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90, "y": 270 }
-        }
-      },
-      "connected": {
-        "submodel": {
-          "west": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 270 }
-        }
-      },
-      "closed": {
-        "submodel": {
-          "west": { "model": "pneumaticcraft:block/pressure_tube_closed", "x": 90, "y": 270 }
-        }
-      }
-    },
-    "east": {
-      "open": {
-        "submodel": {
-          "east": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90, "y": 90 }
-        }
-      },
-      "connected": {
-        "submodel": {
-          "east": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 90 }
-        }
-      },
-      "closed": {
-        "submodel": {
-          "east": { "model": "pneumaticcraft:block/pressure_tube_closed", "x": 90, "y": 90 }
-        }
-      }
-    }
-  }
+  "multipart": [
+    { "when": { "down": "open" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 180 } },
+    { "when": { "down": "connected" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 180 } },
+    { "when": { "down": "closed" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_closed", "x": 180 } },
+    { "when": { "up": "open" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_disconnected" } },
+    { "when": { "up": "connected" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_connected" } },
+    { "when": { "up": "closed" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_closed" } },
+    { "when": { "north": "open" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90 } },
+    { "when": { "north": "connected" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90 } },
+    { "when": { "north": "closed" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_closed", "x": 90 } },
+    { "when": { "south": "open" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90, "y": 180 } },
+    { "when": { "south": "connected" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 180 } },
+    { "when": { "south": "closed" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_closed", "x": 90, "y": 180 } },
+    { "when": { "west": "open" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90, "y": 270 } },
+    { "when": { "west": "connected" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 270 } },
+    { "when": { "west": "closed" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_closed", "x": 90, "y": 270 } },
+    { "when": { "east": "open" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_disconnected", "x": 90, "y": 90 } },
+    { "when": { "east": "connected" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 90 } },
+    { "when": { "east": "closed" }, "apply": { "model": "pneumaticcraft:block/pressure_tube_closed", "x": 90, "y": 90 } }
+  ]
 }

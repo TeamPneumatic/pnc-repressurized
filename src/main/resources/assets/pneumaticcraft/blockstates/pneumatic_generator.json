@@ -1,35 +1,8 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "textures": {},
-    "model": "pneumaticcraft:block/pneumatic_generator"
-  },
   "variants": {
-    "facing": {
-      "up": {"transform": {"rotation" : {"x" : 90}}},
-      "down": {"x" : -90},
-      "east": {
-        "transform": {
-          "rotation": {"y" : 90}
-        }
-      },
-      "north": {
-        "transform": {
-          "rotation": {"y" : 180}
-        }
-      },
-      "west": {
-        "transform": {
-          "rotation": {"y": 270}
-        }
-      },
-      "south": {
-        "transform": {
-        }
-      }
-    },
-    "inventory": [{
-      "transform": "forge:default-block"
-    }]
+    "facing=east": { "model": "pneumaticcraft:block/pneumatic_generator", "y":  90 },
+    "facing=north": { "model": "pneumaticcraft:block/pneumatic_generator", "y":  180 },
+    "facing=south": { "model": "pneumaticcraft:block/pneumatic_generator" },
+    "facing=west": { "model": "pneumaticcraft:block/pneumatic_generator", "y":  270 }
   }
 }

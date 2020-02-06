@@ -1,8 +1,56 @@
 {
-  "loader": "forge:obj",
-  "model": "pneumaticcraft:models/block/pneumatic_door_base.obj",
-  "flip-v": true,
   "textures": {
-    "particle": "pneumaticcraft:block/compressed_iron_block"
-  }
+    "particle": "pneumaticcraft:block/compressed_iron_block",
+    "all": "pneumaticcraft:block/generic/plain_base"
+  },
+  "elements": [
+    {
+      "from": [ 0, 0, 0 ],
+      "to": [ 16, 12, 16 ],
+      "faces": {
+        "up": { "texture": "#all" },
+        "down": { "texture": "#all", "cullface": "down" },
+        "north": { "texture": "#all" },
+        "south": { "texture": "#all" },
+        "west": { "texture": "#all" },
+        "east": { "texture": "#all" }
+      }
+    },
+    {
+      "from": [ 0, 12, 0 ],
+      "to": [ 16, 16, 2 ],
+      "faces": {
+        "up": { "texture": "#all", "cullface": "up" },
+        "down": { "texture": "#all", "cullface": "down" },
+        "north": { "texture": "#all", "cullface": "north" },
+        "south": { "texture": "#all" },
+        "west": { "texture": "#all", "cullface": "west" },
+        "east": { "texture": "#all", "cullface": "east" }
+      }
+    },
+    {
+      "from": [ 13, 12, 2 ],
+      "to": [ 16, 16, 16 ],
+      "faces": {
+        "up": { "texture": "#all", "cullface": "up" },
+        "down": { "texture": "#all", "cullface": "down" },
+        "north": { "texture": "#all", "cullface": "north" },
+        "south": { "texture": "#all", "cullface": "south" },
+        "west": { "texture": "#all" },
+        "east": { "texture": "#all", "cullface": "east" }
+      }
+    },
+    {
+      "from": [ 0, 12, 2 ],
+      "to": [ 2, 16, 16 ],
+      "faces": {
+        "up": { "texture": "#all", "cullface": "up" },
+        "down": { "texture": "#all", "cullface": "down" },
+        "north": { "texture": "#all", "cullface": "north" },
+        "south": { "texture": "#all", "cullface": "south" },
+        "west": { "texture": "#all", "cullface": "west" },
+        "east": { "texture": "#all" }
+      }
+    }
+  ]
 }

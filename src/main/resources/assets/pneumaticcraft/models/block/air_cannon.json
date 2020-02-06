@@ -1,8 +1,16 @@
 {
-  "loader": "forge:obj",
-  "model": "pneumaticcraft:models/block/air_cannon.obj",
-  "flip-v": true,
+  "loader": "forge:composite",
+  "parts": {
+    "part1": {
+      "parent": "pneumaticcraft:block/air_cannon_base"
+    },
+    "part2": {
+      "parent": "pneumaticcraft:block/assembly_connector_edge"
+    }
+  },
   "textures": {
     "particle": "pneumaticcraft:block/compressed_iron_block"
   }
 }
+
+

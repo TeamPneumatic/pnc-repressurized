@@ -178,7 +178,7 @@
     },
 
     {
-      "from": [ 4, 4, 4 ],
+      "from": [ 4, 6, 4 ],
       "to": [ 12, 10, 12 ],
       "faces": {
         "down":  { "uv": [ 0, 8, 4, 12 ], "texture": "#face", "tintindex": 0 },

@@ -1,15 +1,4 @@
 {
-  "defaults": {
-    "textures": {
-      "particle": "pneumaticcraft:block/top_panel",
-      "north": "pneumaticcraft:block/aerial_interface_front",
-      "south": "pneumaticcraft:block/back_panel",
-      "up": "pneumaticcraft:block/top_panel",
-      "down": "pneumaticcraft:block/top_panel",
-      "east": "pneumaticcraft:block/side_panel",
-      "west": "pneumaticcraft:block/side_panel"
-    }
-  },
   "variants": {
     "facing=north": {
       "model": "pneumaticcraft:block/aerial_interface"

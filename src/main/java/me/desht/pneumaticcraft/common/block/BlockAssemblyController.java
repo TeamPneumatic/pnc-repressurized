@@ -20,7 +20,6 @@ public class BlockAssemblyController extends BlockPneumaticCraft {
     public BlockAssemblyController(Properties props) {
         super(props);
         setDefaultState(getStateContainer().getBaseState()
-                .with(DOWN, false)
                 .with(NORTH, false)
                 .with(SOUTH, false)
                 .with(WEST, false)
@@ -35,7 +34,7 @@ public class BlockAssemblyController extends BlockPneumaticCraft {
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(DOWN, NORTH, SOUTH, WEST, EAST);
+        builder.add(NORTH, SOUTH, WEST, EAST);
     }
 
     @Override

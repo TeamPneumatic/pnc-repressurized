@@ -1,0 +1,7 @@
+{
+  "parent": "pneumaticcraft:block/pressure_chamber_valve",
+  "textures": {
+    "north":  "pneumaticcraft:block/pressure_chamber/valve_formed",
+    "south":  "pneumaticcraft:block/pressure_chamber/valve_formed"
+  }
+}

@@ -158,15 +158,20 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
     public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockPos posDown = pos.down();
         BlockPos posUp = pos.up();
-        if (player.isCreative() && isTopDoor(state) && worldIn.getBlockState(posDown).getBlock() == this) {
+        if (isTopDoor(state) && worldIn.getBlockState(posDown).getBlock() == this) {
             worldIn.removeBlock(posDown, false);
-        }
-        if (!isTopDoor(state) && worldIn.getBlockState(posUp).getBlock() == this) {
-            if (player.isCreative()) {
-                worldIn.removeBlock(pos, false);
-            }
+        } else if (!isTopDoor(state) && worldIn.getBlockState(posUp).getBlock() == this) {
             worldIn.removeBlock(posUp, false);
         }
+//        if (player.isCreative() && isTopDoor(state) && worldIn.getBlockState(posDown).getBlock() == this) {
+//            worldIn.removeBlock(posDown, false);
+//        }
+//        if (!isTopDoor(state) && worldIn.getBlockState(posUp).getBlock() == this) {
+//            if (player.isCreative()) {
+//                worldIn.removeBlock(pos, false);
+//            }
+//            worldIn.removeBlock(posUp, false);
+//        }
     }
 
     @Override

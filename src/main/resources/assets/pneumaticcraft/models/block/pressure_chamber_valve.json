@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pneumaticcraft:block/pressure_chamber/valve_side",
+    "up": "pneumaticcraft:block/pressure_chamber/valve_side",
+    "north": "pneumaticcraft:block/pressure_chamber/valve",
+    "south": "pneumaticcraft:block/pressure_chamber/valve",
+    "west": "pneumaticcraft:block/pressure_chamber/valve_side",
+    "east":  "pneumaticcraft:block/pressure_chamber/valve_side",
+    "particle":  "pneumaticcraft:block/pressure_chamber/valve"
+  }
+}

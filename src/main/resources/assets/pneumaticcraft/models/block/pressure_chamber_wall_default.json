@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube",
+  "textures":{
+    "particle": "pneumaticcraft:block/pressure_chamber/pressure_chamber_wall"
+  }
+}

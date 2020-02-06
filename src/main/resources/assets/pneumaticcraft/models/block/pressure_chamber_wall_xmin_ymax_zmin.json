@@ -1,0 +1,11 @@
+{
+  "parent": "pneumaticcraft:block/pressure_chamber_wall_default",
+  "textures":{
+    "down": "pneumaticcraft:block/pressure_chamber/top_right",
+    "up": "pneumaticcraft:block/pressure_chamber/top_left",
+    "north": "pneumaticcraft:block/pressure_chamber/top_right",
+    "south": "pneumaticcraft:block/pressure_chamber/bottom_right",
+    "east": "pneumaticcraft:block/pressure_chamber/bottom_left",
+    "west": "pneumaticcraft:block/pressure_chamber/top_left"
+  }
+}

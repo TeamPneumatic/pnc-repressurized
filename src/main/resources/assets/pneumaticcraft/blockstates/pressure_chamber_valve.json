@@ -1,46 +1,40 @@
 {
-	"forge_marker": 1,
-	"defaults":{
-	   "model": "block/cube_column"
-	},
-	"variants":{
-		"formed":{
-		      "false":{
-		          "textures":{
-		              "side": "pneumaticcraft:block/pressure_chamber/valve_side",
-		              "end":  "pneumaticcraft:block/pressure_chamber/valve"
-		          }
-		      },
-		      "true":{
-		          "textures":{
-                      "side": "pneumaticcraft:block/pressure_chamber/valve_side",
-                      "end":  "pneumaticcraft:block/pressure_chamber/valve_formed"
-                  }
-		      } 
+	"variants": {
+		"formed=false,facing=up": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve", "x": 90
 		},
-		"facing":{
-		      "north":{
-		          "transform": {
-                    "rotation": {"x" : 90}
-                  }
-		      },
-		      "south":{
-                  "transform": {
-                    "rotation": {"x" : 90}
-                  }
-              },
-		      "east":{
-		          "transform": {
-                    "rotation": {"z" : 90}
-                  }
-		      },
-		      "west":{
-                  "transform": {
-                    "rotation": {"z" : 90}
-                  }
-              },
-              "up":{},
-              "down":{}
+		"formed=true,facing=up": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve_formed", "x": 90
+		},
+		"formed=false,facing=down": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve", "x": 270
+		},
+		"formed=true,facing=down": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve_formed", "x": 270
+		},
+		"formed=false,facing=east": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve", "y": 90
+		},
+		"formed=true,facing=east": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve_formed", "y": 90
+		},
+		"formed=false,facing=north": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve"
+		},
+		"formed=true,facing=north": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve_formed"
+		},
+		"formed=false,facing=west": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve", "y": 270
+		},
+		"formed=true,facing=west": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve_formed", "y": 270
+		},
+		"formed=false,facing=south": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve", "y": 180
+		},
+		"formed=true,facing=south": {
+			"model": "pneumaticcraft:block/pressure_chamber_valve_formed", "y": 180
 		}
 	}
 }

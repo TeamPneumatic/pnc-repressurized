@@ -1,0 +1,79 @@
+{
+  "textures": {
+    "pipe": "pneumaticcraft:block/pressure_tube"
+  },
+  "elements": [
+    {
+      "from": [ 12, 1, 7 ],
+      "to": [ 13, 9, 9 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" },
+        "east": { "texture": "#pipe" },
+        "west": { "texture": "#pipe" }
+      }
+    },
+    {
+      "from": [ 15, 1, 7 ],
+      "to": [ 15.999, 9, 9 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" },
+        "east": { "texture": "#pipe" },
+        "west": { "texture": "#pipe" }
+      }
+    },
+    {
+      "from": [ 13, 1, 6 ],
+      "to": [ 15, 9, 7 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" },
+        "east": { "texture": "#pipe" },
+        "west": { "texture": "#pipe" }
+      }
+    },
+    {
+      "from": [ 13, 1, 9 ],
+      "to": [ 15, 8, 10 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" },
+        "east": { "texture": "#pipe" },
+        "west": { "texture": "#pipe" }
+      }
+    },
+    {
+      "from": [ 13, 8, 7 ],
+      "to": [ 15, 10, 10 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" },
+        "east": { "texture": "#pipe" },
+        "west": { "texture": "#pipe" }
+      }
+    },
+    {
+      "from": [ 12, 7, 9 ],
+      "to": [ 15.999, 9, 10 ],
+      "faces": {
+        "north": { "texture": "#pipe" },
+        "south": { "texture": "#pipe" },
+        "down": { "texture": "#pipe" },
+        "up": { "texture": "#pipe" },
+        "east": { "texture": "#pipe" },
+        "west": { "texture": "#pipe" }
+      }
+    }
+  ]
+}

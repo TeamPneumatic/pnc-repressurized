@@ -39,6 +39,16 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
         INPUT_DOWN, INPUT_UP, INPUT_NORTH, INPUT_SOUTH, INPUT_WEST, INPUT_EAST
     };
 
+    private static final VoxelShape OUTPUT_DOWN = Block.makeCuboidShape(6, 0, 6, 10, 6, 10);
+    private static final VoxelShape OUTPUT_UP = Block.makeCuboidShape(6, 10, 6, 10, 16, 10);
+    private static final VoxelShape OUTPUT_NORTH = VoxelShapeUtils.rotateX(OUTPUT_DOWN, 90);
+    private static final VoxelShape OUTPUT_SOUTH = VoxelShapeUtils.rotateX(OUTPUT_DOWN, 270);
+    private static final VoxelShape OUTPUT_WEST = VoxelShapeUtils.rotateY(OUTPUT_NORTH, 270);
+    private static final VoxelShape OUTPUT_EAST = VoxelShapeUtils.rotateY(OUTPUT_NORTH, 90);
+    private static final VoxelShape[] OUTPUT_SHAPES = {
+            OUTPUT_DOWN, OUTPUT_UP, OUTPUT_NORTH, OUTPUT_SOUTH, OUTPUT_WEST, OUTPUT_EAST
+    };
+
     // standard FACING property is used for the output direction
     public static final EnumProperty<Direction> INPUT_FACING = EnumProperty.create("input", Direction.class);
 
@@ -53,8 +63,11 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        // TODO combine with output shape
-        return INPUT_SHAPES[state.get(INPUT_FACING).getIndex()];
+        return VoxelShapes.combineAndSimplify(
+                INPUT_SHAPES[state.get(INPUT_FACING).getIndex()],
+                OUTPUT_SHAPES[state.get(directionProperty()).ordinal()],
+                IBooleanFunction.OR
+        );
     }
 
     @Override

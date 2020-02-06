@@ -1,38 +1,19 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "textures": {},
-    "model": "pneumaticcraft:block/air_cannon"
-  },
   "variants": {
-    "facing": {
-      "east": {
-        "transform": {
-          "translation": [ 0, -0.0625, 0 ],
-          "scale" : [ 0.875, 0.875, 0.875 ],
-          "rotation": {"y" : 90}
-        }
-      },
-      "north": {
-        "transform": {
-          "translation": [ 0, -0.0625, 0 ],
-          "scale" : [ 0.875, 0.875, 0.875 ],
-          "rotation": {"y" : 180}
-        }
-      },
-      "west": {
-        "transform": {
-          "translation": [ 0, -0.0625, 0 ],
-          "scale" : [ 0.875, 0.875, 0.875 ],
-          "rotation": {"y": 270}
-        }
-      },
-      "south": {
-        "transform": {
-          "translation": [ 0, -0.0625, 0 ],
-          "scale" : [ 0.875, 0.875, 0.875 ]
-        }
-      }
+    "facing=north": {
+      "model": "pneumaticcraft:block/air_cannon",
+      "y": 270
+    },
+    "facing=south": {
+      "model": "pneumaticcraft:block/air_cannon",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "pneumaticcraft:block/air_cannon",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "pneumaticcraft:block/air_cannon"
     }
   }
 }

@@ -1,37 +1,34 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "pneumaticcraft:block/pneumatic_door"
-  },
   "variants": {
-    "facing": {
-      "east": {
-        "transform": {
-          "rotation": {"y" : 90}
-        }
-      },
-      "north": {
-        "transform": {
-          "rotation": {"y" : 180}
-        }
-      },
-      "west": {
-        "transform": {
-          "rotation": {"y": 270}
-        }
-      },
-      "south": {
-        "transform": {
-        }
-      }
+    "top_door=false,facing=east": {
+      "model": "pneumaticcraft:block/pneumatic_door",
+      "y": 90
     },
-    "top_door": {
-      "false": {
-        "textures": {
-          "particle": "pneumaticcraft:block/compressed_iron_block"
-        }
-      },
-      "true": { }
+    "top_door=true,facing=east": {
+      "model": "pneumaticcraft:block/pneumatic_door_top",
+      "y": 90
+    },
+    "top_door=false,facing=north": {
+      "model": "pneumaticcraft:block/pneumatic_door",
+      "y": 180
+    },
+    "top_door=true,facing=north": {
+      "model": "pneumaticcraft:block/pneumatic_door_top",
+      "y": 180
+    },
+    "top_door=false,facing=west": {
+      "model": "pneumaticcraft:block/pneumatic_door",
+      "y": 270
+    },
+    "top_door=true,facing=west": {
+      "model": "pneumaticcraft:block/pneumatic_door_top",
+      "y": 270
+    },
+    "top_door=false,facing=south": {
+      "model": "pneumaticcraft:block/pneumatic_door"
+    },
+    "top_door=true,facing=south": {
+      "model": "pneumaticcraft:block/pneumatic_door_top"
     }
   }
 }

@@ -1,0 +1,19 @@
+{
+  "textures": {
+    "base": "minecraft:block/smooth_stone"
+  },
+  "elements": [
+    {
+      "from" : [ 0.999, 0, 0.999 ],
+      "to" : [ 15.001, 3, 15.001 ],
+      "faces": {
+        "down": { "texture": "#base", "uv": [ 0, 0, 16, 16 ], "cullface": "down" },
+        "up": { "texture": "#base", "uv": [ 0, 0, 16, 16 ] },
+        "north": { "texture": "#base" },
+        "south": { "texture": "#base" },
+        "west": { "texture": "#base" },
+        "east": { "texture": "#base" }
+      }
+    }
+  ]
+}
