@@ -6,7 +6,6 @@ import com.mojang.brigadier.context.CommandContext;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.BlockPosArgument;
@@ -75,8 +74,7 @@ public class ModCommands {
                 source.sendErrorMessage(new StringTextComponent("No NBT"));
                 return 0;
             }
-            NBTToJsonConverter conv = new NBTToJsonConverter(held.getTag());
-            String msg = conv.convert(true);
+            String msg = held.getTag().toString();
             source.sendFeedback(new StringTextComponent(msg), false);
             return 1;
         }
