@@ -47,6 +47,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -212,7 +213,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     protected void onFirstServerUpdate() {
-        initializeIfHeatExchanger();
+        initializeHullHeatExchangers();
     }
 
     protected void updateNeighbours() {
@@ -394,7 +395,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     public void onNeighborBlockUpdate() {
         poweredRedstone = PneumaticCraftUtils.getRedstoneLevel(getWorld(), getPos());
-        initializeIfHeatExchanger();
+        initializeHullHeatExchangers();
         for (TileEntityCache cache : getTileCache()) {
             cache.update();
         }
@@ -413,13 +414,14 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         return false;
     }
 
-    protected void initializeIfHeatExchanger() {
-        getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
-                .ifPresent(logic -> initializeHeatExchanger(logic, getConnectedHeatExchangerSides()));
-    }
-
-    void initializeHeatExchanger(IHeatExchangerLogic heatExchanger, Direction... connectedSides) {
-        heatExchanger.initializeAsHull(getWorld(), getPos(), shouldLoseHeatToAir(), connectedSides);
+    private void initializeHullHeatExchangers() {
+        Map<IHeatExchangerLogic, List<Direction>> map = new IdentityHashMap<>();
+        for (Direction side : Direction.VALUES) {
+            getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side)
+                    .ifPresent(logic -> map.computeIfAbsent(logic, k -> new ArrayList<>()).add(side));
+        }
+        map.forEach((logic, sides) ->
+                logic.initializeAsHull(getWorld(), getPos(), shouldLoseHeatToAir(), sides.toArray(new Direction[0])));
     }
 
     /**
@@ -428,16 +430,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
      */
     protected boolean shouldLoseHeatToAir() {
         return true;
-    }
-
-    /**
-     * Gets the valid sides for heat exchanging to be allowed.  An empty array means <strong>no</strong> valid sides
-     * (note: behaviour changed from 1.12 and earlier)
-     *
-     * @return an array of valid sides
-     */
-    protected Direction[] getConnectedHeatExchangerSides() {
-        return Direction.VALUES;
     }
 
     @Override

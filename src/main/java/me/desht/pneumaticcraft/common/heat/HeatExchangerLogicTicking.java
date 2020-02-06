@@ -19,7 +19,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private final Set<IHeatExchangerLogic> hullExchangers = new HashSet<>();
     private final Set<IHeatExchangerLogic> connectedExchangers = new HashSet<>();
     private List<HeatBehaviour> behaviours = new ArrayList<>();
-    private List<HeatBehaviour> newBehaviours; //Required to prevent a CME
+    private List<HeatBehaviour> newBehaviours; // required to prevent CME problems
     private double ambientTemperature = -1;
     private double temperature = HeatExchangerLogicAmbient.BASE_AMBIENT_TEMP;  // degrees Kelvin, 300K by default
     @GuiSynced

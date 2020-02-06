@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.heat;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Heat;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -8,10 +9,10 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
     static final double BASE_AMBIENT_TEMP = 300; // temperature of water in the registry
 
     private static final HeatExchangerLogicAmbient DEFAULT_AIR_EXCHANGER = new HeatExchangerLogicAmbient(BASE_AMBIENT_TEMP);
+    private static final Int2ObjectOpenHashMap<HeatExchangerLogicAmbient> exchangers = new Int2ObjectOpenHashMap<>();
 
     public static HeatExchangerLogicAmbient atPosition(World world, BlockPos pos) {
-        if (PNCConfig.Common.Heat.ambientTempBiomeModifier == 0
-                && PNCConfig.Common.Heat.ambientTempHeightModifier == 0) {
+        if (Heat.ambientTempBiomeModifier == 0 && Heat.ambientTempHeightModifier == 0) {
             return DEFAULT_AIR_EXCHANGER;
         }
 
@@ -26,14 +27,11 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
             h = 40 - pos.getY();
         }
 
-        double temp = BASE_AMBIENT_TEMP
-                + PNCConfig.Common.Heat.ambientTempBiomeModifier * t
-                + PNCConfig.Common.Heat.ambientTempHeightModifier * h;
-
-        return new HeatExchangerLogicAmbient(temp);
+        int temp = (int) (BASE_AMBIENT_TEMP + Heat.ambientTempBiomeModifier * t + Heat.ambientTempHeightModifier * h);
+        return exchangers.computeIfAbsent(temp, HeatExchangerLogicAmbient::new);
     }
 
     private HeatExchangerLogicAmbient(double temperature) {
-        super(temperature, PNCConfig.Common.Heat.airThermalResistance);
+        super(temperature, Heat.airThermalResistance);
     }
 }

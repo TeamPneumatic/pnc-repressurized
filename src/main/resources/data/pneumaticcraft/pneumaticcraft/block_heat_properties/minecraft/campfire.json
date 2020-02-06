@@ -5,6 +5,6 @@
   "thermalResistance": 5000,
   "heatCapacity": 10000,
   "transformCold": {
-    "block": "minecraft:campfire"
+    "block": "minecraft:campfire[lit=false]"
   }
 }

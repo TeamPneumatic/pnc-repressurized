@@ -9,22 +9,17 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.common.util.LazyOptional;
 
-public class TileEntityHasHeatSink extends TileEntityCompressedIronBlock {
+public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
 
     private final IHeatExchangerLogic airExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
 
     private double ambientTemp = -1;
 
-    public TileEntityHasHeatSink() {
+    public TileEntityHeatSink() {
         super(ModTileEntities.HEAT_SINK.get());
 
         airExchanger.addConnectedExchanger(heatExchanger);
         airExchanger.setThermalResistance(TileEntityConstants.HEAT_SINK_THERMAL_RESISTANCE);
-    }
-
-    @Override
-    protected Direction[] getConnectedHeatExchangerSides() {
-        return new Direction[]{getRotation()};
     }
 
     @Override

@@ -44,19 +44,8 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    protected Direction[] getConnectedHeatExchangerSides() {
-        return new Direction[]{getRotation().getOpposite()};
-    }
-
-    @Override
     public IItemHandler getPrimaryInventory() {
         return null;
-    }
-
-    @Override
-    protected void initializeIfHeatExchanger() {
-        super.initializeIfHeatExchanger();
-        initializeHeatExchanger(coldHeatExchanger, getRotation());
     }
 
     @Override

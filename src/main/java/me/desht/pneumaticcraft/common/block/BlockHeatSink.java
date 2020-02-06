@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityHasHeatSink;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -39,7 +39,7 @@ public class BlockHeatSink extends BlockPneumaticCraft {
 
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityHasHeatSink.class;
+        return TileEntityHeatSink.class;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class BlockHeatSink extends BlockPneumaticCraft {
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos,Entity entity) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityHasHeatSink && entity instanceof LivingEntity) {
+        if (te instanceof TileEntityHeatSink && entity instanceof LivingEntity) {
             if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative()) return;
             te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).ifPresent(heatExchanger -> {
                 double temp = heatExchanger.getTemperature();

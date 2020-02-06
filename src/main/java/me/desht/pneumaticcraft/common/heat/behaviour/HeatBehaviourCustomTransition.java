@@ -50,13 +50,13 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
 
     @Override
     protected boolean transformBlockHot() {
-        Block hot = getHeatEntry().getTransformHot();
+        BlockState hot = getHeatEntry().getTransformHot();
         if (hot != null) {
             if (getFluid() != null) {
-                transformFluidBlocks(hot.getDefaultState(), getHeatEntry().getTransformHotFlowing().getDefaultState());
+                transformFluidBlocks(hot, getHeatEntry().getTransformHotFlowing());
                 return true;
             } else {
-                return getWorld().setBlockState(getPos(), hot.getDefaultState());
+                return getWorld().setBlockState(getPos(), hot);
             }
         } else {
             return false;
@@ -65,13 +65,13 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
 
     @Override
     protected boolean transformBlockCold() {
-        Block cold = getHeatEntry().getTransformCold();
+        BlockState cold = getHeatEntry().getTransformCold();
         if (cold != null) {
             if (getFluid() != null) {
-                transformFluidBlocks(cold.getDefaultState(), getHeatEntry().getTransformColdFlowing().getDefaultState());
+                transformFluidBlocks(cold, getHeatEntry().getTransformColdFlowing());
                 return true;
             } else {
-                return getWorld().setBlockState(getPos(), cold.getDefaultState());
+                return getWorld().setBlockState(getPos(), cold);
             }
         } else {
             return false;

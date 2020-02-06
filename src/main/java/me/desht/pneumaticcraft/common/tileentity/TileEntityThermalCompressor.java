@@ -67,15 +67,6 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    protected void initializeIfHeatExchanger() {
-        super.initializeIfHeatExchanger();
-
-        for (int i = 0; i < heatExchangers.length; i++) {
-            initializeHeatExchanger(heatExchangers[i], Direction.byHorizontalIndex(i));
-        }
-    }
-
-    @Override
     public IItemHandler getPrimaryInventory() {
         return null;
     }

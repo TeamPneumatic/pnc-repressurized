@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityHasHeatSink;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -32,7 +32,7 @@ import java.util.Set;
 public class ModuleAirGrate extends TubeModule {
     private int grateRange;
     private boolean vacuum;
-    private final Set<TileEntityHasHeatSink> heatSinks = new HashSet<>();
+    private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
     private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x5500FF00);
     private boolean resetRendering = false;
     private EntityFilter entityFilter = null;
@@ -162,11 +162,11 @@ public class ModuleAirGrate extends TubeModule {
             int curTeIndex = (int) (pressureTube.getWorld().getGameTime() % 27);
             BlockPos curPos = pressureTube.getPos().offset(dir, 2).add(-1 + curTeIndex % 3, -1 + curTeIndex / 3 % 3, -1 + curTeIndex / 9 % 3);
             TileEntity te = pressureTube.getWorld().getTileEntity(curPos);
-            if (te instanceof TileEntityHasHeatSink) heatSinks.add((TileEntityHasHeatSink) te);
+            if (te instanceof TileEntityHeatSink) heatSinks.add((TileEntityHeatSink) te);
 
-            Iterator<TileEntityHasHeatSink> iterator = heatSinks.iterator();
+            Iterator<TileEntityHeatSink> iterator = heatSinks.iterator();
             while (iterator.hasNext()) {
-                TileEntityHasHeatSink heatSink = iterator.next();
+                TileEntityHeatSink heatSink = iterator.next();
                 if (heatSink.isRemoved()) {
                     iterator.remove();
                 } else {

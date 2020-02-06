@@ -3,6 +3,8 @@ package me.desht.pneumaticcraft.common.heat;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.heat.HeatRegistrationEvent;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -12,6 +14,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.command.arguments.BlockStateParser;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.resources.IResourceManager;
@@ -80,18 +83,18 @@ public enum BlockHeatProperties {
      * @return a new custom heat entry for this fluid
      */
     private CustomHeatEntry buildDefaultFluidEntry(Block block, Fluid fluid) {
-        Block transformHot, transformHotFlowing, transformCold, transformColdFlowing;
+        BlockState transformHot, transformHotFlowing, transformCold, transformColdFlowing;
         int temperature = fluid.getAttributes().getTemperature();
         if (fluid.getAttributes().getTemperature() >= 1300) {  // lava temperature
             transformHot = null;
             transformHotFlowing = null;
-            transformCold = Blocks.OBSIDIAN;
-            transformColdFlowing = Blocks.COBBLESTONE;
+            transformCold = Blocks.OBSIDIAN.getDefaultState();
+            transformColdFlowing = Blocks.COBBLESTONE.getDefaultState();
         } else {
-            transformHot = Blocks.STONE;
-            transformHotFlowing = Blocks.AIR;
-            transformCold = Blocks.ICE;
-            transformColdFlowing = Blocks.SNOW;
+            transformHot = Blocks.STONE.getDefaultState();
+            transformHotFlowing = Blocks.AIR.getDefaultState();
+            transformCold = Blocks.ICE.getDefaultState();
+            transformColdFlowing = Blocks.SNOW.getDefaultState();
         }
         return new CustomHeatEntry(
                 block,
@@ -151,15 +154,17 @@ public enum BlockHeatProperties {
         private final int temperature;
         private final double thermalResistance;
         private final Block block;
-        private final Block transformHot;
-        private final Block transformHotFlowing;
-        private final Block transformCold;
-        private final Block transformColdFlowing;
+        private final BlockState transformHot;
+        private final BlockState transformHotFlowing;
+        private final BlockState transformCold;
+        private final BlockState transformColdFlowing;
         private final ResourceLocation id;
         private final Map<String, String> predicates;
         private final IHeatExchangerLogic logic;
 
-        CustomHeatEntry(Block block, Block transformHot, Block transformHotFlowing, Block transformCold, Block transformColdFlowing,
+        CustomHeatEntry(Block block,
+                        BlockState transformHot, BlockState transformHotFlowing,
+                        BlockState transformCold, BlockState transformColdFlowing,
                         int heatCapacity, int temperature, double thermalResistance, Map<String, String> predicates) {
             this.id = block.getRegistryName();
             this.heatCapacity = heatCapacity;
@@ -180,10 +185,10 @@ public enum BlockHeatProperties {
         }
 
         static CustomHeatEntry fromJson(JsonObject json) {
-            Block transformHot = null;
-            Block transformHotFlowing = null;
-            Block transformCold = null;
-            Block transformColdFlowing = null;
+            BlockState transformHot = null;
+            BlockState transformHotFlowing = null;
+            BlockState transformCold = null;
+            BlockState transformColdFlowing = null;
             Map<String, String> predicates = new HashMap<>();
 
             Block block;
@@ -292,21 +297,25 @@ public enum BlockHeatProperties {
             }
         }
 
-        private static Block maybeGetBlock(Block b, JsonObject json, String field) {
+        private static BlockState parseBlockState(String str) {
+            try {
+                BlockStateParser parser = (new BlockStateParser(new StringReader(str), false)).parse(false);
+                return parser.getState();
+            } catch (CommandSyntaxException e) {
+                throw new JsonSyntaxException(String.format("invalid blockstate [%s] - %s", str, e.getMessage()));
+            }
+        }
+
+        private static BlockState maybeGetBlock(Block b, JsonObject json, String field) {
             if (!json.has(field)) return null;
 
             JsonObject sub = json.get(field).getAsJsonObject();
             if (sub.has("block")) {
-                ResourceLocation blockId = new ResourceLocation(JSONUtils.getString(sub, "block"));
-                if (ForgeRegistries.BLOCKS.containsKey(blockId)) {
-                    return ForgeRegistries.BLOCKS.getValue(blockId);
-                } else {
-                    throw new JsonSyntaxException(String.format("unknown block '%s' for field '%s' in block '%s'", blockId, field, b.getRegistryName()));
-                }
+                return parseBlockState(JSONUtils.getString(sub, "block"));
             } else if (sub.has("fluid")) {
                 ResourceLocation fluidId = new ResourceLocation(JSONUtils.getString(sub, "fluid"));
                 if (ForgeRegistries.FLUIDS.containsKey(fluidId)) {
-                    return ForgeRegistries.FLUIDS.getValue(fluidId).getDefaultState().getBlockState().getBlock();
+                    return ForgeRegistries.FLUIDS.getValue(fluidId).getDefaultState().getBlockState();
                 } else {
                     throw new JsonSyntaxException(String.format("unknown fluid '%s' for field '%s' in block '%s'", fluidId, field, b.getRegistryName()));
                 }
@@ -331,19 +340,19 @@ public enum BlockHeatProperties {
             return block;
         }
 
-        public Block getTransformHot() {
+        public BlockState getTransformHot() {
             return transformHot;
         }
 
-        public Block getTransformCold() {
+        public BlockState getTransformCold() {
             return transformCold;
         }
 
-        public Block getTransformHotFlowing() {
+        public BlockState getTransformHotFlowing() {
             return transformHotFlowing;
         }
 
-        public Block getTransformColdFlowing() {
+        public BlockState getTransformColdFlowing() {
             return transformColdFlowing;
         }
 

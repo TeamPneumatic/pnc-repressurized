@@ -52,8 +52,8 @@ public enum HeatBehaviourManager {
     }
 
     public void addHeatBehaviours(World world, BlockPos pos, Direction direction, IHeatExchangerLogic logic, List<HeatBehaviour> list) {
-        for (Supplier<? extends HeatBehaviour> sup : behaviourRegistry.values()) {
-            HeatBehaviour behaviour = sup.get().initialize(logic, world, pos, direction);
+        for (Supplier<? extends HeatBehaviour> bSup : behaviourRegistry.values()) {
+            HeatBehaviour behaviour = bSup.get().initialize(logic, world, pos, direction);
             if (behaviour.isApplicable()) {
                 list.add(behaviour);
             }
