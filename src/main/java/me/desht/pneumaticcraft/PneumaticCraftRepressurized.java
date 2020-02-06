@@ -2,10 +2,10 @@ package me.desht.pneumaticcraft;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.client.AreaShowManager;
 import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.event.ClientTickHandler;
+import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
@@ -203,7 +203,7 @@ public class PneumaticCraftRepressurized {
             MinecraftForge.EVENT_BUS.register(ClientTickHandler.instance());
             MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
             MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));
-            MinecraftForge.EVENT_BUS.register(AreaShowManager.getInstance());
+            MinecraftForge.EVENT_BUS.register(AreaRenderManager.getInstance());
             MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
 
             EntityTrackHandler.registerDefaultEntries();

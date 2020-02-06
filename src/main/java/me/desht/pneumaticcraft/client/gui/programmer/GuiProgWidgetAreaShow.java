@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import me.desht.pneumaticcraft.client.AreaShowManager;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraft.client.resources.I18n;
 
@@ -19,7 +19,7 @@ public class GuiProgWidgetAreaShow<P extends IProgWidget> extends GuiProgWidgetO
         if (displayShowAreaButtons()) {
             addButton(new WidgetCheckBox(guiLeft + 8, guiTop + ySize - (font.FONT_HEIGHT + 8), 0x404040,
                     I18n.format("gui.programmer.button.showArea"), this::previewArea)
-                    .setChecked(AreaShowManager.getInstance().isShowing(guiProgrammer.te)));
+                    .setChecked(AreaRenderManager.getInstance().isShowing(guiProgrammer.te)));
         }
     }
 

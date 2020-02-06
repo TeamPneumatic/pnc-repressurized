@@ -53,19 +53,25 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
         if (worldIn.isRemote) {
-            GuiGPSAreaTool.showGUI(handIn, stack, 0);
+            GuiGPSAreaTool.showGUI(stack, handIn, 0);
         }
         return ActionResult.newResult(ActionResultType.SUCCESS, stack);
     }
 
 
     public static void setGPSPosAndNotify(PlayerEntity player, BlockPos pos, Hand hand, int index){
-        setGPSLocation(player.getHeldItem(hand), pos, index);
+        ItemStack stack = player.getHeldItem(hand);
+        setGPSLocation(stack, pos, index);
         if (!player.world.isRemote) {
-            player.sendStatusMessage(new StringTextComponent(TextFormatting.GREEN + String.format("[GPS Area Tool] Set P%d to %d, %d, %d.", index + 1, pos.getX(), pos.getY(), pos.getZ())), false);
+            player.sendStatusMessage(new StringTextComponent(TextFormatting.AQUA + String.format("[%s] %s", stack.getDisplayName().getFormattedText(), getMessageText(pos, index))), false);
             if (player instanceof ServerPlayerEntity)
                 ((ServerPlayerEntity) player).connection.sendPacket(new SHeldItemChangePacket(player.inventory.currentItem));
         }
+    }
+
+    private static String getMessageText(BlockPos pos, int index) {
+        String str = String.format("P%d%s: [%d, %d, %d]", index + 1, TextFormatting.YELLOW.toString(), pos.getX(), pos.getY(), pos.getZ());
+        return (index == 0 ? TextFormatting.RED.toString() : TextFormatting.GREEN.toString()) + str;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -74,7 +80,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         super.addInformation(stack, worldIn, infoList, par4);
         for(int index = 0; index < 2; index++){
             BlockPos pos = getGPSLocation(worldIn, stack, index);
-            infoList.add(new StringTextComponent(String.format("P%d: %d, %d, %d", index + 1, pos.getX(), pos.getY(), pos.getZ())).applyTextStyle(TextFormatting.GREEN));
+            infoList.add(new StringTextComponent(getMessageText(pos, index)).applyTextStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN));
             String varName = getVariable(stack, index);
             if (!varName.isEmpty()) {
                 infoList.add(xlate("gui.tooltip.gpsTool.variable", varName));
@@ -183,7 +189,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         @SubscribeEvent
         public static void onLeftClickAir(PlayerInteractEvent.LeftClickEmpty event) {
             if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL.get()) {
-                GuiGPSAreaTool.showGUI(event.getHand(), event.getItemStack(), 1);
+                GuiGPSAreaTool.showGUI(event.getItemStack(), event.getHand(), 1);
             }
         }
     }

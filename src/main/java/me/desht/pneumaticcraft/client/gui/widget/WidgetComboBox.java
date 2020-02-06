@@ -95,8 +95,10 @@ public class WidgetComboBox extends WidgetTextField {
                     // in the drop-down area
                     setFocused(false);
                     int i = ((int) mouseY - y) / fontRenderer.FONT_HEIGHT - 1;
-                    setText(getApplicableElements().get(i));
-                    selectedIndex = i;
+                    if (i < getApplicableElements().size()) {
+                        setText(getApplicableElements().get(i));
+                        selectedIndex = i;
+                    }
                 }
                 return true;
             }

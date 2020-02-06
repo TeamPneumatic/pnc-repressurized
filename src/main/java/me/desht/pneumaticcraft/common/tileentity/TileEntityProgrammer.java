@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
-import me.desht.pneumaticcraft.client.AreaShowManager;
+import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.config.aux.ProgWidgetConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -497,11 +497,11 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
 
     public void previewArea(IProgWidget progWidget) {
         if (progWidget == null) {
-            AreaShowManager.getInstance().removeHandlers(this);
+            AreaRenderManager.getInstance().removeHandlers(this);
         } else if (progWidget instanceof IAreaProvider) {
             Set<BlockPos> area = new HashSet<>();
             ((IAreaProvider) progWidget).getArea(area);
-            AreaShowManager.getInstance().showArea(area, 0x9000FF00, this);
+            AreaRenderManager.getInstance().showArea(area, 0x9000FF00, this);
         }
     }
 
