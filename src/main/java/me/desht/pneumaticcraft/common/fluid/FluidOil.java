@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.state.StateContainer;
+import net.minecraft.world.IWorldReader;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
@@ -23,6 +24,11 @@ public abstract class FluidOil extends ForgeFlowingFluid {
 
     FluidOil() {
         super(PROPS);
+    }
+
+    @Override
+    public int getTickRate(IWorldReader world) {
+        return 20;
     }
 
     public static class Source extends FluidOil {
