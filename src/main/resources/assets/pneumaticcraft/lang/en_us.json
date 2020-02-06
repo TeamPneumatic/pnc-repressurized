@@ -1056,7 +1056,7 @@
   "gui.tooltip.amadronTablet.fluidLocation": "Fluids @ §6%s",
   "gui.tooltip.amadronTablet.selectItemLocation": "Right click an inventory to allow it to provide items to vendors.",
   "gui.tooltip.amadronTablet.selectFluidLocation": "Right click a tank to allow it to provide fluids to vendors.",
-  "gui.tooltip.gpsTool.variable": "Linked variable: \"#%s\"",
+  "gui.tooltip.gpsTool.variable": "▶ Linked variable: \"#%s\"",
   "gui.tooltip.aerial_interface.xpDisabled": "XP handling disabled",
   "gui.tooltip.charging_station.manageUpgrades": "Manage Upgrades for the %s",
 
@@ -1107,7 +1107,7 @@
   "gui.tooltip.item.pneumaticcraft.spawner_agitator": "When placed on Mob Spawners, the Spawner Agitator will prevent the spawned entity to despawn when the player leaves the area. Additionally, the spawner will keep spawning while the player is not in the area. Mob farm anyone? ",
   "gui.tooltip.item.pneumaticcraft.crop_support": "When placed on soil or dirt, this will improve the growth speed of any crop or tree that grows there. Sneak + Right-Click with a Logistics Configurator to detach the item.",
   "gui.tooltip.item.pneumaticcraft.transfer_gadget": "When placed between two inventories, it slowly (1 item every 2 seconds) transfers items from one inventory to the other. It does not require any block space. Right-click with a Logistics Configurator to toggle the direction. Sneak + Right-Click to detach the gadget.",
-  "gui.tooltip.item.pneumaticcraft.minigun": "This handheld weapon requires Gun Ammo to operate, which must be placed in the gun's magazine; Sneak + Right-click to access the magazine. \\nThis Minigun can be upgraded in a Charging Station.",
+  "gui.tooltip.item.pneumaticcraft.minigun": "This handheld weapon requires Gun Ammo to operate, which must be placed in the gun's magazine; Sneak + Right-click to access the magazine. \\n This Minigun can be upgraded in a Charging Station.",
   "gui.tooltip.item.uvLightBox.successChance": "Etch success chance: %d%%",
   "gui.tooltip.item.uvLightBox.putInLightBox": "Put in a UV Light Box to progress...",
   "gui.tooltip.item.uvLightBox.etchProgress": "Etching progress: %d%%",
@@ -1115,7 +1115,7 @@
   "gui.tooltip.item.upgrade.usedIn": "Used in:",
   "gui.tooltip.item.upgrade.shiftMessage": "Hold Shift to see which machines use this upgrade",
 
-  "gui.tooltip.item.pneumaticcraft.camo_applicator": "This tool is used to add or remove camouflage to camouflageable blocks.  When held, nearby camouflageable blocks will be highlighted.  Sneak-right-click any solid block to copy its appearance, or air to clear the stored camo.  Right-click any highlighted camouflageable block to apply (or remove) camouflage.",
+  "gui.tooltip.item.pneumaticcraft.camo_applicator": "Used to add or remove camouflage to camouflageable blocks.  When held, nearby camouflageable blocks will be highlighted.  \\n ▶ Right-click any camouflageable block to apply/remove camo \\n ▶ Right-click any other block to record the block's appearance \\n ▶ Sneak-right-click anywhere to clear copied camo",
   "gui.tooltip.item.pneumaticcraft.diagnostic_subroutine": "Required component in a Security Station. \\n \\nThis component is responsible for tracing hack attempts back to the hacker.  If all Diagnostic Subroutines are hacked, the Security Station has been compromised.",
   "gui.tooltip.item.pneumaticcraft.network_api": "This component can store drone programs. Unlike the Network Data Storage, it requires puzzle pieces to program, and can serve as an executable program in a Programmable Controller, or for drones using External Program pieces.",
   "gui.tooltip.item.pneumaticcraft.network_data_storage": "This component can store drone programs. It does not need puzzle pieces to program, and cannot be used to execute programs.  However, it is useful if you want to store a library of programs for loading into the Programmer at a later date.",

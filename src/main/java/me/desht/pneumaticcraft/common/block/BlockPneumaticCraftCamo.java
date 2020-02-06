@@ -82,6 +82,18 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
     }
 
     @Override
+    public VoxelShape getRaytraceShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+        ICamouflageableTE camo = getCamoState(worldIn, pos);
+        return camo != null ? camo.getCamouflage().getRaytraceShape(worldIn, pos) : super.getRaytraceShape(state, worldIn, pos);
+    }
+
+    @Override
+    public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+        ICamouflageableTE camo = getCamoState(worldIn, pos);
+        return camo != null ? camo.getCamouflage().getRenderShape(worldIn, pos) : super.getRenderShape(state, worldIn, pos);
+    }
+
+    @Override
     public boolean doesSideBlockRendering(BlockState state, IEnviromentBlockReader world, BlockPos pos, Direction face) {
         ICamouflageableTE camo = getCamoState(world, pos);
         return camo == null || camo.getCamouflage().doesSideBlockRendering(world, pos, face);
