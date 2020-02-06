@@ -69,14 +69,14 @@ public class DroneAIPlace extends DroneAIBlockInteraction<ProgWidgetPlace> {
     //TODO 1.8 test
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
-        if (drone.getPathNavigator().hasNoPath()) {
+//        if (drone.getPathNavigator().hasNoPath()) {
+        if (distToBlock < 2) {
             Direction side = ProgWidgetPlace.getDirForSides(((ISidedWidget) progWidget).getSides());
             for (int i = 0; i < drone.getInv().getSlots(); i++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(i);
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
                     BlockItem blockItem = (BlockItem) droneStack.getItem();
-                    BlockPos placerPos = pos.offset(side);
-                    BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(PneumaticCraftUtils.getBlockCentre(placerPos), PneumaticCraftUtils.getBlockCentre(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, drone.getFakePlayer()));
+                    BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(PneumaticCraftUtils.getBlockCentre(pos), PneumaticCraftUtils.getBlockCentre(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, drone.getFakePlayer()));
                     BlockItemUseContext ctx = new BlockItemUseContext(new ItemUseContext(drone.getFakePlayer(), Hand.MAIN_HAND, brtr));
                     Block placingBlock = blockItem.getBlock();
                     BlockState state = placingBlock.getStateForPlacement(ctx);
@@ -86,8 +86,8 @@ public class DroneAIPlace extends DroneAIBlockInteraction<ProgWidgetPlace> {
                                 .ifPresent(h -> h.addAir(-PneumaticValues.DRONE_USAGE_PLACE));
                         SoundType soundType = placingBlock.getSoundType(state, drone.world(), pos, drone.getFakePlayer());
                         drone.world().playSound(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, soundType.getPlaceSound(), SoundCategory.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F, false);
-                        droneStack.shrink(1);
-                        if (droneStack.getCount() <= 0) {
+                        if (i == 0 && drone.getInv().getStackInSlot(i).isEmpty()) {
+                            // kludge to force update of visible held item
                             drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
                         }
                         return false;

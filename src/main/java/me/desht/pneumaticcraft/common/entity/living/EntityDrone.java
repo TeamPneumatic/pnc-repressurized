@@ -229,6 +229,7 @@ public class EntityDrone extends EntityDroneBase implements
                     .orElseThrow(RuntimeException::new);
             getAirHandler().addAir(air);
             progWidgets = TileEntityProgrammer.getWidgetsFromNBT(stackTag);
+            TileEntityProgrammer.updatePuzzleConnections(progWidgets);
             setDroneColor(stackTag.getInt("color"));
         }
         if (iStack.hasDisplayName()) setCustomName(iStack.getDisplayName());
@@ -881,6 +882,7 @@ public class EntityDrone extends EntityDroneBase implements
         super.readAdditional(tag);
 
         progWidgets = TileEntityProgrammer.getWidgetsFromNBT(tag);
+        TileEntityProgrammer.updatePuzzleConnections(progWidgets);
         naturallySpawned = tag.getBoolean("naturallySpawned");
         getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
         propSpeed = tag.getFloat("propSpeed");

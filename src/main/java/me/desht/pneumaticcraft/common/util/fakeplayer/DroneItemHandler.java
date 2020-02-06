@@ -44,7 +44,7 @@ public class DroneItemHandler extends ItemStackHandler {
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         ItemStack prevStack = getStackInSlot(slot).copy();
         super.setStackInSlot(slot, stack);
-        if (!ItemStack.areItemStacksEqual(stack, prevStack)) {
+        if (!stack.isItemEqual(prevStack) || stack.getCount() != prevStack.getCount()) {
             copyItemToFakePlayer(slot);
         }
     }
