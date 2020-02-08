@@ -154,7 +154,7 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase im
     }
 
     static List<ItemEntity> getNeighborItems(TileEntity te, Direction dir) {
-        AxisAlignedBB box = new AxisAlignedBB(te.getPos()).grow(dir.getXOffset(), dir.getYOffset(), dir.getZOffset());
+        AxisAlignedBB box = new AxisAlignedBB(te.getPos()).expand(dir.getXOffset(), dir.getYOffset(), dir.getZOffset());
         return te.getWorld().getEntitiesWithinAABB(ItemEntity.class, box, EntityPredicates.IS_ALIVE);
     }
 
