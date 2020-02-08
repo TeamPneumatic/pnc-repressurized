@@ -15,8 +15,7 @@ import java.util.function.Supplier;
  * Sent by client when tube module settings are updated via GUI.
  */
 public abstract class PacketUpdateTubeModule extends LocationIntPacket {
-
-    protected Direction moduleSide;
+    private Direction moduleSide;
 
     public PacketUpdateTubeModule() {
     }
@@ -45,7 +44,6 @@ public abstract class PacketUpdateTubeModule extends LocationIntPacket {
                 if (module != null) {
                     PlayerEntity player = ctx.get().getSender();
                     onModuleUpdate(module, player);
-//                    if (player != null && !player.world.isRemote) NetworkHandler.sendToAllAround(this, player.world);
                 }
             }
         });

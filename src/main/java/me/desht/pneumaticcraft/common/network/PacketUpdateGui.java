@@ -30,13 +30,13 @@ public class PacketUpdateGui {
     }
 
     public PacketUpdateGui(PacketBuffer buf) {
-        syncId = buf.readInt();
+        syncId = buf.readVarInt();
         type = buf.readByte();
         value = SyncedField.fromBytes(buf, type);
     }
 
     public void toBytes(PacketBuffer buf) {
-        buf.writeInt(syncId);
+        buf.writeVarInt(syncId);
         buf.writeByte(type);
         SyncedField.toBytes(buf, value, type);
     }

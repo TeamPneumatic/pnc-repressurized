@@ -26,13 +26,13 @@ public class PacketAmadronOrderUpdate {
     }
 
     public PacketAmadronOrderUpdate(PacketBuffer buffer) {
-        orderId = buffer.readInt();
+        orderId = buffer.readVarInt();
         mouseButton = buffer.readByte();
         sneaking = buffer.readBoolean();
     }
 
     public void toBytes(PacketBuffer buf) {
-        buf.writeInt(orderId);
+        buf.writeVarInt(orderId);
         buf.writeByte(mouseButton);
         buf.writeBoolean(sneaking);
     }

@@ -26,14 +26,14 @@ public class PacketNotifyVariablesRemote {
     }
 
     public PacketNotifyVariablesRemote(PacketBuffer buffer) {
-        variables = new String[buffer.readInt()];
+        variables = new String[buffer.readVarInt()];
         for (int i = 0; i < variables.length; i++) {
             variables[i] = buffer.readString();
         }
     }
 
     public void toBytes(PacketBuffer buf) {
-        buf.writeInt(variables.length);
+        buf.writeVarInt(variables.length);
         Arrays.stream(variables).forEach(buf::writeString);
     }
 

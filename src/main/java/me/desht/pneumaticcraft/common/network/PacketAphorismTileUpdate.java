@@ -21,7 +21,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
 
     public PacketAphorismTileUpdate(PacketBuffer buffer) {
         super(buffer);
-        int lines = buffer.readInt();
+        int lines = buffer.readVarInt();
         text = new String[lines];
         for (int i = 0; i < lines; i++) {
             text[i] = buffer.readString();
@@ -36,7 +36,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
     @Override
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        buffer.writeInt(text.length);
+        buffer.writeVarInt(text.length);
         Arrays.stream(text).forEach(buffer::writeString);
     }
 

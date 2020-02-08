@@ -19,22 +19,22 @@ import java.util.function.Supplier;
 public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
     private Hand hand;
     private String variable;
-    private int metadata;
+    private int index;
 
     public PacketChangeGPSToolCoordinate() {
     }
 
-    public PacketChangeGPSToolCoordinate(BlockPos pos, Hand hand, String variable, int metadata) {
+    public PacketChangeGPSToolCoordinate(BlockPos pos, Hand hand, String variable, int index) {
         super(pos);
         this.hand = hand;
         this.variable = variable;
-        this.metadata = metadata;
+        this.index = index;
     }
 
     public PacketChangeGPSToolCoordinate(PacketBuffer buf) {
         super(buf);
         variable = buf.readString();
-        metadata = buf.readInt();
+        index = buf.readByte();
         hand = buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
     }
 
@@ -42,7 +42,7 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
         buf.writeString(variable);
-        buf.writeInt(metadata);
+        buf.writeByte(index);
         buf.writeBoolean(hand == Hand.MAIN_HAND);
     }
 
@@ -56,9 +56,9 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
                     ItemGPSTool.setGPSLocation(playerStack, pos);
                 }
             } else if (playerStack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
-                ItemGPSAreaTool.setVariable(playerStack, variable, metadata);
+                ItemGPSAreaTool.setVariable(playerStack, variable, index);
                 if (pos.getY() >= 0) {
-                    ItemGPSAreaTool.setGPSPosAndNotify(player, pos, hand, metadata);
+                    ItemGPSAreaTool.setGPSPosAndNotify(player, pos, hand, index);
                 }
             }
         });
