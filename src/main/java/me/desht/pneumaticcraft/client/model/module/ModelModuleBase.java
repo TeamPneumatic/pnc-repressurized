@@ -21,7 +21,7 @@ public abstract class ModelModuleBase<T extends TubeModule> extends Model {
         GlStateManager.pushMatrix();
 
         Minecraft.getInstance().getTextureManager().bindTexture(getTexture());
-        RenderUtils.rotateMatrixByMetadata(module.getDirection());
+        RenderUtils.rotateMatrixForDirection(module.getDirection());
         renderDynamic(module, scale, partialTicks);
 
         GlStateManager.popMatrix();

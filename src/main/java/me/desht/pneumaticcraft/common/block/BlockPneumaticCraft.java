@@ -284,7 +284,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     private int getSavedAir(ItemStack stack) {
-        CompoundNBT tag = stack.getChildTag("BlockEntityTag");
+        CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
         if (tag != null && tag.contains(NBTKeys.NBT_AIR_AMOUNT)) {
             return tag.getInt(NBTKeys.NBT_AIR_AMOUNT);
         } else {
@@ -303,7 +303,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IUpgradeAcceptor) {
                 UpgradableItemUtils.addUpgradeInformation(stack, curInfo, flag);
             }
-            CompoundNBT subTag = stack.getChildTag("BlockEntityTag");
+            CompoundNBT subTag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
             if (subTag != null && subTag.contains(NBTKeys.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
                 CompoundNBT tag = subTag.getCompound(NBTKeys.NBT_SAVED_TANKS);
                 for (String s : tag.keySet()) {

@@ -136,34 +136,34 @@ public class RenderUtils {
      * @param facing block facing direction
      * @return the angle (in degrees) of resulting rotation around the Y axis
      */
-    public static double rotateMatrixByMetadata(Direction facing) {
-        float metaRotation;
+    public static double rotateMatrixForDirection(Direction facing) {
+        float yRotation;
         switch (facing) {
             case UP:
-                metaRotation = 0;
+                yRotation = 0;
                 GlStateManager.rotated(90, 1, 0, 0);
                 GlStateManager.translated(0, -1, -1);
                 break;
             case DOWN:
-                metaRotation = 0;
+                yRotation = 0;
                 GlStateManager.rotated(-90, 1, 0, 0);
                 GlStateManager.translated(0, -1, 1);
                 break;
             case NORTH:
-                metaRotation = 0;
+                yRotation = 0;
                 break;
             case EAST:
-                metaRotation = 90;
+                yRotation = 90;
                 break;
             case SOUTH:
-                metaRotation = 180;
+                yRotation = 180;
                 break;
             default:
-                metaRotation = 270;
+                yRotation = 270;
                 break;
         }
-        GlStateManager.rotated(metaRotation, 0, 1, 0);
-        return metaRotation;
+        GlStateManager.rotated(yRotation, 0, 1, 0);
+        return yRotation;
     }
 
     public static void renderItemAt(ItemStack stack, double x, double y, double z) {

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.util;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -80,7 +81,7 @@ public class UpgradableItemUtils {
         CompoundNBT tag;
         if (stack.getItem() instanceof BlockItem) {
             // tag will be in the serialized BlockEntityTag
-            tag = stack.getChildTag("BlockEntityTag");
+            tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
             if (tag == null) return new ItemStack[0];
             tag = tag.getCompound(NBT_UPGRADE_TAG);
         } else {

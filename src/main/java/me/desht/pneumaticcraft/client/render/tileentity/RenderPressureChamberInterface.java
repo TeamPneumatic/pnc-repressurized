@@ -29,7 +29,7 @@ public class RenderPressureChamberInterface extends AbstractTileModelRenderer<Ti
 //                ghostEntityItem.hoverStart = 0.0F;
                 ghostEntityItem.setItem(te.getStackInInterface());
             }
-            RenderUtils.rotateMatrixByMetadata(te.getRotation());
+            RenderUtils.rotateMatrixForDirection(te.getRotation());
             model.renderModel(0.0625f, te, partialTicks, ghostEntityItem);
         }
     }

@@ -46,7 +46,7 @@ public class TileEntitySerializerFunction extends LootFunction {
     }
 
     private ItemStack applyTEdata(ItemStack teStack, TileEntity te) {
-        CompoundNBT nbt = teStack.getChildTag("BlockEntityTag");
+        CompoundNBT nbt = teStack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
         final CompoundNBT subTag = nbt == null ? new CompoundNBT() : nbt;
 
         // fluid tanks
@@ -87,11 +87,13 @@ public class TileEntitySerializerFunction extends LootFunction {
                     subTag.putInt(NBT_AIR_AMOUNT, h.getAir());
                 }
             });
+
+            ((TileEntityBase) te).serializeExtraItemData(subTag);
         }
 
         if (!subTag.isEmpty()) {
             CompoundNBT tag = teStack.getOrCreateTag();
-            tag.put("BlockEntityTag", subTag);
+            tag.put(NBTKeys.BLOCK_ENTITY_TAG, subTag);
         }
         return teStack;
     }

@@ -136,4 +136,8 @@ public class ClientUtils {
         BlockPos blockpos = new BlockPos(player.posX, getClientWorld().getMaxHeight(), player.posZ);
         return getClientWorld().isAreaLoaded(blockpos, 1) ? getClientWorld().getCombinedLight(blockpos, 0) : 0;
     }
+
+    public static int getStringWidth(String line) {
+        return Minecraft.getInstance().getRenderManager().getFontRenderer().getStringWidth(line);
+    }
 }

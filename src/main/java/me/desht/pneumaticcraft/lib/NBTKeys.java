@@ -10,4 +10,8 @@ public class NBTKeys {
     public static final String NBT_HEAT_EXCHANGER = "HeatExchanger";
     public static final String NBT_AIR_HANDLER = "AirHandler";
     public static final String NBT_SIDE_CONFIG = "SideConfiguration";
+    public static final String NBT_EXTRA = "ExtraData";
+
+    // this is the tag vanilla uses to serialize TE data onto dropped items
+    public static final String BLOCK_ENTITY_TAG = "BlockEntityTag";
 }

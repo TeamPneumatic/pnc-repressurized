@@ -22,7 +22,7 @@ public class RenderVacuumPump extends AbstractTileModelRenderer<TileEntityVacuum
     @Override
     void renderModel(TileEntityVacuumPump te, float partialTicks) {
         if (te != null) {
-            RenderUtils.rotateMatrixByMetadata(te.getRotation());
+            RenderUtils.rotateMatrixForDirection(te.getRotation());
             GlStateManager.rotated(-90, 0, 1, 0);
             model.renderModel(0.0625f, te.oldRotation + (te.rotation - te.oldRotation) * partialTicks);
         } else {

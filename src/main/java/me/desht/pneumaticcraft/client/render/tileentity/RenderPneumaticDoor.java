@@ -27,7 +27,7 @@ public class RenderPneumaticDoor extends AbstractTileModelRenderer<TileEntityPne
 
     @Override
     void renderModel(TileEntityPneumaticDoor te, float partialTicks) {
-        RenderUtils.rotateMatrixByMetadata(te.getRotation());
+        RenderUtils.rotateMatrixForDirection(te.getRotation());
         float rotation = te.oldRotationAngle + (te.rotationAngle - te.oldRotationAngle) * partialTicks;
         boolean rightGoing = te.rightGoing;
         GlStateManager.translated((rightGoing ? -1 : 1) * 6.5F / 16F, 0, -6.5F / 16F);

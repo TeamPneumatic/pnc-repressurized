@@ -1,10 +1,10 @@
 {
   "variants": {
-    "facing=down": { "model": "pneumaticcraft:block/aphorism_tile", "x": 90 },
-    "facing=up": { "model": "pneumaticcraft:block/aphorism_tile", "x": -90 },
+    "facing=down": { "model": "pneumaticcraft:block/aphorism_tile", "x": 270 },
+    "facing=up": { "model": "pneumaticcraft:block/aphorism_tile", "x": 90 },
     "facing=north": { "model": "pneumaticcraft:block/aphorism_tile", "y": 180 },
     "facing=south": { "model": "pneumaticcraft:block/aphorism_tile" },
-    "facing=west": { "model": "pneumaticcraft:block/aphorism_tile", "y": 270 },
-    "facing=east": { "model": "pneumaticcraft:block/aphorism_tile", "y": 90 }
+    "facing=west": { "model": "pneumaticcraft:block/aphorism_tile", "y": 90 },
+    "facing=east": { "model": "pneumaticcraft:block/aphorism_tile", "y": 270 }
   }
 }

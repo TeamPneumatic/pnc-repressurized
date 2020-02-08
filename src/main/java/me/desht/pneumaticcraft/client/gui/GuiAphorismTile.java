@@ -63,43 +63,51 @@ public class GuiAphorismTile extends Screen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         boolean updateTE = false;
 
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
-        } else if (keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_UP) {
-            cursorY--;
-            if (cursorY < 0) cursorY = textLines.length - 1;
-        } else if (keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-            cursorY++;
-            if (cursorY >= textLines.length) cursorY = 0;
-        } else if (keyCode == GLFW.GLFW_KEY_ENTER) {
-            cursorY++;
-            textLines = ArrayUtils.insert(cursorY, textLines, "");
-            updateTE = true;
-        } else if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
-            if (textLines[cursorY].length() > 0) {
-                textLines[cursorY] = textLines[cursorY].substring(0, textLines[cursorY].length() - 1);
-                if (textLines[cursorY].endsWith("\u00a7")) {
-                    textLines[cursorY] = textLines[cursorY].substring(0, textLines[cursorY].length() - 1);
-                }
-            } else if (textLines.length > 1) {
-                textLines = ArrayUtils.remove(textLines, cursorY);
+        switch (keyCode) {
+            case GLFW.GLFW_KEY_ESCAPE:
+                NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
+                break;
+            case GLFW.GLFW_KEY_UP:
                 cursorY--;
-                if (cursorY < 0) cursorY = 0;
-            }
-            updateTE = true;
-        } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
-            if (Screen.hasShiftDown()) {
-                textLines = new String[1];
-                textLines[0] = "";
-                cursorY = 0;
-            } else {
-                if (textLines.length > 1) {
+                if (cursorY < 0) cursorY = textLines.length - 1;
+                break;
+            case GLFW.GLFW_KEY_DOWN:
+            case GLFW.GLFW_KEY_KP_ENTER:
+                cursorY++;
+                if (cursorY >= textLines.length) cursorY = 0;
+                break;
+            case GLFW.GLFW_KEY_ENTER:
+                cursorY++;
+                textLines = ArrayUtils.insert(cursorY, textLines, "");
+                updateTE = true;
+                break;
+            case GLFW.GLFW_KEY_BACKSPACE:
+                if (textLines[cursorY].length() > 0) {
+                    textLines[cursorY] = textLines[cursorY].substring(0, textLines[cursorY].length() - 1);
+                    if (textLines[cursorY].endsWith("\u00a7")) {
+                        textLines[cursorY] = textLines[cursorY].substring(0, textLines[cursorY].length() - 1);
+                    }
+                } else if (textLines.length > 1) {
                     textLines = ArrayUtils.remove(textLines, cursorY);
-                    if (cursorY > textLines.length - 1)
-                        cursorY = textLines.length - 1;
+                    cursorY--;
+                    if (cursorY < 0) cursorY = 0;
                 }
-            }
-            updateTE = true;
+                updateTE = true;
+                break;
+            case GLFW.GLFW_KEY_DELETE:
+                if (Screen.hasShiftDown()) {
+                    textLines = new String[1];
+                    textLines[0] = "";
+                    cursorY = 0;
+                } else {
+                    if (textLines.length > 1) {
+                        textLines = ArrayUtils.remove(textLines, cursorY);
+                        if (cursorY > textLines.length - 1)
+                            cursorY = textLines.length - 1;
+                    }
+                }
+                updateTE = true;
+                break;
         }
         if (updateTE) tile.setTextLines(textLines);
         return super.keyPressed(keyCode, scanCode, modifiers);

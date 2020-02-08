@@ -670,6 +670,15 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         return upgradeCache;
     }
 
+    /**
+     * Get any extra data to be serialized onto a dropped item stack. The supplied tag is the "BlockEntityTag" subtag of
+     * the item's NBT data.
+     *
+     * @param blockEntityTag the existing "BlockEntityTag" subtag to add data to
+     */
+    public void serializeExtraItemData(CompoundNBT blockEntityTag) {
+    }
+
     public class UpgradeHandler extends BaseItemStackHandler {
         UpgradeHandler(int upgradeSize) {
             super(TileEntityBase.this, upgradeSize);

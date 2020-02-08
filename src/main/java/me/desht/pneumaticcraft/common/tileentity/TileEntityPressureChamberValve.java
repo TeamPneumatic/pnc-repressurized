@@ -61,7 +61,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
     public List<TileEntityPressureChamberValve> accessoryValves;
     private final List<BlockPos> nbtValveList;
-    private boolean readNBT = false;
+//    private boolean readNBT = false;
     @GuiSynced
     public boolean isValidRecipeInChamber;
     @GuiSynced
@@ -113,9 +113,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
     @Override
     public void tick() {
-        if (readNBT && !getWorld().isRemote) {
-            doPostNBTSetup();
-        }
+//        if (readNBT && !getWorld().isRemote) {
+//            doPostNBTSetup();
+//        }
 
         if (!getWorld().isRemote) {
             checkForAirLeak();
@@ -160,12 +160,19 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         }
     }
 
+    @Override
+    protected void onFirstServerUpdate() {
+        super.onFirstServerUpdate();
+
+        doPostNBTSetup();
+    }
+
     /**
      * This setup can't be done in readFromNBT() because there may be multiple valve TE's in the multiblock,
      * and all of them need to be fully initialized before this code is run.
      */
     private void doPostNBTSetup() {
-        readNBT = false;
+//        readNBT = false;
 
         BlockState state = getWorld().getBlockState(getPos());
         if (state.getBlock() instanceof BlockPressureChamberValve)
@@ -335,7 +342,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             nbtValveList.add(NBTUtil.getPos(tagCompound));
         }
         
-        readNBT = true;
+//        readNBT = true;
     }
 
     @Override

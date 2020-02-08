@@ -21,7 +21,7 @@ public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<TileEntit
     @Override
     void renderModel(TileEntityPneumaticDoorBase te, float partialTicks) {
         if (te != null) {
-            RenderUtils.rotateMatrixByMetadata(te.getRotation());
+            RenderUtils.rotateMatrixForDirection(te.getRotation());
             model.renderModel(0.0625f, te.oldProgress + (te.progress - te.oldProgress) * partialTicks, te.rightGoing);
         } else {
             model.renderModel(0.0625f, 1, false);

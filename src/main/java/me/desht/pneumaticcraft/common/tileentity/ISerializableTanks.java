@@ -46,7 +46,7 @@ public interface ISerializableTanks {
      * @param tagName name of the subtag in the itemstack's NBT to store the tank data
      */
      static void serializeTank(FluidTank tank, ItemStack stack, String tagName) {
-         CompoundNBT tag = stack.getOrCreateChildTag("BlockEntityTag");
+         CompoundNBT tag = stack.getOrCreateChildTag(NBTKeys.BLOCK_ENTITY_TAG);
          CompoundNBT subTag = tag.getCompound(NBTKeys.NBT_SAVED_TANKS);
          if (!tank.getFluid().isEmpty()) {
              subTag.put(tagName, tank.writeToNBT(new CompoundNBT()));
@@ -70,7 +70,7 @@ public interface ISerializableTanks {
      * @return the deserialized tank, or null
      */
     static FluidTank deserializeTank(ItemStack stack, String tagName, int capacity) {
-        CompoundNBT tag = stack.getChildTag("BlockEntityTag");
+        CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
         if (tag != null && tag.contains(NBTKeys.NBT_SAVED_TANKS)) {
             FluidTank tank = new FluidTank(capacity);
             CompoundNBT subTag = tag.getCompound(NBTKeys.NBT_SAVED_TANKS);

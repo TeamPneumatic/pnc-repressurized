@@ -3,19 +3,20 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
-import net.minecraft.util.Direction.Axis;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -30,23 +31,24 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+import static me.desht.pneumaticcraft.lib.NBTKeys.BLOCK_ENTITY_TAG;
+import static me.desht.pneumaticcraft.lib.NBTKeys.NBT_EXTRA;
 
 public class BlockAphorismTile extends BlockPneumaticCraft {
 
-    private static final String NBT_BORDER_COLOR = "borderColor";
-    private static final String NBT_BACKGROUND_COLOR = "backgroundColor";
-
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
             Block.makeCuboidShape(0, 0, 0, 16,  1, 16),
-            Block.makeCuboidShape(0, 1, 0, 16, 16, 16),
+            Block.makeCuboidShape(0, 15, 0, 16, 16, 16),
             Block.makeCuboidShape(0, 0, 0, 16, 16,  1),
-            Block.makeCuboidShape(0, 0, 1, 16, 16, 16),
+            Block.makeCuboidShape(0, 0, 15, 16, 16, 16),
             Block.makeCuboidShape(0, 0, 0,  1, 16, 16),
-            Block.makeCuboidShape(1, 0, 0, 16, 16, 16),
+            Block.makeCuboidShape(15, 0, 0, 16, 16, 16),
     };
 
     public BlockAphorismTile() {
@@ -56,6 +58,12 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
         return SHAPES[getRotation(state).getIndex()];
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+        return this.getDefaultState().with(directionProperty(), ctx.getFace().getOpposite());
     }
 
     @Override
@@ -72,8 +80,18 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     @Override
     public void addInformation(ItemStack stack, IBlockReader world, List<ITextComponent> curInfo, ITooltipFlag flag) {
         super.addInformation(stack, world, curInfo, flag);
-        if (NBTUtil.hasTag(stack, NBT_BORDER_COLOR) || NBTUtil.hasTag(stack, NBT_BACKGROUND_COLOR)) {
-            curInfo.add(xlate("gui.tab.info.tile.aphorism_tile.color").applyTextStyles(TextFormatting.DARK_GREEN, TextFormatting.ITALIC));
+
+        CompoundNBT tag = stack.getChildTag(BLOCK_ENTITY_TAG);
+        if (tag != null && tag.contains(NBT_EXTRA)) {
+            CompoundNBT subTag = tag.getCompound(NBT_EXTRA);
+            if (subTag != null && (subTag.contains(TileEntityAphorismTile.NBT_BORDER_COLOR) || subTag.contains(TileEntityAphorismTile.NBT_BACKGROUND_COLOR))) {
+                ListNBT l = subTag.getList(TileEntityAphorismTile.NBT_TEXT_LINES, Constants.NBT.TAG_STRING);
+                if (!l.isEmpty()) {
+                    curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.aphorism_tile.text").applyTextStyle(TextFormatting.YELLOW));
+                    l.forEach(el -> curInfo.add(new StringTextComponent("  " + el.getString()).applyTextStyle(TextFormatting.ITALIC)));
+                }
+                curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.aphorism_tile.reset").applyTextStyle(TextFormatting.DARK_GREEN));
+            }
         }
     }
 
@@ -84,46 +102,14 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entityLiving, ItemStack iStack) {
         super.onBlockPlacedBy(world, pos, state, entityLiving, iStack);
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityAphorismTile) {
+        if (te instanceof TileEntityAphorismTile && world.isRemote) {
             TileEntityAphorismTile teAT = (TileEntityAphorismTile) te;
-
-            teAT.setBackgroundColor(getBackgroundColor(iStack));
-            teAT.setBorderColor(getBorderColor(iStack));
-
-            Direction rotation = getRotation(world, pos);
-            if (rotation.getAxis() == Axis.Y) {
-                float yaw = entityLiving.rotationYaw;
-                if (yaw < 0) yaw += 360;
-                teAT.textRotation = (((int) yaw + 45) / 90 + 2) % 4;
-                if (rotation.getYOffset() > 0 && (teAT.textRotation == 1 || teAT.textRotation == 3)) {
-                    // fudge - reverse rotation if placing above, and player is facing on east/west axis
-                    teAT.textRotation = 4 - teAT.textRotation;
-                }
-            }
-
-            if (world.isRemote && entityLiving instanceof PlayerEntity) {
-                GuiAphorismTile.openGui(teAT);
-                sendEditorMessage((PlayerEntity) entityLiving);
-            }
+            CompoundNBT tag = iStack.getChildTag(BLOCK_ENTITY_TAG);
+            if (tag != null) teAT.readFromPacket(tag);
+            GuiAphorismTile.openGui(teAT);
+            if (entityLiving instanceof PlayerEntity) sendEditorMessage((PlayerEntity) entityLiving);
         }
     }
-
-    // todo 1.14 loot table copy colors to itemstack
-//    @Override
-//    public void getDrops(NonNullList<ItemStack> drops, IBlockReader world, BlockPos pos, BlockState state, int fortune) {
-//        super.getDrops(drops, world, pos, state, fortune);
-//        TileEntity te = world.getTileEntity(pos);
-//        if (te instanceof TileEntityAphorismTile && drops.size() > 0) {
-//            TileEntityAphorismTile teAT = (TileEntityAphorismTile) te;
-//            ItemStack teStack = drops.get(0);
-//            int bgColor = teAT.getBackgroundColor();
-//            int borderColor = teAT.getBorderColor();
-//            if (bgColor != DyeColor.WHITE.getDyeDamage() || borderColor != DyeColor.BLUE.getDyeDamage()) {
-//                NBTUtil.setInteger(teStack, NBT_BACKGROUND_COLOR, bgColor);
-//                NBTUtil.setInteger(teStack, NBT_BORDER_COLOR, borderColor);
-//            }
-//        }
-//    }
 
     @Override
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
@@ -157,10 +143,13 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     }
 
     private boolean clickedBorder(BlockState state, Vec3d hitVec) {
+        double x = Math.abs(hitVec.x - (int) hitVec.x);
+        double y = Math.abs(hitVec.y - (int) hitVec.y);
+        double z = Math.abs(hitVec.z - (int) hitVec.z);
         switch (getRotation(state)) {
-            case EAST: case WEST: return hitVec.y < 0.1 || hitVec.y > 0.9 || hitVec.z < 0.1 || hitVec.z > 0.9;
-            case NORTH: case SOUTH: return hitVec.y < 0.1 || hitVec.y > 0.9 || hitVec.x < 0.1 || hitVec.x > 0.9;
-            case UP: case DOWN: return hitVec.x < 0.1 || hitVec.x > 0.9 || hitVec.z < 0.1 || hitVec.z > 0.9;
+            case EAST: case WEST: return y < 0.1 || y > 0.9 || z < 0.1 || z > 0.9;
+            case NORTH: case SOUTH: return y < 0.1 || y > 0.9 || x < 0.1 || x > 0.9;
+            case UP: case DOWN: return x < 0.1 || x > 0.9 || z < 0.1 || z > 0.9;
         }
         return false;
     }
@@ -206,10 +195,18 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
     }
 
     public static int getBackgroundColor(ItemStack stack) {
-        return NBTUtil.hasTag(stack, NBT_BACKGROUND_COLOR) ? NBTUtil.getInteger(stack, NBT_BACKGROUND_COLOR) : DyeColor.WHITE.getId();
+        CompoundNBT tag = stack.getChildTag(BLOCK_ENTITY_TAG);
+        if (tag != null && tag.contains(NBT_EXTRA)) {
+            return tag.getCompound(NBT_EXTRA).getInt(TileEntityAphorismTile.NBT_BACKGROUND_COLOR);
+        }
+        return DyeColor.WHITE.getId();
     }
 
     public static int getBorderColor(ItemStack stack) {
-        return NBTUtil.hasTag(stack, NBT_BORDER_COLOR) ? NBTUtil.getInteger(stack, NBT_BORDER_COLOR) : DyeColor.BLUE.getId();
+        CompoundNBT tag = stack.getChildTag(BLOCK_ENTITY_TAG);
+        if (tag != null && tag.contains(NBT_EXTRA)) {
+            return tag.getCompound(NBT_EXTRA).getInt(TileEntityAphorismTile.NBT_BORDER_COLOR);
+        }
+        return DyeColor.BLUE.getId();
     }
 }

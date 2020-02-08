@@ -22,7 +22,7 @@ public class RenderElevatorCaller extends TileEntityRenderer<TileEntityElevatorC
         GlStateManager.pushMatrix();
         GlStateManager.translated(x + 0.5, y + 1.5, z + 0.5);
         GlStateManager.scaled(1.0F, -1F, -1F);
-        RenderUtils.rotateMatrixByMetadata(te.getRotation());
+        RenderUtils.rotateMatrixForDirection(te.getRotation());
         GlStateManager.translated(-1, 0, -1);
 
         // need this or it'll render blackd

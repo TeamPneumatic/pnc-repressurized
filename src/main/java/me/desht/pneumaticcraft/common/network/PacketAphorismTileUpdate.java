@@ -15,12 +15,14 @@ import java.util.function.Supplier;
 public class PacketAphorismTileUpdate extends LocationIntPacket {
 
     private String[] text;
+    private int textRotation;
 
     public PacketAphorismTileUpdate() {
     }
 
     public PacketAphorismTileUpdate(PacketBuffer buffer) {
         super(buffer);
+        textRotation = buffer.readByte();
         int lines = buffer.readVarInt();
         text = new String[lines];
         for (int i = 0; i < lines; i++) {
@@ -31,11 +33,13 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
     public PacketAphorismTileUpdate(TileEntityAphorismTile tile) {
         super(tile.getPos());
         text = tile.getTextLines();
+        textRotation = tile.textRotation;
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
+        buffer.writeByte(textRotation);
         buffer.writeVarInt(text.length);
         Arrays.stream(text).forEach(buffer::writeString);
     }
@@ -44,7 +48,9 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
             if (te instanceof TileEntityAphorismTile) {
-                ((TileEntityAphorismTile) te).setTextLines(text);
+                // notification not required: the client told us about the text in the first place
+                ((TileEntityAphorismTile) te).setTextLines(text, false);
+                ((TileEntityAphorismTile) te).textRotation = textRotation;
             }
         });
         ctx.get().setPacketHandled(true);

@@ -24,7 +24,7 @@ public class RenderAssemblyController extends AbstractTileModelRenderer<TileEnti
 
     @Override
     void renderModel(TileEntityAssemblyController te, float partialTicks) {
-        RenderUtils.rotateMatrixByMetadata(Direction.NORTH);
+        RenderUtils.rotateMatrixForDirection(Direction.NORTH);
 
         // have the screen face the player
         GlStateManager.rotated(180 + Minecraft.getInstance().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
