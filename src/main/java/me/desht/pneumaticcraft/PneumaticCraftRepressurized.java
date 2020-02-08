@@ -36,8 +36,7 @@ import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.worldgen.ModDecorators;
 import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
-import me.desht.pneumaticcraft.datagen.ModLootTablesProvider;
-import me.desht.pneumaticcraft.datagen.ModRecipeProvider;
+import me.desht.pneumaticcraft.datagen.*;
 import me.desht.pneumaticcraft.datagen.loot.TileEntitySerializerFunction;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
@@ -226,6 +225,9 @@ public class PneumaticCraftRepressurized {
             if (event.includeServer()) {
                 generator.addProvider(new ModRecipeProvider(generator));
                 generator.addProvider(new ModLootTablesProvider(generator));
+                generator.addProvider(new ModBlockTagsProvider(generator));
+                generator.addProvider(new ModItemTagsProvider(generator));
+                generator.addProvider(new ModFluidTagsProvider(generator));
             }
         }
     }

@@ -1,16 +1,22 @@
 {
   "inputs": [
     {
-      "item": "pneumaticcraft:ingot_iron_compressed"
+      "tag": "forge:dusts/redstone",
+      "count": 3
     },
     {
       "item": "pneumaticcraft:plastic"
+    },
+    {
+      "tag": "forge:nuggets/gold",
+      "count": 3
     }
   ],
   "pressure": 1.5,
   "results": [
     {
-      "item": "pneumaticcraft:empty_pcb"
+      "item": "pneumaticcraft:empty_pcb",
+      "count": 3
     }
   ]
 }

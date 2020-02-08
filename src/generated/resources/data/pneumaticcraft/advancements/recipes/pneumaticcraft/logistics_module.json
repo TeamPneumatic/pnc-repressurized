@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:logistics_module"
+    ]
+  },
+  "criteria": {
+    "has_logistics_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:logistics_core"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:logistics_module"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_logistics_core",
+      "has_the_recipe"
+    ]
+  ]
+}

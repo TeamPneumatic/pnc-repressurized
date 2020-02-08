@@ -49,6 +49,8 @@ public class ModLootTablesProvider extends LootTableProvider {
                         && b.hasTileEntity(b.getDefaultState())
                         && ForgeRegistries.ITEMS.containsKey(b.getRegistryName())) {
                     addStandardSerializedDrop(b);
+                } else if (b == ModBlocks.REINFORCED_BRICK_SLAB.get() || b == ModBlocks.REINFORCED_STONE_SLAB.get()) {
+                    registerLootTable(b, BlockLootTables::droppingSlab);
                 } else if (b.asItem() != Items.AIR) {
                     registerDropSelfLootTable(b);
                 }
@@ -77,5 +79,10 @@ public class ModLootTablesProvider extends LootTableProvider {
             registerLootTable(block, LootTable.builder().addLootPool(builder));
         }
 
+    }
+
+    @Override
+    public String getName() {
+        return "PneumaticCraft Loot Tables";
     }
 }

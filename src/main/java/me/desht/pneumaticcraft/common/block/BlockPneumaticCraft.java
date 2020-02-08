@@ -157,8 +157,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         super.onBlockPlacedBy(world, pos, state, entity, stack);
 
         TileEntity te = world.getTileEntity(pos);
-        te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
-                .ifPresent(logic -> logic.setTemperature(HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature()));
+        if (te != null) {
+            te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+                    .ifPresent(logic -> logic.setTemperature(HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature()));
+        }
     }
 
     DirectionProperty directionProperty() { return canRotateToTopOrBottom() ? FACING : HORIZONTAL_FACING; }

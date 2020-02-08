@@ -1,28 +1,21 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    {
-      "item": "pneumaticcraft:unassembled_pcb"
-    },
-    {
-      "item": "pneumaticcraft:transistor"
-    },
-    {
-      "item": "pneumaticcraft:transistor"
-    },
-    {
-      "item": "pneumaticcraft:transistor"
-    },
-    {
-      "item": "pneumaticcraft:capacitor"
-    },
-    {
-      "item": "pneumaticcraft:capacitor"
-    },
-    {
-      "item": "pneumaticcraft:capacitor"
-    }
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T ",
+    "CUC",
+    " T "
   ],
+  "key": {
+    "T": {
+      "item": "pneumaticcraft:transistor"
+    },
+    "C": {
+      "item": "pneumaticcraft:capacitor"
+    },
+    "U": {
+      "item": "pneumaticcraft:unassembled_pcb"
+    }
+  },
   "result": {
     "item": "pneumaticcraft:printed_circuit_board"
   }

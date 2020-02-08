@@ -31,7 +31,7 @@ public class PatchouliBookCrafting extends SpecialRecipe {
         boolean bookFound = false, ingotFound = false;
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             Item item = inv.getStackInSlot(i).getItem();
-            if (item == ModItems.INGOT_IRON_COMPRESSED.get()) {
+            if (item == ModItems.COMPRESSED_IRON_INGOT.get()) {
                 if (ingotFound) return false;
                 ingotFound = true;
             } else if (item == Items.BOOK) {

@@ -2,16 +2,16 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "pneumaticcraft:logistics_module_2"
+      "pneumaticcraft:reinforced_stone_from_slab"
     ]
   },
   "criteria": {
-    "has_plastic": {
+    "has_ingot_iron_compressed": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:plastic"
+            "item": "pneumaticcraft:ingot_iron_compressed"
           }
         ]
       }
@@ -19,13 +19,13 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "pneumaticcraft:logistics_module_2"
+        "recipe": "pneumaticcraft:reinforced_stone_from_slab"
       }
     }
   },
   "requirements": [
     [
-      "has_plastic",
+      "has_ingot_iron_compressed",
       "has_the_recipe"
     ]
   ]

@@ -27,7 +27,7 @@ import java.util.stream.IntStream;
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, Names.MOD_ID);
 
-    public static final RegistryObject<Item> INGOT_IRON_COMPRESSED = register("ingot_iron_compressed");
+    public static final RegistryObject<Item> COMPRESSED_IRON_INGOT = register("ingot_iron_compressed");
     public static final RegistryObject<Item> PRESSURE_GAUGE = register("pressure_gauge");
     public static final RegistryObject<Item> STONE_BASE = register("stone_base");
     public static final RegistryObject<Item> CANNON_BARREL = register("cannon_barrel");
@@ -44,6 +44,7 @@ public class ModItems {
     public static final RegistryObject<Item> COMPRESSED_IRON_GEAR = register("compressed_iron_gear");
     public static final RegistryObject<Item> PROGRAMMING_PUZZLE = register("programming_puzzle");
     public static final RegistryObject<Item> ADVANCED_PCB = register("advanced_pcb");
+    public static final RegistryObject<Item> LOGISTICS_CORE = register("logistics_core");
 
     public static final RegistryObject<ItemGPSTool> GPS_TOOL = register("gps_tool",
             ItemGPSTool::new);

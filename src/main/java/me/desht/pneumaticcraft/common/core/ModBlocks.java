@@ -3,10 +3,9 @@ package me.desht.pneumaticcraft.common.core;
 import me.desht.pneumaticcraft.common.block.*;
 import me.desht.pneumaticcraft.common.itemblock.ItemBlockLiquidHopper;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.block.Block;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.item.BlockItem;
@@ -54,6 +53,12 @@ public class ModBlocks {
         return Block.Properties.create(Material.IRON)
                 .hardnessAndResistance(3f, 10f)
                 .sound(SoundType.METAL);
+    }
+
+    public static Block.Properties reinforcedStoneProps() {
+        return Block.Properties.create(Material.ROCK, MaterialColor.GRAY)
+                .hardnessAndResistance(5f, 1200f)
+                .sound(SoundType.STONE);
     }
 
     private static Block.Properties fluidProps() {
@@ -162,6 +167,24 @@ public class ModBlocks {
             BlockFakeIce::new);
     public static final RegistryObject<BlockThermalCompressor> THERMAL_COMPRESSOR = register("thermal_compressor",
             BlockThermalCompressor::new);
+
+    public static final RegistryObject<Block> REINFORCED_STONE = register("reinforced_stone",
+            () -> new Block(reinforcedStoneProps()));
+    public static final RegistryObject<Block> REINFORCED_BRICKS = register("reinforced_bricks",
+            () -> new Block(reinforcedStoneProps()));
+    public static final RegistryObject<Block> REINFORCED_BRICK_TILE = register("reinforced_brick_tile",
+            () -> new Block(reinforcedStoneProps()));
+    public static final RegistryObject<Block> REINFORCED_BRICK_STAIRS = register("reinforced_brick_stairs",
+            () -> new StairsBlock(() -> REINFORCED_BRICKS.get().getDefaultState(),
+                    reinforcedStoneProps()));
+    public static final RegistryObject<Block> REINFORCED_BRICK_SLAB = register("reinforced_brick_slab",
+            () -> new SlabBlock(reinforcedStoneProps()));
+    public static final RegistryObject<Block> REINFORCED_STONE_SLAB = register("reinforced_stone_slab",
+            () -> new SlabBlock(reinforcedStoneProps()));
+    public static final RegistryObject<Block> REINFORCED_BRICK_PILLAR = register("reinforced_brick_pillar",
+            () -> new RotatedPillarBlock(reinforcedStoneProps()));
+    public static final RegistryObject<Block> REINFORCED_BRICK_WALL = register("reinforced_brick_wall",
+            () -> new WallBlock(reinforcedStoneProps()));
 
     public static final RegistryObject<BlockFluidEtchingAcid> ETCHING_ACID = registerNoItem("etching_acid",
             () -> new BlockFluidEtchingAcid(fluidProps()));

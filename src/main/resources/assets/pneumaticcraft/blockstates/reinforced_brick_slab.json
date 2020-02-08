@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "type=bottom": { "model": "pneumaticcraft:block/reinforced_brick_slab" },
+    "type=top": { "model": "pneumaticcraft:block/reinforced_brick_slab_top" },
+    "type=double": { "model": "pneumaticcraft:block/reinforced_bricks" }
+  }
+}

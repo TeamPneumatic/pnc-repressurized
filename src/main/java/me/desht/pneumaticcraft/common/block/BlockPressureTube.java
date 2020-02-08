@@ -15,10 +15,13 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.RedstoneParticleData;
@@ -46,8 +49,9 @@ import java.util.List;
 import java.util.Random;
 
 import static me.desht.pneumaticcraft.common.block.BlockPressureTube.ConnectionType.CONNECTED;
+import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class BlockPressureTube extends BlockPneumaticCraftCamo {
+public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWaterLoggable {
 
     private static final int TUBE_WIDTH = 2;
     public static final int CORE_MIN = 8 - TUBE_WIDTH;
@@ -95,7 +99,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         for (EnumProperty<ConnectionType> p : CONNECTION_PROPERTIES_3) {
             state = state.with(p, ConnectionType.UNCONNECTED);
         }
-        setDefaultState(state);
+        setDefaultState(state.with(WATERLOGGED, false));
     }
 
     @Override
@@ -108,6 +112,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
         super.fillStateContainer(builder);
 
         builder.add(CONNECTION_PROPERTIES_3);
+        builder.add(WATERLOGGED);
     }
 
     @Nullable
@@ -123,11 +128,20 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
             }
         }
         if (l.size() == 1) state = setSide(state, l.get(0).getOpposite(), CONNECTED);
-        return state;
+        IFluidState fluidState = ctx.getWorld().getFluidState(ctx.getPos());
+        return state.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+    }
+
+    @Override
+    public IFluidState getFluidState(BlockState state) {
+        return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
     }
 
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (stateIn.get(WATERLOGGED)) {
+            worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+        }
         BlockState newState = recalculateState(worldIn, currentPos, stateIn);
         return newState == null ?
                 super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos) :

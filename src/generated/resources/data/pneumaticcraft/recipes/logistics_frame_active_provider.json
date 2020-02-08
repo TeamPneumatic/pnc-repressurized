@@ -3,11 +3,14 @@
   "pattern": [
     "PPP",
     "PDP",
-    "PPP"
+    "PCP"
   ],
   "key": {
     "P": {
-      "item": "pneumaticcraft:plastic"
+      "item": "pneumaticcraft:reinforced_bricks"
+    },
+    "C": {
+      "item": "pneumaticcraft:logistics_core"
     },
     "D": {
       "tag": "forge:dyes/purple"
@@ -15,6 +18,6 @@
   },
   "result": {
     "item": "pneumaticcraft:logistics_frame_active_provider",
-    "count": 4
+    "count": 8
   }
 }

@@ -3,11 +3,11 @@
   "pattern": [
     "I I",
     "I I",
-    "PII"
+    "IPI"
   ],
   "key": {
     "I": {
-      "item": "pneumaticcraft:ingot_iron_compressed"
+      "item": "pneumaticcraft:reinforced_brick_wall"
     },
     "P": {
       "item": "pneumaticcraft:pressure_tube"

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BB",
+    "BB"
+  ],
+  "key": {
+    "B": {
+      "item": "pneumaticcraft:reinforced_bricks"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:reinforced_brick_tile",
+    "count": 4
+  }
+}

@@ -8,7 +8,7 @@ import net.minecraft.item.crafting.SpecialRecipe;
 
 public class PatchouliBookExtension extends AbstractShapelessExtension {
     public PatchouliBookExtension(SpecialRecipe recipe) {
-        super(recipe, makeManual(), Items.BOOK, ModItems.INGOT_IRON_COMPRESSED.get());
+        super(recipe, makeManual(), Items.BOOK, ModItems.COMPRESSED_IRON_INGOT.get());
     }
 
     private static ItemStack makeManual() {

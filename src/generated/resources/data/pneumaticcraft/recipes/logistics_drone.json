@@ -10,7 +10,7 @@
       "item": "pneumaticcraft:turbine_rotor"
     },
     "C": {
-      "tag": "forge:dusts/redstone"
+      "item": "pneumaticcraft:logistics_core"
     }
   },
   "result": {

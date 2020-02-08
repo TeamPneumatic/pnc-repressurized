@@ -1,6 +1,6 @@
 {
   "textures": {
-    "base": "minecraft:block/smooth_stone"
+    "base": "pneumaticcraft:block/reinforced_brick_tile"
   },
   "elements": [
     {
