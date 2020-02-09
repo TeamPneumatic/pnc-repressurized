@@ -531,6 +531,8 @@
   "gui.tab.problems.assembly_controller.duplicateMachine": "§fDuplicate Machine Detected! \\n§0Ensure there is only one %s.",
   "gui.tab.problems.assembly_controller.missingMachine": "§fMissing Machine! \\n§0Not all machines for the inserted program are present. Add one %s to your assembly system.",
   "gui.tab.problems.assembly_controller.no_program": "§fNo Program! \\n§0Insert an Assembly Program into the Controller.",
+  "gui.tab.problems.pressure_chamber_interface.not_formed": "§fBad Multiblock! \\n§0The Pressure Chamber Multiblock is not properly formed.",
+  "gui.tab.problems.pressure_chamber_interface.not_enough_pressure": "§fNot enough pressure! \\n§0Apply more pressure to the Pressure Chamber. The required pressure is dependent on the number of items being transported.",
 
   "_comment": "Upgrades",
   "gui.tab.upgrades": "Upgrades",
@@ -711,10 +713,10 @@
   "gui.pressureChamberInterface.mode.import": "Importing Items",
   "gui.pressureChamberInterface.mode.export": "Exporting Items",
   "gui.pressureChamberInterface.exportLabel": "Exporting:",
-  "gui.pressureChamberInterface.export.valid": "Valid",
-  "gui.pressureChamberInterface.export.valid.tooltip": "Export only items which are known recipe results from the Pressure Chamber. \\n§7Use this under most circumstances.",
+  "gui.pressureChamberInterface.export.valid": "Crafted",
+  "gui.pressureChamberInterface.export.valid.tooltip": "Export only items which have been crafted in the Pressure Chamber. \\n§7Use this under most circumstances.",
   "gui.pressureChamberInterface.export.any": "All",
-  "gui.pressureChamberInterface.export.any.tooltip": "Export ALL items from the Pressure Chamber. \\n§7Use this for special recipes where the recipe result isn't always known (e.g. enchanting), or to extract items added by mistake.",
+  "gui.pressureChamberInterface.export.any.tooltip": "Export ALL items from the Pressure Chamber. \\n§7Use this to extract items added by mistake.",
   "gui.thermopneumatic.dumpInput": "Dump Input Tank \\n§7Get rid of any unwanted / excess fluids from the input tank",
   "gui.universalSensor.button.showRange": "Show Range",
 

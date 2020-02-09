@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.network.SyncedField.*;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.lang.annotation.Annotation;
@@ -173,7 +174,7 @@ public class NetworkUtils {
         if (field.getType().isEnum()) return new SyncedEnum(te, field);
         if (ItemStack.class.isAssignableFrom(field.getType())) return new SyncedItemStack(te, field);
         if (FluidTank.class.isAssignableFrom(field.getType())) return new SyncedFluidTank(te, field);
-        if (ItemStackHandler.class.isAssignableFrom(field.getType())) return new SyncedItemStackHandler(te, field);
+        if (IItemHandlerModifiable.class.isAssignableFrom(field.getType())) return new SyncedItemHandler(te, field);
         return null;
     }
 }

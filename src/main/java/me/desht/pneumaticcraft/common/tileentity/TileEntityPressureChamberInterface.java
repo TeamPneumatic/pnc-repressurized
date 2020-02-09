@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
@@ -14,10 +14,12 @@ import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -28,18 +30,23 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall implements ITickableTileEntity, IRedstoneControlled, INamedContainerProvider {
+public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall
+        implements ITickableTileEntity, IRedstoneControlled, INamedContainerProvider {
     public static final int MAX_PROGRESS = 40;
     public static final int INVENTORY_SIZE = 1;
     private static final int MIN_SOUND_INTERVAL = 400;  // ticks - the sound effect is ~2.5s long
+
+    // cache items we know are accepted to reduce recipe searching
+    private final Set<Item> acceptedItemCache = new HashSet<>();
 
     @DescSynced
     private final PressureChamberInterfaceHandler inventory = new PressureChamberInterfaceHandler();
@@ -186,20 +193,21 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     private void importFromChamber(TileEntityPressureChamberValve core) {
-        ItemStackHandler chamberStacks = core.getStacksInChamber();
-        for (int i = 0; i < chamberStacks.getSlots(); i++) {
-            ItemStack chamberStack = chamberStacks.getStackInSlot(i);
+        IItemHandlerModifiable chamberHandler = exportAny ? core.allItems : core.craftedItems;
+        for (int i = 0; i < chamberHandler.getSlots(); i++) {
+            ItemStack chamberStack = chamberHandler.getStackInSlot(i);
             if (chamberStack.isEmpty()) {
                 continue;
             }
             ItemStack stackInInterface = inventory.getStackInSlot(0);
-            if ((stackInInterface.isEmpty() || stackInInterface.isItemEqual(chamberStack)) && canPullItem(chamberStack)) {
-                final int idx = i;
-                core.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(coreAirHandler -> {
-                    int maxAllowedItems = Math.abs(coreAirHandler.getAir()) / PneumaticValues.USAGE_CHAMBER_INTERFACE;
-                    if (maxAllowedItems > 0) {
-                        maxAllowedItems = Math.min(maxAllowedItems, chamberStack.getMaxStackSize() - stackInInterface.getCount());
-                        int transferredItems = Math.min(chamberStack.getCount(), maxAllowedItems);
+            if ((stackInInterface.isEmpty() || stackInInterface.isItemEqual(chamberStack))) {
+                IAirHandlerMachine coreAirHandler = core.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
+                        .orElseThrow(RuntimeException::new);
+                int maxAllowedItems = Math.abs(coreAirHandler.getAir()) / PneumaticValues.USAGE_CHAMBER_INTERFACE;
+                if (maxAllowedItems > 0) {
+                    maxAllowedItems = Math.min(maxAllowedItems, chamberStack.getMaxStackSize() - stackInInterface.getCount());
+                    int transferredItems = Math.min(chamberStack.getCount(), maxAllowedItems);
+                    if (transferredItems > 0) {
                         ItemStack toTransferStack = chamberStack.copy().split(transferredItems);
                         ItemStack excess = inventory.insertItem(0, toTransferStack, true);
                         if (excess.getCount() < toTransferStack.getCount()) {
@@ -208,24 +216,12 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                             core.addAir((coreAirHandler.getAir() > 0 ? -1 : 1) * transferredItems * PneumaticValues.USAGE_CHAMBER_INTERFACE);
                             toTransferStack.setCount(transferredItems);
                             inventory.insertItem(0, toTransferStack, false);
-                            chamberStacks.extractItem(idx, transferredItems, false);
+                            chamberHandler.extractItem(i, transferredItems, false);
                         }
                     }
-                });
+                }
             }
         }
-    }
-
-    private boolean canPullItem(ItemStack stack) {
-        if (exportAny) return true;
-
-        for (IPressureChamberRecipe recipe: PneumaticCraftRecipes.pressureChamberRecipes.values()) {
-            if (recipe.isOutputItem(stack)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private void outputInChamber() {
@@ -234,15 +230,15 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         TileEntityPressureChamberValve valve = getCore();
         if (valve != null) {
             ItemStack inputStack = inventory.getStackInSlot(0);
-            valve.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(valveAirHandler -> {
-                enoughAir = Math.abs(valveAirHandler.getAir()) > inputStack.getCount() * PneumaticValues.USAGE_CHAMBER_INTERFACE;
-                if (enoughAir) {
-                    ItemStack leftover = ItemHandlerHelper.insertItem(valve.getStacksInChamber(), inputStack.copy(), false);
-                    int inserted = inputStack.getCount() - leftover.getCount();
-                    valve.addAir((valveAirHandler.getAir() > 0 ? -1 : 1) * inserted * PneumaticValues.USAGE_CHAMBER_INTERFACE);
-                    inventory.setStackInSlot(0, leftover);
-                }
-            });
+            IAirHandlerMachine valveAirHandler = valve.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
+                    .orElseThrow(RuntimeException::new);
+            enoughAir = Math.abs(valveAirHandler.getAir()) > inputStack.getCount() * PneumaticValues.USAGE_CHAMBER_INTERFACE;
+            if (enoughAir) {
+                ItemStack excess = valve.insertItemToChamber(inputStack);
+                int inserted = inputStack.getCount() - excess.getCount();
+                valve.addAir((valveAirHandler.getAir() > 0 ? -1 : 1) * inserted * PneumaticValues.USAGE_CHAMBER_INTERFACE);
+                inventory.setStackInSlot(0, excess);
+            }
         }
     }
 
@@ -273,13 +269,9 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     public List<String> getProblemStat() {
         List<String> textList = new ArrayList<>();
         if (interfaceMode == InterfaceDirection.NONE) {
-            textList.addAll(PneumaticCraftUtils.splitString("\u00a77The Interface can't work:"));
-            textList.addAll(PneumaticCraftUtils.splitString("\u00a70\u2022 The Interface is not in a properly formed Pressure Chamber, and/or"));
-            textList.addAll(PneumaticCraftUtils.splitString("\u00a70\u2022 The Interface is not adjacent to an air block of the Pressure Chamber, and/or"));
-            textList.addAll(PneumaticCraftUtils.splitString("\u00a70\u2022 The Interface isn't oriented properly"));
+            textList.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.pressure_chamber_interface.not_formed")));
         } else if (!enoughAir) {
-            textList.addAll(PneumaticCraftUtils.splitString("\u00a70Not enough pressure in the Pressure Chamber to move the items."));
-            textList.addAll(PneumaticCraftUtils.splitString("\u00a70Apply more pressure to the Pressure Chamber. The required pressure is dependent on the amount of items being transported."));
+            textList.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.pressure_chamber_interface.not_enough_pressure")));
         }
         return textList;
     }
@@ -352,7 +344,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return inputProgress == MAX_PROGRESS ? super.insertItem(slot, stack, simulate) : stack;
+            return inputProgress == MAX_PROGRESS && isValidItem(stack) ? super.insertItem(slot, stack, simulate) : stack;
         }
 
         @Nonnull
@@ -361,11 +353,14 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             return outputProgress == MAX_PROGRESS ? super.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
         }
 
-        @Override
-        protected void onContentsChanged(int slot) {
-            if (!getWorld().isRemote && slot == 0) {
-                sendDescriptionPacket();
-            }
+        private boolean isValidItem(ItemStack stack) {
+            if (TileEntityPressureChamberInterface.this.interfaceMode == InterfaceDirection.IMPORT) {
+                if (acceptedItemCache.contains(stack.getItem())) return true;
+                boolean accepted = PneumaticCraftRecipes.pressureChamberRecipes.values().stream()
+                        .anyMatch(recipe -> recipe.isValidInputItem(stack));
+                if (accepted) acceptedItemCache.add(stack.getItem());
+                return accepted;
+            } else return TileEntityPressureChamberInterface.this.interfaceMode == InterfaceDirection.EXPORT;
         }
     }
 }

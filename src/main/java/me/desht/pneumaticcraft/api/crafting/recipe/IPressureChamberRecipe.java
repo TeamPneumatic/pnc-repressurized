@@ -3,9 +3,10 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,12 +22,15 @@ public interface IPressureChamberRecipe extends IModRecipe {
     float getCraftingPressure();
 
     /**
-     * Check if the given list of items is valid for this recipe.
+     * Try to find the ingredients for this recipe in the given item handler, which is the items currently in the
+     * pressure chamber. Returns a collection of slot indexes into the item handler, which should be passed promptly to
+     * {@link #craftRecipe(IItemHandlerModifiable, List)}  and not cached across ticks, since the item handler
+     * could change in the meantime.
      *
      * @param chamberHandler what's currently in the pressure chamber
-     * @return true if this recipe is valid for what's in the chamber (note: pressure checks are not handled here)
+     * @return if this recipe is valid, a list of slots in the item handler where the ingredients can be found; otherwise, an empty list
      */
-    boolean isValidRecipe(@Nonnull ItemStackHandler chamberHandler);
+    Collection<Integer> findIngredients(@Nonnull IItemHandlerModifiable chamberHandler);
 
     /**
      * Get the input items for this recipe. This is primarily intended for recipe display purposes by
@@ -37,32 +41,34 @@ public interface IPressureChamberRecipe extends IModRecipe {
     }
 
     /**
-     * Get the output of this recipe, without crafting it.  This is primarily intended for recipe display purposes by
-     * JEI or any other recipe display mod.
+     * Get the output of this recipe, without crafting it.  This is intended for recipe display purposes by
+     * JEI or any other recipe display mod, and also for testing insertability into the pressure chamber's output, so
+     * the number of item stacks returned must at least be the same as the number of item stacks in the actual crafted output.
      */
     default NonNullList<ItemStack> getResultForDisplay() {
         return EMPTY_LIST;
     }
 
     /**
-     * Check if the given item stack is a valid output item for this recipe.  This is used by the Pressure Chamber
-     * Interface to decide if the item can be pulled from the chamber.
+     * Check if the given item is a valid input item for this recipe.
      *
-     * @param stack the item stack to check
-     * @return true if it's a valid output, false otherwise
+     * @param stack stack to check
+     * @return true if this is a valid item, false otherwise
      */
-    boolean isOutputItem(ItemStack stack);
+    boolean isValidInputItem(ItemStack stack);
 
     /**
      * This method will be called when the recipe should output its items, and will only be called when
-     * {@link #isValidRecipe(ItemStackHandler)} returns true, i.e. the necessary items are definitely in the chamber.
+     * {@link #findIngredients(IItemHandlerModifiable)} returns a non-empty list of slot numbers, i.e. the necessary items
+     * are definitely in the chamber.
      * The implementation is responsible for removing the items that have been used from the {@code chamberHandler}. The
      * implementation must also return the list of crafted items, for the Pressure Chamber to insert.
      *
      * @param chamberHandler items in the pressure chamber; should be modified to remove recipe input items.
+     * @param ingredientSlots slots in the chamber handler where the ingredients can be found, as returned from {@link #findIngredients(IItemHandlerModifiable)}
      * @return the resulting items; these do not have to be copies - the Pressure Chamber itself will make sure they are copied
      */
-    @Nonnull NonNullList<ItemStack> craftRecipe(@Nonnull ItemStackHandler chamberHandler);
+    @Nonnull NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandlerModifiable chamberHandler, List<Integer> ingredientSlots);
 
     /**
      * Return a translation key for a supplementary tooltip to be displayed on the ingredient or resulting item.  For

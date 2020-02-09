@@ -8,6 +8,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
 import org.apache.commons.lang3.ArrayUtils;
@@ -291,8 +292,8 @@ public abstract class SyncedField<T> {
         }
     }
 
-    public static class SyncedItemStackHandler extends SyncedField<ItemStackHandler> {
-        SyncedItemStackHandler(Object te, Field field) {
+    public static class SyncedItemHandler extends SyncedField<IItemHandlerModifiable> {
+        SyncedItemHandler(Object te, Field field) {
             super(te, field);
         }
 
@@ -302,32 +303,27 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected void setValueForArray(Object array, int index, ItemStackHandler value) {
-            ((ItemStackHandler[]) array)[index] = value;
+        protected void setValueForArray(Object array, int index, IItemHandlerModifiable value) {
+            ((IItemHandlerModifiable[]) array)[index] = value;
         }
 
         @Override
-        protected ItemStackHandler retrieveValue(Field field, Object te) throws Exception {
-            return (ItemStackHandler) field.get(te);
+        protected IItemHandlerModifiable retrieveValue(Field field, Object te) throws Exception {
+            return (IItemHandlerModifiable) field.get(te);
         }
 
         @Override
-        protected void injectValue(Field field, Object te, ItemStackHandler value) throws Exception {
-            ItemStackHandler handler = (ItemStackHandler) field.get(te);
+        protected void injectValue(Field field, Object te, IItemHandlerModifiable value) throws Exception {
+            IItemHandlerModifiable handler = (IItemHandlerModifiable) field.get(te);
             for (int i = 0; i < value.getSlots(); i++) {
                 handler.setStackInSlot(i, value.getStackInSlot(i));
             }
         }
 
         @Override
-        protected boolean equals(ItemStackHandler oldValue, ItemStackHandler newValue) {
+        protected boolean equals(IItemHandlerModifiable oldValue, IItemHandlerModifiable newValue) {
             if (oldValue.getSlots() != newValue.getSlots()) return false;
             for (int i = 0; i < oldValue.getSlots(); i++) {
-//                if (oldValue.getStackInSlot(i).isEmpty() && newValue.getStackInSlot(i).isEmpty()) {
-//                    // if both stacks are Item.AIR but different sizes, they're still equal -
-//                    // https://github.com/TeamPneumatic/pnc-repressurized/issues/258
-//                    return true;
-//                }
                 if (!ItemStack.areItemStacksEqual(oldValue.getStackInSlot(i), newValue.getStackInSlot(i))) {
                     return false;
                 }
@@ -336,7 +332,7 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected ItemStackHandler copyWhenNecessary(ItemStackHandler oldValue) {
+        protected IItemHandlerModifiable copyWhenNecessary(IItemHandlerModifiable oldValue) {
             ItemStackHandler result = new ItemStackHandler(oldValue.getSlots());
             for (int i = 0; i < oldValue.getSlots(); i++) {
                 ItemStack stack = oldValue.getStackInSlot(i);
@@ -357,7 +353,7 @@ public abstract class SyncedField<T> {
         else if (syncedField instanceof SyncedEnum) return 5;
         else if (syncedField instanceof SyncedItemStack) return 6;
         else if (syncedField instanceof SyncedFluidTank) return 7;
-        else if (syncedField instanceof SyncedItemStackHandler) return 8;
+        else if (syncedField instanceof SyncedField.SyncedItemHandler) return 8;
         else {
             throw new IllegalArgumentException("Invalid sync type! " + syncedField);
         }

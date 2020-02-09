@@ -1,20 +1,16 @@
 package me.desht.pneumaticcraft.client.model.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.render.StaticItemRenderer;
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.model.RendererModel;
-import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.util.math.MathHelper;
 
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface.MAX_PROGRESS;
 
 public class ModelPressureChamberInterface extends AbstractTileModelRenderer.BaseModel {
     private final RendererModel input;
     private final RendererModel output;
-    private StaticItemRenderer customRenderItem = null;
 
     public ModelPressureChamberInterface() {
         textureWidth = 128;
@@ -46,30 +42,9 @@ public class ModelPressureChamberInterface extends AbstractTileModelRenderer.Bas
         GlStateManager.popMatrix();
     }
 
-    public void renderModel(float size, TileEntityPressureChamberInterface te, float partialTicks, ItemEntity ghostEntityItem) {
-        float renderInputProgress = te.oldInputProgress + (te.inputProgress - te.oldInputProgress) * partialTicks;
-        float renderOutputProgress = te.oldOutputProgress + (te.outputProgress - te.oldOutputProgress) * partialTicks;
+    public void renderModel(float size, TileEntityPressureChamberInterface te, float partialTicks) {
+        float renderInputProgress = MathHelper.lerp(partialTicks, te.oldInputProgress, te.inputProgress);
+        float renderOutputProgress = MathHelper.lerp(partialTicks, te.oldOutputProgress, te.outputProgress);
         renderDoors(size, renderInputProgress / MAX_PROGRESS, renderOutputProgress / MAX_PROGRESS);
-
-        if (ghostEntityItem != null) {
-            if (customRenderItem == null) {
-                customRenderItem = new StaticItemRenderer();
-            }
-
-            float zOff = 0f;
-            if (te.interfaceMode == TileEntityPressureChamberInterface.InterfaceDirection.IMPORT && renderOutputProgress >= MAX_PROGRESS - 5) {
-                // render item moving out of the interface into the chamber (always in +Z direction due to matrix rotation)
-                zOff = (1.0f - (MAX_PROGRESS - renderOutputProgress) + partialTicks) / 3f;
-            }
-
-            GlStateManager.translated(0, 1.25f, zOff);
-            GlStateManager.scaled(1.0F, -1F, -1F);
-
-            EntityRendererManager renderManager = Minecraft.getInstance().getRenderManager();
-            boolean fancySetting = renderManager.options.fancyGraphics;
-            renderManager.options.fancyGraphics = true;
-            customRenderItem.doRender(ghostEntityItem, 0, 0, 0, 0, 0);
-            renderManager.options.fancyGraphics = fancySetting;
-        }
     }
 }

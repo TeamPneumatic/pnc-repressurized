@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.event.ClientTickHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
-import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
@@ -13,20 +12,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RenderPressureChamber extends TileEntityRenderer<TileEntityPressureChamberValve> {
 
     @Override
     public void render(TileEntityPressureChamberValve te, double x, double y, double z, float partialTicks, int destroyStage) {
-
         if (te.multiBlockSize == 0 || !te.hasGlass) return;
 
-        List<ItemStack> stacks = new ItemStackHandlerIterable(te.getStacksInChamber())
-                                        .stream()
-                                        .filter(stack -> !stack.isEmpty())
-                                        .collect(Collectors.toList());
-        
+        List<ItemStack> stacks = te.renderedItems;
         if (!stacks.isEmpty()){
             x += te.multiBlockX - te.getPos().getX() + te.multiBlockSize / 2D;
             y += te.multiBlockY - te.getPos().getY() + 1.1; //Set to '+ 1' for normal y value.
@@ -52,7 +45,7 @@ public class RenderPressureChamber extends TileEntityRenderer<TileEntityPressure
             int light = te.getWorld().getCombinedLight(te.getPos().offset(te.getRotation()), 0);  // otherwise it will render unlit
             GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float) (light & 0xFFFF), (float) ((light >> 16) & 0xFFFF));
 
-            for(int i = 0; i < stacks.size(); i++){
+            for (int i = 0; i < stacks.size(); i++){
                 GlStateManager.pushMatrix();
                 GlStateManager.rotated(i * degreesPerStack, 0, 1, 0);
                 GlStateManager.translated(circleRadius, yBob, 0);

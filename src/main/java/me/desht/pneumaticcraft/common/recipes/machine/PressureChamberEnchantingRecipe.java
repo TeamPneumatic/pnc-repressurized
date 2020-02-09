@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
 import me.desht.pneumaticcraft.common.recipes.AbstractRecipeSerializer;
-import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -14,12 +13,10 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -32,49 +29,57 @@ public class PressureChamberEnchantingRecipe implements IPressureChamberRecipe {
     }
 
     @Override
-    public boolean isValidRecipe(ItemStackHandler chamberHandler) {
-        return getRecipeIngredients(chamberHandler) != null;
-    }
+    public Collection<Integer> findIngredients(IItemHandlerModifiable chamberHandler) {
+        // found slots will be { enchanted book, enchantable item } in that order
 
-    private ItemStack[] getRecipeIngredients(ItemStackHandler inputStacks) {
-        List<ItemStack> enchantedBooks = new ItemStackHandlerIterable(inputStacks)
-                                                    .stream()
-                                                    .filter(book -> book.getItem() == Items.ENCHANTED_BOOK)
-                                                    .collect(Collectors.toList());
+        List<Integer> bookSlots = new ArrayList<>();
+        for (int i = 0; i < chamberHandler.getSlots(); i++) {
+            ItemStack stack = chamberHandler.getStackInSlot(i);
+            if (stack.getItem() == Items.ENCHANTED_BOOK) {
+                bookSlots.add(i);
+            }
+        }
 
-        if (enchantedBooks.isEmpty()) return null;
-
-        for (ItemStack inputStack : new ItemStackHandlerIterable(inputStacks)) {
-            if ((inputStack.isEnchantable() || inputStack.isEnchanted()) && inputStack.getItem() != Items.ENCHANTED_BOOK) {
-                for (ItemStack enchantedBook : enchantedBooks) {
-                    Map<Enchantment, Integer> bookMap = EnchantmentHelper.getEnchantments(enchantedBook);
-                    for (Map.Entry<Enchantment, Integer> entry : bookMap.entrySet()) {
-                        // if the enchantment is applicable, AND the item doesn't have an existing enchantment of the
-                        // same type which is equal to or stronger than the book's enchantment level...
-                        if (entry.getKey().canApply(inputStack)
-                                && EnchantmentHelper.getEnchantmentLevel(entry.getKey(), inputStack) < entry.getValue()) {
-                            return new ItemStack[]{ inputStack, enchantedBook};
-                        }
+        for (int i = 0; i < chamberHandler.getSlots(); i++) {
+            ItemStack stack = chamberHandler.getStackInSlot(i);
+            if (stack.isEnchantable() || stack.isEnchanted()) {
+                for (int bookSlot : bookSlots) {
+                    ItemStack enchantedBook = chamberHandler.getStackInSlot(bookSlot);
+                    if (isApplicable(enchantedBook, stack)) {
+                        return ImmutableList.of(bookSlot, i);
                     }
                 }
             }
         }
-        return null;
+        return Collections.emptyList();
+    }
+
+    private boolean isApplicable(ItemStack enchantedBook, ItemStack enchantable) {
+        Map<Enchantment, Integer> bookMap = EnchantmentHelper.getEnchantments(enchantedBook);
+        for (Map.Entry<Enchantment, Integer> entry : bookMap.entrySet()) {
+            // if the enchantment is applicable, AND the item doesn't have an existing enchantment of the
+            // same type which is equal to or stronger than the book's enchantment level...
+            if (entry.getKey().canApply(enchantable)
+                    && EnchantmentHelper.getEnchantmentLevel(entry.getKey(), enchantable) < entry.getValue()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
-    public NonNullList<ItemStack> craftRecipe(ItemStackHandler chamberHandler) {
-        ItemStack[] recipeIngredients = getRecipeIngredients(chamberHandler);
-        if (recipeIngredients == null) return IPressureChamberRecipe.EMPTY_LIST;
+    public NonNullList<ItemStack> craftRecipe(IItemHandlerModifiable chamberHandler, List<Integer> ingredientSlots) {
+        ItemStack enchantedBook = chamberHandler.getStackInSlot(ingredientSlots.get(0));
+        ItemStack enchantable = chamberHandler.getStackInSlot(ingredientSlots.get(1)).copy();
 
-        ItemStack enchantedTool = recipeIngredients[0];
-        ItemStack enchantedBook = recipeIngredients[1];
-        
         Map<Enchantment, Integer> bookMap = EnchantmentHelper.getEnchantments(enchantedBook);
-        bookMap.forEach(enchantedTool::addEnchantment);
-        
-        enchantedBook.shrink(1);
-        return NonNullList.from(ItemStack.EMPTY, new ItemStack(Items.BOOK));
+        bookMap.forEach((enchantment, level) -> {
+            if (enchantment.canApply(enchantable)) enchantable.addEnchantment(enchantment, level);
+        });
+
+        chamberHandler.extractItem(ingredientSlots.get(0), 1, false);
+        chamberHandler.extractItem(ingredientSlots.get(1), 1, false);
+        return NonNullList.from(ItemStack.EMPTY, new ItemStack(Items.BOOK), enchantable);
     }
 
     @Override
@@ -94,6 +99,11 @@ public class PressureChamberEnchantingRecipe implements IPressureChamberRecipe {
     }
 
     @Override
+    public boolean isValidInputItem(ItemStack stack) {
+        return stack.getItem() == Items.ENCHANTED_BOOK || stack.isEnchantable();
+    }
+
+    @Override
     public String getTooltipKey(boolean input, int slot) {
         switch (slot) {
             case 0: return "gui.nei.tooltip.pressureEnchantItem";
@@ -102,11 +112,6 @@ public class PressureChamberEnchantingRecipe implements IPressureChamberRecipe {
             case 3: return "gui.nei.tooltip.pressureEnchantBookOut";
             default: return "";
         }
-    }
-
-    @Override
-    public boolean isOutputItem(ItemStack stack) {
-        return false;
     }
 
     @Override
@@ -120,7 +125,6 @@ public class PressureChamberEnchantingRecipe implements IPressureChamberRecipe {
     }
 
     public static class Serializer extends AbstractRecipeSerializer<PressureChamberEnchantingRecipe> {
-
         @Override
         public PressureChamberEnchantingRecipe read(ResourceLocation recipeId, JsonObject json) {
             return new PressureChamberEnchantingRecipe();

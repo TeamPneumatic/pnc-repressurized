@@ -14,11 +14,14 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
@@ -40,25 +43,20 @@ public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
     }
 
     @Override
-    public boolean isValidRecipe(@Nonnull ItemStackHandler chamberHandler) {
-        List<Ingredient> missing = new ArrayList<>(inputs);
-
-        for (int i = 0; i < chamberHandler.getSlots() && !missing.isEmpty(); i++) {
-            ItemStack input = chamberHandler.getStackInSlot(i);
-
-            int stackIndex = -1;
-            for(int j = 0; j < missing.size(); j++) {
-                Ingredient ingr = missing.get(j);
-                if (ingr.test(input)) {
-                    stackIndex = j;
+    public Collection<Integer> findIngredients(@Nonnull IItemHandlerModifiable chamberHandler) {
+        List<Integer> slots = new ArrayList<>();
+        for (int i = 0; i < chamberHandler.getSlots(); i++) {
+            for (Ingredient ingr : inputs) {
+                if (ingr.test(chamberHandler.getStackInSlot(i))) {
+                    slots.add(i);
                     break;
                 }
             }
-            if (stackIndex != -1)
-                missing.remove(stackIndex);
-            else return false;
+            if (slots.size() == inputs.size()) {
+                return slots;
+            }
         }
-        return missing.isEmpty();
+        return Collections.emptyList();
     }
 
     @Override
@@ -72,14 +70,6 @@ public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
     }
 
     @Override
-    public boolean isOutputItem(ItemStack stack) {
-        for (ItemStack out: outputs) {
-            if (ItemStack.areItemsEqual(out, stack)) return true;
-        }
-        return false;
-    }
-
-    @Override
     public ResourceLocation getId() {
         return id;
     }
@@ -89,16 +79,23 @@ public class BasicPressureChamberRecipe implements IPressureChamberRecipe {
         return MachineRecipeHandler.Category.PRESSURE_CHAMBER.getId();
     }
 
+    @Override
+    public boolean isValidInputItem(ItemStack stack) {
+        ItemStack s2 = ItemHandlerHelper.copyStackWithSize(stack, stack.getMaxStackSize());
+        return inputs.stream().anyMatch(ingr -> ingr.test(s2));
+    }
+
     @Nonnull
     @Override
-    public NonNullList<ItemStack> craftRecipe(@Nonnull ItemStackHandler chamberHandler) {
+    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandlerModifiable chamberHandler, List<Integer> ingredientSlots) {
         // remove the recipe's input items from the chamber
         for (Ingredient ingredient : inputs) {
-            int nItems = ingredient.hasNoMatchingItems() ? 0 : ingredient.getMatchingStacks()[0].getCount();
-            for (int i = 0; i < chamberHandler.getSlots() && nItems > 0; i++) {
-                ItemStack itemInChamber = chamberHandler.getStackInSlot(i);
-                if (ingredient.test(itemInChamber)) {
-                    ItemStack extracted = chamberHandler.extractItem(i, nItems, false);
+            if (ingredient.hasNoMatchingItems()) return NonNullList.create(); // sanity check
+            int nItems = ingredient.getMatchingStacks()[0].getCount();
+            for (int i = 0; i < ingredientSlots.size() && nItems > 0; i++) {
+                int slot = ingredientSlots.get(i);
+                if (ingredient.test(chamberHandler.getStackInSlot(slot))) {
+                    ItemStack extracted = chamberHandler.extractItem(slot, nItems, false);
                     nItems -= extracted.getCount();
                 }
             }

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
@@ -41,14 +42,18 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public class TileEntityPressureChamberValve extends TileEntityPneumaticBase implements IMinWorkingPressure, IAirListener, INamedContainerProvider {
-    private static final int CHAMBER_INV_SIZE = 27;
+public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
+        implements IMinWorkingPressure, IAirListener, INamedContainerProvider {
+    private static final int CHAMBER_INV_SIZE = 18;
+    private static final int OUTPUT_INV_SIZE = 9;
 
     @DescSynced
     public int multiBlockX, multiBlockY, multiBlockZ;
@@ -59,25 +64,24 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     @DescSynced
     private float roundedPressure; // rounded to multiples of 0.25 to avoid excessive server->client traffic
 
-    public List<TileEntityPressureChamberValve> accessoryValves;
-    private final List<BlockPos> nbtValveList;
-//    private boolean readNBT = false;
     @GuiSynced
     public boolean isValidRecipeInChamber;
     @GuiSynced
     public boolean isSufficientPressureInChamber;
     @GuiSynced
     public float recipePressure;
+
+    private ItemStackHandler itemsInChamber = new ChamberStackHandler();
+    ItemStackHandler craftedItems = new OutputStackHandler();
     @DescSynced
-    private ItemStackHandler itemsInChamber = new ItemStackHandler(CHAMBER_INV_SIZE) {
-        @Override
-        protected void onContentsChanged(int slot) {
-            recipeRecalcNeeded = true;
-        }
-    };
+    CombinedInvWrapper allItems = new CombinedInvWrapper(itemsInChamber, craftedItems);
+    public final List<ItemStack> renderedItems = new ArrayList<>();
+
+    public List<TileEntityPressureChamberValve> accessoryValves;
+    private final List<BlockPos> nbtValveList;  // temp store for positions of other valves read from NBT
 
     // list of recipes which can be made from the current chamber contents, not considering the current pressure
-    private final List<IPressureChamberRecipe> applicableRecipes = new ArrayList<>();
+    private final List<ApplicableRecipe> applicableRecipes = new ArrayList<>();
     private boolean recipeRecalcNeeded = true;
 
     private long lastSoundTick;  // to avoid excessive spamming of the pop sound
@@ -113,10 +117,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
 
     @Override
     public void tick() {
-//        if (readNBT && !getWorld().isRemote) {
-//            doPostNBTSetup();
-//        }
-
         if (!getWorld().isRemote) {
             checkForAirLeak();
         }
@@ -130,8 +130,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 recipePressure = Float.MAX_VALUE;
                 applicableRecipes.clear();
                 for (IPressureChamberRecipe recipe : PneumaticCraftRecipes.pressureChamberRecipes.values()) {
-                    if (recipe.isValidRecipe(itemsInChamber)) {
-                        applicableRecipes.add(recipe);
+                    Collection<Integer> slots = recipe.findIngredients(itemsInChamber);
+                    if (!slots.isEmpty()) {
+                        applicableRecipes.add(new ApplicableRecipe(recipe, slots));
                     }
                 }
                 isValidRecipeInChamber = !applicableRecipes.isEmpty();
@@ -168,27 +169,30 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     }
 
     /**
-     * This setup can't be done in readFromNBT() because there may be multiple valve TE's in the multiblock,
-     * and all of them need to be fully initialized before this code is run.
+     * Initialize the accessory valve list from saved NBT data.
+     * This can't be done in readFromNBT() because there may be multiple valve TE's in the multiblock,
+     * and all of them need to be fully initialized before this is run.
      */
     private void doPostNBTSetup() {
-//        readNBT = false;
+        if (!nbtValveList.isEmpty()) {
+            BlockState state = getWorld().getBlockState(getPos());
+            if (state.getBlock() instanceof BlockPressureChamberValve)
+                getWorld().setBlockState(getPos(), state.with(BlockPressureChamberValve.FORMED, isPrimaryValve()), 2);
 
-        BlockState state = getWorld().getBlockState(getPos());
-        if (state.getBlock() instanceof BlockPressureChamberValve)
-            getWorld().setBlockState(getPos(), state.with(BlockPressureChamberValve.FORMED, isPrimaryValve()), 2);
-
-        accessoryValves.clear();
-        for (BlockPos valve : nbtValveList) {
-            TileEntity te = getWorld().getTileEntity(valve);
-            if (te instanceof TileEntityPressureChamberValve) {
-                accessoryValves.add((TileEntityPressureChamberValve) te);
+            accessoryValves.clear();
+            for (BlockPos valve : nbtValveList) {
+                TileEntity te = getWorld().getTileEntity(valve);
+                if (te instanceof TileEntityPressureChamberValve) {
+                    accessoryValves.add((TileEntityPressureChamberValve) te);
+                }
             }
-        }
 
-        if (isPrimaryValve()) {
-            hasGlass = checkForGlass();
-            sendDescriptionPacket();
+            if (isPrimaryValve()) {
+                hasGlass = checkForGlass();
+                sendDescriptionPacket();
+            }
+
+            nbtValveList.clear();
         }
     }
 
@@ -247,18 +251,22 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     }
 
     private void processApplicableRecipes() {
-        for (IPressureChamberRecipe recipe : applicableRecipes) {
+        for (ApplicableRecipe applicableRecipe : applicableRecipes) {
+            IPressureChamberRecipe recipe = applicableRecipe.recipe;
             boolean pressureOK = recipe.getCraftingPressure() <= getPressure() && recipe.getCraftingPressure() > 0F
                     || recipe.getCraftingPressure() >= getPressure() && recipe.getCraftingPressure() < 0F;
             if (Math.abs(recipe.getCraftingPressure()) < Math.abs(recipePressure)) {
                 recipePressure = recipe.getCraftingPressure();
             }
             if (pressureOK) {
+                // let's craft! (although if the output handler is full, we won't...)
                 isSufficientPressureInChamber = true;
-                giveOutput(recipe.craftRecipe(itemsInChamber));
-                if (getWorld().getGameTime() - lastSoundTick > 5) {
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, getPos(), 0.7f, 0.8f + getWorld().rand.nextFloat() * 0.4f, false), getWorld());
-                    lastSoundTick = getWorld().getGameTime();
+                if (giveOutput(applicableRecipe.recipe.getResultForDisplay(), true)) {
+                    giveOutput(recipe.craftRecipe(itemsInChamber, applicableRecipe.slots), false);
+                    if (getWorld().getGameTime() - lastSoundTick > 5) {
+                        NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, getPos(), 0.7f, 0.8f + getWorld().rand.nextFloat() * 0.4f, false), getWorld());
+                        lastSoundTick = getWorld().getGameTime();
+                    }
                 }
                 // Craft at most one recipe each tick; this is because crafting changes the contents of the
                 // chamber, possibly invalidating other applicable recipes.  Modifying the chamber's contents
@@ -304,16 +312,29 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         return false;
     }
 
-    private void giveOutput(NonNullList<ItemStack> stacks){
-        for (ItemStack stack : stacks){
+    /**
+     * Try to insert all the given stacks into the output handler.
+     * @param stacks list of item stacks
+     * @param simulate true to simulate insertion
+     * @return true if all can be (were) inserted, false if not
+     */
+    private boolean giveOutput(NonNullList<ItemStack> stacks, boolean simulate) {
+        for (ItemStack stack : stacks) {
             stack = stack.copy();
-            stack = ItemHandlerHelper.insertItem(itemsInChamber, stack, false);
-            if (!stack.isEmpty()) dropItemOnGround(stack); //As a last resort, actually drop an item in the chamber.
+            ItemStack result = ItemHandlerHelper.insertItem(craftedItems, stack, simulate);
+            if (!result.isEmpty()) return false;
         }
+        return true;
     }
 
-    public ItemStackHandler getStacksInChamber() {
-        return itemsInChamber;
+    /**
+     * Insert the given item into the crafting chamber.
+     *
+     * @param stack the item to insert
+     * @return what could not be inserted
+     */
+    ItemStack insertItemToChamber(ItemStack stack) {
+        return ItemHandlerHelper.insertItem(itemsInChamber, stack.copy(), false);
     }
 
     @Override
@@ -324,25 +345,24 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         isSufficientPressureInChamber = tag.getBoolean("sufPressure");
         isValidRecipeInChamber = tag.getBoolean("validRecipe");
         recipePressure = tag.getFloat("recipePressure");
-        itemsInChamber.deserializeNBT(tag.getCompound("itemsInChamber"));
-        if (itemsInChamber.getSlots() > CHAMBER_INV_SIZE) {
-            // in case we read in a larger item handler from previous save (used to be 100 items)
-            ItemStackHandler newHandler = new ItemStackHandler(CHAMBER_INV_SIZE);
-            for (int i = 0; i < CHAMBER_INV_SIZE; i++) {
-                newHandler.setStackInSlot(i, itemsInChamber.getStackInSlot(i));
-            }
-            itemsInChamber = newHandler;
+        ItemStackHandler handler = new ItemStackHandler();
+        handler.deserializeNBT(tag.getCompound("itemsInChamber"));
+        for (int i = 0; i < handler.getSlots() && i < CHAMBER_INV_SIZE; i++) {
+            itemsInChamber.setStackInSlot(i, handler.getStackInSlot(i));
+        }
+        ItemStackHandler outHandler = new ItemStackHandler();
+        outHandler.deserializeNBT(tag.getCompound("craftedItems"));
+        for (int i = 0; i < outHandler.getSlots() && i < OUTPUT_INV_SIZE; i++) {
+            craftedItems.setStackInSlot(i, outHandler.getStackInSlot(i));
         }
 
         // Read in the accessory valves from NBT
-        ListNBT tagList2 = tag.getList("Valves", Constants.NBT.TAG_COMPOUND);
+        ListNBT accList = tag.getList("Valves", Constants.NBT.TAG_COMPOUND);
         nbtValveList.clear();
-        for (int i = 0; i < tagList2.size(); ++i) {
-            CompoundNBT tagCompound = tagList2.getCompound(i);
+        for (int i = 0; i < accList.size(); ++i) {
+            CompoundNBT tagCompound = accList.getCompound(i);
             nbtValveList.add(NBTUtil.getPos(tagCompound));
         }
-        
-//        readNBT = true;
     }
 
     @Override
@@ -356,28 +376,29 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         tag.putBoolean("validRecipe", isValidRecipeInChamber);
         tag.putFloat("recipePressure", recipePressure);
         tag.put("itemsInChamber", itemsInChamber.serializeNBT());
+        tag.put("craftedItems", craftedItems.serializeNBT());
 
-        // Write the accessory valve to NBT
-        ListNBT tagList2 = new ListNBT();
+        // Write the accessory valve list to NBT
+        ListNBT accList = new ListNBT();
         for (TileEntityPressureChamberValve valve : accessoryValves) {
             CompoundNBT tagCompound = new CompoundNBT();
-            tagCompound.putInt("x", valve.getPos().getX());
-            tagCompound.putInt("y", valve.getPos().getY());
-            tagCompound.putInt("z", valve.getPos().getZ());
-            tagList2.add(tagCompound);
+            NBTUtil.setPos(tagCompound, valve.getPos());
+            accList.add(tagCompound);
         }
+        tag.put("Valves", accList);
 
-        tag.put("Valves", tagList2);
         return tag;
     }
 
     public void onMultiBlockBreak() {
         if (isPrimaryValve()) {
-            Iterator<ItemStack> itemsInChamberIterator = new ItemStackHandlerIterable(itemsInChamber).iterator();
+            Iterator<ItemStack> itemsInChamberIterator = new ItemStackHandlerIterable(allItems).iterator();
             while (itemsInChamberIterator.hasNext()) {
                 ItemStack stack = itemsInChamberIterator.next();
-                dropItemOnGround(stack);
-                itemsInChamberIterator.remove();
+                if (!stack.isEmpty()) {
+                    dropItemOnGround(stack);
+                    itemsInChamberIterator.remove();
+                }
             }
             invalidateMultiBlock();
         }
@@ -475,7 +496,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                     mPos = mPos.setPos(x + baseX, y + baseY, z + baseZ);
                     BlockState state = world.getBlockState(mPos);
                     if (x != 0 && x != size - 1 && y != 0 && y != size - 1 && z != 0 && z != size - 1) {
-                        if (!world.isAirBlock(mPos)) return false;
+                        if (!world.isAirBlock(mPos)) {
+                            return false;
+                        }
                     } else if (!(state.getBlock() instanceof IBlockPressureChamber)) {
                         return false;
                     } else if (state.getBlock() instanceof BlockPressureChamberValve) {
@@ -599,5 +622,51 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerPressureChamberValve(i, playerInventory, getPos());
+    }
+
+    private void rebuildRenderedItems() {
+        renderedItems.clear();
+        for (int i = 0; i < allItems.getSlots(); i++) {
+            if (!allItems.getStackInSlot(i).isEmpty()) {
+                renderedItems.add(allItems.getStackInSlot(i));
+            }
+        }
+    }
+
+    private class ChamberStackHandler extends ItemStackHandler {
+        ChamberStackHandler() {
+            super(CHAMBER_INV_SIZE);
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            recipeRecalcNeeded = true;
+            if (world != null && world.isRemote) {
+                rebuildRenderedItems();
+            }
+        }
+    }
+
+    private class OutputStackHandler extends ItemStackHandler {
+        OutputStackHandler() {
+            super(OUTPUT_INV_SIZE);
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            if (world != null && world.isRemote) {
+                rebuildRenderedItems();
+            }
+        }
+    }
+
+    private static class ApplicableRecipe {
+        final IPressureChamberRecipe recipe;
+        final List<Integer> slots;
+
+        ApplicableRecipe(IPressureChamberRecipe recipe, Collection<Integer> slots) {
+            this.recipe = recipe;
+            this.slots = ImmutableList.copyOf(slots);
+        }
     }
 }
