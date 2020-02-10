@@ -1,7 +1,7 @@
 {
   "variants": {
     "axis=y":  { "model": "pneumaticcraft:block/reinforced_brick_pillar" },
-    "axis=z":   { "model": "pneumaticcraft:block/reinforced_brick_pillar", "x": 90 },
-    "axis=x":   { "model": "pneumaticcraft:block/reinforced_brick_pillar", "x": 90, "y": 90 }
+    "axis=z":   { "model": "pneumaticcraft:block/reinforced_brick_pillar", "x": 270 },
+    "axis=x":   { "model": "pneumaticcraft:block/reinforced_brick_pillar", "x": 270, "y": 90 }
   }
 }
