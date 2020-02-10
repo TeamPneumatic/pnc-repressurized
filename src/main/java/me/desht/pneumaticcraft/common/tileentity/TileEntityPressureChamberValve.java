@@ -117,6 +117,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
 
     @Override
     public void tick() {
+        super.tick();
+
         if (!getWorld().isRemote) {
             checkForAirLeak();
         }
@@ -145,8 +147,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                 handleEntitiesInChamber();
             }
         }
-
-        super.tick();
 
         // particles
         if (getWorld().isRemote && hasGlass && isPrimaryValve() && roundedPressure > 0.2D) {
