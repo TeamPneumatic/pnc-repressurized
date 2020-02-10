@@ -29,10 +29,6 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
 
         Fluid f = tank.getFluid().getFluid();
         TextureAtlasSprite still = Minecraft.getInstance().getTextureMap().getAtlasSprite(f.getAttributes().getStill(tank.getFluid()).toString());
-        float u1 = still.getMinU();
-        float v1 = still.getMinV();
-        float u2 = still.getMaxU();
-        float v2 = still.getMaxV();
         int color = f.getAttributes().getColor(tank.getFluid());
         float alpha = (color >> 24 & 0xFF) / 255F;
         float red = (color >> 16 & 0xFF) / 255F;
@@ -42,11 +38,21 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
         buffer.setTranslation(x,y,z);
 
         AxisAlignedBB bounds = getRenderBounds(tank, tankRenderInfo.bounds);
+        double bx1 = bounds.minX * 16;
+        double bx2 = bounds.maxX * 16;
+        double by1 = bounds.minY * 16;
+        double by2 = bounds.maxY * 16;
+        double bz1 = bounds.minZ * 16;
+        double bz2 = bounds.maxZ * 16;
 
         if (tankRenderInfo.shouldRender(Direction.DOWN)) {
             int downCombined = getWorld().getCombinedLight(te.getPos().down(), 0);
             int downLMa = downCombined >> 16 & 65535;
             int downLMb = downCombined & 65535;
+            float u1 = still.getInterpolatedU(bx1);
+            float u2 = still.getInterpolatedU(bounds.maxX * 16);
+            float v1 = still.getInterpolatedV(bz1);
+            float v2 = still.getInterpolatedV(bounds.maxZ * 16);
             buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(downLMa, downLMb).endVertex();
             buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(downLMa, downLMb).endVertex();
             buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(downLMa, downLMb).endVertex();
@@ -57,6 +63,10 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
             int upCombined = getWorld().getCombinedLight(te.getPos().up(), 0);
             int upLMa = upCombined >> 16 & 65535;
             int upLMb = upCombined & 65535;
+            float u1 = still.getInterpolatedU(bx1);
+            float u2 = still.getInterpolatedU(bx2);
+            float v1 = still.getInterpolatedV(bz1);
+            float v2 = still.getInterpolatedV(bz2);
             buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(upLMa, upLMb).endVertex();
             buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(upLMa, upLMb).endVertex();
             buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(upLMa, upLMb).endVertex();
@@ -67,6 +77,10 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
             int northCombined = getWorld().getCombinedLight(te.getPos().north(), 0);
             int northLMa = northCombined >> 16 & 65535;
             int northLMb = northCombined & 65535;
+            float u1 = still.getInterpolatedU(bx1);
+            float u2 = still.getInterpolatedU(bx2);
+            float v1 = still.getInterpolatedV(by1);
+            float v2 = still.getInterpolatedV(by2);
             buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(northLMa, northLMb).endVertex();
             buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(northLMa, northLMb).endVertex();
             buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(northLMa, northLMb).endVertex();
@@ -77,6 +91,10 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
             int southCombined = getWorld().getCombinedLight(te.getPos().south(), 0);
             int southLMa = southCombined >> 16 & 65535;
             int southLMb = southCombined & 65535;
+            float u1 = still.getInterpolatedU(bx1);
+            float u2 = still.getInterpolatedU(bx2);
+            float v1 = still.getInterpolatedV(by1);
+            float v2 = still.getInterpolatedV(by2);
             buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(southLMa, southLMb).endVertex();
             buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(southLMa, southLMb).endVertex();
             buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(southLMa, southLMb).endVertex();
@@ -87,6 +105,10 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
             int westCombined = getWorld().getCombinedLight(te.getPos().west(), 0);
             int westLMa = westCombined >> 16 & 65535;
             int westLMb = westCombined & 65535;
+            float u1 = still.getInterpolatedU(by1);
+            float u2 = still.getInterpolatedU(by2);
+            float v1 = still.getInterpolatedV(bz1);
+            float v2 = still.getInterpolatedV(bz2);
             buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(westLMa, westLMb).endVertex();
             buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(westLMa, westLMb).endVertex();
             buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(westLMa, westLMb).endVertex();
@@ -97,6 +119,10 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
             int eastCombined = getWorld().getCombinedLight(te.getPos().east(), 0);
             int eastLMa = eastCombined >> 16 & 65535;
             int eastLMb = eastCombined & 65535;
+            float u1 = still.getInterpolatedU(by1);
+            float u2 = still.getInterpolatedU(by2);
+            float v1 = still.getInterpolatedV(bz1);
+            float v2 = still.getInterpolatedV(bz2);
             buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(eastLMa, eastLMb).endVertex();
             buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(eastLMa, eastLMb).endVertex();
             buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(eastLMa, eastLMb).endVertex();
