@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.item.ITintableItem;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.tileentity.IHeatTinted;
@@ -58,9 +57,8 @@ public class ColorHandlers {
         event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
             if (blockAccess != null && pos != null) {
                 TileEntity te = blockAccess.getTileEntity(pos);
-                int heatLevel = te instanceof IHeatTinted ? ((IHeatTinted) te).getHeatLevelForTintIndex(tintIndex) : 10;
-                float[] color = HeatUtil.getColorForHeatLevel(heatLevel);
-                return 0xFF000000 + ((int) (color[0] * 255) << 16) + ((int) (color[1] * 255) << 8) + (int) (color[2] * 255);
+                TintColor tint = te instanceof IHeatTinted ? ((IHeatTinted) te).getColorForTintIndex(tintIndex) : TintColor.WHITE;
+                return tint.getRGB();
             }
             return 0xFFFFFFFF;
         }, ModBlocks.COMPRESSED_IRON_BLOCK.get(), ModBlocks.HEAT_SINK.get(), ModBlocks.VORTEX_TUBE.get(), ModBlocks.THERMAL_COMPRESSOR.get());

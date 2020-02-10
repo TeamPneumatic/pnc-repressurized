@@ -5,10 +5,12 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
+import me.desht.pneumaticcraft.common.itemblock.ItemBlockLiquidHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -67,23 +69,34 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
     }
 
     @Override
-    protected boolean doExport(int maxItems) {
-        Direction dir = getRotation();
+    public void tick() {
+        super.tick();
 
-        if (!tank.getFluid().isEmpty()) {
-            TileEntity neighbor = getCachedNeighbor(dir);
-            if (neighbor != null) {
-                LazyOptional<IFluidHandler> cap = neighbor.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
-                if (cap.isPresent()) {
-                    return cap.map(fluidHandler -> {
-                        int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
-                        FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
-                        return !transferred.isEmpty();
-                    }).orElse(false);
-                }
+        if (!world.isRemote && getUpgrades(EnumUpgrade.CREATIVE) > 0) {
+            FluidStack fluidStack = tank.getFluid();
+            if (!fluidStack.isEmpty() && fluidStack.getAmount() < PneumaticValues.NORMAL_TANK_CAPACITY) {
+                tank.fill(new FluidStack(fluidStack.getFluid(), PneumaticValues.NORMAL_TANK_CAPACITY), FluidAction.EXECUTE);
             }
         }
+    }
 
+    @Override
+    protected boolean doExport(int maxItems) {
+        if (tank.getFluid().isEmpty()) return false;
+
+        Direction dir = getRotation();
+
+        // try to fill any neighbouring fluid-accepting tile entity
+        TileEntity neighbor = getCachedNeighbor(dir);
+        if (neighbor != null) {
+            return IOHelper.getFluidHandlerForTE(neighbor, dir.getOpposite()).map(fluidHandler -> {
+                int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
+                FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
+                return !transferred.isEmpty();
+            }).orElse(false);
+        }
+
+        // try to fill any fluid-handling items in front of the output
         if (getWorld().isAirBlock(getPos().offset(dir))) {
             for (ItemEntity entity : getNeighborItems(this, dir)) {
                 NonNullList<ItemStack> returnedItems = NonNullList.create();
@@ -99,6 +112,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
             }
         }
 
+        // try to pour fluid into the world
         if (PNCConfig.Common.Machines.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             return FluidUtils.tryPourOutFluid(getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir),
                     world, getPos().offset(dir), false, false, FluidAction.EXECUTE);
@@ -199,24 +213,12 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
     @Nonnull
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
-        return ImmutableMap.of("Tank", tank);
+        return ImmutableMap.of(ItemBlockLiquidHopper.TANK_NAME, tank);
     }
 
     @Override
     public void updateScaledFluidAmount(int tankIndex, int amount) {
         fluidAmountScaled = amount;
-    }
-
-    @Override
-    public void onUpgradesChanged() {
-        super.onUpgradesChanged();
-
-        if (world != null && !world.isRemote && getUpgrades(EnumUpgrade.CREATIVE) > 0) {
-            FluidStack fluidStack = tank.getFluid();
-            if (!fluidStack.isEmpty()) {
-                tank.setFluid(new FluidStack(fluidStack.getFluid(), PneumaticValues.NORMAL_TANK_CAPACITY));
-            }
-        }
     }
 
     @Nullable

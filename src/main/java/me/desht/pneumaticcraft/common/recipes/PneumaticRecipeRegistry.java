@@ -45,6 +45,11 @@ public enum PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     }
 
     @Override
+    public IHeatFrameCoolingRecipe heatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
+        return new HeatFrameCoolingRecipe(id, input, temperature, output, bonusMultiplier, bonusLimit);
+    }
+
+    @Override
     public IHeatFrameCoolingRecipe heatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output) {
         return new HeatFrameCoolingRecipe(id, input, temperature, output);
     }

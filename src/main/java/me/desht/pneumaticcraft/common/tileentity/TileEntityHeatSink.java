@@ -13,7 +13,7 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
 
     private final IHeatExchangerLogic airExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
 
-    private double ambientTemp = -1;
+    private double ambientTemp;
 
     public TileEntityHeatSink() {
         super(ModTileEntities.HEAT_SINK.get());
@@ -28,19 +28,25 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
     }
 
     @Override
-    public void tick() {
-        if (ambientTemp < 0) {
-            ambientTemp = HeatExchangerLogicAmbient.atPosition(getWorld(), getPos()).getTemperature();
-            airExchanger.setTemperature(ambientTemp);
-        }
+    protected void onFirstServerUpdate() {
+        super.onFirstServerUpdate();
 
-        super.tick();
-
-        airExchanger.tick();
+        ambientTemp = HeatExchangerLogicAmbient.atPosition(getWorld(), getPos()).getTemperature();
         airExchanger.setTemperature(ambientTemp);
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (!world.isRemote) {
+            airExchanger.tick();
+            airExchanger.setTemperature(ambientTemp);
+        }
+    }
+
     public void onFannedByAirGrate() {
+        // called server-side
         heatExchanger.tick();
         airExchanger.setTemperature(ambientTemp);
     }

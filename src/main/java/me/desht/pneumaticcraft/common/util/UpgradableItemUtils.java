@@ -67,7 +67,7 @@ public class UpgradableItemUtils {
         stack.getTag().put(NBT_UPGRADE_CACHE_TAG, cache.toNBT());
 
         stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
-            if (h.getPressure() > 10f) {
+            if (h.getPressure() > h.maxPressure()) {
                 int maxAir = (int)(h.getVolume() * h.maxPressure());
                 h.addAir(maxAir - h.getAir());
             }
@@ -78,16 +78,7 @@ public class UpgradableItemUtils {
      * Retrieves the upgrades currently installed on the given itemstack.
      */
     public static ItemStack[] getUpgradeStacks(ItemStack stack) {
-        CompoundNBT tag;
-        if (stack.getItem() instanceof BlockItem) {
-            // tag will be in the serialized BlockEntityTag
-            tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
-            if (tag == null) return new ItemStack[0];
-            tag = tag.getCompound(NBT_UPGRADE_TAG);
-        } else {
-            // TODO implement this as a capability
-            tag = NBTUtil.getCompoundTag(stack, NBT_UPGRADE_TAG);
-        }
+        CompoundNBT tag = getSerializedUpgrades(stack);
         ItemStack[] inventoryStacks = new ItemStack[UPGRADE_INV_SIZE];
         Arrays.fill(inventoryStacks, ItemStack.EMPTY);
         ListNBT itemList = tag.getList("Items", Constants.NBT.TAG_COMPOUND);
@@ -103,16 +94,17 @@ public class UpgradableItemUtils {
 
     public static ItemStackHandler getUpgrades(ItemStack stack) {
         ItemStackHandler handler = new ItemStackHandler(UPGRADE_INV_SIZE);
-        CompoundNBT tag = stack.getChildTag(NBT_UPGRADE_TAG);
-        if (tag != null) handler.deserializeNBT(tag);
+        CompoundNBT tag = getSerializedUpgrades(stack);
+        if (!tag.isEmpty()) handler.deserializeNBT(tag);
         return handler;
     }
 
     public static int getUpgrades(ItemStack stack, EnumUpgrade upgrade) {
-        if (stack.hasTag() && stack.getTag().contains(NBT_UPGRADE_TAG)) {
+        CompoundNBT tag = getSerializedUpgrades(stack);
+        if (!tag.isEmpty()) {
             int[] upgrades = stack.getTag().getIntArray(NBT_UPGRADE_CACHE_TAG);
             if (upgrades.length != EnumUpgrade.values().length) {
-                fixUpgradeCache(stack);
+                fixUpgradeCache(stack, tag);
                 upgrades = stack.getTag().getIntArray(NBT_UPGRADE_CACHE_TAG);
             }
             return upgrades[upgrade.ordinal()];
@@ -120,9 +112,22 @@ public class UpgradableItemUtils {
         return 0;
     }
 
-    private static void fixUpgradeCache(ItemStack stack) {
+    public static boolean hasCreativeUpgrade(ItemStack stack) {
+        return stack.hasTag() && stack.getTag().getBoolean(UpgradableItemUtils.NBT_CREATIVE);
+    }
+
+    private static CompoundNBT getSerializedUpgrades(ItemStack stack) {
+        if (!stack.hasTag()) return new CompoundNBT();
+        if (stack.getTag().contains(NBTKeys.BLOCK_ENTITY_TAG)) {
+            return stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG).getCompound(NBT_UPGRADE_TAG);
+        } else {
+            return stack.getTag().getCompound(NBT_UPGRADE_TAG);
+        }
+    }
+
+    private static void fixUpgradeCache(ItemStack stack, CompoundNBT tag) {
         ItemStackHandler handler = new ItemStackHandler();
-        handler.deserializeNBT(stack.getChildTag(NBT_UPGRADE_TAG));
+        handler.deserializeNBT(tag);
         UpgradeCache cache = new UpgradeCache(() -> handler);
         stack.getTag().put(NBT_UPGRADE_CACHE_TAG, cache.toNBT());
     }

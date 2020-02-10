@@ -2,9 +2,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.util.LazyOptional;
@@ -14,9 +15,8 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
 
     protected final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
-    @DescSynced
-    private int heatLevel = 10;
-    private int oldComparatorOutput = 0;
+    private int comparatorOutput = 0;
+    private SyncedTemperature syncedTemperature;
 
     public TileEntityCompressedIronBlock() {
         this(ModTileEntities.COMPRESSED_IRON_BLOCK.get());
@@ -32,8 +32,11 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
         return heatCap;
     }
 
-    public int getHeatLevel() {
-        return heatLevel;
+    @Override
+    protected void onFirstServerUpdate() {
+        super.onFirstServerUpdate();
+
+        syncedTemperature = new SyncedTemperature(this, null);
     }
 
     @Override
@@ -41,11 +44,11 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
         super.tick();
 
         if (!getWorld().isRemote) {
-            heatLevel = HeatUtil.getHeatLevelForTemperature(heatExchanger.getTemperature());
+            syncedTemperature.setCurrentTemp(heatExchanger.getTemperature());
 
-            int comparatorOutput = HeatUtil.getComparatorOutput((int) heatExchanger.getTemperature());
-            if (oldComparatorOutput != comparatorOutput) {
-                oldComparatorOutput = comparatorOutput;
+            int newComparatorOutput = HeatUtil.getComparatorOutput((int) heatExchanger.getTemperature());
+            if (comparatorOutput != newComparatorOutput) {
+                comparatorOutput = newComparatorOutput;
                 updateNeighbours();
             }
         }
@@ -63,11 +66,11 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
 
     @Override
     public int getComparatorValue() {
-        return HeatUtil.getComparatorOutput((int) heatExchanger.getTemperature());
+        return comparatorOutput;
     }
 
     @Override
-    public int getHeatLevelForTintIndex(int tintIndex) {
-        return heatLevel;
+    public TintColor getColorForTintIndex(int tintIndex) {
+        return HeatUtil.getColourForTemperature(heatExchanger.getTemperatureAsInt());
     }
 }

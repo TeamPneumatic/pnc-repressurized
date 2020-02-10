@@ -1,6 +1,7 @@
 {
   "input" : {
-    "item": "minecraft:lava_bucket"
+    "type": "pneumaticcraft:fluid",
+    "fluid": "minecraft:lava"
   },
   "result": {
     "item": "minecraft:obsidian"

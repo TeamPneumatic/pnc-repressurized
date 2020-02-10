@@ -76,6 +76,19 @@ public interface IPneumaticRecipeRegistry {
     IHeatFrameCoolingRecipe heatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output);
 
     /**
+     * Create a standard Heat Frame cooling recipe with potential output multiplier.
+     *
+     * @param id unique ID for the recipe
+     * @param input the input ingredient
+     * @param temperature the temperature (Kelvin) below which the cooling process occurs
+     * @param output the output item
+     * @param bonusMultiplier output multiplier; chance of extra output per degree below the threshold temperature
+     * @param bonusLimit hard limit on the calculated output multiplier
+     * @return a basic Heat Frame cooling recipe
+     */
+    IHeatFrameCoolingRecipe heatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit);
+
+    /**
      * Create a standard Pressure Chamber recipe. See also {@link StackedIngredient}, which may be helpful if you
      * want to add a recipe taking multiples of the same input item.
      *
@@ -83,7 +96,7 @@ public interface IPneumaticRecipeRegistry {
      * @param inputs a list of input ingredients
      * @param pressureRequired the pressure require (this is a minimum if positive, and a maximum if negative)
      * @param outputs the output item(s)
-     * @return a recipe suitable for adding via {@link RegisterMachineRecipesEvent#getPressureChamber()}
+     * @return a recipe suitable for adding via {@link RegisterMachineRecipesEvent.Pre#getPressureChamber()}
      */
     IPressureChamberRecipe pressureChamberRecipe(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs);
 

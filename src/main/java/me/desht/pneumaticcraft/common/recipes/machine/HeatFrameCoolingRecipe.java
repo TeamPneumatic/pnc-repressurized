@@ -18,12 +18,20 @@ public class HeatFrameCoolingRecipe implements IHeatFrameCoolingRecipe {
     public final Ingredient input;
     private final int temperature;
     public final ItemStack output;
+    private final float bonusMultiplier;
+    private final float bonusLimit;
 
     public HeatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output) {
+        this(id, input, temperature, output, 0f, 1f);
+    }
+
+    public HeatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
         this.id = id;
         this.input = input;
         this.temperature = temperature;
         this.output = output;
+        this.bonusMultiplier = bonusMultiplier;
+        this.bonusLimit = bonusLimit;
     }
 
     @Override
@@ -37,18 +45,23 @@ public class HeatFrameCoolingRecipe implements IHeatFrameCoolingRecipe {
     }
 
     @Override
-    public int getTemperature() {
+    public int getThresholdTemperature() {
         return temperature;
+    }
+
+    @Override
+    public float getBonusMultiplier() {
+        return bonusMultiplier;
+    }
+
+    @Override
+    public float getBonusLimit() {
+        return bonusLimit;
     }
 
     @Override
     public boolean matches(ItemStack stack) {
         return input.test(stack);
-    }
-
-    @Override
-    public int getInputAmount() {
-        return input.getMatchingStacks().length > 0 ? input.getMatchingStacks()[0].getCount() : 0;
     }
 
     @Override
@@ -67,7 +80,14 @@ public class HeatFrameCoolingRecipe implements IHeatFrameCoolingRecipe {
             Ingredient input = Ingredient.deserialize(json.get("input"));
             ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
             int maxTemp = JSONUtils.getInt(json,"max_temp", 273);
-            return new HeatFrameCoolingRecipe(recipeId, input, maxTemp, result);
+            float bonusMultiplier = 0f;
+            float bonusLimit = 1f;
+            if (json.has("bonus_output")) {
+                JsonObject bonus = json.getAsJsonObject("bonus_output");
+                bonusMultiplier = JSONUtils.getFloat(bonus, "multiplier");
+                bonusLimit = JSONUtils.getFloat(bonus, "limit");
+            }
+            return new HeatFrameCoolingRecipe(recipeId, input, maxTemp, result, bonusMultiplier, bonusLimit);
         }
 
         @Nullable
@@ -76,7 +96,9 @@ public class HeatFrameCoolingRecipe implements IHeatFrameCoolingRecipe {
             Ingredient input = Ingredient.read(buffer);
             int temperature = buffer.readInt();
             ItemStack out = buffer.readItemStack();
-            return new HeatFrameCoolingRecipe(recipeId, input, temperature, out);
+            float bonusMultiplier = buffer.readFloat();
+            float bonusLimit = buffer.readFloat();
+            return new HeatFrameCoolingRecipe(recipeId, input, temperature, out, bonusMultiplier, bonusLimit);
         }
 
         @Override
@@ -86,6 +108,8 @@ public class HeatFrameCoolingRecipe implements IHeatFrameCoolingRecipe {
             recipe.input.write(buffer);
             buffer.writeInt(recipe.temperature);
             buffer.writeItemStack(recipe.output);
+            buffer.writeFloat(recipe.bonusMultiplier);
+            buffer.writeFloat(recipe.bonusLimit);
         }
     }
 }

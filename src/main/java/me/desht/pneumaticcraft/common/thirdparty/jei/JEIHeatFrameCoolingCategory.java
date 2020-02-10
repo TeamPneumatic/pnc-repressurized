@@ -8,11 +8,14 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,11 +26,14 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<IHeatFrameCo
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
+    private final IDrawableAnimated progressBar;
 
     JEIHeatFrameCoolingCategory() {
         localizedName = I18n.format("gui.nei.title.heatFrameCooling");
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.HEAT_FRAME.get()));
+        IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
+        progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }
 
     @Override
@@ -56,6 +62,11 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<IHeatFrameCo
     }
 
     @Override
+    public void draw(IHeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
+        progressBar.draw(22, 0);
+    }
+
+    @Override
     public void setIngredients(IHeatFrameCoolingRecipe recipe, IIngredients ingredients) {
         ingredients.setInputIngredients(Collections.singletonList(recipe.getInput()));
         ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutput());
@@ -74,7 +85,11 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<IHeatFrameCo
     public List<String> getTooltipStrings(IHeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
         List<String> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.nei.recipe.heatFrameCooling", recipe.getTemperature() - 273), 32));
+            res.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.nei.recipe.heatFrameCooling", recipe.getThresholdTemperature() - 273), 40));
+            if (recipe.getBonusMultiplier() > 0f) {
+                String bonus = TextFormatting.YELLOW + I18n.format("gui.nei.recipe.heatFrameCooling.bonus", recipe.getBonusMultiplier() * 100, recipe.getOutput().getDisplayName().getFormattedText(), recipe.getThresholdTemperature() - 273, recipe.getBonusLimit() + 1);
+                res.addAll(PneumaticCraftUtils.splitString(bonus, 40));
+            }
         }
         return res;
     }

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.heat;
 
+import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -10,48 +11,43 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.Collection;
 
 public class HeatUtil {
-    private static final int MIN_HEAT_LEVEL_TEMPERATURE = -200 + 273;
-    private static final int MAX_HEAT_LEVEL_TEMPERATURE = 200 + 273;
-    private static final int N_HEAT_LEVELS = 20;  // scaled heat levels for client sync purposes
+    private static final int COMPARATOR_MIN = -200 + 273;
+    private static final int COMPARATOR_MAX = 200 + 273;
 
-    private static final float[][] HEAT_TINT_MAP = new float[N_HEAT_LEVELS][];
+    /**
+     * Get a colour in (A)RGB format for the given temperature.
+     * @param temperature the temperature
+     * @return the colour
+     */
+    public static TintColor getColourForTemperature(int temperature) {
+        int h;
+        float s;
 
-    static {
-        for (int i = 0; i < N_HEAT_LEVELS; i++) {
-            if (i > 11) {
-                float greenAndBlue = 1 - (i - 11) / 10F;
-                HEAT_TINT_MAP[i] = new float[]{1F, greenAndBlue, greenAndBlue * 0.9F};
-            } else if (i < 11) {
-                float redAndGreen = i / 10F;
-                HEAT_TINT_MAP[i] = new float[]{redAndGreen * 0.9F, redAndGreen, 1F};
-            } else {
-                HEAT_TINT_MAP[i] = new float[] { 1F, 1F, 1F };
-            }
-        }
-    }
-
-    public static int getHeatLevelForTemperature(double temperature) {
-        if (temperature < MIN_HEAT_LEVEL_TEMPERATURE) {
-            return 0;
-        } else if (temperature > MAX_HEAT_LEVEL_TEMPERATURE) {
-            return N_HEAT_LEVELS - 1;
+        if (temperature < 273) {
+            h = 180 + (300 - temperature) / 5;  // 180 -> 240: cyan -> blue
+            s = 0.25f + (273 - temperature) / 273f * 0.75f;
+        } else if (temperature < 323) {
+            h = 360;
+            s = 0f;
+        } else if (temperature < 873) {
+            h = (int) (temperature / 873f * 30f);  // red -> orange
+            s = temperature / 873f;
         } else {
-            return (int) ((temperature - MIN_HEAT_LEVEL_TEMPERATURE) * N_HEAT_LEVELS / (MAX_HEAT_LEVEL_TEMPERATURE - MIN_HEAT_LEVEL_TEMPERATURE));
+            h = 30 + (int) (temperature / 2273f * 10f);  // orange -> yellow (part way)
+            s = 1f;
         }
-    }
 
-    public static float[] getColorForHeatLevel(int heatLevel) {
-        return HEAT_TINT_MAP[MathHelper.clamp(heatLevel, 0, 19)];
+        return TintColor.getHSBColor(h / 360f, s, 1f);
     }
 
     public static int getComparatorOutput(int temperature) {
         temperature = temperature - 200;
-        if (temperature < MIN_HEAT_LEVEL_TEMPERATURE) {
+        if (temperature < COMPARATOR_MIN) {
             return 0;
-        } else if (temperature > MAX_HEAT_LEVEL_TEMPERATURE) {
+        } else if (temperature > COMPARATOR_MAX) {
             return 15;
         } else {
-            return (temperature - MIN_HEAT_LEVEL_TEMPERATURE) * 16 / (MAX_HEAT_LEVEL_TEMPERATURE - MIN_HEAT_LEVEL_TEMPERATURE);
+            return (temperature - COMPARATOR_MIN) * 16 / (COMPARATOR_MAX - COMPARATOR_MIN);
         }
     }
 

@@ -3,10 +3,12 @@ package me.desht.pneumaticcraft.common.entity.semiblock;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
+import me.desht.pneumaticcraft.api.crafting.RegisterMachineRecipesEvent;
 import me.desht.pneumaticcraft.api.crafting.recipe.IHeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.EntityType;
@@ -25,22 +27,27 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class EntityHeatFrame extends EntitySemiblockBase {
-    private static final DataParameter<Integer> HEAT_LEVEL = EntityDataManager.createKey(EntityHeatFrame.class, DataSerializers.VARINT);
     private static final DataParameter<Byte> STATUS = EntityDataManager.createKey(EntityHeatFrame.class, DataSerializers.BYTE);
+
+    private static final int MIN_COOKING_TEMP = 373;
 
     private static final byte IDLE = 0;
     private static final byte COOKING = 1;
     private static final byte COOLING = 2;
+
+    // caching this to avoid recipe searching
+    private static int MAX_COOLING_TEMP = 0;
 
     private final IHeatExchangerLogic logic = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap;
@@ -49,6 +56,8 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     private int cookingProgress;
     private int coolingProgress;
 
+    private SyncedTemperature syncedTemperature;
+
     public static EntityHeatFrame create(EntityType<EntityHeatFrame> type, World world) {
         return new EntityHeatFrame(type, world);
     }
@@ -56,15 +65,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     private EntityHeatFrame(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
 
-         heatCap = LazyOptional.of(() -> logic);
-    }
-
-    public int getHeatLevel() {
-        return getDataManager().get(HEAT_LEVEL);
-    }
-
-    private void setHeatLevel(int level) {
-        getDataManager().set(HEAT_LEVEL, level);
+        heatCap = LazyOptional.of(() -> logic);
     }
 
     public IHeatExchangerLogic getHeatExchangerLogic() {
@@ -75,7 +76,6 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     protected void registerData() {
         super.registerData();
 
-        this.dataManager.register(HEAT_LEVEL, 10);
         this.dataManager.register(STATUS, IDLE);
     }
 
@@ -107,53 +107,13 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
         if (!getWorld().isRemote) {
             byte newStatus = IDLE;
-            setHeatLevel(HeatUtil.getHeatLevelForTemperature(logic.getTemperature()));
-            if (logic.getTemperature() > 374) {
-                if (cookingProgress < 100) {
-                    int progress = Math.max(0, ((int) logic.getTemperature() - 343) / 30);
-                    progress = Math.min(5, progress);
-                    logic.addHeat(-progress);
-                    cookingProgress += progress;
-                    newStatus = COOKING;
-                }
-                if (cookingProgress >= 100) {
-                    IOHelper.getInventoryForTE(getCachedTileEntity()).ifPresent(handler -> {
-                        if (!tryCookSlot(handler, lastValidSlot)) {
-                            for (int i = 0; i < handler.getSlots(); i++) {
-                                if (tryCookSlot(handler, i)) {
-                                    cookingProgress -= 100;
-                                    break;
-                                }
-                            }
-                        } else {
-                            cookingProgress -= 100;
-                        }
-                    });
-                }
-            } else if (logic.getTemperature() < 273) {
-                if (coolingProgress < 100) {
-                    int progress = Math.max(0, ((int) logic.getTemperature() - 243) / 30);
-                    progress = 6 - Math.min(5, progress);
-                    logic.addHeat(progress);
-                    coolingProgress += progress;
-                    newStatus = COOLING;
-                }
-                if (coolingProgress >= 100) {
-                    IOHelper.getInventoryForTE(getCachedTileEntity()).ifPresent(handler -> {
-                        if (!tryCoolSlot(handler, lastValidSlot)) {
-                            for (int i = 0; i < handler.getSlots(); i++) {
-                                if (tryCoolSlot(handler, i)) {
-                                    coolingProgress -= 100;
-                                    break;
-                                }
-                            }
-                        } else {
-                            coolingProgress -= 100;
-                        }
-                    });
-                }
+            if (logic.getTemperature() > MIN_COOKING_TEMP) {
+                newStatus = doCooking();
+            } else if (logic.getTemperature() < MAX_COOLING_TEMP) {
+                newStatus = doCooling();
             }
             setStatus(newStatus);
+            syncedTemperature.setCurrentTemp(logic.getTemperature());
         } else {
             // client
             if ((ticksExisted & 0x3) == 0) {
@@ -170,6 +130,41 @@ public class EntityHeatFrame extends EntitySemiblockBase {
         }
     }
 
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+
+        if (!world.isRemote) {
+            syncedTemperature  = new SyncedTemperature(this);
+        }
+    }
+
+    private byte doCooking() {
+        byte newStatus = IDLE;
+        if (cookingProgress < 100) {
+            int progress = Math.max(0, ((int) logic.getTemperature() - 343) / 30);
+            progress = Math.min(5, progress);
+            logic.addHeat(-progress);
+            cookingProgress += progress;
+            newStatus = COOKING;
+        }
+        if (cookingProgress >= 100) {
+            IOHelper.getInventoryForTE(getCachedTileEntity()).ifPresent(handler -> {
+                if (!tryCookSlot(handler, lastValidSlot)) {
+                    for (int i = 0; i < handler.getSlots(); i++) {
+                        if (tryCookSlot(handler, i)) {
+                            cookingProgress -= 100;
+                            break;
+                        }
+                    }
+                } else {
+                    cookingProgress -= 100;
+                }
+            });
+        }
+        return newStatus;
+    }
+
     private boolean tryCookSlot(IItemHandler handler, int slot) {
         ItemStack stack = handler.getStackInSlot(slot);
         if (!stack.isEmpty()) {
@@ -178,10 +173,10 @@ public class EntityHeatFrame extends EntitySemiblockBase {
             return world.getRecipeManager().getRecipe(IRecipeType.SMELTING, inv, this.world).map(recipe -> {
                 ItemStack result = recipe.getRecipeOutput();
                 if (!result.isEmpty()) {
-                    ItemStack remainder = IOHelper.insert(getCachedTileEntity(), result, true);
+                    ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
                     if (remainder.isEmpty()) {
-                        IOHelper.insert(getCachedTileEntity(), result, false);
                         handler.extractItem(slot, 1, false);
+                        ItemHandlerHelper.insertItem(handler, result, false);
                         lastValidSlot = slot;
                         return true;
                     }
@@ -190,6 +185,32 @@ public class EntityHeatFrame extends EntitySemiblockBase {
             }).orElse(false);
         }
         return false;
+    }
+
+    private byte doCooling() {
+        byte newStatus = IDLE;
+        if (coolingProgress < 100) {
+            int progress = Math.max(0, ((int) logic.getTemperature() - 243) / 30);
+            progress = 6 - Math.min(5, progress);
+            logic.addHeat(progress);
+            coolingProgress += progress;
+            newStatus = COOLING;
+        }
+        if (coolingProgress >= 100) {
+            IOHelper.getInventoryForTE(getCachedTileEntity()).ifPresent(handler -> {
+                if (!tryCoolSlot(handler, lastValidSlot)) {
+                    for (int i = 0; i < handler.getSlots(); i++) {
+                        if (tryCoolSlot(handler, i)) {
+                            coolingProgress -= 100;
+                            break;
+                        }
+                    }
+                } else {
+                    coolingProgress -= 100;
+                }
+            });
+        }
+        return newStatus;
     }
 
     private boolean tryCoolSlot(IItemHandler handler, int slot) {
@@ -202,49 +223,22 @@ public class EntityHeatFrame extends EntitySemiblockBase {
                 .orElse(null);
 
         if (recipe != null) {
-            ItemStack output = recipe.getOutput();
-            if (stack.getCount() >= recipe.getInputAmount()) {
-                ItemStack containerItem = stack.getItem().getContainerItem(stack);
-                Pair<Integer,Integer> slots = findOutputSpace(handler, output, containerItem);
-                if (slots.getLeft() >= 0 && (slots.getRight() >= 0 || containerItem.isEmpty())) {
-                    handler.extractItem(slot, recipe.getInputAmount(), false);
-                    handler.insertItem(slots.getLeft(), output, false);
-                    if (!containerItem.isEmpty()) {
-                        handler.insertItem(slots.getRight(), containerItem, false);
-                    }
-                    lastValidSlot = slot;
-                    return true;
+            ItemStack containerItem = stack.getItem().getContainerItem(stack);
+            if (!containerItem.isEmpty() && stack.getCount() > 1) return false;
+            ItemStack result = ItemHandlerHelper.copyStackWithSize(recipe.getOutput(), recipe.calculateOutputQuantity(logic.getTemperature()));
+
+            ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
+            if (remainder.isEmpty()) {
+                handler.extractItem(slot, 1, false);
+                if (!containerItem.isEmpty()) {
+                    handler.insertItem(slot, containerItem, false);
                 }
+                ItemHandlerHelper.insertItem(handler, result, false);
+                lastValidSlot = slot;
+                return true;
             }
         }
         return false;
-    }
-
-    private Pair<Integer,Integer> findOutputSpace(IItemHandler handler, ItemStack output, ItemStack containerItem) {
-        int outSlot = -1;
-        int containerSlot = -1;
-
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack s = handler.getStackInSlot(i);
-            if (s.isEmpty()) {
-                if (outSlot >= 0) {
-                    containerSlot = i;
-                } else {
-                    outSlot = i;
-                }
-            } else {
-                if (ItemHandlerHelper.canItemStacksStack(s, output) && s.getCount() + output.getCount() < s.getMaxStackSize()) {
-                    outSlot = i;
-                }
-                if (!containerItem.isEmpty()
-                        && ItemHandlerHelper.canItemStacksStack(s, containerItem)
-                        && s.getCount() + containerItem.getCount() < s.getMaxStackSize()) {
-                    containerSlot = i;
-                }
-            }
-        }
-
-        return Pair.of(outSlot, containerSlot);
     }
 
     @Override
@@ -257,17 +251,8 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT tag) {
-        super.writeAdditional(tag);
-
-        tag.put("heatExchanger", logic.serializeNBT());
-        tag.putInt("cookingProgress", cookingProgress);
-        tag.putInt("coolingProgress", coolingProgress);
-    }
-
-    @Override
     public CompoundNBT serializeNBT(CompoundNBT tag) {
-        tag.putInt("temperature", getHeatExchangerLogic().getTemperatureAsInt());
+        tag.put("heatExchanger", logic.serializeNBT());
         tag.putInt("cookingProgress", cookingProgress);
         tag.putInt("coolingProgress", coolingProgress);
 
@@ -276,23 +261,35 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
     @Override
     public void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
-        int cook, cool, temp;
+        int cook, cool;
         if (!world.isRemote) {
             // TOP
-            temp = getHeatExchangerLogic().getTemperatureAsInt();
             cook = cookingProgress;
             cool = coolingProgress;
         } else {
             // Waila
-            temp = tag.getInt("temperature");
+            logic.deserializeNBT(tag.getCompound("heatExchanger"));
             cook = tag.getInt("cookingProgress");
             cool = tag.getInt("coolingProgress");
         }
 
         if (getStatus() != COOKING && cook >= 100) cook = 0;
         if (getStatus() != COOLING && cool >= 100) cool = 0;
-        curInfo.add(HeatUtil.formatHeatString(temp));
+        curInfo.add(HeatUtil.formatHeatString(logic.getTemperatureAsInt()));
         curInfo.add(PneumaticCraftUtils.xlate("waila.heatFrame.cooking", cook).applyTextStyle(TextFormatting.GRAY));
         curInfo.add(PneumaticCraftUtils.xlate("waila.heatFrame.cooling", cool).applyTextStyle(TextFormatting.GRAY));
+    }
+
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+    public static class ReloadListener {
+        @SubscribeEvent
+        public static void onRecipeReload(RegisterMachineRecipesEvent.Post event) {
+            MAX_COOLING_TEMP = Integer.MIN_VALUE;
+            for (IHeatFrameCoolingRecipe recipe : PneumaticCraftRecipes.heatFrameCoolingRecipes.values()) {
+                if (MAX_COOLING_TEMP < recipe.getThresholdTemperature()) {
+                    MAX_COOLING_TEMP = recipe.getThresholdTemperature();
+                }
+            }
+        }
     }
 }

@@ -2,11 +2,12 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
-import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,8 +39,8 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
 
     private final IHeatExchangerLogic dummyExchanger;  // never does anything; gets returned from the "null" face
 
-    @DescSynced
-    private int[] heatLevel = new int[4];  // S-W-N-E
+    private SyncedTemperature[] syncedTemperatures = new SyncedTemperature[4];  // S-W-N-E
+
     @GuiSynced
     private int redstoneMode;
 
@@ -72,6 +73,14 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     @Override
+    protected void onFirstServerUpdate() {
+        syncedTemperatures[0] = new SyncedTemperature(this, Direction.SOUTH);
+        syncedTemperatures[1] = new SyncedTemperature(this, Direction.WEST);
+        syncedTemperatures[2] = new SyncedTemperature(this, Direction.NORTH);
+        syncedTemperatures[3] = new SyncedTemperature(this, Direction.EAST);
+    }
+
+    @Override
     public void tick() {
         super.tick();
 
@@ -97,7 +106,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
             }
 
             for (int i = 0; i < 4; i++) {
-                heatLevel[i] = HeatUtil.getHeatLevelForTemperature(heatExchangers[i].getTemperature());
+                syncedTemperatures[i].setCurrentTemp(heatExchangers[i].getTemperature());
             }
         }
     }
@@ -120,12 +129,8 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public int getHeatLevelForTintIndex(int tintIndex) {
-        if (tintIndex >= 0 && tintIndex <= 3) {
-            return heatLevel[tintIndex];
-        } else {
-            return 10;
-        }
+    public TintColor getColorForTintIndex(int tintIndex) {
+        return HeatUtil.getColourForTemperature(heatExchangers[tintIndex].getTemperatureAsInt());
     }
 
     @Override

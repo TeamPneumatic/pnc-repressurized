@@ -2,8 +2,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -18,10 +20,11 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     private final IHeatExchangerLogic connectingExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private int visualizationTimer = 30;
 
+    private SyncedTemperature syncHot;
+    private SyncedTemperature syncCold;
+
     @DescSynced
     private boolean visualize;
-    @DescSynced
-    private int coldHeatLevel = 10, hotHeatLevel = 10;
 
     public TileEntityVortexTube() {
         super(ModTileEntities.VORTEX_TUBE.get(), 20, 25, 2000, 0);
@@ -68,17 +71,18 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
         connectingExchanger.deserializeNBT(tag.getCompound("connector"));
     }
 
-    public int getColdHeatLevel() {
-        return visualize ? 0 : coldHeatLevel;
-    }
+    @Override
+    protected void onFirstServerUpdate() {
+        super.onFirstServerUpdate();
 
-    public int getHotHeatLevel() {
-        return visualize ? 20 : hotHeatLevel;
+        syncCold = new SyncedTemperature(this, getRotation());
+        syncHot = new SyncedTemperature(this, getRotation().getOpposite());
     }
 
     @Override
     public void tick() {
         super.tick();
+
         if (!getWorld().isRemote) {
             // Only update the cold and connecting side; the hot side is handled in the superclass
             connectingExchanger.tick();
@@ -92,14 +96,17 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
             }
             visualize = visualizationTimer > 0;
             if (visualize) visualizationTimer--;
-            coldHeatLevel = HeatUtil.getHeatLevelForTemperature(coldHeatExchanger.getTemperature());
-            hotHeatLevel = HeatUtil.getHeatLevelForTemperature(hotHeatExchanger.getTemperature());
+            syncHot.setCurrentTemp(hotHeatExchanger.getTemperature());
+            syncCold.setCurrentTemp(coldHeatExchanger.getTemperature());
         }
     }
 
     @Override
     public void onBlockRotated() {
         visualizationTimer = 60;
+
+        syncCold = new SyncedTemperature(this, getRotation());
+        syncHot = new SyncedTemperature(this, getRotation().getOpposite());
     }
 
     @Override
@@ -108,11 +115,11 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public int getHeatLevelForTintIndex(int tintIndex) {
+    public TintColor getColorForTintIndex(int tintIndex) {
         switch (tintIndex) {
-            case 1: return visualize ? 20 : hotHeatLevel;
-            case 2: return visualize ? 0 : coldHeatLevel;
-            default: return 11;
+            case 1: return HeatUtil.getColourForTemperature(hotHeatExchanger.getTemperatureAsInt());
+            case 2: return HeatUtil.getColourForTemperature(coldHeatExchanger.getTemperatureAsInt());
+            default: return HeatUtil.getColourForTemperature(300);
         }
     }
 }

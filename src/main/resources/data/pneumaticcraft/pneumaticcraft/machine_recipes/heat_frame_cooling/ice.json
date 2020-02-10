@@ -1,6 +1,7 @@
 {
   "input" : {
-    "item": "minecraft:water_bucket"
+    "type": "pneumaticcraft:fluid",
+    "fluid": "minecraft:water"
   },
   "result": {
     "item": "minecraft:ice"

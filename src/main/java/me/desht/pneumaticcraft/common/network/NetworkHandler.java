@@ -105,12 +105,6 @@ public class NetworkHandler {
 				PacketUpdateRemoteLayout::toBytes, PacketUpdateRemoteLayout::new, PacketUpdateRemoteLayout::handle);
 		registerMessage(PacketSetGlobalVariable.class,
 				PacketSetGlobalVariable::toBytes, PacketSetGlobalVariable::new, PacketSetGlobalVariable::handle);
-//		registerMessage(PacketSetLogisticsFilterStack.class,
-//				PacketSetLogisticsFilterStack::toBytes, PacketSetLogisticsFilterStack::new, PacketSetLogisticsFilterStack::handle);
-//		registerMessage(PacketSetLogisticsFluidFilterStack.class,
-//				PacketSetLogisticsFluidFilterStack::toBytes, PacketSetLogisticsFluidFilterStack::new, PacketSetLogisticsFluidFilterStack::handle);
-//		registerMessage(PacketSetLogisticsMinAmounts.class,
-//				PacketSetLogisticsMinAmounts::toBytes, PacketSetLogisticsMinAmounts::new, PacketSetLogisticsMinAmounts::handle);
 		registerMessage(PacketServerTickTime.class,
 				PacketServerTickTime::toBytes, PacketServerTickTime::new, PacketServerTickTime::handle);
 		registerMessage(PacketUpdatePressureBlock.class,
@@ -121,10 +115,6 @@ public class NetworkHandler {
 				PacketAmadronOrderUpdate::toBytes, PacketAmadronOrderUpdate::new, PacketAmadronOrderUpdate::handle);
 		registerMessage(PacketAmadronTradeAddCustom.class,
 				PacketAmadronTradeAddCustom::toBytes, PacketAmadronTradeAddCustom::new, PacketAmadronTradeAddCustom::handle);
-//		registerMessage(PacketAmadronTradeAddPeriodic.class,
-//				PacketAmadronTradeAddPeriodic::toBytes, PacketAmadronTradeAddPeriodic::new, PacketAmadronTradeAddPeriodic::handle);
-//		registerMessage(PacketAmadronTradeAddStatic.class,
-//				PacketAmadronTradeAddStatic::toBytes, PacketAmadronTradeAddStatic::new, PacketAmadronTradeAddStatic::handle);
 		registerMessage(PacketAmadronTradeNotifyDeal.class,
 				PacketAmadronTradeNotifyDeal::toBytes, PacketAmadronTradeNotifyDeal::new, PacketAmadronTradeNotifyDeal::handle);
 		registerMessage(PacketAmadronTradeRemoved.class,
@@ -193,6 +183,8 @@ public class NetworkHandler {
 				PacketSyncRecipes::toBytes, PacketSyncRecipes::new, PacketSyncRecipes::handle);
 		registerMessage(PacketSyncSemiblock.class,
 				PacketSyncSemiblock::toBytes, PacketSyncSemiblock::new, PacketSyncSemiblock::handle);
+		registerMessage(PacketTemperatureSync.class,
+				PacketTemperatureSync::toBytes, PacketTemperatureSync::new, PacketTemperatureSync::handle);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {

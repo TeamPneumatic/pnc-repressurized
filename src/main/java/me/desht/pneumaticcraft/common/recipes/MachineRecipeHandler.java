@@ -77,7 +77,7 @@ public class MachineRecipeHandler {
             Map<ResourceLocation, IAssemblyRecipe> assembly = parseJSON(Category.ASSEMBLY);
 
             // post event to give mods a chance to modify recipes in code (do we want to keep this?)
-            RegisterMachineRecipesEvent evt = new RegisterMachineRecipesEvent(
+            RegisterMachineRecipesEvent.Pre evt = new RegisterMachineRecipesEvent.Pre(
                     r -> pressureChamber.put(r.getId(), r),
                     r -> thermopneumatic.put(r.getId(), r),
                     r -> heatFrameCooling.put(r.getId(), r),
@@ -97,6 +97,8 @@ public class MachineRecipeHandler {
             AmadronOfferManager.getInstance().initOffers(resourceManager);
 
             NetworkHandler.sendToAll(syncPacket());
+
+            MinecraftForge.EVENT_BUS.post(new RegisterMachineRecipesEvent.Post());
         }
 
         private Map<ResourceLocation, JsonObject> loadJSON(IResourceManager resourceManager, Category category) {

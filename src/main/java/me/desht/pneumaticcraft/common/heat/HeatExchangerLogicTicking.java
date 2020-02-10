@@ -128,6 +128,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
         temperature = nbt.getDouble("temperature");
+        temperatureInt = (int) temperature;
         behaviours.clear();
         ListNBT tagList = nbt.getList("behaviours", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {

@@ -17,7 +17,8 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
-public abstract class TileEntityAbstractHopper extends TileEntityTickableBase implements IRedstoneControlled, IComparatorSupport, INamedContainerProvider {
+public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
+        implements IRedstoneControlled, IComparatorSupport, INamedContainerProvider {
     private int lastComparatorValue = -1;
     @GuiSynced
     public int redstoneMode;
@@ -26,6 +27,7 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase im
     int leaveMaterialCount; // leave items/liquids (used as filter)
     @DescSynced
     public boolean isCreative; // has a creative upgrade installed
+    private boolean wasCreative = false;
     Direction inputDir = Direction.UP;
 
     TileEntityAbstractHopper(TileEntityType type) {
@@ -62,6 +64,13 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase im
                 updateNeighbours();
             }
         }
+    }
+
+    @Override
+    protected boolean shouldRerenderChunkOnDescUpdate() {
+        boolean rerender = wasCreative != isCreative;
+        wasCreative = isCreative;
+        return rerender;
     }
 
     public int getMaxItems() {
