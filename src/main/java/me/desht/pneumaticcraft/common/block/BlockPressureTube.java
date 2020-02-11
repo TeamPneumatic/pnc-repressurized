@@ -151,7 +151,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     public static BlockState recalculateState(IWorld worldIn, BlockPos currentPos, BlockState stateIn) {
         TileEntityPressureTube tePT = getPressureTube(worldIn, currentPos);
         if (tePT != null) {
-            BlockState state = stateIn.getBlock().getDefaultState();
+            BlockState state = stateIn;
             for (Direction dir : Direction.VALUES) {
                 ConnectionType type = ConnectionType.UNCONNECTED;
                 if (tePT.sidesClosed[dir.getIndex()]) {
