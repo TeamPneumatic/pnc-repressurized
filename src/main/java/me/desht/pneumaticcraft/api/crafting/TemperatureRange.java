@@ -7,9 +7,14 @@ import org.apache.commons.lang3.Validate;
  * so negative values are not accepted.
  */
 public class TemperatureRange {
-    private static TemperatureRange INVALID = new TemperatureRange(0, 0) {
+    private static TemperatureRange INVALID = new TemperatureRange(0, 1) {
         @Override
         public boolean inRange(int temp) {
+            return false;
+        }
+
+        @Override
+        public boolean inRange(double temp) {
             return false;
         }
     };

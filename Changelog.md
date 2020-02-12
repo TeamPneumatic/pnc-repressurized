@@ -4,6 +4,25 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+## Minecraft 1.14.4
+
+This release brings a significant internal rewrite and major new and modified gameplay elements.
+
+#### New
+* Recipes
+  * Recipes in general use a lot less iron, especially in the early game.  However, more stone will be required (so it's worth smelting up a stack or two of cobblestone before you start on the mod).
+  * All machine recipes are now loaded from datapacks (`data/<modid>/pneumaticcraft/machine_recipes/<machine_type/*.json`) so can be easily overridden and reloaded on the fly.  To remove an existing recipe, simple create a JSON file of the same name in your datapack with an empty JSON document: `{}`
+* Pressure Chamber
+  * The Pressure Chamber Interface filter system is gone.  The Interface will now just pull crafted items (with an option to pull everything in case the chamber needs to be emptied).
+  * The Pressure Chamber Interface also accepts a Dispenser Upgrade; if installed it will eject items into the world if there is no adjacent inventory.  (Note that the interface still pushes items; no need to pull items from it).
+  * Several new default recipes, including ways to make slime balls, snow, ice, and blue ice
+* Coloured plastic is gone, and so has the Plastic Mixer.
+  * There is now only one type of plastic: the Plastic Sheet.
+  * Which also means there's only one type of Programing Puzzle Piece, which makes programming Drones a lot easier.
+  * You can make them by pouring a bucket of Molten Plastic (which is made in the Thermopneumatic Processing Plant from LPG & Coal as before) into the world.  It will solidify after 10 ticks.
+  * Alternatively, put a bucket or tank of Molten Plastic in an inventory with a Heat Frame attached, and chill the Heat Frame as much as possible (-75C is optimum) for bonus Plastic Sheet output; up to 1.75x.
+* 
+
 ## Minecraft 1.12.2
 
 ### 0.11.3-366 (20 Jun 2019)
