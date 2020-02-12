@@ -107,6 +107,8 @@ public class ModTileEntities {
             = register("pneumatic_dynamo", () -> new TileEntityType<>(TileEntityPneumaticDynamo::new, ImmutableSet.of(ModBlocks.PNEUMATIC_DYNAMO.get()), null));
     public static final RegistryObject<TileEntityType<TileEntityThermalCompressor>> THERMAL_COMPRESSOR
             = register("thermal_compressor", () -> new TileEntityType<>(TileEntityThermalCompressor::new, ImmutableSet.of(ModBlocks.THERMAL_COMPRESSOR.get()), null));
+    public static final RegistryObject<TileEntityType<TileEntityHeatPipe>> HEAT_PIPE
+            = register("heat_pipe", () -> new TileEntityType<>(TileEntityHeatPipe::new, ImmutableSet.of(ModBlocks.HEAT_PIPE.get()), null));
 
     private static <T extends TileEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return TILE_ENTITIES.register(name, sup);

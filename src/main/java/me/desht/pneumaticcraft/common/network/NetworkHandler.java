@@ -183,8 +183,6 @@ public class NetworkHandler {
 				PacketSyncRecipes::toBytes, PacketSyncRecipes::new, PacketSyncRecipes::handle);
 		registerMessage(PacketSyncSemiblock.class,
 				PacketSyncSemiblock::toBytes, PacketSyncSemiblock::new, PacketSyncSemiblock::handle);
-		registerMessage(PacketTemperatureSync.class,
-				PacketTemperatureSync::toBytes, PacketTemperatureSync::new, PacketTemperatureSync::handle);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {

@@ -342,9 +342,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         super.read(tag);
 
         setupMultiBlock(tag.getInt("multiBlockSize"), tag.getInt("multiBlockX"), tag.getInt("multiBlockY"), tag.getInt("multiBlockZ"));
-        isSufficientPressureInChamber = tag.getBoolean("sufPressure");
-        isValidRecipeInChamber = tag.getBoolean("validRecipe");
-        recipePressure = tag.getFloat("recipePressure");
+//        isSufficientPressureInChamber = tag.getBoolean("sufPressure");
+//        isValidRecipeInChamber = tag.getBoolean("validRecipe");
+//        recipePressure = tag.getFloat("recipePressure");
         ItemStackHandler handler = new ItemStackHandler();
         handler.deserializeNBT(tag.getCompound("itemsInChamber"));
         for (int i = 0; i < handler.getSlots() && i < CHAMBER_INV_SIZE; i++) {
@@ -372,9 +372,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         tag.putInt("multiBlockY", multiBlockY);
         tag.putInt("multiBlockZ", multiBlockZ);
         tag.putInt("multiBlockSize", multiBlockSize);
-        tag.putBoolean("sufPressure", isSufficientPressureInChamber);
-        tag.putBoolean("validRecipe", isValidRecipeInChamber);
-        tag.putFloat("recipePressure", recipePressure);
+//        tag.putBoolean("sufPressure", isSufficientPressureInChamber);
+//        tag.putBoolean("validRecipe", isValidRecipeInChamber);
+//        tag.putFloat("recipePressure", recipePressure);
         tag.put("itemsInChamber", itemsInChamber.serializeNBT());
         tag.put("craftedItems", craftedItems.serializeNBT());
 
@@ -430,6 +430,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                     valve.accessoryValves.clear();
                     if (!getWorld().isRemote) valve.sendDescriptionPacket();
                 }
+                valve.markDirty();
             }
             accessoryValves.clear();
         }
@@ -575,6 +576,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         // force-sync primary valve details to clients for rendering purposes
         primaryValve.sendDescriptionPacket();
 
+        primaryValve.markDirty();
+
         return true;
     }
 
@@ -644,6 +647,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
             if (world != null && world.isRemote) {
                 rebuildRenderedItems();
             }
+            markDirty();
         }
     }
 
@@ -657,6 +661,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
             if (world != null && world.isRemote) {
                 rebuildRenderedItems();
             }
+            markDirty();
         }
     }
 

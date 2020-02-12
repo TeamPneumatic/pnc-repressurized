@@ -71,6 +71,7 @@
   "block.pneumaticcraft.reinforced_brick_pillar": "Reinforced Brick Pillar",
   "block.pneumaticcraft.reinforced_brick_tile": "Reinforced Brick Tile",
   "block.pneumaticcraft.reinforced_brick_wall": "Reinforced Brick Wall",
+  "block.pneumaticcraft.heat_pipe": "Heat Pipe",
 
   "_comment": "Items",
   "item.pneumaticcraft.pressure_tube": "Pressure Tube",
@@ -477,6 +478,7 @@
   "gui.tooltip.block.pneumaticcraft.sentry_turret": "A Sentry Turret is an autonomous defensive weapon. When provided with Gun Ammo it will fire at any living entity within a 16 block range (extendable with Range Upgrades). You can filter which entities to attack by entering a filter in the 'Target Filter' field. When the Sentry Gun is covered by a Security Station, players allowed by the Security Station will not be targeted.",
   "gui.tooltip.block.pneumaticcraft.thermal_compressor": "A Thermal Compressor converts temperature differentials on opposite sides of the block to compressed air. Place a high-temperature block on one side of the compressor and a low-temperature block on the opposite side. \\n \\nNote that the North-South faces are thermally connected to one another, as are the East-West faces, but there is no cross-connection from NS to EW. Thermally connected sides will attempt to equalize the temperature, so effort is needed to maintain a good temperature differential.",
   "gui.tooltip.block.pneumaticcraft.reinforced_bricks": "Used to make stuff; also safe for building. Excellent blast resistance.",
+  "gui.tooltip.block.pneumaticcraft.heat_pipe": "An insulated core of compressed iron which can transfer heat without losing any to adjacent air or fluid blocks. A more compact alternative to Compressed Iron Blocks. This block can be camouflaged with the Camouflage Applicator tool.",
 
   "gui.tab.info.logistic_frame_requester": "§0Requester frames can request resources from any other framed inventory. \\n \\nHere you can specify the resources and quantities that Logistics Drones / Logistics Modules should keep stocked in the framed inventory. Either insert items from your inventory, or search for an item/fluid by right clicking an empty slot.",
   "gui.tab.info.logistic_frame_passive_provider": "§0Passive Provider frames can provide resources to Requester Frames. \\n \\nBy default the framed inventory will provide every item in the inventory. By adding items to this filter, only those items will be provided. Add items from your inventory, or search for an item/fluid by right clicking an empty slot.",

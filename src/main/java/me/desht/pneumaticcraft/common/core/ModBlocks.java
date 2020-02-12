@@ -167,6 +167,8 @@ public class ModBlocks {
             BlockFakeIce::new);
     public static final RegistryObject<BlockThermalCompressor> THERMAL_COMPRESSOR = register("thermal_compressor",
             BlockThermalCompressor::new);
+    public static final RegistryObject<BlockHeatPipe> HEAT_PIPE = register("heat_pipe",
+            BlockHeatPipe::new);
 
     public static final RegistryObject<Block> REINFORCED_STONE = register("reinforced_stone",
             () -> new Block(reinforcedStoneProps()));

@@ -1,58 +1,43 @@
 package me.desht.pneumaticcraft.common.heat;
 
-import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketTemperatureSync;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import me.desht.pneumaticcraft.common.network.DescSynced;
 
-import java.lang.ref.WeakReference;
-
-import static net.minecraftforge.fml.network.PacketDistributor.TargetPoint;
-
+/**
+ * Designed to sync temperature to client but only when changed by a certain amount, the delta being dependent on the
+ * temperature at the time.  Include as a field in your TE and mark as @DescSynced, or in an Entity and use the data
+ * manager to sync the temperature.
+ */
 public class SyncedTemperature {
-    private final WeakReference<World> world;
-    private final BlockPos pos;
-    private final Direction dir;
-    private final int id;
-
     private int currentTemp = 300;
-    private int lastSyncedTemp = -1;
 
-    public SyncedTemperature(TileEntity te, Direction dir) {
-        this.world = new WeakReference<>(te.getWorld());
-        this.pos = te.getPos();
-        this.dir = dir;
-        this.id = -1;
+    @DescSynced
+    private int syncedTemp = -1;
+
+    /**
+     * Call client side to get the synced temperature.
+     * @return the synced temperature
+     */
+    public int getSyncedTemp() {
+        return syncedTemp;
     }
 
-    public SyncedTemperature(ISemiBlock semiBlock) {
-        this.world = new WeakReference<>(semiBlock.getWorld());
-        this.pos = semiBlock.getBlockPos();
-        this.id = semiBlock.getTrackingId();
-        this.dir = null;
-    }
-
+    /**
+     * Call server side on a regular basis to set the temperature of the heat exchanger.
+     *
+     * @param currentTemp the heat exchanger's current temp
+     */
     public void setCurrentTemp(double currentTemp) {
         this.currentTemp = (int) currentTemp;
 
-        if (shouldSync() && world.get() != null) {
-            TargetPoint tp = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 256D, world.get().getDimension().getType());
-            if (id < 0) {
-                NetworkHandler.sendToAllAround(new PacketTemperatureSync(pos, dir, (int) currentTemp), tp);
-            } else {
-                NetworkHandler.sendToAllAround(new PacketTemperatureSync(id, (int) currentTemp), tp);
-            }
-            this.lastSyncedTemp = (int) currentTemp;
+        if (shouldSync()) {
+            this.syncedTemp = (int) currentTemp;
         }
     }
 
     private boolean shouldSync() {
-        if (lastSyncedTemp < 0) return true; // initial sync
+        if (syncedTemp < 0) return true; // initial sync
 
-        int delta = Math.abs(lastSyncedTemp - currentTemp);
+        int delta = Math.abs(syncedTemp - currentTemp);
 
         if (currentTemp < 73) {
             return false;

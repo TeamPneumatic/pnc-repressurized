@@ -6,12 +6,14 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 
 public enum HeatBehaviourManager {
@@ -51,12 +53,15 @@ public enum HeatBehaviourManager {
         }
     }
 
-    public void addHeatBehaviours(World world, BlockPos pos, Direction direction, IHeatExchangerLogic logic, List<HeatBehaviour> list) {
+    public int addHeatBehaviours(World world, BlockPos pos, Direction direction, BiPredicate<IWorld, BlockPos> blockFilter, IHeatExchangerLogic logic, List<HeatBehaviour> list) {
+        if (!blockFilter.test(world, pos)) return 0;
+        int s = list.size();
         for (Supplier<? extends HeatBehaviour> bSup : behaviourRegistry.values()) {
             HeatBehaviour behaviour = bSup.get().initialize(logic, world, pos, direction);
             if (behaviour.isApplicable()) {
                 list.add(behaviour);
             }
         }
+        return list.size() - s;
     }
 }

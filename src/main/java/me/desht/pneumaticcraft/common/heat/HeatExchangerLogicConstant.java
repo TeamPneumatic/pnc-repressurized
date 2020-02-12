@@ -4,20 +4,20 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
+import java.util.function.BiPredicate;
+
 /**
- * Used for blocks like lava/ice, which have a constant heat.
+ * Used for blocks like lava/ice, which have a constant heat. These are effectively an infinite heat source/sink,
+ * unless there is a transitioning heat behaviour attached.
  */
 public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     private final double temperature;
     private final double thermalResistance;
 
-    public HeatExchangerLogicConstant(double temperature) {
-        this(temperature, 1);
-    }
-
-    public HeatExchangerLogicConstant(double temperature, double thermalResistance) {
+    HeatExchangerLogicConstant(double temperature, double thermalResistance) {
         this.temperature = temperature;
         this.thermalResistance = thermalResistance;
     }
@@ -27,7 +27,7 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     }
 
     @Override
-    public void initializeAsHull(World world, BlockPos pos, boolean loseHeatToAir, Direction... validSides) {
+    public void initializeAsHull(World world, BlockPos pos, BiPredicate<IWorld,BlockPos> loseHeatToAir, Direction... validSides) {
     }
 
     @Override
@@ -82,6 +82,11 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
 
     @Override
     public void addHeat(double amount) {
+    }
+
+    @Override
+    public boolean isSideConnected(Direction side) {
+        return true;
     }
 
     @Override

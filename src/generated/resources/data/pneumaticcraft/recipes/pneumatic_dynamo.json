@@ -13,7 +13,7 @@
       "item": "pneumaticcraft:compressed_iron_gear"
     },
     "I": {
-      "item": "pneumaticcraft:ingot_iron_compressed"
+      "tag": "forge:ingots/compressed_iron"
     },
     "P": {
       "item": "pneumaticcraft:printed_circuit_board"

@@ -18,6 +18,7 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
     public TileEntityHeatSink() {
         super(ModTileEntities.HEAT_SINK.get());
 
+        heatExchanger.setThermalCapacity(5);
         airExchanger.addConnectedExchanger(heatExchanger);
         airExchanger.setThermalResistance(TileEntityConstants.HEAT_SINK_THERMAL_RESISTANCE);
     }

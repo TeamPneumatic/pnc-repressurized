@@ -20,9 +20,10 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     private final IHeatExchangerLogic connectingExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private int visualizationTimer = 30;
 
-    private SyncedTemperature syncHot;
-    private SyncedTemperature syncCold;
-
+    @DescSynced
+    private SyncedTemperature syncHot = new SyncedTemperature();
+    @DescSynced
+    private SyncedTemperature syncCold = new SyncedTemperature();
     @DescSynced
     private boolean visualize;
 
@@ -72,14 +73,6 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    protected void onFirstServerUpdate() {
-        super.onFirstServerUpdate();
-
-        syncCold = new SyncedTemperature(this, getRotation());
-        syncHot = new SyncedTemperature(this, getRotation().getOpposite());
-    }
-
-    @Override
     public void tick() {
         super.tick();
 
@@ -102,14 +95,6 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public void onBlockRotated() {
-        visualizationTimer = 60;
-
-        syncCold = new SyncedTemperature(this, getRotation());
-        syncHot = new SyncedTemperature(this, getRotation().getOpposite());
-    }
-
-    @Override
     protected boolean shouldRerenderChunkOnDescUpdate() {
         return true;
     }
@@ -117,8 +102,8 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     @Override
     public TintColor getColorForTintIndex(int tintIndex) {
         switch (tintIndex) {
-            case 1: return HeatUtil.getColourForTemperature(hotHeatExchanger.getTemperatureAsInt());
-            case 2: return HeatUtil.getColourForTemperature(coldHeatExchanger.getTemperatureAsInt());
+            case 1: return HeatUtil.getColourForTemperature(syncHot.getSyncedTemp());
+            case 2: return HeatUtil.getColourForTemperature(syncCold.getSyncedTemp());
             default: return HeatUtil.getColourForTemperature(300);
         }
     }

@@ -33,6 +33,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IWorld;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.capabilities.Capability;
@@ -50,6 +51,7 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 //@Optional.InterfaceList({
 //        @Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)
@@ -421,15 +423,15 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
                     .ifPresent(logic -> map.computeIfAbsent(logic, k -> new ArrayList<>()).add(side));
         }
         map.forEach((logic, sides) ->
-                logic.initializeAsHull(getWorld(), getPos(), shouldLoseHeatToAir(), sides.toArray(new Direction[0])));
+                logic.initializeAsHull(getWorld(), getPos(), heatExchangerBlockFilter(), sides.toArray(new Direction[0])));
     }
 
     /**
      * Should this (heat-using) machine lose heat to the surrounding air blocks? Most blocks do.
      * @return true if heat will be lost to the air on exposed faces, false otherwise
      */
-    protected boolean shouldLoseHeatToAir() {
-        return true;
+    protected BiPredicate<IWorld,BlockPos> heatExchangerBlockFilter() {
+        return IHeatExchangerLogic.ALL_BLOCKS;
     }
 
     @Override

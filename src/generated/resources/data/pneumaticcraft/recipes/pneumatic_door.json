@@ -7,7 +7,7 @@
   ],
   "key": {
     "I": {
-      "item": "pneumaticcraft:ingot_iron_compressed"
+      "tag": "forge:ingots/compressed_iron"
     }
   },
   "result": {

@@ -12,10 +12,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.IWorld;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
+import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 
 public enum HeatExchangerManager implements IHeatRegistry {
@@ -26,29 +27,29 @@ public enum HeatExchangerManager implements IHeatRegistry {
     }
 
     @Nonnull
-    public LazyOptional<IHeatExchangerLogic> getLogic(World world, BlockPos pos, Direction side) {
-        return getLogic(world, pos, side, true);
+    public LazyOptional<IHeatExchangerLogic> getLogic(IWorld world, BlockPos pos, Direction side) {
+        return getLogic(world, pos, side, IHeatExchangerLogic.ALL_BLOCKS);
     }
 
     @Nonnull
-    public LazyOptional<IHeatExchangerLogic> getLogic(World world, BlockPos pos, Direction side, boolean loseHeatToAir) {
+    public LazyOptional<IHeatExchangerLogic> getLogic(IWorld world, BlockPos pos, Direction side, BiPredicate<IWorld,BlockPos> blockFilter) {
         if (!world.isAreaLoaded(pos, 0)) return LazyOptional.empty();
         TileEntity te = world.getTileEntity(pos);
         if (te != null && te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side).isPresent()) {
             return te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side);
         } else {
+            if (!blockFilter.test(world, pos)) {
+                return LazyOptional.empty();
+            }
             if (world.isAirBlock(pos)) {
-                return loseHeatToAir ?
-                        LazyOptional.of(() -> HeatExchangerLogicAmbient.atPosition(world, pos)) :
-                        LazyOptional.empty();
+                return LazyOptional.of(() -> HeatExchangerLogicAmbient.atPosition(world, pos));
+            }
+            BlockState state = world.getBlockState(pos);
+            CustomHeatEntry entry = BlockHeatProperties.getInstance().getCustomHeatEntry(state.getBlock());
+            if (entry != null && entry.testPredicates(state)) {
+                return LazyOptional.of(entry::getLogic);
             } else {
-                BlockState state = world.getBlockState(pos);
-                CustomHeatEntry entry = BlockHeatProperties.getInstance().getCustomHeatEntry(state.getBlock());
-                if (entry != null && entry.testPredicates(state)) {
-                    return LazyOptional.of(entry::getLogic);
-                } else {
-                    return LazyOptional.empty();
-                }
+                return LazyOptional.empty();
             }
         }
     }

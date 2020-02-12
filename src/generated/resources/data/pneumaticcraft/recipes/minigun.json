@@ -13,7 +13,7 @@
       "tag": "forge:chests"
     },
     "I": {
-      "item": "pneumaticcraft:ingot_iron_compressed"
+      "tag": "forge:ingots/compressed_iron"
     },
     "B": {
       "item": "pneumaticcraft:cannon_barrel"

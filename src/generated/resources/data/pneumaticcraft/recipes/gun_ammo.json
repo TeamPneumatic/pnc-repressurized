@@ -5,7 +5,7 @@
       "tag": "forge:gunpowder"
     },
     {
-      "item": "pneumaticcraft:ingot_iron_compressed"
+      "tag": "forge:ingots/compressed_iron"
     },
     {
       "tag": "forge:ingots/gold"

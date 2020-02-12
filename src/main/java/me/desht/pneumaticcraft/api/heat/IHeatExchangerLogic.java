@@ -3,8 +3,11 @@ package me.desht.pneumaticcraft.api.heat;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
+
+import java.util.function.BiPredicate;
 
 /**
  * Represents a heat exchanger owned by a tile entity. Retrieve instances of this via capability lookup; you
@@ -34,16 +37,16 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
      *
      * @param world the world
      * @param pos  the position
-     * @param loseHeatToAir true if heat will be lost to adjacent air blocks, false otherwise
+     * @param blockFilter a whitelist check; can be used to exclude certain blocks, e.g. air or fluids
      * @param validSides an array of sides to check for heat exchanging neighbours
      */
-    void initializeAsHull(World world, BlockPos pos, boolean loseHeatToAir, Direction... validSides);
+    void initializeAsHull(World world, BlockPos pos, BiPredicate<IWorld,BlockPos> blockFilter, Direction... validSides);
 
     /**
      * Initialize this heat exchanger's ambient temperature based on the given world & position.  You don't need to call
      * this method if your heat exchanger is a hull exchanger (i.e. provides an {@link IHeatExchangerLogic} object via
      * capability lookup), as hulls are automatically initialized by
-     * {@link IHeatExchangerLogic#initializeAsHull(World, BlockPos, boolean, Direction...)}
+     * {@link IHeatExchangerLogic#initializeAsHull(World, BlockPos, BiPredicate, Direction...)}
      *
      * @param world the world
      * @param pos the position
@@ -140,4 +143,17 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
      * @param amount the heat amount
      */
     void addHeat(double amount);
+
+    /**
+     * Check if this side of the heat exchanger has a thermal connection of any kind to the neighbouring block in the
+     * given direction; whether to another heat exchanger, a static heat source like air, or a custom handler such as
+     * a furnace or heat frame. The connection data is initialized in
+     * {@link #initializeAsHull(World, BlockPos, BiPredicate, Direction...)}.
+     *
+     * @param side the side to check
+     * @return true if this side has a thermal connection of any kind
+     */
+    boolean isSideConnected(Direction side);
+
+    BiPredicate<IWorld,BlockPos> ALL_BLOCKS = (world,pos) -> true;
 }

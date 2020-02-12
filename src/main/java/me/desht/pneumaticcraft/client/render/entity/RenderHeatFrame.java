@@ -26,7 +26,7 @@ public class RenderHeatFrame extends RenderSemiblockBase<EntityHeatFrame> {
     public void doRender(EntityHeatFrame entity, double x, double y, double z, float entityYaw, float partialTicks) {
         bindEntityTexture(entity);
 
-        TintColor tint = HeatUtil.getColourForTemperature(entity.getHeatExchangerLogic().getTemperatureAsInt());
+        TintColor tint = HeatUtil.getColourForTemperature(entity.getSyncedTemperature());
         float[] f = tint.getComponents(null);
         GlStateManager.color4f(f[0], f[1], f[2], 1f);
 

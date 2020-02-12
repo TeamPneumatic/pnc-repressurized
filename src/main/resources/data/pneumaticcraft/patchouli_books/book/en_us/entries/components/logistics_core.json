@@ -1,0 +1,17 @@
+{
+  "name": "Logistics Core",
+  "icon": "pneumaticcraft:logistics_core",
+  "category": "components",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "This is a crafting component for other devices. It has no use on its own."
+    },
+    {
+      "type": "crafting",
+      "text": "Creating a Logistics Core",
+      "recipe": "pneumaticcraft:logistics_core"
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
+import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,6 +40,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
 
     private final IHeatExchangerLogic dummyExchanger;  // never does anything; gets returned from the "null" face
 
+    @DescSynced
     private SyncedTemperature[] syncedTemperatures = new SyncedTemperature[4];  // S-W-N-E
 
     @GuiSynced
@@ -52,6 +54,10 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
             heatExchangers[i].setThermalCapacity(2);
             heatCaps.add(LazyOptional.of(() -> heatExchangers[i]));
         });
+
+        for (int i = 0; i < syncedTemperatures.length; i++) {
+            syncedTemperatures[i] = new SyncedTemperature();
+        }
 
         connector1 = makeConnector(Direction.NORTH);
         connector2 = makeConnector(Direction.EAST);
@@ -70,14 +76,6 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     @Override
     public IItemHandler getPrimaryInventory() {
         return null;
-    }
-
-    @Override
-    protected void onFirstServerUpdate() {
-        syncedTemperatures[0] = new SyncedTemperature(this, Direction.SOUTH);
-        syncedTemperatures[1] = new SyncedTemperature(this, Direction.WEST);
-        syncedTemperatures[2] = new SyncedTemperature(this, Direction.NORTH);
-        syncedTemperatures[3] = new SyncedTemperature(this, Direction.EAST);
     }
 
     @Override
@@ -130,7 +128,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
 
     @Override
     public TintColor getColorForTintIndex(int tintIndex) {
-        return HeatUtil.getColourForTemperature(heatExchangers[tintIndex].getTemperatureAsInt());
+        return HeatUtil.getColourForTemperature(syncedTemperatures[tintIndex].getSyncedTemp());
     }
 
     @Override

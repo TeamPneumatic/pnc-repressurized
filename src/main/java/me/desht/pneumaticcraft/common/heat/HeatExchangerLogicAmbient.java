@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.heat;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Heat;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.IWorld;
 
 public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
     static final double BASE_AMBIENT_TEMP = 300; // temperature of water in the registry
@@ -11,7 +11,7 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
     private static final HeatExchangerLogicAmbient DEFAULT_AIR_EXCHANGER = new HeatExchangerLogicAmbient(BASE_AMBIENT_TEMP);
     private static final Int2ObjectOpenHashMap<HeatExchangerLogicAmbient> exchangers = new Int2ObjectOpenHashMap<>();
 
-    public static HeatExchangerLogicAmbient atPosition(World world, BlockPos pos) {
+    public static HeatExchangerLogicAmbient atPosition(IWorld world, BlockPos pos) {
         if (Heat.ambientTempBiomeModifier == 0 && Heat.ambientTempHeightModifier == 0) {
             return DEFAULT_AIR_EXCHANGER;
         }

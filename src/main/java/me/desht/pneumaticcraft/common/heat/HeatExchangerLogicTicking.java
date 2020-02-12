@@ -10,10 +10,12 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 
 public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private final Set<IHeatExchangerLogic> hullExchangers = new HashSet<>();
@@ -26,12 +28,13 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private int temperatureInt = (int) HeatExchangerLogicAmbient.BASE_AMBIENT_TEMP;
     private double thermalResistance = 1;
     private double thermalCapacity = 1;
+    private final BitSet connections = new BitSet(6);
 
     // prevent infinite recursion when adding/removing a connected exchanger
     private static boolean isAddingOrRemovingLogic;
 
     @Override
-    public void initializeAsHull(World world, BlockPos pos, boolean loseHeatToAir, Direction... validSides) {
+    public void initializeAsHull(World world, BlockPos pos, BiPredicate<IWorld,BlockPos> blockFilter, Direction... validSides) {
         if (ambientTemperature < 0) {
             initializeAmbientTemperature(world, pos);
         }
@@ -43,13 +46,22 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         }
         hullExchangers.clear();
         newBehaviours = new ArrayList<>();
+        connections.clear();
         for (Direction dir : validSides) {
-            HeatBehaviourManager.getInstance().addHeatBehaviours(world, pos.offset(dir), dir, this, newBehaviours);
-            HeatExchangerManager.getInstance().getLogic(world, pos.offset(dir), dir.getOpposite(), loseHeatToAir).ifPresent(logic -> {
+            if (HeatBehaviourManager.getInstance().addHeatBehaviours(world, pos.offset(dir), dir, blockFilter, this, newBehaviours) > 0) {
+                connections.set(dir.getIndex());
+            }
+            HeatExchangerManager.getInstance().getLogic(world, pos.offset(dir), dir.getOpposite(), blockFilter).ifPresent(logic -> {
                 hullExchangers.add(logic);
                 addConnectedExchanger(logic);
+                connections.set(dir.getIndex());
             });
         }
+    }
+
+    @Override
+    public boolean isSideConnected(Direction side) {
+        return connections.get(side.getIndex());
     }
 
     @Override

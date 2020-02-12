@@ -39,6 +39,7 @@ import java.util.List;
 
 public class EntityHeatFrame extends EntitySemiblockBase {
     private static final DataParameter<Byte> STATUS = EntityDataManager.createKey(EntityHeatFrame.class, DataSerializers.BYTE);
+    private static final DataParameter<Integer> TEMPERATURE = EntityDataManager.createKey(EntityHeatFrame.class, DataSerializers.VARINT);
 
     private static final int MIN_COOKING_TEMP = 373;
 
@@ -56,7 +57,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     private int cookingProgress;
     private int coolingProgress;
 
-    private SyncedTemperature syncedTemperature;
+    private SyncedTemperature syncedTemperature = new SyncedTemperature();
 
     public static EntityHeatFrame create(EntityType<EntityHeatFrame> type, World world) {
         return new EntityHeatFrame(type, world);
@@ -77,6 +78,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
         super.registerData();
 
         this.dataManager.register(STATUS, IDLE);
+        this.dataManager.register(TEMPERATURE, 0);
     }
 
     @Nonnull
@@ -101,6 +103,14 @@ public class EntityHeatFrame extends EntitySemiblockBase {
         return getDataManager().get(STATUS);
     }
 
+    private void setSyncedTemperature(int temperature) {
+        getDataManager().set(TEMPERATURE, temperature);
+    }
+
+    public int getSyncedTemperature() {
+        return getDataManager().get(TEMPERATURE);
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -114,6 +124,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
             }
             setStatus(newStatus);
             syncedTemperature.setCurrentTemp(logic.getTemperature());
+            setSyncedTemperature(syncedTemperature.getSyncedTemp());
         } else {
             // client
             if ((ticksExisted & 0x3) == 0) {
@@ -127,15 +138,6 @@ public class EntityHeatFrame extends EntitySemiblockBase {
                         break;
                 }
             }
-        }
-    }
-
-    @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
-
-        if (!world.isRemote) {
-            syncedTemperature  = new SyncedTemperature(this);
         }
     }
 

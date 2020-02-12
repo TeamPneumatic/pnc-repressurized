@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WWW",
+    "BBB",
+    "WWW"
+  ],
+  "key": {
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "B": {
+      "tag": "forge:storage_blocks/compressed_iron"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:heat_pipe",
+    "count": 6
+  }
+}

@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(item)Camouflage Applicator/$ can be used to camouflage certain $(pncr) blocks:$(li)$(l:tubes/pressure_tubes)Pressure Tubes/$$(li)$(l:machines/pneumatic_door)Pneumatic Door Base/$$(li)$(l:machines/elevators)Elevator Base & Caller/$$(li)$(l:machines/charging_station)Charging Station/$$(p)$(thing)Sneak+right-click/$ any solid block to copy its appearance to the Applicator tool, or $(thing)sneak+right-click/$ with no block targeted to clear the copied block. "
+      "text": "The $(item)Camouflage Applicator/$ can be used to camouflage certain $(pncr) blocks:$(li)$(l:tubes/pressure_tubes)Pressure Tubes/$$(li)$(l:machines/pneumatic_door)Pneumatic Door Base/$$(li)$(l:machines/elevators)Elevator Base & Caller/$$(li)$(l:machines/charging_station)Charging Station/$$(li)$(l:machines/heat_pipe)Heat Pipe/$$(p)$(thing)Right-click/$ any solid block to copy its appearance to the Applicator tool, or $(thing)sneak+right-click/$ to clear the copied block. "
     },
     {
       "type": "text",
