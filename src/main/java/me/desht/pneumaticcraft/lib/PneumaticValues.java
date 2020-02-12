@@ -62,7 +62,7 @@ public class PneumaticValues {
 
     public static final int CHARGING_STATION_CHARGE_RATE = 10;// mL per tick
     public static final int USAGE_AIR_GRATE = 10; // mL per tick per meter range
-    public static final int USAGE_VORTEX_CANNON = 500; // mL per shot
+    public static final int USAGE_VORTEX_CANNON = 250; // mL per shot
     public static final int USAGE_ELEVATOR = 300; // mL per meter ascending.
     public static final int USAGE_ENTITY_TRACKER = 1; // mL per tick
     public static final int USAGE_BLOCK_TRACKER = 1; // mL per tick

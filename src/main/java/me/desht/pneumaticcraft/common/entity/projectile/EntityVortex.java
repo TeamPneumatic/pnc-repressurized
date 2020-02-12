@@ -1,25 +1,24 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
 import me.desht.pneumaticcraft.common.core.ModEntities;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.WebBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ThrowableEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.IPacket;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.common.IShearable;
 import net.minecraftforge.fml.network.NetworkHooks;
-
-import java.util.List;
 
 public class EntityVortex extends ThrowableEntity {
     private int hitCounter = 0;
@@ -27,25 +26,17 @@ public class EntityVortex extends ThrowableEntity {
     // clientside: rendering X offset of vortex, depends on which hand the vortex was fired from
     private float renderOffsetX = -Float.MAX_VALUE;
 
-    public EntityVortex(World world, LivingEntity thrower) {
-        super(ModEntities.VORTEX.get(), thrower, world);
+    public static EntityVortex create(EntityType<? extends EntityVortex> type, World world) {
+        return new EntityVortex(world);
     }
 
-    public EntityVortex(World world) {
+    private EntityVortex(World world) {
         super(ModEntities.VORTEX.get(), world);
-    }
-
-    public EntityVortex(EntityType<EntityVortex> type, World world) {
-        super(type, world);
     }
 
     @Override
     public IPacket<?> createSpawnPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    public static EntityVortex create(EntityType<? extends EntityVortex> type, World world) {
-        return new EntityVortex(world);
     }
 
     @Override
@@ -71,7 +62,7 @@ public class EntityVortex extends ThrowableEntity {
 
     private boolean tryCutPlants(BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
-        if (block instanceof IPlantable || block instanceof LeavesBlock) {
+        if (vortexBreakable(block)) {
             world.destroyBlock(pos, true);
             return true;
         }
@@ -88,27 +79,21 @@ public class EntityVortex extends ThrowableEntity {
         if (rtr.getType() == RayTraceResult.Type.ENTITY) {
             Entity entity = ((EntityRayTraceResult) rtr).getEntity();
             entity.setMotion(entity.getMotion().add(this.getMotion()));
-            if (!entity.world.isRemote && entity instanceof IShearable) {
-                IShearable shearable = (IShearable) entity;
-                BlockPos pos = new BlockPos(posX, posY, posZ);
-                if (shearable.isShearable(ItemStack.EMPTY, world, pos)) {
-                    List<ItemStack> drops = shearable.onSheared(ItemStack.EMPTY, world, pos, 0);
-                    for (ItemStack stack : drops) {
-                        PneumaticCraftUtils.dropItemOnGround(stack, world, entity.posX, entity.posY, entity.posZ);
-                    }
-                }
+            ItemStack shears = new ItemStack(Items.SHEARS);
+            if (entity instanceof LivingEntity) {
+                shears.getItem().itemInteractionForEntity(shears, null, (LivingEntity) entity, Hand.MAIN_HAND);
             }
         } else if (rtr.getType() == RayTraceResult.Type.BLOCK) {
             BlockPos pos = ((BlockRayTraceResult) rtr).getPos();
             Block block = world.getBlockState(pos).getBlock();
-            if (block instanceof IPlantable || block instanceof LeavesBlock) {
+            if (vortexBreakable(block)) {
                 if (!world.isRemote) {
                     BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos);
                     if (tryCutPlants(pos)) {
                         int plantsCut = 1;
-                        for (int x = -1; x <= 1; x++) {
-                            for (int y = -1; y <= 1; y++) {
-                                for (int z = -1; z <= 1; z++) {
+                        for (int x = -2; x <= 2; x++) {
+                            for (int y = -2; y <= 2; y++) {
+                                for (int z = -2; z <= 2; z++) {
                                     if (x == 0 && y == 0 && z == 0) continue;
                                     mPos.setPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
                                     if (tryCutPlants(mPos)) plantsCut++;
@@ -116,7 +101,7 @@ public class EntityVortex extends ThrowableEntity {
                             }
                         }
                         // slow the vortex down for each plant it broke
-                        double mult = Math.pow(0.8D, plantsCut);
+                        double mult = Math.pow(0.85D, plantsCut);
                         setMotion(getMotion().scale(mult));
                     }
                 }
@@ -126,6 +111,10 @@ public class EntityVortex extends ThrowableEntity {
         }
         hitCounter++;
         if (hitCounter > 20) remove();
+    }
+
+    private boolean vortexBreakable(Block block) {
+        return block instanceof IPlantable || block instanceof LeavesBlock || block instanceof WebBlock;
     }
 
     @Override
