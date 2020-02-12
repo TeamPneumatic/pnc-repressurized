@@ -51,14 +51,14 @@ public class TooltipEventHandler {
 
         ItemStack stack = event.getItemStack();
 
-        if (stack.getItem().getRegistryName().getNamespace().equals(Names.MOD_ID)) {
+
+        if (stack.getItem() instanceof BucketItem) {
+            handleFluidContainerTooltip(event);
+        } else if (stack.getItem().getRegistryName().getNamespace().equals(Names.MOD_ID)) {
             addStandardTooltip(stack, event.getToolTip(), event.getFlags());
         }
         if (stack.getItem() instanceof IProgrammable) {
             handleProgrammableTooltip(event);
-        }
-        if (stack.getItem() instanceof BucketItem) {
-            handleFluidContainerTooltip(event);
         }
     }
 
