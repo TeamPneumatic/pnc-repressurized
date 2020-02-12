@@ -7,7 +7,7 @@
   ],
   "key": {
     "L": {
-      "item": "minecraft:lapis_lazuli"
+      "tag": "pneumaticcraft:upgrade_component"
     },
     "V": {
       "item": "pneumaticcraft:vortex_cannon"

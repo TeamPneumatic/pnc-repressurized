@@ -69,33 +69,45 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
         if (!recipe.getInputItem().hasNoMatchingItems()) {
             ingredients.setInputIngredients(Collections.singletonList(recipe.getInputItem()));
         }
-        ingredients.setOutput(VanillaTypes.FLUID, recipe.getOutputFluid());
+        if (!recipe.getOutputFluid().isEmpty()) {
+            ingredients.setOutput(VanillaTypes.FLUID, recipe.getOutputFluid());
+        }
+        if (!recipe.getOutputItem().isEmpty()) {
+            ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutputItem());
+        }
     }
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, IThermopneumaticProcessingPlantRecipe recipe, IIngredients ingredients) {
         FluidStack in = ingredients.getInputs(VanillaTypes.FLUID).get(0).get(0);
-        FluidStack out = ingredients.getOutputs(VanillaTypes.FLUID).get(0).get(0);
+
         int inH = 64, outH = 64;
-        if (in.getAmount() > out.getAmount()) {
-            outH = Math.min(64, out.getAmount() * 64 / in.getAmount());
-        } else {
-            inH = Math.min(64, in.getAmount() * 64 / out.getAmount());
+        FluidStack out = FluidStack.EMPTY;
+        if (!recipe.getOutputFluid().isEmpty()) {
+            out = ingredients.getOutputs(VanillaTypes.FLUID).get(0).get(0);
+            if (in.getAmount() > out.getAmount()) {
+                outH = Math.min(64, out.getAmount() * 64 / in.getAmount());
+            } else {
+                inH = Math.min(64, in.getAmount() * 64 / out.getAmount());
+            }
         }
-        int inOff = 64 - inH;
-        int outOff = 64 - outH;
 
         if (!recipe.getInputFluid().hasNoMatchingItems()) {
-            recipeLayout.getFluidStacks().init(0, true, 8, 4 + inOff, 16, inH, in.getAmount(), false, Helpers.makeTankOverlay(inH));
+            recipeLayout.getFluidStacks().init(0, true, 8, 3 + (64 - inH), 16, inH, in.getAmount(), false, Helpers.makeTankOverlay(inH));
             recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
         }
         if (!recipe.getInputItem().hasNoMatchingItems()) {
-            recipeLayout.getItemStacks().init(0, true, 40, 2);
+            recipeLayout.getItemStacks().init(0, true, 32, 2);
             recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
         }
-
-        recipeLayout.getFluidStacks().init(1, false, 74, 3 + outOff, 16, outH, out.getAmount(), false, Helpers.makeTankOverlay(outH));
-        recipeLayout.getFluidStacks().set(1, recipe.getOutputFluid());
+        if (!recipe.getOutputFluid().isEmpty()) {
+            recipeLayout.getFluidStacks().init(1, false, 74, 3 + (64 - outH), 16, outH, out.getAmount(), false, Helpers.makeTankOverlay(outH));
+            recipeLayout.getFluidStacks().set(1, recipe.getOutputFluid());
+        }
+        if (!recipe.getOutputItem().isEmpty()) {
+            recipeLayout.getItemStacks().init(1, false, 47, 50);
+            recipeLayout.getItemStacks().set(1, recipe.getOutputItem());
+        }
     }
 
     @Override

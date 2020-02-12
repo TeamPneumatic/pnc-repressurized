@@ -1,10 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "PCP",
-    "VTV"
+    "LCL",
+    "VTV",
+    "LPL"
   ],
   "key": {
+    "L": {
+      "tag": "pneumaticcraft:upgrade_component"
+    },
     "P": {
       "item": "minecraft:piston"
     },

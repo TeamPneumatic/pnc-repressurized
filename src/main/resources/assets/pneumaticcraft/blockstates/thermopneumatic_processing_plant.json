@@ -1,8 +1,8 @@
 {
 	"variants": {
-		"facing=north": { "model": "pneumaticcraft:block/thermopneumatic_processing_plant", "y": 180 },
-		"facing=south": { "model": "pneumaticcraft:block/thermopneumatic_processing_plant" },
-		"facing=west": { "model": "pneumaticcraft:block/thermopneumatic_processing_plant", "y": 90 },
-		"facing=east": { "model": "pneumaticcraft:block/thermopneumatic_processing_plant", "y": 270 }
+		"facing=north": { "model": "pneumaticcraft:block/thermopneumatic_processing_plant" },
+		"facing=south": { "model": "pneumaticcraft:block/thermopneumatic_processing_plant", "y": 180 },
+		"facing=west": { "model": "pneumaticcraft:block/thermopneumatic_processing_plant", "y": 270 },
+		"facing=east": { "model": "pneumaticcraft:block/thermopneumatic_processing_plant", "y": 90 }
 	}
 }

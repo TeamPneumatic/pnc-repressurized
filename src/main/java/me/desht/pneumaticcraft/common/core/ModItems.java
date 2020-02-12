@@ -45,6 +45,7 @@ public class ModItems {
     public static final RegistryObject<Item> PROGRAMMING_PUZZLE = register("programming_puzzle");
     public static final RegistryObject<Item> ADVANCED_PCB = register("advanced_pcb");
     public static final RegistryObject<Item> LOGISTICS_CORE = register("logistics_core");
+    public static final RegistryObject<Item> UPGRADE_MATRIX = register("upgrade_matrix");
 
     public static final RegistryObject<ItemGPSTool> GPS_TOOL = register("gps_tool",
             ItemGPSTool::new);

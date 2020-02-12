@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -56,7 +57,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
     @Override
     public int getVolume() {
-        return getBaseVolume() + volumeUpgrades * PneumaticValues.VOLUME_VOLUME_UPGRADE;
+        return ApplicableUpgradesDB.getInstance().getUpgradedVolume(getBaseVolume(), volumeUpgrades);
     }
 
     @Override
@@ -80,7 +81,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
     @Override
     public void setVolumeUpgrades(int newVolumeUpgrades) {
-        int newVolume = getBaseVolume() + newVolumeUpgrades * PneumaticValues.VOLUME_VOLUME_UPGRADE;
+        int newVolume = ApplicableUpgradesDB.getInstance().getUpgradedVolume(getBaseVolume(), newVolumeUpgrades);
         if (newVolume < getVolume()) {
             // a decrease in volume causes a proportionate decrease in air amount to keep the pressure constant
             int newAir = (int) (getAir() * (float) newVolume / getVolume());

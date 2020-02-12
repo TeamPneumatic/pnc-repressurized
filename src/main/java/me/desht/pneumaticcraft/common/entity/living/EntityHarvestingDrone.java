@@ -35,7 +35,7 @@ public class EntityHarvestingDrone extends EntityBasicDrone {
     }
 
     @Override
-    public void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, List<IProgWidget> widgets) {
+    public void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, boolean hasStandby, List<IProgWidget> widgets) {
         TileEntity te = world.getTileEntity(clickPos);
         ProgWidgetHarvest harvestPiece = new ProgWidgetHarvest();
         harvestPiece.setRequiresTool(IOHelper.getInventoryForTE(te, facing).isPresent());
@@ -46,6 +46,7 @@ public class EntityHarvestingDrone extends EntityBasicDrone {
         // No item filter, because we cannot guarantee we won't filter away modded hoes...
         builder.add(new ProgWidgetInventoryImport(), ProgWidgetArea.fromPosition(clickPos));
         builder.add(harvestPiece, ProgWidgetArea.fromPosAndExpansions(clickPos, 16, 16, 16));
+        if (hasStandby) builder.add(new ProgWidgetStandby());
         // Wait 10 seconds for performance reasons.
         builder.add(new ProgWidgetWait(), ProgWidgetText.withText("10s"));
         widgets.addAll(builder.build());

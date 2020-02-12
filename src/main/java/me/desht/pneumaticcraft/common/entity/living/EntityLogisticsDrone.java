@@ -4,6 +4,9 @@ import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLogistics;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStandby;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
+import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -32,8 +35,12 @@ public class EntityLogisticsDrone extends EntityBasicDrone {
     }
 
     @Override
-    public void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, List<IProgWidget> widgets) {
+    public void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, boolean hasStandby, List<IProgWidget> widgets) {
+        DroneProgramBuilder builder = new DroneProgramBuilder();
+        builder.add(new ProgWidgetStart());
+        builder.add(new ProgWidgetLogistics(), standard16x16x16Area(pos));
+        if (hasStandby) builder.add(new ProgWidgetStandby());
+        widgets.addAll(builder.build());
         addBasicProgram(pos, widgets, new ProgWidgetLogistics());
     }
-    
 }

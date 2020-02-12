@@ -17,6 +17,36 @@ import java.util.Map;
 public enum ApplicableUpgradesDB {
     INSTANCE;
 
+    // lookup table: 2 * sqrt(n) for 0..25
+    private static float[] VOLUME_MULT = new float[] {
+            1f,
+            2f,
+            2.82842712474619f,
+            3.46410161513775f,
+            4f,
+            4.47213595499958f,
+            4.89897948556636f,
+            5.29150262212918f,
+            5.65685424949238f,
+            6f,
+            6.32455532033676f,
+            6.6332495807108f,
+            6.92820323027551f,
+            7.21110255092798f,
+            7.48331477354788f,
+            7.74596669241483f,
+            8f,
+            8.24621125123532f,
+            8.48528137423857f,
+            8.71779788708135f,
+            8.94427190999916f,
+            9.16515138991168f,
+            9.38083151964686f,
+            9.59166304662544f,
+            9.79795897113271f,
+            10f
+    };
+
     private final Map<ResourceLocation, List<Integer>> TILE_ENTITIES = new HashMap<>();
     private final Map<ResourceLocation, List<Integer>> ENTITIES = new HashMap<>();
     private final Map<ResourceLocation, List<Integer>> ITEMS = new HashMap<>();
@@ -86,5 +116,9 @@ public enum ApplicableUpgradesDB {
 
     private List<Integer> createArrayList() {
         return Ints.asList(new int[EnumUpgrade.values().length]);
+    }
+
+    public int getUpgradedVolume(int baseVolume, int upgradeCount) {
+        return (int)(baseVolume * VOLUME_MULT[Math.min(upgradeCount, VOLUME_MULT.length - 1)]);
     }
 }

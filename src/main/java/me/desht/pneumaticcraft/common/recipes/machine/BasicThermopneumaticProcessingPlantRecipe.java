@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.recipe.IThermopneumaticProcessingPlantRecipe;
@@ -9,10 +10,12 @@ import me.desht.pneumaticcraft.common.recipes.MachineRecipeHandler;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,19 +28,24 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
     private final float requiredPressure;
     private final boolean exothermic;
     private final TemperatureRange operatingTemperature;
+    private final ItemStack outputItem;
 
     public BasicThermopneumaticProcessingPlantRecipe(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
-            FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure,
+            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
             boolean exothermic)
     {
         this.id = id;
         this.inputItem = inputItem;
         this.inputFluid = inputFluid;
         this.outputFluid = outputFluid;
+        this.outputItem = outputItem;
         this.operatingTemperature = operatingTemperature;
         this.requiredPressure = requiredPressure;
         this.exothermic = exothermic;
+
+        Validate.isTrue(!inputFluid.hasNoMatchingItems() || !inputItem.hasNoMatchingItems(),
+                "At least on of input fluid or input item must be non-empty!");
     }
 
     @Override
@@ -73,6 +81,11 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
     }
 
     @Override
+    public ItemStack getOutputItem() {
+        return outputItem;
+    }
+
+    @Override
     public boolean isExothermic() {
         return exothermic;
     }
@@ -96,14 +109,33 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
             Ingredient fluidInput = json.has("fluid_input") ?
                     FluidIngredient.deserialize(json.get("fluid_input")) :
                     Ingredient.EMPTY;
-            FluidStack fluidOutput = ModCraftingHelper.fluidStackFromJSON(json.getAsJsonObject("fluid_output"));
-            int minTemp = JSONUtils.getInt(json, "min_temp", 373);
-            int maxTemp = JSONUtils.getInt(json, "max_temp", Integer.MAX_VALUE);
+            if (itemInput.hasNoMatchingItems() && fluidInput.hasNoMatchingItems()) {
+                throw new JsonSyntaxException("Must have at least one of item_input and/or fluid_input!");
+            }
+
+            FluidStack fluidOutput = json.has("fluid_output") ?
+                    ModCraftingHelper.fluidStackFromJSON(json.getAsJsonObject("fluid_output")):
+                    FluidStack.EMPTY;
+            ItemStack itemOutput = json.has("item_output") ?
+                    ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "item_output")) :
+                    ItemStack.EMPTY;
+            if (fluidOutput.isEmpty() && itemOutput.isEmpty()) {
+                throw new JsonSyntaxException("Must have at least one of item_output and/or fluid_output!");
+            }
+
+            TemperatureRange range;
+            if (!json.has("min_temp") && !json.has("max_temp")) {
+                range = TemperatureRange.any();
+            } else {
+                int minTemp = JSONUtils.getInt(json, "min_temp", 373);
+                int maxTemp = JSONUtils.getInt(json, "max_temp", Integer.MAX_VALUE);
+                range = TemperatureRange.of(minTemp, maxTemp);
+            }
             float pressure = JSONUtils.getFloat(json, "pressure", 0f);
             boolean exothermic = JSONUtils.getBoolean(json, "exothermic", false);
 
             return new BasicThermopneumaticProcessingPlantRecipe(recipeId, (FluidIngredient) fluidInput, itemInput,
-                    fluidOutput, TemperatureRange.of(minTemp, maxTemp), pressure, exothermic);
+                    fluidOutput, itemOutput, range, pressure, exothermic);
         }
 
         @Nullable
@@ -114,8 +146,9 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
             Ingredient input = Ingredient.read(buffer);
             FluidIngredient fluidIn = FluidIngredient.readFromPacket(buffer);
             FluidStack fluidOut = FluidStack.readFromPacket(buffer);
+            ItemStack itemOutput = buffer.readItemStack();
             boolean exothermic = buffer.readBoolean();
-            return new BasicThermopneumaticProcessingPlantRecipe(recipeId, fluidIn, input, fluidOut, range, pressure, exothermic);
+            return new BasicThermopneumaticProcessingPlantRecipe(recipeId, fluidIn, input, fluidOut, itemOutput, range, pressure, exothermic);
         }
 
         @Override
@@ -128,6 +161,7 @@ public class BasicThermopneumaticProcessingPlantRecipe implements IThermopneumat
             recipe.inputItem.write(buffer);
             recipe.inputFluid.writeToPacket(buffer);
             recipe.outputFluid.writeToPacket(buffer);
+            buffer.writeItemStack(recipe.outputItem);
             buffer.writeBoolean(recipe.exothermic);
         }
     }

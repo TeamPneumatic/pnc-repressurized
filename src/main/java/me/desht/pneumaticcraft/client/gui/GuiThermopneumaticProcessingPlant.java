@@ -42,8 +42,8 @@ public class GuiThermopneumaticProcessingPlant extends
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(guiLeft + 13, guiTop + 15, te.getInputTank()));
-        addButton(new WidgetTank(guiLeft + 79, guiTop + 15, te.getOutputTank()));
+        addButton(new WidgetTank(guiLeft + 13, guiTop + 14, te.getInputTank()));
+        addButton(new WidgetTank(guiLeft + 79, guiTop + 14, te.getOutputTank()));
 
         tempWidget = new WidgetTemperature(guiLeft + 98, guiTop + 15, 273, 673,
                 te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY), (int) te.minTemperature) {
@@ -76,10 +76,12 @@ public class GuiThermopneumaticProcessingPlant extends
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y) {
         super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
+
+        // animated progress bar
         double progress = te.getCraftingPercentage();
         int progressWidth = (int) (progress * 48);
         bindGuiTexture();
-        blit(guiLeft + 30, guiTop + 31, xSize, 0, progressWidth, 22);
+        blit(guiLeft + 30, guiTop + 31, xSize, 0, progressWidth, 30);
     }
 
     @Override

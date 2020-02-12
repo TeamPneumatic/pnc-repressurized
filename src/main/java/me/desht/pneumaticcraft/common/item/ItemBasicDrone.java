@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.entity.living.EntityBasicDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -20,14 +22,15 @@ public class ItemBasicDrone extends ItemDrone {
     }
 
     @Override
-    public void spawnDrone(PlayerEntity player, World world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack){
+    public void spawnDrone(PlayerEntity player, World world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack) {
         EntityBasicDrone drone = droneCreator.apply(world, player);
 
         drone.setPosition(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
         drone.initFromItemStack(iStack);
         world.addEntity(drone);
 
-        drone.addProgram(clickPos, facing, placePos, drone.progWidgets);
+        boolean hasStandby = UpgradableItemUtils.getUpgrades(iStack, EnumUpgrade.STANDBY) > 0;
+        drone.addProgram(clickPos, facing, placePos, hasStandby, drone.progWidgets);
         TileEntityProgrammer.updatePuzzleConnections(drone.progWidgets);
 
         drone.naturallySpawned = false;

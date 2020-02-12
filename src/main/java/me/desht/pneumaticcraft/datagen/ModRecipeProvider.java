@@ -729,21 +729,21 @@ public class ModRecipeProvider extends RecipeProvider {
         PotionUtils.addPotionToItemStack(nightVisionPotion, Potions.LONG_NIGHT_VISION);
         shaped(EnumUpgrade.NIGHT_VISION.getItem(), ModItems.PNEUMATIC_HELMET.get(),
                 "LNL/GNG/LNL",
-                'L', Items.LAPIS_LAZULI,
+                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENT,
                 'G', ModBlocks.PRESSURE_CHAMBER_GLASS.get(),
                 'N', IngredientNBTWrapper.fromItemStack(nightVisionPotion)
         ).build(consumer);
 
         shaped(EnumUpgrade.INVENTORY.getItem(), Blocks.CHEST,
                 "LWL/WCW/LWL",
-                'L', Tags.Items.GEMS_LAPIS,
+                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENT,
                 'W', ItemTags.PLANKS,
                 'C', Tags.Items.CHESTS
         ).build(consumer);
 
         shaped(EnumUpgrade.SCUBA.getItem(), ModItems.PNEUMATIC_HELMET.get(),
                 "LTL/PRP/LPL",
-                'L', Items.LAPIS_LAZULI,
+                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENT,
                 'P', ModItems.PLASTIC.get(),
                 'R', ModItems.REGULATOR_TUBE_MODULE.get(),
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
@@ -751,14 +751,14 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(EnumUpgrade.SPEED.getItem(), ModItems.LUBRICANT_BUCKET.get(),
                 "LSL/SFS/LSL",
-                'L', Items.LAPIS_LAZULI,
+                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENT,
                 'S', Items.SUGAR,
                 'F', new FluidIngredient(ModFluids.LUBRICANT.get(), 1000)
         ).build(consumer);
 
         shaped(EnumUpgrade.JET_BOOTS.getItem(1), ModItems.PNEUMATIC_BOOTS.get(),
                 "LTL/VCV/LTL",
-                'L', Items.LAPIS_LAZULI,
+                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENT,
                 'V', ModItems.VORTEX_CANNON.get(),
                 'C', ModBlocks.ADVANCED_AIR_COMPRESSOR.get(),
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
@@ -797,7 +797,8 @@ public class ModRecipeProvider extends RecipeProvider {
         ).build(consumer);
 
         shaped(EnumUpgrade.JUMPING.getItem(1), ModItems.PNEUMATIC_LEGGINGS.get(),
-                "PCP/VTV",
+                "LCL/VTV/LPL",
+                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENT,
                 'P', Blocks.PISTON,
                 'V', ModItems.VORTEX_CANNON.get(),
                 'T', ModBlocks.PRESSURE_TUBE.get(),
@@ -827,6 +828,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 'J', IngredientNBTWrapper.fromItemStack(jumpBoostPotion2),
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
+        ).build(consumer);
+
+        shaped(EnumUpgrade.STANDBY.getItem(), ModItems.TURBINE_ROTOR.get(),
+                "LXL/XCX/LXL",
+                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENT,
+                'X', Items.REDSTONE_TORCH,
+                'C', ItemTags.BEDS
         ).build(consumer);
 
         // bricks etc.
@@ -994,7 +1002,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .patternLine("LXL")
                 .patternLine("XCX")
                 .patternLine("LXL")
-                .key('L', Items.LAPIS_LAZULI)
+                .key('L', PneumaticCraftTags.Items.UPGRADE_COMPONENT)
                 .key('X', edge)
                 .key('C', center)
                 .addCriterion("has_" + safeName(center), this.hasItem(center));

@@ -115,12 +115,13 @@ public interface IPneumaticRecipeRegistry {
 
     /**
      * Create a standard Thermopneumatic Processing Plant recipe.  Such recipes generally have a minimum temperature
-     * requirement.
+     * requirement. At least one of the input fluid and input item must be non-empty.
      *
      * @param id a unique ID for this recipe
-     * @param inputFluid the input fluid
-     * @param inputItem the input ingredient, may be null
+     * @param inputFluid the input fluid, may be empty
+     * @param inputItem the input ingredient, may be empty
      * @param outputFluid the output fluid
+     * @param outputItem the output item
      * @param operatingTemperature the operating temperature range
      * @param requiredPressure the minimum pressure required (pass 0 if no specific pressure is required)
      * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature
@@ -128,21 +129,23 @@ public interface IPneumaticRecipeRegistry {
      */
     IThermopneumaticProcessingPlantRecipe thermoPlantRecipe(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
-            FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure);
+            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure);
 
     /**
      * Create a standard exothermic Thermopneumatic Processing Plant recipe.  Exothermic recipes produce heat rather than
-     * consume it.  See {@link IThermopneumaticProcessingPlantRecipe#isExothermic()}.
+     * consume it.  See {@link IThermopneumaticProcessingPlantRecipe#isExothermic()}.  At least one of the input fluid
+     * and input item must be non-empty.
      *
      * @param id a unique ID for this recipe
-     * @param inputFluid the input fluid
-     * @param inputItem the input ingredient, may be null
+     * @param inputFluid the input fluid, may be empty
+     * @param inputItem the input ingredient, may be empty
      * @param outputFluid the output fluid
+     * @param outputItem the output item
      * @param operatingTemperature the operating temperature range
      * @param requiredPressure the minimum pressure required (pass 0 if no specific pressure is required)
      * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature is required)
      */
     IThermopneumaticProcessingPlantRecipe exothermicThermoPlantRecipe(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
-            FluidStack outputFluid, TemperatureRange operatingTemperature, float requiredPressure);
+            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure);
 }

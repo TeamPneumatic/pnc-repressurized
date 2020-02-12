@@ -29,7 +29,8 @@ public enum EnumUpgrade {
     AIR_CONDITIONING("air_conditioning", 1,"toughasnails"),
     INVENTORY("inventory"),
     JUMPING("jumping", 4),
-    FLIPPERS("flippers");
+    FLIPPERS("flippers"),
+    STANDBY("standby");
 
     private final String name;
     private final int maxTier;

@@ -47,7 +47,7 @@ public abstract class EntityBasicDrone extends EntityDrone {
     
     protected abstract Item getDroneItem();
     
-    public abstract void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, List<IProgWidget> widgets);
+    public abstract void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, boolean hasStandby, List<IProgWidget> widgets);
     
     void addBasicProgram(BlockPos pos, List<IProgWidget> widgets, IProgWidget mainProgram) {
         DroneProgramBuilder builder = new DroneProgramBuilder();
@@ -56,7 +56,7 @@ public abstract class EntityBasicDrone extends EntityDrone {
         widgets.addAll(builder.build());
     }
     
-    private static ProgWidgetArea standard16x16x16Area(BlockPos centerPos){
+    static ProgWidgetArea standard16x16x16Area(BlockPos centerPos){
         return ProgWidgetArea.fromPositions(centerPos.add(-16, -16, -16), centerPos.add(16, 16, 16));
     }
    

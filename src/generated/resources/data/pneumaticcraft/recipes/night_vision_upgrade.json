@@ -7,7 +7,7 @@
   ],
   "key": {
     "L": {
-      "item": "minecraft:lapis_lazuli"
+      "tag": "pneumaticcraft:upgrade_component"
     },
     "G": {
       "item": "pneumaticcraft:pressure_chamber_glass"

@@ -158,7 +158,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         List<String> text = new ArrayList<>();
         te.getApplicableUpgrades().forEach((upgrade, max) -> {
             text.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + upgrade.getItemStack().getDisplayName().getFormattedText());
-            text.add(TextFormatting.GRAY + "Max Upgrades: " + max);
+            text.add(TextFormatting.GRAY + I18n.format("gui.tab.upgrades.max", max));
             String upgradeName = upgrade.toString().toLowerCase();
             String k = "gui.tab.upgrades." + te.getType().getRegistryName().getPath() + "." + upgradeName;
             text.add(TextFormatting.BLACK + (I18n.hasKey(k) ? I18n.format(k) : I18n.format("gui.tab.upgrades.generic." + upgradeName)));

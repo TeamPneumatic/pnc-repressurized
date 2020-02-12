@@ -7,7 +7,7 @@
   ],
   "key": {
     "L": {
-      "item": "minecraft:lapis_lazuli"
+      "tag": "pneumaticcraft:upgrade_component"
     },
     "X": {
       "item": "minecraft:ender_eye"

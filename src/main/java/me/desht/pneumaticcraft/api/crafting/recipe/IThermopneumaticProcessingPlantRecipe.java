@@ -74,6 +74,8 @@ public interface IThermopneumaticProcessingPlantRecipe extends IModRecipe {
 
     FluidStack getOutputFluid();
 
+    ItemStack getOutputItem();
+
     /**
      * Check if this recipe is exothermic, i.e. produces heat rather than requiring it. Such recipes generally
      * have a maximum temperature defined, instead of (or as well as) a minimum temperature.

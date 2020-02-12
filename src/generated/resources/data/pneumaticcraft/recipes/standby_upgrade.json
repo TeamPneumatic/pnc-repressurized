@@ -10,13 +10,13 @@
       "tag": "pneumaticcraft:upgrade_component"
     },
     "X": {
-      "item": "minecraft:apple"
+      "item": "minecraft:redstone_torch"
     },
     "C": {
-      "item": "minecraft:clock"
+      "tag": "minecraft:beds"
     }
   },
   "result": {
-    "item": "pneumaticcraft:item_life_upgrade"
+    "item": "pneumaticcraft:standby_upgrade"
   }
 }

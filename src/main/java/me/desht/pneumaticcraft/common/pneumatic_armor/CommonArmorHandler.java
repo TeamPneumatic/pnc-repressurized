@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
@@ -282,7 +283,7 @@ public class CommonArmorHandler {
 
             ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
 
-            int vol = ((ItemPneumaticArmor) helmetStack.getItem()).getBaseVolume() + PneumaticValues.VOLUME_VOLUME_UPGRADE * getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.VOLUME);
+            int vol = ApplicableUpgradesDB.getInstance().getUpgradedVolume(((ItemPneumaticArmor) helmetStack.getItem()).getBaseVolume(), getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.VOLUME));
             float airInHelmet = getArmorPressure(EquipmentSlotType.HEAD) * vol;
             int playerAir = (int) Math.min(300 - player.getAir(), airInHelmet / PneumaticValues.PNEUMATIC_HELMET_SCUBA_MULTIPLIER);
             player.setAir(player.getAir() + playerAir);

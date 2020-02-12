@@ -39,6 +39,7 @@ import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.util.upgrade.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.Log;
@@ -833,7 +834,8 @@ public class EntityDrone extends EntityDroneBase implements
 
     protected BasicAirHandler getAirHandler() {
         if (airHandler == null) {
-            airHandler = new BasicAirHandler(PneumaticValues.DRONE_VOLUME + getUpgrades(EnumUpgrade.VOLUME) * PneumaticValues.VOLUME_VOLUME_UPGRADE);
+            int vol = ApplicableUpgradesDB.getInstance().getUpgradedVolume(PneumaticValues.DRONE_VOLUME, getUpgrades(EnumUpgrade.VOLUME));
+            airHandler = new BasicAirHandler(vol);
         }
         return airHandler;
     }
@@ -884,7 +886,6 @@ public class EntityDrone extends EntityDroneBase implements
         progWidgets = TileEntityProgrammer.getWidgetsFromNBT(tag);
         TileEntityProgrammer.updatePuzzleConnections(progWidgets);
         naturallySpawned = tag.getBoolean("naturallySpawned");
-        getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");
         setGoingToOwner(tag.getBoolean("hackedByOwner"));
@@ -893,6 +894,7 @@ public class EntityDrone extends EntityDroneBase implements
         standby = tag.getBoolean("standby");
         upgradeInventory.deserializeNBT(tag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
         upgradeCache.invalidate();
+        getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
 
         // we can't just deserialize the saved inv directly into the real inventory, since that
         // also affects its size, meaning any added inventory upgrades wouldn't work

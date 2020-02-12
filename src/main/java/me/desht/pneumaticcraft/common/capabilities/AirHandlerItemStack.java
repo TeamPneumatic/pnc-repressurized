@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -69,7 +69,7 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
     @Override
     public int getVolume() {
         int nUpgrades = UpgradableItemUtils.getUpgrades(container, EnumUpgrade.VOLUME);
-        return getBaseVolume() + nUpgrades * PneumaticValues.VOLUME_VOLUME_UPGRADE;
+        return ApplicableUpgradesDB.getInstance().getUpgradedVolume(getBaseVolume(), nUpgrades);
     }
 
     @Override

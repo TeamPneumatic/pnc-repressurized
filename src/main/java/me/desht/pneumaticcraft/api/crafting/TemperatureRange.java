@@ -20,7 +20,7 @@ public class TemperatureRange {
 
     private TemperatureRange(int min, int max) {
         Validate.isTrue(min >= 0 && max >= 0, "negative temperatures are not accepted!");
-        Validate.isTrue(min <= max, "min temp must be <= max temp!");
+        Validate.isTrue(min < max, "min temp must be < max temp!");
         this.min = min;
         this.max = max;
     }

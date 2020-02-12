@@ -40,6 +40,8 @@ public class PneumaticCraftTags {
         public static final Tag<Item> DOORS = modTag("doors");
         public static final Tag<Item> WALLS = modTag("walls");
 
+        public static final Tag<Item> UPGRADE_COMPONENT = modTag("upgrade_component");
+
         public static final Tag<Item> INGOTS_COMPRESSED_IRON = forgeTag("ingots/compressed_iron");
         public static final Tag<Item> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
 

@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.IItemProvider;
 import net.minecraftforge.common.Tags;
@@ -24,6 +25,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         copy(PneumaticCraftTags.Blocks.WALLS, PneumaticCraftTags.Items.WALLS);
         copy(PneumaticCraftTags.Blocks.DOORS, PneumaticCraftTags.Items.DOORS);
         copy(PneumaticCraftTags.Blocks.STORAGE_BLOCKS_COMPRESSED_IRON, PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON);
+
+        addItemsToTag(PneumaticCraftTags.Items.UPGRADE_COMPONENT, ModItems.UPGRADE_MATRIX, () -> Items.LAPIS_LAZULI);
 
         addItemsToTag(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, ModItems.COMPRESSED_IRON_INGOT);
         appendToTag(Tags.Items.INGOTS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON);

@@ -21,7 +21,8 @@ public class ContainerThermopneumaticProcessingPlant extends
         for (int i = 0; i < 4; i++) {
             addSlot(new SlotUpgrade(te, i, 80 + i * 18, 93));
         }
-        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 46, 14));
+        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 38, 14));
+        addSlot(new SlotOutput(te.getOutputInventory(), 0, 53, 62));
 
         addPlayerSlots(playerInventory, 115);
     }

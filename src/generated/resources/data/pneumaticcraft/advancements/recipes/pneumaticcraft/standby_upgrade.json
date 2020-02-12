@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:standby_upgrade"
+    ]
+  },
+  "criteria": {
+    "has_turbine_rotor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:turbine_rotor"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:standby_upgrade"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_turbine_rotor",
+      "has_the_recipe"
+    ]
+  ]
+}
