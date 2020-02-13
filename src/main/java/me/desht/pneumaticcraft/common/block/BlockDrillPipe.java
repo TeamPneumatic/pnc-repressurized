@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -15,8 +16,8 @@ public class BlockDrillPipe extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE2 = Block.makeCuboidShape(7, 0, 6, 9, 16, 10);
     private static final VoxelShape SHAPE = VoxelShapes.combineAndSimplify(SHAPE1, SHAPE2, IBooleanFunction.OR);
 
-    public BlockDrillPipe(Properties props) {
-        super(props);
+    public BlockDrillPipe() {
+        super(ModBlocks.defaultProps());
     }
 
     @Override

@@ -11,18 +11,60 @@ This release brings a significant internal rewrite and major new and modified ga
 #### New
 * Recipes
   * Recipes in general use a lot less iron, especially in the early game.  However, more stone will be required (so it's worth smelting up a stack or two of cobblestone before you start on the mod).
-  * All machine recipes are now loaded from datapacks (`data/<modid>/pneumaticcraft/machine_recipes/<machine_type/*.json`) so can be easily overridden and reloaded on the fly.  To remove an existing recipe, simple create a JSON file of the same name in your datapack with an empty JSON document: `{}`
-* Pressure Chamber
-  * The Pressure Chamber Interface filter system is gone.  The Interface will now just pull crafted items (with an option to pull everything in case the chamber needs to be emptied).
-  * The Pressure Chamber Interface also accepts a Dispenser Upgrade; if installed it will eject items into the world if there is no adjacent inventory.  (Note that the interface still pushes items; no need to pull items from it).
-  * Several new default recipes, including ways to make slime balls, snow, ice, and blue ice
-* Coloured plastic is gone, and so has the Plastic Mixer.
-  * There is now only one type of plastic: the Plastic Sheet.
-  * Which also means there's only one type of Programing Puzzle Piece, which makes programming Drones a lot easier.
-  * You can make them by pouring a bucket of Molten Plastic (which is made in the Thermopneumatic Processing Plant from LPG & Coal as before) into the world.  It will solidify after 10 ticks.
-  * Alternatively, put a bucket or tank of Molten Plastic in an inventory with a Heat Frame attached, and chill the Heat Frame as much as possible (-75C is optimum) for bonus Plastic Sheet output; up to 1.75x.
-* 
-
+  * For modpack makers: all machine recipes are now loaded from datapacks (`data/<modid>/pneumaticcraft/machine_recipes/<machine_type/*.json`) so can be easily overridden and reloaded on the fly.  To remove an existing recipe, simple create a JSON file of the same name in your datapack with an empty JSON document: `{}`
+* Machines
+  * Pressure Chamber
+    * The Pressure Chamber Interface filter system is gone.  The Interface will now just pull crafted items (with an option to pull everything in case the chamber needs to be emptied).
+    * The Pressure Chamber Interface also accepts a Dispenser Upgrade; if installed it will eject items into the world if there is no adjacent inventory.  (Note that the interface still pushes items; no need to pull items from it).
+    * Several new default recipes, including ways to make slime balls, snow, ice, and blue ice
+  * Refinery
+    * There is now a separate Refinery Controller block in addition to the four Refinery Outputs
+    * Refinery Outputs can be stacked beside or on top of the Refinery Controller
+    * Outputs only output fluid, never accept it (except from the Controller)
+    * Controller only accepts input fluid (Oil by default)
+  * Thermopneumatic Processing Plant
+    * Can now take recipes which produce an item output in addition to or instead of a fluid output
+* Plastic
+  * Coloured plastic is gone, and so has the Plastic Mixer.
+    * There is now only one type of plastic: the Plastic Sheet.
+    * Which also means there's only one type of Programing Puzzle Piece, which makes programming Drones a lot easier.
+    * You can make them by pouring a bucket of Molten Plastic (which is made in the Thermopneumatic Processing Plant from LPG & Coal as before) into the world.  It will solidify after 10 ticks.
+    * Alternatively, put a bucket or tank of Molten Plastic in an inventory with a Heat Frame attached, and chill the Heat Frame as much as possible (-75C is optimum) for bonus Plastic Sheet output; up to 1.75x.
+* Semiblocks are now entities. No direct gameplay effect, but rendering and syncing of semiblocks should be far more robust now. This includes crop supports, logistics frames, heat frame, spawner agitators and transfer gadgets.
+* Programmer improvements
+  * Fix inconsistent zoom out/zoom in behaviour
+  * Now possible to merge programs from Pastebin, clipboard or saved items
+* Items/tools
+  * Camo applicator right-click behaviour changed a little
+    * Right click any non-camo block to copy its appearance
+    * Sneak right click to clear camo
+    * Right click any camo block to apply (or remove) camo
+  * Vortex Cannon
+    * Reduced air usage by half
+    * Increased crop/leaves breaking range from 3x3x3 to 5x5x5
+    * Can now also break webs
+* Heat
+  * Added new Heat Pipe block, perfect for transferring heat from one place to another.
+    * Heat Pipe loses no heat to adjacent air or fluid blocks.  Consider it a much more compact alternative to lines of Compressed Iron Blocks surrounded by insulating blocks.
+    * Heat Pipe can be camouflaged to run through walls/floors.
+  * Heat Frame Cooling expanded a little
+    * Fluids to be cooled can now be provided with tanks, not just buckets (assuming the tank item provides a fluid handler capability)
+    * Recipes can have a bonus output based on the temperature (new Molten Plastic -> Plastic Sheet recipe does this, but the old lava->obsidian and water->ice recipes do not)
+  * Campfire is recognised as a heat source, and is better than lighting a fire on netherrack.
+* Amadron
+  * All static Amadron trades are now loaded from datapacks (`data/<modid>/pneumaticcraft/amadron_offers`) so are much easier to modify or disable.  Because of this, adding static/periodic trades via the tablet GUI is no longer a thing.
+  * Villager trades are discovered as before, but higher level trades will appear much more rarely.
+  * Player->player trades are still added via the tablet GUI, and are stored in `config/pneumaticcraft/AmadronPlayerOffers.cfg`.
+  * Significant internal rewrite to hopefully fix all the syncing problems encountered in 1.12.2.
+* Upgrades
+  * New upgrades:
+    * Jumping Upgrade - replaces Range Upgrade in Pneumatic Leggings
+    * Inventory Upgrade - replaces Dispenser Upgrade in Drones
+    * Flippers Upgrade - for Pneumatic Boots, swim speed increase
+    * Standby Upgrade - for Logistics & Harvesting drones; allows them to go on standby when idle, saving air
+  * Max upgrade amounts are now hard-enforced in machine & item GUIs, e.g. if a machine takes a max of 10 Speed Upgrades, it is now impossible to put more than 10 Speed Upgrades in the machine (unlike in 1.12.2 where any number could be added but only 10 were used).
+  * Some upgrades are now *tiered*, meaning there is a different crafting recipe for each tier. Jet Boots Upgrade and Jumping Upgrade are examples of such upgrades.
+  
 ## Minecraft 1.12.2
 
 ### 0.11.3-366 (20 Jun 2019)

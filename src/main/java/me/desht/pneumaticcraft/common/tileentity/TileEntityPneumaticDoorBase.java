@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
@@ -21,12 +20,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_EXTENSION;
+import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_SPEED_FAST;
 
 public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         implements IRedstoneControl, IMinWorkingPressure, ICamouflageableTE, INamedContainerProvider {
@@ -54,6 +56,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     private BlockState camoState;
     @GuiSynced
     public int redstoneMode;
+    @DescSynced
+    private float speedMultiplier;
 
     public TileEntityPneumaticDoorBase() {
         super(ModTileEntities.PNEUMATIC_DOOR_BASE.get(), PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
@@ -78,22 +82,22 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
             } else {
                 setOpening(true);
             }
+            speedMultiplier = getSpeedMultiplierFromUpgrades();
         }
         float targetProgress = opening ? 1F : 0F;
-        float speedMultiplier = getSpeedMultiplierFromUpgrades();
         if (progress < targetProgress) {
-            if (progress < targetProgress - TileEntityConstants.PNEUMATIC_DOOR_EXTENSION) {
-                progress += TileEntityConstants.PNEUMATIC_DOOR_SPEED_FAST * speedMultiplier;
+            if (progress > 0.05 && progress < targetProgress - PNEUMATIC_DOOR_EXTENSION) {
+                progress += PNEUMATIC_DOOR_SPEED_FAST * speedMultiplier;
             } else {
-                progress += TileEntityConstants.PNEUMATIC_DOOR_SPEED_SLOW * speedMultiplier;
+                progress += Math.min(0.02, TileEntityConstants.PNEUMATIC_DOOR_SPEED_SLOW * speedMultiplier);
             }
             if (progress > targetProgress) progress = targetProgress;
         }
         if (progress > targetProgress) {
-            if (progress > targetProgress + TileEntityConstants.PNEUMATIC_DOOR_EXTENSION) {
-                progress -= TileEntityConstants.PNEUMATIC_DOOR_SPEED_FAST * speedMultiplier;
+            if (progress < 0.95 && progress > targetProgress + PNEUMATIC_DOOR_EXTENSION) {
+                progress -= PNEUMATIC_DOOR_SPEED_FAST * speedMultiplier;
             } else {
-                progress -= TileEntityConstants.PNEUMATIC_DOOR_SPEED_SLOW * speedMultiplier;
+                progress -= Math.min(0.02, TileEntityConstants.PNEUMATIC_DOOR_SPEED_SLOW * speedMultiplier);
             }
             if (progress < targetProgress) progress = targetProgress;
         }
@@ -108,33 +112,22 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     }
 
     private boolean shouldOpen() {
+        if (door == null) return false;
         switch (redstoneMode) {
             case 0:
             case 1:
                 int range = TileEntityConstants.RANGE_PNEUMATIC_DOOR_BASE + this.getUpgrades(EnumUpgrade.RANGE);
-                AxisAlignedBB aabb = new AxisAlignedBB(getPos().getX() - range, getPos().getY() - range, getPos().getZ() - range, getPos().getX() + range + 1, getPos().getY() + range + 1, getPos().getZ() + range + 1);
-                List<PlayerEntity> players = getWorld().getEntitiesWithinAABB(PlayerEntity.class, aabb);
-                for (PlayerEntity player : players) {
-                    if (PneumaticCraftUtils.getProtectingSecurityStations(getWorld(), getPos(), player, false, false) == 0) {
-                        if (redstoneMode == 0) {
-                            return true;
-                        } else {
-                            ModBlocks.PNEUMATIC_DOOR.get().isTrackingPlayerEye = true;
-                            BlockPos lookedPosition = PneumaticCraftUtils.getEntityLookedBlock(player, range * 1.41F); //max range = range * sqrt(2).
-                            ModBlocks.PNEUMATIC_DOOR.get().isTrackingPlayerEye = false;
-                            if (lookedPosition != null) {
-                                if (lookedPosition.equals(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ()))) {
-                                    return true;
-                                } else {
-                                    if (door != null) {
-                                        if (lookedPosition.equals(new BlockPos(door.getPos().getX(), door.getPos().getY(), door.getPos().getZ())))
-                                            return true;
-                                        if (lookedPosition.equals(new BlockPos(door.getPos().getX(), door.getPos().getY() + (door.isTopDoor() ? -1 : 1), door.getPos().getZ())))
-                                            return true;
-                                    }
-                                }
-                            }
-                        }
+                AxisAlignedBB aabb = new AxisAlignedBB(getPos()).grow(range);
+                for (PlayerEntity player : getWorld().getEntitiesWithinAABB(PlayerEntity.class, aabb)) {
+                    if (PneumaticCraftUtils.getProtectingSecurityStations(getWorld(), getPos(), player, false, false) > 0) {
+                        continue;
+                    }
+                    if (redstoneMode == 0) {
+                        return true;
+                    } else {
+                        Vec3d eyePos = player.getEyePosition(0f);
+                        Vec3d endPos = eyePos.add(player.getLookVec().normalize().scale(range * 1.4142f));
+                        return door.getRenderBoundingBox().rayTrace(eyePos, endPos).isPresent();
                     }
                 }
                 return false;

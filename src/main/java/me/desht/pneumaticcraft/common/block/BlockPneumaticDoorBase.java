@@ -49,9 +49,11 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
         TileEntity teDoor = doorBase.getWorld().getTileEntity(doorBase.getPos().offset(doorBase.getRotation()));
         if (teDoor instanceof TileEntityPneumaticDoor) {
             TileEntityPneumaticDoor door = (TileEntityPneumaticDoor) teDoor;
-            if (doorBase.getRotation().rotateY() == door.getRotation() && door.rightGoing || doorBase.getRotation().rotateYCCW() == door.getRotation() && !door.rightGoing) {
+            if (doorBase.getRotation().rotateY() == door.getRotation() && door.rightGoing
+                    || doorBase.getRotation().rotateYCCW() == door.getRotation() && !door.rightGoing) {
                 door.rightGoing = !door.rightGoing;
                 door.setRotationAngle(0);
+                door.markDirty();
             }
         }
     }
@@ -64,5 +66,10 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
     @Override
     protected boolean canRotateToTopOrBottom() {
         return false;
+    }
+
+    @Override
+    protected boolean reversePlacementRotation() {
+        return true;
     }
 }

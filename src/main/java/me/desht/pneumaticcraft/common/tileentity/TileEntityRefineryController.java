@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 public class TileEntityRefineryController extends TileEntityTickableBase
         implements IRedstoneControlled, IComparatorSupport, ISerializableTanks, ISmartFluidSync, INamedContainerProvider {
@@ -139,17 +140,17 @@ public class TileEntityRefineryController extends TileEntityTickableBase
                             inputTank.drain(currentRecipe.getInput().getAmount(), FluidAction.EXECUTE);
                         }
                         lastProgress = progress;
-                        for (int i = 0; i < outputCount; i++) {
-                            final FluidTank tank = outputsSynced[i];
-                            outputCache.get(i).ifPresent(h -> tank.setFluid(h.getFluidInTank(0)));
-                        }
                     }
                 } else {
                     workTimer = 0;
                 }
             }
-            prevOutputCount = outputCount;
 
+            IntStream.range(0, outputCount).forEach(i -> {
+                outputCache.get(i).ifPresent(h -> outputsSynced[i].setFluid(h.getFluidInTank(0)));
+            });
+
+            prevOutputCount = outputCount;
             updateComparatorValue(outputCount, hasWork);
         } else if (getWorld().isRemote && lastProgress > 0) {
             TileEntityRefineryOutput teRO = findAdjacentOutput();

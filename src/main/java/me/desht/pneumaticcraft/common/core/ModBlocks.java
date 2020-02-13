@@ -78,11 +78,11 @@ public class ModBlocks {
     public static final RegistryObject<BlockPressureChamberValve> PRESSURE_CHAMBER_VALVE = register("pressure_chamber_valve",
             BlockPressureChamberValve::new);
     public static final RegistryObject<BlockPressureChamberInterface> PRESSURE_CHAMBER_INTERFACE = register("pressure_chamber_interface",
-            () -> new BlockPressureChamberInterface(defaultProps()));
+            BlockPressureChamberInterface::new);
     public static final RegistryObject<BlockChargingStation> CHARGING_STATION = register("charging_station",
-            () -> new BlockChargingStation(defaultProps()));
+            BlockChargingStation::new);
     public static final RegistryObject<BlockDrillPipe> DRILL_PIPE = register("drill_pipe",
-            () -> new BlockDrillPipe(defaultProps()));
+            BlockDrillPipe::new);
     public static final RegistryObject<BlockElevatorBase> ELEVATOR_BASE = register("elevator_base",
             () -> new BlockElevatorBase(defaultProps()));
     public static final RegistryObject<BlockElevatorFrame> ELEVATOR_FRAME = register("elevator_frame",
@@ -92,7 +92,7 @@ public class ModBlocks {
     public static final RegistryObject<BlockPneumaticDoorBase> PNEUMATIC_DOOR_BASE = register("pneumatic_door_base",
             () -> new BlockPneumaticDoorBase(defaultProps()));
     public static final RegistryObject<BlockPneumaticDoor> PNEUMATIC_DOOR = register("pneumatic_door",
-            () -> new BlockPneumaticDoor(defaultProps()));
+            BlockPneumaticDoor::new, block -> () -> new BlockPneumaticDoor.ItemBlockPneumaticDoor(block.get()));
     public static final RegistryObject<BlockAssemblyPlatform> ASSEMBLY_PLATFORM = register("assembly_platform",
             () -> new BlockAssemblyPlatform(defaultProps()));
     public static final RegistryObject<BlockAssemblyIOUnit> ASSEMBLY_IO_UNIT_IMPORT = register("assembly_io_unit_import",

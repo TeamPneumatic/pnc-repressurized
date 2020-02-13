@@ -14,7 +14,7 @@ public class TileEntityConstants {
 
     public static final float PNEUMATIC_DOOR_SPEED_SLOW = 0.01F;
     public static final float PNEUMATIC_DOOR_SPEED_FAST = 0.04F;
-    public static final float PNEUMATIC_DOOR_EXTENSION = 0.2F;
+    public static final float PNEUMATIC_DOOR_EXTENSION = 0.15F;
     public static final int RANGE_PNEUMATIC_DOOR_BASE = 2;
 
     public static final float ASSEMBLY_IO_UNIT_ARM_SPEED = 1.0F;

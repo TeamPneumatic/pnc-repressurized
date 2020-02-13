@@ -1,23 +1,29 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ITintableItem;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -28,28 +34,23 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 public class BlockPneumaticDoor extends BlockPneumaticCraft {
     public static final BooleanProperty TOP_DOOR = BooleanProperty.create("top_door");
-    public static final EnumProperty<DoorState> DOOR_STATE = EnumProperty.create("door_state", DoorState.class);
 
-    // true when the Pneumatic Door Base is determining if it should open the door dependent
-    // on the player watched block.
-    public boolean isTrackingPlayerEye;
-
-    public BlockPneumaticDoor(Properties props) {
-        super(props);
+    public BlockPneumaticDoor() {
+        super(ModBlocks.defaultProps());
 
         setDefaultState(getStateContainer().getBaseState()
                 .with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
-                .with(TOP_DOOR, false)
-                .with(DOOR_STATE, DoorState.CLOSED));
+                .with(TOP_DOOR, false));
     }
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
-        builder.add(TOP_DOOR, DOOR_STATE);
+        builder.add(TOP_DOOR);
     }
 
     @Override
@@ -58,25 +59,17 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
     }
 
     public static boolean isTopDoor(BlockState state) {
-        return state.get(TOP_DOOR);
+        return state.getBlock() == ModBlocks.PNEUMATIC_DOOR.get() && state.get(TOP_DOOR);
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-        if (isTrackingPlayerEye) {
-            return VoxelShapes.fullCube();
-        } else {
-            return calculateVoxelShape(state, world, pos, 13);
-        }
+        return calculateVoxelShape(state, world, pos, 13);
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-        if (isTrackingPlayerEye) {
-            return VoxelShapes.fullCube();
-        } else {
-            return calculateVoxelShape(state, world, pos, 13);
-        }
+        return calculateVoxelShape(state, world, pos, 15);
     }
 
     private VoxelShape calculateVoxelShape(BlockState state, IBlockReader world, BlockPos pos, int thickness) {
@@ -88,47 +81,28 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
         if (te instanceof TileEntityPneumaticDoor) {
             Direction rotation = getRotation(state);
             TileEntityPneumaticDoor door = (TileEntityPneumaticDoor) te;
-            float cosinus = thickness / 16F - MathHelper.sin((float)Math.toRadians(door.rotationAngle)) * thickness / 16F;
-            float sinus = thickness / 16F - MathHelper.cos((float) Math.toRadians(door.rotationAngle)) * thickness / 16F;
+            float t = thickness / 16F;
+            float rads = (float) Math.toRadians(door.rotationAngle);
+            float cosinus = t - MathHelper.sin(rads) * t;
+            float sinus = t - MathHelper.cos(rads) * t;
             if (door.rightGoing) {
                 switch (rotation) {
-                    case NORTH:
-                        zMin = cosinus; xMax = 1 - sinus;
-                        break;
-                    case WEST:
-                        xMin = cosinus; zMin = sinus;
-                        break;
-                    case SOUTH:
-                        zMax = 1 - cosinus; xMin = sinus;
-                        break;
-                    case EAST:
-                        xMax = 1 - cosinus; zMax = 1 - sinus;
-                        break;
+                    case NORTH: zMin = cosinus; xMax = 1 - sinus; break;
+                    case WEST: xMin = cosinus; zMin = sinus; break;
+                    case SOUTH: zMax = 1 - cosinus; xMin = sinus; break;
+                    case EAST: xMax = 1 - cosinus; zMax = 1 - sinus; break;
                 }
             } else {
                 switch (rotation) {
-                    case NORTH:
-                        zMin = cosinus; xMin = sinus;
-                        break;
-                    case WEST:
-                        xMin = 0.001f + cosinus; zMax = 0.999f - sinus;
-                        break;
-                    case SOUTH:
-                        zMax = 1 - cosinus; xMax = 1 - sinus;
-                        break;
-                    case EAST:
-                        xMax = 1 - cosinus; zMin = sinus;
-                        break;
+                    case NORTH: zMin = cosinus; xMin = sinus; break;
+                    case WEST: xMin = 0.001f + cosinus; zMax = 0.999f - sinus; break;
+                    case SOUTH: zMax = 1 - cosinus; xMax = 1 - sinus; break;
+                    case EAST: xMax = 1 - cosinus; zMin = sinus; break;
                 }
             }
         }
         boolean topDoor = state.get(TOP_DOOR);
         return VoxelShapes.create(new AxisAlignedBB(xMin, topDoor ? -1 : 0, zMin, xMax, topDoor ? 1 : 2, zMax));
-    }
-
-    @Override
-    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-        return this.getBlock().getRenderLayer() == layer; //!state.get(TOP_DOOR) && super.canRenderInLayer(state, layer);
     }
 
     @Override
@@ -148,10 +122,25 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
     }
 
     @Override
-    public void onBlockPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack par6ItemStack) {
-        super.onBlockPlacedBy(par1World, pos, state, par5EntityLiving, par6ItemStack);
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack par6ItemStack) {
+        super.onBlockPlacedBy(world, pos, state, par5EntityLiving, par6ItemStack);
 
-        par1World.setBlockState(pos.offset(Direction.UP), par1World.getBlockState(pos).with(TOP_DOOR, true), 3);
+        world.setBlockState(pos.offset(Direction.UP), world.getBlockState(pos).with(TOP_DOOR, true), Constants.BlockFlags.DEFAULT);
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityPneumaticDoor) {
+            TileEntityPneumaticDoor teDoor = (TileEntityPneumaticDoor) te;
+            BlockPos top = pos.up();
+            if (world.getBlockState(top.offset(getRotation(state).rotateYCCW())).getBlock() == ModBlocks.PNEUMATIC_DOOR_BASE.get()) {
+                teDoor.rightGoing = true;
+            } else if (world.getBlockState(top.offset(getRotation(state).rotateY())).getBlock() == ModBlocks.PNEUMATIC_DOOR_BASE.get()) {
+                teDoor.rightGoing = false;
+            }
+            TileEntity topHalf = world.getTileEntity(top);
+            if (topHalf instanceof TileEntityPneumaticDoor) {
+                ((TileEntityPneumaticDoor) topHalf).rightGoing = teDoor.rightGoing;
+                ((TileEntityPneumaticDoor) topHalf).color = teDoor.color;
+            }
+        }
     }
 
     @Override
@@ -163,15 +152,6 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
         } else if (!isTopDoor(state) && worldIn.getBlockState(posUp).getBlock() == this) {
             worldIn.removeBlock(posUp, false);
         }
-//        if (player.isCreative() && isTopDoor(state) && worldIn.getBlockState(posDown).getBlock() == this) {
-//            worldIn.removeBlock(posDown, false);
-//        }
-//        if (!isTopDoor(state) && worldIn.getBlockState(posUp).getBlock() == this) {
-//            if (player.isCreative()) {
-//                worldIn.removeBlock(pos, false);
-//            }
-//            worldIn.removeBlock(posUp, false);
-//        }
     }
 
     @Override
@@ -184,19 +164,20 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
         BlockState state = world.getBlockState(pos);
         if (isTopDoor(state)) {
             return onWrenched(world, player, pos.offset(Direction.DOWN), face, hand);
+        }
+        if (player != null && player.isSneaking()) {
+            if (!player.isCreative()) {
+                TileEntity te = world.getTileEntity(pos);
+                Block.spawnDrops(world.getBlockState(pos), world, pos, te);
+                IFluidState ifluidstate = world.getFluidState(pos);
+                world.setBlockState(pos, ifluidstate.getBlockState(), Constants.BlockFlags.DEFAULT);
+                ifluidstate = world.getFluidState(pos.up());
+                world.setBlockState(pos.up(), ifluidstate.getBlockState(), Constants.BlockFlags.DEFAULT);
+            }
         } else {
             super.onWrenched(world, player, pos, face, hand);
             BlockState newState = world.getBlockState(pos);
-            world.setBlockState(pos.offset(Direction.UP), newState.with(TOP_DOOR, true), 3);
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityPneumaticDoor) {
-                ((TileEntityPneumaticDoor) te).rightGoing = true;
-                ((TileEntityPneumaticDoor) te).setRotationAngle(0);
-                TileEntity topDoor = world.getTileEntity(pos.offset(Direction.UP));
-                if (topDoor instanceof TileEntityPneumaticDoor) {
-                    ((TileEntityPneumaticDoor) topDoor).sendDescriptionPacket();
-                }
-            }
+            world.setBlockState(pos.offset(Direction.UP), newState.with(TOP_DOOR, true), Constants.BlockFlags.DEFAULT);
         }
         return true;
     }
@@ -204,36 +185,26 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
     @Override
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         TileEntityPneumaticDoorBase doorBase = getDoorBase(world, pos);
-        if (!world.isRemote && doorBase != null && doorBase.redstoneMode == 2 && doorBase.getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR && hand == Hand.MAIN_HAND) {
-            doorBase.setOpening(!doorBase.isOpening());
-            doorBase.setNeighborOpening(doorBase.isOpening());
-            return true;
+        if (!world.isRemote) {
+            DyeColor dyeColor =  DyeColor.getColor(player.getHeldItem(hand));
+            if (dyeColor != null) {
+                TileEntity te = world.getTileEntity(isTopDoor(state) ? pos.down() : pos);
+                if (te instanceof TileEntityPneumaticDoor) {
+                    TileEntityPneumaticDoor teDoor = (TileEntityPneumaticDoor) te;
+                    if (teDoor.setColor(dyeColor) && PNCConfig.Common.General.useUpDyesWhenColoring) {
+                        player.getHeldItem(hand).shrink(1);
+                    }
+                }
+                return true;
+            } else if (doorBase != null && doorBase.redstoneMode == 2
+                    && doorBase.getPressure() >= doorBase.getMinWorkingPressure() && hand == Hand.MAIN_HAND) {
+                doorBase.setOpening(!doorBase.isOpening());
+                doorBase.setNeighborOpening(doorBase.isOpening());
+                return true;
+            }
         }
-        return false;
+        return true;
     }
-
-    // todo 1.14 loot table
-//    public Item getItemDropped(BlockState state, Random rand, int fortune) {
-//        return isTopDoor(state) ? Items.AIR : super.getItemDropped(state, rand, fortune);
-//    }
-//
-//    @Override
-//    public void breakBlock(World world, BlockPos pos, BlockState state) {
-//        if (isTopDoor(state)) {
-//            BlockPos lowerPos = pos.offset(Direction.DOWN);
-//            if (world.getBlockState(lowerPos).getBlock() == ModBlocks.PNEUMATIC_DOOR)
-//                dropBlockAsItem(world, lowerPos, world.getBlockState(lowerPos), 0);
-//            world.setBlockToAir(lowerPos);
-//        } else {
-//            world.setBlockToAir(pos.offset(Direction.UP));
-//        }
-//        super.breakBlock(world, pos, state);
-//    }
-//
-//    @Override
-//    public int quantityDropped(BlockState state, int fortune, Random random) {
-//        return isTopDoor(state) ? 0 : 1;
-//    }
 
     @Override
     public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean b) {
@@ -262,34 +233,37 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
             }
             TileEntity te1 = world.getTileEntity(pos.offset(dir.rotateY()));
             if (te1 instanceof TileEntityPneumaticDoorBase) {
-                TileEntityPneumaticDoorBase door = (TileEntityPneumaticDoorBase) te1;
-                if (door.getRotation() == dir.rotateYCCW()) {
-                    return door;
+                TileEntityPneumaticDoorBase doorBase = (TileEntityPneumaticDoorBase) te1;
+                if (doorBase.getRotation() == dir.rotateYCCW()) {
+                    return doorBase;
                 }
             }
             TileEntity te2 = world.getTileEntity(pos.offset(dir.rotateYCCW()));
             if (te2 instanceof TileEntityPneumaticDoorBase) {
-                TileEntityPneumaticDoorBase door = (TileEntityPneumaticDoorBase) te2;
-                if (door.getRotation() == dir.rotateY()) {
-                    return door;
+                TileEntityPneumaticDoorBase doorBase = (TileEntityPneumaticDoorBase) te2;
+                if (doorBase.getRotation() == dir.rotateY()) {
+                    return doorBase;
                 }
             }
             return null;
         }
     }
 
-    public enum DoorState implements IStringSerializable {
-        CLOSED("closed"), MOVING("moving"), OPEN("open");
-
-        private final String name;
-
-        DoorState(String name) {
-            this.name = name;
+    public static class ItemBlockPneumaticDoor extends BlockItem implements ITintableItem {
+        public ItemBlockPneumaticDoor(Block blockIn) {
+            super(blockIn, ModItems.defaultProps());
         }
 
         @Override
-        public String getName() {
-            return this.name;
+        public int getTintColor(ItemStack stack, int tintIndex) {
+            if (tintIndex == 0) {
+                CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+                if (tag != null && tag.contains("color", Constants.NBT.TAG_INT)) {
+                    int color = tag.getInt("color");
+                    return DyeColor.byId(color).getColorValue();
+                }
+            }
+            return 0xFFFFFFFF;
         }
     }
 }

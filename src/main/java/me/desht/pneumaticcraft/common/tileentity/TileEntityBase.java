@@ -674,7 +674,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     /**
      * Get any extra data to be serialized onto a dropped item stack. The supplied tag is the "BlockEntityTag" subtag of
-     * the item's NBT data.
+     * the item's NBT data, so will be automatically deserialized into the TE when the itemblock is next placed.
      *
      * @param blockEntityTag the existing "BlockEntityTag" subtag to add data to
      */

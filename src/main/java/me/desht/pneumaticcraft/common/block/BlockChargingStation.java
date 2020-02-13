@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -23,8 +24,8 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     private static final VoxelShape SHAPE = VoxelShapes.combineAndSimplify(BASE, FRAME, IBooleanFunction.OR);
     private static final VoxelShape PAD_SHAPE = VoxelShapes.combineAndSimplify(BASE, PAD_FRAME, IBooleanFunction.OR);
 
-    public BlockChargingStation(Properties props) {
-        super(props);
+    public BlockChargingStation() {
+        super(ModBlocks.defaultProps());
         setDefaultState(getStateContainer().getBaseState().with(CHARGE_PAD, false));
     }
 

@@ -44,8 +44,11 @@ public class ModelDoorBase extends AbstractTileModelRenderer.BaseModel {
         double extensionPart = extension * 0.5D;
         cylinder1.render(size);
         GlStateManager.translated(0, 0, extensionPart);
+        GlStateManager.color3f(0.8f, 0.8f, 0.8f);
         cylinder2.render(size);
         GlStateManager.translated(0, 0, extensionPart);
+        GlStateManager.color3f(0.6f, 0.6f, 0.6f);
         cylinder3.render(size);
+        GlStateManager.color3f(1f, 1f, 1f);
     }
 }

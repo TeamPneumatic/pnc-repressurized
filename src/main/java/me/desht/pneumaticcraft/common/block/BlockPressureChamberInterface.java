@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
@@ -45,8 +46,8 @@ public class BlockPressureChamberInterface extends BlockPneumaticCraft implement
         DOORS[5] = Block.makeCuboidShape(14, 3, 3, 15, 13, 13);
     }
 
-    public BlockPressureChamberInterface(Properties props) {
-        super(props);
+    public BlockPressureChamberInterface() {
+        super(ModBlocks.defaultProps());
     }
 
     @Override
