@@ -87,6 +87,7 @@ public enum SemiblockTracker {
      */
     public Stream<ISemiBlock> getAllSemiblocks(World world, BlockPos pos, Direction offsetDir) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.get(getKey(world));
+        if (map == null) return Stream.empty();
         SemiblockCollection sc = map.get(pos);
         if (sc == null && offsetDir != null) sc = map.get(pos.offset(offsetDir));
         return sc == null ? Stream.empty() : sc.getAll();
