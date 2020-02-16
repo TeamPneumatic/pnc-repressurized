@@ -29,8 +29,8 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
     }
 
     @Override
-    protected void onFirstServerUpdate() {
-        super.onFirstServerUpdate();
+    protected void onFirstServerTick() {
+        super.onFirstServerTick();
 
         ambientTemp = HeatExchangerLogicAmbient.atPosition(getWorld(), getPos()).getTemperature();
         airExchanger.setTemperature(ambientTemp);

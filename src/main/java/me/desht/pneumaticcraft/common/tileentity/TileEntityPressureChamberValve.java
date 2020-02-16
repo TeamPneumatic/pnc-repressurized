@@ -162,8 +162,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     }
 
     @Override
-    protected void onFirstServerUpdate() {
-        super.onFirstServerUpdate();
+    protected void onFirstServerTick() {
+        super.onFirstServerTick();
 
         doPostNBTSetup();
     }

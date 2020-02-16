@@ -19,7 +19,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -681,17 +683,18 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             if (texture != null) {
                 GuiUtils.drawTexture(texture, x - (leftSided ? 16 : 0), y);
             } else if (!stack.isEmpty()) {
-                ItemRenderer renderItem = Minecraft.getInstance().getItemRenderer();
-                renderItem.zLevel = 1;
-                GlStateManager.pushMatrix();
-                GlStateManager.translated(0, 0, -50);
-                GlStateManager.enableRescaleNormal();
-                RenderHelper.enableGUIStandardItemLighting();
-                renderItem.renderItemAndEffectIntoGUI(stack, x - (leftSided ? 16 : 0), y);
-                RenderHelper.disableStandardItemLighting();
-                GlStateManager.disableRescaleNormal();
-                GlStateManager.popMatrix();
-                GlStateManager.enableAlphaTest();
+                GuiUtils.drawItemStack(stack, x - (leftSided ? 16 : 0), y);
+//                ItemRenderer renderItem = Minecraft.getInstance().getItemRenderer();
+//                renderItem.zLevel = 1;
+//                GlStateManager.pushMatrix();
+//                GlStateManager.translated(0, 0, -50);
+//                GlStateManager.enableRescaleNormal();
+//                RenderHelper.enableGUIStandardItemLighting();
+//                renderItem.renderItemAndEffectIntoGUI(stack, x - (leftSided ? 16 : 0), y);
+//                RenderHelper.disableStandardItemLighting();
+//                GlStateManager.disableRescaleNormal();
+//                GlStateManager.popMatrix();
+//                GlStateManager.enableAlphaTest();
             }
             GlStateManager.disableBlend();
         }

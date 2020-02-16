@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompress
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -48,8 +49,10 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     @Override
     protected void addWarnings(List<String> textList) {
         super.addWarnings(textList);
-        if (PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath < PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / connectedCompressors) {
-            textList.add("gui.tab.problems.electrostatic.notEnoughGrounding");
+        int grounding = PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath;
+        int generated = PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / connectedCompressors;
+        if (grounding < generated) {
+            textList.add(I18n.format("gui.tab.problems.electrostatic.notEnoughGrounding", grounding, generated));
         }
     }
 
@@ -70,17 +73,28 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
 
         ticksExisted++;
 
+        String col = TextFormatting.BLACK.toString();
         List<String> info = new ArrayList<>();
-        info.add(TextFormatting.WHITE + "Energy production:");
-        info.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / (float) connectedCompressors, 1) + " mL/lightning strike");
-        info.add(TextFormatting.BLACK + "(" + connectedCompressors + " connected compressors)");
-        info.add(TextFormatting.WHITE + "Maximum air redirection:");
-        info.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath, 1) + " mL/lightning strike");
-        info.add(TextFormatting.WHITE + "Lightning rod length (iron bars above):");
-        info.add(TextFormatting.BLACK + "" + te.ironBarsAbove);
-        String t = PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getStrikeChance(), false);
-        info.add(TextFormatting.WHITE + "Average strike time: ");
-        info.add(TextFormatting.BLACK + "" + t + " (with optimal-sized grid)");
+        info.add(col + I18n.format("gui.tab.info.electrostatic.generating",
+                PneumaticCraftUtils.roundNumberTo(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / (float) connectedCompressors, 1)));
+        info.add(col + I18n.format("gui.tab.info.electrostatic.connected", connectedCompressors));
+        info.add(col + I18n.format("gui.tab.info.electrostatic.maxRedirection",
+                PneumaticCraftUtils.roundNumberTo(PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath, 1)));
+        info.add(col + I18n.format("gui.tab.info.electrostatic.lightningRod", te.ironBarsAbove));
+        info.add(col + I18n.format("gui.tab.info.electrostatic.strikeTime",
+                PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getStrikeChance(), false)));
+        info.add(col + I18n.format("gui.tab.info.electrostatic.strikeTime.optimal"));
+
+//        info.add(TextFormatting.WHITE + "Energy production:");
+//        info.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / (float) connectedCompressors, 1) + " mL/lightning strike");
+//        info.add(TextFormatting.BLACK + "(" + connectedCompressors + " connected compressors)");
+//        info.add(TextFormatting.WHITE + "Maximum air redirection:");
+//        info.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath, 1) + " mL/lightning strike");
+//        info.add(TextFormatting.WHITE + "Lightning rod length (iron bars above):");
+//        info.add(TextFormatting.BLACK + "" + te.ironBarsAbove);
+//        String t = PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getStrikeChance(), false);
+//        info.add(TextFormatting.WHITE + "Average strike time: ");
+//        info.add(TextFormatting.BLACK + "" + t + " (with optimal-sized grid)");
 
         electrostaticStat.setText(info);
     }

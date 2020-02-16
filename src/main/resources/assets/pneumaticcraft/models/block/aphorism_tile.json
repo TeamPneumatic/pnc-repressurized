@@ -1,13 +1,14 @@
 {
   "textures": {
     "all": "pneumaticcraft:block/aphorism_tile",
+    "edge": "block/white_concrete",
     "border": "pneumaticcraft:block/aphorism_tile_border",
     "particle" : "pneumaticcraft:block/aphorism_tile"
   },
   "elements": [
     {
-      "from": [ 0, 0, 15.001 ],
-      "to": [ 16, 16, 15.998 ],
+      "from": [ 0, 0, 15 ],
+      "to": [ 16, 16, 16 ],
       "faces": {
         "down":  { "texture": "#border", "cullface": "down", "tintindex": 0 },
         "up":    { "texture": "#border", "cullface": "up", "tintindex": 0 },
@@ -18,15 +19,15 @@
       }
     },
     {
-      "from": [ 0, 0, 14.999 ],
+      "from": [ 0, 0, 14.875 ],
       "to": [ 16, 16, 15 ],
       "faces": {
-        "down":  { "texture": "#border", "cullface": "down", "tintindex": 0 },
-        "up":    { "texture": "#border", "cullface": "up", "tintindex": 0 },
+        "down":  { "texture": "#edge", "cullface": "down", "tintindex": 0 },
+        "up":    { "texture": "#edge", "cullface": "up", "tintindex": 0 },
         "north": { "texture": "#border", "tintindex": 0 },
-        "south": { "texture": "#border", "cullface": "south", "tintindex": 0 },
-        "west":  { "texture": "#border", "cullface": "west", "tintindex": 0 },
-        "east":  { "texture": "#border", "cullface": "east", "tintindex": 0 }
+        "south": { "texture": "#edge", "cullface": "south", "tintindex": 0 },
+        "west":  { "texture": "#edge", "cullface": "west", "tintindex": 0 },
+        "east":  { "texture": "#edge", "cullface": "east", "tintindex": 0 }
       }
     },
     {

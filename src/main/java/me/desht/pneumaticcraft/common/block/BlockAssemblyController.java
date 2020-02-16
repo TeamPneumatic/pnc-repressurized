@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -17,8 +18,8 @@ public class BlockAssemblyController extends BlockPneumaticCraft {
     private static final VoxelShape LEG_SHAPE = Block.makeCuboidShape(7, 2, 7, 9, 12, 9);
     private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, LEG_SHAPE);
 
-    public BlockAssemblyController(Properties props) {
-        super(props);
+    public BlockAssemblyController() {
+        super(ModBlocks.defaultProps());
         setDefaultState(getStateContainer().getBaseState()
                 .with(NORTH, false)
                 .with(SOUTH, false)

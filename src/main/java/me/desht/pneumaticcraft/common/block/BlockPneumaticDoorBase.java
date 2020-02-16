@@ -14,8 +14,8 @@ import net.minecraft.world.World;
 
 public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
 
-    public BlockPneumaticDoorBase(Properties props) {
-        super(props);
+    public BlockPneumaticDoorBase() {
+        super(ModBlocks.defaultProps());
     }
 
     @Override

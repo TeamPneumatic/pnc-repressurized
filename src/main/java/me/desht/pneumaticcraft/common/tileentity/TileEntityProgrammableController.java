@@ -385,8 +385,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    protected void onFirstServerUpdate() {
-        super.onFirstServerUpdate();
+    protected void onFirstServerTick() {
+        super.onFirstServerTick();
 
         droneItemHandler.setFakePlayerReady();
 

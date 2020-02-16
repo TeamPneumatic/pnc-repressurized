@@ -145,7 +145,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.LIQUID_HOPPER.get(), GuiLiquidHopper::new);
         ScreenManager.registerFactory(ModContainers.MINIGUN_MAGAZINE.get(), GuiMinigunMagazine::new);
         ScreenManager.registerFactory(ModContainers.OMNIDIRECTIONAL_HOPPER.get(), GuiOmnidirectionalHopper::new);
-        ScreenManager.registerFactory(ModContainers.PNEUMATIC_DOOR_BASE.get(), GuiPneumaticDoor::new);
+        ScreenManager.registerFactory(ModContainers.PNEUMATIC_DOOR_BASE.get(), GuiPneumaticDoorBase::new);
         ScreenManager.registerFactory(ModContainers.PNEUMATIC_DYNAMO.get(), GuiPneumaticDynamo::new);
         ScreenManager.registerFactory(ModContainers.PRESSURE_CHAMBER_VALVE.get(), GuiPressureChamber::new);
         ScreenManager.registerFactory(ModContainers.PRESSURE_CHAMBER_INTERFACE.get(), GuiPressureChamberInterface::new);

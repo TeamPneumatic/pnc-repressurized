@@ -39,8 +39,8 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
     }
 
     @Override
-    protected void onFirstServerUpdate() {
-        super.onFirstServerUpdate();
+    protected void onFirstServerTick() {
+        super.onFirstServerTick();
 
         isCreative = getUpgrades(EnumUpgrade.CREATIVE) > 0;
     }

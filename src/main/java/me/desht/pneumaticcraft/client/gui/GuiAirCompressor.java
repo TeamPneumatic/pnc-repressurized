@@ -3,11 +3,14 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.tileentity.FurnaceTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
 
@@ -50,25 +53,21 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
-        if (te.getBurnTimeRemainingScaled(12) > 0 || FurnaceTileEntity.isFuel(te.getPrimaryInventory().getStackInSlot(0)) && te.redstoneAllows()) {
-            pressureStatText.add("\u00a77Currently producing:");
-            pressureStatText.add("\u00a70" + (double) Math.round(te.getBaseProduction() * te.getEfficiency() * te.getSpeedMultiplierFromUpgrades() / 100) + " mL/tick.");
+        if (te.isActive()) {
+            float prod = Math.round(te.getBaseProduction() * te.getEfficiency() * te.getSpeedMultiplierFromUpgrades() / 100);
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.producingAir", PneumaticCraftUtils.roundNumberTo(prod, 1)));
         }
     }
 
     @Override
     protected void addProblems(List<String> textList) {
         super.addProblems(textList);
-        if (te.burnTime <= 0 && !FurnaceTileEntity.isFuel(te.getPrimaryInventory().getStackInSlot(0))) {
-            textList.add("\u00a77No fuel!");
-            textList.add("\u00a70Insert any burnable item.");
+        if (te.burnTime <= te.curFuelUsage && !FurnaceTileEntity.isFuel(te.getPrimaryInventory().getStackInSlot(0))) {
+            textList.add(I18n.format("gui.tab.problems.airCompressor.noFuel"));
         }
 
-//        List<Pair<Direction, IAirHandlerMachine>> teSurrounding = te.getAirHandler(null).getConnectedPneumatics();
         if (te.isLeaking()) {
-            textList.add("\u00a77Air leaking!");
-            textList.add("\u00a70Add pipes / machines");
-            textList.add("\u00a70to the output.");
+            textList.add(I18n.format("gui.tab.problems.airLeak"));
         }
     }
 }

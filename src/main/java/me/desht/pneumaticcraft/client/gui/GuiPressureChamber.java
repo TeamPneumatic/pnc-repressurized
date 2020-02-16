@@ -53,9 +53,7 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
     protected void addWarnings(List<String> curInfo) {
         super.addWarnings(curInfo);
         if (!te.isValidRecipeInChamber) {
-            curInfo.add("\u00a7fNo (valid) items in the chamber");
-            curInfo.add("\u00a70Insert valid items in");
-            curInfo.add("\u00a70the chamber to be compressed.");
+            curInfo.add(I18n.format("gui.tab.problems.pressure_chamber.no_recipe"));
         }
     }
 
@@ -63,13 +61,11 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
     protected void addProblems(List<String> curInfo) {
         if (te.isValidRecipeInChamber && !te.isSufficientPressureInChamber) {
             if (te.recipePressure > 0F) {
-                curInfo.add("\u00a7fNot enough pressure");
-                curInfo.add("\u00a70Add air to the input");
+                curInfo.add(I18n.format("gui.tab.problems.pressure_chamber.not_enough_pressure"));
             } else {
-                curInfo.add("\u00a7fToo much pressure");
-                curInfo.add("\u00a70Remove air from the input");
+                curInfo.add(I18n.format("gui.tab.problems.pressure_chamber.too_much_pressure"));
             }
-            curInfo.add("\u00a70Pressure required: " + te.recipePressure + " bar");
+            curInfo.add(I18n.format("gui.tab.problems.pressure_chamber.required_pressure", te.recipePressure));
         }
     }
 }

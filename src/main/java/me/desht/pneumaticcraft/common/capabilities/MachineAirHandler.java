@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +42,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     private int volumeUpgrades = 0;
     private boolean hasSecurityUpgrade = false;
     private int soundCounter;
+    private final BitSet connectedFaces = new BitSet(6);
 
     private final List<LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new ArrayList<>();
 
@@ -96,13 +98,23 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     @Override
-    public void invalidateNeighbours() {
-        // TODO need to get the side passed in here too
+    public void setConnectedFaces(List<Direction> sides) {
+        connectedFaces.clear();
+        sides.forEach(side -> connectedFaces.set(side.getIndex()));
+
+        // invalidate cached neighbour data
         for (int i = 0; i < neighbourAirHandlers.size(); i++) {
             neighbourAirHandlers.set(i, LazyOptional.empty());
         }
-//        neighbourAirHandlers.set(side.getIndex(), null);
     }
+
+//    @Override
+//    public void invalidateNeighbours() {
+//        // TODO need to get the side passed in here too
+//        for (int i = 0; i < neighbourAirHandlers.size(); i++) {
+//            neighbourAirHandlers.set(i, LazyOptional.empty());
+//        }
+//    }
 
     @Override
     public void tick(TileEntity ownerTE) {
@@ -177,6 +189,9 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
     private LazyOptional<IAirHandlerMachine> getNeighbourAirHandler(TileEntity ownerTE, Direction dir) {
         final int idx = dir.getIndex();
+
+        if (!connectedFaces.get(idx)) return LazyOptional.empty();
+
         if (!neighbourAirHandlers.get(idx).isPresent()) {
             TileEntity te1 = ownerTE.getWorld().getTileEntity(ownerTE.getPos().offset(dir));
             if (te1 != null) {
@@ -211,21 +226,24 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         // 4. finally, actually disperse the air
         for (IAirHandlerMachine.Connection neighbour : neighbours) {
             int air = Math.min(neighbour.getMaxDispersion(), neighbour.getDispersedAir());
-            onAirDispersion(ownerTE, neighbour.getDirection(), air);
-            neighbour.getAirHandler().addAir(air);
-            addAir(-air);
+            if (air != 0) {
+                onAirDispersion(ownerTE, neighbour.getDirection(), air);
+                neighbour.getAirHandler().addAir(air);
+                addAir(-air);
+            }
         }
     }
 
     private List<Connection> getConnectedAirHandlers(TileEntity ownerTE, boolean onlyLowerPressure) {
         List<IAirHandlerMachine.Connection> neighbours = new ArrayList<>();
-        for (Direction d : Direction.VALUES) {
-            getNeighbourAirHandler(ownerTE, d).ifPresent(h -> {
-                if (ownerTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, d).isPresent()
-                        && (!onlyLowerPressure || h.getPressure() < getPressure())) {
-                    neighbours.add(new ConnectedAirHandler(d, h));
-                }
-            });
+        for (Direction dir : Direction.VALUES) {
+            if (connectedFaces.get(dir.getIndex())) {
+                getNeighbourAirHandler(ownerTE, dir).ifPresent(h -> {
+                    if ((!onlyLowerPressure || h.getPressure() < getPressure())) {
+                        neighbours.add(new ConnectedAirHandler(dir, h));
+                    }
+                });
+            }
         }
         neighbours.addAll(addExtraConnectedHandlers(ownerTE).stream()
                 .filter(h -> !onlyLowerPressure || h.getPressure() < getPressure())

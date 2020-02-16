@@ -1,9 +1,13 @@
 package me.desht.pneumaticcraft.api.tileentity;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -56,13 +60,6 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     void setHasSecurityUpgrade(boolean hasSecurityUpgrade);
 
     /**
-     * Invalidates any cached air handler neighbour data.  Cached neighbours are automatically invalidated if their
-     * owning tile entity is removed, but this should be called by the owning tile entity when a neighbour block changes
-     * state, to force rediscovery of neighbouring air handlers, or if the owning block has been rotated.
-     */
-    void invalidateNeighbours();
-
-    /**
      * Must be called every tick by the owning tile entity.
      *
      * @param ownerTE the owning tile entity
@@ -97,6 +94,16 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     INBT serializeNBT();
 
     void deserializeNBT(CompoundNBT compound);
+
+    /**
+     * Set the connected faces of this air handler. This should be called on the first server tick, and when
+     * neighbouring blocks change (i.e. via {@link net.minecraft.block.Block#neighborChanged(BlockState, World, BlockPos, Block, BlockPos, boolean)}.
+     * <p>
+     * This also invalidates any cached neighbour data.
+     *
+     * @param sides a list of sides on which this air handler should be offered as a capability
+     */
+    void setConnectedFaces(List<Direction> sides);
 
     /**
      * Represents a connection to a neighbouring air handler.

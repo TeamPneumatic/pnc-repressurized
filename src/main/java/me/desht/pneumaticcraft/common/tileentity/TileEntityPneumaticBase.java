@@ -18,6 +18,10 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     @GuiSynced
@@ -26,6 +30,7 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     public final float dangerPressure;
     public final float criticalPressure;
     private final int defaultVolume;
+    private final Map<IAirHandlerMachine, List<Direction>> airHandlerMap = new HashMap<>();
 
     public TileEntityPneumaticBase(TileEntityType type, float dangerPressure, float criticalPressure, int volume, int upgradeSlots) {
         super(type, upgradeSlots);
@@ -39,23 +44,36 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     }
 
     @Override
+    protected void onFirstServerTick() {
+        super.onFirstServerTick();
+
+        initializeHullAirHandlers();
+    }
+
+    @Override
     public void tick() {
         super.tick();
-        airHandler.tick(this);
+
+        airHandlerMap.keySet().forEach(handler -> handler.tick(this));
     }
 
     @Override
     public void remove() {
         super.remove();
-        airHandlerCap.invalidate();
+
+        airHandlerMap.forEach((handler, sides) -> {
+            if (!sides.isEmpty()) getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, sides.get(0)).invalidate();
+        });
     }
 
     @Override
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
-        airHandler.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
-        airHandler.setHasSecurityUpgrade(getUpgrades(EnumUpgrade.SECURITY) > 0);
+        airHandlerMap.keySet().forEach(h -> {
+            h.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
+            h.setHasSecurityUpgrade(getUpgrades(EnumUpgrade.SECURITY) > 0);
+        });
     }
 
     @Nonnull
@@ -88,16 +106,26 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
         }
     }
 
-    @Override
-    public void onBlockRotated() {
-        super.onBlockRotated();
-        airHandler.invalidateNeighbours();
+    public void initializeHullAirHandlers() {
+        airHandlerMap.clear();
+        for (Direction side : Direction.VALUES) {
+            getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, side)
+                    .ifPresent(handler -> airHandlerMap.computeIfAbsent(handler, k -> new ArrayList<>()).add(side));
+        }
+        airHandlerMap.forEach(IAirHandlerMachine::setConnectedFaces);
     }
+
+//    @Override
+//    public void onBlockRotated() {
+//        super.onBlockRotated();
+////        airHandler.invalidateNeighbours();
+//    }
 
     @Override
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
-        airHandler.invalidateNeighbours();
+
+        initializeHullAirHandlers();
     }
 
     @Override

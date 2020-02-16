@@ -38,8 +38,8 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     private static final BooleanProperty SW = BooleanProperty.create("sw");
     private static final BooleanProperty NW = BooleanProperty.create("nw");
 
-    public BlockElevatorFrame(Properties props) {
-        super(props);
+    public BlockElevatorFrame() {
+        super(ModBlocks.defaultProps());
 
         setDefaultState(getStateContainer().getBaseState()
                 .with(NE, false).with(SE, false).with(SW, false).with(NW, false)

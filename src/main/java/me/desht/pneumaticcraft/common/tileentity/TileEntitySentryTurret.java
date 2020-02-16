@@ -126,8 +126,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     @Override
-    protected void onFirstServerUpdate() {
-        super.onFirstServerUpdate();
+    protected void onFirstServerTick() {
+        super.onFirstServerTick();
         tileVec = new Vec3d(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
         updateAmmo();
         onFilterChanged(entityFilter);

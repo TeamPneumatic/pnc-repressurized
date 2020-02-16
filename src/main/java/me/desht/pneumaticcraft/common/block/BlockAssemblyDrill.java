@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyDrill;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,8 +15,8 @@ public class BlockAssemblyDrill extends BlockPneumaticCraft {
     private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 1, 16);
     private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, Block.makeCuboidShape(5, 1, 5, 11, 7, 11));
 
-    public BlockAssemblyDrill(Properties props) {
-        super(props);
+    public BlockAssemblyDrill() {
+        super(ModBlocks.defaultProps());
     }
 
     @Override

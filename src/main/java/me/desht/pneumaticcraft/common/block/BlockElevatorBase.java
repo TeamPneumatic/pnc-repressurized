@@ -19,8 +19,8 @@ import net.minecraft.world.World;
 public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     private static final VoxelShape SHAPE = Block.makeCuboidShape(0.001, 0, 0.001, 15.999, 16, 15.999);
 
-    public BlockElevatorBase(Properties props) {
-        super(props);
+    public BlockElevatorBase() {
+        super(ModBlocks.defaultProps());
         setDefaultState(getStateContainer().getBaseState()
                 .with(BlockPneumaticCraft.NORTH, false)
                 .with(BlockPneumaticCraft.SOUTH, false)

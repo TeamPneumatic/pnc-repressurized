@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,8 +15,8 @@ import net.minecraft.world.IBlockReader;
 public class BlockUniversalSensor extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 4, 16);
 
-    public BlockUniversalSensor(Properties props) {
-        super(props);
+    public BlockUniversalSensor() {
+        super(ModBlocks.defaultProps());
 
         setDefaultState(getStateContainer().getBaseState()
                 .with(NORTH, false)

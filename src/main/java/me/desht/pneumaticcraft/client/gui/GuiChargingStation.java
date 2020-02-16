@@ -19,6 +19,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -98,8 +99,11 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
         if (te.charging || te.discharging) {
-            pressureStatText.add("\u00a77" + (te.charging ? "C" : "Disc") + "harging at");
-            pressureStatText.add("\u00a70" + (double) Math.round(PneumaticValues.CHARGING_STATION_CHARGE_RATE * te.getSpeedMultiplierFromUpgrades()) + "mL/tick");
+            String key = te.charging ? "gui.tooltip.charging" : "gui.tooltip.discharging";
+            String amount = PneumaticCraftUtils.roundNumberTo(PneumaticValues.CHARGING_STATION_CHARGE_RATE * te.getSpeedMultiplierFromUpgrades(), 1);
+            pressureStatText.add(TextFormatting.BLACK + I18n.format(key, amount));
+        } else {
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.charging", 0));
         }
     }
 
@@ -108,8 +112,8 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         super.addProblems(textList);
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         if (!chargeStack.isEmpty() && !chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
-            textList.addAll(PneumaticCraftUtils.splitString("\u00a77The inserted item can't be (dis)charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-            textList.addAll(PneumaticCraftUtils.splitString("\u00a70Put a pneumatic item in the charge slot.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+            // shouldn't ever happen - I can't be bothered to add a translation
+            textList.addAll(PneumaticCraftUtils.splitString("\u00a70Non-pneumatic item in the charge slot!?", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
         }
     }
 
@@ -118,20 +122,16 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         super.addWarnings(curInfo);
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         if (chargeStack.isEmpty()) {
-            curInfo.add("\u00a7fNo items to (dis)charge");
-            curInfo.addAll(PneumaticCraftUtils.splitString("\u00a70Put a pneumatic item in the charge slot.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+            curInfo.add(I18n.format("gui.tab.problems.charging_station.no_item"));
         } else {
             chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
                 String name = chargeStack.getDisplayName().getFormattedText();
                 if (h.getPressure() > te.getPressure() + 0.01F && h.getPressure() <= 0) {
-                    curInfo.addAll(PneumaticCraftUtils.splitString("\u00a7fThe " + name + " can't be discharged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-                    curInfo.add("\u00a70The item is empty.");
+                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.charging_station.item_empty", name)));
                 } else if (h.getPressure() < te.getPressure() - 0.01F && h.getPressure() >= h.maxPressure()) {
-                    curInfo.addAll(PneumaticCraftUtils.splitString("\u00a7fThe " + name + " can't be charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-                    curInfo.add("\u00a70The item is full.");
+                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.charging_station.item_full", name)));
                 } else if (!te.charging && !te.discharging) {
-                    curInfo.addAll(PneumaticCraftUtils.splitString("\u00a7fThe " + name + " can't be (dis)charged", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-                    curInfo.add("\u00a70The pressures have equalized.");
+                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.charging_station.pressure_equal", name)));
                 }
             });
         }

@@ -8,9 +8,9 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -37,9 +37,9 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     public void init() {
         super.init();
 
-        statusStat = addAnimatedStat("Elevator Status", new ItemStack(ModBlocks.ELEVATOR_BASE.get()), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat(I18n.format("gui.tab.status"), new ItemStack(ModBlocks.ELEVATOR_BASE.get()), 0xFFFFAA00, false);
 
-        floorNameStat = addAnimatedStat("Floor Names", new ItemStack(ModBlocks.ELEVATOR_CALLER.get()), 0xFF005500, false);
+        floorNameStat = addAnimatedStat(I18n.format("gui.tab.info.elevator.floorNames"), new ItemStack(ModBlocks.ELEVATOR_CALLER.get()), 0xFF005500, false);
         floorNameStat.setTextWithoutCuttingString(getFloorNameStat());
 
         Rectangle2d fieldRectangle = floorNameStat.getButtonScaledRectangle(6, 60, 160, 20);
@@ -111,10 +111,11 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     private List<String> getStatusText() {
         List<String> text = new ArrayList<>();
 
-        text.add(TextFormatting.GRAY + "Current Extension:");
-        text.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(te.extension, 1) + " meter");
-        text.add(TextFormatting.GRAY + "Max Extension:");
-        text.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(te.getMaxElevatorHeight(), 1) + " meter");
+        text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.elevator.extension",
+                PneumaticCraftUtils.roundNumberTo(te.extension, 1)));
+        text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.elevator.maxExtension",
+                PneumaticCraftUtils.roundNumberTo(te.getMaxElevatorHeight(), 1)));
+
         return text;
     }
 
@@ -122,8 +123,7 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     protected void addWarnings(List<String> textList) {
         super.addWarnings(textList);
         if (te.getMaxElevatorHeight() == te.extension) {
-            textList.addAll(PneumaticCraftUtils.splitString(TextFormatting.GRAY + "The elevator can't extend anymore.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-            textList.addAll(PneumaticCraftUtils.splitString(TextFormatting.BLACK + "Add (more) Elevator Frames on top of the elevator", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+            textList.add(I18n.format("gui.tab.problems.elevator.fullyExtended"));
         }
     }
 }

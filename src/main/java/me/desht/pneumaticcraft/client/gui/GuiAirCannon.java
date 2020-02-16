@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -36,9 +36,11 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     public void init() {
         super.init();
 
-        statusStat = this.addAnimatedStat("Cannon Status", new ItemStack(ModBlocks.AIR_CANNON.get()), 0xFFFFAA00, false);
+        statusStat = this.addAnimatedStat(I18n.format("gui.tab.info.airCannon.status"), 
+                new ItemStack(ModBlocks.AIR_CANNON.get()), 0xFFFF8000, false);
 
-        strengthTab = this.addAnimatedStat("Force", new ItemStack(ModItems.AIR_CANISTER.get()), 0xFF2080FF, false);
+        strengthTab = this.addAnimatedStat(I18n.format("gui.tab.info.airCannon.force", te.forceMult),
+                new ItemStack(ModItems.AIR_CANISTER.get()), 0xFF2080FF, false);
         strengthTab.addPadding(3, 22);
         strengthTab.addSubWidget(new WidgetButtonExtended(16, 16, 20, 20, "--").withTag("--"));
         strengthTab.addSubWidget(new WidgetButtonExtended(38, 16, 20, 20, "-").withTag("-"));
@@ -61,8 +63,9 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     @Override
     public void tick() {
         super.tick();
+
         statusStat.setText(getStatusText());
-        strengthTab.setTitle("Force: "+ te.forceMult + "%%");
+        strengthTab.setTitle(I18n.format("gui.tab.info.airCannon.force", te.forceMult));
 
         if (gpsX != te.gpsX || gpsY != te.gpsY || gpsZ != te.gpsZ) {
             gpsX = te.gpsX;
@@ -74,18 +77,14 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
 
     private List<String> getStatusText() {
         List<String> text = new ArrayList<>();
-        text.add("\u00a77Current Aimed Coordinate:");
         if (te.gpsX != 0 || te.gpsY != 0 || te.gpsZ != 0) {
-            text.add("\u00a70X: " + te.gpsX + ", Y: " + te.gpsY + ", Z: " + te.gpsZ);
+            text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.airCannon.coord", te.gpsX, te.gpsY, te.gpsZ));
         } else {
-            text.add("\u00a70- No coordinate selected -");
+            text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.airCannon.no_coord"));
         }
-        text.add("\u00a77Current Heading Angle:");
-        text.add("\u00a70" + Math.round(te.rotationAngle) + " degrees.");
-        text.add("\u00a77Current Height Angle:");
-        text.add("\u00a70" + (90 - Math.round(te.heightAngle)) + " degrees.");
-        text.add(TextFormatting.GRAY + "Range");
-        text.add(TextFormatting.BLACK + "About " + PneumaticCraftUtils.roundNumberTo(te.getForce() * 25F, 0) + "m");
+        text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.airCannon.heading", Math.round(te.rotationAngle)));
+        text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.airCannon.height", Math.round(te.heightAngle)));
+        text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.airCannon.range", Math.round(te.getForce() * 25F)));
         return text;
     }
 
@@ -94,29 +93,19 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         super.addProblems(textList);
 
         if (te.isLeaking()) {
-            textList.add("\u00a77No air input connected.");
-            textList.add("\u00a70Add pipes / machines");
-            textList.add("\u00a70to the input.");
+            textList.add(I18n.format("gui.tab.problems.airLeak"));
         }
         if (container.inventorySlots.get(0).getStack().isEmpty()) {
-            textList.add("\u00a77No items to fire");
-            textList.add("\u00a70Add items in the");
-            textList.add("\u00a70cannon slot.");
+            textList.add(I18n.format("gui.tab.problems.air_cannon.no_items"));
         }
         if (!te.hasCoordinate()) {
-            textList.add("\u00a77No destination coordinate set");
-            textList.add("\u00a70Put a GPS Tool with a");
-            textList.add("\u00a70coordinate set in the GPS slot.");
+            textList.add(I18n.format("gui.tab.problems.air_cannon.no_coordinate"));
         } else if (!te.coordWithinReach) {
-            textList.add("\u00a77Selected coordinate");
-            textList.add("\u00a77can't be reached");
-            textList.add("\u00a70Select a coordinate");
-            textList.add("\u00a70closer to the cannon.");
+            textList.add(I18n.format("gui.tab.problems.air_cannon.out_of_range"));
         } else if (te.getRedstoneMode() == 0 && !te.doneTurning) {
-            textList.add("\u00a77Cannon still turning");
-            textList.add("\u00a70Wait for the cannon");
+            textList.add(I18n.format("gui.tab.problems.air_cannon.still_turning"));
         } else if (te.getRedstoneMode() == 2 && !te.insertingInventoryHasSpace) {
-            textList.add("\u00a77The last shot inventory does not have space for the items in the Cannon.");
+            textList.add(I18n.format("gui.tab.problems.air_cannon.inv_space"));
         }
     }
 
@@ -124,7 +113,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     protected void addInformation(List<String> curInfo) {
         super.addInformation(curInfo);
         if (curInfo.isEmpty()) {
-            curInfo.add("\u00a70Apply a redstone signal to fire.");
+            curInfo.add(I18n.format("gui.tooltip.apply_redstone"));
         }
     }
 }

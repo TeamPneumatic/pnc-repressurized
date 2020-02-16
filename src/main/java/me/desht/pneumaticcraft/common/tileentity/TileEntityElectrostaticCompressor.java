@@ -60,6 +60,8 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
 
     @Override
     public void tick() {
+        super.tick();
+
         if ((getWorld().getGameTime() & 0x1f) == 0) {  // every 32 ticks
             int max = PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR;
             for (ironBarsBeneath = 0; ironBarsBeneath < max; ironBarsBeneath++) {
@@ -74,15 +76,15 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
             }
         }
 
-        super.tick();
-
-        maybeLightningStrike();
 
         if (!getWorld().isRemote) {
+            maybeLightningStrike();
+
             if (lastRedstoneState != shouldEmitRedstone()) {
                 lastRedstoneState = !lastRedstoneState;
                 updateNeighbours();
             }
+
             struckByLightningCooldown--;
         }
     }
@@ -99,7 +101,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
         Random rnd = getWorld().rand;
         if (rnd.nextInt(getStrikeChance()) == 0) {
             int dist = rnd.nextInt(6);
-            float angle = rnd.nextFloat() * (float)Math.PI;
+            float angle = rnd.nextFloat() * (float)Math.PI * 2;
             int x = (int)(getPos().getX() + dist * MathHelper.sin(angle));
             int z = (int)(getPos().getZ() + dist * MathHelper.cos(angle));
             for (int y = getPos().getY() + 5; y > getPos().getY() - 5; y--) {

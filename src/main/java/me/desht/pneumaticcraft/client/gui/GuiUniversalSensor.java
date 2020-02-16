@@ -272,8 +272,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         super.addPressureStatInfo(pressureStatText);
 
         if (te.isSensorActive) {
-            pressureStatText.add(TextFormatting.WHITE + "Usage:");
-            pressureStatText.add(TextFormatting.BLACK.toString() + PneumaticValues.USAGE_UNIVERSAL_SENSOR + "mL/tick");
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.airUsage", PneumaticValues.USAGE_UNIVERSAL_SENSOR));
         }
     }
 

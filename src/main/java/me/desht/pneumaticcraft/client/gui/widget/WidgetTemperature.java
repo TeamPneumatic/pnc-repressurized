@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -62,6 +63,6 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
     @Override
     public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
         int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
-        curTip.add("Temperature: " + (temp - 273) + "\u00b0C");
+        curTip.add(HeatUtil.formatHeatString(temp).getFormattedText());
     }
 }

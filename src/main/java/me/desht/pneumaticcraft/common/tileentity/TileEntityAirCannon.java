@@ -37,6 +37,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -240,12 +241,14 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                         ItemStack remainder = ItemHandlerHelper.insertItem(inv, item.getItem(), false);
                         if (!remainder.isEmpty()) {
                             item.setItem(remainder);
+                            insertingInventoryHasSpace = false;
                             return false;
                         } else {
                             item.remove();
                             iterator.remove();
                             lastInsertingInventory = te.getPos();
                             lastInsertingInventorySide = entry.getValue();
+                            world.playSound(null, te.getPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0f, 1.0f);
                             return true;
                         }
                     }).orElse(false);

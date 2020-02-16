@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -13,8 +14,8 @@ public class BlockVacuumPump extends BlockPneumaticCraft {
     private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(2, 0, 2, 14, 11, 14);
     private static final VoxelShape COLLISION_SHAPE = Block.makeCuboidShape(2, 2, 2, 14, 14, 14);
 
-    public BlockVacuumPump(Properties props) {
-        super(props);
+    public BlockVacuumPump() {
+        super(ModBlocks.defaultProps());
     }
 
     @Override

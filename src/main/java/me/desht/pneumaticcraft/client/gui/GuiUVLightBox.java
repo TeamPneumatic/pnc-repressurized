@@ -2,9 +2,8 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -34,8 +33,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     protected void addProblems(List<String> textList) {
         super.addProblems(textList);
         if (te.getPrimaryInventory().getStackInSlot(TileEntityUVLightBox.PCB_SLOT).isEmpty()) {
-            textList.add(TextFormatting.GRAY + "No PCB to expose");
-            textList.addAll(PneumaticCraftUtils.splitString(TextFormatting.GRAY + "Insert an Empty PCB", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+            textList.add(TextFormatting.BLACK + I18n.format("gui.tab.problems.uv_light_box.noItem"));
         }
     }
 }

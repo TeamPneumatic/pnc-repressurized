@@ -65,8 +65,7 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<ContainerFluxCo
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
-        pressureStatText.add("\u00a77Max Production:");
-        pressureStatText.add("\u00a70" + te.getAirRate() + " mL/tick.");
+        pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.maxProduction", te.getAirRate()));
     }
 
     @Override

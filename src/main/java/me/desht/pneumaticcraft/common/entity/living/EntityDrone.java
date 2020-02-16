@@ -365,7 +365,7 @@ public class EntityDrone extends EntityDroneBase implements
             }
             if (lifeUpgrades > 0) {
                 int interval = 50 / lifeUpgrades;
-                if (interval == 0 || ticksExisted % interval == 0) {
+                if (interval == 0 || ticksExisted % interval == 0 && getHealth() < getMaxHealth()) {
                     heal(1);
                     airHandler.addAir(-lifeUpgrades);
                 }

@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -40,7 +41,7 @@ public class GuiUnitProgrammer extends Screen {
     public GuiUnitProgrammer(List<IProgWidget> progWidgets, FontRenderer fontRenderer, int guiLeft, int guiTop,
                              int width, int height, Rectangle2d bounds, double translatedX,
                              double translatedY, int lastZoom) {
-        super(new StringTextComponent("Programmer"));
+        super(new StringTextComponent(I18n.format("block.pneumaticcraft.programmer")));
         this.fontRenderer = fontRenderer;
         this.progWidgets = progWidgets;
         this.guiLeft = guiLeft;

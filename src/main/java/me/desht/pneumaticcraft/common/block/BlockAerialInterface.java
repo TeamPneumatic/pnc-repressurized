@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -12,8 +13,8 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockAerialInterface extends BlockPneumaticCraft {
-    public BlockAerialInterface(Properties props) {
-        super(props);
+    public BlockAerialInterface() {
+        super(ModBlocks.defaultProps());
     }
 
     @Override

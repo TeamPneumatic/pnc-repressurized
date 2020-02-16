@@ -44,11 +44,6 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
         addUpgradeTabs(itemStack.getItem(), "armor." + equipmentSlot.toString().toLowerCase(), "armor.generic");
     }
 
-    private String getTranslationKey(EnumUpgrade upgrade, EquipmentSlotType equipmentSlot) {
-        String s = equipmentSlot == null ? "generic" : equipmentSlot.toString().toLowerCase();
-        return "gui.tab.info.item.armor." + s + "." + upgrade.getName() + "Upgrade";
-    }
-
     @Override
     public void tick() {
         super.tick();

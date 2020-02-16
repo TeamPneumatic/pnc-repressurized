@@ -65,8 +65,7 @@ public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<ContainerPneum
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
-        pressureStatText.add("\u00a77Max Usage:");
-        pressureStatText.add("\u00a70" + te.getAirRate() + " mL/tick.");
+        pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.maxUsage", te.getAirRate()));
     }
 
     @Override

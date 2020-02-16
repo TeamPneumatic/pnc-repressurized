@@ -109,11 +109,18 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         }
     }
 
+    public double airProduced(int side) {
+        if (world.isRemote) {
+            double diff = Math.abs(heatExchangers[side].getTemperatureAsInt() - heatExchangers[side + 2].getTemperatureAsInt());
+            return diff * AIR_GEN_MULTIPLIER;
+        } else {
+            double diff = Math.abs(heatExchangers[side].getTemperature() - heatExchangers[side + 2].getTemperature());
+            return diff * AIR_GEN_MULTIPLIER;
+        }
+    }
 
     private void generatePressure(int side) {
-        double diff = Math.abs(heatExchangers[side].getTemperature() - heatExchangers[side + 2].getTemperature());
-        generated[side] += diff * AIR_GEN_MULTIPLIER;
-
+        generated[side] += airProduced(side);
         if (generated[side] > 1.0) {
             int toAdd = (int) generated[side];
             addAir(toAdd);

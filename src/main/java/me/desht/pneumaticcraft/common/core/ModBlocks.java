@@ -55,7 +55,7 @@ public class ModBlocks {
                 .sound(SoundType.METAL);
     }
 
-    public static Block.Properties reinforcedStoneProps() {
+    private static Block.Properties reinforcedStoneProps() {
         return Block.Properties.create(Material.ROCK, MaterialColor.GRAY)
                 .hardnessAndResistance(5f, 1200f)
                 .sound(SoundType.STONE);
@@ -84,39 +84,39 @@ public class ModBlocks {
     public static final RegistryObject<BlockDrillPipe> DRILL_PIPE = register("drill_pipe",
             BlockDrillPipe::new);
     public static final RegistryObject<BlockElevatorBase> ELEVATOR_BASE = register("elevator_base",
-            () -> new BlockElevatorBase(defaultProps()));
+            BlockElevatorBase::new);
     public static final RegistryObject<BlockElevatorFrame> ELEVATOR_FRAME = register("elevator_frame",
-            () -> new BlockElevatorFrame(defaultProps()));
+            BlockElevatorFrame::new);
     public static final RegistryObject<BlockVacuumPump> VACUUM_PUMP = register("vacuum_pump",
-            () -> new BlockVacuumPump(defaultProps()));
+            BlockVacuumPump::new);
     public static final RegistryObject<BlockPneumaticDoorBase> PNEUMATIC_DOOR_BASE = register("pneumatic_door_base",
-            () -> new BlockPneumaticDoorBase(defaultProps()));
+            BlockPneumaticDoorBase::new);
     public static final RegistryObject<BlockPneumaticDoor> PNEUMATIC_DOOR = register("pneumatic_door",
             BlockPneumaticDoor::new, block -> () -> new BlockPneumaticDoor.ItemBlockPneumaticDoor(block.get()));
     public static final RegistryObject<BlockAssemblyPlatform> ASSEMBLY_PLATFORM = register("assembly_platform",
-            () -> new BlockAssemblyPlatform(defaultProps()));
+            BlockAssemblyPlatform::new);
     public static final RegistryObject<BlockAssemblyIOUnit> ASSEMBLY_IO_UNIT_IMPORT = register("assembly_io_unit_import",
             () -> new BlockAssemblyIOUnit.Import(defaultProps()));
     public static final RegistryObject<BlockAssemblyIOUnit> ASSEMBLY_IO_UNIT_EXPORT = register("assembly_io_unit_export",
             () -> new BlockAssemblyIOUnit.Export(defaultProps()));
     public static final RegistryObject<BlockAssemblyDrill> ASSEMBLY_DRILL = register("assembly_drill",
-            () -> new BlockAssemblyDrill(defaultProps()));
+            BlockAssemblyDrill::new);
     public static final RegistryObject<BlockAssemblyLaser> ASSEMBLY_LASER = register("assembly_laser",
-            () -> new BlockAssemblyLaser(defaultProps()));
+            BlockAssemblyLaser::new);
     public static final RegistryObject<BlockAssemblyController> ASSEMBLY_CONTROLLER = register("assembly_controller",
-            () -> new BlockAssemblyController(defaultProps()));
+            BlockAssemblyController::new);
     public static final RegistryObject<BlockCompressedIron> COMPRESSED_IRON_BLOCK = register("compressed_iron_block",
-            () -> new BlockCompressedIron(defaultProps()));
+            BlockCompressedIron::new);
     public static final RegistryObject<BlockUVLightBox> UV_LIGHT_BOX = register("uv_light_box",
-            () -> new BlockUVLightBox(defaultProps()));
+            BlockUVLightBox::new);
     public static final RegistryObject<BlockSecurityStation> SECURITY_STATION = register("security_station",
-            () -> new BlockSecurityStation(defaultProps()));
+            BlockSecurityStation::new);
     public static final RegistryObject<BlockUniversalSensor> UNIVERSAL_SENSOR = register("universal_sensor",
-            () -> new BlockUniversalSensor(defaultProps()));
+            BlockUniversalSensor::new);
     public static final RegistryObject<BlockAerialInterface> AERIAL_INTERFACE = register("aerial_interface",
-            () -> new BlockAerialInterface(defaultProps()));
+            BlockAerialInterface::new);
     public static final RegistryObject<BlockElectrostaticCompressor> ELECTROSTATIC_COMPRESSOR = register("electrostatic_compressor",
-            () -> new BlockElectrostaticCompressor(defaultProps()));
+            BlockElectrostaticCompressor::new);
     public static final RegistryObject<BlockAphorismTile> APHORISM_TILE = register("aphorism_tile",
             BlockAphorismTile::new);
     public static final RegistryObject<BlockOmnidirectionalHopper> OMNIDIRECTIONAL_HOPPER = register("omnidirectional_hopper",

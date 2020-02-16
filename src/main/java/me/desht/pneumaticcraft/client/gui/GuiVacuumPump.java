@@ -1,19 +1,21 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
 
@@ -62,37 +64,30 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
 
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
-//        IAirHandlerMachine inputHandler = te.getAirHandler(te.getInputSide());
-//        IAirHandlerMachine vacuumHandler = te.getAirHandler(te.getVacuumSide());
+        IAirHandlerMachine inputAirHandler = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
+                .orElseThrow(RuntimeException::new);
+        IAirHandlerMachine vacuumHandler = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide())
+                .orElseThrow(RuntimeException::new);
 
-        te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide()).ifPresent(h -> {
-            pressureStatText.add("\u00a77Current Input Pressure:");
-            pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(h.getPressure(), 1) + " bar.");
-            pressureStatText.add("\u00a77Current Input Air:");
-            pressureStatText.add("\u00a70" + (h.getAir() + h.getVolume()) + " mL.");
-        });
+        String col = TextFormatting.BLACK.toString();
 
-        te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide()).ifPresent(h -> {
-            pressureStatText.add("\u00a77Current Vacuum Pressure:");
-            pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(h.getPressure(), 1) + " bar.");
-            pressureStatText.add("\u00a77Current Vacuum Air:");
-            pressureStatText.add("\u00a70" + (h.getAir() + h.getVolume()) + " mL.");
-        });
+        pressureStatText.add(col + I18n.format("gui.tab.vacuumPump.inputPressure", PneumaticCraftUtils.roundNumberTo(inputAirHandler.getPressure(), 2)));
+        pressureStatText.add(col + I18n.format("gui.tab.vacuumPump.vacuumPressure", PneumaticCraftUtils.roundNumberTo(vacuumHandler.getPressure(), 2)));
+        pressureStatText.add(col + I18n.format("gui.tab.vacuumPump.inputAir", String.format("%,d", inputAirHandler.getAir())));
+        pressureStatText.add(col + I18n.format("gui.tab.vacuumPump.vacuumAir", String.format("%,d", vacuumHandler.getAir())));
 
-        pressureStatText.add("\u00a77Volume:");
-        pressureStatText.add("\u00a70" + (double) Math.round(PneumaticValues.VOLUME_VACUUM_PUMP) + " mL.");
-        int vol = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
-                .map(IAirHandler::getVolume).orElseThrow(RuntimeException::new);
-        int volumeLeft = vol - PneumaticValues.VOLUME_VACUUM_PUMP;
-        if (volumeLeft > 0) {
-            pressureStatText.add("\u00a70" + volumeLeft + " mL. (Volume Upgrades)");
-            pressureStatText.add("\u00a70--------+");
-            pressureStatText.add("\u00a70" + vol + " mL.");
+        int volume = inputAirHandler.getVolume();
+        int upgrades = te.getUpgrades(EnumUpgrade.VOLUME);
+        pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.baseVolume", String.format("%,d", PneumaticValues.VOLUME_VACUUM_PUMP)));
+        pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.effectiveVolume", String.format("%,d", volume)));
+        if (volume > inputAirHandler.getBaseVolume()) {
+            pressureStatText.add(TextFormatting.BLACK + GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getFormattedText());
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.effectiveVolume", String.format("%,d",volume)));
         }
 
         if (te.turning) {
-            pressureStatText.add("\u00a77Currently sucking at:");
-            pressureStatText.add("\u00a70" + (double) Math.round(PneumaticValues.PRODUCTION_VACUUM_PUMP * te.getSpeedMultiplierFromUpgrades()) + " mL/tick.");
+            String suction = String.format("%,d", Math.round(PneumaticValues.PRODUCTION_VACUUM_PUMP * te.getSpeedMultiplierFromUpgrades()));
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.suction", suction));
         }
     }
 

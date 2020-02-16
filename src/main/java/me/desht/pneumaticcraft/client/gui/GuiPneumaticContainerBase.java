@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -16,6 +17,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -52,6 +54,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     protected boolean firstUpdate = true;
     private final List<IGuiAnimatedStat> statWidgets = new ArrayList<>();
     private int sendDelay = -1;
+    boolean redstoneAllows;
 
     public GuiPneumaticContainerBase(C container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -65,6 +68,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         lastLeftStat = lastRightStat = null;
         if (shouldAddPressureTab() && te instanceof TileEntityPneumaticBase) {
             pressureStat = this.addAnimatedStat("gui.tab.pressure", new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFF00AA00, false);
+            ((TileEntityPneumaticBase) te).initializeHullAirHandlers();
         }
         if (shouldAddProblemTab()) {
             problemTab = addAnimatedStat("gui.tab.problems", 0xFFA0A0A0, false);
@@ -356,6 +360,9 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         if (redstoneTab != null) {
             redstoneButton.setMessage(I18n.format(te.getRedstoneButtonText(((IRedstoneControl) te).getRedstoneMode())));
         }
+        if (te instanceof IRedstoneControlled) {
+            redstoneAllows = te.redstoneAllows();
+        }
 
         firstUpdate = false;
     }
@@ -387,17 +394,19 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     protected void addPressureStatInfo(List<String> pressureStatText) {
         te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
-            pressureStatText.add("\u00a77Current Pressure:");
-            pressureStatText.add("\u00a70" + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1) + " bar.");
-            pressureStatText.add("\u00a77Current Air:");
-            pressureStatText.add("\u00a70" + (airHandler.getAir() + airHandler.getVolume()) + " mL.");
-            pressureStatText.add("\u00a77Volume:");
-            pressureStatText.add("\u00a70" + airHandler.getBaseVolume() + " mL.");
-            int volumeLeft = airHandler.getVolume() - airHandler.getBaseVolume();
-            if (volumeLeft > 0) {
-                pressureStatText.add("\u00a70" + volumeLeft + " mL. (Volume Upgrades)");
-                pressureStatText.add("\u00a70--------+");
-                pressureStatText.add("\u00a70" + airHandler.getVolume() + " mL.");
+            String col = TextFormatting.BLACK.toString();
+            float curPressure = airHandler.getPressure();
+            int volume = airHandler.getVolume();
+            int upgrades = te.getUpgrades(EnumUpgrade.VOLUME);
+            airHandler.setVolumeUpgrades(upgrades);
+
+            pressureStatText.add(col + I18n.format("gui.tooltip.pressure",
+                    PneumaticCraftUtils.roundNumberTo(curPressure, 2)));
+            pressureStatText.add(col + I18n.format("gui.tooltip.air", String.format("%,d", Math.round(curPressure * volume))));
+            pressureStatText.add(col + I18n.format("gui.tooltip.baseVolume", String.format("%,d", airHandler.getBaseVolume())));
+            if (volume > airHandler.getBaseVolume()) {
+                pressureStatText.add(col + GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getFormattedText());
+                pressureStatText.add(col + I18n.format("gui.tooltip.effectiveVolume", String.format("%,d",volume)));
             }
         });
     }
@@ -431,7 +440,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
      * @param curInfo string list to append to, which may already contain some problem text
      */
     protected void addWarnings(List<String> curInfo) {
-        if (te instanceof IRedstoneControlled && !te.redstoneAllows()) {
+        if (te instanceof IRedstoneControlled && !redstoneAllows) {
             IRedstoneControlled redstoneControlled = (IRedstoneControlled) te;
             curInfo.add("gui.tab.problems.redstoneDisallows");
             if (redstoneControlled.getRedstoneMode() == 1) {

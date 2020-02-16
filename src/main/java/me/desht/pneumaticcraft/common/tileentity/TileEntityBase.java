@@ -172,7 +172,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
      */
     void tickImpl() {
         if (firstRun && !world.isRemote) {
-            onFirstServerUpdate();
+            onFirstServerTick();
             onNeighborTileUpdate();
             onNeighborBlockUpdate();
         }
@@ -214,7 +214,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         if (getHeatCap(null).isPresent()) getHeatCap(null).invalidate();
     }
 
-    protected void onFirstServerUpdate() {
+    protected void onFirstServerTick() {
         initializeHullHeatExchangers();
     }
 
@@ -404,7 +404,9 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     public boolean redstoneAllows() {
-        if (getWorld().isRemote) onNeighborBlockUpdate();
+        if (getWorld().isRemote) {
+            poweredRedstone = PneumaticCraftUtils.getRedstoneLevel(getWorld(), getPos());
+        }
         switch (((IRedstoneControl) this).getRedstoneMode()) {
             case 0:
                 return true;

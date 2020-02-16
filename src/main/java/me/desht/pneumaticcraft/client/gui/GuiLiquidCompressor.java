@@ -5,7 +5,9 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
@@ -36,8 +38,8 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
         if (te.isProducing) {
-            pressureStatText.add("\u00a77Currently producing:");
-            pressureStatText.add("\u00a70" + (double) Math.round(te.getBaseProduction() * te.getEfficiency() * te.getSpeedMultiplierFromUpgrades() / 100) + " mL/tick.");
+            float prod = Math.round(te.getBaseProduction() * te.getEfficiency() * te.getSpeedMultiplierFromUpgrades() / 100);
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.producingAir", PneumaticCraftUtils.roundNumberTo(prod, 1)));
         }
     }
 
@@ -63,9 +65,8 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
 
         for (Map.Entry<ResourceLocation, Integer> map : sortByValue(PneumaticCraftAPIHandler.getInstance().liquidFuels).entrySet()) {
             String value = String.format("%4d", map.getValue() / 1000);
-            while (font.getStringWidth(value) < 30) {
-                value = value + " ";
-            }
+            int nSpc = (32 - font.getStringWidth(value)) / font.getStringWidth(".");
+            value = value + StringUtils.repeat('.', nSpc);
             Fluid fluid = ForgeRegistries.FLUIDS.getValue(map.getKey());
             FluidStack stack = new FluidStack(fluid, 1);
             fuels.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getFormattedText(), 25));

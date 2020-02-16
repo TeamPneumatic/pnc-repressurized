@@ -11,7 +11,6 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -53,7 +52,7 @@ public class GuiThermopneumaticProcessingPlant extends
                 if (te.minTemperature > 0) {
                     int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
                     TextFormatting tf = te.minTemperature < temp ? TextFormatting.GREEN : TextFormatting.GOLD;
-                    curTip.add(tf + "Required Temperature: " + (te.minTemperature - 273) + GuiConstants.DEGREES + "C");
+                    curTip.add(tf + I18n.format("gui.misc.requiredTemperature", te.minTemperature -273));
                 }
             }
         };

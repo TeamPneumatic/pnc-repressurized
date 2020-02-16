@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -32,7 +32,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRedstoneControlled, IManoMeasurable, INamedContainerProvider {
     @GuiSynced
     private final MachineAirHandler vacuumHandler;
-    private final LazyOptional<IAirHandler> vacuumCap;
+    private final LazyOptional<IAirHandlerMachine> vacuumCap;
     public int rotation;
     public int oldRotation;
     private int turnTimer = -1;
@@ -54,7 +54,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY) {
             if (side == getVacuumSide()) {
-                return vacuumCap.cast();
+                return PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY.orEmpty(cap, vacuumCap);
             } else if (side != getInputSide() && side != null) {
                 return LazyOptional.empty();
             }
@@ -62,17 +62,17 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
         return super.getCapability(cap, side);
     }
 
-    @Override
-    public void remove() {
-        super.remove();
-        vacuumCap.invalidate();
-    }
-
-    @Override
-    public void onBlockRotated() {
-        super.onBlockRotated();
-        vacuumHandler.invalidateNeighbours();
-    }
+//    @Override
+//    public void remove() {
+//        super.remove();
+////        vacuumCap.invalidate();
+//    }
+//
+//    @Override
+//    public void onBlockRotated() {
+//        super.onBlockRotated();
+////        vacuumHandler.invalidateNeighbours();
+//    }
 
     @Override
     public IItemHandler getPrimaryInventory() {
@@ -89,25 +89,33 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
 
     @Override
     public void tick() {
-        if (!getWorld().isRemote && turnTimer >= 0) {
-            turnTimer--;
-        }
-        if (!getWorld().isRemote
-                && airHandler.getPressure() > PneumaticValues.MIN_PRESSURE_VACUUM_PUMP
-                && vacuumHandler.getPressure() > -1F
-                && redstoneAllows()) {
-            if (!getWorld().isRemote && turnTimer == -1) {
-                turning = true;
+        super.tick();
+
+        if (!getWorld().isRemote) {
+            if (turnTimer >= 0) turnTimer--;
+
+            if (airHandler.getPressure() > PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && vacuumHandler.getPressure() > -0.99F
+                    && redstoneAllows()) {
+                if (turnTimer == -1) {
+                    turning = true;
+                }
+                airHandler.addAir((int) (-PneumaticValues.USAGE_VACUUM_PUMP * getSpeedUsageMultiplierFromUpgrades()));
+                // negative because it's creating a vacuum.
+                vacuumHandler.addAir((int) (-PneumaticValues.PRODUCTION_VACUUM_PUMP * getSpeedMultiplierFromUpgrades()));
+                turnTimer = 40;
             }
-            vacuumHandler.addAir((int) (-PneumaticValues.PRODUCTION_VACUUM_PUMP * getSpeedMultiplierFromUpgrades())); // negative because it's pulling a vacuum.
-            airHandler.addAir((int) (-PneumaticValues.USAGE_VACUUM_PUMP * getSpeedUsageMultiplierFromUpgrades()));
-            turnTimer = 40;
-        }
-        if (turnTimer == 0) {
-            turning = false;
-        }
-        oldRotation = rotation;
-        if (getWorld().isRemote) {
+            if (turnTimer == 0) {
+                turning = false;
+            }
+
+            if (airHandler.getConnectedAirHandlers(this).isEmpty()) {
+                airHandler.airLeak(this, getInputSide());
+            }
+            if (vacuumHandler.getConnectedAirHandlers(this).isEmpty()) {
+                vacuumHandler.airLeak(this, getVacuumSide());
+            }
+        } else {
+            oldRotation = rotation;
             if (turning) {
                 rotationSpeed = Math.min(rotationSpeed + 1, 20);
             } else {
@@ -115,14 +123,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
             }
             rotation += rotationSpeed;
         }
-
-        super.tick();
-        vacuumHandler.tick(this);
-
-        if (airHandler.getConnectedAirHandlers(this).isEmpty()) airHandler.airLeak(this, getInputSide());
-        if (vacuumHandler.getConnectedAirHandlers(this).isEmpty()) vacuumHandler.airLeak(this, getInputSide());
-
-
     }
 
     @Override

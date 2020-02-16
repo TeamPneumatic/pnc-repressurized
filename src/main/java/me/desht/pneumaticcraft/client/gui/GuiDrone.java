@@ -26,22 +26,6 @@ public class GuiDrone extends GuiPneumaticInventoryItem {
         addUpgradeTabs(itemStack.getItem(), "drone");
     }
 
-//    private void addUpgradeTabs(ItemDrone itemDrone) {
-//        boolean leftSided = true;
-//        for (EnumUpgrade upgrade : EnumUpgrade.values()) {
-//            int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(itemDrone, upgrade);
-//            if (max > 0) {
-//                ItemStack upgradeStack = upgrade.getItemStack();
-//                List<String> text = new ArrayList<>();
-//                text.add(TextFormatting.GRAY + I18n.format("gui.tab.upgrades.max", max));
-//                text.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.info.item.drone." + upgrade.getName() + "Upgrade")));
-//                addAnimatedStat(upgradeStack.getDisplayName().getFormattedText(), upgradeStack, 0xFF6060FF, leftSided)
-//                        .setTextWithoutCuttingString(text);
-//                leftSided = !leftSided;
-//            }
-//        }
-//    }
-
     @Override
     protected int getDefaultVolume() {
         return PneumaticValues.DRONE_VOLUME;
