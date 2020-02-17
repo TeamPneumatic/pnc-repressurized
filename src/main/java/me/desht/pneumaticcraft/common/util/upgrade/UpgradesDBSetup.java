@@ -148,6 +148,7 @@ public class UpgradesDBSetup {
         db.addApplicableUpgrades(ModTileEntities.UV_LIGHT_BOX.get(),
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, MAX_VOLUME,
+                EnumUpgrade.DISPENSER, 1,
                 EnumUpgrade.SPEED, 10);
         db.addApplicableUpgrades(ModTileEntities.SECURITY_STATION.get(),
                 EnumUpgrade.ENTITY_TRACKER, 4,

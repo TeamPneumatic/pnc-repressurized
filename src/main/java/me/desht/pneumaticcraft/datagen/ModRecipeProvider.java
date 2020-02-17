@@ -63,7 +63,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', ModBlocks.AIR_COMPRESSOR.get()
         ).build(consumer);
 
-        shaped(ModItems.ADVANCED_PCB.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+        shaped(ModItems.ADVANCED_PCB.get(), 4, ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "RPR/PCP/RPR",
                 'R', Tags.Items.DUSTS_REDSTONE,
                 'P', ModItems.PLASTIC.get(),

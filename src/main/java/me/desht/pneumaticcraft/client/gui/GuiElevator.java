@@ -123,7 +123,7 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     protected void addWarnings(List<String> textList) {
         super.addWarnings(textList);
         if (te.getMaxElevatorHeight() == te.extension) {
-            textList.add(I18n.format("gui.tab.problems.elevator.fullyExtended"));
+            textList.add(I18n.format("gui.tab.problems.elevator.fully_extended"));
         }
     }
 }

@@ -118,6 +118,7 @@ public class Textures {
     public static final ResourceLocation GUI_NEI_ASSEMBLY_CONTROLLER = guiTexture("gui_nei_assembly_controller.png");
     public static final ResourceLocation GUI_LASER_DANGER = guiTexture("gui_laser_danger.png");
     public static final ResourceLocation GUI_UV_LIGHT_BOX = guiTexture("gui_uv_light_box.png");
+    public static final ResourceLocation GUI_UV_LIGHT_BOX_ON = guiTexture("gui_uv_light_box_on.png");
     public static final ResourceLocation GUI_SECURITY_STATION = guiTexture("gui_security_station.png");
     public static final ResourceLocation GUI_HACKING = guiTexture("gui_hacking.png");
     public static final ResourceLocation GUI_UNIVERSAL_SENSOR = guiTexture("gui_universal_sensor.png");

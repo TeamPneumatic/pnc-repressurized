@@ -71,23 +71,30 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
 
         String col = TextFormatting.BLACK.toString();
 
-        pressureStatText.add(col + I18n.format("gui.tab.vacuumPump.inputPressure", PneumaticCraftUtils.roundNumberTo(inputAirHandler.getPressure(), 2)));
-        pressureStatText.add(col + I18n.format("gui.tab.vacuumPump.vacuumPressure", PneumaticCraftUtils.roundNumberTo(vacuumHandler.getPressure(), 2)));
-        pressureStatText.add(col + I18n.format("gui.tab.vacuumPump.inputAir", String.format("%,d", inputAirHandler.getAir())));
-        pressureStatText.add(col + I18n.format("gui.tab.vacuumPump.vacuumAir", String.format("%,d", vacuumHandler.getAir())));
+        pressureStatText.add(col + I18n.format("gui.tab.status.vacuumPump.inputPressure",
+                PneumaticCraftUtils.roundNumberTo(inputAirHandler.getPressure(), 2)));
+        pressureStatText.add(col + I18n.format("gui.tab.status.vacuumPump.vacuumPressure",
+                PneumaticCraftUtils.roundNumberTo(vacuumHandler.getPressure(), 2)));
+        pressureStatText.add(col + I18n.format("gui.tab.status.vacuumPump.inputAir",
+                String.format("%,d", inputAirHandler.getAir())));
+        pressureStatText.add(col + I18n.format("gui.tab.status.vacuumPump.vacuumAir",
+                String.format("%,d", vacuumHandler.getAir())));
 
         int volume = inputAirHandler.getVolume();
         int upgrades = te.getUpgrades(EnumUpgrade.VOLUME);
-        pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.baseVolume", String.format("%,d", PneumaticValues.VOLUME_VACUUM_PUMP)));
-        pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.effectiveVolume", String.format("%,d", volume)));
+        pressureStatText.add(col + I18n.format("gui.tooltip.baseVolume",
+                String.format("%,d", PneumaticValues.VOLUME_VACUUM_PUMP)));
+        pressureStatText.add(col + I18n.format("gui.tooltip.effectiveVolume",
+                String.format("%,d", volume)));
         if (volume > inputAirHandler.getBaseVolume()) {
-            pressureStatText.add(TextFormatting.BLACK + GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getFormattedText());
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.effectiveVolume", String.format("%,d",volume)));
+            pressureStatText.add(col + GuiConstants.TRIANGLE_RIGHT + " "
+                    + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getFormattedText());
+            pressureStatText.add(col + I18n.format("gui.tooltip.effectiveVolume", String.format("%,d",volume)));
         }
 
         if (te.turning) {
-            String suction = String.format("%,d", Math.round(PneumaticValues.PRODUCTION_VACUUM_PUMP * te.getSpeedMultiplierFromUpgrades()));
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.suction", suction));
+            int suction = Math.round(PneumaticValues.PRODUCTION_VACUUM_PUMP * te.getSpeedMultiplierFromUpgrades());
+            pressureStatText.add(col + I18n.format("gui.tooltip.suction", String.format("%,d", suction)));
         }
     }
 

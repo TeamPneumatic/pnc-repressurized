@@ -1,78 +1,66 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 //import elucent.albedo.lighting.ILightProvider;
 //import elucent.albedo.lighting.Light;
 
 //@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
-public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControl, INamedContainerProvider /*,ILightProvider */ {
+public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControlled, INamedContainerProvider /*,ILightProvider */ {
     private static final String NBT_EXPOSURE = "pneumaticcraft:uv_exposure";
-
-    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.button.never",
-            "gui.tab.redstoneBehaviour.uvLightBox.button.chance.70",
-            "gui.tab.redstoneBehaviour.uvLightBox.button.chance.80",
-            "gui.tab.redstoneBehaviour.uvLightBox.button.chance.90",
-            "gui.tab.redstoneBehaviour.uvLightBox.button.chance.100"
-    );
 
     public static final int INVENTORY_SIZE = 1;
     public static final int PCB_SLOT = 0;
 
 //    private Object light = null;
 
+    // avoid rapid blockstate switching, which is a framerate killer
+    private long lastStateUpdate = 0;
+    private BlockState pendingState;
+
     @GuiSynced
     public int redstoneMode;
+    @GuiSynced
+    public int threshold = 100;
 
-    public final LightBoxItemHandlerInternal inventory = new LightBoxItemHandlerInternal();
-    private final LightBoxItemHandlerExternal inventoryExt = new LightBoxItemHandlerExternal(inventory);
+    private final UVInputHandler inputHandler = new UVInputHandler();
+    private final ItemStackHandler outputHandler = new BaseItemStackHandler(this, INVENTORY_SIZE);
+    private final UVInvWrapper inventoryExt = new UVInvWrapper();
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventoryExt);
+    private LazyOptional<IItemHandler> cachedEjectHandler = LazyOptional.empty();
+
     public int ticksExisted;
-    private boolean oldRedstoneStatus;
 
     public TileEntityUVLightBox() {
         super(ModTileEntities.UV_LIGHT_BOX.get(), PneumaticValues.DANGER_PRESSURE_UV_LIGHTBOX, PneumaticValues.MAX_PRESSURE_UV_LIGHTBOX, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
-    }
-
-    @Override
-    public void read(CompoundNBT nbt) {
-        super.read(nbt);
-        redstoneMode = nbt.getInt("redstoneMode");
-        inventory.deserializeNBT(nbt.getCompound("Items"));
-    }
-
-    @Override
-    public CompoundNBT write(CompoundNBT nbt) {
-        super.write(nbt);
-        nbt.putInt("redstoneMode", redstoneMode);
-        nbt.put("Items", inventory.serializeNBT());
-        return nbt;
     }
 
     @Override
@@ -83,39 +71,108 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
             ticksExisted++;
             ItemStack stack = getLoadedPCB();
             boolean didWork = false;
-            if (!stack.isEmpty()) {
+            if (!stack.isEmpty() && redstoneAllows()) {
                 int progress = getExposureProgress(stack);
                 if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && progress < 100) {
                     addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
                     if (ticksExisted % ticksPerProgress(progress) == 0) {
-                        setExposureProgress(stack, Math.min(progress + 1, 100));
+                        progress++;
+                        setExposureProgress(stack, progress);
+                    }
+                    if (progress >= threshold) {
+                        if (outputHandler.insertItem(0, inputHandler.getStackInSlot(0), true).isEmpty()) {
+                            ItemStack toMove = inputHandler.extractItem(0, 1, false);
+                            outputHandler.insertItem(0, toMove, false);
+                        }
                     }
                     didWork = true;
                 }
-                if (oldRedstoneStatus != shouldEmitRedstone()) {
-                    oldRedstoneStatus = !oldRedstoneStatus;
-                    updateNeighbours();
-                }
             }
-            if (getBlockState().getBlock() == ModBlocks.UV_LIGHT_BOX.get()) {
-                boolean loaded = getBlockState().get(BlockUVLightBox.LOADED);
-                if (loaded == stack.isEmpty()) {
-                    world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LOADED, !stack.isEmpty()));
+            if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+                tryEject();
+            }
+            checkStateUpdates(stack, didWork);
+        }
+    }
+
+    private void checkStateUpdates(ItemStack loadedStack, boolean didWork) {
+        BlockState state = getBlockState();
+        if (state.getBlock() == ModBlocks.UV_LIGHT_BOX.get()) {
+            boolean loaded = state.get(BlockUVLightBox.LOADED);
+            boolean update = false;
+            if (loaded == loadedStack.isEmpty()) {
+                state = state.with(BlockUVLightBox.LOADED, !loadedStack.isEmpty());
+                update = true;
+            }
+            if (didWork != getBlockState().get(BlockUVLightBox.LIT)) {
+                state = state.with(BlockUVLightBox.LIT, didWork);
+                update = true;
+            }
+            long now = world.getGameTime();
+            if (update) {
+                if (now - lastStateUpdate > 10) {
+                    world.setBlockState(pos, state);
+                    pendingState = null;
+                    lastStateUpdate = now;
+                } else {
+                    pendingState = state;
                 }
-                if (didWork != getBlockState().get(BlockUVLightBox.LIT)) {
-                    world.setBlockState(pos, getBlockState().with(BlockUVLightBox.LIT, didWork));
-                }
+            } else if (pendingState != null && now - lastStateUpdate > 10) {
+                world.setBlockState(pos, pendingState);
+                pendingState = null;
+                lastStateUpdate = now;
             }
         }
+    }
+
+    private void tryEject() {
+        Direction dir = getUpgradeCache().getEjectDirection();
+        if (dir != null) {
+            getEjectionHandler().ifPresent(handler -> {
+                ItemStack stack = outputHandler.extractItem(0, 1, true);
+                if (!stack.isEmpty() && ItemHandlerHelper.insertItem(handler, stack, false).isEmpty()) {
+                    outputHandler.extractItem(0, 1, false);
+                }
+            });
+        }
+    }
+
+    private LazyOptional<IItemHandler> getEjectionHandler() {
+        if (!cachedEjectHandler.isPresent()) {
+            Direction dir = getUpgradeCache().getEjectDirection();
+            TileEntity te = world.getTileEntity(pos.offset(dir));
+            cachedEjectHandler = IOHelper.getInventoryForTE(te, dir.getOpposite());
+            if (cachedEjectHandler.isPresent()) {
+                cachedEjectHandler.addListener(l -> cachedEjectHandler = LazyOptional.empty());
+            }
+        }
+        return cachedEjectHandler;
+    }
+
+    @Override
+    public void read(CompoundNBT nbt) {
+        super.read(nbt);
+        redstoneMode = nbt.getInt("redstoneMode");
+        threshold = nbt.getInt("threshold");
+        inputHandler.deserializeNBT(nbt.getCompound("Items"));
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT nbt) {
+        super.write(nbt);
+        nbt.putInt("threshold", threshold);
+        nbt.putInt("redstoneMode", redstoneMode);
+        nbt.put("Items", inputHandler.serializeNBT());
+        return nbt;
+    }
+
+    public static int getExposureProgress(ItemStack stack) {
+        return stack.hasTag() ? stack.getTag().getInt(NBT_EXPOSURE) : 0;
     }
 
     public static void setExposureProgress(ItemStack stack, int progress) {
         Validate.isTrue(progress >= 0 && progress <= 100);
         stack.getOrCreateTag().putInt(NBT_EXPOSURE, progress);
-    }
-
-    public static int getExposureProgress(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getInt(NBT_EXPOSURE) : 0;
     }
 
     private int ticksPerProgress(int progress) {
@@ -155,27 +212,24 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
             redstoneMode++;
-            if (redstoneMode > 4) redstoneMode = 0;
+            if (redstoneMode > 2) redstoneMode = 0;
             updateNeighbours();
+        } else {
+            try {
+                threshold = MathHelper.clamp(Integer.parseInt(tag), 1, 100);
+                markDirty();
+            } catch (IllegalArgumentException ignored) {
+            }
         }
     }
 
     @Override
     public IItemHandler getPrimaryInventory() {
-        return inventory;
+        return inputHandler;
     }
 
-    public boolean shouldEmitRedstone() {
-        ItemStack stack = getLoadedPCB();
-        if (redstoneMode == 0 || stack.getItem() != ModItems.EMPTY_PCB.get()) return false;
-        int progress = getExposureProgress(stack);
-        switch (redstoneMode) {
-            case 1: return progress > 70;
-            case 2: return progress > 80;
-            case 3: return progress > 90;
-            case 4: return progress == 100;
-        }
-        return false;
+    public IItemHandler getOutputInventory() {
+        return outputHandler;
     }
 
     @Override
@@ -189,17 +243,12 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     @Override
-    protected List<String> getRedstoneButtonLabels() {
-        return REDSTONE_LABELS;
-    }
-
-    @Override
     public float getMinWorkingPressure() {
         return PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX;
     }
 
     private ItemStack getLoadedPCB() {
-        return inventory.getStackInSlot(PCB_SLOT);
+        return inputHandler.getStackInSlot(PCB_SLOT);
     }
 
     @Override
@@ -211,6 +260,10 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerUVLightBox(i, playerInventory, getPos());
+    }
+
+    public int getThreshold() {
+        return threshold;
     }
 
     /*
@@ -227,8 +280,8 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
     */
 
-    private class LightBoxItemHandlerInternal extends BaseItemStackHandler {
-        LightBoxItemHandlerInternal() {
+    private class UVInputHandler extends BaseItemStackHandler {
+        UVInputHandler() {
             super(TileEntityUVLightBox.this, INVENTORY_SIZE);
         }
 
@@ -241,61 +294,43 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || itemStack.getItem() instanceof ItemEmptyPCB;
         }
-
-//        @Override
-//        protected void onContentsChanged(int slot) {
-//            super.onContentsChanged(slot);
-//
-//        }
     }
 
-    private class LightBoxItemHandlerExternal implements IItemHandlerModifiable {
-        private final LightBoxItemHandlerInternal wrapped;
-
-        LightBoxItemHandlerExternal(LightBoxItemHandlerInternal wrapped) {
-            this.wrapped = wrapped;
+    private class UVInvWrapper implements IItemHandler {
+        UVInvWrapper() {
         }
 
         @Override
         public int getSlots() {
-            return wrapped.getSlots();
+            return 2;
         }
 
         @Nonnull
         @Override
         public ItemStack getStackInSlot(int slot) {
-            return wrapped.getStackInSlot(slot);
+            return slot == 0 ? inputHandler.getStackInSlot(0) : outputHandler.getStackInSlot(0);
         }
 
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return wrapped.insertItem(slot, stack, simulate);
+            return inputHandler.insertItem(0, stack, simulate);
         }
 
         @Nonnull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if (redstoneMode != 0 && !shouldEmitRedstone()) {
-                return ItemStack.EMPTY;
-            } else {
-                return wrapped.extractItem(slot, amount, simulate);
-            }
+            return outputHandler.extractItem(0, amount, simulate);
         }
 
         @Override
         public int getSlotLimit(int slot) {
-            return wrapped.getSlotLimit(slot);
+            return slot == 0 ? inputHandler.getSlotLimit(0) : outputHandler.getSlotLimit(0);
         }
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return wrapped.isItemValid(slot, stack);
-        }
-
-        @Override
-        public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-            wrapped.setStackInSlot(slot, stack);
+            return slot == 0 ? inputHandler.isItemValid(0, stack) : outputHandler.isItemValid(0, stack);
         }
     }
 }

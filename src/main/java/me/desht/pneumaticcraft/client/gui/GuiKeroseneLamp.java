@@ -36,12 +36,23 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
     public void tick() {
         super.tick();
 
+        if (firstUpdate) {
+            // te sync packet hasn't necessarily arrived when init() is called; need to set it up here
+            slider.setValue(te.getTargetRange());
+            slider.updateSlider();
+        }
+
         rangeLabel.setMessage(I18n.format("gui.keroseneLamp.currentRange", te.getRange()));
     }
 
     @Override
+    public void onChangeSliderValue(GuiSlider slider) {
+        sendDelayed(5);
+    }
+
+    @Override
     protected void doDelayedAction() {
-        sendPacketToServer(Integer.toString(slider.getValueInt()));
+        sendGUIButtonPacketToServer(Integer.toString(slider.getValueInt()));
     }
 
     @Override
@@ -65,10 +76,5 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
         if (te.getTank().getFluidAmount() < 30 && te.getTank().getFluidAmount() > 0) {
             curInfo.add("gui.tab.problems.keroseneLamp.lowFuel");
         }
-    }
-
-    @Override
-    public void onChangeSliderValue(GuiSlider slider) {
-        sendDelayed(5);
     }
 }

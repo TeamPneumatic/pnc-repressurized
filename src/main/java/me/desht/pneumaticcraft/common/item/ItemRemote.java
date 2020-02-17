@@ -99,7 +99,7 @@ public class ItemRemote extends Item {
                 NetworkHandler.sendToPlayer(new PacketNotifyVariablesRemote(GlobalVariableManager.getInstance().getAllActiveVariableNames()), (ServerPlayerEntity) player);
             }
         } else {
-            NetworkHooks.openGui((ServerPlayerEntity) player, new RemoteContainerProvider(remote, hand));
+            NetworkHooks.openGui((ServerPlayerEntity) player, new RemoteContainerProvider(remote, hand), buf -> buf.writeBoolean(hand == Hand.MAIN_HAND));
         }
     }
 

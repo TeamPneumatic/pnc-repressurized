@@ -57,18 +57,4 @@ public class BlockUVLightBox extends BlockPneumaticCraft {
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
-
-    @Override
-    public boolean canProvidePower(BlockState state) {
-        return true;
-    }
-
-    @Override
-    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        TileEntity te = blockAccess.getTileEntity(pos);
-        if (te instanceof TileEntityUVLightBox) {
-            return ((TileEntityUVLightBox) te).shouldEmitRedstone() ? 15 : 0;
-        }
-        return 0;
-    }
 }

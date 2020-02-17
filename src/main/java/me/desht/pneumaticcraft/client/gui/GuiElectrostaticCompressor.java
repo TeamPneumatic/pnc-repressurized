@@ -32,7 +32,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     @Override
     public void init() {
         super.init();
-        electrostaticStat = addAnimatedStat("gui.tab.electrostaticCompressor.info.title", new ItemStack(ModBlocks.ELECTROSTATIC_COMPRESSOR.get()), 0xFF20A0FF, false);
+        electrostaticStat = addAnimatedStat("gui.tab.info.electrostaticCompressor.title", new ItemStack(ModBlocks.ELECTROSTATIC_COMPRESSOR.get()), 0xFF20A0FF, false);
     }
 
     @Override

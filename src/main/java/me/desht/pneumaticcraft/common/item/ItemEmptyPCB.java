@@ -63,6 +63,12 @@ public class ItemEmptyPCB extends ItemNonDespawning {
     }
 
     @Override
+    public int getRGBDurabilityForDisplay(ItemStack stack) {
+        int progress = TileEntityUVLightBox.getExposureProgress(stack);
+        return progress << 16 | 0xFF;
+    }
+
+    @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entityItem) {
         super.onEntityItemUpdate(stack, entityItem);
 

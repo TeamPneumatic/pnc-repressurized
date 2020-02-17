@@ -451,7 +451,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
     }
 
-    void sendPacketToServer(String tag) {
+    void sendGUIButtonPacketToServer(String tag) {
         NetworkHandler.sendToServer(new PacketGuiButton(tag));
     }
 
