@@ -11,6 +11,10 @@ public class ModCategoryUid {
     static final ResourceLocation PRESSURE_CHAMBER = RL("pressure_chamber");
     static final ResourceLocation REFINERY = RL("refinery");
     static final ResourceLocation THERMO_PNEUMATIC = RL("thermo_pneumatic");
-    static final ResourceLocation UV_LIGHT_BOX = RL("uv_light_box");
     static final ResourceLocation HEAT_FRAME_COOLING = RL("heat_frame_cooling");
+
+    // pseudo recipes
+    static final ResourceLocation UV_LIGHT_BOX = RL("uv_light_box");
+    static final ResourceLocation PLASTIC_SOLIDIFYING = RL("plastic_solidifying");
+    static final ResourceLocation ETCHING_TANK = RL("etching_tank");
 }

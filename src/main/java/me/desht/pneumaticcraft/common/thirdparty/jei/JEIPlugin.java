@@ -61,7 +61,9 @@ public class JEIPlugin implements IModPlugin {
                 new JEIRefineryCategory(),
                 new JEIUVLightBoxCategory(),
                 new JEIAmadronTradeCategory(),
-                new JEIHeatFrameCoolingCategory()
+                new JEIHeatFrameCoolingCategory(),
+                new JEIPlasticSolidifyingCategory(),
+                new JEIEtchingTankCategory()
         );
         if (PNCConfig.Common.Recipes.explosionCrafting) {
             registry.addRecipeCategories(new JEIExplosionCraftingCategory());
@@ -78,6 +80,8 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipes(JEIPressureChamberRecipeCategory.getAllRecipes(), ModCategoryUid.PRESSURE_CHAMBER);
         registration.addRecipes(JEIUVLightBoxCategory.getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
         registration.addRecipes(JEIAmadronTradeCategory.getAllRecipes(), ModCategoryUid.AMADRON_TRADE);
+        registration.addRecipes(JEIPlasticSolidifyingCategory.getAllRecipes(), ModCategoryUid.PLASTIC_SOLIDIFYING);
+        registration.addRecipes(JEIEtchingTankCategory.getAllRecipes(), ModCategoryUid.ETCHING_TANK);
 
         for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
             addStackInfo(registration, new ItemStack(item.get()));
@@ -104,6 +108,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()), ModCategoryUid.THERMO_PNEUMATIC);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.UV_LIGHT_BOX.get()), ModCategoryUid.UV_LIGHT_BOX);
         registration.addRecipeCatalyst(new ItemStack(ModItems.HEAT_FRAME.get()), ModCategoryUid.HEAT_FRAME_COOLING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ETCHING_TANK.get()), ModCategoryUid.ETCHING_TANK);
     }
 
     @Override

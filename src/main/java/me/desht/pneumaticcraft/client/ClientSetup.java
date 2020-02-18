@@ -108,17 +108,18 @@ public class ClientSetup {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityChargingStation.class, new RenderChargingStation());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorBase.class, new RenderElevatorBase());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorCaller.class, new RenderElevatorCaller());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityUniversalSensor.class, new RenderUniversalSensor());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVacuumPump.class, new RenderVacuumPump());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefineryController.class, new RenderRefineryController());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefineryOutput.class, new RenderRefineryOutput());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiquidHopper.class, new RenderLiquidHopper());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEtchingTank.class, new RenderEtchingTank());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityKeroseneLamp.class, new RenderKeroseneLamp());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityThermopneumaticProcessingPlant.class, new RenderThermopneumaticProcessingPlant());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySentryTurret.class, new RenderSentryTurret());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySecurityStation.class, new RenderSecurityStation());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiquidHopper.class, new RenderLiquidHopper());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureChamberValve.class, new RenderPressureChamber());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureChamberInterface.class, new RenderPressureChamberInterface());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefineryController.class, new RenderRefineryController());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefineryOutput.class, new RenderRefineryOutput());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySecurityStation.class, new RenderSecurityStation());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySentryTurret.class, new RenderSentryTurret());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityThermopneumaticProcessingPlant.class, new RenderThermopneumaticProcessingPlant());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityUniversalSensor.class, new RenderUniversalSensor());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVacuumPump.class, new RenderVacuumPump());
     }
 
     private static void registerScreenFactories() {
@@ -137,12 +138,16 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.CREATIVE_COMPRESSOR.get(), GuiCreativeCompressor::new);
         ScreenManager.registerFactory(ModContainers.ELECTROSTATIC_COMPRESSOR.get(), GuiElectrostaticCompressor::new);
         ScreenManager.registerFactory(ModContainers.ELEVATOR.get(), GuiElevator::new);
+        ScreenManager.registerFactory(ModContainers.ETCHING_TANK.get(), GuiEtchingTank::new);
         ScreenManager.registerFactory(ModContainers.FLUX_COMPRESSOR.get(), GuiFluxCompressor::new);
         ScreenManager.registerFactory(ModContainers.GAS_LIFT.get(), GuiGasLift::new);
         ScreenManager.registerFactory(ModContainers.INVENTORY_SEARCHER.get(), GuiInventorySearcher::new);
         ScreenManager.registerFactory(ModContainers.KEROSENE_LAMP.get(), GuiKeroseneLamp::new);
         ScreenManager.registerFactory(ModContainers.LIQUID_COMPRESSOR.get(), GuiLiquidCompressor::new);
         ScreenManager.registerFactory(ModContainers.LIQUID_HOPPER.get(), GuiLiquidHopper::new);
+        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_PROVIDER.get(), GuiLogisticsProvider::new);
+        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_REQUESTER.get(), GuiLogisticsRequester::new);
+        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_STORAGE.get(), GuiLogisticsStorage::new);
         ScreenManager.registerFactory(ModContainers.MINIGUN_MAGAZINE.get(), GuiMinigunMagazine::new);
         ScreenManager.registerFactory(ModContainers.OMNIDIRECTIONAL_HOPPER.get(), GuiOmnidirectionalHopper::new);
         ScreenManager.registerFactory(ModContainers.PNEUMATIC_DOOR_BASE.get(), GuiPneumaticDoorBase::new);
@@ -163,9 +168,6 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.UNIVERSAL_SENSOR.get(), GuiUniversalSensor::new);
         ScreenManager.registerFactory(ModContainers.UV_LIGHT_BOX.get(), GuiUVLightBox::new);
         ScreenManager.registerFactory(ModContainers.VACUUM_PUMP.get(), GuiVacuumPump::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_PROVIDER.get(), GuiLogisticsProvider::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_REQUESTER.get(), GuiLogisticsRequester::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_STORAGE.get(), GuiLogisticsStorage::new);
     }
 
     private static void registerProgWidgetScreenFactories() {

@@ -292,7 +292,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || itemStack.getItem() instanceof ItemEmptyPCB;
+            return itemStack.isEmpty() || itemStack.getItem() instanceof ItemEmptyPCB && ItemEmptyPCB.getEtchProgress(itemStack) == 0;
         }
     }
 

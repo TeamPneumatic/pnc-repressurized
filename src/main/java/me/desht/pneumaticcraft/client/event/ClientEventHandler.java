@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.event;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
@@ -14,9 +13,9 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
+import me.desht.pneumaticcraft.common.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
-import me.desht.pneumaticcraft.common.item.ItemPressurizable;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
@@ -396,31 +395,29 @@ public class ClientEventHandler {
             int j = container.getGuiTop();
             bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
             for (Slot s : container.getContainer().inventorySlots) {
-                if (!s.getStack().isEmpty()) {
+                if (s.getStack().getItem() instanceof ICustomDurabilityBar
+                        && ((ICustomDurabilityBar) s.getStack().getItem()).shouldShowCustomDurabilityBar(s.getStack())) {
+                    // render secondary durability bar
+                    ICustomDurabilityBar custom = (ICustomDurabilityBar)s.getStack().getItem();
                     float x = s.xPos;
                     float y = s.yPos;
-                    if (s.getStack().getItem() instanceof ItemPneumaticArmor && ItemPressurizable.shouldShowPressureDurability(s.getStack())) {
-                        // render secondary durability bar showing remaining air
-                        float val = s.getStack().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                                .map(h -> h.getPressure() / h.maxPressure())
-                                .orElse(0f);
-                        int c = ItemPressurizable.getPressureDurabilityColor(s.getStack());
-                        float r = ((c & 0xFF0000) >> 16) / 256f;
-                        float g = ((c & 0xFF00) >> 8) / 256f;
-                        float b = ((c & 0xFF)) / 256f;
-                        int yOff = s.getStack().getDamage() > 0 ? 0 : 1;
+                    float val = custom.getCustomDurability(s.getStack());
+                    int c = custom.getCustomDurabilityColour(s.getStack());
+                    float r = ((c & 0xFF0000) >> 16) / 256f;
+                    float g = ((c & 0xFF00) >> 8) / 256f;
+                    float b = ((c & 0xFF)) / 256f;
+                    int yOff = custom.shouldShowCustomDurabilityBar(s.getStack()) ? 0 : 1;
 
-                        if (yOff == 1) {
-                            bb.pos(i + x + 2, j + y + 15, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-                            bb.pos(i + x + 15, j + y + 15, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-                            bb.pos(i + x + 15, j + y + 14, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-                            bb.pos(i + x + 2, j + y + 14, 1).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-                        }
-                        bb.pos(i + x + 2, j + y + 13 + yOff, 300).color(r, g, b, 1F).endVertex();
-                        bb.pos(i + x + 2 + 13 * val, j + y + 13 + yOff, 300).color(r, g, b, 1F).endVertex();
-                        bb.pos(i + x + 2 + 13 * val, j + y + 12 + yOff, 300).color(r, g, b, 1F).endVertex();
-                        bb.pos(i + x + 2, j + y + 12 + yOff, 300).color(r, g, b, 1F).endVertex();
-                    }
+                    bb.pos(i + x + 2, j + y + 14 + yOff, 300).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+                    bb.pos(i + x + 15, j + y + 14 + yOff, 300).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+                    bb.pos(i + x + 15, j + y + 12 + yOff, 300).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+                    bb.pos(i + x + 2, j + y + 12 + yOff, 300).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
+
+                    bb.pos(i + x + 2, j + y + 13 + yOff, 300).color(r, g, b, 1F).endVertex();
+                    bb.pos(i + x + 2 + 13 * val, j + y + 13 + yOff, 300).color(r, g, b, 1F).endVertex();
+                    bb.pos(i + x + 2 + 13 * val, j + y + 12 + yOff, 300).color(r, g, b, 1F).endVertex();
+                    bb.pos(i + x + 2, j + y + 12 + yOff, 300).color(r, g, b, 1F).endVertex();
+
                 }
             }
             Tessellator.getInstance().draw();

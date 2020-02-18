@@ -1,6 +1,6 @@
 {
   "name": "Getting Started",
-  "icon": "pneumaticcraft:textures/gui/gui_no_problem.png",
+  "icon": "pneumaticcraft:textures/gui/icon/gui_no_problem.png",
   "category": "base_concepts",
   "priority": "true",
   "pages": [

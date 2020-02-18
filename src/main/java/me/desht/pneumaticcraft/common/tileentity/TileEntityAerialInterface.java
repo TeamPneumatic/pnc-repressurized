@@ -239,14 +239,14 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             if (dispenserUpgradeInserted) {
-                return playerFoodCap.cast();
+                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, playerFoodCap);
             } else {
-                return itemHandlerSideConfigurator.getHandler(side).cast();
+                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, itemHandlerSideConfigurator.getHandler(side));
             }
         } else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted && curXpFluid != null) {
-            return playerExpCap.cast();
+            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(cap, playerExpCap);
         } else if (cap == CapabilityEnergy.ENERGY) {
-            return energyCap.cast();
+            return CapabilityEnergy.ENERGY.orEmpty(cap, energyCap);
         } else {
             return super.getCapability(cap, side);
         }

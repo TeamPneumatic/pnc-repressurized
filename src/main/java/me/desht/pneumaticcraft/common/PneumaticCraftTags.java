@@ -60,6 +60,7 @@ public class PneumaticCraftTags {
 
     public static class Fluids extends PneumaticCraftTags {
         public static final Tag<Fluid> OIL = modTag("oil");
+        public static final Tag<Fluid> ETCHING_ACID = modTag("etching_acid");
 
         static Tag<Fluid> tag(String modid, String name) {
             return tag(FluidTags.Wrapper::new, modid, name);

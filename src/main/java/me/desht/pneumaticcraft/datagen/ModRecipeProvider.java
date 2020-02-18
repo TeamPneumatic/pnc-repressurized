@@ -254,6 +254,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer);
 
+        shaped(ModBlocks.ETCHING_TANK.get(), ModItems.ETCHING_ACID_BUCKET.get(),
+                "OGO/W W/SSS",
+                'O', Tags.Blocks.OBSIDIAN,
+                'W', ModBlocks.REINFORCED_BRICK_WALL.get(),
+                'S', ModBlocks.REINFORCED_BRICK_SLAB.get(),
+                'G', Tags.Items.GLASS_PANES
+        ).build(consumer);
+
         shaped(ModItems.FLOW_DETECTOR_MODULE.get(), ModItems.TURBINE_BLADE.get(),
                 "B B/ T /B B",
                 'B', ModItems.TURBINE_BLADE.get(),

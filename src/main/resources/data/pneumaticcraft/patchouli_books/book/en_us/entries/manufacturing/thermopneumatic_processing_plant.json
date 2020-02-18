@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "A Thermopneumatic Processing Plant uses $(l:base_concepts/pressure)pressure/$ and/or $(l:base_concepts/heat)heat/$ to process materials. It has several uses:$(li)100mB $(thing)LPG/$ and 1 piece of $(item)Coal/$ makes 1000mB of $(l:components/plastic)Plastic/$. This requires heat, but no pressure.$(li)1000mB of $(thing)Diesel/$ and 1 piece of $(item)Redstone Dust/$ makes 1000mB of $(l:components/lubricant)Lubricant/$. Again, this requires heat, but no pressure."
+      "text": "A $(thing)Thermopneumatic Processing Plant/$ uses $(l:base_concepts/pressure)pressure/$ and/or $(l:base_concepts/heat)heat/$ to process materials. It has several uses:$(li)100mB $(thing)LPG/$ and 1 piece of $(item)Coal/$ makes 1000mB of $(l:components/plastic)Plastic/$. This requires heat, but no pressure.$(li)1000mB of $(thing)Diesel/$ and 1 piece of $(item)Redstone Dust/$ makes 1000mB of $(l:components/lubricant)Lubricant/$. Again, this requires heat, but no pressure."
     },
     {
       "type": "text",

@@ -69,6 +69,7 @@
   "block.pneumaticcraft.reinforced_brick_tile": "Reinforced Brick Tile",
   "block.pneumaticcraft.reinforced_brick_wall": "Reinforced Brick Wall",
   "block.pneumaticcraft.heat_pipe": "Heat Pipe",
+  "block.pneumaticcraft.etching_tank": "Etching Tank",
 
   "_comment": "Items",
   "item.pneumaticcraft.pressure_tube": "Pressure Tube",
@@ -181,7 +182,7 @@
   "item.pneumaticcraft.upgrade_matrix": "Upgrade Matrix",
 
   "_comment": "Fluid",
-  "fluid.pneumaticcraft.plastic": "Liquid Plastic",
+  "fluid.pneumaticcraft.plastic": "Molten Plastic",
   "fluid.pneumaticcraft.etching_acid": "Etching Acid",
   "fluid.pneumaticcraft.lpg": "LPG",
   "fluid.pneumaticcraft.gasoline": "Gasoline",
@@ -494,6 +495,7 @@
   "gui.tooltip.block.pneumaticcraft.thermal_compressor": "A Thermal Compressor converts temperature differentials on opposite sides of the block to compressed air. Place a high-temperature block on one side of the compressor and a low-temperature block on the opposite side. \\n \\nNote that the North-South faces are thermally connected to one another, as are the East-West faces, but there is no cross-connection from NS to EW. Thermally connected sides will attempt to equalize the temperature, so effort is needed to maintain a good temperature differential.",
   "gui.tooltip.block.pneumaticcraft.reinforced_bricks": "Used to make stuff; also safe for building. Excellent blast resistance.",
   "gui.tooltip.block.pneumaticcraft.heat_pipe": "An insulated core of compressed iron which can transfer heat without losing any to adjacent air or fluid blocks. A more compact alternative to Compressed Iron Blocks. This block can be camouflaged with the Camouflage Applicator tool.",
+  "gui.tooltip.block.pneumaticcraft.etching_tank": "Fill this with Etching Acid and insert Empty PCB's which have been exposed in a UV Light Box. Can be heated above 50°C for progressively faster progression (but Etching Acid will be slowly used when heated). \\nExtract Unassembled PCB's from the sides, and Failed PCB's from the top/bottom.",
 
   "gui.tab.info.logistic_frame_requester": "§0Requester frames can request resources from any other framed inventory. \\n \\nHere you can specify the resources and quantities that Logistics Drones / Logistics Modules should keep stocked in the framed inventory. Either insert items from your inventory, or search for an item/fluid by right clicking an empty slot.",
   "gui.tab.info.logistic_frame_passive_provider": "§0Passive Provider frames can provide resources to Requester Frames. \\n \\nBy default the framed inventory will provide every item in the inventory. By adding items to this filter, only those items will be provided. Add items from your inventory, or search for an item/fluid by right clicking an empty slot.",
@@ -565,6 +567,9 @@
   "gui.tab.problems.air_cannon.inv_space": "§7No Inventory Space \\n§0The last-fired item couldn't be inserted into the target inventory due to lack of space.",
   "gui.tab.problems.elevator.fully_extended": "§7Fully Extended \\n§0Add (more) Elevator Frames on top of the elevator.",
   "gui.tab.problems.uv_light_box.no_item": "§7No Item \\n§0Insert an item to be exposed.",
+  "gui.tab.problems.etching_tank.output_full": "§7Output Full \\n§0No further items can be etched until the output is cleared.",
+  "gui.tab.problems.etching_tank.failed_full": "§7Failed Output Full \\n§0No further items can be etched until the failed output is cleared.",
+  "gui.tab.problems.etching_tank.no_acid": "§7No Etching Acid \\n§0Fill the tank with some Etching Acid.",
 
   "_comment": "Upgrades",
   "gui.tab.upgrades": "Upgrades",
@@ -1120,7 +1125,7 @@
 
   "_comment": "Item tooltips",
   "gui.tooltip.item.pneumaticcraft.plastic_bucket": "Pour into the world or chill in an inventory with a Heat Frame to solidify into Plastic Sheets. Using a Heat Frame might get you better results...",
-  "gui.tooltip.item.pneumaticcraft.etching_acid_bucket": "Place the Etching Acid in the world and throw in an Empty PCB that has been exposed in a UV Light Box. After 5 minutes, an Unassembled PCB will be produced.",
+  "gui.tooltip.item.pneumaticcraft.etching_acid_bucket": "Put this into an Etching Tank to produce Unassembled PCB's from Empty PCB's.",
   "gui.tooltip.item.pneumaticcraft.lpg_bucket": "Used in a Thermopneumatic Processing Plant together with Coal to produce Plastic. A superior liquid fuel. Can be placed in a Furnace.",
   "gui.tooltip.item.pneumaticcraft.gasoline_bucket": "Can be processed in a Thermopneumatic Processing Plant to produce LPG. An excellent liquid fuel (equivalent in quality to Thermal Expansion's Refined Fuel). Can be placed in a Furnace.",
   "gui.tooltip.item.pneumaticcraft.kerosene_bucket": "Can be processed in a Thermopneumatic Processing Plant to produce Gasoline. A good liquid fuel. Can be placed in a Furnace.",
@@ -1129,7 +1134,6 @@
   "gui.tooltip.item.pneumaticcraft.lubricant_bucket": "Required for the creation of Speed Upgrades.",
   "gui.tooltip.item.pneumaticcraft.gps_tool": "Stores a coordinate in the world by right-clicking a block. Used in various blocks, like the Air Cannon, Universal Sensor and Programmer. \\n \\nIn a Programmer: \\n• Left-click empty programming area: create new Coordinate puzzle piece \\n• Shift+Left-click empty programming area: create new Area puzzle piece \\n• Left-click existing Coordinate or Area piece: overwrite it",
   "gui.tooltip.item.pneumaticcraft.gps_area_tool": "Stores two coordinates in the world. Right-click a block to change the first coordinate (P1), and left-click for the second coordinate (P2). \\n \\nIn a Programmer: \\n• Left-click empty programming area: create new Area puzzle piece \\n• Left-click existing Area piece: overwrite it.",
-  "gui.tooltip.item.pneumaticcraft.machine_upgrade": "Can be used in most machines to upgrade the functionality of the machine.",
   "gui.tooltip.item.pneumaticcraft.air_canister": "Can be (dis)charged with a Charging Station. Used in the crafting of most pneumatically chargeable items.",
   "gui.tooltip.item.pneumaticcraft.reinforced_air_canister": "A stronger version of the basic Air Canister. In conjunction with a couple of Aerial Interfaces, Charging Modules and an Ender Chest, this could have some wireless pressure transfer possibilities...",
   "gui.tooltip.item.pneumaticcraft.vortex_cannon": "Shoots air vortices - harmless projectiles which repel entities, shear animals, and destroy plants & leaves.  With careful timing, you can also fling yourself considerable distances, but beware fall damage!",
@@ -1168,9 +1172,9 @@
   "gui.tooltip.item.pneumaticcraft.minigun": "This handheld weapon requires Gun Ammo to operate, which must be placed in the gun's magazine; Sneak + Right-click to access the magazine. \\n This Minigun can be upgraded in a Charging Station.",
   "gui.tooltip.item.pneumaticcraft.upgrade_matrix": "Crafting component for upgrades. Can be used to save on Lapis Lazuli.",
   "gui.tooltip.item.uvLightBox.successChance": "Etch success chance: %d%%",
-  "gui.tooltip.item.uvLightBox.putInLightBox": "Put in a UV Light Box to progress...",
+  "gui.tooltip.item.uvLightBox.putInLightBox": "Put in a UV Light Box to expose...",
   "gui.tooltip.item.uvLightBox.etchProgress": "Etching progress: %d%%",
-  "gui.tooltip.item.uvLightBox.putInAcid": "Throw in Etching Acid to develop...",
+  "gui.tooltip.item.uvLightBox.putInAcid": "Put in an Etching Tank to develop...",
   "gui.tooltip.item.upgrade.usedIn": "Used in:",
   "gui.tooltip.item.upgrade.shiftMessage": "Hold Shift to see what uses this upgrade",
 
@@ -1201,6 +1205,9 @@
   "gui.tooltip.hacking.detectionChance": "DETECTION: %d%%",
   "gui.tooltip.hacking.rightClickFortify": "Right-click to fortify",
   "gui.tooltip.hacking.leftClickHack": "Left-click to hack",
+
+  "gui.tooltip.etching_tank.process_time": "Etching time: %d secs",
+  "gui.tooltip.etching_tank.acid_usage": "Etching Acid usage: ~%s mB/sec",
 
   "_comment": "Keybindings screen",
   "pneumaticcraft.armor.options": "Pneumatic Armor General Options",
@@ -1423,6 +1430,8 @@
   "gui.nei.tooltip.vacuumEnchantItem": "§aAny enchanted item",
   "gui.nei.tooltip.vacuumEnchantItemOut": "§aThe input item with one enchantment removed (and added to the book)",
   "gui.nei.tooltip.vacuumEnchantBookOut": "§aThe input book with one enchantment from the item added to it",
+  "gui.jei.tooltip.plasticSolidifying": "Pour a bucket of Molten Plastic into the world; it will solidify to a Plastic Sheet within a second.",
+  "gui.jei.title.plasticSolidifying": "In-world Solidifying",
   "gui.jei.filterDrag": "Tip: Items and fluids can be dragged straight from JEI to the filter slots.",
 
   "_comment": "Amadron",

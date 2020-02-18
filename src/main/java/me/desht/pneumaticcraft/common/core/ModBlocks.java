@@ -169,6 +169,8 @@ public class ModBlocks {
             BlockThermalCompressor::new);
     public static final RegistryObject<BlockHeatPipe> HEAT_PIPE = register("heat_pipe",
             BlockHeatPipe::new);
+    public static final RegistryObject<BlockEtchingTank> ETCHING_TANK = register("etching_tank",
+            BlockEtchingTank::new);
 
     public static final RegistryObject<Block> REINFORCED_STONE = register("reinforced_stone",
             () -> new Block(reinforcedStoneProps()));

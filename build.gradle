@@ -155,17 +155,16 @@ minecraft {
             source sourceSets.main
         }
         data {
-            taskName 'pneumaticcraft_data'
             workingDirectory project.file('run')
-            environment 'target', 'fmluserdevdata'
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+            property 'fml.earlyprogresswindow', 'false'
             mods {
                 pneumaticcraft {
                     source sourceSets.main
                 }
             }
-            args '--mod', 'pneumaticcraft', '--all', '--output',  file('src/generated/resources/')
+            args '--mod', 'pneumaticcraft', '--all', '--output', file('src/generated/resources/')
+            environment 'target', 'fmluserdevdata'
         }
     }
 }

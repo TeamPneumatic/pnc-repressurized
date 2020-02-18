@@ -10,24 +10,29 @@
     },
     {
       "type": "pneumaticcraft:pressure_chamber",
-      "item": "pneumaticcraft:empty_pcb"
+      "recipe": "pneumaticcraft:empty_pcb"
     },
     {
       "type": "text",
       "title": "Method #1",
-      "text": "This method is the only one available initially, and is somewhat slow: you can develop a $(item)PCB/$ chemically by putting it in a $(l:manufacturing/uv_light_box)UV Light Box/$ and then throwing the exposed $(item)Empty PCB/$ in a pool of $(l:manufacturing/etching_acid)Etching Acid/$ to turn it into an $(item)Unassembled PCB/$."
+      "text": "This method is the only one available initially, and is somewhat slow without extra automation and heating infrastructure: you can develop a $(item)PCB/$ chemically by putting it in a $(l:manufacturing/uv_light_box)UV Light Box/$ and then putting the exposed $(item)Empty PCB/$ into a $(l:manufacturing/etching_tank)Etching Tank/$ to turn it into an $(item)Unassembled PCB/$."
     },
     {
       "type": "smelting",
       "title": "Recycling Failed PCB's",
-      "recipe": "pneumaticcraft:failed_pcb",
-      "text": "The etching process has a chance of failure if the $(item)Empty PCB/$ was not 100% exposed in the $(l:manufacturing/uv_light_box)UV Light Box/$; you can recycle $(item)Failed PCB's/$ in a $(item)Furnace/$ (or other smelting device)"
+      "recipe": "pneumaticcraft:empty_pcb_from_failed_pcb",
+      "text": "The etching process has a chance of failure if the $(item)Empty PCB/$ was not 100% exposed in the $(l:manufacturing/uv_light_box)UV Light Box/$; you can recycle $(item)Failed PCB's/$ in a $(item)Blast Furnace/$."
     },
     {
       "type": "spotlight",
       "title": "Method #2",
       "item": "pneumaticcraft:assembly_controller",
-      "text": "Once you can make an $(l:manufacturing/assembly_system)Assembly System/$, you can use that to turn $(item)Empty PCB's/$ directly into an $(item)Unassembled PCB/$ with an $(item)Assembly Program: Laser/$.$(p)There's no need to expose it in a $(item)UV Light Box/$ or drop it in $(item)Etching Acid/$ in this case."
+      "text": "Once you can make an $(l:manufacturing/assembly_system)Assembly System/$, you can use that to turn $(item)Empty PCB's/$ directly into $(item)Unassembled PCB's/$ with an $(item)Assembly Program: Laser/$. There's no need to expose it in a $(item)UV Light Box/$ or use an $(item)Etching Tank/$ in this case."
+    },
+    {
+      "type": "text",
+      "title": "Method #2 (cont)",
+      "text": "$(p)The Assembly System is a very convenient and reasonably quick option for producing $(item)Unassembled PCB's/$; however with sufficient automation and heating infrastructure, the $(thing)UV Light Box/Etching Tank/$ combo can be much quicker, especially if you need to mass-produce PCB's."
     },
     {
       "type": "pneumaticcraft:assembly_system",

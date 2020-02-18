@@ -146,9 +146,6 @@ public class PneumaticCraftRepressurized {
 //            LootTableList.register(RL("inject/simple_dungeon_loot"));
 //        }
 
-        // TODO 1.14 tags
-//        OreDictionaryHelper.addOreDictEntries();
-
         // stuff to do after every other mod is done initialising
         DeferredWorkQueue.runLater(() -> {
             DispenserBlock.registerDispenseBehavior(ModItems.DRONE.get(), new BehaviorDispenseDrone());
@@ -156,8 +153,6 @@ public class PneumaticCraftRepressurized {
             DispenserBlock.registerDispenseBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());
 
             ModNameCache.init();
-//            HeatBehaviourManager.getInstance().onPostInit();
-//            HeatExchangerManager.getInstance().onPostInit();
             FluidFuelManager.registerFuels();
             ThirdPartyManager.instance().postInit();
 

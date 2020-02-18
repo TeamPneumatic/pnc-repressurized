@@ -2,10 +2,9 @@ package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
-import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariableProvider;
-import vazkii.patchouli.api.PatchouliAPI;
 import vazkii.patchouli.common.util.ItemStackUtil;
 
 public class ProcessorPressureChamber implements IComponentProcessor {
@@ -13,15 +12,8 @@ public class ProcessorPressureChamber implements IComponentProcessor {
 
     @Override
     public void setup(IVariableProvider<String> iVariableProvider) {
-        ItemStack result = PatchouliAPI.instance.deserializeItemStack(iVariableProvider.get("item"));
-
-        // FIXME: only supports recipes with a single output
-        for (IPressureChamberRecipe recipe : PneumaticCraftRecipes.pressureChamberRecipes.values()) {
-            if (ItemStack.areItemStacksEqual(result, recipe.getResultForDisplay().get(0))) {
-                this.recipe = recipe;
-                break;
-            }
-        }
+        String recipeName = iVariableProvider.get("recipe");
+        this.recipe = PneumaticCraftRecipes.pressureChamberRecipes.get(new ResourceLocation(recipeName));
     }
 
     @Override

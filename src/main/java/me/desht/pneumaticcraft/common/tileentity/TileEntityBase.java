@@ -600,13 +600,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
      * @param drops list in which to collect dropped items
      */
     public void getContentsToDrop(NonNullList<ItemStack> drops) {
-        getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> {
-            for (int i = 0; i < h.getSlots(); i++) {
-                if (!h.getStackInSlot(i).isEmpty()) {
-                    drops.add(h.getStackInSlot(i));
-                }
-            }
-        });
+        PneumaticCraftUtils.collectNonEmptyItems(getPrimaryInventory(), drops);
 
         if (!shouldPreserveStateOnBreak()) {
             UpgradeHandler uh = getUpgradeHandler();

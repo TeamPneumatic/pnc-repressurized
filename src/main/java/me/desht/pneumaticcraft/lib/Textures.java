@@ -108,14 +108,12 @@ public class Textures {
     public static final ResourceLocation GUI_ADVANCED_AIR_COMPRESSOR_LOCATION = guiTexture("gui_advanced_air_compressor.png");
     public static final ResourceLocation GUI_AIR_CANNON_LOCATION = guiTexture("gui_air_cannon.png");
     public static final ResourceLocation GUI_4UPGRADE_SLOTS = guiTexture("gui_pressure_chamber.png");
-    public static final ResourceLocation GUI_JEI_PRESSURE_CHAMBER_LOCATION = guiTexture("gui_nei_pressure_chamber.png");
     public static final ResourceLocation GUI_CHARGING_STATION_LOCATION = guiTexture("gui_charging_station.png");
     public static final ResourceLocation GUI_PNEUMATIC_ARMOR_LOCATION = guiTexture("gui_pneumatic_armor.png");
     public static final ResourceLocation GUI_PRESSURE_CHAMBER_INTERFACE_LOCATION = guiTexture("gui_pressure_chamber_interface.png");
     public static final ResourceLocation GUI_VACUUM_PUMP_LOCATION = guiTexture("gui_vacuum_pump.png");
     public static final ResourceLocation GUI_ITEM_SEARCHER_LOCATION = guiTexture("gui_item_searcher.png");
     public static final ResourceLocation GUI_ASSEMBLY_CONTROLLER = guiTexture("gui_assembly_controller.png");
-    public static final ResourceLocation GUI_NEI_ASSEMBLY_CONTROLLER = guiTexture("gui_nei_assembly_controller.png");
     public static final ResourceLocation GUI_LASER_DANGER = guiTexture("gui_laser_danger.png");
     public static final ResourceLocation GUI_UV_LIGHT_BOX = guiTexture("gui_uv_light_box.png");
     public static final ResourceLocation GUI_UV_LIGHT_BOX_ON = guiTexture("gui_uv_light_box_on.png");
@@ -140,7 +138,6 @@ public class Textures {
     public static final ResourceLocation GUI_THERMOPNEUMATIC_PROCESSING_PLANT = guiTexture("gui_thermopneumatic_processing_plant.png");
     public static final ResourceLocation GUI_LOGISTICS_REQUESTER = guiTexture("gui_logistics_requester.png");
     public static final ResourceLocation GUI_AMADRON = guiTexture("gui_amadron.png");
-    public static final ResourceLocation GUI_JEI_MISC_RECIPES = guiTexture("gui_nei_misc_recipes.png");
     public static final ResourceLocation GUI_KEROSENE_LAMP = guiTexture("gui_kerosene_lamp.png");
     public static final ResourceLocation GUI_SENTRY_TURRET = guiTexture("gui_sentry_turret.png");
     public static final ResourceLocation GUI_MINIGUN_MAGAZINE = guiTexture("gui_minigun_magazine.png");
@@ -153,6 +150,12 @@ public class Textures {
     public static final ResourceLocation GUI_MODULE_SIMPLE = guiTexture("gui_tube_module_simple.png");
     public static final ResourceLocation GUI_MICROMISSILE = guiTexture("gui_micromissile.png");
     public static final ResourceLocation GUI_AMADRON_ADD_TRADE = guiTexture("gui_amadron_add_trade.png");
+    public static final ResourceLocation GUI_ETCHING_TANK = guiTexture("gui_etching_tank.png");
+
+    public static final ResourceLocation GUI_JEI_PRESSURE_CHAMBER_LOCATION = guiTexture("jei/gui_jei_pressure_chamber.png");
+    public static final ResourceLocation GUI_JEI_ASSEMBLY_CONTROLLER = guiTexture("jei/gui_jei_assembly_controller.png");
+    public static final ResourceLocation GUI_JEI_MISC_RECIPES = guiTexture("jei/gui_jei_misc_recipes.png");
+    public static final ResourceLocation GUI_JEI_ETCHING_TANK = guiTexture("jei/gui_jei_etching_tank.png");
 
     // misc GUI Icons
     public static final ResourceLocation GUI_COPY_ICON_LOCATION = guiIconTexture("gui_copy.png");

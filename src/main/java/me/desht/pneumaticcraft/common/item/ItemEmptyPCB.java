@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.core.ModFluids;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemGroup;
@@ -13,6 +14,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 
@@ -20,7 +22,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ItemEmptyPCB extends ItemNonDespawning {
+public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurabilityBar {
     private static final String NBT_ETCH_PROGRESS = "pneumaticcraft:etch_progress";
 
     @Override
@@ -30,22 +32,22 @@ public class ItemEmptyPCB extends ItemNonDespawning {
         int etchProgress = getEtchProgress(stack);
 
         infoList.add(xlate("gui.tooltip.item.uvLightBox.successChance", uvProgress));
-        if (uvProgress < 100) {
-            infoList.add(xlate("gui.tooltip.item.uvLightBox.putInLightBox"));
+        if (uvProgress < 100 && etchProgress == 0) {
+            infoList.add(xlate("gui.tooltip.item.uvLightBox.putInLightBox").applyTextStyle(TextFormatting.GRAY));
         }
         if (etchProgress > 0) {
             infoList.add(xlate("gui.tooltip.item.uvLightBox.etchProgress", etchProgress));
         }
         if (uvProgress > 0) {
-            infoList.add(xlate("gui.tooltip.item.uvLightBox.putInAcid"));
+            infoList.add(xlate("gui.tooltip.item.uvLightBox.putInAcid").applyTextStyle(TextFormatting.GRAY));
         }
     }
 
-    private static int getEtchProgress(ItemStack stack) {
+    public static int getEtchProgress(ItemStack stack) {
         return stack.hasTag() ? stack.getTag().getInt(NBT_ETCH_PROGRESS) : 0;
     }
 
-    private static void setEtchProgress(ItemStack stack, int progress) {
+    public static void setEtchProgress(ItemStack stack, int progress) {
         Validate.isTrue(progress >= 0 && progress <= 100);
         stack.getOrCreateTag().putInt(NBT_ETCH_PROGRESS, progress);
     }
@@ -58,8 +60,7 @@ public class ItemEmptyPCB extends ItemNonDespawning {
 
     @Override
     public boolean showDurabilityBar(ItemStack stack) {
-        int progress = TileEntityUVLightBox.getExposureProgress(stack);
-        return progress < 100;
+        return true;
     }
 
     @Override
@@ -72,7 +73,7 @@ public class ItemEmptyPCB extends ItemNonDespawning {
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entityItem) {
         super.onEntityItemUpdate(stack, entityItem);
 
-        if (entityItem.world.getFluidState(new BlockPos(entityItem)).getFluid() == ModFluids.ETCHING_ACID.get()) {
+        if (entityItem.world.getFluidState(new BlockPos(entityItem)).getFluid().isIn(PneumaticCraftTags.Fluids.ETCHING_ACID)) {
             if (!stack.hasTag()) {
                 stack.setTag(new CompoundNBT());
             }
@@ -123,5 +124,25 @@ public class ItemEmptyPCB extends ItemNonDespawning {
             TileEntityUVLightBox.setExposureProgress(stack, 100);
             items.add(stack);
         }
+    }
+
+    @Override
+    public boolean shouldShowCustomDurabilityBar(ItemStack stack) {
+        return ItemEmptyPCB.getEtchProgress(stack) > 0;
+    }
+
+    @Override
+    public int getCustomDurabilityColour(ItemStack stack) {
+        return MaterialColor.EMERALD.colorValue;
+    }
+
+    @Override
+    public float getCustomDurability(ItemStack stack) {
+        return ItemEmptyPCB.getEtchProgress(stack) / 100f;
+    }
+
+    @Override
+    public boolean isShowingOtherBar(ItemStack stack) {
+        return true;
     }
 }

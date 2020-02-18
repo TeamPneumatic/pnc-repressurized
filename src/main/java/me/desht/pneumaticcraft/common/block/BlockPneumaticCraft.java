@@ -32,11 +32,8 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.util.*;
 import net.minecraft.util.Direction.Axis;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -118,8 +115,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (!world.isRemote) {
                 if (te instanceof TileEntityBase) {
                     if (FluidUtils.tryFluidInsertion(te, null, player, hand)) {
+                        world.playSound(null, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
                         return true;
                     } else if (FluidUtils.tryFluidExtraction(te, null, player, hand)) {
+                        world.playSound(null, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
                         return true;
                     }
                     if (te instanceof INamedContainerProvider) {

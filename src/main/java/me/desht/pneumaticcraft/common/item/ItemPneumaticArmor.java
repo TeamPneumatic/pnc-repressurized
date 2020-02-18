@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
@@ -51,7 +52,7 @@ import java.util.Map;
 //        @Optional.Interface(iface = "thaumcraft.api.items.IRevealer", modid = ModIds.THAUMCRAFT)
 //})
 public class ItemPneumaticArmor extends ArmorItem
-        implements IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem
+        implements IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem, ICustomDurabilityBar
         /*, IVisDiscountGear, IGoggles, IRevealer,*/
 {
 
@@ -261,6 +262,23 @@ public class ItemPneumaticArmor extends ArmorItem
     @Override
     public INamedContainerProvider getContainerProvider(TileEntityChargingStation te) {
         return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_ARMOR.get());
+    }
+
+    @Override
+    public boolean shouldShowCustomDurabilityBar(ItemStack stack) {
+        return ItemPressurizable.shouldShowPressureDurability(stack);
+    }
+
+    @Override
+    public int getCustomDurabilityColour(ItemStack stack) {
+        return ItemPressurizable.getPressureDurabilityColor(stack);
+    }
+
+    @Override
+    public float getCustomDurability(ItemStack stack) {
+        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+                .map(h -> h.getPressure() / h.maxPressure())
+                .orElseThrow(RuntimeException::new);
     }
 
     /*------- Thaumcraft -------- */

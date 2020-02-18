@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/etching_tank",
+  "transform": "forge:default-block"
+}

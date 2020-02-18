@@ -26,6 +26,7 @@ import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
 import net.minecraft.util.text.ITextComponent;
@@ -718,6 +719,21 @@ public class PneumaticCraftUtils {
     }
 
     /**
+     * Add all of the non-empty items in the given item handler to the given list.
+     * @param handler the item handler
+     * @param items the list
+     */
+    public static void collectNonEmptyItems(IItemHandler handler, NonNullList<ItemStack> items) {
+        if (handler != null) {
+            for (int i = 0; i < handler.getSlots(); i++) {
+                if (!handler.getStackInSlot(i).isEmpty()) {
+                    items.add(handler.getStackInSlot(i));
+                }
+            }
+        }
+    }
+
+    /**
      * Convenience method, ported from 1.8.  Try to consume one item from the player's inventory.
      *
      * @param inv player's inventory
@@ -737,20 +753,6 @@ public class PneumaticCraftUtils {
         }
         return toConsume <= 0;
     }
-
-//    /**
-//     * Gets a tile entity without risking creation of a new one, which can cause all sorts of problems if called
-//     * from Block#getActualState or Block#getExtendedState
-//     *
-//     * @param world the world
-//     * @param pos the block position
-//     * @return the tile entity, or null if there is none
-//     */
-//    public static TileEntity getTileEntitySafely(IBlockReader world, BlockPos pos) {
-//        return world instanceof Region ?
-//                ((Region) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) :
-//                world.getTileEntity(pos);
-//    }
 
     /**
      * Get a resource location with the domain of PneumaticCraft: Repressurized's mod ID.

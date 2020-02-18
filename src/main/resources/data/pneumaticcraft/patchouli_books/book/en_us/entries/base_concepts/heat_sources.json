@@ -10,7 +10,7 @@
     {
       "type": "text",
       "title": "Vanilla Heat Sources",
-      "text": "The following vanilla blocks & fluids act as static heat sources: $(li)Air$(li)Ice$(li)Packed Ice$(li)Snow$(li)Torch$(li)Fire (will go out)$(li)Magma (cools to Netherrack)$(li)Water (may freeze or evaporate)$(li)Lava (cools to Obsidian)"
+      "text": "The following vanilla blocks & fluids act as static heat sources: $(li)Air$(li)Ice/Packed Ice/Blue Ice$(li)Snow$(li)Torch$(li)Fire (will go out)$(li)Magma (cools to Netherrack)$(li)Water (may freeze or evaporate)$(li)Lava (cools to Obsidian)$(li)Campfire (will go out)"
     },
     {
       "type": "text",
@@ -20,12 +20,12 @@
     {
       "type": "text",
       "title": "Adding Custom Sources",
-      "text": "(Primarily for modpack creators) The file $(thing)config/pneumaticcraft/BlockHeatProperties.cfg/$ can be used to define custom heat properties for pretty much any block or fluid in the game. You can freely edit this JSON file, and your changes won't be overwritten by new versions of the mod (although new entries may be added). You can delete the file to force a 'factory reset'."
+      "text": "(For modpack makers) All block heat properties are defined in datapacks. You can add your own definitions or override/remove default definitions by adding JSON files to $(thing)data/pneumaticcraft/pneumaticcraft/block_heat_properties/$."
     },
     {
       "type": "spotlight",
       "item": "pneumaticcraft:vortex_tube",
-      "text": "A $(l:machines/vortex_tube)Vortex Tube/$ is a $(thing)dynamic heat source/$ which converts $(l:base_concepts/pressure)pressure/$ directly to heat and cold."
+      "text": "A $(l:machines/vortex_tube)Vortex Tube/$ is a $(thing)dynamic heat source/$ which converts $(l:base_concepts/pressure)pressure/$ directly to heat and cold. It's highly recommended to put a $(l:machines/heat_sink) on the unused side of a Vortex Tube, for efficiency."
     },
     {
       "type": "spotlight",
@@ -35,7 +35,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:heat_sink",
-      "text": "A $(l:machines/heat_sink)Heat Sink/$ is a block that can be used to disperse Heat (or cold!) from the block it's attached to, into the atmosphere."
+      "text": "A $(l:machines/heat_sink)Heat Sink/$ is a block that can be used to efficiently disperse Heat (or cold!) from the block it's attached to, into the atmosphere."
     },
     {
       "type": "spotlight",
