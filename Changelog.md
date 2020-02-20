@@ -6,6 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.10-385 (20 Feb 2020)
+#### Updates
+* Widgets in the Remote GUI now support global variable interpolation in their tooltips
+#### Fixes
+* Fixed client NPE when logging in in specific circumstances
+* Fixed Remote GUI dropdown text being truncated to 32 characters
+* Fixed Programmer GUI zooming behaviour (position now properly remains focused on where the pointer is when the mouse wheel is rolled)
+
 ### 0.11.9-383 (31 Jan 2020)
 #### Fixes
 * Fixed Amadron player-player trades not always paying out to the selling player.
