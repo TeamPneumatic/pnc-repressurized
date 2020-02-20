@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemAssign;
-import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 
 public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetItemAssign> {
     private WidgetComboBox textfield;

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemote;
-import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -44,7 +44,7 @@ public class PacketSetGlobalVariable extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             GlobalVariableManager.getInstance().set(varName, pos);
-            if (ctx.get().getSender().world.isRemote) {
+            if (ctx.get().getSender() == null) {
                 GuiRemote.maybeHandleVariableChange(varName);
             }
         });

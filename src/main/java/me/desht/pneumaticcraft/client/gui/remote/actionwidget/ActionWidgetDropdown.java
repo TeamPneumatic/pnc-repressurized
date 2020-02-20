@@ -1,10 +1,11 @@
-package me.desht.pneumaticcraft.common.remote;
+package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteDropdown;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
@@ -27,10 +28,12 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
     public ActionWidgetDropdown(WidgetComboBox widget) {
         super(widget);
+        x = widget.x;
+        y = widget.y;
         width = widget.getWidth();
         height = widget.getHeight();
-        widget.setText(I18n.format("remote.dropdown.name"));
-        widget.setTooltip(WordUtils.wrap(I18n.format("remote.dropdown.tooltip"), 50).split(System.getProperty("line.separator")));
+        widget.setText(I18n.format("gui.remote.tray.dropdown.name"));
+        widget.setTooltip(WordUtils.wrap(I18n.format("gui.remote.tray.dropdown.tooltip"), 50).split(System.getProperty("line.separator")));
     }
 
     @Override
@@ -90,13 +93,19 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     @Override
     public WidgetComboBox getWidget() {
         if (widget == null) {
-            widget = new WidgetComboBox(Minecraft.getInstance().fontRenderer, x, y, width, height);
+            widget = new WidgetComboBox(Minecraft.getInstance().fontRenderer, x, y, width, height, this::onPressed);
             widget.setElements(getDropdownElements());
             widget.setFixedOptions();
             widget.setShouldSort(sorted);
             updateWidget();
         }
         return widget;
+    }
+
+    private void onPressed(WidgetComboBox comboBox) {
+        if (comboBox.getSelectedElementIndex() >= 0) {
+            NetworkHandler.sendToServer(new PacketSetGlobalVariable(getVariableName(), comboBox.getSelectedElementIndex()));
+        }
     }
 
     private String[] getDropdownElements() {

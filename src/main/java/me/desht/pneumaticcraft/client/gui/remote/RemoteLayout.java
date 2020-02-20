@@ -1,5 +1,6 @@
-package me.desht.pneumaticcraft.common.remote;
+package me.desht.pneumaticcraft.client.gui.remote;
 
+import me.desht.pneumaticcraft.client.gui.remote.actionwidget.*;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;

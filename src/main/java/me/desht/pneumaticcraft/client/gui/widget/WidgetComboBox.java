@@ -6,6 +6,7 @@ import net.minecraft.client.gui.FontRenderer;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class WidgetComboBox extends WidgetTextField {
@@ -17,12 +18,18 @@ public class WidgetComboBox extends WidgetTextField {
     private boolean shouldSort = true;
     private int selectedIndex = -1;
     private final int baseHeight; // unexpanded height
+    private final Consumer<WidgetComboBox> pressable;
     private List<String> applicable = null;
 
     public WidgetComboBox(FontRenderer fontRenderer, int x, int y, int width, int height) {
+        this(fontRenderer, x, y, width, height, b -> {});
+    }
+
+    public WidgetComboBox(FontRenderer fontRenderer, int x, int y, int width, int height, Consumer<WidgetComboBox> pressable) {
         super(fontRenderer, x, y, width, height);
         this.fontRenderer = fontRenderer;
         this.baseHeight = height;
+        this.pressable = pressable;
     }
 
     public WidgetComboBox setElements(Collection<String> elements) {
@@ -46,11 +53,11 @@ public class WidgetComboBox extends WidgetTextField {
     }
 
     private List<String> getApplicableElements() {
-        if (applicable == null) {
+//        if (applicable == null) {
             applicable = elements.stream()
                     .filter(element -> fixedOptions || element.toLowerCase().contains(getText().toLowerCase()))
                     .collect(Collectors.toList());
-        }
+//        }
         return applicable;
     }
 
@@ -98,6 +105,7 @@ public class WidgetComboBox extends WidgetTextField {
                     if (i < getApplicableElements().size()) {
                         setText(getApplicableElements().get(i));
                         selectedIndex = i;
+                        pressable.accept(this);
                     }
                 }
                 return true;
@@ -118,6 +126,11 @@ public class WidgetComboBox extends WidgetTextField {
             }
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char key, int keyCode) {
+        return !fixedOptions && super.charTyped(key, keyCode);
     }
 
     @Override

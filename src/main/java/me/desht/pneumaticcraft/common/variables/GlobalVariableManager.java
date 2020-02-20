@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.remote;
+package me.desht.pneumaticcraft.common.variables;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -8,6 +8,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -28,7 +29,7 @@ public class GlobalVariableManager extends WorldSavedData {
 
     private final Map<String, BlockPos> globalVars = new HashMap<>();
     private final Map<String, ItemStack> globalItemVars = new HashMap<>();
-    public static ServerWorld overworld;
+    private static ServerWorld overworld;
 
     public static GlobalVariableManager getInstance() {
         if (EffectiveSide.get() == LogicalSide.CLIENT) {
@@ -99,7 +100,7 @@ public class GlobalVariableManager extends WorldSavedData {
     @Override
     public void read(CompoundNBT tag) {
         globalVars.clear();
-        ListNBT list = tag.getList("globalVars", 10);
+        ListNBT list = tag.getList("globalVars", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             CompoundNBT t = list.getCompound(i);
             globalVars.put(t.getString("varName"), new BlockPos(t.getInt("x"), t.getInt("y"), t.getInt("z")));
@@ -110,7 +111,7 @@ public class GlobalVariableManager extends WorldSavedData {
 
     public static void readItemVars(CompoundNBT tag, Map<String, ItemStack> map) {
         map.clear();
-        ListNBT list = tag.getList("globalItemVars", 10);
+        ListNBT list = tag.getList("globalItemVars", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             CompoundNBT t = list.getCompound(i);
             map.put(t.getString("varName"), ItemStack.read(t.getCompound("item")));

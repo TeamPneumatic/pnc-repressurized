@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.remote;
+package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteButton;

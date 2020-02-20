@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
+import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidget;
+import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariable;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
-import me.desht.pneumaticcraft.common.remote.ActionWidget;
-import me.desht.pneumaticcraft.common.remote.ActionWidgetVariable;
-import me.desht.pneumaticcraft.common.remote.RemoteLayout;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -74,5 +74,10 @@ public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEnt
                 ((ActionWidgetVariable) actionWidget).onVariableChange();
             }
         }
+    }
+
+    @Override
+    protected boolean shouldParseVariablesInTooltips() {
+        return true;
     }
 }

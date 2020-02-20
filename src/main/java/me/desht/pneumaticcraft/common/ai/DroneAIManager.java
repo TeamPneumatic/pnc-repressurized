@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.progwidgets.*;
-import me.desht.pneumaticcraft.common.remote.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;

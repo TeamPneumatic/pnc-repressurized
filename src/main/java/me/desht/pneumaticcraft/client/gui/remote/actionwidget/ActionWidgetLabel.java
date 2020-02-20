@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.remote;
+package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteOptionBase;
@@ -20,7 +20,7 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
         tag.putString("text", widget.getMessage());
         tag.putInt("x", widget.x - guiLeft);
         tag.putInt("y", widget.y - guiTop);
-//        tag.putString("tooltip", widget.getTooltip());
+        tag.putString("tooltip", widget.getTooltip());
         return tag;
     }
 
@@ -28,7 +28,7 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
         widget = new WidgetLabelVariable(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, tag.getString("text"));
-//        widget.setTooltipText(tag.getString("tooltip"));
+        widget.setTooltipText(tag.getString("tooltip"));
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
 
     @Override
     public Screen getGui(GuiRemoteEditor guiRemote) {
-        return new GuiRemoteOptionBase(this, guiRemote);
+        return new GuiRemoteOptionBase<>(this, guiRemote);
     }
 
     @Override
@@ -59,11 +59,11 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
 
     @Override
     public void setTooltip(String text) {
-//        widget.setTooltipText(text);
+        widget.setTooltipText(text);
     }
 
     @Override
     public String getTooltip() {
-        return "";//widget.getTooltip();
+        return widget.getTooltip();
     }
 }

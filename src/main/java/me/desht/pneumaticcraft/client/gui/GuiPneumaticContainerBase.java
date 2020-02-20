@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.MainWindow;
@@ -315,10 +316,15 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
                 ((ITooltipProvider) widget).addTooltip(x, y, tooltip, Screen.hasShiftDown());
             }
         }
+        if (shouldParseVariablesInTooltips()) {
+            for (int i = 0; i < tooltip.size(); i++) {
+                tooltip.set(i, new TextVariableParser(tooltip.get(i)).parse());
+            }
+        }
 
         if (tooltip.size() > 0) {
             drawHoveringString(tooltip, x, y, font);
-            tooltip.clear();
+//            tooltip.clear();
         }
     }
 
@@ -516,5 +522,9 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         if (sendDelay > 0) doDelayedAction();  // ensure any pending delayed action is done
 
         super.onClose();
+    }
+
+    protected boolean shouldParseVariablesInTooltips() {
+        return false;
     }
 }

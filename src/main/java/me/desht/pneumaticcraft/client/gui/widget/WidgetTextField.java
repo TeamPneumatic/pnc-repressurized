@@ -44,6 +44,9 @@ public class WidgetTextField extends TextFieldWidget implements ITooltipProvider
 
     @Override
     public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
-        curTip.addAll(tooltip);
+        if (!isFocused()) {
+            // hide tooltip when actually typing; it just gets in the way
+            curTip.addAll(tooltip);
+        }
     }
 }

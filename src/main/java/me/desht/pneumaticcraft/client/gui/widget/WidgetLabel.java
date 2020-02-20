@@ -45,9 +45,16 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
         curTip.addAll(tooltip);
     }
 
-    public void setTooltipText(String text) {
+    public <T extends WidgetLabel> T setTooltipText(String text) {
         tooltip.clear();
-        tooltip.addAll(PneumaticCraftUtils.splitString(I18n.format(text), 35));
+        if (!text.isEmpty()) {
+            tooltip.addAll(PneumaticCraftUtils.splitString(I18n.format(text), 35));
+        }
+        return (T) this;
+    }
+
+    public String getTooltip() {
+        return tooltip.isEmpty() ? "" : tooltip.get(0);
     }
 
     public void setColor(int color) {

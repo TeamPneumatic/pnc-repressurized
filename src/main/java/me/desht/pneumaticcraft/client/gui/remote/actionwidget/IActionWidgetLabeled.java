@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.remote;
+package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 public interface IActionWidgetLabeled {
     void setText(String text);

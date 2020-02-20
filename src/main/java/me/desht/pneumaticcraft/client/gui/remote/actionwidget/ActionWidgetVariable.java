@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.remote;
+package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteVariable;
@@ -39,7 +39,7 @@ public abstract class ActionWidgetVariable<W extends Widget> extends ActionWidge
 
     @Override
     public Screen getGui(GuiRemoteEditor guiRemote) {
-        return new GuiRemoteVariable(this, guiRemote);
+        return new GuiRemoteVariable<>(this, guiRemote);
     }
 
     public abstract void onActionPerformed();

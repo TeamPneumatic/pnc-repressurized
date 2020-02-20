@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.remote;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
+import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariable;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
-import me.desht.pneumaticcraft.common.remote.ActionWidgetVariable;
 import net.minecraft.client.resources.I18n;
 
 public class GuiRemoteVariable<A extends ActionWidgetVariable> extends GuiRemoteOptionBase<A> {
@@ -28,8 +28,8 @@ public class GuiRemoteVariable<A extends ActionWidgetVariable> extends GuiRemote
 
     @Override
     public void onClose() {
-        super.onClose();
-
         widget.setVariableName(variableField.getText());
+
+        super.onClose();
     }
 }

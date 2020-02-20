@@ -484,7 +484,9 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public Set<String> getAllVariables() {
         Set<String> variables = new HashSet<>();
         for (IProgWidget widget : progWidgets) {
-            if (widget instanceof IVariableWidget) ((IVariableWidget) widget).addVariables(variables);
+            if (widget instanceof IVariableWidget) {
+                ((IVariableWidget) widget).addVariables(variables);
+            }
         }
         variables.remove("");
         return variables;

@@ -2,11 +2,11 @@ package me.desht.pneumaticcraft.client.gui.remote;
 
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
+import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidget;
+import me.desht.pneumaticcraft.client.gui.remote.actionwidget.IActionWidgetLabeled;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
-import me.desht.pneumaticcraft.common.remote.ActionWidget;
-import me.desht.pneumaticcraft.common.remote.IActionWidgetLabeled;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
@@ -102,7 +102,7 @@ public class GuiRemoteOptionBase<A extends ActionWidget> extends GuiPneumaticScr
 
     @Override
     public void onClose() {
-        super.onClose();
+//        super.onClose();
 
         widget.setEnableVariable(enableField.getText());
         widget.setEnablingValue(xValueField.getValue(), yValueField.getValue(), zValueField.getValue());

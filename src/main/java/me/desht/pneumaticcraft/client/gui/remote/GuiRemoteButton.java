@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.remote;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
+import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
-import me.desht.pneumaticcraft.common.remote.ActionWidgetButton;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.BlockPos;
 
@@ -58,10 +58,10 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
 
     @Override
     public void onClose() {
-        super.onClose();
-
         widget.settingCoordinate = new BlockPos(xValueField.getValue(), yValueField.getValue(), zValueField.getValue());
         widget.setWidth(widthField.getValue());
         widget.setHeight(heightField.getValue());
+
+        super.onClose();
     }
 }
