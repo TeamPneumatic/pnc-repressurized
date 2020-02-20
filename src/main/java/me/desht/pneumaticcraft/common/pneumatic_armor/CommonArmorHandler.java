@@ -223,7 +223,8 @@ public class CommonArmorHandler {
 
     public float addAir(EquipmentSlotType slot, int airAmount) {
         float oldPressure = getArmorPressure(slot);
-        airHandlers.get(slot.getIndex()).ifPresent(h -> h.addAir(airAmount));
+        if (!player.isCreative() || airAmount > 0)
+            airHandlers.get(slot.getIndex()).ifPresent(h -> h.addAir(airAmount));
         return oldPressure;
     }
 
