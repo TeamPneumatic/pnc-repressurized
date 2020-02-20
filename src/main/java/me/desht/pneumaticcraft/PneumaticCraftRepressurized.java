@@ -98,6 +98,8 @@ public class PneumaticCraftRepressurized {
         ModParticleTypes.PARTICLES.register(modBus);
         ModRecipes.RECIPES.register(modBus);
         ModDecorators.DECORATORS.register(modBus);
+        ModVillagers.POI.register(modBus);
+        ModVillagers.PROFESSIONS.register(modBus);
         // Temp. hacky solution: delay adding deferred registration for custom registries
         // Proper forge support under discussion...
         modBus.addListener(EventPriority.LOW, this::addCustomRegistryDeferredRegisters);
@@ -138,6 +140,7 @@ public class PneumaticCraftRepressurized {
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();
         ModWorldGen.init();
+        ModVillagers.Structures.init();
 
         ThirdPartyManager.instance().init();
 
