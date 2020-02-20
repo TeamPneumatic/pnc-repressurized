@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.remote.ActionWidgetDropdown;
 import net.minecraft.client.resources.I18n;
+import org.lwjgl.input.Keyboard;
 
 public class GuiRemoteDropdown extends GuiRemoteVariable<ActionWidgetDropdown> {
     private WidgetTextField dropDownElementsField;
@@ -19,6 +20,8 @@ public class GuiRemoteDropdown extends GuiRemoteVariable<ActionWidgetDropdown> {
     @Override
     public void initGui() {
         super.initGui();
+
+        Keyboard.enableRepeatEvents(true);
 
         addLabel(I18n.format("gui.remote.button.width"), guiLeft + 10, guiTop + 100);
         addLabel(I18n.format("gui.remote.dropdown.dropDownElements"), guiLeft + 10, guiTop + 40);
@@ -43,6 +46,8 @@ public class GuiRemoteDropdown extends GuiRemoteVariable<ActionWidgetDropdown> {
     @Override
     public void onGuiClosed() {
         super.onGuiClosed();
+
+        Keyboard.enableRepeatEvents(false);
         widget.setDropDownElements(dropDownElementsField.getText());
         widget.setWidth(widthField.getValue());
         widget.setSorted(sortCheckBox.checked);
