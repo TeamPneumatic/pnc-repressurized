@@ -24,9 +24,9 @@ public class GuiRemoteDropdown extends GuiRemoteVariable<ActionWidgetDropdown> {
         addLabel(I18n.format("gui.remote.dropdown.dropDownElements"), guiLeft + 10, guiTop + 40);
 
         dropDownElementsField = new WidgetTextField(fontRenderer, guiLeft + 10, guiTop + 50, 160, 10);
+        dropDownElementsField.setMaxStringLength(32768);
         dropDownElementsField.setText(widget.getDropDownElements());
         dropDownElementsField.setTooltip(I18n.format("gui.remote.dropdown.dropDownElements.tooltip"));
-        dropDownElementsField.setMaxStringLength(32768);
         addWidget(dropDownElementsField);
 
         widthField = new WidgetTextFieldNumber(fontRenderer, guiLeft + 50, guiTop + 99, 30, 10);
