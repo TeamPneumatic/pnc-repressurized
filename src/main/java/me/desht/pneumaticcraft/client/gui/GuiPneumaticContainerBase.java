@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
+import me.desht.pneumaticcraft.common.remote.TextVariableParser;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
@@ -323,6 +324,11 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
             if (widget.getBounds().contains(x, y))
                 widget.addTooltip(x, y, tooltip, PneumaticCraftRepressurized.proxy.isSneakingInGui());
         }
+        if (shouldParseVariablesInTooltips()) {
+            for (int i = 0; i < tooltip.size(); i++) {
+                tooltip.set(i, new TextVariableParser(tooltip.get(i)).parse());
+            }
+        }
 
         if (tooltip.size() > 0) {
             drawHoveringString(tooltip, x, y, fontRenderer);
@@ -547,5 +553,9 @@ public class GuiPneumaticContainerBase<Tile extends TileEntityBase> extends GuiC
         int j = scaledresolution.getScaledHeight();
         setWorldAndResolution(Minecraft.getMinecraft(), i, j);
         widgets.stream().filter(widget -> widget instanceof GuiAnimatedStat).forEach(IGuiWidget::update);
+    }
+
+    protected boolean shouldParseVariablesInTooltips() {
+        return false;
     }
 }

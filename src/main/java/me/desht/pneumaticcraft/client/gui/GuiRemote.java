@@ -85,4 +85,9 @@ public class GuiRemote extends GuiPneumaticContainerBase {
             }
         }
     }
+
+    @Override
+    protected boolean shouldParseVariablesInTooltips() {
+        return true;
+    }
 }
