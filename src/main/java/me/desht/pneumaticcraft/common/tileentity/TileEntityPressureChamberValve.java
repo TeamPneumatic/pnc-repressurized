@@ -280,20 +280,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         AxisAlignedBB bbBox = new AxisAlignedBB(multiBlockX + 1, multiBlockY + 1, multiBlockZ + 1, multiBlockX + multiBlockSize - 1, multiBlockY + multiBlockSize - 1, multiBlockZ + multiBlockSize - 1);
         List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, bbBox);
         for (LivingEntity entity : entities) {
-            // TODO 1.14 villagers
-//            if (entity instanceof VillagerEntity) {
-//                VillagerEntity villager = (VillagerEntity) entity;
-//                if (villager.getProfessionForge() != VillagerHandler.mechanicProfession) {
-//                    villager.remove();
-//                    VillagerEntity mechanic = new VillagerEntity(world);
-//                    mechanic.setProfession(VillagerHandler.mechanicProfession);
-//                    mechanic.setPosition(villager.posX, villager.posY, villager.posZ);
-//                    world.addEntity(mechanic);
-//                }
-//            }
-//            if (!(entity instanceof VillagerEntity) || ((VillagerEntity) entity).getProfessionForge() != VillagerHandler.mechanicProfession) {
-                entity.attackEntityFrom(DamageSourcePneumaticCraft.PRESSURE, (int) (getPressure() * 2D));
-//            }
+            // Note: villager conversion is no longer a thing, since due to new 1.14+ villager mechanics,
+            // the converted villager will just lose his progression. Instead, just place down a
+            // charging station, and an unemployed villager will claim it.
+            entity.attackEntityFrom(DamageSourcePneumaticCraft.PRESSURE, (int) (getPressure() * 2D));
         }
     }
 
@@ -425,7 +415,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         }
         if (accessoryValves != null) {
             for (TileEntityPressureChamberValve valve : accessoryValves) {
+                float p = valve.getPressure();
                 valve.setupMultiBlock(0, 0, 0, 0);
+                // the base volume has suddenly dropped; remove excess air to keep pressure constant and avoid big bang
+                valve.airHandler.addAir((int)(p * valve.airHandler.getBaseVolume()) - valve.airHandler.getAir());
                 if (valve != this) {
                     valve.accessoryValves.clear();
                     if (!getWorld().isRemote) valve.sendDescriptionPacket();
