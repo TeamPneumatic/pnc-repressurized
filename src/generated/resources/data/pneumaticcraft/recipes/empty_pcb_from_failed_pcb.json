@@ -4,6 +4,6 @@
     "item": "pneumaticcraft:failed_pcb"
   },
   "result": "pneumaticcraft:empty_pcb",
-  "experience": 0.5,
+  "experience": 0.25,
   "cookingtime": 100
 }

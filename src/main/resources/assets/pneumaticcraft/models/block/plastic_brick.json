@@ -1,0 +1,10 @@
+{
+  "textures": {
+    "top": "pneumaticcraft:block/plastic_brick_top",
+    "bottom": "pneumaticcraft:block/plastic_brick_bottom",
+    "left": "pneumaticcraft:block/plastic_brick_left",
+    "right": "pneumaticcraft:block/plastic_brick_right",
+    "none": "pneumaticcraft:block/plastic_brick_none",
+    "particle": "pneumaticcraft:block/plastic_brick_none"
+  }
+}

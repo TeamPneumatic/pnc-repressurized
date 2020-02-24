@@ -1,0 +1,17 @@
+{
+  "parent": "pneumaticcraft:block/plastic_brick",
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "down": { "texture": "#bottom", "tintindex": 0, "cullface": "down" },
+        "up": { "texture": "#top", "tintindex": 0, "cullface": "up" },
+        "north": { "texture": "#left", "tintindex": 0, "cullface": "north" },
+        "south": { "texture": "#left", "tintindex": 0, "cullface": "south" },
+        "west": { "texture": "#right", "tintindex": 0, "cullface": "west" },
+        "east": { "texture": "#right", "tintindex": 0, "cullface": "east" }
+      }
+    }
+  ]
+}

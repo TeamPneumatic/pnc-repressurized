@@ -9,12 +9,15 @@ import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -171,6 +174,17 @@ public class ModBlocks {
             BlockHeatPipe::new);
     public static final RegistryObject<BlockEtchingTank> ETCHING_TANK = register("etching_tank",
             BlockEtchingTank::new);
+
+    public static final List<RegistryObject<BlockPlasticBrick>> PLASTIC_BRICKS = new ArrayList<>();
+    static {
+        for (DyeColor color : DyeColor.values()) {
+            PLASTIC_BRICKS.add(register("plastic_brick_" + color.getTranslationKey(),
+                    () -> new BlockPlasticBrick(color), block -> () -> new BlockPlasticBrick.ItemPlasticBrick(block.get())));
+        }
+    }
+    public static RegistryObject<BlockPlasticBrick> plasticBrick(DyeColor color) {
+        return PLASTIC_BRICKS.get(color.getId());
+    }
 
     public static final RegistryObject<Block> REINFORCED_STONE = register("reinforced_stone",
             () -> new Block(reinforcedStoneProps()));

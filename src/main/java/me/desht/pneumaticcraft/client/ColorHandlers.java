@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
+import me.desht.pneumaticcraft.common.block.BlockPlasticBrick;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -93,6 +94,15 @@ public class ColorHandlers {
                     return 0xFFFFFFFF;
                 }, b.get());
             }
+        }
+
+        for (RegistryObject<BlockPlasticBrick> b : ModBlocks.PLASTIC_BRICKS) {
+            event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
+                if (blockAccess != null && pos != null) {
+                    return b.get().getColor().getColorValue();
+                }
+                return 0xFFFFFFFF;
+            }, b.get());
         }
 
         event.getBlockColors().register((state, worldIn, pos, tintIndex) -> {

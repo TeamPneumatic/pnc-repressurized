@@ -31,6 +31,9 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
         createAndAppend(PneumaticCraftTags.Blocks.STORAGE_BLOCKS_COMPRESSED_IRON, Tags.Blocks.STORAGE_BLOCKS,
                 ModBlocks.COMPRESSED_IRON_BLOCK);
+
+
+        createTag(PneumaticCraftTags.Blocks.PLASTIC_BRICKS, ModBlocks.PLASTIC_BRICKS.toArray(new Supplier[0]));
     }
 
     // with thanks to Tropicraft for these helper methods

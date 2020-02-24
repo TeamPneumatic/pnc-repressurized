@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.datagen.recipe.ShapedPressurizableRecipeBuilder;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.*;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -891,6 +892,24 @@ public class ModRecipeProvider extends RecipeProvider {
                 'B', ModBlocks.REINFORCED_BRICKS.get()
         ).build(consumer);
 
+        // plastic bricks
+        plasticBrick(DyeColor.WHITE, Tags.Items.DYES_WHITE).build(consumer);
+        plasticBrick(DyeColor.ORANGE, Tags.Items.DYES_ORANGE).build(consumer);
+        plasticBrick(DyeColor.MAGENTA, Tags.Items.DYES_MAGENTA).build(consumer);
+        plasticBrick(DyeColor.LIGHT_BLUE, Tags.Items.DYES_LIGHT_BLUE).build(consumer);
+        plasticBrick(DyeColor.YELLOW, Tags.Items.DYES_YELLOW).build(consumer);
+        plasticBrick(DyeColor.LIME, Tags.Items.DYES_LIME).build(consumer);
+        plasticBrick(DyeColor.PINK, Tags.Items.DYES_PINK).build(consumer);
+        plasticBrick(DyeColor.GRAY, Tags.Items.DYES_GRAY).build(consumer);
+        plasticBrick(DyeColor.LIGHT_GRAY, Tags.Items.DYES_LIGHT_GRAY).build(consumer);
+        plasticBrick(DyeColor.CYAN, Tags.Items.DYES_CYAN).build(consumer);
+        plasticBrick(DyeColor.PURPLE, Tags.Items.DYES_PURPLE).build(consumer);
+        plasticBrick(DyeColor.BLUE, Tags.Items.DYES_BLUE).build(consumer);
+        plasticBrick(DyeColor.BROWN, Tags.Items.DYES_BROWN).build(consumer);
+        plasticBrick(DyeColor.GREEN, Tags.Items.DYES_GREEN).build(consumer);
+        plasticBrick(DyeColor.RED, Tags.Items.DYES_RED).build(consumer);
+        plasticBrick(DyeColor.BLACK, Tags.Items.DYES_BLACK).build(consumer);
+
         // specials
         specialRecipe(ModRecipes.DRONE_COLOR_CRAFTING.get()).build(consumer, getId("color_drone"));
         specialRecipe(ModRecipes.DRONE_UPGRADE_CRAFTING.get()).build(consumer, getId("drone_upgrade"));
@@ -899,9 +918,13 @@ public class ModRecipeProvider extends RecipeProvider {
         specialRecipe(ModRecipes.PATCHOULI_BOOK_CRAFTING.get()).build(consumer, getId("patchouli_book_crafting"));
 
         // smelting
-        CookingRecipeBuilder.blastingRecipe(Ingredient.fromItems(ModItems.FAILED_PCB.get()), ModItems.EMPTY_PCB.get(), 0.5f, 100)
+        CookingRecipeBuilder.blastingRecipe(Ingredient.fromItems(ModItems.FAILED_PCB.get()), ModItems.EMPTY_PCB.get(), 0.25f, 100)
                 .addCriterion("has_empty_pcb", this.hasItem(ModItems.FAILED_PCB.get()))
                 .build(consumer, RL("empty_pcb_from_failed_pcb"));
+        CookingRecipeBuilder.smeltingRecipe(Ingredient.fromTag(PneumaticCraftTags.Items.PLASTIC_BRICKS), ModItems.PLASTIC.get(),
+                0.1f, 100)
+                .addCriterion("has_plastic", this.hasItem(ModItems.PLASTIC.get()))
+                .build(consumer, RL("plastic_sheet_from_brick"));
     }
 
     private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, T required, Object... ingredients) {
@@ -994,6 +1017,14 @@ public class ModRecipeProvider extends RecipeProvider {
         }
         b.addCriterion("has_" + safeName(required), this.hasItem(required));
         return b;
+    }
+
+    private ShapedRecipeBuilder plasticBrick(DyeColor color, Tag<Item> dyeIngredient) {
+        Item brick = ModBlocks.plasticBrick(color).get().asItem();
+        return shaped(brick, 8, ModItems.PLASTIC.get(),
+                "PPP/PDP/PPP",
+                'P', ModItems.PLASTIC.get(),
+                'D', dyeIngredient);
     }
 
     private ShapedRecipeBuilder miniGunAmmo(Item result, Object item1, Object item2) {
