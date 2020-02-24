@@ -1,8 +1,0 @@
-Etching Acid is used to chemically develop [link{pneumaticcraft:menu/printed_circuit_boards}]PCB's [link{}]. Etching Acid is made in a Pressure Chamber:
-
-[pressureChamber{190, 50, item/bucket/etchacid}]
-
-[image{380, 230, 0.3, pneumaticcraft:textures/wiki/etching_acid.png}]
-When you have a PCB that is exposed by the light of a [link{block/uv_light_box}]UV Lightbox[link{}], you can throw the Empty (exposed) PCB in Etching Acid. The PCB needs to be etched for 5 minutes. You can pick it up while it's being etched to see the progress. You'll have to pick it up as a matter of fact, to prevent despawning. Seems like a nuisance, but now you have another thing to automate! After these 5 minutes, the Empty (exposed) PCB turns into an Unassembled PCB when successful, or a Failed PCB when not. A Failed PCB can be thrown in a Furnace to be turned back into an Empty PCB (not exposed).
-
-[furnace{200, 400, key=item/empty_pcb}]

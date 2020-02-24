@@ -1,4 +1,0 @@
-[image{320, 20, 0.5, pneumaticcraft:textures/wiki/uv_light_box.png}]
-The UV Light Box is a machine in which you can expose [link{pneumaticcraft:menu/printed_circuit_boards}]PCB's [link{}] to UV light, at certain places (which is determined by the Blueprint laying on top of the PCB). The exposure process takes a maximum of 10 minutes (less if you add Speed Upgrades). When you wait these full 10 minutes you'll have a 100% chance that the etching process (next step) will succeed. You can however expose the PCB for a shorter time, which will result in a lower chance of the PCB successfully being etched. The UV Light Box needs pressure to run, and the tubes can't be connected to the front, back or top of the machine.
-
-[crafting{200, 220, key=block/uv_light_box}]

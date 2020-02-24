@@ -1,7 +1,0 @@
-Note: the [link{block/pneumatic_dynamo}]Pneumatic Dynamo[link{}] and [link{block/flux_compressor}]Flux Compressor[link{}] are now considered "core" PneumaticCraft, since they work with Forge Energy (FE). However, they remain compatible with CoFH machines (and other mods which implement Forge Energy, including but not limited to RFTools and Immersive Engineering).
-
-If CoFH mods are detected, then:
-
-• CoFH fuels will work in the Liquid and Advanced Liquid Compressors
-• CoFH Crude Oil will be usable in the Refinery
-• PneumaticCraft: Repressurized fuels will work in the Compression Dynamo

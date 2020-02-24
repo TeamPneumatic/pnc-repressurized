@@ -1,3 +1,0 @@
-Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
-
-For info about the Computer piece, look at the [link{block/drone_interface}]Drone Interface[link{}].

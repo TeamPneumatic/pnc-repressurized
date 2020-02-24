@@ -1,5 +1,0 @@
-[image{335, 20, 0.4, pneumaticcraft:textures/wiki/electric_compressor.png}]
-The Electric Compressor can generate compressed air from IndustrialCraft 2's EU. By default it has an efficiency of 40%, but this can be changed in the config. It behaves like a IndustrialCraft tier 1 machine, meaning that it'll explode when you apply medium/high voltage to it. You can insert transformer upgrades to allow higher voltages just like in normal IndustrialCraft machines though. *The energy output in mL/tick = input rate / efficiency * 400, in which the efficiency is in %. For instance, when the efficiency is 40% while you�re inputting at a rate of 32EU/tick, the compressed air production equals 32 / 40 * 400 = 320mL/tick.
-
-Another factor that influences the efficiency, is the machine's heat. The machine needs to be [link{pneumaticcraft:menu/heat}] cooled[link{}], as the efficiency will drop as the temperature rises, up to the point where no air is generated at all.
-[crafting{200, 280, key=block/electric_compressor}]

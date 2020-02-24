@@ -1,2 +1,0 @@
-The Liquid Compressor is a machine which can produce [link{pneumaticcraft:menu/generating_pressure}]compressed air[link{}]. It uses liquids to do so. You can either use liquids with a high temperature (the higher the temperature, the higher the yield), or use liquids like Fuel (Buildcraft), Oil (Buildcraft), Biofuel (Forestry) or Biomass (Forestry). There may be more. To see which fuel you can use open up the 'Available Fuels' tab in the Liquid Compressor's GUI. In there you can also see which fuel is the best.
-[crafting{200, 120, key=block/liquid_compressor}]

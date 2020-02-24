@@ -1,9 +1,0 @@
-Programming Puzzles are used in [link{block/programmer}]programmers [link{}].
-
-[prefix{l}]The Label piece [prefix{}]
-This piece is purely focused on program flow. The label defines a point in the program that [link{pneumaticcraft:progwidget/jump}] Jump[link{}] and [link{pneumaticcraft:progwidget/conditions}]Conditions [link{}] can jump to. You must attach a [link{pneumaticcraft:progwidget/text}]Text [link{}] piece to this label piece to name it with the Text piece's string value. Any jumps/conditions using a Text piece of that value will then jump to this label.
-
-So a Label piece can be used to create a 'branch' in the program flow (when using conditions), or just to organize sections of your program for clarity by putting them next to each other. A useful tip is to check 'Show Flow' at the bottom right of the Programmer Interface; it will show lines linking Jump/Condition/Label pieces of the same name.
-
-[prefix{l}]Debugging routines[prefix{}]
-When using a [link{pneumaticcraft:item/pneumatic_helmet}]Pneumatic Helmet[link{}] with an Entity Tracker Upgrade, you can see which label a Drone has jumped to last. This is nice to know which routine the Drone is currently running, useful in debugging.

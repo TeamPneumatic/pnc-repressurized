@@ -1,5 +1,0 @@
-The Logistics Configurator's primary purpose is to help out with configuring a [link{item/logistic_drone}]Logistics Network[link{}]. By right clicking it on any Logistic Frame it can configure various filters. Sneak right-clicking removes the frame.
-
-The Logistics Configurator can also be used to remove other attachable gadgets, such as the [link{item/transfer_gadget}]Transfer Gadget[link{}] and the [link{item/crop_support}]Crop Support[link{}].
-
-[crafting{200, 130, key=item/logistics_configurator}]

@@ -1,2 +1,0 @@
-A Block of Compressed Iron consists of 9 [link{pneumaticcraft:menu/base_concepts}]Compressed Ingots[link{}]. it has the special property that it's a very good [link{pneumaticcraft:menu/heat}]heat conductor[link{}]. The Block of Compressed generally is used to conduct/transport heat to other places.
-[crafting{200, 80,key=block/compressed_iron_block}]

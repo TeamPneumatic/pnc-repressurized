@@ -1,8 +1,0 @@
-Crafting component.
-
-Crafted from [link{pneumaticcraft:menu/oil}]Oil [link{}]
-
-[prefix{l}]Old recipe[prefix{}]
-Crafted by throwing [link{pneumaticcraft:menu/worldgen}]seeds [link{}] in a [link{pneumaticcraft:menu/pressure_chamber}]Pressure Chamber[link{}]. A certain color seed will turn into the same color plastic.
-
-[pressureChamber{190, 70, item/plastic}]

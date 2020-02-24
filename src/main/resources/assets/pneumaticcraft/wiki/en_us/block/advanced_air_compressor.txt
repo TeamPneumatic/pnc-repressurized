@@ -1,2 +1,0 @@
-The Advanced Air Compressor is a machine which can produce [link{pneumaticcraft:menu/generating_pressure}]compressed air[link{}]. It's the upgraded version of the [link{block/air_compressor}]Air Compressor[link{}], able to generate a base 50ml/tick with a maximum safe air pressure of 20 bar. It can be upgraded with speed upgrades. However, this generator needs to be [link{pneumaticcraft:menu/heat}] cooled[link{}], as its efficiency will drop as the temperature rises, up to the point where no air is generated at all.
-[crafting{200, 130, key=block/advanced_air_compressor}] 
