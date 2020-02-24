@@ -8,7 +8,7 @@ public class Textures {
     private static final String MODEL_LOCATION = ICON_LOCATION + "textures/model/";
     private static final String TUBE_MODULE_MODEL_LOCATION = MODEL_LOCATION + "modules/";
     private static final String GUI_LOCATION = ICON_LOCATION + "textures/gui/";
-    private static final String ENTITY_LOCATION = ICON_LOCATION + "textures/entities/";
+    private static final String ENTITY_LOCATION = ICON_LOCATION + "textures/entity/";
     private static final String ARMOR_LOCATION = ICON_LOCATION + "textures/armor/";
     private static final String RENDER_LOCATION = ICON_LOCATION + "textures/render/";
     private static final String PROG_WIDGET_LOCATION = ICON_LOCATION + "textures/progwidgets/";

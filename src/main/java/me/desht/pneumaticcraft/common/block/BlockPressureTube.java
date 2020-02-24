@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Random;
 
 import static me.desht.pneumaticcraft.common.block.BlockPressureTube.ConnectionType.CONNECTED;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.HORIZONTALS;
 import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWaterLoggable {
@@ -539,6 +540,31 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     @Nonnull
     private static TubeHitInfo getHitInfo(RayTraceResult result) {
         return result != null && result.hitInfo instanceof TubeHitInfo ? (TubeHitInfo) result.hitInfo : TubeHitInfo.NO_HIT;
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, Rotation rotation) {
+        ConnectionType[] conns = new ConnectionType[HORIZONTALS.length];
+        for (Direction dir : HORIZONTALS) {
+            conns[rotation.rotate(dir).getHorizontalIndex()] = state.get(CONNECTION_PROPERTIES_3[dir.getIndex()]);
+        }
+        for (Direction dir : HORIZONTALS) {
+            state = state.with(CONNECTION_PROPERTIES_3[dir.getIndex()], conns[dir.getHorizontalIndex()]);
+        }
+        return super.rotate(state, rotation);
+    }
+
+    @Override
+    public BlockState mirror(BlockState state, Mirror mirrorIn) {
+        ConnectionType[] conns = new ConnectionType[HORIZONTALS.length];
+        for (Direction dir : HORIZONTALS) {
+            Rotation r = mirrorIn.toRotation(dir);
+            conns[r.rotate(dir).getHorizontalIndex()] = state.get(CONNECTION_PROPERTIES_3[dir.getIndex()]);
+        }
+        for (Direction dir : HORIZONTALS) {
+            state = state.with(CONNECTION_PROPERTIES_3[dir.getIndex()], conns[dir.getHorizontalIndex()]);
+        }
+        return super.mirror(state, mirrorIn);
     }
 
     public enum Tier {

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OGO",
+    "W W",
+    "SSS"
+  ],
+  "key": {
+    "O": {
+      "tag": "forge:obsidian"
+    },
+    "W": {
+      "item": "pneumaticcraft:reinforced_brick_wall"
+    },
+    "S": {
+      "item": "pneumaticcraft:reinforced_brick_slab"
+    },
+    "G": {
+      "tag": "forge:glass_panes"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:etching_tank"
+  }
+}

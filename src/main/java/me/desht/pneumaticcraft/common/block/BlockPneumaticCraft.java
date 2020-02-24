@@ -84,11 +84,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         try {
-            TileEntity te = getTileEntityClass().newInstance();
-            if (world instanceof World) {
-                te.setWorld((World) world);
-            }
-            return te;
+            //            if (world instanceof World) {
+//                te.setWorld((World) world);
+//            }
+            return getTileEntityClass().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -197,11 +196,30 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public BlockState rotate(BlockState state, Rotation rotation) {
-        // we simply disallow any external block rotation here:
+        // this is here to support rotation when creating blocks from templates (jigsaw system)
         // - rotation by the pneumatic wrench is handled by onBlockWrenched() below
         // - rotation by 3rd party wrenches is captured by a client-side event handler, which sends
         //   a PacketModWrenchBlock to the server, also leading to onBlockWrenched()
+        if (isRotatable()) {
+            state = state.with(directionProperty(), rotation.rotate(state.get(directionProperty())));
+        }
+
+//        Boolean conn[] = new Boolean[4];
+//        if (state.has(NORTH)) {
+//             conn[rotation.rotate(Direction.NORTH).getHorizontalIndex()] = state.get(NORTH);
+//             conn[rotation.rotate(Direction.SOUTH).getHorizontalIndex()] = state.get(SOUTH);
+//             conn[rotation.rotate(Direction.WEST).getHorizontalIndex()] = state.get(WEST);
+//             conn[rotation.rotate(Direction.EAST).getHorizontalIndex()] = state.get(EAST);
+//             state
+//        }
+
         return state;
+    }
+
+    @Override
+    public BlockState mirror(BlockState state, Mirror mirrorIn) {
+        // see above
+        return isRotatable() ? state.rotate(mirrorIn.toRotation(state.get(directionProperty()))) : state;
     }
 
     @Override

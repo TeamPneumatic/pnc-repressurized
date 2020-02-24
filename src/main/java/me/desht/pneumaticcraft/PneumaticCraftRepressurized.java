@@ -34,6 +34,8 @@ import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradesDBSetup;
+import me.desht.pneumaticcraft.common.villages.POIFixup;
+import me.desht.pneumaticcraft.common.villages.VillageStructures;
 import me.desht.pneumaticcraft.common.worldgen.ModDecorators;
 import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import me.desht.pneumaticcraft.datagen.*;
@@ -140,7 +142,8 @@ public class PneumaticCraftRepressurized {
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();
         ModWorldGen.init();
-        ModVillagers.Structures.init();
+        POIFixup.fixup();
+        VillageStructures.init();
 
         ThirdPartyManager.instance().init();
 
