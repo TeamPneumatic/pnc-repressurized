@@ -29,7 +29,7 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
         int editedLine = -1;
         if (Minecraft.getInstance().currentScreen instanceof GuiAphorismTile) {
             GuiAphorismTile gui = (GuiAphorismTile) Minecraft.getInstance().currentScreen;
-            if (gui.tile == te) {
+            if (gui.tile == te && (gui.updateCounter & 0x0f) < 8) {
                 editedLine = gui.cursorY;
             }
         }
