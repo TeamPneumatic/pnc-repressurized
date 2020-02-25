@@ -1,26 +1,24 @@
 package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.*;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
 public class RenderDroneHeldItem {
     private StaticItemRenderer customRenderItem;
-    private final World world;
 
-    public RenderDroneHeldItem(World world) {
-        this.world = world;
+    public RenderDroneHeldItem() {
         if (customRenderItem == null) {
             customRenderItem = new StaticItemRenderer();
         }
     }
 
     public void render(@Nonnull ItemStack droneHeldItem) {
-        ItemEntity carriedItem = new ItemEntity(EntityType.ITEM, world);
+        ItemEntity carriedItem = new ItemEntity(EntityType.ITEM, Minecraft.getInstance().world);
 //        carriedItem.hoverStart = 0.0F;
         carriedItem.setItem(droneHeldItem);
 

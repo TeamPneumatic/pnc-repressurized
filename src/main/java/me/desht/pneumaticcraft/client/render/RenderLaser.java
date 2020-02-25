@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -13,24 +14,7 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 public class RenderLaser {
-
-    private int ticksExisted;
-    private final int coreColor, glowColor;
-
-    public RenderLaser(int color) {
-        this(color, color);
-    }
-
-    public RenderLaser(int coreColor, int glowColor) {
-        this.coreColor = coreColor;
-        this.glowColor = glowColor;
-    }
-
-    public void update() {
-        ticksExisted++;
-    }
-
-    public void render(float partialTicks, double x1, double y1, double z1, double x2, double y2, double z2) {
+    public void render(float partialTicks, EntityDroneBase drone, double x1, double y1, double z1, double x2, double y2, double z2) {
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
 
         double laserLength = PneumaticCraftUtils.distBetween(x1, y1, z1, x2, y2, z2);
@@ -55,27 +39,22 @@ public class RenderLaser {
 
         GlStateManager.scaled(laserSize, laserSize, laserSize);
         GlStateManager.translated(0, 0.6, 0);
-        GlStateManager.rotated((ticksExisted + partialTicks) * 200, 0, 1, 0);
+        GlStateManager.rotated((drone.ticksExisted + partialTicks) * 200, 0, 1, 0);
 
         GlStateManager.pushMatrix();
         GlStateManager.scaled(1, laserLength / laserSize, 1);
 
-        /*   GlStateManager.translate(0, -0.01, 0);
-           textureManager.bindTexture(Textures.RENDER_LASER_ANIMATION);
-           renderAnimation(partialTicks, laserLength / laserSize);
-           GlStateManager.translate(0, 0.01, 0);*/
-
         textureManager.bindTexture(Textures.RENDER_LASER);
-        renderQuad(glowColor);
+        renderQuad(drone.getLaserColor());  // glow
         textureManager.bindTexture(Textures.RENDER_LASER_OVERLAY);
-        renderQuad(coreColor);
+        renderQuad(drone.getLaserColor());  // core
         GlStateManager.popMatrix();
 
         GlStateManager.rotated(180, 1, 0, 0);
         textureManager.bindTexture(Textures.RENDER_LASER_START);
-        renderQuad(glowColor);
+        renderQuad(drone.getLaserColor());  // glow
         textureManager.bindTexture(Textures.RENDER_LASER_START_OVERLAY);
-        renderQuad(coreColor);
+        renderQuad(drone.getLaserColor());  //core
 
         GlStateManager.disableBlend();
         GlStateManager.enableCull();
@@ -94,15 +73,4 @@ public class RenderLaser {
         wr.pos(0.5, 0, 0).tex(1, 0).endVertex();
         Tessellator.getInstance().draw();
     }
-
-    /*  private void renderAnimation(float partialTicks, double length){
-          float p = (ticksExisted + partialTicks) % 100 / 100;
-          BufferBuilder wr = Tessellator.getInstance()getBuffer();
-          wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-          t.addVertexWithUV(-0.5, 0, 0, 0, p);
-          t.addVertexWithUV(-0.5, 1, 0, 0, length + p);
-          t.addVertexWithUV(0.5, 1, 0, 1, length + p);
-          t.addVertexWithUV(0.5, 0, 0, 1, p);
-          Tessellator.getInstance().draw();
-      }*/
 }

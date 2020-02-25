@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.model.block;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.model.entity.ModelDroneMinigun;
+import me.desht.pneumaticcraft.client.render.RenderMinigunTracers;
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -10,7 +11,8 @@ import net.minecraft.util.math.BlockPos;
 
 public class ModelSentryTurret extends AbstractTileModelRenderer.BaseModel {
     private final ModelDroneMinigun model = new ModelDroneMinigun();
-    private TileEntitySentryTurret fakeTurret;// = new TileEntitySentryTurret();
+    private TileEntitySentryTurret fakeTurret;
+    private RenderMinigunTracers minigunTracersRenderer;
 
     public ModelSentryTurret() {
     }
@@ -24,12 +26,15 @@ public class ModelSentryTurret extends AbstractTileModelRenderer.BaseModel {
             }
             model.renderMinigun(fakeTurret.getMinigun(), 1 / 16F, partialTicks, false);
         } else {
+            if (minigunTracersRenderer == null) {
+                minigunTracersRenderer = new RenderMinigunTracers(te.getMinigun());
+            }
             model.renderMinigun(te.getMinigun(), 1 / 16F, partialTicks, false);
             GlStateManager.pushMatrix();
             GlStateManager.scaled(1.0F, -1, -1F);
             GlStateManager.translated(0, -1.45F, 0);
             BlockPos pos = te.getPos();
-            te.getMinigun().render(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1.2);
+            minigunTracersRenderer.render(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1.2);
             GlStateManager.popMatrix();
         }
         GlStateManager.popMatrix();

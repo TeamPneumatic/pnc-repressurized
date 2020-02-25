@@ -42,13 +42,13 @@ public class EntityProgrammableController extends EntityDroneBase {
     @Override
     public void tick() {
         if (controller.isRemoved()) remove();
-        if (digLaser != null) digLaser.update();
+//        if (digLaser != null) digLaser.update();
         oldPropRotation = propRotation;
         propRotation += 1;
     }
 
     @Override
-    protected double getLaserOffsetY() {
+    public double getLaserOffsetY() {
         return 0.45;
     }
 
@@ -58,7 +58,7 @@ public class EntityProgrammableController extends EntityDroneBase {
     }
 
     @Override
-    protected BlockPos getDugBlock() {
+    public BlockPos getDugBlock() {
         return controller.getDugPosition();
     }
 

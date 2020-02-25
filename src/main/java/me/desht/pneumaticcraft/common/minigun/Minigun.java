@@ -1,11 +1,8 @@
 package me.desht.pneumaticcraft.common.minigun;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -24,12 +21,8 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import java.util.Random;
@@ -48,8 +41,7 @@ public abstract class Minigun {
     private double minigunRotation, oldMinigunRotation;
     public double minigunYaw, oldMinigunYaw;
     public double minigunPitch, oldMinigunPitch;
-    private final RenderProgressingLine minigunFire = new RenderProgressingLine().setProgress(1);
-    private boolean sweeping; //When true, the yaw of the minigun will sweep with a sinus pattern when not targeting.
+    private boolean sweeping; // When true, the yaw of the minigun will sweep with a sinus pattern when not targeting.
     private double sweepingProgress;
 
     private boolean gunAimedAtTarget;
@@ -190,6 +182,10 @@ public abstract class Minigun {
         return sweeping;
     }
 
+    public boolean isGunAimedAtTarget() {
+        return gunAimedAtTarget;
+    }
+
     public boolean tryFireMinigun(Entity target) {
         boolean lastShotOfAmmo = false;
         if (!ammoStack.isEmpty() && ammoStack.getDamage() < ammoStack.getMaxDamage() && airCapability.map(h -> h.getPressure() > 0).orElse(true)) {
@@ -318,34 +314,6 @@ public abstract class Minigun {
             val = Math.min(val + amount, target);
         }
         return val;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void render(double x, double y, double z, double gunRadius) {
-        if (isMinigunActivated() && getMinigunSpeed() == MAX_GUN_SPEED && gunAimedAtTarget && attackTarget != null) {
-            GlStateManager.pushMatrix();
-            GlStateManager.scaled(1, 1, 1);
-            GlStateManager.translated(-x, -y, -z);
-            GlStateManager.disableTexture();
-            GL11.glEnable(GL11.GL_LINE_STIPPLE);
-            RenderUtils.glColorHex(0xFF000000 | getAmmoColor());
-            for (int i = 0; i < 5; i++) {
-                int stipple = 0xFFFF & ~(2 << rand.nextInt(16));
-                GL11.glLineStipple(4, (short) stipple);
-                Vec3d vec = new Vec3d(attackTarget.posX - x, attackTarget.posY - y, attackTarget.posZ - z).normalize();
-                minigunFire.startX = x + vec.x * gunRadius;
-                minigunFire.startY = y + vec.y * gunRadius;
-                minigunFire.startZ = z + vec.z * gunRadius;
-                minigunFire.endX = attackTarget.posX + rand.nextDouble() - 0.5;
-                minigunFire.endY = attackTarget.posY + attackTarget.getHeight() / 2 + rand.nextDouble() - 0.5;
-                minigunFire.endZ = attackTarget.posZ + rand.nextDouble() - 0.5;
-                minigunFire.render();
-            }
-            GlStateManager.color4f(1, 1, 1, 1);
-            GL11.glDisable(GL11.GL_LINE_STIPPLE);
-            GlStateManager.enableTexture();
-            GlStateManager.popMatrix();
-        }
     }
 
     public int getUpgrades(EnumUpgrade upgrade) {

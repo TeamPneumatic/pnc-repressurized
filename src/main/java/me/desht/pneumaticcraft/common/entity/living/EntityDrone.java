@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
@@ -13,7 +12,6 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.client.render.RenderDroneHeldItem;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft.DamageSourceDroneOverload;
 import me.desht.pneumaticcraft.common.DroneRegistry;
@@ -89,8 +87,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
@@ -152,6 +148,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     private RenderProgressingLine targetLine;
     private RenderProgressingLine oldTargetLine;
+
     public List<IProgWidget> progWidgets = new ArrayList<>();
 
     private DroneFakePlayer fakePlayer;
@@ -394,7 +391,6 @@ public class EntityDrone extends EntityDroneBase implements
             fp.posZ = posZ;
             fp.tick();
         } else {
-            if (digLaser != null) digLaser.update();
             oldLaserExtension = laserExtension;
             if (getActiveProgramKey().getPath().equals("dig")) {
                 laserExtension = Math.min(1, laserExtension + LASER_EXTEND_SPEED);
@@ -492,7 +488,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
-    protected BlockPos getDugBlock() {
+    public BlockPos getDugBlock() {
         BlockPos pos = dataManager.get(DUG_POS);
         return pos.equals(BlockPos.ZERO) ? null : pos;
     }
@@ -645,34 +641,12 @@ public class EntityDrone extends EntityDroneBase implements
         onGround = true; //set onGround to true so AI pathfinding will keep updating.
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void renderExtras(double transX, double transY, double transZ, float partialTicks) {
-        super.renderExtras(transX, transY, transZ, partialTicks);
+    public RenderProgressingLine getTargetLine() {
+        return targetLine;
+    }
 
-        if (targetLine != null && oldTargetLine != null) {
-            GlStateManager.pushMatrix();
-            GlStateManager.scaled(1, -1, 1);
-            GlStateManager.disableTexture();
-            GlStateManager.color4f(1, 0, 0, 1);
-            targetLine.renderInterpolated(oldTargetLine, partialTicks);
-            GlStateManager.color4f(1, 1, 1, 1);
-            GlStateManager.enableTexture();
-            GlStateManager.popMatrix();
-        }
-
-        double x = lastTickPosX + (posX - lastTickPosX) * partialTicks;
-        double y = lastTickPosY + (posY - lastTickPosY) * partialTicks;
-        double z = lastTickPosZ + (posZ - lastTickPosZ) * partialTicks;
-        getMinigun().render(x, y, z, 0.6);
-
-        ItemStack held = getDroneHeldItem();
-        if (!held.isEmpty() && !(held.getItem() instanceof ItemGunAmmo && hasMinigun())) {
-            if (renderDroneHeldItem == null) {
-                renderDroneHeldItem = new RenderDroneHeldItem(world);
-            }
-            renderDroneHeldItem.render(held);
-        }
+    public RenderProgressingLine getOldTargetLine() {
+        return oldTargetLine;
     }
 
     public double getRange() {
@@ -681,24 +655,31 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public boolean processInteract(PlayerEntity player, Hand hand) {
-        ItemStack equippedItem = player.getHeldItem(hand);
-        if (!world.isRemote && !equippedItem.isEmpty()) {
-            if (equippedItem.getItem() == ModItems.GPS_TOOL.get()) {
-                BlockPos gpsLoc = ItemGPSTool.getGPSLocation(world, equippedItem);
+        ItemStack stack = player.getHeldItem(hand);
+        if (stack.getItem() == ModItems.GPS_TOOL.get()) {
+            if (!world.isRemote) {
+                BlockPos gpsLoc = ItemGPSTool.getGPSLocation(world, stack);
                 if (gpsLoc != null) {
                     getNavigator().tryMoveToXYZ(gpsLoc.getX(), gpsLoc.getY(), gpsLoc.getZ(), 0.1D);
+                    return true;
+                } else {
+                    return false;
                 }
-            } else {
-                DyeColor color = DyeColor.getColor(equippedItem);
-                if (color != null) {
+            }
+            return true;
+        } else {
+            DyeColor color = DyeColor.getColor(stack);
+            if (color != null) {
+                if (!world.isRemote) {
                     setDroneColor(color.getId());
                     if (PNCConfig.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
-                        equippedItem.shrink(1);
-                        if (equippedItem.getCount() <= 0) {
+                        stack.shrink(1);
+                        if (stack.getCount() <= 0) {
                             player.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY);
                         }
                     }
                 }
+                return true;
             }
         }
         return false;
@@ -710,7 +691,6 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
         if (!naturallySpawned) {
-            if (player.isCreative()) naturallySpawned = true;//don't drop the drone in creative.
             attackEntityFrom(new DamageSourceDroneOverload("wrenched"), 2000.0F);
             return true;
         } else {
@@ -790,7 +770,8 @@ public class EntityDrone extends EntityDroneBase implements
         writeAdditional(tag);
         ItemStack drone = new ItemStack(ModItems.DRONE.get());
         drone.setTag(tag);
-        drone.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> h.addAir(getAirHandler().getAir()));
+        drone.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new)
+                .addAir(getAirHandler().getAir());
         return drone;
     }
 
