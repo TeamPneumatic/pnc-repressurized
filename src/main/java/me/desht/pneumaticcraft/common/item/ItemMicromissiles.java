@@ -112,7 +112,7 @@ public class ItemMicromissiles extends Item {
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
         super.addInformation(stack, worldIn, curInfo, extraInfo);
 
-        curInfo.add(xlate("gui.micromissile.remaining", stack.getMaxDamage() - stack.getDamage() + 1));
+        curInfo.add(xlate("gui.micromissile.remaining", stack.getMaxDamage() - stack.getDamage()));
         if (stack.hasTag()) {
             CompoundNBT tag = stack.getTag();
             // padding for ClientEventHandler#renderTooltipEvent() to draw in

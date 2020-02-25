@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsBase;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.ItemPressurizable;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.recipes.special.PatchouliBookCrafting;
@@ -22,9 +23,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.registration.*;
-import net.minecraft.block.Block;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -86,13 +85,10 @@ public class JEIPlugin implements IModPlugin {
         for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
             addStackInfo(registration, new ItemStack(item.get()));
         }
-        for (RegistryObject<Block> block: ModBlocks.BLOCKS.getEntries()) {
-            addStackInfo(registration, new ItemStack(block.get()));
-        }
     }
 
     private void addStackInfo(IRecipeRegistration registry, ItemStack stack) {
-        String k = (stack.getItem() instanceof BlockItem ? "gui.tab.info.tile." : "gui.tooltip.") + stack.getTranslationKey();
+        String k = ICustomTooltipName.getTranslationKey(stack);
         if (I18n.hasKey(k)) {
             String raw = TextFormatting.getTextWithoutFormattingCodes(I18n.format(k));
             registry.addIngredientInfo(stack, VanillaTypes.ITEM, raw.split(" \\\\n"));

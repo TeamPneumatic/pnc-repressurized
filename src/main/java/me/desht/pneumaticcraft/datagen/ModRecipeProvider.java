@@ -956,7 +956,7 @@ public class ModRecipeProvider extends RecipeProvider {
     private ShapedRecipeBuilder logisticsFrame(Item result, Tag<Item> dye) {
         return shaped(result, 8, ModItems.LOGISTICS_CORE.get(),
                 "PPP/PDP/PCP",
-                'P', ModBlocks.REINFORCED_BRICKS.get(),
+                'P', Items.STICK,
                 'C', ModItems.LOGISTICS_CORE.get(),
                 'D', dye);
     }

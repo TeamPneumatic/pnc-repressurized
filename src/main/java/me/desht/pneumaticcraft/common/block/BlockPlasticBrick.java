@@ -3,10 +3,12 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.ITintableItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -18,19 +20,20 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
-public class BlockPlasticBrick extends BlockPneumaticCraft {
+public class BlockPlasticBrick extends Block {
     private static final VoxelShape COLLISION_SHAPE = makeCuboidShape(0, 0, 0, 16, 15, 16);
 
     private static final EnumProperty<PartType> X_PART = EnumProperty.create("x_part", PartType.class);
@@ -42,6 +45,11 @@ public class BlockPlasticBrick extends BlockPneumaticCraft {
         this.color = color;
 
         setDefaultState(getStateContainer().getBaseState().with(X_PART, PartType.NONE).with(Z_PART, PartType.NONE));
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
     public DyeColor getColor() {
@@ -58,11 +66,6 @@ public class BlockPlasticBrick extends BlockPneumaticCraft {
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         return COLLISION_SHAPE;
-    }
-
-    @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return null;
     }
 
     @Nullable
@@ -126,7 +129,7 @@ public class BlockPlasticBrick extends BlockPneumaticCraft {
         }
     }
 
-    public static class ItemPlasticBrick extends BlockItem implements ITintableItem {
+    public static class ItemPlasticBrick extends BlockItem implements ITintableItem, ICustomTooltipName {
         public ItemPlasticBrick(BlockPlasticBrick blockPlasticBrick) {
             super(blockPlasticBrick, ModItems.defaultProps());
         }
@@ -138,6 +141,11 @@ public class BlockPlasticBrick extends BlockPneumaticCraft {
                 return ((BlockPlasticBrick) b).getColor().getColorValue();
             }
             return 0xFFFFFFF;
+        }
+
+        @Override
+        public String getCustomTooltipTranslationKey() {
+            return "block.pneumaticcraft.plastic_brick";
         }
     }
 }

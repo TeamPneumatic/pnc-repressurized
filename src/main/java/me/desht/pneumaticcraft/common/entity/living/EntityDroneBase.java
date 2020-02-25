@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.render.RenderDroneHeldItem;
 import me.desht.pneumaticcraft.client.render.RenderLaser;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -45,7 +46,7 @@ public abstract class EntityDroneBase extends CreatureEntity {
     }
 
     public int getDroneColor() {
-        return 0;
+        return DyeColor.BLACK.getId();
     }
 
     public boolean isAccelerating() {

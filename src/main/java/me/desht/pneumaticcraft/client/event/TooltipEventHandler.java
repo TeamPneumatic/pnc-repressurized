@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModRegistries;
+import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -79,10 +80,10 @@ public class TooltipEventHandler {
             PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks.toArray(new ItemStack[0]));
         }
 
-        String info = "gui.tooltip." + stack.getTranslationKey();
-        if (I18n.hasKey(info)) {
+        String key = ICustomTooltipName.getTranslationKey(stack);
+        if (I18n.hasKey(key)) {
             if (ClientUtils.hasShiftDown()) {
-                String translatedInfo = TextFormatting.AQUA + I18n.format(info);
+                String translatedInfo = TextFormatting.AQUA + I18n.format(key);
                 curInfo.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(translatedInfo, 50)));
                 if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
                     curInfo.add(xlate("gui.tab.info.assistIGW"));
