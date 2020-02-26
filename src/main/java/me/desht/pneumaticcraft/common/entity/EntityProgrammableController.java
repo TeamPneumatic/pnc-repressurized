@@ -1,25 +1,34 @@
 package me.desht.pneumaticcraft.common.entity;
 
-import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class EntityProgrammableController extends EntityDroneBase {
-    private final TileEntityProgrammableController controller;
+    private TileEntityProgrammableController controller;
 
-//    public EntityProgrammableController(World world) {
-//        super(world);
-//        controller = null;
-//    }
+    public static EntityProgrammableController createProgrammableController(EntityType<EntityProgrammableController> type, World world) {
+        return new EntityProgrammableController(type, world);
+    }
 
-    public EntityProgrammableController(World world, TileEntityProgrammableController controller) {
-        super(ModEntities.DRONE.get(), world);
+    private EntityProgrammableController(EntityType<EntityProgrammableController> type, World world) {
+        super(type, world);
 
         this.preventEntitySpawning = false;
+    }
+
+//    public EntityProgrammableController(World world, TileEntityProgrammableController controller) {
+//        super(ModEntities.DRONE.get(), world);
+//
+//        this.preventEntitySpawning = false;
+//        this.controller = controller;
+//    }
+
+    public void setController(TileEntityProgrammableController controller) {
         this.controller = controller;
     }
 
@@ -42,7 +51,6 @@ public class EntityProgrammableController extends EntityDroneBase {
     @Override
     public void tick() {
         if (controller.isRemoved()) remove();
-//        if (digLaser != null) digLaser.update();
         oldPropRotation = propRotation;
         propRotation += 1;
     }
@@ -66,4 +74,5 @@ public class EntityProgrammableController extends EntityDroneBase {
     public ItemStack getDroneHeldItem() {
         return controller.getFakePlayer().getHeldItemMainhand();
     }
+
 }

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.core;
 
+import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -30,6 +31,8 @@ public class ModEntities {
             = register("logistics_drone", ModEntities::logisticsDrone);
     public static final RegistryObject<EntityType<EntityHarvestingDrone>> HARVESTING_DRONE
             = register("harvesting_drone", ModEntities::harvestingDrone);
+    public static final RegistryObject<EntityType<EntityProgrammableController>> PROGRAMMABLE_CONTROLLER
+            = register("programmable_controller", ModEntities::programmableController);
 
     public static final RegistryObject<EntityType<EntityVortex>> VORTEX
             = register("vortex", ModEntities::vortex);
@@ -106,6 +109,15 @@ public class ModEntities {
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
                 .setCustomClientFactory(((spawnEntity, world) -> ModEntities.HARVESTING_DRONE.get().create(world)))
+                .setShouldReceiveVelocityUpdates(true);
+    }
+
+    private static EntityType.Builder<EntityProgrammableController> programmableController() {
+        return EntityType.Builder.create(EntityProgrammableController::createProgrammableController, EntityClassification.CREATURE)
+                .size(0.35f, 0.175f)
+                .setTrackingRange(32)
+                .setUpdateInterval(3)
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.PROGRAMMABLE_CONTROLLER.get().create(world)))
                 .setShouldReceiveVelocityUpdates(true);
     }
 

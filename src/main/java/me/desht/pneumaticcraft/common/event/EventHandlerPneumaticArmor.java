@@ -61,7 +61,8 @@ public class EventHandlerPneumaticArmor {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.getArmorPressure(EquipmentSlotType.HEAD) > 0 && handler.isEntityTrackerEnabled()) {
                         NetworkHandler.sendToPlayer(new PacketSendArmorHUDMessage(
-                                "pneumaticHelmet.message.targetWarning", 60, 0x70FF4000, event.getEntityLiving().getName().toString()),
+                                "pneumaticHelmet.message.targetWarning", 60, 0x70FF4000,
+                                        event.getEntityLiving().getName().getFormattedText()),
                                 player
                         );
                     }

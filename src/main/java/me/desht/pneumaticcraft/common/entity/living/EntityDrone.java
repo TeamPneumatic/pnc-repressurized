@@ -479,12 +479,8 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public int getLaserColor() {
-        if (colorMap.containsKey(getCustomName().getFormattedText().toLowerCase())) {
-            return colorMap.get(getCustomName().getFormattedText().toLowerCase());
-        } else if (colorMap.containsKey(playerName.toLowerCase())) {
-            return colorMap.get(playerName.toLowerCase());
-        }
-        return super.getLaserColor();
+        String name = hasCustomName() ? getCustomName().getFormattedText().toLowerCase() : playerName.toLowerCase();
+        return colorMap.getOrDefault(name, super.getLaserColor());
     }
 
     @Override

@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
@@ -30,6 +31,7 @@ import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.item.ItemEntity;
@@ -119,7 +121,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private LogisticsManager logisticsManager;
 
     public TileEntityProgrammableController() {
-        super(ModTileEntities.PROGRAMMABLE_CONTROLLER.get(), 5, 7, 5000, 4);
+        super(ModTileEntities.PROGRAMMABLE_CONTROLLER.get(), 20, 25, 10000, 4);
 
         MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
@@ -178,11 +180,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             }
         } else {
             if (drone == null || !drone.isAlive()) {
-                drone = new EntityProgrammableController(getWorld(), this);
+                drone = ModEntities.PROGRAMMABLE_CONTROLLER.get().create(getWorld());
+                drone.setController(this);
                 drone.posX = curX;
                 drone.posY = curY;
                 drone.posZ = curZ;
-                getWorld().addEntity(drone);
+                if (world instanceof ClientWorld) {  // should always be the case
+                    ((ClientWorld) getWorld()).addEntity(drone.getEntityId(), drone);
+                }
             }
             drone.setPosition(curX, curY, curZ);
         }
@@ -281,6 +286,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             progWidgets.clear();
             if (!stack.isEmpty() && isProgrammableAndValidForDrone(TileEntityProgrammableController.this, stack)) {
                 progWidgets.addAll(TileEntityProgrammer.getProgWidgets(stack));
+                TileEntityProgrammer.updatePuzzleConnections(progWidgets);
             } else {
                 setDugBlock(null);
                 targetX = getPos().getX() + 0.5;
@@ -388,7 +394,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     protected void onFirstServerTick() {
         super.onFirstServerTick();
 
-        droneItemHandler.setFakePlayerReady();
+        getDroneItemHandler().setFakePlayerReady();
 
         calculateUpgrades();
         inventory.onContentsChanged(0);  // force initial read of any installed drone/network api
@@ -415,7 +421,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public float getMinWorkingPressure() {
-        return 3;
+        return 10;
     }
 
     @Override

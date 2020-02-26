@@ -78,6 +78,7 @@ public class ClientSetup {
         RenderingRegistry.registerEntityRenderingHandler(EntityAmadrone.class, RenderDrone.AMADRONE_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityLogisticsDrone.class, RenderDrone.LOGISTICS_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityHarvestingDrone.class, RenderDrone.HARVESTING_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, RenderDrone.REGULAR_FACTORY);
 
         // semiblocks
         RenderingRegistry.registerEntityRenderingHandler(EntityCropSupport.class, RenderCropSupport.FACTORY);
@@ -88,7 +89,6 @@ public class ClientSetup {
 
         // misc
         RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, RenderEntityVortex.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, RenderDrone.REGULAR_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, RenderEntityRing.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityMicromissile.class, RenderMicromissile.FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityTumblingBlock.class, RenderTumblingBlock.FACTORY);
