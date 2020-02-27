@@ -177,6 +177,8 @@ public class ModItems {
             ModFluids.LPG);
     public static final RegistryObject<ItemBucketPneumaticCraft> LUBRICANT_BUCKET = registerBucket("lubricant_bucket",
             ModFluids.LUBRICANT);
+    public static final RegistryObject<ItemBucketPneumaticCraft> MEMORY_ESSENCE_BUCKET = registerBucket("memory_essence_bucket",
+            ModFluids.MEMORY_ESSENCE);
 
     static {
         for (EnumUpgrade upgrade : EnumUpgrade.values()) {

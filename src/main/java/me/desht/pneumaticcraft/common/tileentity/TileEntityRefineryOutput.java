@@ -57,7 +57,7 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
     @Override
     public int getComparatorValue() {
         TileEntityRefineryController controller = getRefineryController();
-        return controller == null ? 0 : controller.getRedstoneMode();
+        return controller == null ? 0 : controller.getComparatorValue();
     }
 
     @Override

@@ -44,6 +44,10 @@ repositories {
         name = 'BlameJared - Crafttweaker/Patchouli'
         url = 'http://maven.blamejared.com/'
     }
+    maven {
+        name = 'Curios'
+        url = "https://maven.theillusivec4.top/"
+    }
 //    maven {
 //        name = "K-4u Mod maven"
 //        url = "https://modmaven.k-4u.nl/"
@@ -180,6 +184,8 @@ dependencies {
     runtime fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.14:${top_version}")
     compileOnly fg.deobf("mezz.jei:jei-1.14.4:${jei_version}:api")
     runtime fg.deobf("mezz.jei:jei-1.14.4:${jei_version}")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios:${curios_version}:api")
+    runtime fg.deobf("top.theillusivec4.curios:curios:${curios_version}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
 //    compileOnly("mekanism:Mekanism:${mekanism_version}:api") { exclude group: "mezz.jei" }
 //    compileOnly "mezz.jei:jei_${mc_version}:${jei_version}"

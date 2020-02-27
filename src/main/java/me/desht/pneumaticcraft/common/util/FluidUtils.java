@@ -28,6 +28,8 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
+import javax.annotation.Nullable;
+
 import static net.minecraftforge.fluids.FluidAttributes.BUCKET_VOLUME;
 
 public class FluidUtils {
@@ -126,8 +128,8 @@ public class FluidUtils {
      * @param pos the blockpos
      * @return true if there is a fluid source block at the given blockpos, false otherwise
      */
-    public static boolean isSourceBlock(World world, BlockPos pos) {
-        return isSourceBlock(world, pos, null);
+    public static boolean isSourceFluidBlock(World world, BlockPos pos) {
+        return isSourceFluidBlock(world, pos, null);
     }
 
     /**
@@ -138,9 +140,31 @@ public class FluidUtils {
      * @param fluid the fluid, may be null to match any fluid
      * @return true if there is a fluid source block of the right fluid at the given blockpos, false otherwise
      */
-    public static boolean isSourceBlock(World world, BlockPos pos, Fluid fluid) {
+    public static boolean isSourceFluidBlock(World world, BlockPos pos, @Nullable Fluid fluid) {
         IFluidState state = world.getFluidState(pos);
         return state.isSource() && fluid == null || state.getFluid() == fluid;
+    }
+
+    /**
+     * Check if the given blockpos contains a flowing fluid block of any fluid.
+     * @param world the world
+     * @param pos the blockpos
+     * @return true if there is a fluid block at the given blockpos, which is not a source block
+     */
+    public static boolean isFlowingFluidBlock(World world, BlockPos pos) {
+        return isFlowingFluidBlock(world, pos, null);
+    }
+
+    /**
+     * Check if the given blockpos contains a flowing fluid block of the given fluid type.
+     * @param world the world
+     * @param pos the blockpos
+     * @param fluid the fluid (null to match any fluid)
+     * @return true if there is a matching fluid block at the given blockpos, which is not a source block
+     */
+    public static boolean isFlowingFluidBlock(World world, BlockPos pos, @Nullable Fluid fluid) {
+        IFluidState state = world.getFluidState(pos);
+        return !state.isEmpty() && !state.isSource() && (fluid == null || fluid == state.getFluid());
     }
 
 //    /**
@@ -207,15 +231,19 @@ public class FluidUtils {
      * @return true if fluid was poured, false otherwise
      */
     public static boolean tryPourOutFluid(LazyOptional<IFluidHandler> fluidCap, World world, BlockPos pos, boolean playSound, boolean force, IFluidHandler.FluidAction action) {
-        if (!force && !(world.isAirBlock(pos) || world.getBlockState(pos).getBlock() instanceof ILiquidContainer)) {
-            return false;
-        }
-
         // code partially lifted from BucketItem
+
         BlockState blockstate = world.getBlockState(pos);
         Material material = blockstate.getMaterial();
-        boolean isNotSolid = !material.isSolid();
         boolean isReplaceable = material.isReplaceable();
+        boolean isNotSolid = !material.isSolid();
+
+        // if not force-placing then block must be:
+        // - a waterloggable block, or
+        // - a replaceable block, NOT including fluid source blocks
+        if (!force && !(blockstate.getBlock() instanceof ILiquidContainer) && (isSourceFluidBlock(world, pos) || !isReplaceable)) {
+            return false;
+        }
 
         boolean didWork = fluidCap.map(handler -> {
             FluidStack toPlace = handler.drain(BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);

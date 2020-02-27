@@ -19,8 +19,7 @@ public abstract class FluidDiesel extends ForgeFlowingFluid {
     private static final ForgeFlowingFluid.Properties PROPS =
             new ForgeFlowingFluid.Properties(ModFluids.DIESEL, ModFluids.DIESEL_FLOWING, ATTRS)
                     .block(ModBlocks.DIESEL)
-                    .bucket(ModItems.DIESEL_BUCKET
-            );
+                    .bucket(ModItems.DIESEL_BUCKET);
 
     FluidDiesel() {
         super(PROPS);

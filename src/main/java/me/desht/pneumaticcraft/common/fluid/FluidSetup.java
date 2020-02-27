@@ -22,5 +22,7 @@ public class FluidSetup {
                 e -> e instanceof ItemEntity && ((ItemEntity) e).getItem().getItem() == ModItems.EMPTY_PCB.get()
                         && e.getEntityWorld().getFluidState(e.getPosition()).getFluid() == ModFluids.ETCHING_ACID.get()
         );
+
+        PneumaticRegistry.getInstance().registerXPFluid(ModFluids.MEMORY_ESSENCE.get(), 20);
     }
 }

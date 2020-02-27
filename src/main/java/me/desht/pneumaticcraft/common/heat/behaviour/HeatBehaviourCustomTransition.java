@@ -90,7 +90,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
      * @param turningBlockFlowing blockstate to transform any flowing blocks to
      */
     private void transformFluidBlocks(BlockState turningBlockSource, BlockState turningBlockFlowing) {
-        if (FluidUtils.isSourceBlock(getWorld(), getPos())) {
+        if (FluidUtils.isSourceFluidBlock(getWorld(), getPos())) {
             getWorld().setBlockState(getPos(), turningBlockSource);
         } else {
             Set<BlockPos> traversed = new HashSet<>();
@@ -103,7 +103,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
                     BlockPos newPos = pos.offset(d);
                     Block checkingBlock = getWorld().getBlockState(newPos).getBlock();
                     if (checkingBlock == getBlockState().getBlock() && traversed.add(newPos)) {
-                        if (FluidUtils.isSourceBlock(getWorld(), newPos)) {
+                        if (FluidUtils.isSourceFluidBlock(getWorld(), newPos)) {
                             getWorld().setBlockState(newPos, turningBlockSource);
                             onTransition(newPos);
                             return;

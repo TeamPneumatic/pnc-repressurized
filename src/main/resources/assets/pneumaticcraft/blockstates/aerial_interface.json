@@ -9,11 +9,11 @@
     },
     "facing=west": {
       "model": "pneumaticcraft:block/aerial_interface",
-      "y": 90
+      "y": 270
     },
     "facing=east": {
       "model": "pneumaticcraft:block/aerial_interface",
-      "y": 270
+      "y": 90
     }
   }
 }

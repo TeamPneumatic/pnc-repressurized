@@ -23,8 +23,8 @@ public class WidgetEnergy extends Widget implements ITooltipProvider {
         int amount = getScaled();
 
         Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_ENERGY);
-        AbstractGui.blit(x, y, 0, 0, width, height, 32, 64);
-        AbstractGui.blit(x, y + DEFAULT_SCALE - amount, 16, DEFAULT_SCALE - amount, width, amount, 32, 64);
+        AbstractGui.blit(x + 1, y, 1, 0, width - 2, height, 32, 64);
+        AbstractGui.blit(x + 1, y + DEFAULT_SCALE - amount, 17, DEFAULT_SCALE - amount, width - 2, amount, 32, 64);
     }
 
     @Override

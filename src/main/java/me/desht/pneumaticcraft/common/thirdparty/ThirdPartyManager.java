@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty;
 
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.common.config.aux.ThirdPartyConfig;
+import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
@@ -41,6 +42,7 @@ public class ThirdPartyManager {
 //            thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
             thirdPartyClasses.put(ModIds.WAILA, Waila.class);
             thirdPartyClasses.put(ModIds.TOP, TheOneProbe.class);
+            thirdPartyClasses.put(ModIds.CURIOS, Curios.class);
 //            thirdPartyClasses.put(ModIds.CRAFTTWEAKER, CraftTweaker.class);
 //            thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
 //            thirdPartyClasses.put(ModIds.IMMERSIVEENGINEERING, ImmersiveEngineering.class);

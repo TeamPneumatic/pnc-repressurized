@@ -23,6 +23,7 @@ import net.minecraftforge.common.util.NonNullSupplier;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * A class to manage which sides of a TE's block are mapped to which capability handler objects (item/fluid/energy...)
@@ -59,16 +60,34 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
         setupFacingMatrix();
     }
 
-    int registerHandler(String id, ItemStack textureStack, Capability<T> cap, NonNullSupplier<T> handler, RelativeFace... defaultRelativeFaces) {
+    public int registerHandler(String id, ItemStack textureStack, Capability<T> cap, NonNullSupplier<T> handler, RelativeFace... defaultRelativeFaces) {
         entries.add(new ConnectionEntry<>(id, textureStack, cap, handler));
         idxMap.put(id, entries.size() - 1);
         return setDefaultSides(defaultRelativeFaces);
     }
 
-    int registerHandler(String id, ResourceLocation texture, Capability<T> cap, NonNullSupplier<T> handler, RelativeFace... defaultRelativeFaces) {
+    public int registerHandler(String id, ResourceLocation texture, Capability<T> cap, NonNullSupplier<T> handler, RelativeFace... defaultRelativeFaces) {
         entries.add(new ConnectionEntry<>(id, texture, cap, handler));
         idxMap.put(id, entries.size() - 1);
         return setDefaultSides(defaultRelativeFaces);
+    }
+
+    public void unregisterHandlers(Predicate<String> idMatcher) {
+        List<ConnectionEntry<T>> newEntries = new ArrayList<>();
+
+        for (String id : idxMap.keySet()) {
+            if (!idMatcher.test(id)) {
+                newEntries.add(entries.get(idxMap.get(id)));
+            }
+        }
+
+        entries.clear();
+        entries.addAll(newEntries);
+        idxMap.clear();
+        for (int i = 0; i < entries.size(); i++) {
+            ConnectionEntry e = entries.get(i);
+            idxMap.put(e.id, i);
+        }
     }
 
     private int setDefaultSides(RelativeFace... defaultRelativeFaces) {

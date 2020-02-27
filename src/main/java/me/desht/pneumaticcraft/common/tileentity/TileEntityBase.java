@@ -69,8 +69,10 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     @GuiSynced
     private final UpgradeHandler upgradeHandler;
-    boolean firstRun = true;  // True only the first time updateEntity invokes in a session
+    @GuiSynced
     int poweredRedstone; // The redstone strength currently applied to the block.
+
+    boolean firstRun = true;  // True only the first time updateEntity invokes in a session
     private boolean descriptionPacketScheduled;
     private List<SyncedField> descriptionFields;
     private TileEntityCache[] tileCache;
@@ -116,7 +118,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     // client side, chunk sending
     @Override
     public void handleUpdateTag(CompoundNBT tag) {
-        super.handleUpdateTag(tag);
+//        super.handleUpdateTag(tag);
 
         new PacketDescription(tag).process();
     }
@@ -380,7 +382,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     public void onNeighborTileUpdate() {
-//        initializeIfHeatExchanger();
         for (TileEntityCache cache : getTileCache()) {
             cache.update();
         }
@@ -404,9 +405,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     public boolean redstoneAllows() {
-        if (getWorld().isRemote) {
-            poweredRedstone = PneumaticCraftUtils.getRedstoneLevel(getWorld(), getPos());
-        }
         switch (((IRedstoneControl) this).getRedstoneMode()) {
             case 0:
                 return true;

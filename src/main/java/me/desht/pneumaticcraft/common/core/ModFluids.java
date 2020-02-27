@@ -36,6 +36,9 @@ public class ModFluids {
     public static final RegistryObject<Fluid> LUBRICANT = register("lubricant", FluidLubricant.Source::new);
     public static final RegistryObject<Fluid> LUBRICANT_FLOWING = register("lubricant_flowing", FluidLubricant.Flowing::new);
 
+    public static final RegistryObject<Fluid> MEMORY_ESSENCE = register("memory_essence", FluidMemoryEssence.Source::new);
+    public static final RegistryObject<Fluid> MEMORY_ESSENCE_FLOWING = register("memory_essence_flowing", FluidMemoryEssence.Flowing::new);
+
     private static <T extends Fluid> RegistryObject<T> register(String name, final Supplier<T> sup) {
         return FLUIDS.register(name, sup);
     }

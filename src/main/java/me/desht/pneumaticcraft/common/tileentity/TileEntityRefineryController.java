@@ -256,23 +256,21 @@ public class TileEntityRefineryController extends TileEntityTickableBase
 
     @Override
     public boolean redstoneAllows() {
-        boolean isPoweredByRedstone = poweredRedstone > 0;
+        int totalPower = poweredRedstone;
 
+        // power to each refinery output block is also considered
         TileEntityRefineryOutput refineryOutput = findAdjacentOutput();
         if (refineryOutput != null) {
-            while (refineryOutput.poweredRedstone == 0 && refineryOutput.getCachedNeighbor(Direction.UP) instanceof TileEntityRefineryOutput) {
+            while (refineryOutput.getCachedNeighbor(Direction.UP) instanceof TileEntityRefineryOutput) {
+                totalPower += refineryOutput.poweredRedstone;
                 refineryOutput = (TileEntityRefineryOutput) refineryOutput.getCachedNeighbor(Direction.UP);
-                isPoweredByRedstone = refineryOutput.poweredRedstone > 0;
             }
         }
 
         switch (getRedstoneMode()) {
-            case 0:
-                return true;
-            case 1:
-                return isPoweredByRedstone;
-            case 2:
-                return !isPoweredByRedstone;
+            case 0: return true;
+            case 1: return totalPower > 0;
+            case 2: return totalPower == 0;
         }
         return false;
     }

@@ -3,43 +3,41 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.block.material.MaterialColor;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.state.StateContainer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
-public abstract class FluidEtchingAcid extends ForgeFlowingFluid {
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
+public abstract class FluidMemoryEssence extends ForgeFlowingFluid {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            new ResourceLocation("minecraft:block/water_still"),
-            new ResourceLocation("minecraft:block/water_flow")
-    ).color(MaterialColor.EMERALD.colorValue | 0xFF000000);
+            RL("block/fluid/memory_essence_still"), RL("block/fluid/memory_essence_flow")
+    ).color(0xFFD0FF00);
 
     private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(ModFluids.ETCHING_ACID, ModFluids.ETCHING_ACID_FLOWING, ATTRS)
-                    .block(ModBlocks.ETCHING_ACID)
-                    .bucket(ModItems.ETCHING_ACID_BUCKET
-            );
+            new ForgeFlowingFluid.Properties(ModFluids.MEMORY_ESSENCE, ModFluids.MEMORY_ESSENCE_FLOWING, ATTRS)
+                    .block(ModBlocks.MEMORY_ESSENCE)
+                    .bucket(ModItems.MEMORY_ESSENCE_BUCKET);
 
-    FluidEtchingAcid() {
+    FluidMemoryEssence() {
         super(PROPS);
     }
 
-    public static class Source extends FluidEtchingAcid {
+    public static class Source extends FluidMemoryEssence {
         @Override
         public boolean isSource(IFluidState state) {
             return true;
         }
 
         @Override
-        public int getLevel(IFluidState state) {
+        public int getLevel(IFluidState p_207192_1_) {
             return 8;
         }
     }
 
-    public static class Flowing extends FluidEtchingAcid {
+    public static class Flowing extends FluidMemoryEssence {
         @Override
         protected void fillStateContainer(StateContainer.Builder<Fluid, IFluidState> builder) {
             super.fillStateContainer(builder);

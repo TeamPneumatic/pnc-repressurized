@@ -324,7 +324,6 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
         if (tooltip.size() > 0) {
             drawHoveringString(tooltip, x, y, font);
-//            tooltip.clear();
         }
     }
 

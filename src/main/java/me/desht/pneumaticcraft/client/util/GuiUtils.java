@@ -142,6 +142,7 @@ public class GuiUtils {
     public static void drawItemStack(ItemStack stack, int x, int y) {
         GlStateManager.enableRescaleNormal();
         RenderHelper.enableGUIStandardItemLighting();
+        GlStateManager.enableDepthTest();
         itemRenderer.renderItemAndEffectIntoGUI(stack, x, y);
         RenderHelper.disableStandardItemLighting();
         GlStateManager.disableRescaleNormal();

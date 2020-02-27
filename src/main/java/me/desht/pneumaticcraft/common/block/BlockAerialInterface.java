@@ -29,7 +29,7 @@ public class BlockAerialInterface extends BlockPneumaticCraft {
 
     @Override
     protected boolean reversePlacementRotation() {
-        return false;
+        return true;
     }
 
     @Override

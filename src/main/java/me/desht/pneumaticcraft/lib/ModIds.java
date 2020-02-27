@@ -25,4 +25,5 @@ ModIds {
     public static final String MEKANISM = "mekanism";
     public static final String BAUBLES = "baubles";
     public static final String TOUGH_AS_NAILS = "toughasnails";
+    public static final String CURIOS = "curios";
 }

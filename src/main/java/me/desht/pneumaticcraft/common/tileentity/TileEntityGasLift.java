@@ -218,7 +218,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
             BlockPos curPos = null;
             while (pumpingLake.size() > 0) {
                 curPos = pumpingLake.get(0);
-                if (FluidUtils.isSourceBlock(getWorld(), curPos, fluidStack.getFluid())) {
+                if (FluidUtils.isSourceFluidBlock(getWorld(), curPos, fluidStack.getFluid())) {
                     foundSource = true;
                     break;
                 }
@@ -249,7 +249,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
                 if (d == Direction.DOWN) continue;
                 BlockPos newPos = checkingPos.offset(d);
                 if (PneumaticCraftUtils.distBetweenSq(newPos, thisPos) <= MAX_PUMP_RANGE_SQUARED
-                        && FluidUtils.isSourceBlock(getWorld(), newPos, fluid)
+                        && FluidUtils.isSourceFluidBlock(getWorld(), newPos, fluid)
                         && !pumpingLake.contains(newPos)) {
                     pendingPositions.add(newPos);
                     pumpingLake.add(newPos);

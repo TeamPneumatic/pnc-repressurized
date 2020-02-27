@@ -44,7 +44,7 @@ public class TOPInfoProvider {
             if (te == null) return;
         }
 
-        if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, data.getSideHit()).isPresent()) {
+        if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
             TOPInfoProvider.handlePneumatic(mode, probeInfo, te);
         }
         if (te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {

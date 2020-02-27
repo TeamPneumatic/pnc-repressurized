@@ -372,8 +372,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         }
         tag.put("droneItems", handler.serializeNBT());
 
-        tag.putString("ownerID", ownerID.toString());
-        tag.putString("ownerName", ownerName.getFormattedText());
+        if (ownerID != null) tag.putString("ownerID", ownerID.toString());
+        if (ownerName != null) tag.putString("ownerName", ownerName.getFormattedText());
 
         return tag;
     }

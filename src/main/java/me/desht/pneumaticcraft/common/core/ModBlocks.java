@@ -220,4 +220,6 @@ public class ModBlocks {
             () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.GASOLINE.get(), fluidProps()));
     public static final RegistryObject<FlowingFluidBlock> LPG = registerNoItem("lpg",
             () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.LPG.get(), fluidProps()));
+    public static final RegistryObject<FlowingFluidBlock> MEMORY_ESSENCE = registerNoItem("memory_essence",
+            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.MEMORY_ESSENCE.get(), fluidProps()));
 }

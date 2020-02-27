@@ -135,7 +135,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
         if (isRotatable()) {
-            Direction f = PneumaticCraftUtils.getDirectionFacing(ctx.getPlayer(), canRotateToTopOrBottom());
+            Direction f = canRotateToTopOrBottom() ? ctx.getNearestLookingDirection() : ctx.getPlacementHorizontalFacing();
+//            Direction f = PneumaticCraftUtils.getDirectionFacing(ctx.getPlayer(), canRotateToTopOrBottom());
             return state.with(directionProperty(), reversePlacementRotation() ? f.getOpposite() : f);
         } else {
             return state;
@@ -143,7 +144,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     /**
-     * Bit of a kludge for historical reasons; some blocks face the wrong way by default.
+     * Does the block face the same way as the player when placed, or opposite?
      * @return whether or not the block should be rotated 180 degrees on placement
      */
     protected boolean reversePlacementRotation() {
