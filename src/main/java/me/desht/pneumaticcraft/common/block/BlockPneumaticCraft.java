@@ -84,9 +84,6 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         try {
-            //            if (world instanceof World) {
-//                te.setWorld((World) world);
-//            }
             return getTileEntityClass().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,7 +133,6 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         BlockState state = super.getStateForPlacement(ctx);
         if (isRotatable()) {
             Direction f = canRotateToTopOrBottom() ? ctx.getNearestLookingDirection() : ctx.getPlacementHorizontalFacing();
-//            Direction f = PneumaticCraftUtils.getDirectionFacing(ctx.getPlayer(), canRotateToTopOrBottom());
             return state.with(directionProperty(), reversePlacementRotation() ? f.getOpposite() : f);
         } else {
             return state;

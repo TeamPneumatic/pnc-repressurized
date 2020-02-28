@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.common.block.*;
-import me.desht.pneumaticcraft.common.itemblock.ItemBlockLiquidHopper;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -121,9 +120,9 @@ public class ModBlocks {
     public static final RegistryObject<BlockElectrostaticCompressor> ELECTROSTATIC_COMPRESSOR = register("electrostatic_compressor",
             BlockElectrostaticCompressor::new);
     public static final RegistryObject<BlockAphorismTile> APHORISM_TILE = register("aphorism_tile",
-            BlockAphorismTile::new);
+            BlockAphorismTile::new, block -> () -> new BlockAphorismTile.ItemBlockAphorismTile(block.get()));
     public static final RegistryObject<BlockOmnidirectionalHopper> OMNIDIRECTIONAL_HOPPER = register("omnidirectional_hopper",
-            BlockOmnidirectionalHopper::new);
+            BlockOmnidirectionalHopper::new, block -> () -> new BlockOmnidirectionalHopper.ItemBlockOmnidirectionalHopper(block.get()));
     public static final RegistryObject<BlockElevatorCaller> ELEVATOR_CALLER = register("elevator_caller",
             BlockElevatorCaller::new);
     public static final RegistryObject<BlockProgrammer> PROGRAMMER = register("programmer",
@@ -139,7 +138,7 @@ public class ModBlocks {
     public static final RegistryObject<BlockAdvancedAirCompressor> ADVANCED_AIR_COMPRESSOR = register("advanced_air_compressor",
             BlockAdvancedAirCompressor::new);
     public static final RegistryObject<BlockLiquidHopper> LIQUID_HOPPER = register("liquid_hopper",
-            BlockLiquidHopper::new, block -> () -> new ItemBlockLiquidHopper(block.get()));
+            BlockLiquidHopper::new, block -> () -> new BlockLiquidHopper.ItemBlockLiquidHopper(block.get()));
     public static final RegistryObject<BlockDroneRedstoneEmitter> DRONE_REDSTONE_EMITTER = registerNoItem("drone_redstone_emitter",
             BlockDroneRedstoneEmitter::new);
     public static final RegistryObject<BlockHeatSink> HEAT_SINK = register("heat_sink",
@@ -178,8 +177,8 @@ public class ModBlocks {
     public static final List<RegistryObject<BlockPlasticBrick>> PLASTIC_BRICKS = new ArrayList<>();
     static {
         for (DyeColor color : DyeColor.values()) {
-            PLASTIC_BRICKS.add(register("plastic_brick_" + color.getTranslationKey(),
-                    () -> new BlockPlasticBrick(color), block -> () -> new BlockPlasticBrick.ItemPlasticBrick(block.get())));
+            PLASTIC_BRICKS.add(register("plastic_brick_" + color.getTranslationKey(), () -> new BlockPlasticBrick(color),
+                    block -> () -> new BlockPlasticBrick.ItemPlasticBrick(block.get())));
         }
     }
     public static RegistryObject<BlockPlasticBrick> plasticBrick(DyeColor color) {

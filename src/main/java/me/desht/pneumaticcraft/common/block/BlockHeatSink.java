@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
@@ -22,7 +23,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class BlockHeatSink extends BlockPneumaticCraft {
+public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.IHeatTintable {
 
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
         Block.makeCuboidShape(0, 0, 0, 16,  8, 16),

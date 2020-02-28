@@ -61,4 +61,12 @@ public class VoxelShapeUtils {
 
         return rotatedShapes.stream().reduce((v1, v2) -> VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR)).get();
     }
+
+    public static VoxelShape combine(IBooleanFunction func, VoxelShape... shapes) {
+        VoxelShape result = VoxelShapes.empty();
+        for (VoxelShape shape : shapes) {
+            result = VoxelShapes.combine(result, shape, func);
+        }
+        return result.simplify();
+    }
 }

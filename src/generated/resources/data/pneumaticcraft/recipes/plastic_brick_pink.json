@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PDP",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "D": {
+      "tag": "forge:dyes/pink"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:plastic_brick_pink",
+    "count": 8
+  }
+}

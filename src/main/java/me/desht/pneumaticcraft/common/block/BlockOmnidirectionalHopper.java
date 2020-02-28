@@ -1,13 +1,19 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAbstractHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -20,9 +26,12 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraft.world.World;
 
-public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
+import javax.annotation.Nullable;
+
+public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
 
     private static final VoxelShape MIDDLE_SHAPE = Block.makeCuboidShape(4, 6, 4, 12, 10, 12);
     private static final VoxelShape INPUT_SHAPE = Block.makeCuboidShape(0.0D, 10.0D, 0.0D, 16.0D, 16.0D, 16.0D);
@@ -80,7 +89,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         return this.getDefaultState()
                 .with(BlockStateProperties.FACING, ctx.getFace().getOpposite())
-                .with(INPUT_FACING, PneumaticCraftUtils.getDirectionFacing(ctx.getPlayer(), true).getOpposite());
+                .with(INPUT_FACING, ctx.getNearestLookingDirection().getOpposite());
     }
 
     @Override
@@ -114,19 +123,26 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft {
         return true;
     }
 
-//    @Override
-//    public RayTraceResult collisionRayTrace(BlockState blockState, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
-//        TileEntity te = world.getTileEntity(pos);
-//        if (te instanceof TileEntityOmnidirectionalHopper) {
-//            Direction o = ((TileEntityOmnidirectionalHopper) te).getInputDirection();
-//            boolean isColliding = false;
-//            setBlockBounds(new AxisAlignedBB(o.getXOffset() == 1 ? 10 / 16F : 0, o.getYOffset() == 1 ? 10 / 16F : 0, o.getZOffset() == 1 ? 10 / 16F : 0, o.getXOffset() == -1 ? 6 / 16F : 1, o.getYOffset() == -1 ? 6 / 16F : 1, o.getZOffset() == -1 ? 6 / 16F : 1));
-//            if (super.collisionRayTrace(blockState, world, pos, origin, direction) != null) isColliding = true;
-//            setBlockBounds(new AxisAlignedBB(4 / 16F, 4 / 16F, 4 / 16F, 12 / 16F, 12 / 16F, 12 / 16F));
-//            if (super.collisionRayTrace(blockState, world, pos, origin, direction) != null) isColliding = true;
-//            setBlockBounds(FULL_BLOCK_AABB);
-//            return isColliding ? super.collisionRayTrace(blockState, world, pos, origin, direction) : null;
-//        }
-//        return null;
-//    }
+    @Override
+    public int getTintColor(BlockState state, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int tintIndex) {
+        if (world != null && pos != null) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof TileEntityAbstractHopper) {
+                return ((TileEntityAbstractHopper) te).isCreative ? 0xFFFF80FF : 0xFFFFFFFF;
+            }
+        }
+        return 0xFFFFFFFF;
+    }
+
+    public static class ItemBlockOmnidirectionalHopper extends BlockItem implements ColorHandlers.ITintableItem {
+        public ItemBlockOmnidirectionalHopper(Block block) {
+            super(block, ModItems.defaultProps());
+        }
+
+        @Override
+        public int getTintColor(ItemStack stack, int tintIndex) {
+            int n = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.CREATIVE);
+            return n > 0 ? 0xFFFF60FF : 0xFFFFFFFF;
+        }
+    }
 }

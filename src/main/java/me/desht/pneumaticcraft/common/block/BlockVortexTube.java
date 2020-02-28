@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVortexTube;
 import net.minecraft.block.Block;
@@ -11,7 +12,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 
-public class BlockVortexTube extends BlockPneumaticCraft {
+public class BlockVortexTube extends BlockPneumaticCraft implements ColorHandlers.IHeatTintable {
 
     private static final VoxelShape[] SHAPES = new VoxelShape[] {  // DUNSWE order
             Block.makeCuboidShape(0,0, 0, 15, 15, 15),

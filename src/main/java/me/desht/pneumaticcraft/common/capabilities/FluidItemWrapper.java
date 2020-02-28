@@ -18,7 +18,6 @@ public class FluidItemWrapper implements ICapabilityProvider {
     private final ItemStack stack;
     private final String tankName;
     private final int capacity;
-
     private final LazyOptional<IFluidHandlerItem> holder = LazyOptional.of(Handler::new);
 
     public FluidItemWrapper(ItemStack stack, String tankName, int capacity) {
@@ -26,12 +25,6 @@ public class FluidItemWrapper implements ICapabilityProvider {
         this.tankName = tankName;
         this.capacity = capacity;
     }
-
-//    @Nonnull
-//    @Override
-//    public LazyOptional<? extends IFluidHandlerItem> getCapability(@Nonnull Capability capability, @Nullable Direction facing) {
-//        return LazyOptional.of(Handler::new);
-//    }
 
     @Override
     @Nonnull

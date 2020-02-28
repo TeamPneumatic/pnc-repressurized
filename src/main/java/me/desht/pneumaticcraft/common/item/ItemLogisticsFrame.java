@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
@@ -28,10 +29,10 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+import static me.desht.pneumaticcraft.lib.GuiConstants.bullet;
 
-public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ITintableItem {
+public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorHandlers.ITintableItem {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getHeldItem(handIn);

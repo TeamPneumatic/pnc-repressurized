@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
 import net.minecraft.block.Block;
@@ -10,7 +11,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 
-public class BlockThermalCompressor extends BlockPneumaticCraft {
+public class BlockThermalCompressor extends BlockPneumaticCraft implements ColorHandlers.IHeatTintable {
     private VoxelShape BOUNDS = Block.makeCuboidShape(2, 0, 2, 14, 15, 14);
 
     public BlockThermalCompressor() {

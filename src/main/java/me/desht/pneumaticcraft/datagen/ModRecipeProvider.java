@@ -893,22 +893,9 @@ public class ModRecipeProvider extends RecipeProvider {
         ).build(consumer);
 
         // plastic bricks
-        plasticBrick(DyeColor.WHITE, Tags.Items.DYES_WHITE).build(consumer);
-        plasticBrick(DyeColor.ORANGE, Tags.Items.DYES_ORANGE).build(consumer);
-        plasticBrick(DyeColor.MAGENTA, Tags.Items.DYES_MAGENTA).build(consumer);
-        plasticBrick(DyeColor.LIGHT_BLUE, Tags.Items.DYES_LIGHT_BLUE).build(consumer);
-        plasticBrick(DyeColor.YELLOW, Tags.Items.DYES_YELLOW).build(consumer);
-        plasticBrick(DyeColor.LIME, Tags.Items.DYES_LIME).build(consumer);
-        plasticBrick(DyeColor.PINK, Tags.Items.DYES_PINK).build(consumer);
-        plasticBrick(DyeColor.GRAY, Tags.Items.DYES_GRAY).build(consumer);
-        plasticBrick(DyeColor.LIGHT_GRAY, Tags.Items.DYES_LIGHT_GRAY).build(consumer);
-        plasticBrick(DyeColor.CYAN, Tags.Items.DYES_CYAN).build(consumer);
-        plasticBrick(DyeColor.PURPLE, Tags.Items.DYES_PURPLE).build(consumer);
-        plasticBrick(DyeColor.BLUE, Tags.Items.DYES_BLUE).build(consumer);
-        plasticBrick(DyeColor.BROWN, Tags.Items.DYES_BROWN).build(consumer);
-        plasticBrick(DyeColor.GREEN, Tags.Items.DYES_GREEN).build(consumer);
-        plasticBrick(DyeColor.RED, Tags.Items.DYES_RED).build(consumer);
-        plasticBrick(DyeColor.BLACK, Tags.Items.DYES_BLACK).build(consumer);
+        for (DyeColor dye : DyeColor.values()) {
+            plasticBrick(dye, dye.getTag()).build(consumer);
+        }
 
         // specials
         specialRecipe(ModRecipes.DRONE_COLOR_CRAFTING.get()).build(consumer, getId("color_drone"));

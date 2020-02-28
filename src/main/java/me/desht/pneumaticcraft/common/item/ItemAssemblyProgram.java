@@ -19,8 +19,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.Arrays;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+import static me.desht.pneumaticcraft.lib.GuiConstants.bullet;
 
 public class ItemAssemblyProgram extends Item {
     private static final AssemblyProgram[] PROGRAMS = new AssemblyProgram[AssemblyProgramType.values().length];

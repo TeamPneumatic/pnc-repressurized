@@ -2,10 +2,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.common.block.BlockLiquidHopper;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
-import me.desht.pneumaticcraft.common.itemblock.ItemBlockLiquidHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
@@ -213,7 +213,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
     @Nonnull
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
-        return ImmutableMap.of(ItemBlockLiquidHopper.TANK_NAME, tank);
+        return ImmutableMap.of(BlockLiquidHopper.ItemBlockLiquidHopper.TANK_NAME, tank);
     }
 
     @Override

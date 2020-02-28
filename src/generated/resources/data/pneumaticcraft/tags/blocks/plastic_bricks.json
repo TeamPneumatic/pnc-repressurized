@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "pneumaticcraft:plastic_brick_white",
+    "pneumaticcraft:plastic_brick_orange",
+    "pneumaticcraft:plastic_brick_magenta",
+    "pneumaticcraft:plastic_brick_light_blue",
+    "pneumaticcraft:plastic_brick_yellow",
+    "pneumaticcraft:plastic_brick_lime",
+    "pneumaticcraft:plastic_brick_pink",
+    "pneumaticcraft:plastic_brick_gray",
+    "pneumaticcraft:plastic_brick_light_gray",
+    "pneumaticcraft:plastic_brick_cyan",
+    "pneumaticcraft:plastic_brick_purple",
+    "pneumaticcraft:plastic_brick_blue",
+    "pneumaticcraft:plastic_brick_brown",
+    "pneumaticcraft:plastic_brick_green",
+    "pneumaticcraft:plastic_brick_red",
+    "pneumaticcraft:plastic_brick_black"
+  ]
+}

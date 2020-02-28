@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -30,7 +31,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class ItemGunAmmo extends Item implements ITintableItem {
+public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintableItem {
 
     public ItemGunAmmo() {
         super(ModItems.defaultProps().maxStackSize(1).setNoRepair());

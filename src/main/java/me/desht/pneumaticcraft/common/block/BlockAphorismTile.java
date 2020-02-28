@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -9,6 +11,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
@@ -28,6 +31,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -36,11 +40,13 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile.NBT_BACKGROUND_COLOR;
+import static me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile.NBT_BORDER_COLOR;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static me.desht.pneumaticcraft.lib.NBTKeys.BLOCK_ENTITY_TAG;
 import static me.desht.pneumaticcraft.lib.NBTKeys.NBT_EXTRA;
 
-public class BlockAphorismTile extends BlockPneumaticCraft {
+public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
 
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
             Block.makeCuboidShape(0, 0, 0, 16,  1, 16),
@@ -84,7 +90,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
         CompoundNBT tag = stack.getChildTag(BLOCK_ENTITY_TAG);
         if (tag != null && tag.contains(NBT_EXTRA)) {
             CompoundNBT subTag = tag.getCompound(NBT_EXTRA);
-            if (subTag != null && (subTag.contains(TileEntityAphorismTile.NBT_BORDER_COLOR) || subTag.contains(TileEntityAphorismTile.NBT_BACKGROUND_COLOR))) {
+            if (subTag != null && (subTag.contains(NBT_BORDER_COLOR) || subTag.contains(NBT_BACKGROUND_COLOR))) {
                 ListNBT l = subTag.getList(TileEntityAphorismTile.NBT_TEXT_LINES, Constants.NBT.TAG_STRING);
                 if (!l.isEmpty()) {
                     curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.aphorism_tile.text").applyTextStyle(TextFormatting.YELLOW));
@@ -194,19 +200,46 @@ public class BlockAphorismTile extends BlockPneumaticCraft {
         return false;
     }
 
-    public static int getBackgroundColor(ItemStack stack) {
-        CompoundNBT tag = stack.getChildTag(BLOCK_ENTITY_TAG);
-        if (tag != null && tag.contains(NBT_EXTRA)) {
-            return tag.getCompound(NBT_EXTRA).getInt(TileEntityAphorismTile.NBT_BACKGROUND_COLOR);
+    @Override
+    public int getTintColor(BlockState state, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int tintIndex) {
+        if (world != null && pos != null) {
+            TileEntity te = world.getTileEntity(pos);
+            if (te instanceof TileEntityAphorismTile) {
+                TileEntityAphorismTile teAt = (TileEntityAphorismTile) te;
+                switch (tintIndex) {
+                    case 0: // border
+                        return DyeColor.byId(teAt.getBorderColor()).getColorValue();
+                    case 1: // background
+                        return ColorHandlers.desaturate(DyeColor.byId(teAt.getBackgroundColor()).getColorValue());
+                }
+            }
         }
-        return DyeColor.WHITE.getId();
+        return 0xFFFFFFFF;
     }
 
-    public static int getBorderColor(ItemStack stack) {
-        CompoundNBT tag = stack.getChildTag(BLOCK_ENTITY_TAG);
-        if (tag != null && tag.contains(NBT_EXTRA)) {
-            return tag.getCompound(NBT_EXTRA).getInt(TileEntityAphorismTile.NBT_BORDER_COLOR);
+    public static class ItemBlockAphorismTile extends BlockItem implements ColorHandlers.ITintableItem {
+        public ItemBlockAphorismTile(BlockAphorismTile blockAphorismTile) {
+            super(blockAphorismTile, ModItems.defaultProps());
         }
-        return DyeColor.BLUE.getId();
+
+        private static int getColor(ItemStack stack, String key, DyeColor fallback) {
+            CompoundNBT tag = stack.getChildTag(BLOCK_ENTITY_TAG);
+            if (tag != null && tag.contains(NBT_EXTRA)) {
+                return tag.getCompound(NBT_EXTRA).getInt(key);
+            }
+            return fallback.getId();
+        }
+
+        @Override
+        public int getTintColor(ItemStack stack, int tintIndex) {
+            switch (tintIndex) {
+                case 0: // border
+                    return DyeColor.byId(getColor(stack, NBT_BORDER_COLOR, DyeColor.BLUE)).getColorValue();
+                case 1: // background
+                    return ColorHandlers.desaturate(DyeColor.byId(getColor(stack, NBT_BACKGROUND_COLOR, DyeColor.WHITE)).getColorValue());
+                default:
+                    return 0xFFFFFF;
+            }
+        }
     }
 }

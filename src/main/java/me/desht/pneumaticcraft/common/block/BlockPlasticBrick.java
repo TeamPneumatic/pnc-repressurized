@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
-import me.desht.pneumaticcraft.common.item.ITintableItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -27,13 +27,14 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class BlockPlasticBrick extends Block {
+public class BlockPlasticBrick extends Block implements ColorHandlers.ITintableBlock {
     private static final VoxelShape COLLISION_SHAPE = makeCuboidShape(0, 0, 0, 16, 15, 16);
 
     private static final EnumProperty<PartType> X_PART = EnumProperty.create("x_part", PartType.class);
@@ -85,17 +86,21 @@ public class BlockPlasticBrick extends Block {
         Block w = world.getBlockState(pos.west()).getBlock();
         Block e = world.getBlockState(pos.east()).getBlock();
         PartType xType = PartType.NONE;
-        if (w == this || e == this) {
-            boolean bx = ((pos.getX() + pos.getY()) & 0x1) == 0;
-            xType = bx ? PartType.RIGHT : PartType.LEFT;
+        boolean xRight = ((pos.getX() + pos.getY()) & 0x1) == 0;
+        if (xRight && w == this) {
+            xType = PartType.RIGHT;
+        } else if (!xRight && e == this) {
+            xType = PartType.LEFT;
         }
 
         Block n = world.getBlockState(pos.north()).getBlock();
         Block s = world.getBlockState(pos.south()).getBlock();
         PartType zType = PartType.NONE;
-        if (n == this || s == this) {
-            boolean bz = ((pos.getZ() + pos.getY()) & 0x1) == 0;
-            zType = bz ? PartType.LEFT : PartType.RIGHT;
+        boolean zRight = ((pos.getZ() + pos.getY()) & 0x1) == 0;
+        if (zRight && s == this) {
+            zType = PartType.RIGHT;
+        } else if (!zRight && n == this) {
+            zType = PartType.LEFT;
         }
 
         return stateIn.with(X_PART, xType).with(Z_PART, zType);
@@ -110,6 +115,11 @@ public class BlockPlasticBrick extends Block {
                 ((LivingEntity) entityIn).addPotionEffect(new EffectInstance(Effects.SLOWNESS, 40, 1));
             }
         }
+    }
+
+    @Override
+    public int getTintColor(BlockState state, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int tintIndex) {
+        return getColor().getColorValue();
     }
 
     enum PartType implements IStringSerializable {
@@ -129,18 +139,9 @@ public class BlockPlasticBrick extends Block {
         }
     }
 
-    public static class ItemPlasticBrick extends BlockItem implements ITintableItem, ICustomTooltipName {
+    public static class ItemPlasticBrick extends BlockItem implements ICustomTooltipName {
         public ItemPlasticBrick(BlockPlasticBrick blockPlasticBrick) {
             super(blockPlasticBrick, ModItems.defaultProps());
-        }
-
-        @Override
-        public int getTintColor(ItemStack stack, int tintIndex) {
-            Block b = ((BlockItem) stack.getItem()).getBlock();
-            if (b instanceof BlockPlasticBrick) {
-                return ((BlockPlasticBrick) b).getColor().getColorValue();
-            }
-            return 0xFFFFFFF;
         }
 
         @Override

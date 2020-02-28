@@ -55,10 +55,6 @@ import java.util.stream.Stream;
 public class PneumaticCraftUtils {
     private static final List<Item> inventoryItemBlacklist = new ArrayList<>();
 
-    public static ITextComponent bullet() {
-        return new StringTextComponent(GuiConstants.BULLET + " ");
-    }
-
     // this may return to Direction.HORIZONTALS one day (like in 1.12.2) but for now...
     public static final Direction[] HORIZONTALS = new Direction[] {
             Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST

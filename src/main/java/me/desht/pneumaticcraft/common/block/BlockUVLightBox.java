@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import net.minecraft.block.Block;
@@ -14,8 +15,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IEnviromentBlockReader;
 
-public class BlockUVLightBox extends BlockPneumaticCraft {
+import javax.annotation.Nullable;
+
+public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
     public static final BooleanProperty LOADED = BooleanProperty.create("loaded");
     public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
@@ -56,5 +60,14 @@ public class BlockUVLightBox extends BlockPneumaticCraft {
     @Override
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT_MIPPED;
+    }
+
+    @Override
+    public int getTintColor(BlockState state, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int tintIndex) {
+        if (world != null && pos != null) {
+            boolean lightsOn = world.getBlockState(pos).get(BlockUVLightBox.LIT);
+            return lightsOn ? 0xFF4000FF : 0xFFAFAFE4;
+        }
+        return 0xFFAFAFE4;
     }
 }

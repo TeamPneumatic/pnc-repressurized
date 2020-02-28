@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:etching_tank"
+    ]
+  },
+  "criteria": {
+    "has_etching_acid_bucket": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:etching_acid_bucket"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:etching_tank"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_etching_acid_bucket",
+      "has_the_recipe"
+    ]
+  ]
+}

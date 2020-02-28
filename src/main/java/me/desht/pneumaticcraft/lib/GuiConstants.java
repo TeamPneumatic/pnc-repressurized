@@ -1,5 +1,8 @@
 package me.desht.pneumaticcraft.lib;
 
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+
 public class GuiConstants {
     public static final int MAX_CHAR_PER_LINE_LEFT = 26;
 
@@ -15,4 +18,8 @@ public class GuiConstants {
     public static final String INFINITY = "\u221E";
     public static final String TRIANGLE_UP_LEFT = "\u25e4";
     public static final String TRIANGLE_DOWN_RIGHT = "\u25e2";
+
+    public static ITextComponent bullet() {
+        return new StringTextComponent(BULLET + " ");
+    }
 }

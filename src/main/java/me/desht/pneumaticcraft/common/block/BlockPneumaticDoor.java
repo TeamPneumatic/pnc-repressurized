@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.ITintableItem;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.lib.NBTKeys;
@@ -249,7 +249,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
         }
     }
 
-    public static class ItemBlockPneumaticDoor extends BlockItem implements ITintableItem {
+    public static class ItemBlockPneumaticDoor extends BlockItem implements ColorHandlers.ITintableItem {
         public ItemBlockPneumaticDoor(Block blockIn) {
             super(blockIn, ModItems.defaultProps());
         }
