@@ -4,12 +4,13 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
-import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
+import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.inventory.ContainerAerialInterface;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface.FeedMode;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
@@ -49,13 +50,14 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
 
         if (te.dispenserUpgradeInserted) {
             // Experience Tab
-            if (PneumaticCraftAPIHandler.getInstance().liquidXPs.size() > 0) {
+            List<Fluid> availableXp = XPFluidManager.getInstance().getAvailableLiquidXPs();
+            if (availableXp.size() > 0) {
                 WidgetAnimatedStat xpStat = addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title",
                         new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false);
                 xpStat.setText(getLiquidXPText());
                 xpButton = new WidgetButtonExtended(20, 15, 20, 20, "", b -> {
                     te.curXPFluidIndex++;
-                    if (te.curXPFluidIndex >= PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.size()) {
+                    if (te.curXPFluidIndex >= availableXp.size()) {
                         te.curXPFluidIndex = -1;
                     }
                     setupXPButton();
@@ -115,8 +117,9 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
     }
 
     private void setupXPButton() {
-        Fluid fluid = te.curXPFluidIndex >= 0 && te.curXPFluidIndex < PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.size() ?
-                PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.get(te.curXPFluidIndex) : Fluids.EMPTY;
+        List<Fluid> availableXp = XPFluidManager.getInstance().getAvailableLiquidXPs();
+        Fluid fluid = te.curXPFluidIndex >= 0 && te.curXPFluidIndex < availableXp.size() ?
+                availableXp.get(te.curXPFluidIndex) : Fluids.EMPTY;
         if (fluid != Fluids.EMPTY) {
             FluidStack fluidStack = new FluidStack(fluid, 1000);
             xpButton.setRenderStacks(FluidUtil.getFilledBucket(fluidStack));
@@ -135,13 +138,14 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
         liquidXpText.add("");
         liquidXpText.add("gui.tab.info.aerialInterface.liquidXp.info");
         liquidXpText.add("");
-        if (PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.isEmpty()) {
+        List<Fluid> availableXp = XPFluidManager.getInstance().getAvailableLiquidXPs();
+        if (availableXp.isEmpty()) {
             liquidXpText.add(TextFormatting.ITALIC + "None");
         } else {
-            for (Fluid f : PneumaticCraftAPIHandler.getInstance().availableLiquidXPs) {
+            for (Fluid f : availableXp) {
                 FluidStack stack = new FluidStack(f, 1000);
                 String modName = ModNameCache.getModName(f.getRegistryName().getNamespace());
-                liquidXpText.add(TextFormatting.BLACK + "\u2022  " + stack.getDisplayName().getFormattedText() + " (" + modName + ")");
+                liquidXpText.add(TextFormatting.BLACK.toString() + GuiConstants.bullet() + stack.getDisplayName().getFormattedText() + " (" + modName + ")");
             }
         }
         return liquidXpText;

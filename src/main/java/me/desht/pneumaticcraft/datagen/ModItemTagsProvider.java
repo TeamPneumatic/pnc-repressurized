@@ -9,6 +9,7 @@ import net.minecraft.item.Items;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.IItemProvider;
 import net.minecraftforge.common.Tags;
+import top.theillusivec4.curios.api.CurioTags;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -28,6 +29,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         copy(PneumaticCraftTags.Blocks.PLASTIC_BRICKS, PneumaticCraftTags.Items.PLASTIC_BRICKS);
 
         addItemsToTag(PneumaticCraftTags.Items.UPGRADE_COMPONENT, ModItems.UPGRADE_MATRIX, () -> Items.LAPIS_LAZULI);
+
+        addItemsToTag(CurioTags.CURIO, ModItems.MEMORY_STICK);
 
         addItemsToTag(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, ModItems.COMPRESSED_IRON_INGOT);
         appendToTag(Tags.Items.INGOTS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON);

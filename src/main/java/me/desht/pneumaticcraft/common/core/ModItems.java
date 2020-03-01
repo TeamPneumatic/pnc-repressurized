@@ -57,6 +57,8 @@ public class ModItems {
             ItemSeismicSensor::new);
     public static final RegistryObject<ItemMicromissiles> MICROMISSILES = register("micromissiles",
             ItemMicromissiles::new);
+    public static final RegistryObject<ItemMemoryStick> MEMORY_STICK = register("memory_stick",
+            ItemMemoryStick::new);
 
     public static final RegistryObject<ItemPressurizable> AIR_CANISTER = register("air_canister",
             () -> new ItemPressurizable(PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));

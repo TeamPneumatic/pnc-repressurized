@@ -89,9 +89,8 @@ public final class PneumaticRegistry {
         int getProtectingSecurityStations(World world, BlockPos pos, PlayerEntity player, boolean showRangeLines);
 
         /**
-         * Used to register a liquid that represents liquid XP (e.g. PneumaticCraft Memory Essence, CoFH Essence of
-         * Knowledge, or OpenBlocks Liquid XP).
-         * This is used in the Aerial Interface to pump XP in/out of the player.
+         * Register a fluid that represents liquid XP (e.g. PneumaticCraft Memory Essence, CoFH Essence of
+         * Knowledge, or OpenBlocks Liquid XP). This is used in the Aerial Interface to pump XP in/out of the player.
          *
          * @param fluid the fluid to register
          * @param liquidToPointRatio the amount of liquid (in mB) used to get one XP point; use a value of 0 or less to

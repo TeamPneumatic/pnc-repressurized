@@ -382,6 +382,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', ModItems.AIR_CANISTER.get()
         ).build(consumer);
 
+        shaped(ModItems.MEMORY_STICK.get(), ModItems.PLASTIC.get(),
+                "DED/PSP/G G",
+                'D', Tags.Items.GEMS_DIAMOND,
+                'E', Tags.Items.GEMS_EMERALD,
+                'P', ModItems.PLASTIC.get(),
+                'S', Blocks.SOUL_SAND,
+                'G', Tags.Items.INGOTS_GOLD
+        ).build(consumer);
+
         shaped(ModItems.MICROMISSILES.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 " T /WPW/WFW",
                 'W', ModItems.PLASTIC.get(),

@@ -26,9 +26,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,8 +34,6 @@ import java.util.Map;
  */
 public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCraftInterface {
     private final static PneumaticCraftAPIHandler INSTANCE = new PneumaticCraftAPIHandler();
-    public final Map<Fluid, Integer> liquidXPs = new HashMap<>();
-    public final List<Fluid> availableLiquidXPs = new ArrayList<>(); // for cycling through xp fluid types
     public final Map<ResourceLocation, Integer> liquidFuels = new HashMap<>();
 
     public static PneumaticCraftAPIHandler getInstance() {
@@ -77,14 +73,7 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
 
     @Override
     public void registerXPFluid(Fluid fluid, int liquidToPointRatio) {
-        Validate.notNull(fluid, "Fluid may not be null!");
-        if (liquidToPointRatio <= 0) {
-            liquidXPs.remove(fluid);
-            availableLiquidXPs.remove(fluid);
-        } else {
-            liquidXPs.put(fluid, liquidToPointRatio);
-            availableLiquidXPs.add(fluid);
-        }
+        XPFluidManager.getInstance().registerXPFluid(fluid, liquidToPointRatio);
     }
 
     @Override

@@ -169,17 +169,6 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     @Override
     public Map<EnumUpgrade,Integer> getApplicableUpgrades() {
         return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
-//        if (applicableUpgrades == null) {
-//            applicableUpgrades = ImmutableSet.of(
-//                    EnumUpgrade.SPEED.getItem(),
-//                    EnumUpgrade.RANGE.getItem(),
-//                    EnumUpgrade.DISPENSER.getItem(),
-//                    EnumUpgrade.ENTITY_TRACKER.getItem(),
-//                    EnumUpgrade.ITEM_LIFE.getItem(),
-//                    EnumUpgrade.SECURITY.getItem()
-//            );
-//        }
-//        return applicableUpgrades;
     }
 
     @Override

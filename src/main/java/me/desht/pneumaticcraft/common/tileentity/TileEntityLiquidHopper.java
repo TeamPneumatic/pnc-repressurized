@@ -16,14 +16,13 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
@@ -99,15 +98,10 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
         // try to fill any fluid-handling items in front of the output
         if (getWorld().isAirBlock(getPos().offset(dir))) {
             for (ItemEntity entity : getNeighborItems(this, dir)) {
-                NonNullList<ItemStack> returnedItems = NonNullList.create();
-                if (FluidUtils.tryFluidExtraction(tank, entity.getItem(), returnedItems)) {
-                    if (entity.getItem().getCount() <= 0) entity.remove();
-                    for (ItemStack stack : returnedItems) {
-                        ItemEntity item = new ItemEntity(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
-                        item.setMotion(entity.getMotion());
-                        getWorld().addEntity(item);
-                    }
-                    return true;
+                FluidActionResult res = FluidUtil.tryFillContainer(entity.getItem(), tank, maxItems * 100, null, true);
+                if (res.success) {
+                    entity.setItem(res.result);
+                    break;
                 }
             }
         }
@@ -144,14 +138,9 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
 
         if (getWorld().isAirBlock(getPos().offset(inputDir))) {
             for (ItemEntity entity : getNeighborItems(this, inputDir)) {
-                NonNullList<ItemStack> returnedItems = NonNullList.create();
-                if (FluidUtils.tryFluidInsertion(tank, entity.getItem(), returnedItems)) {
-                    if (entity.getItem().isEmpty()) entity.remove();
-                    for (ItemStack stack : returnedItems) {
-                        ItemEntity item = new ItemEntity(getWorld(), entity.posX, entity.posY, entity.posZ, stack);
-                        item.setMotion(entity.getMotion());
-                        getWorld().addEntity(item);
-                    }
+                FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, maxItems * 100, null, true);
+                if (res.success) {
+                    entity.setItem(res.result);
                     return true;
                 }
             }

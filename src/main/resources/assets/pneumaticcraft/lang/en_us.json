@@ -198,6 +198,7 @@
   "item.pneumaticcraft.network_registry": "Network Registry",
   "item.pneumaticcraft.network_node": "Network Node",
   "item.pneumaticcraft.upgrade_matrix": "Upgrade Matrix",
+  "item.pneumaticcraft.memory_stick": "Memory Stick",
 
   "_comment": "Fluid",
   "fluid.pneumaticcraft.plastic": "Molten Plastic",
@@ -1148,6 +1149,7 @@
   "gui.tooltip.gpsTool.variable": "▶ Linked variable: \"#%s\"",
   "gui.tooltip.aerial_interface.xpDisabled": "XP handling disabled",
   "gui.tooltip.charging_station.manageUpgrades": "Manage Upgrades for the %s",
+  "gui.tooltip.memory_stick.xp_stored": "Stored: %d XP (%d levels)",
 
   "_comment": "Item tooltips",
   "gui.tooltip.item.pneumaticcraft.plastic_bucket": "Pour into the world or chill in an inventory with a Heat Frame to solidify into Plastic Sheets. Using a Heat Frame might get you better results...",
@@ -1197,6 +1199,7 @@
   "gui.tooltip.item.pneumaticcraft.crop_support": "When placed on soil or dirt, this will improve the growth speed of any crop or tree that grows there. Sneak + Right-Click with a Logistics Configurator to detach the item.",
   "gui.tooltip.item.pneumaticcraft.transfer_gadget": "When placed between two inventories, it slowly (1 item every 2 seconds) transfers items from one inventory to the other. It does not require any block space. Right-click with a Logistics Configurator to toggle the direction. Sneak + Right-Click to detach the gadget.",
   "gui.tooltip.item.pneumaticcraft.minigun": "This handheld weapon requires Gun Ammo to operate, which must be placed in the gun's magazine; Sneak + Right-click to access the magazine. \\n This Minigun can be upgraded in a Charging Station.",
+  "gui.tooltip.item.pneumaticcraft.memory_stick": "Stores Player Experience. \\n▶ Right-click: Store one level \\n▶ Sneak-Right-click: Retrieve one level \\n▶ Left-click: Toggle XP Orb auto-absorb",
   "gui.tooltip.item.pneumaticcraft.upgrade_matrix": "Crafting component for upgrades. Can be used to save on Lapis Lazuli.",
   "gui.tooltip.item.uvLightBox.successChance": "Etch success chance: %d%%",
   "gui.tooltip.item.uvLightBox.putInLightBox": "Put in a UV Light Box to expose...",
@@ -1308,6 +1311,8 @@
   "message.seismicSensor.noOilFound": "§c[Seismic Sensor] No oil found.",
   "message.minigun.outOfAmmo": "§6Out of Ammo! Sneak & Right-click to load",
   "message.misc.outOfAir": "The %s is out of air!",
+  "message.memory_stick.absorb.true": "XP Orb auto-absorb: §aon",
+  "message.memory_stick.absorb.false": "XP Orb auto-absorb: §6off",
   "gui.regulatorTube.hudMessage.notInLine": "§cA Regulator Tube Module only regulates air in line of the module.",
   "gui.regulatorTube.hudMessage.inverted": "§cA Regulator Tube Module only regulates air in the direction of the arrow.",
   "gui.search": "Search:",

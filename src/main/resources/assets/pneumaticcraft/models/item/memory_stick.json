@@ -1,0 +1,8 @@
+{
+  "textures" : {
+    "layer0" : "pneumaticcraft:item/memory_stick",
+    "layer1" : "pneumaticcraft:item/memory_stick_layer1",
+    "layer2" : "pneumaticcraft:item/memory_stick_layer2"
+  },
+  "parent" : "item/generated"
+}

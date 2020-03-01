@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
+import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -56,13 +56,12 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     private static final int ENERGY_CAPACITY = 100000;
     private static final int RF_PER_TICK = 1000;
 
-//    @DescSynced
     @GuiSynced
     public String playerName = "";
-//    @DescSynced
     private String playerUUID = "";
 
     private Fluid curXpFluid = Fluids.EMPTY;
+    private int curXpRatio = 0;
     @GuiSynced
     public int curXPFluidIndex = -1;  // index into PneumaticCraftAPIHandler.availableLiquidXPs, -1 = disabled
 
@@ -202,7 +201,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             if (redstoneMode > 1) redstoneMode = 0;
         } else if (tag.equals("xpType")) {
             curXPFluidIndex++;
-            List<Fluid> available = PneumaticCraftAPIHandler.getInstance().availableLiquidXPs;
+            List<Fluid> available = XPFluidManager.getInstance().getAvailableLiquidXPs();
             if (curXPFluidIndex >= available.size()) {
                 curXPFluidIndex = -1;
             }
@@ -211,6 +210,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             } else {
                 curXpFluid = Fluids.EMPTY;
             }
+            curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
         } else if (tag.startsWith("SideConf") && itemHandlerSideConfigurator.handleButtonPress(tag)) {
             updateNeighbours = true;
         } else {
@@ -266,9 +266,10 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
         setPlayerId(tag.getString("playerName"), tag.getString("playerUUID"));
         curXpFluid = tag.contains("curXpFluid") ? ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("curXpFluid"))) : Fluids.EMPTY;
+        curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
         energyStorage.readFromNBT(tag);
 
-        curXPFluidIndex = curXpFluid == Fluids.EMPTY ? -1 : PneumaticCraftAPIHandler.getInstance().availableLiquidXPs.indexOf(curXpFluid);
+        curXPFluidIndex = curXpFluid == Fluids.EMPTY ? -1 : XPFluidManager.getInstance().getAvailableLiquidXPs().indexOf(curXpFluid);
         dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
     }
 
@@ -542,7 +543,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             if (curXpFluid != Fluids.EMPTY) {
                 PlayerEntity player = getPlayer();
                 if (player != null) {
-                    return new FluidStack(curXpFluid, EnchantmentUtils.getPlayerXP(player) * PneumaticCraftAPIHandler.getInstance().liquidXPs.get(curXpFluid));
+                    return new FluidStack(curXpFluid, EnchantmentUtils.getPlayerXP(player) * curXpRatio);
                 }
             }
             return FluidStack.EMPTY;
@@ -560,15 +561,14 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
         @Override
         public int fill(FluidStack resource, FluidAction doFill) {
-            if (canFill(resource.getFluid())) {
+            if (curXpRatio != 0 && canFill(resource.getFluid())) {
                 PlayerEntity player = getPlayer();
                 if (player != null) {
-                    int liquidToXP = PneumaticCraftAPIHandler.getInstance().liquidXPs.get(resource.getFluid());
-                    int pointsAdded = resource.getAmount() / liquidToXP;
+                    int pointsAdded = resource.getAmount() / curXpRatio;
                     if (doFill.execute()) {
                         player.giveExperiencePoints(pointsAdded);
                     }
-                    return pointsAdded * liquidToXP;
+                    return pointsAdded * curXpRatio;
                 }
             }
             return 0;
@@ -576,20 +576,19 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
         private boolean canFill(Fluid fluid) {
             return dispenserUpgradeInserted && fluid != Fluids.EMPTY && fluid == curXpFluid
-                    && PneumaticCraftAPIHandler.getInstance().liquidXPs.containsKey(fluid)
+                    && curXpRatio != 0
                     && getPlayer() != null
                     && getPressure() >= getMinWorkingPressure();
         }
 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction doDrain) {
-            if (canDrain(resource.getFluid())) {
+            if (curXpRatio != 0 && canDrain(resource.getFluid())) {
                 PlayerEntity player = getPlayer();
                 if (player != null) {
-                    int liquidToXP = PneumaticCraftAPIHandler.getInstance().liquidXPs.get(resource.getFluid());
-                    int pointsDrained = Math.min(EnchantmentUtils.getPlayerXP(player), resource.getAmount() / liquidToXP);
+                    int pointsDrained = Math.min(EnchantmentUtils.getPlayerXP(player), resource.getAmount() / curXpRatio);
                     if (doDrain.execute()) EnchantmentUtils.addPlayerXP(player, -pointsDrained);
-                    return new FluidStack(resource.getFluid(), pointsDrained * liquidToXP);
+                    return new FluidStack(resource.getFluid(), pointsDrained * curXpRatio);
                 }
             }
             return FluidStack.EMPTY;
@@ -597,7 +596,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
         private boolean canDrain(Fluid fluid) {
             return dispenserUpgradeInserted
-                    && (fluid == Fluids.EMPTY || PneumaticCraftAPIHandler.getInstance().liquidXPs.containsKey(fluid))
                     && getPlayer() != null
                     && getPressure() >= getMinWorkingPressure();
         }

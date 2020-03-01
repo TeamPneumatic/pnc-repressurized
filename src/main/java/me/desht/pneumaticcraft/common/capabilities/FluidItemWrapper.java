@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
 import me.desht.pneumaticcraft.common.tileentity.ISerializableTanks;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -13,17 +14,24 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Predicate;
 
 public class FluidItemWrapper implements ICapabilityProvider {
     private final ItemStack stack;
     private final String tankName;
     private final int capacity;
+    private final Predicate<Fluid> fluidPredicate;
     private final LazyOptional<IFluidHandlerItem> holder = LazyOptional.of(Handler::new);
 
-    public FluidItemWrapper(ItemStack stack, String tankName, int capacity) {
+    public FluidItemWrapper(ItemStack stack, String tankName, int capacity, Predicate<Fluid> fluidPredicate) {
         this.stack = stack;
         this.tankName = tankName;
         this.capacity = capacity;
+        this.fluidPredicate = fluidPredicate;
+    }
+
+    public FluidItemWrapper(ItemStack stack, String tankName, int capacity) {
+        this(stack, tankName, capacity, fluid -> true);
     }
 
     @Override
@@ -65,7 +73,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
 
         @Override
         public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
-            return fluidTank != null && fluidTank.isFluidValid(tank, stack);
+            return fluidTank != null && fluidPredicate.test(stack.getFluid()) && fluidTank.isFluidValid(tank, stack);
         }
 
         @Override

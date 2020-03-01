@@ -10,7 +10,12 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.curios.api.CuriosAPI;
+import top.theillusivec4.curios.api.inventory.CurioStackHandler;
+
+import java.util.Map;
+import java.util.function.Predicate;
 
 public class Curios implements IThirdParty {
     public static boolean available = false;
@@ -39,6 +44,39 @@ public class Curios implements IThirdParty {
                 });
             }
         }));
+    }
+
+    /**
+     * Get the curio item in the given curios inventory at the given slot
+     * @param player the player
+     * @param invId id of the curios inventory in question
+     * @param slot slot in the given curios inventory
+     * @return stack in that slot
+     */
+    public static ItemStack getStack(PlayerEntity player, String invId, int slot) {
+        return CuriosAPI.getCuriosHandler(player).map(handler -> {
+            CurioStackHandler h = handler.getCurioMap().get(invId);
+            return h == null ? ItemStack.EMPTY : h.getStackInSlot(slot);
+        }).orElse(ItemStack.EMPTY);
+    }
+
+    /**
+     * Try to find a curio item on the player matching the given predicate
+     * @param player the player
+     * @param predicate an itemstack matching predicate
+     * @return a pair of (inventory id and slot), or null if no match
+     */
+    public static Pair<String,Integer> findStack(PlayerEntity player, Predicate<ItemStack> predicate) {
+        return CuriosAPI.getCuriosHandler(player).map(handler -> {
+            for (Map.Entry<String,CurioStackHandler> entry : handler.getCurioMap().entrySet()) {
+                for (int i = 0; i < entry.getValue().getSlots(); i++) {
+                    if (predicate.test(entry.getValue().getStackInSlot(i))) {
+                        return Pair.of(entry.getKey(), i);
+                    }
+                }
+            }
+            return null;
+        }).orElse(null);
     }
 
     /**

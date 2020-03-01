@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DED",
+    "PSP",
+    "G G"
+  ],
+  "key": {
+    "D": {
+      "tag": "forge:gems/diamond"
+    },
+    "E": {
+      "tag": "forge:gems/emerald"
+    },
+    "P": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "S": {
+      "item": "minecraft:soul_sand"
+    },
+    "G": {
+      "tag": "forge:ingots/gold"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:memory_stick"
+  }
+}
