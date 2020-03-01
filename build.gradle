@@ -174,9 +174,8 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:1.14.4-28.2.3-model-system-rework"
-//    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-//    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+//    minecraft "net.minecraftforge:forge:1.14.4-28.2.3-model-system-rework"
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     compile fg.deobf (project.dependencies.create("mcp.mobius.waila:Hwyla:${hwyla_version}") {
         transitive = false
     })
