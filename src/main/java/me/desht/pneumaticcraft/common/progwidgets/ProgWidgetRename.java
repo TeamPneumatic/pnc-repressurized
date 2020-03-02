@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.item.ItemPlastic;
 import me.desht.pneumaticcraft.common.remote.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.ResourceLocation;
 
@@ -65,7 +64,7 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
 
         @Override
         public boolean shouldExecute() {
-            drone.setName(widget.getNewName() != null ? widget.getNewName() : I18n.format("entity.PneumaticCraft.Drone.name"));
+            drone.setName(widget.getNewName() != null ? widget.getNewName() : "Drone");
             return false;
         }
 
