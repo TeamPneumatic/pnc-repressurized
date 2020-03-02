@@ -217,6 +217,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         if (whitelistWidget == null) return new ArrayList<>();
         Set<Entity> entities = new HashSet<>();
         ProgWidgetArea widget = whitelistWidget;
+        if (whitelistPredicate == null) whitelistPredicate = e -> true;
         while (widget != null) {
             entities.addAll(widget.getEntitiesWithinArea(world, whitelistPredicate));
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
