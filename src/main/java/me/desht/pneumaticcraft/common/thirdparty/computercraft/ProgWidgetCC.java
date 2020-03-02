@@ -25,10 +25,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdered, ISidedWidget, IGotoWidget,
@@ -418,6 +415,7 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
 
     public void setCraftingGrid(String[] stackStrings) {
         ItemStack[] grid = new ItemStack[9];
+        Arrays.fill(grid, ItemStack.EMPTY);
         for (int i = 0; i < 9; i++) {
             if (stackStrings[i] != null)
                 grid[i] = getItemFilter(stackStrings[i], 0, false, false, false, false).getFilter();
