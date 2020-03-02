@@ -49,10 +49,10 @@ public class PressureChamberVacuumEnchantHandler implements IPressureChamberReci
     @Override
     public NonNullList<ItemStack> craftRecipe(ItemStackHandler chamberHandler) {
         ItemStack enchantedStack = getDisenchantableItem(chamberHandler);
-        getBook(chamberHandler).shrink(1);
-        
+
         // take a random enchantment off the enchanted item...
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(enchantedStack);
+        if (enchantments.isEmpty()) return EMPTY_RESULT;  // shouldn't happen, but https://github.com/TeamPneumatic/pnc-repressurized/issues/424
         List<Enchantment> l = new ArrayList<>(enchantments.keySet());
         Enchantment strippedEnchantment = l.get(new Random().nextInt(l.size()));
         int level = enchantments.get(strippedEnchantment);
@@ -61,6 +61,7 @@ public class PressureChamberVacuumEnchantHandler implements IPressureChamberReci
 
         // ...and create an enchanted book with it
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
+        getBook(chamberHandler).shrink(1);
         EnchantmentHelper.setEnchantments(ImmutableMap.of(strippedEnchantment, level), enchantedBook);
 
         return NonNullList.from(ItemStack.EMPTY, enchantedBook);
