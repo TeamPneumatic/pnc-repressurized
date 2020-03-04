@@ -1,9 +1,12 @@
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import java.util.List;
 
@@ -22,4 +25,16 @@ public class RenderLiquidHopper extends FastFluidTESR<TileEntityLiquidHopper> {
     List<TankRenderInfo> getTanksToRender(TileEntityLiquidHopper te) {
         return ImmutableList.of(new TankRenderInfo(te.getTank(), BOUNDS[te.getInputDirection().getIndex()]).without(te.getInputDirection().getOpposite()));
     }
+
+    public static class ItemInfoProvider extends FluidItemRenderInfoProvider {
+        @Override
+        public List<TankRenderInfo> getTanksToRender(ItemStack stack) {
+            return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(h -> {
+                FluidTank tank = new FluidTank(h.getTankCapacity(0));
+                tank.setFluid(h.getFluidInTank(0));
+                return ImmutableList.of(new TankRenderInfo(tank, BOUNDS[Direction.UP.getIndex()]).without(Direction.DOWN));
+            }).orElse(null);
+        }
+    }
+
 }

@@ -57,11 +57,10 @@ public class ModRecipeProvider extends RecipeProvider {
         ).build(consumer);
 
         shaped(ModBlocks.ADVANCED_LIQUID_COMPRESSOR.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
-                "III/IBT/ICI",
+                "III/ITT/ICI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-                'B', Items.BUCKET,
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
-                'C', ModBlocks.AIR_COMPRESSOR.get()
+                'C', ModBlocks.LIQUID_COMPRESSOR.get()
         ).build(consumer);
 
         shaped(ModItems.ADVANCED_PCB.get(), 4, ModItems.PRINTED_CIRCUIT_BOARD.get(),
@@ -256,9 +255,10 @@ public class ModRecipeProvider extends RecipeProvider {
         ).build(consumer);
 
         shaped(ModBlocks.ETCHING_TANK.get(), ModItems.ETCHING_ACID_BUCKET.get(),
-                "OGO/W W/SSS",
+                "OGO/WTW/SSS",
                 'O', Tags.Blocks.OBSIDIAN,
                 'W', ModBlocks.REINFORCED_BRICK_WALL.get(),
+                'T', ModBlocks.TANK_SMALL.get(),
                 'S', ModBlocks.REINFORCED_BRICK_SLAB.get(),
                 'G', Tags.Items.GLASS_PANES
         ).build(consumer);
@@ -281,10 +281,10 @@ public class ModRecipeProvider extends RecipeProvider {
         ).build(consumer);
 
         shaped(ModBlocks.GAS_LIFT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
-                " T /TGT/III",
+                " T /TGT/SSS",
                 'T', ModBlocks.PRESSURE_TUBE.get(),
-                'G', Tags.Items.GLASS,
-                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
+                'G', ModBlocks.TANK_SMALL.get(),
+                'S', ModBlocks.REINFORCED_STONE_SLAB.get()
         ).build(consumer);
 
         shaped(ModItems.GPS_TOOL.get(), ModItems.PLASTIC.get(),
@@ -340,21 +340,21 @@ public class ModRecipeProvider extends RecipeProvider {
                 " I /G G/IBI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'G', Tags.Items.GLASS_PANES,
-                'B', Items.BUCKET
+                'B', ModBlocks.TANK_SMALL.get()
         ).build(consumer);
 
         shaped(ModBlocks.LIQUID_COMPRESSOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "PBP/LCL",
                 'P', ModBlocks.PRESSURE_TUBE.get(),
-                'B', Items.BUCKET,
+                'B', ModBlocks.TANK_SMALL.get(),
                 'L', Tags.Items.LEATHER,
                 'C', ModBlocks.AIR_COMPRESSOR.get()
         ).build(consumer);
 
         shaped(ModBlocks.LIQUID_HOPPER.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
-                "I I/ICI/ I ",
-                'I', Tags.Items.GLASS,
-                'C', Blocks.HOPPER
+                "T/H",
+                'T', ModBlocks.TANK_SMALL.get(),
+                'H', Blocks.HOPPER
         ).build(consumer);
 
         shaped(ModItems.LOGISTICS_CORE.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
@@ -568,14 +568,14 @@ public class ModRecipeProvider extends RecipeProvider {
         ).build(consumer);
 
         shaped(ModBlocks.REFINERY.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
-                "III/GBG/III",
-                'I', ModItems.COMPRESSED_IRON_INGOT.get(),
-                'G', Tags.Items.GLASS,
-                'B', Items.BUCKET
+                "SSS/RTR/SSS",
+                'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
+                'T', ModBlocks.TANK_SMALL.get(),
+                'R', Tags.Items.DUSTS_REDSTONE
         ).build(consumer);
         shaped(ModBlocks.REFINERY_OUTPUT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
-                "III/GDG/III",
-                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                "SSS/GDG/SSS",
+                'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
                 'G', Tags.Items.GLASS,
                 'D', Tags.Items.GEMS_DIAMOND
         ).build(consumer);
@@ -644,6 +644,29 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
+        shaped(ModBlocks.TANK_SMALL.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
+                "BIB/IGI/BIB",
+                'B', Blocks.IRON_BARS,
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'G', Tags.Items.GLASS
+        ).build(consumer);
+
+        shaped(ModBlocks.TANK_MEDIUM.get(), ModItems.PLASTIC.get(),
+                "PSP/ITI/PSP",
+                'P', ModItems.PLASTIC.get(),
+                'S', ModBlocks.TANK_SMALL.get(),
+                'I', Tags.Items.INGOTS_GOLD,
+                'T', ModBlocks.PRESSURE_TUBE.get()
+        ).build(consumer);
+
+        shaped(ModBlocks.TANK_LARGE.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+                "PMP/DTD/PMP",
+                'M', ModBlocks.TANK_MEDIUM.get(),
+                'P', ModItems.PLASTIC.get(),
+                'D', Tags.Items.GEMS_DIAMOND,
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
+        ).build(consumer);
+
         shaped(ModBlocks.THERMAL_COMPRESSOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "ITI/PAP/ITI",
                 'I', ModItems.COMPRESSED_IRON_INGOT.get(),
@@ -653,11 +676,10 @@ public class ModRecipeProvider extends RecipeProvider {
         ).build(consumer);
 
         shaped(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
-                "IGI/TRI/IGI",
-                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-                'G', Tags.Items.GLASS,
-                'T', ModBlocks.PRESSURE_TUBE.get(),
-                'R', Tags.Items.DUSTS_REDSTONE
+                "SSS/TPT/SSS",
+                'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
+                'T', ModBlocks.TANK_SMALL.get(),
+                'P', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
         shapeless(ModItems.TRANSFER_GADGET.get(), ModItems.COMPRESSED_IRON_INGOT.get(),

@@ -103,6 +103,8 @@ public class ModContainers {
             = register("item_searcher", ContainerItemSearcher::new);
     public static final RegistryObject<ContainerType<ContainerEtchingTank>> ETCHING_TANK
             = register("etching_tank", ContainerEtchingTank::new);
+    public static final RegistryObject<ContainerType<ContainerFluidTank>> FLUID_TANK
+            = register("fluid_tank", ContainerFluidTank::new);
 
     private static <C extends Container, T extends ContainerType<C>> RegistryObject<T> register(String name, IContainerFactory<? extends C> f) {
         //noinspection unchecked

@@ -204,6 +204,15 @@ public class UpgradesDBSetup {
         db.addApplicableUpgrades(ModTileEntities.THERMAL_COMPRESSOR.get(),
                 EnumUpgrade.SECURITY, 1,
                 EnumUpgrade.VOLUME, MAX_VOLUME);
+        db.addApplicableUpgrades(ModTileEntities.TANK_SMALL.get(),
+                EnumUpgrade.SPEED, 7,
+                EnumUpgrade.DISPENSER, 1);
+        db.addApplicableUpgrades(ModTileEntities.TANK_MEDIUM.get(),
+                EnumUpgrade.SPEED, 7,
+                EnumUpgrade.DISPENSER, 1);
+        db.addApplicableUpgrades(ModTileEntities.TANK_LARGE.get(),
+                EnumUpgrade.SPEED, 7,
+                EnumUpgrade.DISPENSER, 1);
 
         // universal sensor needs some dynamic calculation...
         List<Object> l = new ArrayList<>();

@@ -31,7 +31,9 @@ public interface ISerializableTanks {
     default CompoundNBT serializeTanks() {
         CompoundNBT tag = new CompoundNBT();
         for (Map.Entry<String,FluidTank> entry : getSerializableTanks().entrySet()) {
-            tag.put(entry.getKey(), entry.getValue().writeToNBT(new CompoundNBT()));
+            if (!entry.getValue().getFluid().isEmpty()) {
+                tag.put(entry.getKey(), entry.getValue().writeToNBT(new CompoundNBT()));
+            }
         }
         return tag;
     }

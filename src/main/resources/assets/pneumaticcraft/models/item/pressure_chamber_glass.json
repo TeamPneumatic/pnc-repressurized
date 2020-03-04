@@ -1,8 +1,4 @@
 {
-  "parent": "pneumaticcraft:block/pressure_chamber_glass",
-  "textures": {
-    "all": "pneumaticcraft:block/pressure_chamber/windows/window_1",
-    "particle": "pneumaticcraft:block/pressure_chamber/windows/window_1"
-  },
+  "parent": "pneumaticcraft:block/pressure_chamber_glass_inv",
   "transform": "forge:default-block"
 }

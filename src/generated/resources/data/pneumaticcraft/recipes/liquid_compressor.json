@@ -9,7 +9,7 @@
       "item": "pneumaticcraft:pressure_tube"
     },
     "B": {
-      "item": "minecraft:bucket"
+      "item": "pneumaticcraft:small_tank"
     },
     "L": {
       "tag": "forge:leather"

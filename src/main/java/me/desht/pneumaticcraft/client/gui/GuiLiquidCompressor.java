@@ -59,6 +59,11 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         return new PointXY(xStart + xSize * 3 / 4 + 5, yStart + ySize / 4 + 4);
     }
 
+    @Override
+    protected String upgradeCategory() {
+        return "liquid_compressor";
+    }
+
     private List<String> getAllFuels() {
         List<String> fuels = new ArrayList<>();
         fuels.add(TextFormatting.UNDERLINE + "mL/mB | Fluid");

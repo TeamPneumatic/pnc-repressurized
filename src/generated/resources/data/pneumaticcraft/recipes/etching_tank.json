@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "OGO",
-    "W W",
+    "WTW",
     "SSS"
   ],
   "key": {
@@ -11,6 +11,9 @@
     },
     "W": {
       "item": "pneumaticcraft:reinforced_brick_wall"
+    },
+    "T": {
+      "item": "pneumaticcraft:small_tank"
     },
     "S": {
       "item": "pneumaticcraft:reinforced_brick_slab"

@@ -13,7 +13,7 @@
       "tag": "forge:glass_panes"
     },
     "B": {
-      "item": "minecraft:bucket"
+      "item": "pneumaticcraft:small_tank"
     }
   },
   "result": {

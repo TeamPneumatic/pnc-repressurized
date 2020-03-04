@@ -112,6 +112,12 @@ public class ModTileEntities {
     public static final RegistryObject<TileEntityType<TileEntityEtchingTank>> ETCHING_TANK
             = register("etching_tank", () -> new TileEntityType<>(TileEntityEtchingTank::new, ImmutableSet.of(ModBlocks.ETCHING_TANK.get()),
     null));
+    public static final RegistryObject<TileEntityType<TileEntityFluidTank.Small>> TANK_SMALL
+            = register("small_tank", () -> new TileEntityType<>(TileEntityFluidTank.Small::new, ImmutableSet.of(ModBlocks.TANK_SMALL.get()), null));
+    public static final RegistryObject<TileEntityType<TileEntityFluidTank.Medium>> TANK_MEDIUM
+            = register("medium_tank", () -> new TileEntityType<>(TileEntityFluidTank.Medium::new, ImmutableSet.of(ModBlocks.TANK_MEDIUM.get()), null));
+    public static final RegistryObject<TileEntityType<TileEntityFluidTank.Large>> TANK_LARGE
+            = register("large_tank", () -> new TileEntityType<>(TileEntityFluidTank.Large::new, ImmutableSet.of(ModBlocks.TANK_LARGE.get()), null));
 
     private static <T extends TileEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return TILE_ENTITIES.register(name, sup);

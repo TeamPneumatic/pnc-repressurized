@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.model.semiblocks;
+package me.desht.pneumaticcraft.client.model.entity.semiblocks;
 
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.client.renderer.model.Model;

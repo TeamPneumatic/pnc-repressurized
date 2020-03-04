@@ -2,8 +2,11 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.ColorHandlers;
+import me.desht.pneumaticcraft.client.render.fluid.FluidItemRenderInfoProvider;
+import me.desht.pneumaticcraft.client.render.fluid.RenderLiquidHopper;
 import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -35,8 +38,9 @@ public class BlockLiquidHopper extends BlockOmnidirectionalHopper {
         return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
-    public static class ItemBlockLiquidHopper extends BlockItem implements ColorHandlers.ITintableItem {
+    public static class ItemBlockLiquidHopper extends BlockItem implements ColorHandlers.ITintableItem, IFluidRendered {
         public static final String TANK_NAME = "Tank";
+        RenderLiquidHopper.ItemInfoProvider renderInfoProvider = null;
 
         public ItemBlockLiquidHopper(Block block) {
             super(block, ModItems.defaultProps());
@@ -67,6 +71,12 @@ public class BlockLiquidHopper extends BlockOmnidirectionalHopper {
         public int getTintColor(ItemStack stack, int tintIndex) {
             int n = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.CREATIVE);
             return n > 0 ? 0xFFFF60FF : 0xFFFFFFFF;
+        }
+
+        @Override
+        public FluidItemRenderInfoProvider getFluidItemRenderer() {
+            if (renderInfoProvider == null) renderInfoProvider = new RenderLiquidHopper.ItemInfoProvider();
+            return renderInfoProvider;
         }
     }
 }

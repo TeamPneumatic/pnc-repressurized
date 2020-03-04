@@ -1,3 +1,7 @@
 {
-  "parent": "pneumaticcraft:block/liquid_hopper_inv"
+  "loader": "pneumaticcraft:fluid_container_item",
+  "transform": "forge:default-block",
+  "base_model": {
+    "parent": "pneumaticcraft:block/liquid_hopper_inv"
+  }
 }

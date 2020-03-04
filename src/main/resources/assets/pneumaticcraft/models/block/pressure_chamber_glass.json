@@ -1,7 +1,3 @@
 {
-    "parent": "block/cube_all",
-    "textures": {
-        "all": "pneumaticcraft:block/pressure_chamber/windows/window_1",
-        "particle": "pneumaticcraft:block/pressure_chamber/windows/window_1"
-    }
+    "loader": "pneumaticcraft:pressure_glass"
 }

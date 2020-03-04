@@ -55,7 +55,7 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
         BlockState state = getBlockState();
         boolean changed = false;
         for (Direction dir : Direction.VALUES) {
-            BooleanProperty prop = BlockPneumaticCraft.CONNECTION_PROPERTIES[dir.getIndex()];
+            BooleanProperty prop = BlockPneumaticCraft.connectionProperty(dir);
             boolean connected = heatExchanger.isSideConnected(dir);
             if (state.get(prop) != connected) {
                 state = state.with(prop, connected);

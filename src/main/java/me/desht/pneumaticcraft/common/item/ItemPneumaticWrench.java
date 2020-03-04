@@ -76,13 +76,13 @@ public class ItemPneumaticWrench extends ItemPressurizable {
                 boolean wrenched = ((IPneumaticWrenchable) target).onWrenched(target.world, player, null, null, hand);
                 if (wrenched) {
                     if (!player.isCreative()) {
-                        if (h.getPressure() < 0.1) return false;
+                        if (h.getAir() < PneumaticValues.USAGE_PNEUMATIC_WRENCH) return false;
                         h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                     }
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH.get(), SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0F, 1.0F, false), target.world);
+                    playWrenchSound(target.world, target.getPosition());
                 }
                 return wrenched;
-            }).orElse(false);
+            }).orElseThrow(RuntimeException::new);
         }
         return false;
     }

@@ -173,6 +173,12 @@ public class ModBlocks {
             BlockHeatPipe::new);
     public static final RegistryObject<BlockEtchingTank> ETCHING_TANK = register("etching_tank",
             BlockEtchingTank::new);
+    public static final RegistryObject<BlockFluidTank> TANK_SMALL = register("small_tank",
+            () -> new BlockFluidTank(BlockFluidTank.Size.SMALL), block -> () -> new BlockFluidTank.ItemBlockFluidTank(block.get()));
+    public static final RegistryObject<BlockFluidTank> TANK_MEDIUM = register("medium_tank",
+            () -> new BlockFluidTank(BlockFluidTank.Size.MEDIUM), block -> () -> new BlockFluidTank.ItemBlockFluidTank(block.get()));
+    public static final RegistryObject<BlockFluidTank> TANK_LARGE = register("large_tank",
+            () -> new BlockFluidTank(BlockFluidTank.Size.LARGE), block -> () -> new BlockFluidTank.ItemBlockFluidTank(block.get()));
 
     public static final List<RegistryObject<BlockPlasticBrick>> PLASTIC_BRICKS = new ArrayList<>();
     static {

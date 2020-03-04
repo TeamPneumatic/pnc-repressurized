@@ -1,0 +1,14 @@
+{
+  "loader": "forge:composite",
+  "parts": {
+    "part1": {
+      "parent": "pneumaticcraft:block/fluid_tank_body"
+    },
+    "part2": {
+      "parent": "pneumaticcraft:block/fluid_tank_top"
+    },
+    "part3": {
+      "parent": "pneumaticcraft:block/fluid_tank_bottom"
+    }
+  }
+}

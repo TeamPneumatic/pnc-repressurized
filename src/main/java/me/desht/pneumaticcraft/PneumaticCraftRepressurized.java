@@ -213,7 +213,6 @@ public class PneumaticCraftRepressurized {
         }
 
         static void registerRenders(ModelRegistryEvent event) {
-            // TODO 1.14 do we even need anything here?
         }
     }
 

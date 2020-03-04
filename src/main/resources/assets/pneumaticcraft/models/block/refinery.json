@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"wall": "pneumaticcraft:block/refinery",
-		"glass": "minecraft:block/black_stained_glass",
+		"glass": "pneumaticcraft:block/tank_glass",
 		"particle": "pneumaticcraft:block/refinery"
 	},
 	"elements": [

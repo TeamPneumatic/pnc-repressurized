@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.fluid;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import net.minecraft.util.Direction;

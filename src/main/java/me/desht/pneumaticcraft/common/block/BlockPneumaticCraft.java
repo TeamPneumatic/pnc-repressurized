@@ -158,6 +158,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         }
     }
 
+    public static BooleanProperty connectionProperty(Direction dir) {
+        return CONNECTION_PROPERTIES[dir.getIndex()];
+    }
+
     DirectionProperty directionProperty() { return canRotateToTopOrBottom() ? FACING : HORIZONTAL_FACING; }
 
     protected Direction getRotation(IBlockReader world, BlockPos pos) {
@@ -393,13 +397,13 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (stateIn.has(CONNECTION_PROPERTIES[facing.getIndex()])) {
+        if (stateIn.has(connectionProperty(facing))) {
             TileEntity ourTE = worldIn.getTileEntity(currentPos);
             if (ourTE != null && ourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing).isPresent()) {
                 // handle pneumatic connections to neighbouring air handlers
                 TileEntity te = worldIn.getTileEntity(currentPos.offset(facing));
                 boolean b = te != null && te.getCapability (PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing.getOpposite()).isPresent();
-                stateIn = stateIn.with(CONNECTION_PROPERTIES[facing.getIndex()], b);
+                stateIn = stateIn.with(connectionProperty(facing), b);
                 return stateIn;
             }
         }

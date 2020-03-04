@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.fluid;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.Minecraft;
@@ -10,7 +10,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.client.model.animation.TileEntityRendererFast;
 import net.minecraftforge.fluids.IFluidTank;
 
-import java.util.BitSet;
 import java.util.List;
 
 public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntityRendererFast<T> {
@@ -24,7 +23,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
     }
 
     private void doRender(T te, double x, double y, double z, BufferBuilder buffer, TankRenderInfo tankRenderInfo) {
-        IFluidTank tank = tankRenderInfo.tank;
+        IFluidTank tank = tankRenderInfo.getTank();
         if (tank.getFluidAmount() == 0) return;
 
         Fluid f = tank.getFluid().getFluid();
@@ -37,7 +36,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
 
         buffer.setTranslation(x,y,z);
 
-        AxisAlignedBB bounds = getRenderBounds(tank, tankRenderInfo.bounds);
+        AxisAlignedBB bounds = getRenderBounds(tank, tankRenderInfo.getBounds());
         double bx1 = bounds.minX * 16;
         double bx2 = bounds.maxX * 16;
         double by1 = bounds.minY * 16;
@@ -50,9 +49,9 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
             int downLMa = downCombined >> 16 & 65535;
             int downLMb = downCombined & 65535;
             float u1 = still.getInterpolatedU(bx1);
-            float u2 = still.getInterpolatedU(bounds.maxX * 16);
+            float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(bz1);
-            float v2 = still.getInterpolatedV(bounds.maxZ * 16);
+            float v2 = still.getInterpolatedV(bz2);
             buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(downLMa, downLMb).endVertex();
             buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(downLMa, downLMb).endVertex();
             buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(downLMa, downLMb).endVertex();
@@ -153,31 +152,4 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
     }
 
     abstract List<TankRenderInfo> getTanksToRender(T te);
-
-    class TankRenderInfo {
-        final IFluidTank tank;
-        final AxisAlignedBB bounds;
-        final BitSet faces = new BitSet(6);
-
-        TankRenderInfo(IFluidTank tank, AxisAlignedBB bounds, Direction... renderFaces) {
-            this.tank = tank;
-            this.bounds = bounds;
-            if (renderFaces.length == 0) {
-                faces.set(0, 6, true);
-            } else {
-                for (Direction face : renderFaces) {
-                    faces.set(face.getIndex(), true);
-                }
-            }
-        }
-
-        TankRenderInfo without(Direction face) {
-            faces.clear(face.getIndex());
-            return this;
-        }
-
-        boolean shouldRender(Direction face) {
-            return faces.get(face.getIndex());
-        }
-    }
 }

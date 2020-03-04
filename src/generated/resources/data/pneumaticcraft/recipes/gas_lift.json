@@ -3,17 +3,17 @@
   "pattern": [
     " T ",
     "TGT",
-    "III"
+    "SSS"
   ],
   "key": {
     "T": {
       "item": "pneumaticcraft:pressure_tube"
     },
     "G": {
-      "tag": "forge:glass"
+      "item": "pneumaticcraft:small_tank"
     },
-    "I": {
-      "tag": "forge:ingots/compressed_iron"
+    "S": {
+      "item": "pneumaticcraft:reinforced_stone_slab"
     }
   },
   "result": {

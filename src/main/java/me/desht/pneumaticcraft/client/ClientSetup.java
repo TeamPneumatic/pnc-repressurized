@@ -9,9 +9,14 @@ import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsStorage;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiAirGrateModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiPressureModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiRedstoneModule;
+import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
+import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
+import me.desht.pneumaticcraft.client.model.custom.PressureGlassModel;
+import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
 import me.desht.pneumaticcraft.client.model.module.*;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.render.entity.*;
+import me.desht.pneumaticcraft.client.render.fluid.*;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.common.core.ModContainers;
@@ -36,6 +41,7 @@ import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.util.InputMappings;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.model.ModelLoaderRegistry2;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -49,11 +55,15 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientSetup {
     public static final Map<String, Pair<Integer,KeyModifier>> keybindToKeyCodes = new HashMap<>();
 
     public static void init() {
+        modelInit();
+
         registerEntityRenderers();
         registerTESRs();
         registerScreenFactories();
@@ -64,6 +74,14 @@ public class ClientSetup {
         EntityTrackHandler.init();
         GuiHelmetMainScreen.initHelmetMainScreen();
         DramaSplash.getInstance();
+    }
+
+    private static void modelInit() {
+        // this will become just ModelLoaderRegistry in 1.15
+        ModelLoaderRegistry2.registerLoader(RL("camouflaged"), CamouflageModel.Loader.INSTANCE);
+        ModelLoaderRegistry2.registerLoader(RL("pressure_glass"), PressureGlassModel.Loader.INSTANCE);
+        ModelLoaderRegistry2.registerLoader(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
+        ModelLoaderRegistry2.registerLoader(RL("rendered_item"), RenderedItemModel.Loader.INSTANCE);
     }
 
     @SubscribeEvent
@@ -117,6 +135,9 @@ public class ClientSetup {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefineryOutput.class, new RenderRefineryOutput());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySecurityStation.class, new RenderSecurityStation());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySentryTurret.class, new RenderSentryTurret());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFluidTank.Small.class, new RenderFluidTank());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFluidTank.Medium.class, new RenderFluidTank());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFluidTank.Large.class, new RenderFluidTank());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityThermopneumaticProcessingPlant.class, new RenderThermopneumaticProcessingPlant());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityUniversalSensor.class, new RenderUniversalSensor());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVacuumPump.class, new RenderVacuumPump());
@@ -139,6 +160,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.ELECTROSTATIC_COMPRESSOR.get(), GuiElectrostaticCompressor::new);
         ScreenManager.registerFactory(ModContainers.ELEVATOR.get(), GuiElevator::new);
         ScreenManager.registerFactory(ModContainers.ETCHING_TANK.get(), GuiEtchingTank::new);
+        ScreenManager.registerFactory(ModContainers.FLUID_TANK.get(), GuiFluidTank::new);
         ScreenManager.registerFactory(ModContainers.FLUX_COMPRESSOR.get(), GuiFluxCompressor::new);
         ScreenManager.registerFactory(ModContainers.GAS_LIFT.get(), GuiGasLift::new);
         ScreenManager.registerFactory(ModContainers.INVENTORY_SEARCHER.get(), GuiInventorySearcher::new);
@@ -250,5 +272,4 @@ public class ClientSetup {
             }
         }
     }
-
 }

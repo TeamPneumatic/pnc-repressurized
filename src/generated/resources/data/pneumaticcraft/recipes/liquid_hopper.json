@@ -1,15 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "I I",
-    "ICI",
-    " I "
+    "T",
+    "H"
   ],
   "key": {
-    "I": {
-      "tag": "forge:glass"
+    "T": {
+      "item": "pneumaticcraft:small_tank"
     },
-    "C": {
+    "H": {
       "item": "minecraft:hopper"
     }
   },

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.render.entity;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.model.semiblocks.ModelHeatFrame;
+import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelHeatFrame;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityHeatFrame;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;

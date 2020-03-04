@@ -2,21 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "III",
-    "IBT",
+    "ITT",
     "ICI"
   ],
   "key": {
     "I": {
       "tag": "forge:ingots/compressed_iron"
     },
-    "B": {
-      "item": "minecraft:bucket"
-    },
     "T": {
       "item": "pneumaticcraft:advanced_pressure_tube"
     },
     "C": {
-      "item": "pneumaticcraft:air_compressor"
+      "item": "pneumaticcraft:liquid_compressor"
     }
   },
   "result": {

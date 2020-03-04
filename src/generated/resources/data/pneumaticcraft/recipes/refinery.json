@@ -1,19 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "III",
-    "GBG",
-    "III"
+    "SSS",
+    "RTR",
+    "SSS"
   ],
   "key": {
-    "I": {
-      "item": "pneumaticcraft:ingot_iron_compressed"
+    "S": {
+      "item": "pneumaticcraft:reinforced_stone_slab"
     },
-    "G": {
-      "tag": "forge:glass"
+    "T": {
+      "item": "pneumaticcraft:small_tank"
     },
-    "B": {
-      "item": "minecraft:bucket"
+    "R": {
+      "tag": "forge:dusts/redstone"
     }
   },
   "result": {

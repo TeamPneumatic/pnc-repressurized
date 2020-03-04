@@ -70,4 +70,9 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
             textList.add(I18n.format("gui.tab.problems.airLeak"));
         }
     }
+
+    @Override
+    protected String upgradeCategory() {
+        return "air_compressor";
+    }
 }
