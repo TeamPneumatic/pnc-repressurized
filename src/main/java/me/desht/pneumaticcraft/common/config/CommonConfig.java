@@ -53,7 +53,7 @@ public class CommonConfig {
     }
     public class Advanced {
         ForgeConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
-        ForgeConfigSpec.DoubleValue liquidTankUpdateThreshold;
+        ForgeConfigSpec.IntValue fluidTankUpdateRate;
         ForgeConfigSpec.BooleanValue stopDroneAI;
     }
     public class Micromissiles {
@@ -257,10 +257,10 @@ public class CommonConfig {
                 .comment("When set to true, the Kerosene Lamp's fake air blocks won't be registered and therefore removed from the world. Useful if this causes trouble (it shouldn't though)")
                 .translation("pneumaticcraft.config.common.advanced.disable_kerosene_lamp_fake_air_block")
                 .define("disable_kerosene_lamp_fake_air_block", false);
-        advanced.liquidTankUpdateThreshold = builder
-                .comment("The amount by which any liquid tank's contents must change, as a proportion of the tank's total capacity, to trigger an update to clients. Larger values mean fewer updates but less granularity in client-side fluid rendering.")
-                .translation("pneumaticcraft.config.common.advanced.liquid_tank_update_threshold")
-                .defineInRange("liquid_tank_update_threshold", 0.01, 0.0001, 1);
+        advanced.fluidTankUpdateRate = builder
+                .comment("The minimum interval in ticks between which fluid tank contents should be synced to clients. Smaller values mean smoother visual tank updates, but more of a performance cost in terms of network syncing. Note that fluid tank sync packets are also only sent when a fluid tank changes by more than 1% of its capacity, or 1000mB, whichever is smaller.")
+                .translation("pneumaticcraft.config.common.advanced.fluid_tank_update_rate")
+                .defineInRange("fluid_tank_update_rate", 10, 1, 100);
         advanced.stopDroneAI = builder
                 .comment("When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report the bug if you encounter it.")
                 .translation("pneumaticcraft.config.common.advanced.stop_drone_ai")

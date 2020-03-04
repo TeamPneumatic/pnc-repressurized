@@ -140,4 +140,8 @@ public class ClientUtils {
     public static int getStringWidth(String line) {
         return Minecraft.getInstance().getRenderManager().getFontRenderer().getStringWidth(line);
     }
+
+    public static boolean isGuiOpen() {
+        return Minecraft.getInstance().currentScreen != null;
+    }
 }

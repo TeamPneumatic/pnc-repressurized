@@ -12,7 +12,6 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -39,7 +38,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class TileEntityEtchingTank extends TileEntityTickableBase
-        implements INamedContainerProvider, ISmartFluidSync, ISerializableTanks {
+        implements INamedContainerProvider, ISerializableTanks {
     public static final int ETCHING_SLOTS = 25;
 
     private final EtchingTankHandler itemHandler = new EtchingTankHandler();
@@ -53,7 +52,6 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     private final WrappedInvHandler endHandler = new WrappedInvHandler(failedHandler);
     private final LazyOptional<IItemHandler> endCap = LazyOptional.of(() -> endHandler);
 
-    @LazySynced
     @DescSynced
     @GuiSynced
     private final EtchingFluidTank acidTank = new EtchingFluidTank();
@@ -62,9 +60,6 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
-
-    @DescSynced
-    private int fluidAmountSynced;
 
     public TileEntityEtchingTank() {
         super(ModTileEntities.ETCHING_TANK.get());
@@ -76,6 +71,8 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     @Override
     public void tick() {
         super.tick();
+
+        acidTank.tick();
 
         if (!world.isRemote && !acidTank.getFluid().isEmpty()) {
             int tickInterval = getTickInterval();
@@ -199,11 +196,6 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
         return new ContainerEtchingTank(windowId, playerInv, getPos());
     }
 
-    @Override
-    public void updateScaledFluidAmount(int tankIndex, int amount) {
-        fluidAmountSynced = amount;
-    }
-
     @Nonnull
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
@@ -309,7 +301,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
         }
     }
 
-    private class EtchingFluidTank extends ISmartFluidSync.SmartSyncTank {
+    private class EtchingFluidTank extends SmartSyncTank {
         EtchingFluidTank() {
             super(TileEntityEtchingTank.this, 4000);
         }

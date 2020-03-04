@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -31,17 +30,12 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class TileEntityRefineryOutput extends TileEntityTickableBase
-        implements IRedstoneControlled, IComparatorSupport, ISerializableTanks, ISmartFluidSync, INamedContainerProvider {
+        implements IRedstoneControlled, IComparatorSupport, ISerializableTanks, INamedContainerProvider {
 
     private TileEntityRefineryController controllerTE = null;
 
     @DescSynced
-    @LazySynced
     private final SmartSyncTank outputTank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
-
-    @SuppressWarnings("unused")
-    @DescSynced
-    private int outputAmountScaled;  // just present to cause a TE sync when fluid changes
 
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
@@ -52,6 +46,13 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
 
     public TileEntityRefineryOutput() {
         super(ModTileEntities.REFINERY_OUTPUT.get());
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        outputTank.tick();
     }
 
     @Override
@@ -70,11 +71,6 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
         return ImmutableMap.of("Tank", outputTank);
-    }
-
-    @Override
-    public void updateScaledFluidAmount(int tankIndex, int amount) {
-        outputAmountScaled = outputTank.getScaledFluidAmount();
     }
 
     @Override

@@ -11,7 +11,6 @@ import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessi
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -39,7 +38,7 @@ import java.util.Map;
 
 public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumaticBase
         implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks,
-        ISmartFluidSync, IAutoFluidEjecting, INamedContainerProvider {
+        IAutoFluidEjecting, INamedContainerProvider {
 
     private static final int INVENTORY_SIZE = 1;
     private static final int CRAFTING_TIME = 60 * 100;
@@ -47,11 +46,9 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     @GuiSynced
     @DescSynced
-    @LazySynced
     private final ThermopneumaticFluidTankInput inputTank = new ThermopneumaticFluidTankInput(PneumaticValues.NORMAL_TANK_CAPACITY);
     @GuiSynced
     @DescSynced
-    @LazySynced
     private final ThermopneumaticFluidTankOutput outputTank = new ThermopneumaticFluidTankOutput(PneumaticValues.NORMAL_TANK_CAPACITY);
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
@@ -111,6 +108,10 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     @Override
     public void tick() {
         super.tick();
+
+        inputTank.tick();
+        outputTank.tick();
+
         if (!getWorld().isRemote) {
             // bit of a kludge since inv/fluid changes aren't always reliably detected
             if (searchForRecipe || (getWorld().getGameTime() & 0xf) == 0) {
@@ -225,9 +226,6 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         outputItemHandler.deserializeNBT(tag.getCompound("Output"));
         redstoneMode = tag.getByte("redstoneMode");
         craftingProgress = tag.getInt("craftingProgress");
-
-        inputAmountScaled = inputTank.getScaledFluidAmount();
-        outputAmountScaled = outputTank.getScaledFluidAmount();
     }
 
     @Override
@@ -267,15 +265,6 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     @Override
-    public void updateScaledFluidAmount(int tankIndex, int amount) {
-        if (tankIndex == 1) {
-            inputAmountScaled = amount;
-        } else if (tankIndex == 2) {
-            outputAmountScaled = amount;
-        }
-    }
-
-    @Override
     public ITextComponent getDisplayName() {
         return getDisplayNameInternal();
     }
@@ -294,7 +283,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         private Fluid prevFluid;
 
         ThermopneumaticFluidTankInput(int capacity){
-            super(TileEntityThermopneumaticProcessingPlant.this, capacity, 1);
+            super(TileEntityThermopneumaticProcessingPlant.this, capacity);
         }
         
         @Override
@@ -316,7 +305,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     private class ThermopneumaticFluidTankOutput extends SmartSyncTank {
         ThermopneumaticFluidTankOutput(int capacity){
-            super(TileEntityThermopneumaticProcessingPlant.this, capacity, 2);
+            super(TileEntityThermopneumaticProcessingPlant.this, capacity);
         }
 
         @Override

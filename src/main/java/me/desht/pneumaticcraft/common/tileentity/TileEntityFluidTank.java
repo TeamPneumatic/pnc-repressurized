@@ -18,7 +18,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
@@ -39,7 +38,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public abstract class TileEntityFluidTank extends TileEntityTickableBase
-        implements ISmartFluidSync, ISerializableTanks, INamedContainerProvider {
+        implements ISerializableTanks, INamedContainerProvider {
     private static final int INVENTORY_SIZE = 2;
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
@@ -59,20 +58,18 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
 
-    @SuppressWarnings("unused")
-    @DescSynced
-    private int fluidAmountScaled;
-
     TileEntityFluidTank(TileEntityType<?> type, BlockFluidTank.Size tankSize) {
         super(type, 4);
 
-        this.tank = new StackableTank(this, tankSize.getCapacity());
+        this.tank = new StackableTank(tankSize.getCapacity());
         this.fluidCap = LazyOptional.of(() -> tank);
     }
 
     @Override
     public void tick() {
         super.tick();
+
+        tank.tick();
 
         if (!world.isRemote) {
             processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
@@ -119,18 +116,6 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
     @Override
     protected LazyOptional<IItemHandler> getInventoryCap() {
         return inventoryCap;
-    }
-
-    @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
-
-        fluidAmountScaled = tank.getScaledFluidAmount();
-    }
-
-    @Override
-    public void updateScaledFluidAmount(int tankIndex, int amount) {
-        fluidAmountScaled = amount;
     }
 
     @Nonnull
@@ -182,8 +167,8 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
     }
 
     public class StackableTank extends SmartSyncTank {
-        StackableTank(ISmartFluidSync holder, int capacity) {
-            super(holder, capacity);
+        StackableTank(int capacity) {
+            super(TileEntityFluidTank.this, capacity);
         }
 
         @Override

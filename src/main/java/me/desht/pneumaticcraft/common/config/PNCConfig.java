@@ -83,7 +83,7 @@ public class PNCConfig {
 
         public static class Advanced {
             public static boolean disableKeroseneLampFakeAirBlock;
-            public static double liquidTankUpdateThreshold;
+            public static int fluidTankUpdateRate;
             public static boolean stopDroneAI;
         }
 

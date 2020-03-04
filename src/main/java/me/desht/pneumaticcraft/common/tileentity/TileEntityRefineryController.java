@@ -11,7 +11,6 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,11 +41,10 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 public class TileEntityRefineryController extends TileEntityTickableBase
-        implements IRedstoneControlled, IComparatorSupport, ISerializableTanks, ISmartFluidSync, INamedContainerProvider {
+        implements IRedstoneControlled, IComparatorSupport, ISerializableTanks, INamedContainerProvider {
 
     @GuiSynced
     @DescSynced
-    @LazySynced
     private final RefineryInputTank inputTank = new RefineryInputTank(PneumaticValues.NORMAL_TANK_CAPACITY);
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> inputTank);
 
@@ -64,9 +62,6 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     @GuiSynced
     public int maxTemp;
 
-    @SuppressWarnings("unused")
-    @DescSynced
-    private int inputAmountScaled;  // for fluid tank sync
     @DescSynced
     private int outputCount;
     @DescSynced
@@ -104,6 +99,8 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     @Override
     public void tick() {
         super.tick();
+
+        inputTank.tick();
 
         if (!getWorld().isRemote) {
             lastProgress = 0;
@@ -301,8 +298,6 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     public void read(CompoundNBT tag) {
         super.read(tag);
 
-        inputAmountScaled = inputTank.getScaledFluidAmount();
-
         redstoneMode = tag.getByte("redstoneMode");
     }
 
@@ -354,11 +349,6 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     }
 
     @Override
-    public void updateScaledFluidAmount(int tankIndex, int amount) {
-        inputAmountScaled = amount;
-    }
-
-    @Override
     public ITextComponent getDisplayName() {
         return getDisplayNameInternal();
     }
@@ -378,7 +368,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
         private Fluid prevFluid;
 
         RefineryInputTank(int capacity) {
-            super(TileEntityRefineryController.this, capacity, 1);
+            super(TileEntityRefineryController.this, capacity);
         }
 
         @Override

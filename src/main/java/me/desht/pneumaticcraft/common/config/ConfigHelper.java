@@ -88,7 +88,7 @@ public class ConfigHelper {
         PNCConfig.Common.Integration.tanRefreshInterval = common.integration.tanRefreshInterval.get();
 
         PNCConfig.Common.Advanced.disableKeroseneLampFakeAirBlock = common.advanced.disableKeroseneLampFakeAirBlock.get();
-        PNCConfig.Common.Advanced.liquidTankUpdateThreshold = common.advanced.liquidTankUpdateThreshold.get();
+        PNCConfig.Common.Advanced.fluidTankUpdateRate = common.advanced.fluidTankUpdateRate.get();
         PNCConfig.Common.Advanced.stopDroneAI = common.advanced.stopDroneAI.get();
 
         PNCConfig.Common.Micromissiles.baseExplosionDamage = common.micromissiles.baseExplosionDamage.get();

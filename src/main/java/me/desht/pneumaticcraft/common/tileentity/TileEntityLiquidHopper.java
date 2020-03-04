@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -36,22 +35,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements ISerializableTanks, ISmartFluidSync {
+public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements ISerializableTanks {
     private int comparatorValue = -1;
 
-    @LazySynced
     @DescSynced
     @GuiSynced
-    private final HopperTank tank = new HopperTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
+    private final HopperTank tank = new HopperTank(PneumaticValues.NORMAL_TANK_CAPACITY);
     private final LazyOptional<IFluidHandler> tankCap = LazyOptional.of(() -> tank);
     private final WrappedFluidTank inputWrapper = new WrappedFluidTank(tank, true);
     private final LazyOptional<IFluidHandler> inputCap = LazyOptional.of(() -> inputWrapper);
     private final WrappedFluidTank outputWrapper = new WrappedFluidTank(tank, false);
     private final LazyOptional<IFluidHandler> outputCap = LazyOptional.of(() -> outputWrapper);
-
-    @SuppressWarnings("unused")
-    @DescSynced
-    private int fluidAmountScaled;
 
     public TileEntityLiquidHopper() {
         super(ModTileEntities.LIQUID_HOPPER.get());
@@ -70,6 +64,8 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
     @Override
     public void tick() {
         super.tick();
+
+        tank.tick();
 
         if (!world.isRemote && getUpgrades(EnumUpgrade.CREATIVE) > 0) {
             FluidStack fluidStack = tank.getFluid();
@@ -155,7 +151,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
         return false;
     }
 
-    public FluidTank getTank() {
+    public HopperTank getTank() {
         return tank;
     }
 
@@ -169,7 +165,6 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
     public void read(CompoundNBT tag) {
         super.read(tag);
 
-        fluidAmountScaled = tank.getScaledFluidAmount();
         comparatorValue = -1;
     }
 
@@ -205,20 +200,15 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
         return ImmutableMap.of(BlockLiquidHopper.ItemBlockLiquidHopper.TANK_NAME, tank);
     }
 
-    @Override
-    public void updateScaledFluidAmount(int tankIndex, int amount) {
-        fluidAmountScaled = amount;
-    }
-
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerLiquidHopper(i, playerInventory, getPos());
     }
 
-    class HopperTank extends SmartSyncTank {
-        HopperTank(ISmartFluidSync holder, int capacity) {
-            super(holder, capacity);
+    public class HopperTank extends SmartSyncTank {
+        HopperTank(int capacity) {
+            super(TileEntityLiquidHopper.this, capacity);
         }
 
         @Override

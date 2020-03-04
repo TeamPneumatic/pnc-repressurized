@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.network.SyncedField.*;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
@@ -127,13 +128,13 @@ public class NetworkUtils {
                     }
                     return syncedFields;
                 }
-                if (o instanceof FluidTank[]) {
+                if (o instanceof FluidStack[]) {
                     FluidTank[] array = (FluidTank[]) o;
                     if (filteredIndex >= 0) {
-                        syncedFields.add(new SyncedFluidTank(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
+                        syncedFields.add(new SyncedFluidStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
                         for (int i = 0; i < array.length; i++) {
-                            syncedFields.add(new SyncedFluidTank(te, field).setArrayIndex(i).setLazy(isLazy));
+                            syncedFields.add(new SyncedFluidStack(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
                     return syncedFields;
@@ -173,7 +174,7 @@ public class NetworkUtils {
         if (String.class.isAssignableFrom(field.getType())) return new SyncedString(te, field);
         if (field.getType().isEnum()) return new SyncedEnum(te, field);
         if (ItemStack.class.isAssignableFrom(field.getType())) return new SyncedItemStack(te, field);
-        if (FluidTank.class.isAssignableFrom(field.getType())) return new SyncedFluidTank(te, field);
+        if (FluidStack.class.isAssignableFrom(field.getType())) return new SyncedFluidStack(te, field);
         if (IItemHandlerModifiable.class.isAssignableFrom(field.getType())) return new SyncedItemHandler(te, field);
         return null;
     }

@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,11 +35,9 @@ public class RenderFluidTank extends FastFluidTESR<TileEntityFluidTank> {
     public static class ItemInfoProvider extends FluidItemRenderInfoProvider {
         @Override
         public List<TankRenderInfo> getTanksToRender(ItemStack stack) {
-            return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(h -> {
-                FluidTank tank = new FluidTank(h.getTankCapacity(0));
-                tank.setFluid(h.getFluidInTank(0));
-                return ImmutableList.of(new TankRenderInfo(tank, BOUNDS_NONE));
-            }).orElse(null);
+            return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+                    .map(h -> ImmutableList.of(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_NONE)))
+                    .orElse(null);
         }
     }
 }

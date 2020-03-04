@@ -2,7 +2,9 @@ package me.desht.pneumaticcraft.client.render.fluid;
 
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import java.util.BitSet;
 
@@ -11,7 +13,9 @@ public class TankRenderInfo {
     private final AxisAlignedBB bounds;
     private final BitSet faces = new BitSet(6);
 
-    public TankRenderInfo(IFluidTank tank, AxisAlignedBB bounds, Direction... renderFaces) {
+    public TankRenderInfo(FluidStack stack, int capacity, AxisAlignedBB bounds, Direction... renderFaces) {
+        FluidTank tank = new FluidTank(capacity);
+        tank.setFluid(stack);
         this.tank = tank;
         this.bounds = bounds;
         if (renderFaces.length == 0) {
@@ -21,6 +25,10 @@ public class TankRenderInfo {
                 faces.set(face.getIndex(), true);
             }
         }
+    }
+
+    public TankRenderInfo(IFluidTank tank, AxisAlignedBB bounds, Direction... renderFaces) {
+        this(tank.getFluid(), tank.getCapacity(), bounds, renderFaces);
     }
 
     public TankRenderInfo without(Direction face) {

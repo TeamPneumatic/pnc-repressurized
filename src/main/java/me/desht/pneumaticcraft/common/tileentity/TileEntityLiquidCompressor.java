@@ -41,7 +41,8 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     private static final int OUTPUT_SLOT = 1;
 
     @GuiSynced
-    private final FluidTank tank = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+    private final SmartSyncTank tank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
+
     private final ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
@@ -81,6 +82,8 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     @Override
     public void tick() {
         super.tick();
+
+        tank.tick();
 
         if (!getWorld().isRemote) {
             processFluidItem(INPUT_SLOT, OUTPUT_SLOT);

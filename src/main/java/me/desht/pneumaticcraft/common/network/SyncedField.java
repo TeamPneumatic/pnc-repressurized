@@ -7,7 +7,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.EmptyHandler;
@@ -253,42 +252,25 @@ public abstract class SyncedField<T> {
         }
     }
 
-    public static class SyncedFluidTank extends SyncedField<FluidStack> {
-
-        SyncedFluidTank(Object te, Field field) {
+    public static class SyncedFluidStack extends SyncedField<FluidStack> {
+        SyncedFluidStack(Object te, Field field) {
             super(te, field);
         }
 
         @Override
         protected FluidStack getValueForArray(Object array, int index) {
-            return ((FluidTank[]) array)[index].getFluid();
+            return ((FluidStack[]) array)[index];
         }
 
         @Override
         protected void setValueForArray(Object array, int index, FluidStack value) {
-            ((FluidTank[]) array)[index].setFluid(value);
-        }
-
-        @Override
-        protected FluidStack retrieveValue(Field field, Object te) throws Exception {
-            FluidTank tank = (FluidTank) field.get(te);
-            return tank.getFluid();
-        }
-
-        @Override
-        protected void injectValue(Field field, Object te, FluidStack value) throws Exception {
-            FluidTank tank = (FluidTank) field.get(te);
-            tank.setFluid(value);
+            ((FluidStack[]) array)[index] = value;
         }
 
         @Override
         protected boolean equals(FluidStack oldValue, FluidStack newValue) {
-            return oldValue == null ? newValue == null : oldValue.isFluidStackIdentical(newValue);
-        }
-
-        @Override
-        protected FluidStack copyWhenNecessary(FluidStack oldValue) {
-            return oldValue.copy();
+            // Default FluidStack .equals() implementation only checks the fluid, not the amount
+            return oldValue.isFluidEqual(newValue) && oldValue.getAmount() == newValue.getAmount();
         }
     }
 
@@ -352,7 +334,7 @@ public abstract class SyncedField<T> {
         else if (syncedField instanceof SyncedString) return 4;
         else if (syncedField instanceof SyncedEnum) return 5;
         else if (syncedField instanceof SyncedItemStack) return 6;
-        else if (syncedField instanceof SyncedFluidTank) return 7;
+        else if (syncedField instanceof SyncedFluidStack) return 7;
         else if (syncedField instanceof SyncedField.SyncedItemHandler) return 8;
         else {
             throw new IllegalArgumentException("Invalid sync type! " + syncedField);
@@ -410,7 +392,7 @@ public abstract class SyncedField<T> {
                 buf.writeByte((Byte) value);
                 break;
             case 6:
-                new PacketBuffer(buf).writeItemStack(value == null ? ItemStack.EMPTY : (ItemStack) value);
+                buf.writeItemStack(value == null ? ItemStack.EMPTY : (ItemStack) value);
                 break;
             case 7:
                 buf.writeBoolean(value != null);
