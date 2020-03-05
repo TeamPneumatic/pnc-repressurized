@@ -68,6 +68,10 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<TileEntityPres
                 curInfo.add("\u00a7fToo much pressure");
                 curInfo.add("\u00a70Remove air from the input");
             }
+            if (te.itemsInOverflow) {
+                curInfo.add("\u00a7fToo many items in Chamber");
+                curInfo.add("\u00a70Crafting cannot continue until some items are removed from the chamber");
+            }
             curInfo.add("\u00a70Pressure required: " + te.recipePressure + " bar");
         }
     }

@@ -35,9 +35,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class TileEntityPressureChamberValve extends TileEntityPneumaticBase implements IMinWorkingPressure, IAirListener {
     private static final int CHAMBER_INV_SIZE = 27;
@@ -67,6 +65,12 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             recipeRecalcNeeded = true;
         }
     };
+
+    // Hold excess crafting output rather than dropping it as an item.  Items in overflow will prevent further crafting.
+    // Overflow will automatically spill back into the main chamber handler as space becomes available
+    private final Deque<ItemStack> overflow = new ArrayDeque<>();
+    @GuiSynced
+    public boolean itemsInOverflow;
 
     // list of recipes which can be made from the current chamber contents, not considering the current pressure
     private final List<IPressureChamberRecipe> applicableRecipes = new ArrayList<>();
@@ -147,7 +151,14 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 recipeRecalcNeeded = false;
             }
 
-            processApplicableRecipes();
+            if (!overflow.isEmpty()) {
+                ItemStack stack = overflow.peekFirst();
+                if (ItemHandlerHelper.insertItem(itemsInChamber, stack, false).isEmpty()) {
+                    overflow.removeFirst();
+                }
+            }
+            itemsInOverflow = !overflow.isEmpty();
+            if (overflow.isEmpty()) processApplicableRecipes();
 
             if (getPressure() > PneumaticValues.MAX_PRESSURE_LIVING_ENTITY) {
                 handleEntitiesInChamber();
@@ -257,10 +268,13 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
             }
             if (pressureOK) {
                 isSufficientPressureInChamber = true;
-                giveOutput(recipe.craftRecipe(itemsInChamber));
-                if (getWorld().getTotalWorldTime() - lastSoundTick > 5) {
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, getPos(), 0.5f, 0.8f + getWorld().rand.nextFloat() * 0.4f, false), getWorld());
-                    lastSoundTick = getWorld().getTotalWorldTime();
+                NonNullList<ItemStack> output = recipe.craftRecipe(itemsInChamber);
+                if (!output.isEmpty()) {
+                    giveOutput(output);
+                    if (getWorld().getTotalWorldTime() - lastSoundTick > 5) {
+                        NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, getPos(), 0.5f, 0.8f + getWorld().rand.nextFloat() * 0.4f, false), getWorld());
+                        lastSoundTick = getWorld().getTotalWorldTime();
+                    }
                 }
                 // Craft at most one recipe each tick; this is because crafting changes the contents of the
                 // chamber, possibly invalidating other applicable recipes.  Modifying the chamber's contents
@@ -309,7 +323,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         for (ItemStack stack : stacks){
             stack = stack.copy();
             stack = ItemHandlerHelper.insertItem(itemsInChamber, stack, false);
-            if (!stack.isEmpty()) dropItemOnGround(stack); //As a last resort, actually drop an item in the chamber.
+            if (!stack.isEmpty()) overflow.addLast(stack);
         }
     }
 
@@ -332,6 +346,13 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 newHandler.setStackInSlot(i, itemsInChamber.getStackInSlot(i));
             }
             itemsInChamber = newHandler;
+        }
+
+        if (tag.hasKey("overflow", Constants.NBT.TAG_COMPOUND)) {
+            NBTTagList ov = tag.getTagList("overflow", Constants.NBT.TAG_COMPOUND);
+            for (int i = 0; i < ov.tagCount(); i++) {
+                overflow.addFirst(new ItemStack(ov.getCompoundTagAt(i)));
+            }
         }
 
         // Read in the accessory valves from NBT
@@ -357,6 +378,14 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
         tag.setFloat("recipePressure", recipePressure);
         tag.setTag("itemsInChamber", itemsInChamber.serializeNBT());
 
+        if (!overflow.isEmpty() && isPrimaryValve()) {
+            NBTTagList ov = new NBTTagList();
+            for (ItemStack stack: overflow) {
+                ov.appendTag(stack.serializeNBT());
+            }
+            tag.setTag("overflow", ov);
+        }
+
         // Write the accessory valve to NBT
         NBTTagList tagList2 = new NBTTagList();
         for (TileEntityPressureChamberValve valve : accessoryValves) {
@@ -379,6 +408,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase impl
                 dropItemOnGround(stack);
                 itemsInChamberIterator.remove();
             }
+            for (ItemStack stack : overflow) {
+                dropItemOnGround(stack);
+            }
+            overflow.clear();
             invalidateMultiBlock();
         }
 
