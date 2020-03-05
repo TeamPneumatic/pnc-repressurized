@@ -37,7 +37,9 @@ public abstract class SyncedField<T> {
 
     @Override
     public String toString() {
-        return "[" + te + "/" + field.getName() + "=" + getValue() + "]";
+        return arrayIndex == -1 ?
+                "[" + te + "/" + field.getName() + "=" + getValue() + "]" :
+                "[" + te + "/" + field.getName() + "[" + arrayIndex + "]=" + getValue() + "]";
     }
 
     /**

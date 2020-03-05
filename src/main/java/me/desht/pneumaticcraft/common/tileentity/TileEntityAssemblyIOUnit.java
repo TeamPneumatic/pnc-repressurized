@@ -12,7 +12,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.items.*;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.List;
 
@@ -103,9 +106,8 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         }
     }
 
-    @Override
-    public IItemHandlerModifiable getPrimaryInventory() {
-        return inventory;
+    public ItemStack getHeldStack() {
+        return inventory.getStackInSlot(0);
     }
 
     @Override

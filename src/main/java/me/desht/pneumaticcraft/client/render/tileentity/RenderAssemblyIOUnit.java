@@ -29,10 +29,10 @@ public class RenderAssemblyIOUnit extends AbstractModelRenderer<TileEntityAssemb
             }
 
             EntityItem ghostEntityItem = null;
-            if (!te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
+            if (!te.getHeldStack().isEmpty()) {
                 ghostEntityItem = new EntityItem(te.getWorld());
                 ghostEntityItem.hoverStart = 0.0F;
-                ghostEntityItem.setItem(te.getPrimaryInventory().getStackInSlot(0));
+                ghostEntityItem.setItem(te.getHeldStack());
             }
             RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
             boolean fancySetting = renderManager.options.fancyGraphics;
