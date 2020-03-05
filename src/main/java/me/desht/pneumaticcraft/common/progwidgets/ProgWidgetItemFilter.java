@@ -1,18 +1,14 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
@@ -22,8 +18,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -36,9 +30,6 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     public boolean useItemDurability, useNBT, useItemTags, useModSimilarity, matchBlock;
     private DroneAIManager aiManager;
     private String variable = "";
-
-    @OnlyIn(Dist.CLIENT)
-    private static ItemRenderer itemRender;
 
     public ProgWidgetItemFilter() {
         super(ModProgWidgets.ITEM_FILTER.get());
@@ -65,7 +56,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     public void renderExtraInfo() {
         if (variable.equals("")) {
             if (!filter.isEmpty()) {
-                drawItemStack(filter, 10, 2, "");
+                GuiUtils.drawItemStack(filter, 10, 2, "");
             }
         } else {
             super.renderExtraInfo();
@@ -88,21 +79,6 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
 
     public void setFilter(@Nonnull ItemStack filter) {
         this.filter = filter;
-    }
-
-    public static void drawItemStack(@Nonnull ItemStack stack, int x, int y, String text) {
-        RenderHelper.enableGUIStandardItemLighting();
-        GlStateManager.pushMatrix();
-        Minecraft mc = Minecraft.getInstance();
-        if (itemRender == null) itemRender = Minecraft.getInstance().getItemRenderer();
-        FontRenderer font = null;
-        if (!stack.isEmpty()) font = stack.getItem().getFontRenderer(stack);
-        if (font == null) font = mc.fontRenderer;
-        itemRender.renderItemAndEffectIntoGUI(stack, x, y);
-        itemRender.renderItemOverlayIntoGUI(font, stack, x, y, text);
-        GlStateManager.popMatrix();
-        RenderHelper.disableStandardItemLighting();
-        GlStateManager.disableLighting();
     }
 
     @Override

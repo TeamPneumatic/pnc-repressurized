@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.ItemTagMatcher;
@@ -130,7 +131,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     public void renderExtraInfo() {
         ItemStack recipe = getRecipeResult(ClientUtils.getClientWorld());
         if (recipe != null) {
-            ProgWidgetItemFilter.drawItemStack(recipe, 8, getHeight() / 2 - 8, recipe.getCount() + "");
+            GuiUtils.drawItemStack(recipe, 8, getHeight() / 2 - 8, recipe.getCount() + "");
         }
     }
 

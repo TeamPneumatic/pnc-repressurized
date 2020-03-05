@@ -17,6 +17,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,6 +145,21 @@ public class GuiUtils {
         RenderHelper.enableGUIStandardItemLighting();
         GlStateManager.enableDepthTest();
         itemRenderer.renderItemAndEffectIntoGUI(stack, x, y);
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+    }
+
+    public static void drawItemStack(@Nonnull ItemStack stack, int x, int y, String text) {
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.enableDepthTest();
+        RenderHelper.enableGUIStandardItemLighting();
+        GlStateManager.pushMatrix();
+        FontRenderer font = null;
+        if (!stack.isEmpty()) font = stack.getItem().getFontRenderer(stack);
+        if (font == null) font = Minecraft.getInstance().fontRenderer;
+        itemRenderer.renderItemAndEffectIntoGUI(stack, x, y);
+        itemRenderer.renderItemOverlayIntoGUI(font, stack, x, y, text);
+        GlStateManager.popMatrix();
         RenderHelper.disableStandardItemLighting();
         GlStateManager.disableRescaleNormal();
     }
