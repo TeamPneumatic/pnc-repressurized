@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -32,37 +33,30 @@ public class ModCommands {
         );
 
         dispatcher.register(Commands.literal("amadrone_deliver")
-                .then(argument("toPos", BlockPosArgument.blockPos()))
-                .then(argument("fromPos", BlockPosArgument.blockPos()))
-                .executes(c -> amadroneDeliver(
-                        c.getSource(),
-                        getLoadedBlockPos(c, "toPos"),
-                        getLoadedBlockPos(c, "fromPos")
+                .then(argument("toPos", BlockPosArgument.blockPos())
+                        .then(argument("fromPos", BlockPosArgument.blockPos())
+                                .executes(ctx -> amadroneDeliver(ctx.getSource(), getLoadedBlockPos(ctx, "toPos"), getLoadedBlockPos(ctx, "fromPos")))
                         )
                 )
-                .then(argument("player", EntityArgument.player()))
-                .then(argument("fromPos", BlockPosArgument.blockPos()))
-                .executes(c -> amadroneDeliver(
-                        c.getSource(),
-                        getPlayer(c, "player").getPosition(),
-                        getLoadedBlockPos(c, "fromPos")
-                ))
+                .then(argument("player", EntityArgument.player())
+                        .then(argument("fromPos", BlockPosArgument.blockPos())
+                                .executes(ctx -> amadroneDeliver(ctx.getSource(), getPlayer(ctx, "player").getPosition(), getLoadedBlockPos(ctx, "fromPos")))
+                        )
+                )
         );
 
         dispatcher.register(Commands.literal("get_global_var")
-                .then(argument("varname", StringArgumentType.string()))
-                .executes(c -> getGlobalVar(
-                        c, StringArgumentType.getString(c,"varname")
-                ))
+                .then(argument("varname", StringArgumentType.string())
+                        .executes(c -> getGlobalVar(c, StringArgumentType.getString(c,"varname")))
+                )
         );
 
         dispatcher.register(Commands.literal("set_global_var")
-                .then(argument("varname", StringArgumentType.string()))
-                .then(argument("pos", BlockPosArgument.blockPos()))
-                .executes(c -> setGlobalVar(
-                        c, StringArgumentType.getString(c,"varname"),
-                        BlockPosArgument.getLoadedBlockPos(c, "pos")
-                ))
+                .then(argument("varname", StringArgumentType.string())
+                        .then(argument("pos", BlockPosArgument.blockPos())
+                                .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), BlockPosArgument.getLoadedBlockPos(c, "pos")))
+                        )
+                )
         );
     }
 
@@ -74,8 +68,7 @@ public class ModCommands {
                 source.sendErrorMessage(new StringTextComponent("No NBT"));
                 return 0;
             }
-            String msg = held.getTag().toString();
-            source.sendFeedback(new StringTextComponent(msg), false);
+            source.sendFeedback(new StringTextComponent(held.getTag().toString()), false);
             return 1;
         }
         return 0;
@@ -84,7 +77,7 @@ public class ModCommands {
     private static int amadroneDeliver(CommandSource source, BlockPos toPos, BlockPos fromPos) {
         TileEntity te = source.getWorld().getTileEntity(fromPos);
 
-        return IOHelper.getInventoryForTE(te).map(inv -> {
+        int status = IOHelper.getInventoryForTE(te).map(inv -> {
             List<ItemStack> deliveredStacks = new ArrayList<>();
             for (int i = 0; i < inv.getSlots() && deliveredStacks.size() < 65; i++) {
                 if (!inv.getStackInSlot(i).isEmpty()) deliveredStacks.add(inv.getStackInSlot(i));
@@ -92,12 +85,16 @@ public class ModCommands {
             if (deliveredStacks.size() > 0) {
                 GlobalPos gPos = GlobalPos.of(source.getWorld().dimension.getType(), toPos);
                 PneumaticRegistry.getInstance().getDroneRegistry().deliverItemsAmazonStyle(gPos, deliveredStacks.toArray(new ItemStack[0]));
-                source.sendFeedback(new StringTextComponent("command.deliverAmazon.success"), false);
+                source.sendFeedback(xlate("command.deliverAmazon.success", PneumaticCraftUtils.posToString(fromPos), PneumaticCraftUtils.posToString(toPos)), false);
+                return 1;
             } else {
-                source.sendErrorMessage(new StringTextComponent("command.deliverAmazon.noItems"));
+                source.sendErrorMessage(xlate("command.deliverAmazon.noItems", PneumaticCraftUtils.posToString(fromPos)));
+                return 0;
             }
-            return 1;
-        }).orElse(0);
+        }).orElse(-1);
+
+        if (status == -1) source.sendErrorMessage(xlate("command.deliverAmazon.noInventory", PneumaticCraftUtils.posToString(fromPos)));
+        return status;
     }
 
     private static int getGlobalVar(CommandContext<CommandSource> ctx, String varName) {
