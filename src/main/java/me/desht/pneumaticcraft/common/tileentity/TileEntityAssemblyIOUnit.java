@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -30,7 +29,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     public float oldClawProgress;
     @DescSynced
     private final RenderedItemStackHandler itemHandler = new RenderedItemStackHandler(this);
-    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
 
     private Collection<IAssemblyRecipe> recipeList;
     private ItemStack searchedItemStack = ItemStack.EMPTY;
@@ -106,11 +104,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
                     break;
             }
         }
-    }
-
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
-        return inventoryCap;
     }
 
     @Override
