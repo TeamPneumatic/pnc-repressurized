@@ -275,6 +275,8 @@ public class HUDHandler implements IKeyListener {
     }
 
     private void update(EntityPlayer player, EntityEquipmentSlot slot, CommonArmorHandler comHudHandler) {
+        if (GuiKeybindCheckBox.getCoreComponents() == null) return;  // should never happen, but https://github.com/TeamPneumatic/pnc-repressurized/issues/431
+
         boolean armorEnabled = GuiKeybindCheckBox.getCoreComponents().checked;
         List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
 
