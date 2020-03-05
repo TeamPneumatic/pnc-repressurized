@@ -133,7 +133,18 @@ public interface IPneumaticRecipeRegistry {
 
     /**
      * Add a melting and/or solidifying recipe to the Plastic Mixer.
-     *
+     *  @param fluidPlastic the fluid; the FluidStack must include the amount required
+     * @param solidPlastic the solid item; this should support dye coloring as metadata (or ignore metadata), or nonsensical results may ensue
+     * @param temperature the temperature (Kelvin) at which the item should melt (irrelevant if allowMelting is false)
+     * @param allowMelting should this recipe allow melting of items to fluids?
+     * @param allowSolidifying should this recipe allow solidifying of fluids to items?
+     * @param useDye true if dye should be used up when solidifying
+     * @param meta if >=0, only solidify to items with this specific metadata; if <0, ignore metadata and offer all known items for this item ID
+     */
+    void registerPlasticMixerRecipe(FluidStack fluidPlastic, ItemStack solidPlastic, int temperature, boolean allowMelting, boolean allowSolidifying, boolean useDye, int meta);
+
+    /**
+     * Add a melting and/or solidifying recipe to the Plastic Mixer.
      * @param fluidPlastic the fluid; the FluidStack must include the amount required
      * @param solidPlastic the solid item; this should support dye coloring as metadata (or ignore metadata), or nonsensical results may ensue
      * @param temperature the temperature (Kelvin) at which the item should melt (irrelevant if allowMelting is false)

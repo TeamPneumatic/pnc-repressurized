@@ -28,7 +28,7 @@ public class ItemIngredient {
     }
 
     public ItemIngredient(String oredictKey, int amount) {
-        Validate.isTrue(OreDictionary.doesOreNameExist(oredictKey), "invalid oredict key");
+        Validate.isTrue(OreDictionary.doesOreNameExist(oredictKey), "invalid oredict key '" + oredictKey + "'");
         this.oredictKey = oredictKey;
         this.amount = amount;
         this.stack = ItemStack.EMPTY;

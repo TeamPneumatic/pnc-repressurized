@@ -119,6 +119,11 @@ public class PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
 
     @Override
     public void registerPlasticMixerRecipe(FluidStack fluidPlastic, ItemStack solidPlastic, int temperature, boolean allowMelting, boolean allowSolidifying) {
-        PlasticMixerRegistry.INSTANCE.addPlasticMixerRecipe(fluidPlastic, solidPlastic, temperature, allowMelting, allowSolidifying);
+        PlasticMixerRegistry.INSTANCE.addPlasticMixerRecipe(fluidPlastic, solidPlastic, temperature, allowMelting, allowSolidifying, true, -1);
+    }
+
+    @Override
+    public void registerPlasticMixerRecipe(FluidStack fluidPlastic, ItemStack solidPlastic, int temperature, boolean allowMelting, boolean allowSolidifying, boolean useDye, int meta) {
+        PlasticMixerRegistry.INSTANCE.addPlasticMixerRecipe(fluidPlastic, solidPlastic, temperature, allowMelting, allowSolidifying, useDye, meta);
     }
 }

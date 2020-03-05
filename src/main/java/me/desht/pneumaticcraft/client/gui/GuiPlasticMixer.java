@@ -96,24 +96,31 @@ public class GuiPlasticMixer extends GuiPneumaticContainerBase<TileEntityPlastic
 
     private void updateSelectionTab() {
         PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(te.getTank().getFluid());
-        boolean recipeOK = recipe != null && recipe.allowSolidifying();
 
-        int nTypes = recipe == null ? 0 : recipe.getNumSubTypes();
-        for (int index = 0; index < 16; index++) {
-            if (recipeOK) {
-                ItemStack stack = new ItemStack(recipe.getItemStack().getItem(), 1, index);
-                buttons[index].setRenderStacks(stack).setTooltipText(stack.getDisplayName());
+        if (recipe == null || !recipe.allowSolidifying()) {
+            for (int index = 0; index < 16; index++) {
+                buttons[index].setVisible(false);
+                buttons[index].visible = false;
             }
-            buttons[index].setVisible(recipeOK && index < nTypes);
-            buttons[index].visible = recipeOK && index < nTypes;
-        }
-        if (recipeOK) {
+            amountLabel.visible = false;
+            noItemsLabel.visible = true;
+            selectionTab.setTexture(new ItemStack(Blocks.STRUCTURE_VOID));
+        } else {
+            for (int index = 0; index < 16; index++) {
+                boolean showButton = recipe.getMeta() < 0 ? index < recipe.getNumSubTypes() : index == recipe.getMeta();
+                if (showButton) {
+                    ItemStack stack = new ItemStack(recipe.getItemStack().getItem(), 1, index);
+                    buttons[index].setRenderStacks(stack).setTooltipText(stack.getDisplayName());
+                }
+                buttons[index].setVisible(showButton);
+                buttons[index].visible = showButton;
+            }
             FluidStack f = recipe.getFluidStack();
             amountLabel.text = StringUtils.abbreviate(TextFormatting.GRAY + "" + f.amount + "mB " + f.getFluid().getLocalizedName(f), 20);
+            amountLabel.visible = true;
+            noItemsLabel.visible = false;
+            selectionTab.setTexture(recipe.getItemStack());
         }
-        amountLabel.visible = recipeOK;
-        noItemsLabel.visible = !recipeOK;
-        selectionTab.setTexture(recipeOK ? recipe.getItemStack() : new ItemStack(Blocks.STRUCTURE_VOID));
     }
 
     @Override

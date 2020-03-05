@@ -166,18 +166,18 @@ public class TileEntityPlasticMixer extends TileEntityTickableBase implements IH
 
     private void trySolidifyPlastic() {
         PlasticMixerRecipe recipe = PlasticMixerRegistry.INSTANCE.getRecipe(tank.getFluid());
-        if (recipe != null && recipe.allowSolidifying()) {
+        if (recipe != null && recipe.allowSolidifying() && (recipe.getMeta() < 0 || recipe.getMeta() == selectedPlastic)) {
             ItemStack solidifiedStack = ItemHandlerHelper.copyStackWithSize(recipe.getItemStack(), 1);
             solidifiedStack.setItemDamage(selectedPlastic);
             if (inventory.getStackInSlot(INV_OUTPUT).isEmpty()) {
-                solidifiedStack.setCount(useDye(solidifiedStack.getCount()));
+                solidifiedStack.setCount(recipe.useDye() ? useDye(solidifiedStack.getCount()) : solidifiedStack.getCount());
                 if (solidifiedStack.getCount() > 0) {
                     inventory.setStackInSlot(INV_OUTPUT, solidifiedStack);
                     tank.drain(solidifiedStack.getCount() * recipe.getFluidStack().amount, true);
                 }
             } else if (solidifiedStack.isItemEqual(inventory.getStackInSlot(INV_OUTPUT))) {
                 int solidifiedItems = Math.min(solidifiedStack.getMaxStackSize() - inventory.getStackInSlot(INV_OUTPUT).getCount(), solidifiedStack.getCount());
-                solidifiedItems = useDye(solidifiedItems);
+                if (recipe.useDye()) solidifiedItems = useDye(solidifiedItems);
                 ItemStack newStack = inventory.getStackInSlot(INV_OUTPUT);
                 newStack.grow(solidifiedItems);
                 tank.drain(solidifiedItems * recipe.getFluidStack().amount, true);

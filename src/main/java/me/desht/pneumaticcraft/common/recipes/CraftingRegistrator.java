@@ -236,7 +236,7 @@ public class CraftingRegistrator {
         PneumaticCraftAPIHandler.getInstance().getRecipeRegistry().registerPlasticMixerRecipe(
                 new FluidStack(Fluids.PLASTIC, ConfigHandler.machineProperties.plasticMixerPlasticRatio),
                 new ItemStack(Itemss.PLASTIC),
-                PneumaticValues.PLASTIC_MIXER_MELTING_TEMP, true, true
-        );
+                PneumaticValues.PLASTIC_MIXER_MELTING_TEMP, true, true,
+                true, -1);
     }
 }

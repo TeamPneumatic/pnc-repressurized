@@ -12,7 +12,6 @@ import me.desht.pneumaticcraft.api.tileentity.IHeatRegistry;
 import me.desht.pneumaticcraft.api.universalSensor.ISensorRegistry;
 import me.desht.pneumaticcraft.client.GuiRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
-import me.desht.pneumaticcraft.common.config.ConfigHandler;
 import me.desht.pneumaticcraft.common.fluid.Fluids;
 import me.desht.pneumaticcraft.common.harvesting.HarvestRegistry;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
@@ -106,7 +105,7 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface {
     @Override
     public void registerPlasticFluid(Fluid fluid, int ratio) {
         PneumaticRecipeRegistry.getInstance().registerPlasticMixerRecipe(new FluidStack(fluid, ratio), new ItemStack(Itemss.PLASTIC),
-                PneumaticValues.PLASTIC_MIXER_MELTING_TEMP, true, true);
+                PneumaticValues.PLASTIC_MIXER_MELTING_TEMP, true, true, true, -1);
     }
 
     @Override

@@ -78,12 +78,16 @@ public class JEIPlasticMixerCategory extends PneumaticCraftCategory<PlasticMixer
                 int numSubTypes = recipe.getNumSubTypes();
                 if (recipe.allowSolidifying()) {
                     for (int i = 0; i < numSubTypes; i++) {
-                        recipes.add(new PlasticMixerRecipeWrapper(recipe.getFluidStack(), new ItemStack(recipe.getItemStack().getItem(), 1, i)));
+                        if (recipe.getMeta() < 0 || recipe.getMeta() == i) {
+                            recipes.add(new PlasticMixerRecipeWrapper(recipe.getFluidStack(), new ItemStack(recipe.getItemStack().getItem(), 1, i)));
+                        }
                     }
                 }
                 if (recipe.allowMelting()) {
                     for (int i = 0; i < numSubTypes; i++) {
-                        recipes.add(new PlasticMixerRecipeWrapper(new ItemStack(recipe.getItemStack().getItem(), 1, i), recipe.getFluidStack(), recipe.getTemperature()));
+                        if (recipe.getMeta() < 0 || recipe.getMeta() == i) {
+                            recipes.add(new PlasticMixerRecipeWrapper(new ItemStack(recipe.getItemStack().getItem(), 1, i), recipe.getFluidStack(), recipe.getTemperature()));
+                        }
                     }
                 }
             }

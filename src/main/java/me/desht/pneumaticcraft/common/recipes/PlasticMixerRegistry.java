@@ -17,9 +17,9 @@ public enum PlasticMixerRegistry {
 
     private final List<PlasticMixerRecipe> recipes = new ArrayList<>();
 
-    public void addPlasticMixerRecipe(@Nonnull FluidStack fluid, @Nonnull ItemStack stack, int temperature, boolean allowMelting, boolean allowSolidifying) {
+    public void addPlasticMixerRecipe(@Nonnull FluidStack fluid, @Nonnull ItemStack stack, int temperature, boolean allowMelting, boolean allowSolidifying, boolean useDye, int meta) {
         if (fluid.amount > 0 && !stack.isEmpty()) {
-            recipes.add(new PlasticMixerRecipe(fluid, ItemHandlerHelper.copyStackWithSize(stack, 1), temperature, allowMelting, allowSolidifying));
+            recipes.add(new PlasticMixerRecipe(fluid, ItemHandlerHelper.copyStackWithSize(stack, 1), temperature, allowMelting, allowSolidifying, useDye, meta));
             validItems.put(stack.getItem(), allowMelting);
             validFluids.add(fluid.getFluid().getName());
         } else {
@@ -76,13 +76,17 @@ public enum PlasticMixerRegistry {
         private final int temperature;
         private final boolean allowMelting;
         private final boolean allowSolidifying;
+        private final boolean useDye;
+        private final int meta;
 
-        PlasticMixerRecipe(FluidStack fluidStack, ItemStack itemStack, int temperature, boolean allowMelting, boolean allowSolidifying) {
+        PlasticMixerRecipe(FluidStack fluidStack, ItemStack itemStack, int temperature, boolean allowMelting, boolean allowSolidifying, boolean useDye, int meta) {
             this.fluidStack = fluidStack;
             this.itemStack = itemStack;
             this.temperature = temperature;
             this.allowMelting = allowMelting;
             this.allowSolidifying = allowSolidifying;
+            this.useDye = useDye;
+            this.meta = meta;
         }
 
         public FluidStack getFluidStack() {
@@ -103,6 +107,14 @@ public enum PlasticMixerRegistry {
 
         public int getTemperature() {
             return temperature;
+        }
+
+        public boolean useDye() {
+            return useDye;
+        }
+
+        public int getMeta() {
+            return meta;
         }
 
         public int getNumSubTypes() {

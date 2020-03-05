@@ -38,6 +38,11 @@ public class PlasticMixer {
     }
 
     @ZenMethod
+    public static void addSolidifyOnlyRecipe(ILiquidStack liquidInput, IItemStack stackOutput, boolean useDye, int meta) {
+        CraftTweaker.ADDITIONS.add(new LiquidPlasticAction(Helper.toFluid(liquidInput), Helper.toStack(stackOutput), 0, false, true, useDye, meta));
+    }
+
+    @ZenMethod
     public static void removeRecipe(ILiquidStack liquidInput) {
         CraftTweaker.REMOVALS.add(new LiquidPlasticAction(Helper.toFluid(liquidInput).getFluid(), 0));
     }
@@ -63,30 +68,34 @@ public class PlasticMixer {
         private final int temperature;
         private final boolean allowMelting;
         private final boolean allowSolidifying;
+        private final boolean useDye;
+        private final int meta;
 
         LiquidPlasticAction(FluidStack fluidStack, ItemStack stack, int temperature, boolean allowMelting, boolean allowSolidifying) {
-            this.fluidStack = fluidStack;
-            this.stack = stack;
-            this.temperature = temperature;
-            this.allowMelting = allowMelting;
-            this.allowSolidifying = allowSolidifying;
+            this(fluidStack, stack, temperature, allowMelting, allowSolidifying, true, -1);
         }
 
         LiquidPlasticAction(FluidStack fluidStack, ItemStack stack) {
-            this.fluidStack = fluidStack;
-            this.stack = stack;
-            this.allowMelting = true;
-            this.allowSolidifying = true;
-            this.temperature = PneumaticValues.PLASTIC_MIXER_MELTING_TEMP;
+            this(fluidStack, stack, PneumaticValues.PLASTIC_MIXER_MELTING_TEMP, true, true, true, -1);
         }
 
         LiquidPlasticAction(Fluid fluid, int ratio) {
             this(new FluidStack(fluid, ratio), new ItemStack(Itemss.PLASTIC));
         }
 
+        LiquidPlasticAction(FluidStack fluidStack, ItemStack stack, int temperature, boolean allowMelting, boolean allowSolidifying, boolean useDye, int meta) {
+            this.fluidStack = fluidStack;
+            this.stack = stack;
+            this.temperature = temperature;
+            this.allowMelting = allowMelting;
+            this.allowSolidifying = allowSolidifying;
+            this.useDye = useDye;
+            this.meta = meta;
+        }
+
         @Override
         public void apply(){
-            PneumaticRecipeRegistry.getInstance().registerPlasticMixerRecipe(fluidStack, stack, temperature, allowMelting, allowSolidifying);
+            PneumaticRecipeRegistry.getInstance().registerPlasticMixerRecipe(fluidStack, stack, temperature, allowMelting, allowSolidifying, useDye, meta);
         }
         
         @Override
