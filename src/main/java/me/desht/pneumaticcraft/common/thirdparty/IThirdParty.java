@@ -42,7 +42,7 @@ public interface IThirdParty {
     static void registerFuel(ResourceLocation fuelName, int mLperBucket) {
         Fluid f = ForgeRegistries.FLUIDS.getValue(fuelName);
         if (f != null && f != Fluids.EMPTY) {
-            PneumaticCraftAPIHandler.getInstance().registerFuel(f, mLperBucket);
+            PneumaticCraftAPIHandler.getInstance().getFuelRegistry().registerFuel(f, mLperBucket);
             Log.info("Registered " + fuelName + "' @ " + mLperBucket + " mL air/bucket");
         } else {
             Log.warning("Can't find fuel: " + fuelName);

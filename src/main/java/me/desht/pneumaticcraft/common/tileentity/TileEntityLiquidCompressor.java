@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -11,7 +11,6 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -22,7 +21,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -52,9 +50,11 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
 
+    private double internalFuelBuffer;
+    @GuiSynced
+    private float burnMultiplier = 1f;  // how fast this fuel burns (and produces pressure)
     @GuiSynced
     public int redstoneMode;
-    private double internalFuelBuffer;
     @DescSynced
     @GuiSynced
     public boolean isProducing;
@@ -71,14 +71,6 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
         return tank;
     }
 
-    private int getFuelValue(FluidStack fluid) {
-        return getFuelValue(fluid.getFluid());
-    }
-
-    private int getFuelValue(Fluid fluid) {
-        return PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(fluid.getRegistryName(), 0);
-    }
-
     @Override
     public void tick() {
         super.tick();
@@ -90,20 +82,21 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
 
             isProducing = false;
             if (redstoneAllows()) {
-                int usageRate = (int) (getBaseProduction() * this.getSpeedUsageMultiplierFromUpgrades());
+                double usageRate = getBaseProduction() * this.getSpeedUsageMultiplierFromUpgrades() * burnMultiplier;
                 if (internalFuelBuffer < usageRate) {
-                    double fuelValue = getFuelValue(tank.getFluid()) / 1000D;
+                    double fuelValue = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(tank.getFluid().getFluid()) / 1000D;
                     if (fuelValue > 0) {
                         int usedFuel = Math.min(tank.getFluidAmount(), (int) (usageRate / fuelValue) + 1);
                         tank.drain(usedFuel, IFluidHandler.FluidAction.EXECUTE);
                         internalFuelBuffer += usedFuel * fuelValue;
+                        burnMultiplier = PneumaticRegistry.getInstance().getFuelRegistry().getBurnRateMultiplier(tank.getFluid().getFluid());
                     }
                 }
                 if (internalFuelBuffer >= usageRate) {
                     isProducing = true;
                     internalFuelBuffer -= usageRate;
-                    onFuelBurn(usageRate);
-                    addAir((int) (getBaseProduction() * this.getSpeedMultiplierFromUpgrades() * getEfficiency() / 100));
+                    onFuelBurn((int) usageRate);
+                    addAir((int) (getBaseProduction() * burnMultiplier * this.getSpeedMultiplierFromUpgrades() * getEfficiency() / 100));
                 }
             }
         } else {
@@ -137,6 +130,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
         tag.put("Items", itemHandler.serializeNBT());
         tag.putByte("redstoneMode", (byte) redstoneMode);
         tag.putDouble("internalFuelBuffer", internalFuelBuffer);
+        tag.putFloat("burnMultiplier", burnMultiplier);
 
         return tag;
     }
@@ -148,6 +142,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         redstoneMode = tag.getByte("redstoneMode");
         internalFuelBuffer = tag.getDouble("internalFuelBuffer");
+        burnMultiplier = tag.getFloat("burnMultiplier");
     }
 
     @Override
@@ -199,5 +194,9 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerLiquidCompressor(i, playerInventory, getPos());
+    }
+
+    public float getBurnMultiplier() {
+        return burnMultiplier;
     }
 }

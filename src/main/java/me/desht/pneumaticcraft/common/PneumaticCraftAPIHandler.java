@@ -5,36 +5,32 @@ import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
+import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import me.desht.pneumaticcraft.client.GuiRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.pressure.AirHandlerMachineFactory;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * With this class you can register your entities to give more info in the tooltip of the Entity Tracker.
  */
 public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCraftInterface {
     private final static PneumaticCraftAPIHandler INSTANCE = new PneumaticCraftAPIHandler();
-    public final Map<ResourceLocation, Integer> liquidFuels = new HashMap<>();
 
     public static PneumaticCraftAPIHandler getInstance() {
         return INSTANCE;
@@ -77,19 +73,6 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     }
 
     @Override
-    public void registerFuel(Fluid fluid, int mLPerBucket) {
-        Validate.notNull(fluid);
-        Validate.isTrue(mLPerBucket >= 0, "mlPerBucket can't be < 0!");
-        if (liquidFuels.containsKey(fluid.getRegistryName())) {
-            Log.info("Overriding liquid fuel entry " + new FluidStack(fluid, 1).getDisplayName().getFormattedText() + " (" + fluid.getRegistryName() + ") with a fuel value of " + mLPerBucket + " (previously " + liquidFuels.get(fluid.getRegistryName()) + ")");
-            if (mLPerBucket == 0) {
-                liquidFuels.remove(fluid.getRegistryName());
-            }
-        }
-        if (mLPerBucket > 0) liquidFuels.put(fluid.getRegistryName(), mLPerBucket);
-    }
-
-    @Override
     public IClientRegistry getGuiRegistry() {
         return GuiRegistry.getInstance();
     }
@@ -102,6 +85,11 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     @Override
     public IItemRegistry getItemRegistry() {
         return ItemRegistry.getInstance();
+    }
+
+    @Override
+    public IFuelRegistry getFuelRegistry() {
+        return FuelRegistry.getInstance();
     }
 
     @Override

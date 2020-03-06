@@ -1,8 +1,10 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -17,10 +19,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiquidCompressor,TileEntityLiquidCompressor> {
     public GuiLiquidCompressor(ContainerLiquidCompressor container, PlayerInventory inv, ITextComponent displayString) {
@@ -31,15 +33,16 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     public void init() {
         super.init();
         addButton(new WidgetTank(guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
-        addAnimatedStat("gui.tab.liquidCompressor.fuel", new ItemStack(Items.LAVA_BUCKET), 0xFFFF6600, true).setTextWithoutCuttingString(getAllFuels());
+        WidgetAnimatedStat stat = addAnimatedStat("gui.tab.liquidCompressor.fuel", new ItemStack(Items.LAVA_BUCKET), 0xFFFF6600, true);
+        stat.setTextWithoutCuttingString(getAllFuels());
     }
 
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
         if (te.isProducing) {
-            float prod = Math.round(te.getBaseProduction() * te.getEfficiency() * te.getSpeedMultiplierFromUpgrades() / 100);
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.producingAir", PneumaticCraftUtils.roundNumberTo(prod, 1)));
+            float prod = te.getBaseProduction() * te.getBurnMultiplier() *  te.getEfficiency() * te.getSpeedMultiplierFromUpgrades() / 100;
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.producingAir", PneumaticCraftUtils.roundNumberTo(prod, 2)));
         }
     }
 
@@ -65,31 +68,27 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     }
 
     private List<String> getAllFuels() {
-        List<String> fuels = new ArrayList<>();
-        fuels.add(TextFormatting.UNDERLINE + "mL/mB | Fluid");
+        List<String> text = new ArrayList<>();
+        text.add(TextFormatting.UNDERLINE + "mL/mB | Fluid (x burn rate)");
 
-        for (Map.Entry<ResourceLocation, Integer> map : sortByValue(PneumaticCraftAPIHandler.getInstance().liquidFuels).entrySet()) {
-            String value = String.format("%4d", map.getValue() / 1000);
-            int nSpc = (32 - font.getStringWidth(value)) / font.getStringWidth(".");
+        IFuelRegistry api = PneumaticRegistry.getInstance().getFuelRegistry();
+        List<Fluid> fluids = new ArrayList<>(api.registeredFuels());
+        fluids.sort((o1, o2) -> Integer.compare(api.getFuelValue(o2), api.getFuelValue(o1)));
+        int w = font.getStringWidth(".");
+        for (Fluid fluid : fluids) {
+            String value = String.format("%4d", api.getFuelValue(fluid) / 1000);
+            int nSpc = (32 - font.getStringWidth(value)) / w;
             value = value + StringUtils.repeat('.', nSpc);
-            Fluid fluid = ForgeRegistries.FLUIDS.getValue(map.getKey());
             FluidStack stack = new FluidStack(fluid, 1);
-            fuels.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getFormattedText(), 25));
-
+            float mul = api.getBurnRateMultiplier(fluid);
+            if (mul == 1) {
+                text.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getFormattedText(), 25));
+            } else {
+                text.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getFormattedText(), 20) + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
+            }
         }
 
-        return fuels;
-    }
-
-    private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-        List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
-        list.sort((o1, o2) -> -o1.getValue().compareTo(o2.getValue()));
-
-        Map<K, V> result = new LinkedHashMap<>();
-        for (Map.Entry<K, V> entry : list) {
-            result.put(entry.getKey(), entry.getValue());
-        }
-        return result;
+        return text;
     }
 
     @Override

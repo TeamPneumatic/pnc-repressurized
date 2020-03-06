@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.event;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.EntityTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
-import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
@@ -77,7 +77,7 @@ public class EventHandlerPneumaticCraft {
         FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
             ResourceLocation name = fluidStack.getFluid().getRegistryName();
             if (Names.MOD_ID.equals(name.getNamespace())) {
-                int value = PneumaticCraftAPIHandler.getInstance().liquidFuels.getOrDefault(name, -1);
+                int value = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(fluidStack.getFluid());
                 event.setBurnTime(value > 0 ? (int)(value * PNCConfig.Common.General.fuelBucketEfficiency) : -1);
             }
         });

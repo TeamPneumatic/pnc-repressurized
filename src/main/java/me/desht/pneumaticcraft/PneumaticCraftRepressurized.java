@@ -20,7 +20,6 @@ import me.desht.pneumaticcraft.common.config.aux.AuxConfigHandler;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.dispenser.BehaviorDispenseDrone;
 import me.desht.pneumaticcraft.common.event.*;
-import me.desht.pneumaticcraft.common.fluid.FluidFuelManager;
 import me.desht.pneumaticcraft.common.fluid.FluidSetup;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
@@ -144,7 +143,7 @@ public class PneumaticCraftRepressurized {
         ModWorldGen.init();
         POIFixup.fixup();
         VillageStructures.init();
-
+        ModNameCache.init();
         ThirdPartyManager.instance().init();
 
         // TODO 1.14 loot
@@ -158,8 +157,6 @@ public class PneumaticCraftRepressurized {
             DispenserBlock.registerDispenseBehavior(ModItems.LOGISTICS_DRONE.get(), new BehaviorDispenseDrone());
             DispenserBlock.registerDispenseBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());
 
-            ModNameCache.init();
-            FluidFuelManager.registerFuels();
             ThirdPartyManager.instance().postInit();
 
             for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {

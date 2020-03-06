@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.enderio;
 
+import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
@@ -19,7 +20,9 @@ public class EnderIO implements IThirdParty {
     }
 
     private void registerFuel(Fluid fluid) {
-        registerFuel(fluid, 60, PneumaticCraftAPIHandler.getInstance().liquidFuels.get(fluid.getRegistryName()) / 60);
+        IFuelRegistry api = PneumaticCraftAPIHandler.getInstance().getFuelRegistry();
+        float burnTime = api.getBurnRateMultiplier(fluid) * 60;
+        registerFuel(fluid, (int)burnTime, api.getFuelValue(fluid) / (int)burnTime);
     }
 
     private void registerFuel(Fluid fluid, int powerPerCycle, int burnTime) {

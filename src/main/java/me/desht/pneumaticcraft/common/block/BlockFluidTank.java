@@ -199,7 +199,7 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
     }
 
     public enum Size {
-        SMALL(32000, 0xFF808080, TileEntityFluidTank.Small.class),
+        SMALL(32000, 0xFF909090, TileEntityFluidTank.Small.class),
         MEDIUM(64000, 0xFFFFFF40, TileEntityFluidTank.Medium.class),
         LARGE(128000, 0xFF91E8E4, TileEntityFluidTank.Large.class);
 

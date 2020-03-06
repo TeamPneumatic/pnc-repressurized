@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
+import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
@@ -63,16 +64,7 @@ public final class PneumaticRegistry {
 
         IItemRegistry getItemRegistry();
 
-        /**
-         * Adds a burnable liquid to the Liquid Compressor's available burnable fuels.  This also allows a bucket
-         * of that liquid to be used in furnaces, the burn time being half the mLPerBucket value.  Note that this
-         * can also be manipulated via CraftTweaker.
-         *
-         * @param fluid the fluid to register
-         * @param mLPerBucket the amount of mL generated for 1000mB of the fuel. As comparison, one piece of coal
-         *                    generates 16000mL in an Air Compressor.
-         */
-        void registerFuel(Fluid fluid, int mLPerBucket);
+        IFuelRegistry getFuelRegistry();
 
         /**
          * Returns the number of Security Stations that disallow interaction with the given coordinate for the given
