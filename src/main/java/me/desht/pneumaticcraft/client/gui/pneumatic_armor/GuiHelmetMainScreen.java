@@ -8,9 +8,10 @@ import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.widget.GuiKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.Itemss;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -54,6 +55,10 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
             int width = scaledresolution.getScaledWidth();
             int height = scaledresolution.getScaledHeight();
             instance.setWorldAndResolution(minecraft, width, height);  // causes initGui() to be called
+            if (instance.upgradeOptions.isEmpty()) {
+                Log.warning("Empty armor upgradeOptions list - did some other mod cancel GuiScreenEvent.InitGuiEvent.Pre? Forcing manual init.");
+                instance.initGui();
+            }
 
             for (int i = 1; i < instance.upgradeOptions.size(); i++) {
                 pageNumber = i;
