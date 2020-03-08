@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.resources.IResourceManager;
+import net.minecraft.resources.IResourceManagerReloadListener;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,12 +27,9 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.resource.IResourceType;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -59,11 +57,13 @@ public class MachineRecipeHandler {
         public ResourceLocation getId() { return RL(name); }
     }
 
-    public static class ReloadListener implements ISelectiveResourceReloadListener {
+    // can't use the Forge selective listener because it references client-only class ReloadRequirements
+    @SuppressWarnings("deprecation")
+    public static class ReloadListener implements IResourceManagerReloadListener {
         private List<Map<ResourceLocation, JsonObject>> allRecipes = new ArrayList<>();
 
         @Override
-        public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
+        public void onResourceManagerReload(IResourceManager resourceManager) {
             allRecipes.clear();
             for (Category cat : Category.values()) {
                 allRecipes.add(loadJSON(resourceManager, cat));

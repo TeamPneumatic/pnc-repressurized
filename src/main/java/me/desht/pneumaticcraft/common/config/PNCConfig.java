@@ -14,7 +14,6 @@ public class PNCConfig {
         public static WidgetDifficulty programmerDifficulty;
         public static boolean topShowsFluids;
         public static boolean logisticsGuiTint;
-        public static boolean dronesRenderHeldItem;
         public static boolean semiBlockLighting;
         public static boolean guiBevel;
         public static boolean alwaysShowPressureDurabilityBar;
@@ -42,6 +41,7 @@ public class PNCConfig {
             public static Set<ResourceLocation> oilWorldGenBlacklist;
             public static int minFluidFuelTemperature;
             public static boolean useUpDyesWhenColoring;
+            public static boolean dronesRenderHeldItem;
         }
 
         public static class Machines {

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.client;
 
+import me.desht.pneumaticcraft.client.gui.widget.ITickableWidget;
 import net.minecraft.client.renderer.Rectangle2d;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * class via the various {@link IClientRegistry} getAnimatedStat() methods. Implementing your own version of animated
  * stats is also possible, and they will interact with the PneumaticCraft GuiAnimatedStats if you implement it correctly.
  */
-public interface IGuiAnimatedStat {
+public interface IGuiAnimatedStat extends ITickableWidget {
     /**
      * When you call this method with a set of coordinates representing the button location and dimensions, you'll get
      * these parameters back scaled to the GuiAnimatedStat's scale.
@@ -204,11 +205,6 @@ public interface IGuiAnimatedStat {
      * @return a bounding box
      */
     Rectangle2d getBounds();
-
-    /**
-     * This method should be called every game tick to update the logic of the stat (expanding of the stat).
-     */
-    void tick();
 
     /**
      * Should be called every render tick when and where you want to render the stat.

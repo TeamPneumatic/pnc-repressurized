@@ -117,7 +117,7 @@ public class HUDHandler implements IKeyListener {
                 if (armorEquipped) {
                     ensureArmorInit(player, comHudHandler);
                     updateLauncherTracker();
-                    messageList.forEach(message -> message.getStat().tick());
+                    messageList.forEach(message -> message.getStat().tickWidget());
                     messageList.removeIf(message -> message == null || --message.lifeSpan <= 0);
                 } else {
                     messageList.clear();
@@ -277,7 +277,7 @@ public class HUDHandler implements IKeyListener {
                         } else {
                             stat.closeWindow();
                         }
-                        stat.tick();
+                        stat.tickWidget();
                     }
                     upgradeRenderHandler.update(player, comHudHandler.getUpgradeCount(slot, EnumUpgrade.RANGE));
                 }

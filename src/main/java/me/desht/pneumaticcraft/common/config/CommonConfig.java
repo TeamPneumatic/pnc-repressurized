@@ -16,6 +16,7 @@ public class CommonConfig {
         ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenBlacklist;
         ForgeConfigSpec.IntValue minFluidFuelTemperature;
         ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
+        ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
     }
     public class Machines {
         ForgeConfigSpec.BooleanValue aerialInterfaceArmorCompat;
@@ -160,6 +161,10 @@ public class CommonConfig {
                 .comment("Should dyes be used up when coloring things (Drones, Logistics Modules, Redstone Modules)?")
                 .translation("pneumaticcraft.config.common.general.use_up_dyes_when_coloring")
                 .define("use_up_dyes_when_coloring", false);
+        general.dronesRenderHeldItem = builder
+                .comment("Drones render their held item (the item in slot 0 of their inventory) ?")
+                .translation("pneumaticcraft.config.client.general.drones_render_held_item")
+                .define("drones_render_held_item", true);
         builder.pop();
 
         builder.push("Machine Properties");

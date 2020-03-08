@@ -18,20 +18,18 @@ import net.minecraft.command.arguments.BlockStateParser;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.resources.IResourceManager;
+import net.minecraft.resources.IResourceManagerReloadListener;
 import net.minecraft.state.IProperty;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.resource.IResourceType;
-import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Predicate;
 
 public enum BlockHeatProperties {
     INSTANCE;
@@ -107,9 +105,11 @@ public enum BlockHeatProperties {
         );
     }
 
-    public static class ReloadListener implements ISelectiveResourceReloadListener {
+    // can't use the Forge selective listener because it references client-only class ReloadRequirements
+    @SuppressWarnings("deprecation")
+    public static class ReloadListener implements IResourceManagerReloadListener {
         @Override
-        public void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
+        public void onResourceManagerReload(IResourceManager resourceManager) {
             Map<ResourceLocation, JsonObject> map = DatapackHelper.loadJSONFiles(resourceManager, BLOCK_HEAT_PROPERTIES, "block heat properties");
 
             BlockHeatProperties.getInstance().clear();

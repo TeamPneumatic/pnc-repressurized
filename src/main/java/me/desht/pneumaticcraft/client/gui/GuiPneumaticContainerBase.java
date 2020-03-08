@@ -356,7 +356,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             sendDelay = -1;
         }
 
-        buttons.stream().filter(w -> w instanceof ITickable).forEach(w -> ((ITickable) w).tick());
+        buttons.stream().filter(w -> w instanceof ITickableWidget).forEach(w -> ((ITickableWidget) w).tickWidget());
 
         if (pressureStat != null) {
             List<String> pressureText = new ArrayList<>();

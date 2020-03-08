@@ -274,7 +274,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
                 if (module == null) return false;
                 if (simulate) module.markFake();
                 tePT.setModule(module, side);
-                if (!simulate) {
+                if (!simulate && !world.isRemote) {
                     neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side), false);
                     world.notifyNeighborsOfStateChange(pos, this);
                     if (!player.isCreative()) heldStack.shrink(1);

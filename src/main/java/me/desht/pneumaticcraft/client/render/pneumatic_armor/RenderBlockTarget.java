@@ -93,7 +93,7 @@ public class RenderBlockTarget {
             te = null;
         }
 
-        stat.tick();
+        stat.tickWidget();
 
         List<IBlockTrackEntry> applicableTrackEntries = getApplicableEntries();
         nEntries = applicableTrackEntries.size();

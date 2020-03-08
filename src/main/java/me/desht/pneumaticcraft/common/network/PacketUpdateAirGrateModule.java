@@ -5,6 +5,10 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 
+/**
+ * Received on: SERVER
+ * Update the entity filter of an air grate module
+ */
 public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule {
     private String entityFilter;
 
@@ -18,7 +22,7 @@ public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule {
 
     public PacketUpdateAirGrateModule(PacketBuffer buffer) {
         super(buffer);
-        entityFilter = buffer.readString();
+        entityFilter = buffer.readString(32767);
     }
 
     @Override

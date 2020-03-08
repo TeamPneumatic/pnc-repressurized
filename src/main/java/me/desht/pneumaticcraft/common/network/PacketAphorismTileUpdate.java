@@ -14,6 +14,7 @@ import java.util.function.Supplier;
  */
 public class PacketAphorismTileUpdate extends LocationIntPacket {
 
+    private static final int MAX_LENGTH = 1024;
     private String[] text;
     private int textRotation;
 
@@ -26,7 +27,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
         int lines = buffer.readVarInt();
         text = new String[lines];
         for (int i = 0; i < lines; i++) {
-            text[i] = buffer.readString();
+            text[i] = buffer.readString(MAX_LENGTH);
         }
     }
 
@@ -41,7 +42,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
         super.toBytes(buffer);
         buffer.writeByte(textRotation);
         buffer.writeVarInt(text.length);
-        Arrays.stream(text).forEach(buffer::writeString);
+        Arrays.stream(text).forEach(s -> buffer.writeString(s, MAX_LENGTH));
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

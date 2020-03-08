@@ -28,7 +28,7 @@ public class PacketGuiButton {
     }
 
     public PacketGuiButton(PacketBuffer buffer) {
-        tag = buffer.readString();
+        tag = buffer.readString(1024);
         shiftHeld = buffer.readBoolean();
     }
 

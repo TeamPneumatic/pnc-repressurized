@@ -33,7 +33,7 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
 
     public PacketChangeGPSToolCoordinate(PacketBuffer buf) {
         super(buf);
-        variable = buf.readString();
+        variable = buf.readString(32767);
         index = buf.readByte();
         hand = buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
     }

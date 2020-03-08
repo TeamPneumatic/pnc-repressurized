@@ -24,7 +24,6 @@ public class ConfigHelper {
         PNCConfig.Client.programmerDifficulty = client.general.programmerDifficulty.get();
         PNCConfig.Client.topShowsFluids = client.general.topShowsFluids.get();
         PNCConfig.Client.logisticsGuiTint = client.general.logisticsGuiTint.get();
-        PNCConfig.Client.dronesRenderHeldItem = client.general.dronesRenderHeldItem.get();
         PNCConfig.Client.semiBlockLighting = client.general.semiBlockLighting.get();
         PNCConfig.Client.guiBevel = client.general.guiBevel.get();
         PNCConfig.Client.alwaysShowPressureDurabilityBar = client.general.alwaysShowPressureDurabilityBar.get();
@@ -55,6 +54,7 @@ public class ConfigHelper {
         PNCConfig.Common.General.oilWorldGenBlacklist = common.general.oilWorldGenBlacklist.get()
                 .stream().map(ResourceLocation::new).collect(Collectors.toSet());
         PNCConfig.Common.General.useUpDyesWhenColoring = common.general.useUpDyesWhenColoring.get();
+        PNCConfig.Common.General.dronesRenderHeldItem = common.general.dronesRenderHeldItem.get();
 
         PNCConfig.Common.Machines.aerialInterfaceArmorCompat = common.machines.aerialInterfaceArmorCompat.get();
         PNCConfig.Common.Machines.cropSticksGrowthBoostChance = common.machines.cropSticksGrowthBoostChance.get();

@@ -491,7 +491,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public ItemStack getDroneHeldItem() {
-        return PNCConfig.Client.dronesRenderHeldItem ? dataManager.get(HELD_ITEM) : ItemStack.EMPTY;
+        return PNCConfig.Common.General.dronesRenderHeldItem ? dataManager.get(HELD_ITEM) : ItemStack.EMPTY;
     }
 
     @Override
@@ -1353,7 +1353,7 @@ public class EntityDrone extends EntityDroneBase implements
         public void copyItemToFakePlayer(int slot) {
             super.copyItemToFakePlayer(slot);
 
-            if (isFakePlayerReady() && slot == getFakePlayer().inventory.currentItem && PNCConfig.Client.dronesRenderHeldItem) {
+            if (isFakePlayerReady() && slot == getFakePlayer().inventory.currentItem && PNCConfig.Common.General.dronesRenderHeldItem) {
                 dataManager.set(HELD_ITEM, getStackInSlot(slot));
             }
         }

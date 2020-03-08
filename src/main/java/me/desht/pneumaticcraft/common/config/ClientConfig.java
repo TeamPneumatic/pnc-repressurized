@@ -9,7 +9,6 @@ public class ClientConfig {
         ForgeConfigSpec.EnumValue<WidgetDifficulty> programmerDifficulty;
         ForgeConfigSpec.BooleanValue topShowsFluids;
         ForgeConfigSpec.BooleanValue logisticsGuiTint;
-        ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
         ForgeConfigSpec.BooleanValue semiBlockLighting;
         ForgeConfigSpec.BooleanValue guiBevel;
         ForgeConfigSpec.BooleanValue alwaysShowPressureDurabilityBar;
@@ -48,10 +47,6 @@ public class ClientConfig {
                 .comment("Tint Logistics configuration GUI backgrounds according to the colour of the logistics frame you are configuring.")
                 .translation("pneumaticcraft.config.client.general.logistics_gui_tint")
                 .define("logistics_gui_tint", true);
-        general.dronesRenderHeldItem = builder
-                .comment("Drones render their held item (the item in slot 0 of their inventory) ?")
-                .translation("pneumaticcraft.config.client.general.drones_render_held_item")
-                .define("drones_render_held_item", true);
         general.semiBlockLighting = builder
                 .comment("Use block lighting for semiblocks (logistics frames, heat frames...). May cause occasional lighting issues - semiblocks appearing unlit - disable this if that's a problem.")
                 .translation("pneumaticcraft.config.client.general.semi_block_lighting")

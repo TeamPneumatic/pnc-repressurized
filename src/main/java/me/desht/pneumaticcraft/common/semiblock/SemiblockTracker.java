@@ -86,8 +86,8 @@ public enum SemiblockTracker {
      * @return a stream of all the semiblocks at the given position
      */
     public Stream<ISemiBlock> getAllSemiblocks(World world, BlockPos pos, Direction offsetDir) {
-        Map<BlockPos, SemiblockCollection> map = semiblockMap.get(getKey(world));
-        if (map == null) return Stream.empty();
+        Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
+        if (map.isEmpty()) return Stream.empty();
         SemiblockCollection sc = map.get(pos);
         if (sc == null && offsetDir != null) sc = map.get(pos.offset(offsetDir));
         return sc == null ? Stream.empty() : sc.getAll();
@@ -100,11 +100,9 @@ public enum SemiblockTracker {
      * @param direction the side of the block, or null for the block itself
      */
     public void clearSemiblock(World world, BlockPos pos, Direction direction) {
-        Map<BlockPos, SemiblockCollection> map = semiblockMap.get(getKey(world));
-        if (map != null) {
-            SemiblockCollection sc = map.get(pos);
-            if (sc != null) sc.clear(direction);
-        }
+        Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
+        SemiblockCollection sc = map.get(pos);
+        if (sc != null) sc.clear(direction);
     }
 
     /**
@@ -134,7 +132,7 @@ public enum SemiblockTracker {
      * @return a stream of semiblock in the area
      */
     public Stream<ISemiBlock> getSemiblocksInArea(World world, AxisAlignedBB aabb) {
-        Map<BlockPos, SemiblockCollection> map = semiblockMap.get(getKey(world));
+        Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
 
         return map.entrySet().stream()
                 .filter(e -> aabb.contains(e.getKey().getX(), e.getKey().getY(), e.getKey().getZ()))

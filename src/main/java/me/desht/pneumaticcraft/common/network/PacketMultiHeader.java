@@ -34,7 +34,7 @@ public class PacketMultiHeader {
 
     PacketMultiHeader(PacketBuffer buffer) {
         length = buffer.readInt();
-        className = buffer.readString();
+        className = buffer.readString(32767);
     }
 
     public void toBytes(PacketBuffer buf) {

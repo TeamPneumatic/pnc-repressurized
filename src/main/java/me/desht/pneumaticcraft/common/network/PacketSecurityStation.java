@@ -6,9 +6,12 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * Received on: SERVER
+ */
 public abstract class PacketSecurityStation extends LocationIntPacket {
 
-    protected String username;
+    private String username;
 
     public PacketSecurityStation() {
     }
@@ -20,7 +23,7 @@ public abstract class PacketSecurityStation extends LocationIntPacket {
 
     public PacketSecurityStation(PacketBuffer buffer) {
         super(buffer);
-        username = buffer.readString();
+        username = buffer.readString(1024);
     }
 
     public void toBytes(PacketBuffer buffer) {

@@ -118,8 +118,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     // client side, chunk sending
     @Override
     public void handleUpdateTag(CompoundNBT tag) {
-//        super.handleUpdateTag(tag);
-
         new PacketDescription(tag).process();
     }
 

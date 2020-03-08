@@ -47,12 +47,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.*;
@@ -127,34 +129,40 @@ public class CommonArmorHandler {
         return getHandlerForPlayer(ClientUtils.getClientPlayer());
     }
 
-    @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            getHandlerForPlayer(event.player).tick();
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+    public static class Listeners {
+        @SubscribeEvent
+        public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+            if (event.phase == TickEvent.Phase.END) {
+                getHandlerForPlayer(event.player).tick();
+            }
+        }
+
+        @SubscribeEvent
+        public static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
+            // called server side when player logs off
+            clearHUDHandlerForPlayer(event.getPlayer());
+        }
+
+        @SubscribeEvent
+        public static void onPlayerJoinWorld(EntityJoinWorldEvent event) {
+            if (event.getEntity() instanceof PlayerEntity) {
+                PlayerEntity player = (PlayerEntity) event.getEntity();
+                CommonArmorHandler handler = getManagerInstance(player).playerHudHandlers.get(player.getUniqueID());
+                if (handler != null) handler.player = player;
+            }
         }
     }
 
-    @SubscribeEvent
-    public static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
-        // called server side when player logs off
-        clearHUDHandlerForPlayer(event.getPlayer());
-    }
-
-    @SubscribeEvent
-    public static void onPlayerJoinWorld(EntityJoinWorldEvent event) {
-        if (event.getEntity() instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) event.getEntity();
-            CommonArmorHandler handler = getManagerInstance(player).playerHudHandlers.get(player.getUniqueID());
-            if (handler != null) handler.player = player;
-        }
-    }
-
-    @SubscribeEvent
-    public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
-        // called client side when client disconnects
-        PlayerEntity player = ClientUtils.getClientPlayer();
-        if (player != null) {
-            clearHUDHandlerForPlayer(player);
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+    public static class ClientListeners {
+        @SubscribeEvent
+        public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+            // called client side when client disconnects
+            PlayerEntity player = ClientUtils.getClientPlayer();
+            if (player != null) {
+                clearHUDHandlerForPlayer(player);
+            }
         }
     }
 

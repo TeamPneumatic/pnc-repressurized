@@ -28,7 +28,7 @@ public class PacketUpdateTextfield extends LocationIntPacket {
     public PacketUpdateTextfield(PacketBuffer buffer) {
         super(buffer);
         textFieldID = buffer.readInt();
-        text = buffer.readString();
+        text = buffer.readString(32767);
     }
 
     @Override

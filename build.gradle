@@ -91,7 +91,7 @@ allprojects {
 
 jar {
     manifest {
-        attributes 'FMLAT': 'pneumaticcraft_at.cfg'
+        attributes 'FMLAT': 'accesstransformer.cfg'
     }
 }
 
@@ -136,7 +136,7 @@ sourceSets.main.resources {
 
 minecraft {
     mappings channel: 'snapshot', version: '20191125-1.14.3'
-    accessTransformer = file('src/main/resources/META-INF/pneumaticcraft_at.cfg')
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
     //accessTransformer = file('my_at.cfg')
     runs {
         client = {

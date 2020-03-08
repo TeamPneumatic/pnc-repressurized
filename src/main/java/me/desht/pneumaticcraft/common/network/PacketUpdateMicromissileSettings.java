@@ -52,7 +52,7 @@ public class PacketUpdateMicromissileSettings {
         accel = buffer.readFloat();
         damage = buffer.readFloat();
         point = new PointXY(buffer.readInt(), buffer.readInt());
-        entityFilter = buffer.readString();
+        entityFilter = buffer.readString(32767);
         fireMode = FireMode.values()[buffer.readByte()];
         saveDefault = buffer.readBoolean();
         hand = buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;

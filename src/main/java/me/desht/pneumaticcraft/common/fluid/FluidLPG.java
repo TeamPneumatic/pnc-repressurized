@@ -11,7 +11,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public abstract class FluidLPG {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            RL("block/fluid/lpg_still"), RL("block/fluid/lpg_flow")
+            RL("block/fluid/generic_fuel_still"), RL("block/fluid/generic_fuel_flow")
     ).viscosity(250).color(0xFFECD71C);
 
     private static final ForgeFlowingFluid.Properties PROPS =

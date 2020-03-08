@@ -33,7 +33,7 @@ public class PacketSetGlobalVariable extends LocationIntPacket {
 
     public PacketSetGlobalVariable(PacketBuffer buf) {
         super(buf);
-        this.varName = buf.readString();
+        this.varName = buf.readString(32767);
     }
 
     public void toBytes(PacketBuffer buf) {

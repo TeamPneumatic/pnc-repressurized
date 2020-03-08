@@ -67,7 +67,7 @@ public class RenderEntityTarget {
     }
 
     public void update() {
-        stat.tick();
+        stat.tickWidget();
         stat.setTitle(entity.getDisplayName().getFormattedText());
         PlayerEntity player = Minecraft.getInstance().player;
 

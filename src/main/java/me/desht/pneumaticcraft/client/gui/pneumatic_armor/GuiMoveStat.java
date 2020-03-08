@@ -171,8 +171,8 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         gridSize = gridSlider.getValueInt();
         gridSlider.visible = snap;
 
-        movedStat.tick();
-        otherStats.forEach(IGuiAnimatedStat::tick);
+        movedStat.tickWidget();
+        otherStats.forEach(IGuiAnimatedStat::tickWidget);
 
         if (helpText.isEmpty()) {
             helpText.add(TextFormatting.GREEN + "" + TextFormatting.UNDERLINE + "Moving: "

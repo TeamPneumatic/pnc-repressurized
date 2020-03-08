@@ -22,7 +22,6 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
@@ -41,7 +40,7 @@ import java.util.stream.IntStream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, ITooltipProvider, ITickable {
+public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, ITooltipProvider {
     private static final int ANIMATED_STAT_SPEED = 30;
     private static final int MIN_WIDTH_HEIGHT = 17;
     private static final int MAX_LINES = 12;
@@ -293,7 +292,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void tick() {
+    public void tickWidget() {
         oldBaseX = x;
         oldAffectedY = affectedY;
         oldWidth = width;

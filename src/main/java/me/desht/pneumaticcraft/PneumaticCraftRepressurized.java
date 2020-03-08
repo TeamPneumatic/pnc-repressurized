@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.MachineRecipeHandler;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
@@ -119,7 +118,6 @@ public class PneumaticCraftRepressurized {
         MinecraftForge.EVENT_BUS.register(new EventHandlerUniversalSensor());
         MinecraftForge.EVENT_BUS.register(new DroneSpecialVariableHandler());
         MinecraftForge.EVENT_BUS.register(ItemGPSAreaTool.EventHandler.class);
-        MinecraftForge.EVENT_BUS.register(CommonArmorHandler.class);
         MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
     }
 
