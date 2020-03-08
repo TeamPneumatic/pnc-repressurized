@@ -102,6 +102,11 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return areaSetCache;
     }
 
+    protected void invalidateAreaCache() {
+        areaListCache = null;
+        areaSetCache = null;
+    }
+
     private void initializeVariableCache() {
         areaVariableStates = new HashMap<>();
         ProgWidgetArea whitelistWidget = (ProgWidgetArea) getConnectedParameters()[0];

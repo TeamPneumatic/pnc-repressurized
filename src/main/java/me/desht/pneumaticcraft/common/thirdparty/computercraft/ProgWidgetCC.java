@@ -101,22 +101,27 @@ public class ProgWidgetCC extends ProgWidgetAreaItemBase implements IBlockOrdere
 
     public synchronized void addArea(int x, int y, int z) {
         area.add(new BlockPos(x, y, z));
+        invalidateAreaCache();
     }
 
     public synchronized void addArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws IllegalArgumentException {
         area.addAll(getArea(x1, y1, z1, x2, y2, z2, areaType));
+        invalidateAreaCache();
     }
 
     public synchronized void removeArea(int x, int y, int z) {
         area.remove(new BlockPos(x, y, z));
+        invalidateAreaCache();
     }
 
     public synchronized void removeArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws IllegalArgumentException {
         area.removeAll(getArea(x1, y1, z1, x2, y2, z2, areaType));
+        invalidateAreaCache();
     }
 
     public synchronized void clearArea() {
         area.clear();
+        invalidateAreaCache();
     }
 
     @Override
