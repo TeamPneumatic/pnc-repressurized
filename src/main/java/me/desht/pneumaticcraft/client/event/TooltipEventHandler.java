@@ -72,12 +72,12 @@ public class TooltipEventHandler {
 
         if (stack.getItem() instanceof IInventoryItem) {
             List<ItemStack> stacks = new ArrayList<>();
-            ((IInventoryItem) stack.getItem()).getStacksInItem(stack, stacks);
-            ITextComponent header = ((IInventoryItem) stack.getItem()).getInventoryHeader();
-            if (header != null && !stacks.isEmpty()) {
-                curInfo.add(header);
+            IInventoryItem item = (IInventoryItem) stack.getItem();
+            item.getStacksInItem(stack, stacks);
+            if (item.getInventoryHeader() != null && !stacks.isEmpty()) {
+                curInfo.add(item.getInventoryHeader());
             }
-            PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks.toArray(new ItemStack[0]));
+            PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks.toArray(new ItemStack[0]), item.getTooltipPrefix(stack));
         }
 
         String key = ICustomTooltipName.getTranslationKey(stack);

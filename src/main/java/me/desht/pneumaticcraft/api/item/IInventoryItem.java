@@ -11,7 +11,6 @@ import java.util.List;
  * This will then will be used in the Pneumatic Helmet's item search.
  */
 public interface IInventoryItem {
-
     /**
      * @param stack Item that potentially has an inventory.
      * @param curStacks List of all currently added stacks for this item. Add more stacks in here in your implementation when found the right item.
@@ -23,4 +22,12 @@ public interface IInventoryItem {
      * @return a header string (can be a translation string), or null for no header
      */
     default ITextComponent getInventoryHeader() { return null; }
+
+    /**
+     * A String to prepend to outputted tooltip lines. Can be used to apply colouring, for example.
+     *
+     * @param stack the itemstack currently being added to the tooltip
+     * @return a string prefix
+     */
+    default String getTooltipPrefix(ItemStack stack) { return ""; }
 }

@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IGI",
+    "WCW",
+    "IOI"
+  ],
+  "key": {
+    "G": {
+      "tag": "forge:nuggets/gold"
+    },
+    "I": {
+      "tag": "forge:ingots/compressed_iron"
+    },
+    "W": {
+      "item": "pneumaticcraft:reinforced_brick_wall"
+    },
+    "O": {
+      "tag": "forge:obsidian"
+    },
+    "C": {
+      "tag": "forge:chests"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:reinforced_chest"
+  }
+}

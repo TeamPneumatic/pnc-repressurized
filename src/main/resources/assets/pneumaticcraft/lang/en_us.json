@@ -89,6 +89,7 @@
   "block.pneumaticcraft.small_tank": "Small Fluid Tank",
   "block.pneumaticcraft.medium_tank": "Medium Fluid Tank",
   "block.pneumaticcraft.large_tank": "Large Fluid Tank",
+  "block.pneumaticcraft.reinforced_chest": "Reinforced Chest",
 
   "_comment": "Items",
   "item.pneumaticcraft.pressure_tube": "Pressure Tube",
@@ -425,6 +426,7 @@
   "gui.tab.info.electrostatic.strikeTime": "Average strike time: %s",
   "gui.tab.info.electrostatic.strikeTime.optimal": "  (with optimally sized grid)",
 
+  "gui.tooltip.block.pneumaticcraft.reinforced_chest": "Blastproof chest which preserves its contents when broken.",
   "gui.tooltip.block.pneumaticcraft.small_tank": "General fluid storage. Can be connected with tanks above and below with a wrench (if either tank is empty, or both tanks contain the same fluid).",
   "gui.tooltip.block.pneumaticcraft.medium_tank": "General fluid storage. Can be connected with tanks above and below with a wrench (if either tank is empty, or both tanks contain the same fluid).",
   "gui.tooltip.block.pneumaticcraft.large_tank": "General fluid storage. Can be connected with tanks above and below with a wrench (if either tank is empty, or both tanks contain the same fluid).",

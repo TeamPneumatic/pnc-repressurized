@@ -118,6 +118,8 @@ public class ModTileEntities {
             = register("medium_tank", () -> new TileEntityType<>(TileEntityFluidTank.Medium::new, ImmutableSet.of(ModBlocks.TANK_MEDIUM.get()), null));
     public static final RegistryObject<TileEntityType<TileEntityFluidTank.Large>> TANK_LARGE
             = register("large_tank", () -> new TileEntityType<>(TileEntityFluidTank.Large::new, ImmutableSet.of(ModBlocks.TANK_LARGE.get()), null));
+    public static final RegistryObject<TileEntityType<TileEntityReinforcedChest>> REINFORCED_CHEST
+            = register("reinforced_chest", () -> new TileEntityType<>(TileEntityReinforcedChest::new, ImmutableSet.of(ModBlocks.REINFORCED_CHEST.get()),null));
 
     private static <T extends TileEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return TILE_ENTITIES.register(name, sup);

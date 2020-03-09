@@ -152,6 +152,7 @@ public class Textures {
     public static final ResourceLocation GUI_AMADRON_ADD_TRADE = guiTexture("gui_amadron_add_trade.png");
     public static final ResourceLocation GUI_ETCHING_TANK = guiTexture("gui_etching_tank.png");
     public static final ResourceLocation GUI_FLUID_TANK = guiTexture("gui_fluid_tank.png");
+    public static final ResourceLocation GUI_REINFORCED_CHEST = guiTexture("gui_reinforced_chest.png");
 
     public static final ResourceLocation GUI_JEI_PRESSURE_CHAMBER_LOCATION = guiTexture("jei/gui_jei_pressure_chamber.png");
     public static final ResourceLocation GUI_JEI_ASSEMBLY_CONTROLLER = guiTexture("jei/gui_jei_assembly_controller.png");

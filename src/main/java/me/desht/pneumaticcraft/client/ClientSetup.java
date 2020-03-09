@@ -179,6 +179,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.PROGRAMMER.get(), GuiProgrammer::new);
         ScreenManager.registerFactory(ModContainers.PROGRAMMABLE_CONTROLLER.get(), GuiProgrammableController::new);
         ScreenManager.registerFactory(ModContainers.REFINERY.get(), GuiRefineryController::new);
+        ScreenManager.registerFactory(ModContainers.REINFORCED_CHEST.get(), GuiReinforcedChest::new);
         ScreenManager.registerFactory(ModContainers.REMOTE.get(), GuiRemote::new);
         ScreenManager.registerFactory(ModContainers.REMOTE_EDITOR.get(), GuiRemoteEditor::new);
         ScreenManager.registerFactory(ModContainers.ITEM_SEARCHER.get(), GuiItemSearcher::new);

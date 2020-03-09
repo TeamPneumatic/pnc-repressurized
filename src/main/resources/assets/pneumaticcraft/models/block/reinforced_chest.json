@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "pneumaticcraft:block/generic/plain_base",
+    "up": "pneumaticcraft:block/generic/top_panel",
+    "north": "pneumaticcraft:block/chest/front_panel",
+    "south": "pneumaticcraft:block/chest/back_panel",
+    "west": "pneumaticcraft:block/chest/side_panel",
+    "east": "pneumaticcraft:block/chest/side_panel",
+    "particle": "pneumaticcraft:block/compressed_iron_block"
+  }
+}

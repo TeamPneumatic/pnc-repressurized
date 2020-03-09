@@ -593,6 +593,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer);
 
+        shaped(ModBlocks.REINFORCED_CHEST.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
+                "IGI/WCW/IOI",
+                'G', Tags.Items.NUGGETS_GOLD,
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'W', ModBlocks.REINFORCED_BRICK_WALL.get(),
+                'O', Tags.Blocks.OBSIDIAN,
+                'C', Tags.Items.CHESTS
+        ).build(consumer);
+
         shaped(ModItems.REMOTE.get(), ModItems.TRANSISTOR.get(),
                 " I /TGT/TDT",
                 'I', ModItems.NETWORK_IO_PORT.get(),

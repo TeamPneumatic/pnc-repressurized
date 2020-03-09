@@ -258,7 +258,7 @@ public class PneumaticCraftUtils {
         int i = begin - 1;
 
         for (int j = begin; j < end; j++) {
-            if (arr[j].getDisplayName().toString().compareToIgnoreCase(pivot.getDisplayName().toString()) <= 0) {
+            if (arr[j].getDisplayName().getFormattedText().compareToIgnoreCase(pivot.getDisplayName().getFormattedText()) <= 0) {
                 i++;
 
                 ItemStack swapTemp = arr[i];
@@ -282,7 +282,7 @@ public class PneumaticCraftUtils {
      * @param originalStacks array of item stacks to sort & combine
      */
     public static void sortCombineItemStacksAndToString(List<ITextComponent> textList, ItemStack[] originalStacks) {
-        sortCombineItemStacksAndToString(textList, originalStacks, "\u2022 ");
+        sortCombineItemStacksAndToString(textList, originalStacks, GuiConstants.bullet().getFormattedText());
     }
 
     /**
@@ -307,7 +307,7 @@ public class PneumaticCraftUtils {
                         addText(textList, prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getFormattedText());
                     }
                     if (prevInventoryItems != null) {
-                        sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), "\u21b3 ");
+                        sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
                     }
                     prevItemStack = stack;
                     itemCount = stack.getCount();
@@ -320,7 +320,7 @@ public class PneumaticCraftUtils {
         if (itemCount > 0 && !prevItemStack.isEmpty()) {
             addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getFormattedText());
             if (prevInventoryItems != null) {
-                sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), "\u21b3 ");
+                sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
             }
         }
     }
