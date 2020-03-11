@@ -1,9 +1,15 @@
 package me.desht.pneumaticcraft.api.item;
 
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedChest.NBT_ITEMS;
 
 /**
  * Implement this interface for your items that have an inventory. When you don't have access to the item, just create any old class
@@ -30,4 +36,22 @@ public interface IInventoryItem {
      * @return a string prefix
      */
     default String getTooltipPrefix(ItemStack stack) { return ""; }
+
+    /**
+     * Convenience implementation for {@link IInventoryItem#getStacksInItem(ItemStack, List)} for items have been
+     * dropped from a tile entity block with serialized data.
+     *
+     * @param stack the stack
+     * @param curStacks a list of stacks to fill
+     */
+    static void getStacks(ItemStack stack, List<ItemStack> curStacks) {
+        CompoundNBT sub = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+        if (sub != null && sub.contains(NBT_ITEMS, Constants.NBT.TAG_COMPOUND)) {
+            ItemStackHandler handler = new ItemStackHandler();
+            handler.deserializeNBT(sub.getCompound(NBT_ITEMS));
+            for (int i = 0; i < handler.getSlots(); i++) {
+                if (!handler.getStackInSlot(i).isEmpty()) curStacks.add(handler.getStackInSlot(i));
+            }
+        }
+    }
 }

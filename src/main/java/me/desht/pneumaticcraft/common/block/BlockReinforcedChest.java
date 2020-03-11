@@ -4,20 +4,21 @@ import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedChest;
-import me.desht.pneumaticcraft.lib.NBTKeys;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraft.world.IBlockReader;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedChest.NBT_ITEMS;
-
 public class BlockReinforcedChest extends BlockPneumaticCraft {
+    private static final VoxelShape SHAPE = makeCuboidShape(1, 0, 1, 15, 15, 15);
+
     public BlockReinforcedChest() {
         super(ModBlocks.reinforcedStoneProps());
     }
@@ -37,6 +38,11 @@ public class BlockReinforcedChest extends BlockPneumaticCraft {
         return true;
     }
 
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return SHAPE;
+    }
+
     public static class ItemBlockReinforcedChest extends BlockItem implements IInventoryItem {
         public ItemBlockReinforcedChest(BlockReinforcedChest block) {
             super(block, ModItems.defaultProps());
@@ -44,19 +50,13 @@ public class BlockReinforcedChest extends BlockPneumaticCraft {
 
         @Override
         public void getStacksInItem(ItemStack stack, List<ItemStack> curStacks) {
-            CompoundNBT sub = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
-            if (sub != null && sub.contains(NBT_ITEMS, Constants.NBT.TAG_COMPOUND)) {
-                ItemStackHandler handler = new ItemStackHandler();
-                handler.deserializeNBT(sub.getCompound(NBT_ITEMS));
-                for (int i = 0; i < handler.getSlots(); i++) {
-                    if (!handler.getStackInSlot(i).isEmpty()) curStacks.add(handler.getStackInSlot(i));
-                }
-            }
+            IInventoryItem.getStacks(stack, curStacks);
         }
 
         @Override
         public String getTooltipPrefix(ItemStack stack) {
             return TextFormatting.GREEN.toString();
         }
+
     }
 }

@@ -202,6 +202,9 @@ public abstract class SyncedField<T> {
 
     }
 
+    /**
+     * FIXME: sync'ing an array of enum does not work
+     */
     public static class SyncedEnum extends SyncedField<Byte> {
 
         SyncedEnum(Object te, Field field) {

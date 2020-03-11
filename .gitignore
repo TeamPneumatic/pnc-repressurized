@@ -23,6 +23,7 @@ run
 run-*
 conf
 *.xcf
+*.swp
 *.pl
 
 # datagen caches

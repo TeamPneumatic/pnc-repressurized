@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import net.minecraft.entity.player.PlayerEntity;
 
 /**
- * Implement on a Tile Entity or Semiblock to allow it to receive messages from the client when a GUI button is
+ * Implement on a Container/Tile Entity/EntitySemiblock to allow it to receive messages from the client when a GUI button is
  * clicked.
  */
 public interface IGUIButtonSensitive {

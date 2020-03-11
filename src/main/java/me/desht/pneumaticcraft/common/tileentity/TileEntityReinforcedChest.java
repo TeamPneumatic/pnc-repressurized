@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerReinforcedChest;
-import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -14,16 +14,15 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityReinforcedChest extends TileEntityBase implements INamedContainerProvider {
+public class TileEntityReinforcedChest extends TileEntityBase implements INamedContainerProvider, IComparatorSupport {
     public static final int CHEST_SIZE = 36;
     public static final String NBT_ITEMS = "Items";
 
-    private final ItemStackHandler inventory = new BaseItemStackHandler(this, CHEST_SIZE) {
+    private final ComparatorItemStackHandler inventory = new ComparatorItemStackHandler(this, CHEST_SIZE) {
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             return stack.getItem() != ModBlocks.REINFORCED_CHEST.get().asItem() && super.isItemValid(slot, stack);
@@ -89,5 +88,10 @@ public class TileEntityReinforcedChest extends TileEntityBase implements INamedC
     @Override
     public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
         return new ContainerReinforcedChest(windowId, inv, getPos());
+    }
+
+    @Override
+    public int getComparatorValue() {
+        return inventory.getComparatorValue();
     }
 }

@@ -2,7 +2,7 @@
   "textures": {
     "down": "pneumaticcraft:block/generic/plain_base",
     "up": "pneumaticcraft:block/generic/top_panel",
-    "front": "pneumaticcraft:block/chest/front_panel",
+    "front": "pneumaticcraft:block/chest/front_panel_smart",
     "back": "pneumaticcraft:block/chest/back_panel",
     "side": "pneumaticcraft:block/chest/side_panel",
     "particle": "pneumaticcraft:block/compressed_iron_block"

@@ -186,6 +186,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.SECURITY_STATION_MAIN.get(), GuiSecurityStationInventory::new);
         ScreenManager.registerFactory(ModContainers.SECURITY_STATION_HACKING.get(), GuiSecurityStationHacking::new);
         ScreenManager.registerFactory(ModContainers.SENTRY_TURRET.get(), GuiSentryTurret::new);
+        ScreenManager.registerFactory(ModContainers.SMART_CHEST.get(), GuiSmartChest::new);
         ScreenManager.registerFactory(ModContainers.THERMAL_COMPRESSOR.get(), GuiThermalCompressor::new);
         ScreenManager.registerFactory(ModContainers.THERMOPNEUMATIC_PROCESSING_PLANT.get(), GuiThermopneumaticProcessingPlant::new);
         ScreenManager.registerFactory(ModContainers.UNIVERSAL_SENSOR.get(), GuiUniversalSensor::new);

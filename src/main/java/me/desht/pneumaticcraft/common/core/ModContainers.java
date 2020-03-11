@@ -107,6 +107,8 @@ public class ModContainers {
             = register("fluid_tank", ContainerFluidTank::new);
     public static final RegistryObject<ContainerType<ContainerReinforcedChest>> REINFORCED_CHEST
             = register("reinforced_chest", ContainerReinforcedChest::new);
+    public static final RegistryObject<ContainerType<ContainerSmartChest>> SMART_CHEST
+            = register("smart_chest", ContainerSmartChest::new);
 
     private static <C extends Container, T extends ContainerType<C>> RegistryObject<T> register(String name, IContainerFactory<? extends C> f) {
         //noinspection unchecked

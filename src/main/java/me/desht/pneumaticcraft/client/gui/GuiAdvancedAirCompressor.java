@@ -40,6 +40,6 @@ public class GuiAdvancedAirCompressor extends GuiAirCompressor {
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return Textures.GUI_ADVANCED_AIR_COMPRESSOR_LOCATION;
+        return Textures.GUI_ADVANCED_AIR_COMPRESSOR;
     }
 }

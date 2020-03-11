@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -110,7 +110,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
 
     void updateHandler(String id, NonNullSupplier<T> handler) {
         int idx = idxMap.get(id);
-        ConnectionEntry e = entries.get(idx);
+        ConnectionEntry<T> e = entries.get(idx);
         entries.set(idx, new ConnectionEntry<T>(e.id, e.texture, e.cap, handler));
         setNullFaceHandler(id);
     }
@@ -211,7 +211,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
                 button.setRenderStacks(ItemStack.EMPTY);
                 button.setRenderedIcon(Textures.GUI_X_BUTTON);
             }
-            button.setTooltipText(Lists.newArrayList(TextFormatting.YELLOW + relativeFace.toString(), I18n.format(getFaceKey(relativeFace))));
+            button.setTooltipText(ImmutableList.of(TextFormatting.YELLOW + relativeFace.toString(), I18n.format(getFaceKey(relativeFace))));
         } catch (IllegalArgumentException e) {
             Log.warning("Bad tag '" + button.getTag() + "'");
         }

@@ -1,3 +1,4 @@
 {
-  "parent": "pneumaticcraft:block/reinforced_chest"
+  "parent": "pneumaticcraft:block/reinforced_chest",
+  "transform": "forge:default-block"
 }

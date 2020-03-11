@@ -213,6 +213,11 @@ public class UpgradesDBSetup {
         db.addApplicableUpgrades(ModTileEntities.TANK_LARGE.get(),
                 EnumUpgrade.SPEED, 7,
                 EnumUpgrade.DISPENSER, 1);
+        db.addApplicableUpgrades(ModTileEntities.SMART_CHEST.get(),
+                EnumUpgrade.SPEED, 9,
+                EnumUpgrade.DISPENSER, 1,
+                EnumUpgrade.MAGNET, 1,
+                EnumUpgrade.RANGE, 4);
 
         // universal sensor needs some dynamic calculation...
         List<Object> l = new ArrayList<>();

@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/smart_chest",
+  "transform": "forge:default-block"
+}

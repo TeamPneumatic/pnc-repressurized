@@ -104,8 +104,8 @@ public class Textures {
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_PRESSURE = progWidgetTexture("condition_drone_pressure_piece.png");
 
     // GUI background textures
-    public static final ResourceLocation GUI_AIR_COMPRESSOR_LOCATION = guiTexture("gui_air_compressor.png");
-    public static final ResourceLocation GUI_ADVANCED_AIR_COMPRESSOR_LOCATION = guiTexture("gui_advanced_air_compressor.png");
+    public static final ResourceLocation GUI_AIR_COMPRESSOR = guiTexture("gui_air_compressor.png");
+    public static final ResourceLocation GUI_ADVANCED_AIR_COMPRESSOR = guiTexture("gui_advanced_air_compressor.png");
     public static final ResourceLocation GUI_AIR_CANNON_LOCATION = guiTexture("gui_air_cannon.png");
     public static final ResourceLocation GUI_4UPGRADE_SLOTS = guiTexture("gui_pressure_chamber.png");
     public static final ResourceLocation GUI_CHARGING_STATION_LOCATION = guiTexture("gui_charging_station.png");
@@ -153,6 +153,7 @@ public class Textures {
     public static final ResourceLocation GUI_ETCHING_TANK = guiTexture("gui_etching_tank.png");
     public static final ResourceLocation GUI_FLUID_TANK = guiTexture("gui_fluid_tank.png");
     public static final ResourceLocation GUI_REINFORCED_CHEST = guiTexture("gui_reinforced_chest.png");
+    public static final ResourceLocation GUI_SMART_CHEST = guiTexture("gui_smart_chest.png");
 
     public static final ResourceLocation GUI_JEI_PRESSURE_CHAMBER_LOCATION = guiTexture("jei/gui_jei_pressure_chamber.png");
     public static final ResourceLocation GUI_JEI_ASSEMBLY_CONTROLLER = guiTexture("jei/gui_jei_assembly_controller.png");

@@ -22,7 +22,7 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return Textures.GUI_AIR_COMPRESSOR_LOCATION;
+        return Textures.GUI_AIR_COMPRESSOR;
     }
 
     @Override

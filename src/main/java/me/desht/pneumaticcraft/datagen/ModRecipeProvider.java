@@ -573,6 +573,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.TANK_SMALL.get(),
                 'R', Tags.Items.DUSTS_REDSTONE
         ).build(consumer);
+
         shaped(ModBlocks.REFINERY_OUTPUT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "SSS/GDG/SSS",
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
@@ -610,6 +611,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModItems.TRANSISTOR.get()
         ).build(consumer);
 
+
         shaped(ModItems.SAFETY_TUBE_MODULE.get(), ModItems.PRESSURE_GAUGE.get(),
                 " G /LTL",
                 'G', ModItems.PRESSURE_GAUGE.get(),
@@ -639,6 +641,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 'M', ModItems.MINIGUN.get(),
                 'P', ModItems.PLASTIC.get(),
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
+        ).build(consumer);
+
+        shaped(ModBlocks.SMART_CHEST.get(), ModBlocks.REINFORCED_CHEST.get(),
+                "DPD/CHC",
+                'D', Tags.Items.GEMS_DIAMOND,
+                'H', ModBlocks.OMNIDIRECTIONAL_HOPPER.get(),
+                'C', ModBlocks.REINFORCED_CHEST.get(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).build(consumer);
 
         shaped(ModItems.SPAWNER_AGITATOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),

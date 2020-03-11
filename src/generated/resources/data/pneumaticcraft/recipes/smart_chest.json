@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "C",
+    "P",
+    "C"
+  ],
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:reinforced_chest"
+    },
+    "P": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:smart_chest"
+  }
+}

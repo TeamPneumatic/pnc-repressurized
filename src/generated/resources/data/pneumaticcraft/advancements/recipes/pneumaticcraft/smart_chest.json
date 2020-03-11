@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:smart_chest"
+    ]
+  },
+  "criteria": {
+    "has_reinforced_chest": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:reinforced_chest"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:smart_chest"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_reinforced_chest",
+      "has_the_recipe"
+    ]
+  ]
+}

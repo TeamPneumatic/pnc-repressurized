@@ -90,6 +90,7 @@
   "block.pneumaticcraft.medium_tank": "Medium Fluid Tank",
   "block.pneumaticcraft.large_tank": "Large Fluid Tank",
   "block.pneumaticcraft.reinforced_chest": "Reinforced Chest",
+  "block.pneumaticcraft.smart_chest": "Smart Chest",
 
   "_comment": "Items",
   "item.pneumaticcraft.pressure_tube": "Pressure Tube",
@@ -390,6 +391,8 @@
   "gui.tab.info.heat.title": "Heat",
   "gui.tab.info.ghostSlotInteraction": " \\n§f• +1: §eRight-Click \\n§f• -1: §eLeft-Click \\n§f• x2: §eShift/Right-Click \\n§f• /2: §eShift/Left-Click \\n§f• =0: §eMiddle-Click",
   "gui.tab.info.ghostSlotInteraction.title": "Slot Interaction",
+  "gui.tab.info.smart_chest.slots": "\\n§eAlt + Left-Click \\n§f• If the clicked slot is empty and has no filter, mark the slot and all following slots as closed. All following slots must also be currently empty. \\n• If the clicked slot is empty and has a filter, remove the filter. \\n• If there is an item in the slot, toggle filtering for the slot.",
+  "gui.tab.info.smart_chest.slots.title": "Slot Interaction",
   "gui.tab.liquidCompressor.fuel": "Available Fuels",
 
   "gui.tooltip.block.pneumaticcraft.aerial_interface": "By using an advanced technology which compresses items so much they become as small as atoms, this machine can use a player's inventory as its own. This means you can hopper items in and out of this machine, and they will be added or removed to the inventory of the player who placed the block. Smarter insertion methods like Drones and/or Logistics Frames (or indeed other mods) could be used to keep the player's inventory supplied with 64 torches, for example.",
@@ -427,6 +430,7 @@
   "gui.tab.info.electrostatic.strikeTime.optimal": "  (with optimally sized grid)",
 
   "gui.tooltip.block.pneumaticcraft.reinforced_chest": "Blastproof chest which preserves its contents when broken.",
+  "gui.tooltip.block.pneumaticcraft.smart_chest": "Blastproof chest which preserves its contents when broken. Slots can be individually filtered, and each side can be configured to push or pull items.",
   "gui.tooltip.block.pneumaticcraft.small_tank": "General fluid storage. Can be connected with tanks above and below with a wrench (if either tank is empty, or both tanks contain the same fluid).",
   "gui.tooltip.block.pneumaticcraft.medium_tank": "General fluid storage. Can be connected with tanks above and below with a wrench (if either tank is empty, or both tanks contain the same fluid).",
   "gui.tooltip.block.pneumaticcraft.large_tank": "General fluid storage. Can be connected with tanks above and below with a wrench (if either tank is empty, or both tanks contain the same fluid).",
@@ -533,7 +537,6 @@
   "gui.tooltip.block.pneumaticcraft.reinforced_bricks": "Used to make stuff; also safe for building. Excellent blast resistance.",
   "gui.tooltip.block.pneumaticcraft.heat_pipe": "An insulated core of compressed iron which can transfer heat without losing any to adjacent air or fluid blocks. A more compact alternative to Compressed Iron Blocks. This block can be camouflaged with the Camouflage Applicator tool.",
   "gui.tooltip.block.pneumaticcraft.etching_tank": "Fill this with Etching Acid and insert Empty PCB's which have been exposed in a UV Light Box. Can be heated above 50°C for progressively faster progression (but Etching Acid will be slowly used when heated). \\nExtract Unassembled PCB's from the sides, and Failed PCB's from the top/bottom.",
-
   "gui.tab.info.logistic_frame_requester": "§0Requester frames can request resources from any other framed inventory. \\n \\nHere you can specify the resources and quantities that Logistics Drones / Logistics Modules should keep stocked in the framed inventory. Either insert items from your inventory, or search for an item/fluid by right clicking an empty slot.",
   "gui.tab.info.logistic_frame_passive_provider": "§0Passive Provider frames can provide resources to Requester Frames. \\n \\nBy default the framed inventory will provide every item in the inventory. By adding items to this filter, only those items will be provided. Add items from your inventory, or search for an item/fluid by right clicking an empty slot.",
   "gui.tab.info.logistic_frame_active_provider": "§0Active Provider frames can provide resources to Requester frames and Storage / Default Storage frames. \\n \\nBy default the framed inventory will provide every item in the inventory. By adding items to this filter, only items specified will be provided. Add items from your inventory or search for an item/fluid by right clicking an empty slot.",
@@ -657,6 +660,10 @@
   "gui.tab.upgrades.sentry_turret.range": "Increases the range of the Sentry Turret by one block for each upgrade.",
   "gui.tab.upgrades.fluid_tank.dispenser": "The tank will auto-eject fluid in the upgrade's configured direction at a base rate of 25mB/t (can be increased with Speed Upgrades)",
   "gui.tab.upgrades.fluid_tank.speed": "Each Speed Upgrade doubles the rate of fluid ejection when a Dispenser Upgrade is installed.",
+  "gui.tab.upgrades.smart_chest.speed": "Each Speed Upgrade doubles the item push/pull rate of the Smart Chest.",
+  "gui.tab.upgrades.smart_chest.dispenser": "With a Dispenser Upgrade installed, sides configured to push items will eject them into the world if there's no inventory present on that side.",
+  "gui.tab.upgrades.smart_chest.magnet": "With a Magnet Upgrade installed, sides configured to pull items will absorb nearby items in the world if there's no inventory present on that side. The default range is a 3x3x3 cube centered 2 blocks from the side in question, but can be increased with Range Upgrades.",
+  "gui.tab.upgrades.smart_chest.range": "Each Range Upgrade increases the Magnet Upgrade's range by one block.",
 
   "_comment": "Redstone Behaviour",
   "gui.tab.redstoneBehaviour": "Redstone Behaviour",
@@ -694,10 +701,10 @@
 
   "_comment": "misc",
   "gui.tab.hopperStatus": "Hopper Status",
-  "gui.tab.hopperStatus.itemTransferPerTick": "§7Item Transfer Speed: \\n§0%s items/tick",
-  "gui.tab.hopperStatus.itemTransferPerSecond": "§7Item Transfer Speed: \\n§0%s items/s",
-  "gui.tab.hopperStatus.liquidTransferPerTick": "§7Liquid Transfer Speed: \\n§0%s mB/tick",
-  "gui.tab.hopperStatus.liquidTransferPerSecond": "§7Liquid Transfer Speed: \\n§0%s mB/s",
+  "gui.tab.hopperStatus.itemTransferPerTick": "§fItem Transfer Speed: \\n§0%s items/tick",
+  "gui.tab.hopperStatus.itemTransferPerSecond": "§fItem Transfer Speed: \\n§0%s items/s",
+  "gui.tab.hopperStatus.liquidTransferPerTick": "§fLiquid Transfer Speed: \\n§0%s mB/tick",
+  "gui.tab.hopperStatus.liquidTransferPerSecond": "§fLiquid Transfer Speed: \\n§0%s mB/s",
   "gui.tab.status": "Status",
   "gui.tab.status.gasLift.action": "§7Action",
   "gui.tab.status.gasLift.action.idling": "§0Idling",
@@ -724,6 +731,10 @@
   "gui.tab.status.vacuumPump.vacuumPressure": "Vacuum Pressure: %s bar",
   "gui.tab.status.vacuumPump.inputAir": "Input Air: %s mL",
   "gui.tab.status.vacuumPump.vacuumAir": "Vacuum Air: %s mL",
+  "gui.tab.info.smart_chest.push_pull.title": "Push/Pull Modes",
+  "gui.tab.smartChestStatus.header": "§0Per side:",
+  "gui.tab.smartChestStatus.itemsPerOperation": "§fItem Transfer: \\n§0%d item(s)/operation",
+  "gui.tab.smartChestStatus.tickInterval": "§fTick Rate: \\n§0%d tick(s)",
 
   "_comment": "Universal Sensor descriptions",
   "gui.universalSensor.desc.userSetSensor": "This is a 'sensor' you can use to emit a constant redstone value. The value emitted is the numeric value inserted into the textbox.",
@@ -792,8 +803,7 @@
   "gui.pressureChamberInterface.export.any": "All",
   "gui.pressureChamberInterface.export.any.tooltip": "Export ALL items from the Pressure Chamber. \\n§7Use this to extract items added by mistake.",
   "gui.thermopneumatic.dumpInput": "Dump Input Tank \\n§7Get rid of any unwanted / excess fluids from the input tank",
-  "gui.universalSensor.button.showRange": "Show Range",
-
+  "gui.button.showRange": "Show Range",
   "gui.programmer.button.showArea": "Preview Area",
   "gui.programmer.button.stopShowingArea": "Stop Previewing Area",
   "gui.programmer.button.showStart": "Show Start",
@@ -1245,6 +1255,12 @@
 
   "gui.tooltip.etching_tank.process_time": "Etching time: %d secs",
   "gui.tooltip.etching_tank.acid_usage": "Etching Acid usage: ~%s mB/sec",
+
+  "gui.tooltip.smartChest.mode.none": "No Action",
+  "gui.tooltip.smartChest.mode.push": "Pushing Items",
+  "gui.tooltip.smartChest.mode.pull": "Pulling Items",
+  "gui.tooltip.smartChest.slotsClosed": "§2%d slot(s) closed",
+  "gui.tooltip.smartChest.filter": "§2%d filtered item(s)",
 
   "_comment": "Keybindings screen",
   "pneumaticcraft.armor.options": "Pneumatic Armor General Options",
