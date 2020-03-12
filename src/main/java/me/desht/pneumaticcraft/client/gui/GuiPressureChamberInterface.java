@@ -47,8 +47,6 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
 
-        font.drawString("Upgr.", 24, 16, 4210752);
-
         int inputShift = (int) ((1F - (float) Math.cos(te.inputProgress / (float) MAX_PROGRESS * Math.PI)) * 11);
         int outputShift = (int) ((1F - (float) Math.cos(te.outputProgress / (float) MAX_PROGRESS * Math.PI)) * 11);
         fill(63 + inputShift, 30, 87 + inputShift, 32, 0xFF5A62FF);

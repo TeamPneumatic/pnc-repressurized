@@ -33,7 +33,6 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("Upgr.", 76, 19, 4210752);
 
         font.drawString("+", 32, 47, 0xFF00AA00);
         font.drawString("-", 138, 47, 0xFFFF0000);

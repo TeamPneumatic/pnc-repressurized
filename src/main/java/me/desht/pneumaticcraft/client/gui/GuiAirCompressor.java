@@ -39,13 +39,6 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
         }
     }
 
-    @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-
-        font.drawString("Upgr.", 28, 19, 4210752);
-    }
-
     protected int getFuelSlotXOffset() {
         return 80;
     }

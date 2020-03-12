@@ -41,12 +41,6 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("Upgr.", 28, 19, 0x404040);
-    }
-
-    @Override
     protected ResourceLocation getGuiTexture() {
         return Textures.GUI_PROGRAMMABLE_CONTROLLER;
     }

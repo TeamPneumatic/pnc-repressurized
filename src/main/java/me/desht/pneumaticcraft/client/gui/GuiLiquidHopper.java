@@ -65,12 +65,6 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("Upgr.", 53, 19, 4210752);
-    }
-
-    @Override
     protected ResourceLocation getGuiTexture() {
         return Textures.GUI_LIQUID_HOPPER;
     }

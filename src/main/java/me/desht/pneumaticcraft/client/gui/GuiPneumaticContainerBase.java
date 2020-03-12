@@ -268,7 +268,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         if (getInvNameOffset() != null) {
             String containerName = title.getFormattedText();
-            font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f + getInvNameOffset().x, 6 + getInvNameOffset().y, getTitleColor());
+            font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f + getInvNameOffset().x, 5 + getInvNameOffset().y, getTitleColor());
         }
 
         if (getInvTextOffset() != null) {
@@ -284,7 +284,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
     }
 
-    protected void bindGuiTexture() {
+    void bindGuiTexture() {
         ResourceLocation guiTexture = getGuiTexture();
         if (guiTexture != null) {
             minecraft.getTextureManager().bindTexture(guiTexture);

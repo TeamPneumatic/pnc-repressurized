@@ -51,8 +51,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("GPS", 50, 20, 4210752);
-        font.drawString("Upgr.", 13, 19, 4210752);
+        font.drawString("GPS", 50, 20, 0x404040);
     }
 
     @Override

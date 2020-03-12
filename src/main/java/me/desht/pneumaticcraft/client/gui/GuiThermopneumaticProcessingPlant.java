@@ -85,11 +85,10 @@ public class GuiThermopneumaticProcessingPlant extends
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-        font.drawString(I18n.format("gui.tab.upgrades"), 91, 83, 4210752);
         String containerName = title.getFormattedText();
         GlStateManager.pushMatrix();
         GlStateManager.scaled(0.95, 0.97, 1);
-        font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f + 1, 5, 4210752);
+        font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f + 1, 5, 0x404040);
         GlStateManager.popMatrix();
         super.drawGuiContainerForegroundLayer(x, y);
 

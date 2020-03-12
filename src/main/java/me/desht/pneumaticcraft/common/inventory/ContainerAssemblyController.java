@@ -17,7 +17,7 @@ public class ContainerAssemblyController extends ContainerPneumaticBase<TileEnti
 
         addSlot(new SlotItemSpecific(te.getPrimaryInventory(), stack -> stack.getItem() instanceof ItemAssemblyProgram, 0, 74, 38));
 
-        addUpgradeSlots(13, 31);
+        addUpgradeSlots(13, 30);
 
         addPlayerSlots(playerInventory, 84);
     }

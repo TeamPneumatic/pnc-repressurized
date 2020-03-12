@@ -93,7 +93,6 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         if (maxPage > 1) {
             font.drawString(page + "/" + maxPage, 110, 46 + 22 * MAX_SENSORS_PER_PAGE, 0x404040);
         }
-        font.drawString("Upgr.", 23, 98, 0x404040);
 
         String[] folders = te.getSensorSetting().split("/");
         if (folders.length == 1 && !folders[0].isEmpty()) {

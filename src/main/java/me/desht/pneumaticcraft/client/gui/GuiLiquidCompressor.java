@@ -92,13 +92,6 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-
-        font.drawString("Upgr.", 15, 19, 4210752);
-    }
-
-    @Override
     protected ResourceLocation getGuiTexture() {
         return Textures.GUI_LIQUID_COMPRESSOR;
     }

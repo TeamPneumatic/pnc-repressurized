@@ -36,12 +36,6 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("Upgr.", 53, 19, 4210752);
-    }
-
-    @Override
     protected ResourceLocation getGuiTexture() {
         return Textures.GUI_4UPGRADE_SLOTS;
     }

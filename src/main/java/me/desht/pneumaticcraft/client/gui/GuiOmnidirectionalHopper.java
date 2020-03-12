@@ -49,12 +49,6 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("Upgr.", 28, 19, 4210752);
-    }
-
-    @Override
     protected ResourceLocation getGuiTexture() {
         return Textures.GUI_OMNIDIRECTIONAL_HOPPER;
     }

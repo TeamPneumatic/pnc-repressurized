@@ -46,7 +46,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("Upgr.", 28, 19, 0x404040);
+
         font.drawString(I18n.format("gui.sentryTurret.ammo"), 80, 19, 0x404040);
         font.drawString(I18n.format("gui.sentryTurret.targetFilter"), 80, 53, 0x404040);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {

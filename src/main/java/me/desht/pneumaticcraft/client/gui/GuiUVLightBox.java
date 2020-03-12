@@ -43,12 +43,6 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("Upgr.", 98, 80, 0x404040);
-    }
-
-    @Override
     protected ResourceLocation getGuiTexture() {
         BlockState state = te.getBlockState();
         return state.getBlock() == ModBlocks.UV_LIGHT_BOX.get() && state.get(BlockUVLightBox.LIT) ?

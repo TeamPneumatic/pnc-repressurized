@@ -152,13 +152,6 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("Upgr.", 53, 19, 0x404040);
-
-    }
-
-    @Override
     protected ResourceLocation getGuiTexture() {
         return Textures.GUI_4UPGRADE_SLOTS;
     }
