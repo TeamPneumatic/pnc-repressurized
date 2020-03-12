@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import com.google.common.collect.Multimap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -15,11 +16,14 @@ import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -45,6 +49,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 //@Optional.InterfaceList({
 //        @Optional.Interface(iface = "thaumcraft.api.items.IGoggles", modid = ModIds.THAUMCRAFT),
@@ -55,6 +60,12 @@ public class ItemPneumaticArmor extends ArmorItem
         implements IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem, ICustomDurabilityBar
         /*, IVisDiscountGear, IGoggles, IRevealer,*/
 {
+    private static final UUID[] PNEUMATIC_ARMOR_MODIFIERS = new UUID[] {
+            UUID.fromString("4a6bf01d-2e83-4b13-aaf0-a4c05958ea3c"),
+            UUID.fromString("ad78a169-0409-47fb-8ca2-126b19196b56"),
+            UUID.fromString("87bf456d-7360-407d-8592-5a2583eb948c"),
+            UUID.fromString("e836e6c9-355e-49f2-87fc-331fadfdd642")
+    };
 
     private static final IArmorMaterial COMPRESSED_IRON_MATERIAL = new CompressedArmorMaterial();
 
@@ -80,7 +91,11 @@ public class ItemPneumaticArmor extends ArmorItem
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        return new AirHandlerItemStack(stack, ARMOR_VOLUMES[getEquipmentSlot().getIndex()], 10F);
+        if (stack.getItem() instanceof ItemPneumaticArmor) {
+            return new AirHandlerItemStack(stack, ARMOR_VOLUMES[getEquipmentSlot().getIndex()], 10F);
+        } else {
+            return super.initCapabilities(stack, nbt);
+        }
     }
 
     /**
@@ -152,7 +167,6 @@ public class ItemPneumaticArmor extends ArmorItem
     @Override
     public Map<EnumUpgrade,Integer> getApplicableUpgrades() {
         return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
-//        return maxUpgrades.get(slot.getIndex());
     }
 
     @Override
@@ -160,45 +174,18 @@ public class ItemPneumaticArmor extends ArmorItem
         return getTranslationKey();
     }
 
-    // todo 1.14 ISpecialArmor ?
-//    @Override
-//    public ArmorProperties getProperties(LivingEntity player, @Nonnull ItemStack armor, DamageSource source, double damage, int slot) {
-//        int maxAbsorb = armor.getMaxDamage() + 1 - armor.getItemDamage();
-//        float ratio;
-//        if (source.isExplosion()) {
-//            ratio = 0.18F;  // absorb a lot of explosion damage
-//        } else {
-//            ratio = ((ArmorItem) armor.getItem()).damageReduceAmount / 30.0F;
-//        }
-//        ArmorProperties ap = new ArmorProperties(1, ratio, maxAbsorb);
-//        int armorUpgrades = Math.min(6, UpgradableItemUtils.getUpgrades(EnumUpgrade.ARMOR, armor));
-//        ap.Armor = armorUpgrades * (slot == 2 ? 1.0F : 0.5F);  // slot 2 = chestplate
-//        ap.Toughness = Math.min(2, armorUpgrades * 0.5F);
-//        return ap;
-//    }
-//
-//    @Override
-//    public int getArmorDisplay(PlayerEntity player, @Nonnull ItemStack armor, int slot) {
-//        int armorUpgrades = Math.min(6, UpgradableItemUtils.getUpgrades(EnumUpgrade.ARMOR, armor));
-//        return Math.min(armorUpgrades, 2);
-//    }
-//
-//    @Override
-//    public void damageArmor(LivingEntity entity, @Nonnull ItemStack stack, DamageSource source, int damage, int slot) {
-//        if (source.isExplosion()) {
-//            // compressed iron is very explosion-resistant
-//            return;
-//        }
-//        ItemStack copy = stack.copy();
-//        stack.damageItem(damage, entity);
-//        if (stack.isEmpty() && entity instanceof PlayerEntity) {
-//            // armor has been destroyed; return the upgrades to the player, at least
-//            ItemStack[] upgrades = UpgradableItemUtils.getUpgradeStacks(copy);
-//            for (ItemStack upgrade : upgrades) {
-//                ItemHandlerHelper.giveItemToPlayer((PlayerEntity) entity, upgrade);
-//            }
-//        }
-//    }
+    @Override
+    public Multimap<String, AttributeModifier> getAttributeModifiers(EquipmentSlotType equipmentSlot, ItemStack stack) {
+        Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(equipmentSlot, stack);
+
+        if (equipmentSlot == this.slot) {
+            int upgrades = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.ARMOR);
+            multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor modifier boost", (double) upgrades / 2d, AttributeModifier.Operation.ADDITION));
+            multimap.put(SharedMonsterAttributes.ARMOR_TOUGHNESS.getName(), new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor toughness boost", (double) upgrades, AttributeModifier.Operation.ADDITION));
+        }
+
+        return multimap;
+    }
 
     /* ----------- Pneumatic Helmet helpers ---------- */
 
