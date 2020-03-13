@@ -79,7 +79,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return new AxisAlignedBB(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
     }
 
-    public List<BlockPos> getCachedAreaList() {
+    public synchronized List<BlockPos> getCachedAreaList() {
         if (areaListCache != null) {
             if (!canCache || updateVariables()) {
                 areaSetCache = new HashSet<>(areaListCache.size());
@@ -97,12 +97,12 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget implements IArea
         return areaListCache;
     }
 
-    public Set<BlockPos> getCachedAreaSet() {
+    public synchronized Set<BlockPos> getCachedAreaSet() {
         getCachedAreaList();
         return areaSetCache;
     }
 
-    protected void invalidateAreaCache() {
+    protected synchronized void invalidateAreaCache() {
         areaListCache = null;
         areaSetCache = null;
     }

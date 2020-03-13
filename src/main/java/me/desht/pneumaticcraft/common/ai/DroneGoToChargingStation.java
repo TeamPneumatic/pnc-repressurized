@@ -15,9 +15,9 @@ import java.util.List;
 
 public class DroneGoToChargingStation extends EntityAIBase {
     private final EntityDrone drone;
-    public boolean isExecuting;
-    public TileEntityChargingStation curCharger;
+    private TileEntityChargingStation curCharger;
     private int chargingTime;
+    public boolean isExecuting;
 
     public DroneGoToChargingStation(EntityDrone drone) {
         this.drone = drone;
@@ -51,7 +51,7 @@ public class DroneGoToChargingStation extends EntityAIBase {
 
         for (TileEntityChargingStation station : validChargingStations) {
             boolean protect = PneumaticCraftUtils.getProtectingSecurityStations(drone.world, station.getPos(), drone.getFakePlayer(), false, false) > 0;
-            BlockPos pos = new BlockPos(station.getPos().getX(), station.getPos().getY(), station.getPos().getZ());
+            BlockPos pos = new BlockPos(station.getPos());
             if (protect) {
                 drone.addDebugEntry("gui.progWidget.chargingStation.debug.protected", pos);
             } else if (drone.getPathNavigator().moveToXYZ(station.getPos().getX(), station.getPos().getY() + 1, station.getPos().getZ()) || drone.getPathNavigator().isGoingToTeleport()) {
@@ -72,7 +72,8 @@ public class DroneGoToChargingStation extends EntityAIBase {
      */
     @Override
     public boolean shouldContinueExecuting() {
-        if (curCharger.getUpgrades(EnumUpgrade.DISPENSER) == 0 || curCharger.isInvalid()) {//If our path was blocked.
+        if (curCharger.getUpgrades(EnumUpgrade.DISPENSER) == 0 || curCharger.isInvalid()) {
+            // Our path was blocked.
             isExecuting = false;
             return false;
         } else if (!drone.getPathNavigator().isGoingToTeleport() && (drone.getNavigator().getPath() == null || drone.getNavigator().getPath().isFinished())) {

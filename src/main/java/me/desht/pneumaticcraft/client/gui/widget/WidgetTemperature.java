@@ -44,7 +44,8 @@ public class WidgetTemperature extends WidgetBase {
 
         for (int scale : scales) {
             int scaleY = 48 - (scale - minTemp) * 48 / maxTemp;
-            Gui.drawModalRectWithCustomSizedTexture(x, y - 1 + scaleY, 0, 0, 6, 5, 18, 50);
+            int v = scaleY < 0 ? 6 : (scaleY > 48 ? 12 : 0);
+            Gui.drawModalRectWithCustomSizedTexture(x, y - 1 + MathHelper.clamp(scaleY, 0, 48), 0, v, 6, 6, 18, 50);
         }
     }
 

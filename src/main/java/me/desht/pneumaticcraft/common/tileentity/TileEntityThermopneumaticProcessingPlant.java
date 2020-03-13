@@ -112,7 +112,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                 ItemStack stackInSlot = handler.getStackInSlot(0);
                 requiredPressure = currentRecipe.getRequiredPressure(inputTank.getFluid(), stackInSlot);
                 requiredTemperature = currentRecipe.getRequiredTemperature(inputTank.getFluid(), stackInSlot);
-                if (redstoneAllows() && heatExchanger.getTemperature() >= requiredTemperature && getPressure() >= getMinWorkingPressure()) {
+                if (redstoneAllows() && heatExchanger.getTemperature() >= requiredTemperature && hasEnoughPressure()) {
                     double inc = requiredTemperature > 0 ? Math.min(MAX_SPEED_UP, heatExchanger.getTemperature() / requiredTemperature) : 1.0;
                     craftingProgress += inc * 100;
                     if (craftingProgress >= CRAFTING_TIME) {
@@ -134,6 +134,10 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                 ClientUtils.emitParticles(getWorld(), getPos(), EnumParticleTypes.SMOKE_NORMAL);
             }
         }
+    }
+
+    private boolean hasEnoughPressure() {
+        return getMinWorkingPressure() > 0 ? getPressure() >= getMinWorkingPressure() : getPressure() < getMinWorkingPressure();
     }
 
     private IThermopneumaticProcessingPlantRecipe getValidRecipe() {

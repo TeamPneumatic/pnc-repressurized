@@ -35,11 +35,11 @@ public class DroneClaimManager {
         }
     }
 
-    public boolean isClaimed(BlockPos pos) {
+    boolean isClaimed(BlockPos pos) {
         return currentPositions.containsKey(pos);
     }
 
-    public void claim(BlockPos pos) {
+    void claim(BlockPos pos) {
         currentPositions.put(pos, 0);
     }
 }
