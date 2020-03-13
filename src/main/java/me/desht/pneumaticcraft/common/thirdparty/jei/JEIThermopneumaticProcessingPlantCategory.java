@@ -112,7 +112,7 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
 
     @Override
     public void draw(IThermopneumaticProcessingPlantRecipe recipe, double mouseX, double mouseY) {
-        if (recipe.getRequiredPressure() > 0) {
+        if (recipe.getRequiredPressure() != 0) {
             float pressure = recipe.getRequiredPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
             GuiUtils.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 136, 42);
         }
