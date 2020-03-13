@@ -8,10 +8,11 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 
+import java.util.Collections;
 import java.util.List;
 
 public abstract class JEISpecialCraftingCategory<T extends IRecipeWrapper> extends PneumaticCraftCategory<T> {
-    private List<String> text;
+    private List<String> text = Collections.emptyList();
 
     JEISpecialCraftingCategory(IJeiHelpers jeiHelpers) {
         super(jeiHelpers);
@@ -33,13 +34,12 @@ public abstract class JEISpecialCraftingCategory<T extends IRecipeWrapper> exten
 
     @Override
     public void drawExtras(Minecraft minecraft) {
-        if (text != null) {
-            for (int i = 0; i < text.size(); i++) {
-                Minecraft.getMinecraft().fontRenderer.drawString(text.get(i), 5, 24 + i * 10, 0xFF404040);
-            }
-        }
-
         drawProgressBar(63, 0, 82, 0, 38, 18, StartDirection.LEFT);
+    }
+
+    @Override
+    public List<String> getTooltipStrings(int mouseX, int mouseY) {
+        return mouseX >= 63 && mouseX <= 101 ? text : Collections.emptyList();
     }
 
     protected abstract List<MultipleInputOutputRecipeWrapper> getAllRecipes();
