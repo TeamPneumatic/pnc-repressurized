@@ -6,6 +6,24 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.11-390 (13 Mar 2020)
+#### Updates
+* Thermopneumatic Processing Plant now supports custom recipes with a pressure < 0 bar.
+* Plastic Mixer CraftTweaker support enhancement
+  * Can now add recipes with a specific item meta, and dye usage is configurable
+  * E.g. `mods.pneumaticcraft.plasticmixer.addSolidifyOnlyRecipe(<liquid:rubber> * 100, <ic2:crafting>, false, 0);` will solidify Rubber liquid to IC2 Rubber (and not any other "ic2:crafting" sub-item) without using any dye.
+#### Fixes
+* Fixed some bad text formatting in JEI display for Heat Frame Cooling recipes
+* Several Drone / ComputerCraft fixes 
+  * Most drone actions (as set with the `setAction()` Lua method) were getting ignored
+  * Fixed NPE crashes in a couple of drone actions
+* Pressure Chamber enchanting/disenchanting fixes
+  * Conflicting enchantments (e.g. Smite & Sharpness) will no longer be applied to items
+  * Pressure Chamber will no longer drop excess items in-world, but rather hold them in a hidden overflow buffer, and stall crafting until the main pressure chamber has had some items removed.  Prevents a mess of items and needing to break the chamber to get them out.
+  * Fix possible crash with disenchanting (  not one I could reproduce myself but added some extra sanity checking)
+* Possibly fix a Pneumatic Armor init client-side crash (not one I could reproduce myself, but possibly related some other mod cancelling a GUI-init event)
+* Assembly IO Unit can no longer have items piped into it (an item handler capability was exposed by mistake)
+  
 ### 0.11.10-385 (20 Feb 2020)
 #### Updates
 * Widgets in the Remote GUI now support global variable interpolation in their tooltips
