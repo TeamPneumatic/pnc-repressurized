@@ -28,12 +28,13 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 ModBlocks.REINFORCED_BRICK_STAIRS);
         createAndAppend(PneumaticCraftTags.Blocks.DOORS, BlockTags.DOORS,
                 ModBlocks.PNEUMATIC_DOOR);
-
+        createAndAppend(PneumaticCraftTags.Blocks.CHESTS, Tags.Blocks.CHESTS,
+                ModBlocks.SMART_CHEST, ModBlocks.REINFORCED_CHEST);
         createAndAppend(PneumaticCraftTags.Blocks.STORAGE_BLOCKS_COMPRESSED_IRON, Tags.Blocks.STORAGE_BLOCKS,
                 ModBlocks.COMPRESSED_IRON_BLOCK);
 
-
         createTag(PneumaticCraftTags.Blocks.PLASTIC_BRICKS, ModBlocks.PLASTIC_BRICKS.toArray(new Supplier[0]));
+        createTag(PneumaticCraftTags.Blocks.FLUID_TANKS, ModBlocks.TANK_SMALL, ModBlocks.TANK_MEDIUM, ModBlocks.TANK_LARGE);
     }
 
     // with thanks to Tropicraft for these helper methods

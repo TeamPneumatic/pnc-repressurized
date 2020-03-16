@@ -43,7 +43,7 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> {
             this.itemContainer = false;
         }
         if (logistics != null) {
-            IItemHandler requests = logistics.getFilters();
+            IItemHandler requests = logistics.getItemFilterHandler();
             for (int y = 0; y < 3; y++) {
                 for (int x = 0; x < 9; x++) {
                     addSlot(logistics.canFilterStack() ?

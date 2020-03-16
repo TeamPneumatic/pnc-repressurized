@@ -27,7 +27,7 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return Textures.GUI_VACUUM_PUMP_LOCATION;
+        return Textures.GUI_VACUUM_PUMP;
     }
 
     @Override

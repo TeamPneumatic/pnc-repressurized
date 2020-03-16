@@ -212,6 +212,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer);
 
+        shaped(ModBlocks.DISPLAY_TABLE.get(), ModBlocks.REINFORCED_STONE.get(),
+                "SSS/I I",
+                'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
+        ).build(consumer);
+
         shaped(ModBlocks.DRILL_PIPE.get(), 3, ModBlocks.GAS_LIFT.get(),
                 "T/T/T",
                 'T', ModBlocks.PRESSURE_TUBE.get()
@@ -663,6 +669,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
+        shaped(ModBlocks.TAG_WORKBENCH.get(), ModBlocks.REINFORCED_STONE.get(),
+                "B/D",
+                'B', Items.WRITABLE_BOOK,
+                'D', ModBlocks.DISPLAY_TABLE.get()
+        ).build(consumer);
+
         shaped(ModBlocks.TANK_SMALL.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "BIB/IGI/BIB",
                 'B', Blocks.IRON_BARS,
@@ -741,6 +753,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.PRESSURE_TUBE.get(),
                 'G', Tags.Items.INGOTS_GOLD
         ).build(consumer);
+
+        shapeless(Items.PAPER, Items.PAPER, ModItems.TAG_FILTER.get()).build(consumer, RL("paper_from_tag_filter"));
 
         // network components
         networkComponent(ModItems.DIAGNOSTIC_SUBROUTINE.get(), 1, ModItems.PLASTIC.get(), Tags.Items.DYES_RED).build(consumer);

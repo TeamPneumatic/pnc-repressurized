@@ -136,22 +136,34 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     private void addFilterTab() {
         WidgetAnimatedStat filterTab = addAnimatedStat("gui.logistics_frame.filter_settings",
                 new ItemStack(Blocks.COBWEB), 0xFF106010, false);
-        filterTab.addPadding(logistics.supportsBlacklisting() ? 6 : 4, 28);
+        filterTab.addPadding(logistics.supportsBlacklisting() ? 8 : 6, 28);
 
-        WidgetCheckBox matchTags = new WidgetCheckBox(5, 20, 0xFFFFFFFF, I18n.format("gui.logistics_frame.matchTags"), b -> {
-            logistics.setMatchTags(b.checked);
+        WidgetCheckBox matchDurability = new WidgetCheckBox(5, 20, 0xFFFFFFFF, I18n.format("gui.logistics_frame.matchDurability"), b -> {
+            logistics.setMatchDurability(b.checked);
             syncToServer();
-        }).setChecked(logistics.isMatchTags());
-        filterTab.addSubWidget(matchTags);
+        })
+                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.logistics_frame.matchDurability.tooltip", 40)))
+                .setChecked(logistics.isMatchDurability());
+        filterTab.addSubWidget(matchDurability);
 
         WidgetCheckBox matchNBT = new WidgetCheckBox(5, 36, 0xFFFFFFFF, I18n.format("gui.logistics_frame.matchNBT"), b -> {
             logistics.setMatchNBT(b.checked);
             syncToServer();
-        }).setChecked(logistics.isMatchNBT());
+        })
+                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.logistics_frame.matchNBT.tooltip",40)))
+                .setChecked(logistics.isMatchNBT());
         filterTab.addSubWidget(matchNBT);
 
+        WidgetCheckBox matchModId = new WidgetCheckBox(5, 52, 0xFFFFFFFF, I18n.format("gui.logistics_frame.matchModId"), b -> {
+            logistics.setMatchModId(b.checked);
+            syncToServer();
+        })
+                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.logistics_frame.matchModId.tooltip", 40)))
+                .setChecked(logistics.isMatchModId());
+        filterTab.addSubWidget(matchModId);
+
         if (logistics.supportsBlacklisting()) {
-            WidgetCheckBox whitelist = new WidgetCheckBox(5, 52, 0xFFFFFFFF, I18n.format("gui.logistics_frame.whitelist"), b -> {
+            WidgetCheckBox whitelist = new WidgetCheckBox(5, 73, 0xFFFFFFFF, I18n.format("gui.logistics_frame.whitelist"), b -> {
                 logistics.setWhiteList(b.checked);
                 updateLabels();
                 syncToServer();

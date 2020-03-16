@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/tag_workbench",
+  "transform": "forge:default-block"
+}

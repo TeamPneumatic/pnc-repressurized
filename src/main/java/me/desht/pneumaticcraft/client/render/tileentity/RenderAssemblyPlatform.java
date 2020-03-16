@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
 import me.desht.pneumaticcraft.client.model.block.ModelAssemblyPlatform;
-import me.desht.pneumaticcraft.common.inventory.handler.RenderedItemStackHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyPlatform;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
@@ -27,10 +27,10 @@ public class RenderAssemblyPlatform extends AbstractTileModelRenderer<TileEntity
             EntityRendererManager renderManager = Minecraft.getInstance().getRenderManager();
             boolean fancySetting = renderManager.options.fancyGraphics;
             renderManager.options.fancyGraphics = true;
-            model.renderModel(0.0625f, MathHelper.lerp(partialTicks, te.oldClawProgress, te.clawProgress),  RenderedItemStackHandler.getItemToRender(te));
+            model.renderModel(0.0625f, MathHelper.lerp(partialTicks, te.oldClawProgress, te.clawProgress),  te.getPrimaryInventory().getStackInSlot(0));
             renderManager.options.fancyGraphics = fancySetting;
         } else {
-            model.renderModel(0.0625f, 0, null);
+            model.renderModel(0.0625f, 0, ItemStack.EMPTY);
         }
     }
 }

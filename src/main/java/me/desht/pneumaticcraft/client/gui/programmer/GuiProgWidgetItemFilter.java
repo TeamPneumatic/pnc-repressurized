@@ -15,18 +15,15 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-
-import java.util.Arrays;
 
 public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetItemFilter> {
     private GuiItemSearcher searchGui;
     private GuiInventorySearcher invSearchGui;
-    private WidgetCheckBox checkBoxUseDamage;
+    private WidgetCheckBox checkBoxUseDurability;
     private WidgetCheckBox checkBoxUseNBT;
-    private WidgetCheckBox checkBoxUseOreDict;
     private WidgetCheckBox checkBoxUseModSimilarity;
     private WidgetCheckBox checkBoxMatchBlock;
     private WidgetComboBox variableField;
@@ -42,54 +39,32 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         addButton(new WidgetButtonExtended(guiLeft + 4, guiTop + 24, 70, 20, "Search item...", b -> openSearcher()));
         addButton(new WidgetButtonExtended(guiLeft + 78, guiTop + 24, 100, 20, "Search inventory...", b -> openInventorySearcher()));
 
-        checkBoxUseDamage = new WidgetCheckBox(guiLeft + 8, guiTop + 96, 0xFF404040,
-                "Match Item durability", b -> progWidget.useItemDurability = b.checked);
-        checkBoxUseDamage.setTooltip(Arrays.asList("Check to handle differently damaged", "tools as different."));
-        checkBoxUseDamage.checked = progWidget.useItemDurability;
-        addButton(checkBoxUseDamage);
+        addButton(checkBoxUseDurability = new WidgetCheckBox(guiLeft + 8, guiTop + 96, 0xFF404040,
+                I18n.format("gui.logistics_frame.matchDurability"), b -> progWidget.useItemDurability = b.checked)
+                .setTooltip(I18n.format("gui.logistics_frame.matchDurability.tooltip"))
+                .setChecked(progWidget.useItemDurability)
+        );
 
-        checkBoxUseNBT = new WidgetCheckBox(guiLeft + 8, guiTop + 108, 0xFF404040, "Match Item NBT", b -> {
-            progWidget.useNBT = b.checked;
-            checkBoxMatchBlock.active = !b.checked;
-        });
-        checkBoxUseNBT.setTooltip(Arrays.asList("Check to handle items like Enchanted Books", "or Fireworks as different."));
-        checkBoxUseNBT.checked = progWidget.useNBT;
-        addButton(checkBoxUseNBT);
+        addButton(checkBoxUseNBT = new WidgetCheckBox(guiLeft + 8, guiTop + 108, 0xFF404040,
+                I18n.format("gui.logistics_frame.matchNBT"), b -> progWidget.useNBT = b.checked)
+                .setTooltip(I18n.format("gui.logistics_frame.matchNBT.tooltip"))
+                .setChecked(progWidget.useNBT)
+        );
 
-        checkBoxUseOreDict = new WidgetCheckBox(guiLeft + 8, guiTop + 120, 0xFF404040, "Match Item Tags", b -> {
-            progWidget.useItemTags = b.checked;
-            checkBoxUseDamage.active = !b.checked;
-            checkBoxUseNBT.active = !b.checked;
-            checkBoxUseModSimilarity.active = !b.checked;
-            checkBoxMatchBlock.active = !b.checked;
-        });
-        checkBoxUseOreDict.setTooltip(Arrays.asList("Check to handle items with", "common Item Tags as the same."));
-        checkBoxUseOreDict.checked = progWidget.useItemTags;
-        addButton(checkBoxUseOreDict);
+        addButton(checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 8, guiTop + 120, 0xFF404040,
+                I18n.format("gui.logistics_frame.matchModId"), b -> progWidget.useModSimilarity = b.checked)
+                .setTooltip(I18n.format("gui.logistics_frame.matchModId.tooltip"))
+                .setChecked(progWidget.useModSimilarity)
+        );
 
-        checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 8, guiTop + 132, 0xFF404040, "Match by Mod", b -> {
-            progWidget.useModSimilarity = b.checked;
-            checkBoxUseDamage.active = !b.checked;
-            checkBoxUseNBT.active = !b.checked;
-            checkBoxUseOreDict.active = !b.checked;
-            checkBoxMatchBlock.active = !b.checked;
-        });
-        checkBoxUseModSimilarity.setTooltip(Arrays.asList("Check to handle items from the", "same mod as the same."));
-        checkBoxUseModSimilarity.checked = progWidget.useModSimilarity;
-        addButton(checkBoxUseModSimilarity);
+        addButton(checkBoxMatchBlock = new WidgetCheckBox(guiLeft + 8, guiTop + 132, 0xFF404040,
+                I18n.format("gui.logistics_frame.matchBlockstate"), b -> progWidget.matchBlock = b.checked)
+                .setTooltip(I18n.format("gui.logistics_frame.matchBlockstate.tooltip"))
+                .setChecked(progWidget.matchBlock)
+        );
 
-        checkBoxMatchBlock = new WidgetCheckBox(guiLeft + 8, guiTop + 144, 0xFF404040, "Match by Block", b -> {
-            progWidget.matchBlock = b.checked;
-            checkBoxUseModSimilarity.active = !b.checked;
-            checkBoxUseNBT.active = !b.checked;
-            checkBoxUseOreDict.active = !b.checked;
-        });
-        checkBoxMatchBlock.setTooltip(Arrays.asList("Check to match by block instead of", "dropped item. Useful for blocks", "which don't drop an item.", TextFormatting.GRAY.toString() + TextFormatting.ITALIC + "Only used by the 'Dig' programming piece."));
-        checkBoxMatchBlock.checked = progWidget.matchBlock;
-        addButton(checkBoxMatchBlock);
-
-        variableField = new WidgetComboBox(font, guiLeft + 90, guiTop + 60, 80, font.FONT_HEIGHT + 1);
-        variableField.setElements(guiProgrammer.te.getAllVariables());
+        variableField = new WidgetComboBox(font, guiLeft + 90, guiTop + 60, 80, font.FONT_HEIGHT + 1)
+                .setElements(guiProgrammer.te.getAllVariables());
         variableField.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         variableField.setText(progWidget.getVariable());
 
@@ -97,18 +72,10 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
             addButton(variableField);
         }
 
-        checkBoxUseDamage.active = !checkBoxUseOreDict.checked && !checkBoxUseModSimilarity.checked;
-        checkBoxUseNBT.active = !checkBoxUseOreDict.checked && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
-        checkBoxUseOreDict.active = !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
-        checkBoxUseModSimilarity.active = !checkBoxUseOreDict.checked && !checkBoxMatchBlock.checked;
-        checkBoxMatchBlock.active = !checkBoxUseNBT.checked && !checkBoxUseModSimilarity.checked && !checkBoxUseOreDict.checked;
-
         if (searchGui != null) progWidget.setFilter(searchGui.getSearchStack());
         if (invSearchGui != null) progWidget.setFilter(invSearchGui.getSearchStack());
         searchGui = null;
         invSearchGui = null;
-
-        checkBoxUseDamage.active = progWidget.getFilter().getMaxDamage() > 0;
     }
 
     private void openSearcher() {
@@ -132,6 +99,19 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     }
 
     @Override
+    public void tick() {
+        super.tick();
+
+        ItemStack filter = progWidget.getRawFilter();
+        checkBoxUseDurability.active = filter.getMaxDamage() > 0 && !checkBoxUseModSimilarity.checked;
+        checkBoxUseNBT.active = filter.hasTag() && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
+        checkBoxUseModSimilarity.active = !filter.isEmpty() && !checkBoxMatchBlock.checked;
+        String msg = I18n.format("gui.logistics_frame.matchModId");
+        checkBoxUseModSimilarity.setMessage(filter.isEmpty() ? msg : msg + " (" + filter.getItem().getRegistryName().getNamespace() + ")");
+        checkBoxMatchBlock.active = filter.getItem() instanceof BlockItem && !checkBoxUseNBT.checked && !checkBoxUseModSimilarity.checked;
+    }
+
+    @Override
     public void onClose() {
         progWidget.setVariable(variableField.getText());
 
@@ -151,7 +131,11 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         }
         String f = I18n.format("gui.progWidget.itemFilter.filterLabel");
         font.drawString(f, guiLeft + 48 - font.getStringWidth(f), guiTop + 56, 0xFF404040);
-        if (!progWidget.getRawFilter().isEmpty())
+        if (!progWidget.getRawFilter().isEmpty()) {
             GuiUtils.drawItemStack(progWidget.getRawFilter(), guiLeft + 50, guiTop + 52);
+            if (mouseX >= guiLeft + 49 && mouseX <= guiLeft + 66 && mouseY >= guiTop + 51 && mouseY <= guiTop + 68) {
+                renderTooltip(progWidget.getRawFilter(), mouseX, mouseY);
+            }
+        }
     }
 }

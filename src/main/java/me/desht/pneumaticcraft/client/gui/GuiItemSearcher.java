@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
-    private static final ResourceLocation GUI_TEXTURE = Textures.GUI_ITEM_SEARCHER_LOCATION;
+    private static final ResourceLocation GUI_TEXTURE = Textures.GUI_ITEM_SEARCHER;
     private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
     private static List<SearchEntry> cachedSearchEntries;
     private final ItemStackHandler inventory = new ItemStackHandler(49);

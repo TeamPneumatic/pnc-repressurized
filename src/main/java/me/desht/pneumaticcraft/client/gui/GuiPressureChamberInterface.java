@@ -61,7 +61,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return Textures.GUI_PRESSURE_CHAMBER_INTERFACE_LOCATION;
+        return Textures.GUI_PRESSURE_CHAMBER_INTERFACE;
     }
 
     @Override

@@ -49,6 +49,8 @@ public interface IProgWidget extends IProgWidgetBase {
 
     boolean hasStepOutput();
 
+    default boolean freeToUse() { return false; }
+
     /**
      * @param drone the drone
      * @param widget Will be 'this' most of the times, but not when controlled by ComputerCraft.

@@ -39,16 +39,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
         });
 
         // Add the player's inventory slots to the container
-        for (int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
-            for (int inventoryColumnIndex = 0; inventoryColumnIndex < 9; ++inventoryColumnIndex) {
-                addSlot(new Slot(playerInventory, inventoryColumnIndex + inventoryRowIndex * 9 + 9, xBase + inventoryColumnIndex * 18, yBase + inventoryRowIndex * 18));
-            }
-        }
-
-        // Add the player's action bar slots to the container
-        for (int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
-            addSlot(new Slot(playerInventory, actionBarSlotIndex, xBase + actionBarSlotIndex * 18, yBase + 58));
-        }
+        addPlayerSlots(playerInventory, xBase, yBase);
     }
 
     public ContainerProgrammer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {

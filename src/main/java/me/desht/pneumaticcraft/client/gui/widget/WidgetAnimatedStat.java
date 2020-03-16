@@ -393,6 +393,19 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
+    protected boolean clicked(double mouseX, double mouseY) {
+        if (leftSided) {
+            return this.active && this.visible
+                    && mouseX >= (double)this.x - this.width
+                    && mouseX < (double)this.x
+                    && mouseY >= (double)this.y
+                    && mouseY < (double)(this.y + this.height);
+        } else {
+            return super.clicked(mouseX, mouseY);
+        }
+    }
+
+    @Override
     public void renderButton(int mouseX, int mouseY, float partialTicks) {
         float zLevel = 0;
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
@@ -683,17 +696,6 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
                 GuiUtils.drawTexture(texture, x - (leftSided ? 16 : 0), y);
             } else if (!stack.isEmpty()) {
                 GuiUtils.drawItemStack(stack, x - (leftSided ? 16 : 0), y);
-//                ItemRenderer renderItem = Minecraft.getInstance().getItemRenderer();
-//                renderItem.zLevel = 1;
-//                GlStateManager.pushMatrix();
-//                GlStateManager.translated(0, 0, -50);
-//                GlStateManager.enableRescaleNormal();
-//                RenderHelper.enableGUIStandardItemLighting();
-//                renderItem.renderItemAndEffectIntoGUI(stack, x - (leftSided ? 16 : 0), y);
-//                RenderHelper.disableStandardItemLighting();
-//                GlStateManager.disableRescaleNormal();
-//                GlStateManager.popMatrix();
-//                GlStateManager.enableAlphaTest();
             }
             GlStateManager.disableBlend();
         }

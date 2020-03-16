@@ -36,7 +36,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return Textures.GUI_THERMAL_COMPRESSOR_LOCATION;
+        return Textures.GUI_THERMAL_COMPRESSOR;
     }
 
     @Override

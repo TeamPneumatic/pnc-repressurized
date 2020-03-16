@@ -106,13 +106,13 @@ public class Textures {
     // GUI background textures
     public static final ResourceLocation GUI_AIR_COMPRESSOR = guiTexture("gui_air_compressor.png");
     public static final ResourceLocation GUI_ADVANCED_AIR_COMPRESSOR = guiTexture("gui_advanced_air_compressor.png");
-    public static final ResourceLocation GUI_AIR_CANNON_LOCATION = guiTexture("gui_air_cannon.png");
+    public static final ResourceLocation GUI_AIR_CANNON = guiTexture("gui_air_cannon.png");
     public static final ResourceLocation GUI_4UPGRADE_SLOTS = guiTexture("gui_pressure_chamber.png");
-    public static final ResourceLocation GUI_CHARGING_STATION_LOCATION = guiTexture("gui_charging_station.png");
-    public static final ResourceLocation GUI_PNEUMATIC_ARMOR_LOCATION = guiTexture("gui_pneumatic_armor.png");
-    public static final ResourceLocation GUI_PRESSURE_CHAMBER_INTERFACE_LOCATION = guiTexture("gui_pressure_chamber_interface.png");
-    public static final ResourceLocation GUI_VACUUM_PUMP_LOCATION = guiTexture("gui_vacuum_pump.png");
-    public static final ResourceLocation GUI_ITEM_SEARCHER_LOCATION = guiTexture("gui_item_searcher.png");
+    public static final ResourceLocation GUI_CHARGING_STATION = guiTexture("gui_charging_station.png");
+    public static final ResourceLocation GUI_PNEUMATIC_ARMOR = guiTexture("gui_pneumatic_armor.png");
+    public static final ResourceLocation GUI_PRESSURE_CHAMBER_INTERFACE = guiTexture("gui_pressure_chamber_interface.png");
+    public static final ResourceLocation GUI_VACUUM_PUMP = guiTexture("gui_vacuum_pump.png");
+    public static final ResourceLocation GUI_ITEM_SEARCHER = guiTexture("gui_item_searcher.png");
     public static final ResourceLocation GUI_ASSEMBLY_CONTROLLER = guiTexture("gui_assembly_controller.png");
     public static final ResourceLocation GUI_LASER_DANGER = guiTexture("gui_laser_danger.png");
     public static final ResourceLocation GUI_UV_LIGHT_BOX = guiTexture("gui_uv_light_box.png");
@@ -141,7 +141,7 @@ public class Textures {
     public static final ResourceLocation GUI_KEROSENE_LAMP = guiTexture("gui_kerosene_lamp.png");
     public static final ResourceLocation GUI_SENTRY_TURRET = guiTexture("gui_sentry_turret.png");
     public static final ResourceLocation GUI_MINIGUN_MAGAZINE = guiTexture("gui_minigun_magazine.png");
-    public static final ResourceLocation GUI_THERMAL_COMPRESSOR_LOCATION = guiTexture("gui_thermal_compressor.png");
+    public static final ResourceLocation GUI_THERMAL_COMPRESSOR = guiTexture("gui_thermal_compressor.png");
     public static final ResourceLocation GUI_WIDGET_AREA = guiTexture("gui_widget_area.png");
     public static final ResourceLocation GUI_PASTEBIN = guiTexture("gui_pastebin.png");
     public static final ResourceLocation GUI_INVENTORY_SEARCHER = guiTexture("gui_inventory_searcher.png");
@@ -154,8 +154,9 @@ public class Textures {
     public static final ResourceLocation GUI_FLUID_TANK = guiTexture("gui_fluid_tank.png");
     public static final ResourceLocation GUI_REINFORCED_CHEST = guiTexture("gui_reinforced_chest.png");
     public static final ResourceLocation GUI_SMART_CHEST = guiTexture("gui_smart_chest.png");
+    public static final ResourceLocation GUI_TAG_WORKBENCH = guiTexture("gui_tag_workbench.png");
 
-    public static final ResourceLocation GUI_JEI_PRESSURE_CHAMBER_LOCATION = guiTexture("jei/gui_jei_pressure_chamber.png");
+    public static final ResourceLocation GUI_JEI_PRESSURE_CHAMBER = guiTexture("jei/gui_jei_pressure_chamber.png");
     public static final ResourceLocation GUI_JEI_ASSEMBLY_CONTROLLER = guiTexture("jei/gui_jei_assembly_controller.png");
     public static final ResourceLocation GUI_JEI_MISC_RECIPES = guiTexture("jei/gui_jei_misc_recipes.png");
     public static final ResourceLocation GUI_JEI_ETCHING_TANK = guiTexture("jei/gui_jei_etching_tank.png");
@@ -193,10 +194,10 @@ public class Textures {
 
     public static final ResourceLocation JEI_EXPLOSION = guiTexture("jei/explosion.png");
 
+    // entities
     public static final ResourceLocation VORTEX = new ResourceLocation(ENTITY_LOCATION + "vortex");
     public static final ResourceLocation MODEL_DRONE = new ResourceLocation(ENTITY_LOCATION + "drone.png");
     public static final ResourceLocation MICROMISSILE_TEXTURE = new ResourceLocation(ENTITY_LOCATION + "micromissile.png");
-    public static final String VILLAGER_MECHANIC = ENTITY_LOCATION + "villager_mechanic.png";
 
     private static ResourceLocation guiTexture(String img) {
         return new ResourceLocation(GUI_LOCATION + img);

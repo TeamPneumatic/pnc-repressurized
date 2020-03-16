@@ -1,0 +1,4 @@
+{
+  "parent": "pneumaticcraft:block/display_table",
+  "transform": "forge:default-block"
+}

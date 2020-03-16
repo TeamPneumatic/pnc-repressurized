@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.util;
 
-import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
+import me.desht.pneumaticcraft.api.item.ITagFilteringItem;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
@@ -500,23 +500,24 @@ public class PneumaticCraftUtils {
         return distBetween(vec1, vec2.x, vec2.y, vec2.z);
     }
 
-    public static boolean areStacksEquivalent(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2, boolean checkDurability, boolean checkNBT, boolean checkItemTags, boolean checkModSimilarity) {
-        if (stack1.isEmpty() && stack2.isEmpty()) return true;
-        if (stack1.isEmpty() || stack2.isEmpty()) return false;
+    public static boolean doesItemMatchFilter(@Nonnull ItemStack filterStack, @Nonnull ItemStack stack, boolean checkDurability, boolean checkNBT, boolean checkModSimilarity) {
+        if (filterStack.isEmpty() && stack.isEmpty()) return true;
+        if (filterStack.isEmpty() || stack.isEmpty()) return false;
 
         if (checkModSimilarity) {
-            String mod1 = stack1.getItem().getRegistryName().getNamespace();
-            String mod2 = stack2.getItem().getRegistryName().getNamespace();
+            String mod1 = filterStack.getItem().getRegistryName().getNamespace();
+            String mod2 = stack.getItem().getRegistryName().getNamespace();
             return mod1.equals(mod2);
         }
-        if (checkItemTags) {
-            return !Sets.intersection(stack1.getItem().getTags(), stack2.getItem().getTags()).isEmpty();
+
+        if (filterStack.getItem() instanceof ITagFilteringItem) {
+            return ((ITagFilteringItem) filterStack.getItem()).matchTags(filterStack, stack.getItem());
         }
 
-        if (stack1.getItem() != stack2.getItem()) return false;
+        if (filterStack.getItem() != stack.getItem()) return false;
 
-        boolean durabilityOK = !checkDurability || (stack1.getMaxDamage() > 0 && stack1.getDamage() == stack2.getDamage());
-        boolean nbtOK = !checkNBT || (stack1.hasTag() ? stack1.getTag().equals(stack2.getTag()) : !stack2.hasTag());
+        boolean durabilityOK = !checkDurability || (filterStack.getMaxDamage() > 0 && filterStack.getDamage() == stack.getDamage());
+        boolean nbtOK = !checkNBT || (filterStack.hasTag() ? filterStack.getTag().equals(stack.getTag()) : !stack.hasTag());
 
         return durabilityOK && nbtOK;
     }

@@ -21,7 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContainerPneumaticBase<T extends TileEntityBase> extends Container implements IGUIButtonSensitive {
-    private static final String[] ARMOR_SLOT_TEXTURES = new String[]{"item/empty_armor_slot_boots", "item/empty_armor_slot_leggings", "item/empty_armor_slot_chestplate", "item/empty_armor_slot_helmet"};
+    private static final String[] ARMOR_SLOT_TEXTURES = new String[]{
+            "item/empty_armor_slot_boots",
+            "item/empty_armor_slot_leggings",
+            "item/empty_armor_slot_chestplate",
+            "item/empty_armor_slot_helmet"
+    };
 
     public final T te;
     private final List<SyncedField> syncedFields = new ArrayList<>();
@@ -98,18 +103,22 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
     }
 
     protected void addPlayerSlots(PlayerInventory inventoryPlayer, int yOffset) {
+        addPlayerSlots(inventoryPlayer, 8, yOffset);
+    }
+
+    protected void addPlayerSlots(PlayerInventory inventoryPlayer, int xOffset, int yOffset) {
         playerSlotsStart = inventorySlots.size();
 
         // Add the player's inventory slots to the container
         for (int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
             for (int inventoryColumnIndex = 0; inventoryColumnIndex < 9; ++inventoryColumnIndex) {
-                addSlot(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 8 + inventoryColumnIndex * 18, yOffset + inventoryRowIndex * 18));
+                addSlot(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, xOffset + inventoryColumnIndex * 18, yOffset + inventoryRowIndex * 18));
             }
         }
 
         // Add the player's action bar slots to the container
         for (int actionBarSlotIndex = 0; actionBarSlotIndex < 9; ++actionBarSlotIndex) {
-            addSlot(new Slot(inventoryPlayer, actionBarSlotIndex, 8 + actionBarSlotIndex * 18, yOffset + 58));
+            addSlot(new Slot(inventoryPlayer, actionBarSlotIndex, xOffset + actionBarSlotIndex * 18, yOffset + 58));
         }
     }
 

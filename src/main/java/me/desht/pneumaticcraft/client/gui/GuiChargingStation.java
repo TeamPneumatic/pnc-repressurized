@@ -47,7 +47,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return Textures.GUI_CHARGING_STATION_LOCATION;
+        return Textures.GUI_CHARGING_STATION;
     }
 
     @Override

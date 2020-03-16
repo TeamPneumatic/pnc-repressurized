@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import me.desht.pneumaticcraft.common.inventory.handler.RenderedItemStackHandler;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
@@ -28,7 +28,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     public float clawProgress;
     public float oldClawProgress;
     @DescSynced
-    private final RenderedItemStackHandler itemHandler = new RenderedItemStackHandler(this);
+    private final BaseItemStackHandler itemHandler = new BaseItemStackHandler(this, 1);
 
     private Collection<IAssemblyRecipe> recipeList;
     private ItemStack searchedItemStack = ItemStack.EMPTY;

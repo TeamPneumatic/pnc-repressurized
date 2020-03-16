@@ -47,18 +47,13 @@ public class ModItems {
     public static final RegistryObject<Item> LOGISTICS_CORE = register("logistics_core");
     public static final RegistryObject<Item> UPGRADE_MATRIX = register("upgrade_matrix");
 
-    public static final RegistryObject<ItemGPSTool> GPS_TOOL = register("gps_tool",
-            ItemGPSTool::new);
-    public static final RegistryObject<ItemGPSAreaTool> GPS_AREA_TOOL = register("gps_area_tool",
-            ItemGPSAreaTool::new);
-    public static final RegistryObject<ItemRemote> REMOTE = register("remote",
-            ItemRemote::new);
-    public static final RegistryObject<ItemSeismicSensor> SEISMIC_SENSOR = register("seismic_sensor",
-            ItemSeismicSensor::new);
-    public static final RegistryObject<ItemMicromissiles> MICROMISSILES = register("micromissiles",
-            ItemMicromissiles::new);
-    public static final RegistryObject<ItemMemoryStick> MEMORY_STICK = register("memory_stick",
-            ItemMemoryStick::new);
+    public static final RegistryObject<ItemGPSTool> GPS_TOOL = register("gps_tool", ItemGPSTool::new);
+    public static final RegistryObject<ItemGPSAreaTool> GPS_AREA_TOOL = register("gps_area_tool", ItemGPSAreaTool::new);
+    public static final RegistryObject<ItemRemote> REMOTE = register("remote", ItemRemote::new);
+    public static final RegistryObject<ItemSeismicSensor> SEISMIC_SENSOR = register("seismic_sensor", ItemSeismicSensor::new);
+    public static final RegistryObject<ItemMicromissiles> MICROMISSILES = register("micromissiles", ItemMicromissiles::new);
+    public static final RegistryObject<ItemMemoryStick> MEMORY_STICK = register("memory_stick", ItemMemoryStick::new);
+    public static final RegistryObject<ItemTagFilter> TAG_FILTER = register("tag_filter", ItemTagFilter::new);
 
     public static final RegistryObject<ItemPressurizable> AIR_CANISTER = register("air_canister",
             () -> new ItemPressurizable(PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));

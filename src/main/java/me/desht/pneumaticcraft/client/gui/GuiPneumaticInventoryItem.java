@@ -37,7 +37,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return Textures.GUI_PNEUMATIC_ARMOR_LOCATION;
+        return Textures.GUI_PNEUMATIC_ARMOR;
     }
 
     @Override

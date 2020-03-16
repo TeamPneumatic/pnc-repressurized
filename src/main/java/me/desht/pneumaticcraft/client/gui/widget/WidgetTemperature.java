@@ -46,17 +46,21 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
             GlStateManager.color4f(1, 1, 1, 1);
             AbstractGui.blit(x + 6, y, 6, 0, 7, 50, 18, 50);
 
+            int h = height - 2;
+
             int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
-            int barLength = (temp - minTemp) * 48 / maxTemp;
-            barLength = MathHelper.clamp(barLength, 0, 48);
-            AbstractGui.blit(x + 7, y + 1 + 48 - barLength, 13, 48 - barLength, 5, barLength, 18, 50);
+            int barLength = (temp - minTemp) * h / maxTemp;
+            barLength = MathHelper.clamp(barLength, 0, h);
+            AbstractGui.blit(x + 7, y + 1 + h - barLength, 13, h - barLength, 5, barLength, 18, 50);
 
             for (int scale : scales) {
                 if (scale != 0) {
-                    int scaleY = 48 - (scale - minTemp) * 48 / maxTemp;
-                    AbstractGui.blit(x, y - 1 + scaleY, 0, 0, 6, 5, 18, 50);
+                    int scaleY = h - (scale - minTemp) * h / maxTemp;
+                    int v = scaleY < 0 ? 6 : (scaleY > 48 ? 12 : 0);
+                    AbstractGui.blit(x, y - 1 + MathHelper.clamp(scaleY, 0, h), 0, v, 6, 6, 18, 50);
                 }
             }
+
         }
     }
 

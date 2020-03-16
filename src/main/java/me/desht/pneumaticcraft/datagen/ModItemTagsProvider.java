@@ -6,6 +6,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.IItemProvider;
 import net.minecraftforge.common.Tags;
@@ -27,13 +28,22 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         copy(PneumaticCraftTags.Blocks.DOORS, PneumaticCraftTags.Items.DOORS);
         copy(PneumaticCraftTags.Blocks.STORAGE_BLOCKS_COMPRESSED_IRON, PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON);
         copy(PneumaticCraftTags.Blocks.PLASTIC_BRICKS, PneumaticCraftTags.Items.PLASTIC_BRICKS);
+        copy(PneumaticCraftTags.Blocks.FLUID_TANKS, PneumaticCraftTags.Items.FLUID_TANKS);
+        copy(PneumaticCraftTags.Blocks.CHESTS, PneumaticCraftTags.Items.CHESTS);
+
+        appendToTag(ItemTags.SLABS, PneumaticCraftTags.Items.SLABS);
+        appendToTag(ItemTags.STAIRS, PneumaticCraftTags.Items.STAIRS);
+        appendToTag(ItemTags.WALLS, PneumaticCraftTags.Items.WALLS);
+        appendToTag(ItemTags.DOORS, PneumaticCraftTags.Items.DOORS);
+        appendToTag(Tags.Items.STORAGE_BLOCKS, PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON);
+        appendToTag(Tags.Items.CHESTS, PneumaticCraftTags.Items.CHESTS);
 
         addItemsToTag(PneumaticCraftTags.Items.UPGRADE_COMPONENT, ModItems.UPGRADE_MATRIX, () -> Items.LAPIS_LAZULI);
 
-        addItemsToTag(CurioTags.CURIO, ModItems.MEMORY_STICK);
-
         addItemsToTag(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, ModItems.COMPRESSED_IRON_INGOT);
         appendToTag(Tags.Items.INGOTS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON);
+
+        addItemsToTag(CurioTags.CURIO, ModItems.MEMORY_STICK);
     }
 
     @SafeVarargs

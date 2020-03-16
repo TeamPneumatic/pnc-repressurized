@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +28,6 @@ public class ProgWidgetComment extends ProgWidgetText {
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(new TranslationTextComponent("gui.progWidget.comment.tooltip.freeToUse"));
     }
 
     @Override
@@ -62,4 +60,8 @@ public class ProgWidgetComment extends ProgWidgetText {
         return string;
     }
 
+    @Override
+    public boolean freeToUse() {
+        return true;
+    }
 }

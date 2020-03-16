@@ -419,8 +419,10 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public int getRequiredPuzzleCount() {
         ItemStack stackInSlot = inventory.getStackInSlot(PROGRAM_SLOT);
         if (!stackInSlot.isEmpty() && ((IProgrammable) stackInSlot.getItem()).usesPieces(stackInSlot)) {
-            int dronePieces = getProgWidgets(stackInSlot).size();
-            return progWidgets.size() - dronePieces;
+            List<IProgWidget> inDrone = getProgWidgets(stackInSlot);
+            int dronePieces = (int) inDrone.stream().filter(p -> !p.freeToUse()).count();
+            int required = (int) progWidgets.stream().filter(p -> !p.freeToUse()).count();
+            return required - dronePieces;
         } else {
             return 0;
         }

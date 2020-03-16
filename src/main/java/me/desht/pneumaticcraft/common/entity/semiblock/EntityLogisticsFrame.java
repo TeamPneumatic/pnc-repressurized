@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
-import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
@@ -18,7 +17,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -38,7 +36,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -48,13 +45,14 @@ import java.util.*;
 public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
     public static final String NBT_INVISIBLE = "invisible";
     public static final String NBT_MATCH_NBT = "matchNBT";
-    public static final String NBT_MATCH_TAGS = "matchTags";
+    public static final String NBT_MATCH_DURABILITY = "matchDurability";
+    public static final String NBT_MATCH_MODID = "matchModID";
     public static final String NBT_WHITELIST = "whitelist";
     public static final String NBT_ITEM_FILTERS = "filters";
     public static final String NBT_FLUID_FILTERS = "fluidFilters";
     private static final String NBT_SIDE = "side";
 
-    public static final int ITEM_FILTER_SLOTS = 27;
+    private static final int ITEM_FILTER_SLOTS = 27;
     public static final int FLUID_FILTER_SLOTS = 9;
 
     private static final DataParameter<Boolean> INVISIBLE = EntityDataManager.createKey(EntityLogisticsFrame.class, DataSerializers.BOOLEAN);
@@ -62,10 +60,11 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
 
     private final Map<ItemStack, Integer> incomingStacks = new HashMap<>();
     private final Map<FluidStack, Integer> incomingFluid = new IdentityHashMap<>();
-    private final ItemStackHandler filters = new ItemStackHandler(ITEM_FILTER_SLOTS);
+    private final ItemFilterHandler itemFilterHandler = new ItemFilterHandler(ITEM_FILTER_SLOTS);
     private FluidFilter fluidFilters = new FluidFilter(FLUID_FILTER_SLOTS);
     private boolean matchNBT = false;
-    private boolean matchTags = false;
+    private boolean matchDurability = false;
+    private boolean matchModId = false;
     private boolean whiteList = true;
     private int alpha = 255;
     public final double antiZfight;  // prevents frames on adjacent full-blocks from z-fighting
@@ -169,12 +168,20 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
         this.matchNBT = matchNBT;
     }
 
-    public boolean isMatchTags() {
-        return matchTags;
+    public boolean isMatchDurability() {
+        return matchDurability;
     }
 
-    public void setMatchTags(boolean matchTags) {
-        this.matchTags = matchTags;
+    public void setMatchDurability(boolean matchDurability) {
+        this.matchDurability = matchDurability;
+    }
+
+    public boolean isMatchModId() {
+        return matchModId;
+    }
+
+    public void setMatchModId(boolean matchModId) {
+        this.matchModId = matchModId;
     }
 
     @Override
@@ -239,7 +246,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
     public int getIncomingItems(ItemStack stack) {
         int count = 0;
         for (ItemStack s : incomingStacks.keySet()) {
-            if (matchItems(s, stack)) {
+            if (itemFilterHandler.matchOneItem(s, stack)) {
                 count += s.getCount();
             }
         }
@@ -247,7 +254,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
     }
 
     public void setItemFilter(int slot, ItemStack stack) {
-        filters.setStackInSlot(slot, stack);
+        itemFilterHandler.setStackInSlot(slot, stack);
     }
 
     public void setFluidFilter(int filterIndex, FluidStack stack) {
@@ -258,19 +265,20 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
         return fluidFilters.fluidStacks.get(filterIndex);
     }
 
-    public IItemHandlerModifiable getFilters() {
-        return filters;
+    public ItemFilterHandler getItemFilterHandler() {
+        return itemFilterHandler;
     }
 
     @Override
     protected void readAdditional(CompoundNBT tag) {
         super.readAdditional(tag);
 
-        filters.deserializeNBT(tag.getCompound(NBT_ITEM_FILTERS));
+        itemFilterHandler.deserializeNBT(tag.getCompound(NBT_ITEM_FILTERS));
         fluidFilters.deserializeNBT(tag.getCompound(NBT_FLUID_FILTERS));
         setSemiblockInvisible(tag.getBoolean(NBT_INVISIBLE));
         setMatchNBT(tag.getBoolean(NBT_MATCH_NBT));
-        setMatchTags(tag.getBoolean(NBT_MATCH_TAGS));
+        setMatchDurability(tag.getBoolean(NBT_MATCH_DURABILITY));
+        setMatchModId(tag.getBoolean(NBT_MATCH_MODID));
         setWhiteList(tag.getBoolean(NBT_WHITELIST));
         setFacing(tag.contains(NBT_SIDE) ? Direction.byIndex(tag.getInt(NBT_SIDE)) : Direction.UP);
     }
@@ -279,11 +287,12 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
     public CompoundNBT serializeNBT(CompoundNBT tag) {
         tag = super.serializeNBT(tag);
 
-        tag.put(NBT_ITEM_FILTERS, filters.serializeNBT());
+        tag.put(NBT_ITEM_FILTERS, itemFilterHandler.serializeNBT());
         tag.put(NBT_FLUID_FILTERS, fluidFilters.serializeNBT());
         tag.putBoolean(NBT_INVISIBLE, isSemiblockInvisible());
         tag.putBoolean(NBT_MATCH_NBT, isMatchNBT());
-        tag.putBoolean(NBT_MATCH_TAGS, isMatchTags());
+        tag.putBoolean(NBT_MATCH_DURABILITY, isMatchDurability());
+        tag.putBoolean(NBT_MATCH_MODID, isMatchModId());
         tag.putBoolean(NBT_WHITELIST, isWhiteList());
         if (getFacing() != null) tag.putInt(NBT_SIDE, getFacing().getIndex());
 
@@ -302,41 +311,23 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
     }
 
     boolean passesFilter(ItemStack stack) {
-        boolean hasStack = false;
-        for (int i = 0; i < filters.getSlots(); i++) {
-            ItemStack s = filters.getStackInSlot(i);
-            if (!s.isEmpty()) {
-                if (matchItems(s, stack)) return true;
-                hasStack = true;
-            }
-        }
-        return !hasStack;
+        return itemFilterHandler.isEmpty() || itemFilterHandler.match(stack) == isWhiteList();
     }
 
     boolean passesFilter(Fluid fluid) {
         boolean hasFilter = false;
-        for (FluidStack stack : fluidFilters.fluidStacks) {
-            if (stack.getAmount() > 0) {
-                if (matchFluids(stack.getFluid(), fluid)) return true;
+        for (FluidStack filterStack : fluidFilters.fluidStacks) {
+            if (filterStack.getAmount() > 0) {
+                if (matchFluids(filterStack, fluid)) return true;
                 hasFilter = true;
             }
         }
         return !hasFilter;
     }
 
-    boolean matchItems(ItemStack s1, ItemStack s2) {
-        boolean matched = !s1.isEmpty()
-                && tryMatchItem(s1.getItem(), s2.getItem())
-                && (!isMatchNBT() || ItemStack.areItemStackTagsEqual(s1, s2));
-        return matched == isWhiteList();
-    }
-
-    private boolean tryMatchItem(Item i1, Item i2) {
-        return i1 == i2 || matchTags && !Sets.intersection(i1.getTags(), i2.getTags()).isEmpty();
-    }
-
-    private boolean matchFluids(Fluid f1, Fluid f2) {
-        return f1 == f2 || matchTags && !Sets.intersection(f1.getTags(), f2.getTags()).isEmpty();
+    private boolean matchFluids(FluidStack filterStack, Fluid fluid) {
+        // TODO tag matcher fluid support
+        return filterStack.getFluid() == fluid;
     }
 
     @Override
@@ -391,11 +382,12 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
 
         payload.writeBoolean(isSemiblockInvisible());
         payload.writeBoolean(whiteList);
-        payload.writeBoolean(matchTags);
         payload.writeBoolean(matchNBT);
-        payload.writeVarInt(filters.getSlots());
-        for (int i = 0; i < filters.getSlots(); i++) {
-            payload.writeItemStack(filters.getStackInSlot(i));
+        payload.writeBoolean(matchDurability);
+        payload.writeBoolean(matchModId);
+        payload.writeVarInt(itemFilterHandler.getSlots());
+        for (int i = 0; i < itemFilterHandler.getSlots(); i++) {
+            payload.writeItemStack(itemFilterHandler.getStackInSlot(i));
         }
         fluidFilters.write(payload);
     }
@@ -406,13 +398,76 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
 
         setSemiblockInvisible(payload.readBoolean());
         whiteList = payload.readBoolean();
-        matchTags = payload.readBoolean();
         matchNBT = payload.readBoolean();
+        matchDurability = payload.readBoolean();
+        matchModId = payload.readBoolean();
         int size = payload.readVarInt();
         for (int i = 0; i < size; i++) {
-            filters.setStackInSlot(i, payload.readItemStack());
+            itemFilterHandler.setStackInSlot(i, payload.readItemStack());
         }
         fluidFilters = new FluidFilter(payload);
+    }
+
+    /**
+     * Specialised item handler which caches a list of non-empty filter stacks, for more efficient iteration over them.
+     */
+    public class ItemFilterHandler extends ItemStackHandler {
+        private final List<ItemStack> filterStacks = new ArrayList<>();
+
+        ItemFilterHandler(int size) {
+            super(size);
+        }
+
+        boolean match(ItemStack stack) {
+            for (ItemStack filterStack : filterStacks) {
+                if (matchOneItem(filterStack, stack)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        int getMatchedCount(ItemStack stack) {
+            int count = 0;
+            for (ItemStack filterStack : filterStacks) {
+                if (matchOneItem(filterStack, stack)) {
+                    count += filterStack.getCount();
+                }
+            }
+            return count;
+        }
+
+        boolean matchOneItem(ItemStack filterStack, ItemStack stack) {
+            return !filterStack.isEmpty()
+                    && PneumaticCraftUtils.doesItemMatchFilter(filterStack, stack, isMatchDurability(), isMatchNBT(), isMatchModId());
+        }
+
+        private void buildFilterList() {
+            filterStacks.clear();
+            for (int i = 0; i < getSlots(); i++) {
+                if (!getStackInSlot(i).isEmpty()) {
+                    filterStacks.add(getStackInSlot(i));
+                }
+            }
+        }
+
+        @Override
+        public void deserializeNBT(CompoundNBT nbt) {
+            super.deserializeNBT(nbt);
+
+            buildFilterList();
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+
+            buildFilterList();
+        }
+
+        public boolean isEmpty() {
+            return filterStacks.isEmpty();
+        }
     }
 
     public static class FluidFilter implements INBTSerializable<CompoundNBT> {

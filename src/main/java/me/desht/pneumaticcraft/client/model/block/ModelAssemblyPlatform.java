@@ -3,16 +3,18 @@ package me.desht.pneumaticcraft.client.model.block;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.GuiRegistry;
-import me.desht.pneumaticcraft.client.render.StaticItemRenderer;
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.model.RendererModel;
-import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
 
 public class ModelAssemblyPlatform extends AbstractTileModelRenderer.BaseModel {
+    private static final float ITEM_SCALE = 0.5F;
+
     private final RendererModel claw1;
     private final RendererModel claw2;
-    private StaticItemRenderer customRenderItem = null;
 
     public ModelAssemblyPlatform() {
         textureWidth = 64;
@@ -32,19 +34,14 @@ public class ModelAssemblyPlatform extends AbstractTileModelRenderer.BaseModel {
         setRotation(claw2, 0F, 0F, 0F);
     }
 
-    public void renderModel(float size, float progress, ItemEntity carriedItem) {
+    public void renderModel(float size, float progress, ItemStack carriedItem) {
         float clawTrans;
-        float scaleFactor = 0.7F;
-
-        if (customRenderItem == null) {
-            customRenderItem = new StaticItemRenderer();
-        }
 
         IAssemblyRenderOverriding renderOverride = null;
-        if (carriedItem != null) {
+        if (!carriedItem.isEmpty()) {
             renderOverride = GuiRegistry.renderOverrides.get(carriedItem.getItem().getItem().getRegistryName());
             if(renderOverride != null) {
-                clawTrans = renderOverride.getPlatformClawShift(carriedItem.getItem());
+                clawTrans = renderOverride.getPlatformClawShift(carriedItem);
             } else {
                 if (carriedItem.getItem().getItem() instanceof BlockItem) {
                     clawTrans = 1.5F / 16F - progress * 0.1F / 16F;
@@ -63,13 +60,13 @@ public class ModelAssemblyPlatform extends AbstractTileModelRenderer.BaseModel {
         claw2.render(size);
         GlStateManager.popMatrix();
 
-        if (carriedItem != null) {
-            if (renderOverride == null || renderOverride.applyRenderChangePlatform(carriedItem.getItem())) {
+        if (!carriedItem.isEmpty()) {
+            if (renderOverride == null || renderOverride.applyRenderChangePlatform(carriedItem)) {
                 GlStateManager.rotated(180, 1, 0, 0);
                 double yOffset = carriedItem.getItem().getItem() instanceof BlockItem ? -16.5 / 16F : -17.5 / 16F;
-                GlStateManager.translated(0, yOffset - 0.2, 0);
-                GlStateManager.scaled(scaleFactor, scaleFactor, scaleFactor);
-                customRenderItem.doRender(carriedItem, 0, 0, 0, 0, 0);
+                GlStateManager.translated(0, yOffset + 0.05, 0);
+                GlStateManager.scaled(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
+                Minecraft.getInstance().getItemRenderer().renderItem(carriedItem, ItemCameraTransforms.TransformType.FIXED);
             }
         }
     }

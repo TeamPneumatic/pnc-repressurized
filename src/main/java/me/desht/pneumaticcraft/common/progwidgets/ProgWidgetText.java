@@ -33,7 +33,9 @@ public class ProgWidgetText extends ProgWidget {
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        if (addToTooltip()) curTooltip.add(new StringTextComponent("Value: \"" + string + "\""));
+        if (addToTooltip()) {
+            curTooltip.add(new StringTextComponent("Value: \"" + string + "\""));
+        }
     }
 
     protected boolean addToTooltip() {

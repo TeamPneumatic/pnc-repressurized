@@ -124,6 +124,7 @@ public class ClientSetup {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyLaser.class, new RenderAssemblyLaser());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyDrill.class, new RenderAssemblyDrill());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityChargingStation.class, new RenderChargingStation());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDisplayTable.class, new RenderDisplayTable());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorBase.class, new RenderElevatorBase());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorCaller.class, new RenderElevatorCaller());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEtchingTank.class, new RenderEtchingTank());
@@ -138,6 +139,7 @@ public class ClientSetup {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFluidTank.Small.class, new RenderFluidTank());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFluidTank.Medium.class, new RenderFluidTank());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFluidTank.Large.class, new RenderFluidTank());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTagWorkbench.class, new RenderTagWorkbench());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityThermopneumaticProcessingPlant.class, new RenderThermopneumaticProcessingPlant());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityUniversalSensor.class, new RenderUniversalSensor());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVacuumPump.class, new RenderVacuumPump());
@@ -187,6 +189,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.SECURITY_STATION_HACKING.get(), GuiSecurityStationHacking::new);
         ScreenManager.registerFactory(ModContainers.SENTRY_TURRET.get(), GuiSentryTurret::new);
         ScreenManager.registerFactory(ModContainers.SMART_CHEST.get(), GuiSmartChest::new);
+        ScreenManager.registerFactory(ModContainers.TAG_MATCHER.get(), GuiTagWorkbench::new);
         ScreenManager.registerFactory(ModContainers.THERMAL_COMPRESSOR.get(), GuiThermalCompressor::new);
         ScreenManager.registerFactory(ModContainers.THERMOPNEUMATIC_PROCESSING_PLANT.get(), GuiThermopneumaticProcessingPlant::new);
         ScreenManager.registerFactory(ModContainers.UNIVERSAL_SENSOR.get(), GuiUniversalSensor::new);
@@ -235,6 +238,7 @@ public class ClientSetup {
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetRedstoneCondition.class, GuiProgWidgetCondition::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEnergyCondition.class, GuiProgWidgetCondition::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetText.class, GuiProgWidgetString::new);
+        ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetComment.class, GuiProgWidgetString::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetTeleport.class, GuiProgWidgetGoToLocation::new);
     }
 

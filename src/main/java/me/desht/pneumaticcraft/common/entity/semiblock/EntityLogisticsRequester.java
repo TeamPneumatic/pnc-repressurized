@@ -112,7 +112,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
                 int count = 0;
                 for (int i = 0; i < itemHandler.getSlots(); i++) {
                     ItemStack s = itemHandler.getStackInSlot(i);
-                    if (!s.isEmpty() && matchItems(s, stack)) {
+                    if (!s.isEmpty() && getItemFilterHandler().matchOneItem(s, stack)) {
                         count += s.getCount();
                     }
                 }
@@ -143,14 +143,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     }
 
     private int getTotalRequestedAmount(ItemStack stack) {
-        int requesting = 0;
-        for (int i = 0; i < getFilters().getSlots(); i++) {
-            ItemStack requestingStack = getFilters().getStackInSlot(i);
-            if (!requestingStack.isEmpty() && matchItems(stack, requestingStack)) {
-                requesting += requestingStack.getCount();
-            }
-        }
-        return requesting;
+        return getItemFilterHandler().getMatchedCount(stack);
     }
 
     private int getTotalRequestedAmount(FluidStack stack) {

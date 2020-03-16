@@ -69,11 +69,14 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
                 if (tag.getBoolean(EntityLogisticsFrame.NBT_INVISIBLE)) {
                     curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.invisible")).applyTextStyle(TextFormatting.YELLOW));
                 }
-                if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_TAGS)) {
-                    curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.matchTags")).applyTextStyle(TextFormatting.YELLOW));
+                if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_DURABILITY)) {
+                    curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.matchDurability")).applyTextStyle(TextFormatting.YELLOW));
                 }
                 if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_NBT)) {
                     curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.matchNBT")).applyTextStyle(TextFormatting.YELLOW));
+                }
+                if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_MODID)) {
+                    curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.matchModId")).applyTextStyle(TextFormatting.YELLOW));
                 }
 
                 boolean whitelist = tag.getBoolean(EntityLogisticsFrame.NBT_WHITELIST);

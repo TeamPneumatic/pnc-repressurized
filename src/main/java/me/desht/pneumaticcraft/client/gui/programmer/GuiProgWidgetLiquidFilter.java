@@ -36,7 +36,7 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
 
     @Override
     protected ResourceLocation getTexture() {
-        return Textures.GUI_ITEM_SEARCHER_LOCATION;
+        return Textures.GUI_ITEM_SEARCHER;
     }
 
     @Override

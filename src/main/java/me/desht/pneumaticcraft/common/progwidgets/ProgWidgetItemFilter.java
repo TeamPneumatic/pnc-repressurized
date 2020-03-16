@@ -27,7 +27,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget {
     private ItemStack filter = ItemStack.EMPTY;
-    public boolean useItemDurability, useNBT, useItemTags, useModSimilarity, matchBlock;
+    public boolean useItemDurability;
+    public boolean useNBT;
+    public boolean useModSimilarity;
+    public boolean matchBlock;
     private DroneAIManager aiManager;
     private String variable = "";
 
@@ -78,7 +81,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     public void setFilter(@Nonnull ItemStack filter) {
-        this.filter = filter;
+        this.filter = filter.copy();
     }
 
     @Override
@@ -86,9 +89,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         super.getTooltip(curTooltip);
         if (!filter.isEmpty()) {
             curTooltip.add(new StringTextComponent("Filter: ").applyTextStyle(TextFormatting.AQUA).appendSibling(filter.getDisplayName()));
-            if (useItemTags) {
-                curTooltip.add(new StringTextComponent("- Using Item Tag Similarity").applyTextStyle(TextFormatting.DARK_AQUA));
-            } else if (useModSimilarity) {
+            if (useModSimilarity) {
                 curTooltip.add(new StringTextComponent("- Using Mod Similarity").applyTextStyle(TextFormatting.DARK_AQUA));
             } else {
                 curTooltip.add(new StringTextComponent((useItemDurability ? "Using" : "Ignoring") + " item damage").applyTextStyle(TextFormatting.DARK_AQUA));
@@ -129,7 +130,6 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         }
         tag.putBoolean("useMetadata", useItemDurability);
         tag.putBoolean("useNBT", useNBT);
-        tag.putBoolean("useOreDict", useItemTags);
         tag.putBoolean("useModSimilarity", useModSimilarity);
         tag.putBoolean("matchBlock", matchBlock);
         tag.putString("variable", variable);
@@ -141,7 +141,6 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         filter = ItemStack.read(tag);
         useItemDurability = tag.getBoolean("useMetadata");
         useNBT = tag.getBoolean("useNBT");
-        useItemTags = tag.getBoolean("useOreDict");
         useModSimilarity = tag.getBoolean("useModSimilarity");
         matchBlock = tag.getBoolean("matchBlock");
         variable = tag.getString("variable");
@@ -153,7 +152,6 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         buf.writeItemStack(filter);
         buf.writeBoolean(useItemDurability);
         buf.writeBoolean(useNBT);
-        buf.writeBoolean(useItemTags);
         buf.writeBoolean(useModSimilarity);
         buf.writeBoolean(matchBlock);
         buf.writeString(variable);
@@ -165,7 +163,6 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         filter = buf.readItemStack();
         useItemDurability = buf.readBoolean();
         useNBT = buf.readBoolean();
-        useItemTags = buf.readBoolean();
         useModSimilarity = buf.readBoolean();
         matchBlock = buf.readBoolean();
         variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
@@ -193,7 +190,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
             return blockState.getBlock() == ((BlockItem) filter.getFilter().getItem()).getBlock();
         } else {
             // match by item
-            if (PneumaticCraftUtils.areStacksEquivalent(filter.getFilter(), stack, filter.useItemDurability && blockState == null, filter.useNBT, filter.useItemTags, filter.useModSimilarity)) {
+            if (PneumaticCraftUtils.doesItemMatchFilter(filter.getFilter(), stack, filter.useItemDurability && blockState == null, filter.useNBT, filter.useModSimilarity)) {
                 return blockState == null || !filter.useItemDurability;
             }
         }

@@ -1,11 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "C",
-    "P",
-    "C"
+    "DPD",
+    "CHC"
   ],
   "key": {
+    "D": {
+      "tag": "forge:gems/diamond"
+    },
+    "H": {
+      "item": "pneumaticcraft:omnidirectional_hopper"
+    },
     "C": {
       "item": "pneumaticcraft:reinforced_chest"
     },

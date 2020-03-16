@@ -41,8 +41,8 @@ public class GuiProgWidgetString extends GuiProgWidgetOptionBase<ProgWidgetText>
 
     @Override
     public void onClose() {
-        super.onClose();
-
         progWidget.string = textfield.getText();
+
+        super.onClose();
     }
 }

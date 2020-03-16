@@ -56,7 +56,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return Textures.GUI_AIR_CANNON_LOCATION;
+        return Textures.GUI_AIR_CANNON;
     }
 
     @Override

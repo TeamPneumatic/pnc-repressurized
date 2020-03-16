@@ -16,6 +16,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
@@ -52,6 +53,9 @@ public abstract class ProgWidget implements IProgWidget {
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         curTooltip.add(xlate(getTranslationKey()).applyTextStyles(TextFormatting.DARK_AQUA, TextFormatting.UNDERLINE));
+        if (freeToUse()) {
+            curTooltip.add(new TranslationTextComponent("gui.progWidget.comment.tooltip.freeToUse"));
+        }
     }
 
     public String getExtraStringInfo() {

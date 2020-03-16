@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "pneumaticcraft:block/tag_workbench" },
+    "facing=south": { "model": "pneumaticcraft:block/tag_workbench", "y": 180 },
+    "facing=west": { "model": "pneumaticcraft:block/tag_workbench", "y": 90 },
+    "facing=east": { "model": "pneumaticcraft:block/tag_workbench", "y": 270 }
+  }
+}

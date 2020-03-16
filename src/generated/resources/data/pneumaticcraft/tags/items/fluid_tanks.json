@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "pneumaticcraft:small_tank",
+    "pneumaticcraft:medium_tank",
+    "pneumaticcraft:large_tank"
+  ]
+}

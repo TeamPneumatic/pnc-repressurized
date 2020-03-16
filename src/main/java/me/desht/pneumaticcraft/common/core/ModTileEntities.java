@@ -122,6 +122,11 @@ public class ModTileEntities {
             = register("reinforced_chest", () -> new TileEntityType<>(TileEntityReinforcedChest::new, ImmutableSet.of(ModBlocks.REINFORCED_CHEST.get()),null));
     public static final RegistryObject<TileEntityType<TileEntitySmartChest>> SMART_CHEST
             = register("smart_chest", () -> new TileEntityType<>(TileEntitySmartChest::new, ImmutableSet.of(ModBlocks.SMART_CHEST.get()), null));
+    public static final RegistryObject<TileEntityType<TileEntityTagWorkbench>> TAG_WORKBENCH
+            = register("tag_workbench", () -> new TileEntityType<>(TileEntityTagWorkbench::new, ImmutableSet.of(ModBlocks.TAG_WORKBENCH.get()), null));
+    public static final RegistryObject<TileEntityType<TileEntityDisplayTable>> DISPLAY_TABLE
+            = register("display_table", () -> new TileEntityType<>(TileEntityDisplayTable::new, ImmutableSet.of(ModBlocks.DISPLAY_TABLE.get()),
+            null));
 
     private static <T extends TileEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return TILE_ENTITIES.register(name, sup);
