@@ -119,8 +119,10 @@ public class NetworkHandler {
 				PacketAmadronTradeNotifyDeal::toBytes, PacketAmadronTradeNotifyDeal::new, PacketAmadronTradeNotifyDeal::handle);
 		registerMessage(PacketAmadronTradeRemoved.class,
 				PacketAmadronTradeRemoved::toBytes, PacketAmadronTradeRemoved::new, PacketAmadronTradeRemoved::handle);
-		registerMessage(PacketUpdateLogisticModule.class,
-				PacketUpdateLogisticModule::toBytes, PacketUpdateLogisticModule::new, PacketUpdateLogisticModule::handle);
+		registerMessage(PacketUpdateLogisticsModule.class,
+				PacketUpdateLogisticsModule::toBytes, PacketUpdateLogisticsModule::new, PacketUpdateLogisticsModule::handle);
+		registerMessage(PacketTubeModuleColor.class,
+				PacketTubeModuleColor::toBytes, PacketTubeModuleColor::new, PacketTubeModuleColor::handle);
 		registerMessage(PacketSyncRedstoneModuleToClient.class,
 				PacketSyncRedstoneModuleToClient::toBytes, PacketSyncRedstoneModuleToClient::new, PacketSyncRedstoneModuleToClient::handle);
 		registerMessage(PacketSyncRedstoneModuleToServer.class,

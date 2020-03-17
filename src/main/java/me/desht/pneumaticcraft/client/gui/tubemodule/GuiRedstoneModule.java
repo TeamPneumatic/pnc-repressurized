@@ -8,17 +8,15 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToServer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.dyeColorDesc;
 
@@ -27,21 +25,23 @@ public class GuiRedstoneModule extends GuiTubeModule {
     private WidgetLabel constLabel;
     private WidgetTextFieldNumber textField;
     private WidgetLabel otherColorLabel;
-    private WidgetButtonExtended ourColorButton;
-    private WidgetButtonExtended otherColorButton;
+    private WidgetColorSelector otherColorButton;
     private int ourColor;
     private int otherColor;
     private WidgetCheckBox invertCheckBox;
+    private boolean upgraded;
+    private boolean output;
+    private final List<String> lowerText = new ArrayList<>();
 
     public GuiRedstoneModule(BlockPos modulePos) {
         super(modulePos);
 
-        ySize = 202;
+        ySize = ((ModuleRedstone) module).getRedstoneDirection() == ModuleRedstone.EnumRedstoneDirection.OUTPUT ? 202 : 57;
     }
 
     @Override
     protected ResourceLocation getTexture() {
-        return Textures.GUI_WIDGET_OPTIONS;
+        return output ? Textures.GUI_WIDGET_OPTIONS : Textures.GUI_MODULE_SIMPLE;
     }
 
     @Override
@@ -49,22 +49,27 @@ public class GuiRedstoneModule extends GuiTubeModule {
         super.init();
 
         ModuleRedstone mr = (ModuleRedstone) module;
+        upgraded = mr.isUpgraded();
+        output = mr.getRedstoneDirection() == ModuleRedstone.EnumRedstoneDirection.OUTPUT;
         ourColor = mr.getColorChannel();
         otherColor = mr.getOtherColor();
 
-        addButton(new WidgetLabel(guiLeft + xSize / 2, guiTop + 5, "Redstone Module").setAlignment(WidgetLabel.Alignment.CENTRE));
+        addButton(new WidgetLabel(guiLeft + xSize / 2, guiTop + 5, getTitle().getFormattedText()).setAlignment(WidgetLabel.Alignment.CENTRE));
 
         WidgetLabel ourColorLabel;
-        addButton(ourColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 20, "Our Color"));
+        addButton(ourColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 25, I18n.format("gui.tubeModule.channel")));
 
         WidgetLabel opLabel;
-        addButton(opLabel = new WidgetLabel(guiLeft + 10, guiTop + 40, "Operation"));
+        addButton(opLabel = new WidgetLabel(guiLeft + 10, guiTop + 45, I18n.format("gui.redstoneModule.operation")));
+        opLabel.visible = output;
 
-        otherColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 60, "Other Color");
+        otherColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 65, I18n.format("gui.tubeModule.otherChannel"));
+        otherColorLabel.visible = output;
         addButton(otherColorLabel);
 
-        constLabel = new WidgetLabel(guiLeft + 15, guiTop + 60, "Constant");
+        constLabel = new WidgetLabel(guiLeft + 15, guiTop + 65, I18n.format("gui.redstoneModule.constant"));
         addButton(constLabel);
+        constLabel.visible = output;
 
         int w = 0;
         for (WidgetLabel label : ImmutableList.of(ourColorLabel, otherColorLabel, opLabel, constLabel)) {
@@ -72,64 +77,57 @@ public class GuiRedstoneModule extends GuiTubeModule {
         }
         int xBase = guiLeft + w + 15;
 
-        // TODO add a proper colour selector widget
-        ourColorButton = new WidgetButtonExtended(xBase, guiTop + 15, 20, 20, "*", b -> {
-            if (Screen.hasShiftDown()) {
-                if (--ourColor < 0) ourColor = 15;
-            } else {
-                if (++ourColor > 15) ourColor = 0;
-            }
-        }).setRenderStacks(getColourItem(ourColor));
-        addButton(ourColorButton);
+        addButton(new WidgetColorSelector(xBase, guiTop + 20, b -> ourColor = b.getColor().getId())
+                .withInitialColor(DyeColor.byId(ourColor)));
+
+        if (!output) return;
 
         List<String> ops = new ArrayList<>();
         for (Operation op : Operation.values()) {
             ops.add(I18n.format(op.getTranslationKey()));
         }
-        comboBox = new WidgetComboBox(font, xBase, guiTop + 39, xSize - xBase + guiLeft - 10, 12)
+        comboBox = new WidgetComboBox(font, xBase, guiTop + 43, xSize - xBase + guiLeft - 10, 12)
                 .setFixedOptions().setShouldSort(false).setElements(ops);
         comboBox.selectElement(mr.getOperation().ordinal());
+        comboBox.active = upgraded;
         addButton(comboBox);
 
-        otherColorButton = new WidgetButtonExtended(xBase, guiTop + 55, 20, 20, "*", b -> {
-            if (Screen.hasShiftDown()) {
-                if (--otherColor < 0) otherColor = 15;
-            } else {
-                if (++otherColor > 15) otherColor = 0;
-            }
-        }).setRenderStacks(getColourItem(otherColor));
+        otherColorButton = new WidgetColorSelector(xBase, guiTop + 60, b -> otherColor = b.getColor().getId())
+                .withInitialColor(DyeColor.byId(otherColor));
+        otherColorButton.active = upgraded;
         addButton(otherColorButton);
 
-        textField = new WidgetTextFieldNumber(font, xBase, guiTop + 58, 30, 12);
+        textField = new WidgetTextFieldNumber(font, xBase, guiTop + 63, 30, 12);
         textField.minValue = 0;
         textField.setDecimals(0);
         textField.setValue(mr.getConstantVal());
+        textField.active = upgraded;
         addButton(textField);
 
-        invertCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 80, 0xFF404040, "Invert Output?") {
+        invertCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 85, 0xFF404040, I18n.format("gui.redstoneModule.invert")) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (comboBox.isFocused()) return true;  // it hangs over the button
                 return super.mouseClicked(mouseX, mouseY, button);
             }
         };
-        invertCheckBox.checked = mr.isInvert();
+        invertCheckBox.checked = mr.isInverted();
         invertCheckBox.setTooltip(I18n.format("gui.redstoneModule.invert.tooltip"));
         addButton(invertCheckBox);
 
         updateWidgetVisibility();
     }
 
-    private ItemStack getColourItem(int colour) {
-        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation("minecraft", DyeColor.byId(colour).getName() + "_concrete"));
-        return new ItemStack(item);
-    }
-
     @Override
     public void tick() {
         super.tick();
 
-        updateWidgetVisibility();
+        if (output) {
+            if (upgraded) {
+                updateWidgetVisibility();
+            }
+            updateLowerText();
+        }
     }
 
     private void updateWidgetVisibility() {
@@ -139,15 +137,10 @@ public class GuiRedstoneModule extends GuiTubeModule {
         otherColorLabel.visible = op.useOtherColor();
         otherColorButton.visible = op.useOtherColor();
         otherColorButton.setVisible(op.useOtherColor());
-        ourColorButton.setRenderStacks(getColourItem(ourColor));
-        otherColorButton.setRenderStacks(getColourItem(otherColor));
     }
 
-    @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
-
-        minecraft.getTextureManager().bindTexture(getTexture());
+    private void updateLowerText() {
+        lowerText.clear();
 
         Operation op = getSelectedOp();
         String key = op.getTranslationKey() + ".tooltip";
@@ -159,10 +152,22 @@ public class GuiRedstoneModule extends GuiTubeModule {
         } else {
             s = I18n.format(key, dyeColorDesc(ourColor));
         }
-        List<String> l = PneumaticCraftUtils.splitString(s, 30);
-        int yBase = guiTop + ySize - l.size() * font.FONT_HEIGHT - 10;
-        for (int i = 0; i < l.size(); i++) {
-            font.drawString(l.get(i), guiLeft + 10, yBase + i * font.FONT_HEIGHT, 0xFF404040);
+        lowerText.addAll(PneumaticCraftUtils.splitString(s, 30));
+        if (!upgraded) {
+            List<String> extra = PneumaticCraftUtils.splitString(I18n.format("gui.redstoneModule.addAdvancedPCB"), 30).stream()
+                    .map(str -> TextFormatting.DARK_BLUE + str)
+                    .collect(Collectors.toList());
+            lowerText.addAll(extra);
+        }
+    }
+
+    @Override
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        super.render(mouseX, mouseY, partialTicks);
+
+        int yBase = guiTop + ySize - lowerText.size() * font.FONT_HEIGHT - 10;
+        for (int i = 0; i < lowerText.size(); i++) {
+            font.drawString(lowerText.get(i), guiLeft + 10, yBase + i * font.FONT_HEIGHT, 0xFF404040);
         }
     }
 
@@ -175,8 +180,10 @@ public class GuiRedstoneModule extends GuiTubeModule {
         super.onClose();
 
         ((ModuleRedstone) module).setColorChannel(ourColor);
-        ((ModuleRedstone) module).setInvert(invertCheckBox.checked);
-        ((ModuleRedstone) module).setOperation(getSelectedOp(), otherColor, textField.getValue());
+        if (output) {
+            ((ModuleRedstone) module).setInverted(invertCheckBox.checked);
+            ((ModuleRedstone) module).setOperation(getSelectedOp(), otherColor, textField.getValue());
+        }
         NetworkHandler.sendToServer(new PacketSyncRedstoneModuleToServer((ModuleRedstone) module));
     }
 }

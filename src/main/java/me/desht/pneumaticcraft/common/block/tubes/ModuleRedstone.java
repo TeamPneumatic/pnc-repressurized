@@ -28,7 +28,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     private int outputLevel;
     private int colorChannel;
     private Operation operation = Operation.PASSTHROUGH;
-    private boolean invert = false;
+    private boolean inverted = false;
     private int otherColor = 0;   // for advanced modules
     private int constantVal = 0;  // for advanced modules
     private byte[] prevLevels = new byte[16];
@@ -78,7 +78,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
                 }
 
                 int out = computeOutputSignal(outputLevel, levels);
-                if (invert) out = out > 0 ? 0 : 15;
+                if (inverted) out = out > 0 ? 0 : 15;
                 if (setOutputLevel(out)) {
                     NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().getWorld());
                 }
@@ -147,7 +147,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         tag.putString("op", operation.toString());
         tag.putByte("color2", (byte) otherColor);
         tag.putByte("const", (byte) constantVal);
-        tag.putBoolean("invert", invert);
+        tag.putBoolean("invert", inverted);
         tag.putLong("prevLevels", encodeLevels(prevLevels));
     }
 
@@ -166,7 +166,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         }
         otherColor = tag.getByte("color2");
         constantVal = tag.getByte("const");
-        invert = tag.getBoolean("invert");
+        inverted = tag.getBoolean("invert");
         decodeLevels(tag.getLong("prevLevels"), prevLevels);
     }
 
@@ -210,8 +210,8 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         return inputLevel;
     }
 
-    // for clientside use
     public void setInputLevel(int level) {
+        // used by clientside sync and also to invalidate the cached signal level (e.g. see pressure gauge)
         inputLevel = level;
     }
 
@@ -225,12 +225,12 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         this.colorChannel = channel;
     }
 
-    public boolean isInvert() {
-        return invert;
+    public boolean isInverted() {
+        return inverted;
     }
 
-    public void setInvert(boolean invert) {
-        this.invert = invert;
+    public void setInverted(boolean inverted) {
+        this.inverted = inverted;
     }
 
     @Override
@@ -253,7 +253,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             s = s.appendText(" (" + constantVal + ")");
         }
         curInfo.add(s);
-        if (invert) curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.inverted"));
+        if (inverted) curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.inverted"));
     }
 
     @Override
@@ -274,7 +274,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
                 NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().getWorld());
             }
             return true;
-        } else if (!getTube().getWorld().isRemote && upgraded && getRedstoneDirection() == EnumRedstoneDirection.OUTPUT) {
+        } else if (!getTube().getWorld().isRemote) {
             NetworkHandler.sendToPlayer(new PacketOpenTubeModuleGui(getType(), pressureTube.getPos()), (ServerPlayerEntity) player);
             return true;
         }
@@ -284,6 +284,13 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     private boolean updateInputLevel() {
         int newInputLevel = redstoneDirection == EnumRedstoneDirection.INPUT ?
                 pressureTube.getWorld().getRedstonePower(pressureTube.getPos().offset(getDirection()), getDirection()) : 0;
+
+        for (TubeModule module : pressureTube.modules) {
+            if (module instanceof TubeModuleRedstoneEmitting) {
+                newInputLevel = Math.max(newInputLevel, module.getRedstoneLevel());
+            }
+        }
+
         if (newInputLevel != inputLevel) {
             inputLevel = newInputLevel;
             NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().getWorld());

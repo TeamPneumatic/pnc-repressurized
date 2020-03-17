@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.render.RenderRangeLines;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
@@ -8,6 +7,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.ItemEntity;
@@ -24,10 +24,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ModuleAirGrate extends TubeModule {
     private int grateRange;
@@ -38,19 +35,21 @@ public class ModuleAirGrate extends TubeModule {
     private EntityFilter entityFilter = null;
     private TileEntity adjacentInsertionTE = null;
     private Direction adjacentInsertionSide;
+    private Map<BlockPos,Boolean> traceabilityCache = new HashMap<>();
 
     public ModuleAirGrate(ItemTubeModule itemTubeModule) {
         super(itemTubeModule);
     }
 
     private int getRange() {
-        float range = pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
-                .map(h -> h.getPressure() * 4f)
-                .orElseThrow(RuntimeException::new);
-
+        float range = pressureTube.getPressure() * 4f;
         vacuum = range < 0;
         if (vacuum) range *= -4f;
         return (int) range;
+    }
+
+    public int getGrateRange() {
+        return grateRange;
     }
 
     @Override
@@ -68,6 +67,8 @@ public class ModuleAirGrate extends TubeModule {
 
         World world = pressureTube.getWorld();
         BlockPos pos = pressureTube.getPos();
+
+        if ((world.getGameTime() & 0x1f) == 0) traceabilityCache.clear();
 
         if (!world.isRemote) {
             int oldGrateRange = grateRange;
@@ -88,44 +89,60 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     private AxisAlignedBB getAffectedAABB() {
-        return new AxisAlignedBB(pressureTube.getPos()).grow(grateRange);
+        return new AxisAlignedBB(pressureTube.getPos().offset(getDirection(), grateRange + 1)).grow(grateRange);
     }
 
     private void pushEntities(World world, BlockPos pos, Vec3d tileVec) {
         AxisAlignedBB bbBox = getAffectedAABB();
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, entityFilter);
-        double d0 = grateRange + 0.5D;
+        double d0 = grateRange * 3;
         for (Entity entity : entities) {
             if (!entity.world.isRemote && entity instanceof ItemEntity && entity.isAlive()
                     && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 1D) {
                 tryItemInsertion((ItemEntity) entity);
-            } else if (!(entity instanceof PlayerEntity) || !((PlayerEntity) entity).isCreative()) {
-                Vec3d entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
-                RayTraceContext ctx = new RayTraceContext(entityVec, tileVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
-                BlockRayTraceResult trace = world.rayTraceBlocks(ctx);
-                if (trace != null && trace.getPos().equals(pos)) {
-                    double x = (entity.posX - pos.getX() - 0.5D) / d0;
-                    double y = (entity.posY + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
-                    y -= 0.08;  // kludge: avoid entities getting stuck on edges, e.g. farmland->full block
-                    double z = (entity.posZ - pos.getZ() - 0.5D) / d0;
-                    double d4 = Math.sqrt(x * x + y * y + z * z);
-                    double d5 = 1.0D - d4;
+            } else if (!ignoreEntity(entity) && rayTraceOK(entity, tileVec)) {
+                double x = (entity.posX - pos.getX() - 0.5D) / d0;
+                double y = (entity.posY + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
+                BlockPos entityPos = entity.getPosition();
+                if (!Block.hasSolidSide(world.getBlockState(entityPos), world, entityPos, Direction.UP) && !world.isAirBlock(entityPos)) {
+                    y -= 0.15;  // kludge: avoid entities getting stuck on edges, e.g. farmland->full block
+                }
+                double z = (entity.posZ - pos.getZ() - 0.5D) / d0;
+                double d4 = Math.sqrt(x * x + y * y + z * z);
+                double d5 = 1.0D - d4;
 
-                    if (d5 > 0.0D) {
-                        d5 *= d5;
-                        if (vacuum) d5 *= -1;
-                        entity.move(MoverType.PISTON, new Vec3d(x / d4 * d5 * 0.1, y / d4 * d5 * 0.1, z / d4 * d5 * 0.1));
-                        if (world.isRemote && world.rand.nextDouble() * 0.85 > d4) {
-                            if (vacuum) {
-                                world.addParticle(AirParticleData.DENSE, entity.posX, entity.posY, entity.posZ, -x, -y, -z);
-                            } else {
-                                world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5 + x, pos.getY() + 0.5 + y, pos.getZ() + 0.5 + z, x, y, z);
-                            }
+                if (d5 > 0.0D) {
+                    d5 *= d5;
+                    if (vacuum) d5 *= -1;
+                    entity.move(MoverType.SELF, new Vec3d(x * d5, y * d5, z * d5));
+                    if (world.isRemote && world.rand.nextDouble() * 0.85 > d4) {
+                        if (vacuum) {
+                            world.addParticle(AirParticleData.DENSE, entity.posX, entity.posY, entity.posZ, -x, -y, -z);
+                        } else {
+                            world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5 + x, pos.getY() + 0.5 + y, pos.getZ() + 0.5 + z, x, y, z);
                         }
                     }
                 }
             }
         }
+    }
+
+    private boolean ignoreEntity(Entity entity) {
+        if (entity instanceof PlayerEntity) {
+            return ((PlayerEntity) entity).isCreative() || entity.isSneaking();
+        } else {
+            return false;
+        }
+    }
+
+    private boolean rayTraceOK(Entity entity, Vec3d tileVec) {
+        BlockPos pos = new BlockPos(entity.getEyePosition(0f));
+        return traceabilityCache.computeIfAbsent(pos, k -> {
+            Vec3d entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
+            RayTraceContext ctx = new RayTraceContext(entityVec, tileVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
+            BlockRayTraceResult trace = entity.getEntityWorld().rayTraceBlocks(ctx);
+            return trace != null && trace.getPos().equals(pressureTube.getPos());
+        });
     }
 
     private void tryItemInsertion(ItemEntity entity) {
@@ -206,7 +223,7 @@ public class ModuleAirGrate extends TubeModule {
 
     @Override
     public boolean hasGui() {
-        return true;
+        return upgraded;
     }
 
     @Override

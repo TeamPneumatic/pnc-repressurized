@@ -11,18 +11,18 @@ import java.util.function.Supplier;
 
 /**
  * Received on: CLIENT
- * Sent by server when the status or colour of a logistic module is updated
+ * Sent by server when the status or colour of a logistics module is updated
  */
-public class PacketUpdateLogisticModule extends LocationIntPacket {
+public class PacketUpdateLogisticsModule extends LocationIntPacket {
 
     private int side;
     private int colorIndex;
     private int status;
 
-    public PacketUpdateLogisticModule() {
+    public PacketUpdateLogisticsModule() {
     }
 
-    public PacketUpdateLogisticModule(ModuleLogistics logisticsModule, int action) {
+    public PacketUpdateLogisticsModule(ModuleLogistics logisticsModule, int action) {
         super(logisticsModule.getTube().getPos());
         side = logisticsModule.getDirection().ordinal();
         colorIndex = logisticsModule.getColorChannel();
@@ -33,7 +33,7 @@ public class PacketUpdateLogisticModule extends LocationIntPacket {
         }
     }
 
-    public PacketUpdateLogisticModule(PacketBuffer buffer) {
+    public PacketUpdateLogisticsModule(PacketBuffer buffer) {
         super(buffer);
         side = buffer.readByte();
         colorIndex = buffer.readByte();

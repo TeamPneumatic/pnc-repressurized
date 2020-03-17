@@ -36,29 +36,31 @@ public class GuiPressureModuleSimple extends GuiTubeModule {
         String titleText = title.getFormattedText();
         addLabel(titleText, width / 2 - font.getStringWidth(titleText) / 2, guiTop + 5);
 
-        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
+        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
             module.advancedConfig = true;
             NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
         }).setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
         advancedMode.checked = false;
         addButton(advancedMode);
 
-        thresholdField = new WidgetTextFieldNumber(font, guiLeft + 110, guiTop + 33, 30, font.FONT_HEIGHT).setDecimals(1);
+        thresholdField = new WidgetTextFieldNumber(font, guiLeft + 105, guiTop + 35, 30, font.FONT_HEIGHT + 2).setDecimals(1);
         addButton(thresholdField);
         setFocused(thresholdField);
         thresholdField.setFocused2(true);
 
         if (module instanceof TubeModuleRedstoneReceiving) {
             thresholdField.setValue(((TubeModuleRedstoneReceiving) module).getThreshold());
-            addLabel(I18n.format("gui.tubeModule.simpleConfig.threshold"), guiLeft + 6, guiTop + 33);
+            String s = I18n.format("gui.tubeModule.simpleConfig.threshold");
+            addLabel(s, guiLeft + 80 - font.getStringWidth(s), guiTop + 36);
         } else {
             thresholdField.setValue(module.lowerBound);
-            addLabel(I18n.format("gui.tubeModule.simpleConfig.turn"), guiLeft + 6, guiTop + 33);
-            moreOrLessButton = new WidgetButtonExtended(guiLeft + 85, guiTop + 28, 20, 20, module.lowerBound < module.higherBound ? ">" : "<", b -> flipThreshold());
+            String s = I18n.format("gui.tubeModule.simpleConfig.turn");
+            addLabel(s,guiLeft + 80 - font.getStringWidth(s), guiTop + 36);
+            moreOrLessButton = new WidgetButtonExtended(guiLeft + 85, guiTop + 33, 16, 16, module.lowerBound < module.higherBound ? ">" : "<", b -> flipThreshold());
             moreOrLessButton.setTooltipText(I18n.format(module.lowerBound < module.higherBound ? "gui.tubeModule.simpleConfig.higherThan" : "gui.tubeModule.simpleConfig.lowerThan"));
             addButton(moreOrLessButton);
         }
-        addLabel(I18n.format("gui.general.bar"), guiLeft + 145, guiTop + 34);
+        addLabel(I18n.format("gui.general.bar"), guiLeft + 137, guiTop + 37);
     }
 
     private void flipThreshold() {

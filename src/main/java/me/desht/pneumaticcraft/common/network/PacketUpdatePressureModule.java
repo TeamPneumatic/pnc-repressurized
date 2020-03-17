@@ -40,6 +40,6 @@ public class PacketUpdatePressureModule extends PacketUpdateTubeModule {
         module.lowerBound = lower;
         module.higherBound = higher;
         module.advancedConfig = advanced;
-        module.sendDescriptionPacket();
+//        module.sendDescriptionPacket();
     }
 }

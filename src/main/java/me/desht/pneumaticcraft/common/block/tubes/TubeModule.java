@@ -195,7 +195,7 @@ public abstract class TubeModule {
     }
 
     public boolean onActivated(PlayerEntity player, Hand hand) {
-        if (!player.world.isRemote && upgraded && hasGui()) {
+        if (!player.world.isRemote && hasGui()) {
             NetworkHandler.sendToPlayer(new PacketOpenTubeModuleGui(getType(), pressureTube.getPos()), (ServerPlayerEntity) player);
         }
         return true;

@@ -33,7 +33,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         this.ourColor = (byte) module.getColorChannel();
         this.otherColor = (byte) module.getOtherColor();
         this.constantVal = (byte) module.getConstantVal();
-        this.invert = module.isInvert();
+        this.invert = module.isInverted();
     }
 
     PacketSyncRedstoneModuleToServer(PacketBuffer buffer) {
@@ -65,7 +65,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
                 if (m instanceof ModuleRedstone) {
                     ModuleRedstone mr = (ModuleRedstone) m;
                     mr.setColorChannel(ourColor);
-                    mr.setInvert(invert);
+                    mr.setInverted(invert);
                     mr.setOperation(ModuleRedstone.Operation.values()[op], otherColor, constantVal);
                 }
             }

@@ -54,6 +54,7 @@ public class RenderRangeLines {
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isCurrentlyRendering() {
         return rangeLines.size() > 0;
     }

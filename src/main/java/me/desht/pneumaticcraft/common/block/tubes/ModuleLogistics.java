@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticModule;
+import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticsModule;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -57,7 +57,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
 
     @Override
     public double getWidth() {
-        return 13 / 16D;
+        return 13;
     }
 
     @Override
@@ -73,6 +73,11 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     @Override
     public void setColorChannel(int colorChannel) {
         this.colorChannel = colorChannel;
+    }
+
+    @Override
+    public boolean hasGui() {
+        return true;
     }
 
     public boolean hasPower() {
@@ -118,7 +123,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
             int colorId = color.getId();
             if (!player.world.isRemote) {
                 setColorChannel(colorId);
-                NetworkHandler.sendToAllAround(new PacketUpdateLogisticModule(this, 0), getTube().getWorld());
+                NetworkHandler.sendToAllAround(new PacketUpdateLogisticsModule(this, 0), getTube().getWorld());
                 if (PNCConfig.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
                     heldStack.shrink(1);
                 }
@@ -135,7 +140,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         if (!getTube().getWorld().isRemote) {
             if (powered != getTube().getPressure() >= MIN_PRESSURE) {
                 powered = !powered;
-                NetworkHandler.sendToAllAround(new PacketUpdateLogisticModule(this, 0), getTube().getWorld());
+                NetworkHandler.sendToAllAround(new PacketUpdateLogisticsModule(this, 0), getTube().getWorld());
             }
             if (--ticksUntilNextCycle <= 0) {
                 LogisticsManager manager = new LogisticsManager();
@@ -266,7 +271,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     private void sendModuleUpdate(ModuleLogistics module, boolean enoughAir) {
-        NetworkHandler.sendToAllAround(new PacketUpdateLogisticModule(module, enoughAir ? 1 : 2), module.getTube().getWorld());
+        NetworkHandler.sendToAllAround(new PacketUpdateLogisticsModule(module, enoughAir ? 1 : 2), module.getTube().getWorld());
     }
 
     @Override

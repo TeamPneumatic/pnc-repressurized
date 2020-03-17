@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
@@ -23,7 +25,7 @@ public class GuiAirGrateModule extends GuiTubeModule {
     public GuiAirGrateModule(BlockPos pos) {
         super(pos);
 
-        ySize = 61;
+        ySize = 57;
     }
 
     private TextFieldWidget textfield;
@@ -31,11 +33,19 @@ public class GuiAirGrateModule extends GuiTubeModule {
     @Override
     public void init() {
         super.init();
-        addLabel(I18n.format("gui.entityFilter"), guiLeft + 10, guiTop + 14);
 
-        textfield = new TextFieldWidget(font, guiLeft + 10, guiTop + 25, 140, 10,
-                ((ModuleAirGrate) module).getEntityFilterString());
+        addLabel(title.getFormattedText(), guiLeft + xSize / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
+        WidgetLabel label = addLabel(I18n.format("gui.entityFilter"), guiLeft + 10, guiTop + 30);
+        addLabel(I18n.format("gui.holdF1forHelp"), guiLeft + xSize / 2, guiTop + ySize + 5, WidgetLabel.Alignment.CENTRE)
+                .setColor(0xFFC0C0C0);
+
+        int tx = 12 + label.getWidth();
+        textfield = new WidgetTextField(font, guiLeft + tx, guiTop + 29, xSize - tx - 10, 10);
+        textfield.setText(((ModuleAirGrate) module).getEntityFilterString());
         textfield.setResponder(s -> sendTimer = 5);
+        textfield.setFocused2(true);
+        setFocused(textfield);
+        addButton(textfield);
 
         warningButton = new WidgetButtonExtended(guiLeft + 152, guiTop + 20, 20, 20, "");
         warningButton.setVisible(false);
@@ -78,7 +88,7 @@ public class GuiAirGrateModule extends GuiTubeModule {
 
     @Override
     protected ResourceLocation getTexture() {
-        return Textures.GUI_TEXT_WIDGET;
+        return Textures.GUI_MODULE_SIMPLE;
     }
 
 }

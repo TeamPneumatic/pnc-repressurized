@@ -49,7 +49,7 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
 
     @Override
     public boolean hasGui() {
-        return true;
+        return upgraded;
     }
 
     @Override

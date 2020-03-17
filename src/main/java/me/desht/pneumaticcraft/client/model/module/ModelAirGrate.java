@@ -1,9 +1,11 @@
 package me.desht.pneumaticcraft.client.model.module;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.entity.model.RendererModel;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 
 public class ModelAirGrate extends ModelModuleBase<ModuleAirGrate> {
@@ -90,6 +92,12 @@ public class ModelAirGrate extends ModelModuleBase<ModuleAirGrate> {
 
     @Override
     protected void renderExtras(ModuleAirGrate module) {
+        Direction d = module.getDirection();
+        int r = -module.getGrateRange() - 1;
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translated(d.getXOffset() * r, d.getYOffset() * r, d.getZOffset() * r);
         module.getRangeLineRenderer().render();
+        GlStateManager.popMatrix();
     }
 }

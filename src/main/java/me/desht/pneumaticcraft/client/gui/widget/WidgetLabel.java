@@ -41,6 +41,16 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
     }
 
     @Override
+    protected boolean clicked(double mouseX, double mouseY) {
+        switch (alignment) {
+            case LEFT: return super.clicked(mouseX, mouseY);
+            case CENTRE: return super.clicked(mouseX + width / 2d, mouseY);
+            case RIGHT: return super.clicked(mouseX + width, mouseY);
+            default: return false;
+        }
+    }
+
+    @Override
     public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
         curTip.addAll(tooltip);
     }
@@ -57,8 +67,9 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
         return tooltip.isEmpty() ? "" : tooltip.get(0);
     }
 
-    public void setColor(int color) {
+    public WidgetLabel setColor(int color) {
         this.color = color;
+        return this;
     }
 
     @Override
@@ -79,10 +90,10 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
                     drawX = x;
                     break;
                 case CENTRE:
-                    drawX = x - (int)(fr.getStringWidth(getMessage()) / 2 * scale);
+                    drawX = x - (int)(width / 2 * scale);
                     break;
                 case RIGHT:
-                    drawX = x - (int)(fr.getStringWidth(getMessage()) * scale);
+                    drawX = x - (int)(width * scale);
                     break;
             }
             if (scale != 1.0f) {

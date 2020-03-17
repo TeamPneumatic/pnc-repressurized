@@ -48,24 +48,25 @@ public class GuiPressureModule extends GuiTubeModule {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        addLabel("lower", guiLeft + 10, guiTop + 30);
-        addLabel("bar", guiLeft + 45, guiTop + 42);
-        addLabel("higher", guiLeft + 140, guiTop + 30);
+        addLabel("lower", guiLeft + 15, guiTop + 33);
+        addLabel("bar", guiLeft + 50, guiTop + 44);
+        addLabel("higher", guiLeft + 140, guiTop + 33);
 
         String titleText = title.getFormattedText();
         addLabel(titleText, width / 2 - font.getStringWidth(titleText) / 2, guiTop + 5);
 
-        lowerBoundField = new TextFieldWidget(font, xStart + 10, yStart + 41, 30, 10,
+        lowerBoundField = new TextFieldWidget(font, xStart + 15, yStart + 43, 30, 10,
                 PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1));
         lowerBoundField.setResponder(s -> updateBoundFromTextfield(0));
         addButton(lowerBoundField);
-        higherBoundField = new TextFieldWidget(font, xStart + 140, yStart + 41, 30, 10,
+
+        higherBoundField = new TextFieldWidget(font, xStart + 140, yStart + 43, 30, 10,
                 PneumaticCraftUtils.roundNumberTo(module.higherBound, 1));
         higherBoundField.setResponder(s -> updateBoundFromTextfield(1));
         addButton(higherBoundField);
 
-        graphLowY = guiTop + 153;
-        graphHighY = guiTop + 93;
+        graphLowY = guiTop + 158;
+        graphHighY = guiTop + 98;
         graphLeft = guiLeft + 22;
         graphRight = guiLeft + 172;
 
@@ -77,7 +78,7 @@ public class GuiPressureModule extends GuiTubeModule {
         stat.setBeveled(true);
         addButton(stat);
 
-        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 15, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
+        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
             module.advancedConfig = b.checked;
             NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
         }).setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
@@ -114,8 +115,9 @@ public class GuiPressureModule extends GuiTubeModule {
         if (module instanceof TubeModuleRedstoneReceiving) {
             module.onNeighborBlockUpdate();
             hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((TubeModuleRedstoneReceiving) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
-            String status = "Current threshold: " + PneumaticCraftUtils.roundNumberTo(((TubeModuleRedstoneReceiving) module).getThreshold(), 1) + " bar";
-            font.drawString(status, guiLeft + xSize / 2f - font.getStringWidth(status) / 2f, guiTop + 173, 0xFF000000);
+            String status = I18n.format("gui.tubeModule.simpleConfig.threshold")
+                    + " " + PneumaticCraftUtils.roundNumberTo(((TubeModuleRedstoneReceiving) module).getThreshold(), 1) + " bar";
+            font.drawString(status, guiLeft + xSize / 2f - font.getStringWidth(status) / 2f, guiTop + 175, 0xFF404040);
         }
 
         /*

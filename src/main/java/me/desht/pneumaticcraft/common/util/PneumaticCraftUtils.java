@@ -39,6 +39,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -777,7 +778,7 @@ public class PneumaticCraftUtils {
 
     public static String dyeColorDesc(int c) {
         // TODO 1.14 make this better
-        return TextFormatting.BOLD + DyeColor.byId(c).getTranslationKey() + TextFormatting.RESET;
+        return TextFormatting.BOLD + StringUtils.capitalize(DyeColor.byId(c).getTranslationKey()) + TextFormatting.RESET;
     }
 
     public static int getBurnTime(ItemStack stack) {

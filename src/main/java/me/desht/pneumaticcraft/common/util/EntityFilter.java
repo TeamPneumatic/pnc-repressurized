@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetText;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -77,6 +78,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
         try {
             return new EntityFilter(s);
         } catch (Exception e) {
+            Log.warning("ignoring invalid filter: " + s);
             return null;
         }
     }

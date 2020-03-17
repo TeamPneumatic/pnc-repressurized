@@ -57,15 +57,6 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
             int maxDispersion = (int) ((getThreshold() - h.getPressure()) * h.getVolume());
             return Math.max(0, maxDispersion);
         }).orElse(0);
-//        // TODO should be able to cache the neighbouring air handler
-//        TileEntity neighborTE = pressureTube.getWorld().getTileEntity(pressureTube.getPos().offset(dir));
-//        if (neighborTE != null) {
-//            return neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).map(h -> {
-//                int maxDispersion = (int) ((getThreshold() - h.getPressure()) * h.getVolume());
-//                return Math.max(0, maxDispersion);
-//            }).orElse(0);
-//        }
-//        return 0;
     }
 
     @Override
@@ -81,6 +72,12 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
         neighbourCap = null;
+    }
+
+    @Override
+    public float getThreshold() {
+        // non-upgraded regulator has a simple redstone gradient
+        return upgraded ? super.getThreshold() : (getTube().dangerPressure - 0.1f) * (15 - getReceivingRedstoneLevel()) / 15f;
     }
 
     private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {

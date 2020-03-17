@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.client.gui.widget.ITickableWidget;
 import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -32,8 +32,12 @@ public abstract class GuiPneumaticScreenBase extends Screen {
 
     protected abstract ResourceLocation getTexture();
 
-    protected void addLabel(String text, int x, int y) {
-        addButton(new WidgetLabel(x, y, text));
+    protected WidgetLabel addLabel(String text, int x, int y) {
+        return addLabel(text, x, y, WidgetLabel.Alignment.LEFT);
+    }
+
+    protected WidgetLabel addLabel(String text, int x, int y, WidgetLabel.Alignment alignment) {
+        return addButton(new WidgetLabel(x, y, text).setAlignment(alignment));
     }
 
     protected void removeWidget(Widget widget) {
@@ -45,7 +49,7 @@ public abstract class GuiPneumaticScreenBase extends Screen {
     public void tick() {
         super.tick();
 
-        buttons.stream().filter(w -> w instanceof ITickable).forEach(w -> ((ITickable) w).tick());
+        buttons.stream().filter(w -> w instanceof ITickableWidget).forEach(w -> ((ITickableWidget) w).tickWidget());
     }
 
     @Override

@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsProvider;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsRequester;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsStorage;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiAirGrateModule;
+import me.desht.pneumaticcraft.client.gui.tubemodule.GuiLogisticsModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiPressureModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiRedstoneModule;
 import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
@@ -248,6 +249,7 @@ public class ClientSetup {
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_REGULATOR, GuiPressureModule::new);
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_SAFETY_VALVE, GuiPressureModule::new);
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_REDSTONE, GuiRedstoneModule::new);
+        TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_LOGISTICS, GuiLogisticsModule::new);
 
         TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_AIR_GRATE, ModelAirGrate::new);
         TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_REDSTONE, ModelRedstone::new);
