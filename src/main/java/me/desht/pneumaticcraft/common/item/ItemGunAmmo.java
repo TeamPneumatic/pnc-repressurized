@@ -151,16 +151,17 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
      * @return the number of rounds fired
      */
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
-        World w = minigun.getPlayer().world;
-        BlockState state = w.getBlockState(brtr.getPos());
-        Direction face = brtr.getFace();
-        Vec3d hitVec = brtr.getHitVec();
-        IParticleData data = new BlockParticleData(ParticleTypes.BLOCK, state);
-        ((ServerWorld) w).spawnParticle(data, hitVec.x, hitVec.y, hitVec.z, 10,
-                face.getXOffset() * 0.2, face.getYOffset() * 0.2, face.getZOffset() * 0.2, 0.05);
+        if (PNCConfig.Common.Minigun.blockHitParticles) {
+            World w = minigun.getPlayer().world;
+            BlockState state = w.getBlockState(brtr.getPos());
+            Direction face = brtr.getFace();
+            Vec3d hitVec = brtr.getHitVec();
+            IParticleData data = new BlockParticleData(ParticleTypes.BLOCK, state);
+            ((ServerWorld) w).spawnParticle(data, hitVec.x, hitVec.y, hitVec.z, 10,
+                    face.getXOffset() * 0.2, face.getYOffset() * 0.2, face.getZOffset() * 0.2, 0.05);
+        }
 
         // not taking speed upgrades into account here; being kind to players who miss a lot...
         return 1;
     }
-
 }

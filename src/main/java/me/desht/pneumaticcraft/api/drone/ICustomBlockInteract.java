@@ -7,8 +7,8 @@ import net.minecraftforge.event.RegistryEvent;
 
 /**
  * Implement this and register it with {@link IDroneRegistry#registerCustomBlockInteractor(RegistryEvent.Register, ICustomBlockInteract)}.
- * This will add a puzzle piece that has only a Area white- and blacklist parameter (similar to a GoTo piece).
- * It will do the specified behaviour. This can be used to create energy import/export widgets, for example.
+ * This will add a puzzle piece that has only an Area white- and blacklist parameter (similar to a Goto piece).
+ * This can be used to create energy import/export widgets, for example.
  */
 public interface ICustomBlockInteract {
 
@@ -21,8 +21,8 @@ public interface ICustomBlockInteract {
     ResourceLocation getID();
 
     /**
-     * Should return the puzzle piece texture. Should be a multiple of 80x64 (width x height). I'd recommend starting
-     * out with copying the
+     * Get the puzzle piece texture. Should be a multiple of 80x64 (width x height). I'd recommend starting
+     * out by copying the
      * <a href="https://github.com/TeamPneumatic/pnc-repressurized/blob/master/src/main/resources/assets/pneumaticcraft/textures/items/progwidgets/goto_piece.png">Go To widget texture</a>
      *
      * @return a resource location for the texture to be used

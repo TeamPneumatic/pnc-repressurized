@@ -9,11 +9,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.spawner.AbstractSpawner;
 
 public class EntitySpawnerAgitator extends EntitySemiblockBase {
-    public static EntitySpawnerAgitator create(EntityType<EntitySpawnerAgitator> type, World world) {
-        return new EntitySpawnerAgitator(type, world);
-    }
-
-    private EntitySpawnerAgitator(EntityType<?> entityTypeIn, World worldIn) {
+    public EntitySpawnerAgitator(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
 

@@ -314,6 +314,11 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         public Object getSoundSource() {
             return TileEntitySentryTurret.this.getPos();
         }
+
+        @Override
+        public boolean isValid() {
+            return !TileEntitySentryTurret.this.isRemoved();
+        }
     }
 
     private class TargetSorter implements Comparator<Entity> {

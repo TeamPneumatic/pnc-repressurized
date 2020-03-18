@@ -30,7 +30,8 @@ public enum EnumUpgrade {
     INVENTORY("inventory"),
     JUMPING("jumping", 4),
     FLIPPERS("flippers"),
-    STANDBY("standby");
+    STANDBY("standby"),
+    MINIGUN("minigun");
 
     private final String name;
     private final int maxTier;

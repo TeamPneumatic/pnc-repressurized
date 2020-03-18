@@ -1,8 +1,10 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStandby;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -47,8 +49,14 @@ public abstract class EntityBasicDrone extends EntityDrone {
     
     protected abstract Item getDroneItem();
     
-    public abstract void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, boolean hasStandby, List<IProgWidget> widgets);
-    
+    public abstract void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets);
+
+    void maybeAddStandbyInstruction(DroneProgramBuilder builder, ItemStack droneStack) {
+        if (UpgradableItemUtils.getUpgrades(droneStack, EnumUpgrade.STANDBY) > 0) {
+            builder.add(new ProgWidgetStandby());
+        }
+    }
+
     void addBasicProgram(BlockPos pos, List<IProgWidget> widgets, IProgWidget mainProgram) {
         DroneProgramBuilder builder = new DroneProgramBuilder();
         builder.add(new ProgWidgetStart());

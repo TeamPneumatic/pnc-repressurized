@@ -121,6 +121,7 @@ public class ConfigHelper {
         PNCConfig.Common.Minigun.weightedAmmoCartridgeSize = common.minigun.weightedAmmoCartridgeSize.get();
         PNCConfig.Common.Minigun.weightedAmmoDamageMultiplier = common.minigun.weightedAmmoDamageMultiplier.get();
         PNCConfig.Common.Minigun.weightedAmmoRangeMultiplier = common.minigun.weightedAmmoRangeMultiplier.get();
+        PNCConfig.Common.Minigun.blockHitParticles = common.minigun.blockHitParticles.get();
 
         PNCConfig.Common.Recipes.coalToDiamondsRecipe = common.recipes.coalToDiamondsRecipe.get();
         PNCConfig.Common.Recipes.explosionCrafting = common.recipes.explosionCrafting.get();

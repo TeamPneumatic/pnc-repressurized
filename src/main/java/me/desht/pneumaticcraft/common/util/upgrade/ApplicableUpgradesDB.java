@@ -8,7 +8,6 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.Validate;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +46,8 @@ public enum ApplicableUpgradesDB {
             10f
     };
 
+    // map a registry name to a list of upgrade amount
+    // each list is (EnumUpgrade.values().length) in size, and stores the max. number of upgrades allowed for each upgrade
     private final Map<ResourceLocation, List<Integer>> TILE_ENTITIES = new HashMap<>();
     private final Map<ResourceLocation, List<Integer>> ENTITIES = new HashMap<>();
     private final Map<ResourceLocation, List<Integer>> ITEMS = new HashMap<>();
@@ -57,16 +58,16 @@ public enum ApplicableUpgradesDB {
         return INSTANCE;
     }
 
-    public void addApplicableUpgrades(TileEntityType<?> type, Object... o) {
-        addUpgrades(TILE_ENTITIES, type.getRegistryName(), o);
+    public void addApplicableUpgrades(TileEntityType<?> type, UpgradesDBSetup.Builder builder) {
+        addUpgrades(TILE_ENTITIES, type.getRegistryName(), builder);
     }
 
-    public void addApplicableUpgrades(EntityType<?> type, Object... o) {
-        addUpgrades(ENTITIES, type.getRegistryName(), o);
+    public void addApplicableUpgrades(EntityType<?> type, UpgradesDBSetup.Builder builder) {
+        addUpgrades(ENTITIES, type.getRegistryName(), builder);
     }
 
-    public void addApplicableUpgrades(Item item, Object... o) {
-        addUpgrades(ITEMS, item.getRegistryName(), o);
+    public void addApplicableUpgrades(Item item, UpgradesDBSetup.Builder builder) {
+        addUpgrades(ITEMS, item.getRegistryName(), builder);
     }
 
     public int getMaxUpgrades(TileEntity te, EnumUpgrade upgrade) {
@@ -105,12 +106,10 @@ public enum ApplicableUpgradesDB {
         return res;
     }
 
-    private void addUpgrades(Map<ResourceLocation,List<Integer>> l, ResourceLocation key, Object... o) {
-        Validate.isTrue(o.length % 2 == 0, "must pass an even number of values!");
-        for (int i = 0; i < o.length; i += 2) {
-            EnumUpgrade u = (EnumUpgrade) o[i];
-            int n = (int) o[i + 1];
-            l.computeIfAbsent(key, k -> createArrayList()).set(u.ordinal(), n);
+    private void addUpgrades(Map<ResourceLocation,List<Integer>> l, ResourceLocation key, UpgradesDBSetup.Builder builder) {
+        List<Integer> u = l.computeIfAbsent(key, k -> createArrayList());
+        for (int i = 0; i < EnumUpgrade.values().length; i++) {
+            u.set(i, u.get(i) + builder.upgrades().get(i));
         }
     }
 

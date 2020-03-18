@@ -89,6 +89,7 @@ public class CommonConfig {
         ForgeConfigSpec.IntValue weightedAmmoCartridgeSize;
         ForgeConfigSpec.DoubleValue weightedAmmoDamageMultiplier;
         ForgeConfigSpec.DoubleValue weightedAmmoRangeMultiplier;
+        ForgeConfigSpec.BooleanValue blockHitParticles;
     }
     public class Recipes {
         ForgeConfigSpec.BooleanValue coalToDiamondsRecipe;
@@ -339,7 +340,7 @@ public class CommonConfig {
         minigun.freezingAmmoBlockIceChance = builder
                 .comment("Freezing Ammo base percentage chance to form ice or snow on blocks which have been hit")
                 .translation("pneumaticcraft.config.common.minigun_properties.freezing_ammo_block_ice_chance")
-                .defineInRange("freezing_ammo_block_ice_chance", 20, 0, 100);
+                .defineInRange("freezing_ammo_block_ice_chance", 10, 0, 100);
         minigun.freezingAmmoCartridgeSize = builder
                 .comment("Freezing Ammo cartridge size")
                 .translation("pneumaticcraft.config.common.minigun_properties.freezing_ammo_cartridge_size")
@@ -392,6 +393,10 @@ public class CommonConfig {
                 .comment("Weighted Ammo range multiplier (relative to standard ammo)")
                 .translation("pneumaticcraft.config.common.minigun_properties.weighted_ammo_range_multiplier")
                 .defineInRange("weighted_ammo_range_multiplier", 0.2, 0, Double.MAX_VALUE);
+        minigun.blockHitParticles = builder
+                .comment("Show particles when a block is hit by minigun fire? Looks good, but consumes some network bandwidth.")
+                .translation("pneumaticcraft.config.common.minigun_properties.block_hit_particles")
+                .define("block_hit_particles", true);
         builder.pop();
 
         builder.push("Integration");

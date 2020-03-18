@@ -2,10 +2,7 @@ package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
-import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
+import me.desht.pneumaticcraft.common.entity.living.*;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
@@ -31,6 +28,10 @@ public class ModEntities {
             = register("logistics_drone", ModEntities::logisticsDrone);
     public static final RegistryObject<EntityType<EntityHarvestingDrone>> HARVESTING_DRONE
             = register("harvesting_drone", ModEntities::harvestingDrone);
+    public static final RegistryObject<EntityType<EntityGuardDrone>> GUARD_DRONE
+            = register("guard_drone", ModEntities::guardDrone);
+    public static final RegistryObject<EntityType<EntityCollectorDrone>> COLLECTOR_DRONE
+            = register("collector_drone", ModEntities::collectorDrone);
     public static final RegistryObject<EntityType<EntityProgrammableController>> PROGRAMMABLE_CONTROLLER
             = register("programmable_controller", ModEntities::programmableController);
 
@@ -67,7 +68,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityVortex> vortex() {
-        return EntityType.Builder.create(EntityVortex::create, EntityClassification.MISC)
+        return EntityType.Builder.create(EntityVortex::new, EntityClassification.MISC)
                 .size(0.5f, 0.5f)
                 .immuneToFire()
                 .setTrackingRange(4)
@@ -77,7 +78,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityDrone> drone() {
-        return EntityType.Builder.create(EntityDrone::create, EntityClassification.CREATURE)
+        return EntityType.Builder.<EntityDrone>create(EntityDrone::new, EntityClassification.CREATURE)
                 .size(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -86,7 +87,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityAmadrone> amadrone() {
-        return EntityType.Builder.create(EntityAmadrone::create, EntityClassification.CREATURE)
+        return EntityType.Builder.create(EntityAmadrone::new, EntityClassification.CREATURE)
                 .size(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -95,7 +96,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsDrone> logisticsDrone() {
-        return EntityType.Builder.create(EntityLogisticsDrone::createLogisticsDrone, EntityClassification.CREATURE)
+        return EntityType.Builder.<EntityLogisticsDrone>create(EntityLogisticsDrone::new, EntityClassification.CREATURE)
                 .size(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -104,7 +105,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityHarvestingDrone> harvestingDrone() {
-        return EntityType.Builder.create(EntityHarvestingDrone::createHarvestingDrone, EntityClassification.CREATURE)
+        return EntityType.Builder.<EntityHarvestingDrone>create(EntityHarvestingDrone::new, EntityClassification.CREATURE)
                 .size(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -112,8 +113,26 @@ public class ModEntities {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
+    private static EntityType.Builder<EntityGuardDrone> guardDrone() {
+        return EntityType.Builder.<EntityGuardDrone>create(EntityGuardDrone::new, EntityClassification.CREATURE)
+                .size(0.7f, 0.35f)
+                .setTrackingRange(32)
+                .setUpdateInterval(3)
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.GUARD_DRONE.get().create(world)))
+                .setShouldReceiveVelocityUpdates(true);
+    }
+
+    private static EntityType.Builder<EntityCollectorDrone> collectorDrone() {
+        return EntityType.Builder.<EntityCollectorDrone>create(EntityCollectorDrone::new, EntityClassification.CREATURE)
+                .size(0.7f, 0.35f)
+                .setTrackingRange(32)
+                .setUpdateInterval(3)
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.COLLECTOR_DRONE.get().create(world)))
+                .setShouldReceiveVelocityUpdates(true);
+    }
+
     private static EntityType.Builder<EntityProgrammableController> programmableController() {
-        return EntityType.Builder.create(EntityProgrammableController::createProgrammableController, EntityClassification.CREATURE)
+        return EntityType.Builder.create(EntityProgrammableController::new, EntityClassification.CREATURE)
                 .size(0.35f, 0.175f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -122,7 +141,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityMicromissile> micromissile() {
-        return EntityType.Builder.create(EntityMicromissile::create, EntityClassification.MISC)
+        return EntityType.Builder.<EntityMicromissile>create(EntityMicromissile::new, EntityClassification.MISC)
                 .size(0.5f, 0.5f)
                 .immuneToFire()
                 .setTrackingRange(4)
@@ -132,7 +151,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityTumblingBlock> tumblingBlock() {
-        return EntityType.Builder.create(EntityTumblingBlock::create, EntityClassification.MISC)
+        return EntityType.Builder.<EntityTumblingBlock>create(EntityTumblingBlock::new, EntityClassification.MISC)
                 .size(0.5f, 0.5f)
                 .immuneToFire()
                 .setTrackingRange(4)
@@ -142,7 +161,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityRing> ring() {
-        return EntityType.Builder.create(EntityRing::create, EntityClassification.MISC)
+        return EntityType.Builder.<EntityRing>create(EntityRing::new, EntityClassification.MISC)
                 .size(0.5f, 0.5f)
                 .immuneToFire()
                 .setTrackingRange(4)
@@ -152,7 +171,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityCropSupport> cropSupport() {
-        return EntityType.Builder.create(EntityCropSupport::create, EntityClassification.MISC)
+        return EntityType.Builder.create(EntityCropSupport::new, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
                 .setTrackingRange(3)
@@ -162,7 +181,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntitySpawnerAgitator> spawnerAgitator() {
-        return EntityType.Builder.create(EntitySpawnerAgitator::create, EntityClassification.MISC)
+        return EntityType.Builder.create(EntitySpawnerAgitator::new, EntityClassification.MISC)
                 .size(1F, 1F)
                 .immuneToFire()
                 .setTrackingRange(3)
@@ -172,7 +191,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityHeatFrame> heatFrame() {
-        return EntityType.Builder.create(EntityHeatFrame::create, EntityClassification.MISC)
+        return EntityType.Builder.create(EntityHeatFrame::new, EntityClassification.MISC)
                 .size(1F, 1F)
                 .immuneToFire()
                 .setTrackingRange(3)
@@ -182,7 +201,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityTransferGadget> transferGadget() {
-        return EntityType.Builder.create(EntityTransferGadget::create, EntityClassification.MISC)
+        return EntityType.Builder.create(EntityTransferGadget::new, EntityClassification.MISC)
                 .size(1F, 1F)
                 .immuneToFire()
                 .setTrackingRange(3)
@@ -192,7 +211,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsActiveProvider> activeProvider() {
-        return EntityType.Builder.create(EntityLogisticsActiveProvider::create, EntityClassification.MISC)
+        return EntityType.Builder.create(EntityLogisticsActiveProvider::new, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
                 .setTrackingRange(3)
@@ -202,7 +221,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsPassiveProvider> passiveProvider() {
-        return EntityType.Builder.create(EntityLogisticsPassiveProvider::createPassive, EntityClassification.MISC)
+        return EntityType.Builder.create(EntityLogisticsPassiveProvider::new, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
                 .setTrackingRange(3)
@@ -212,7 +231,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsStorage> storage() {
-        return EntityType.Builder.create(EntityLogisticsStorage::create, EntityClassification.MISC)
+        return EntityType.Builder.create(EntityLogisticsStorage::new, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
                 .setTrackingRange(3)
@@ -222,7 +241,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsDefaultStorage> defaultStorage() {
-        return EntityType.Builder.create(EntityLogisticsDefaultStorage::createDefault, EntityClassification.MISC)
+        return EntityType.Builder.create(EntityLogisticsDefaultStorage::new, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
                 .setTrackingRange(3)
@@ -232,7 +251,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsRequester> requester() {
-        return EntityType.Builder.create(EntityLogisticsRequester::create, EntityClassification.MISC)
+        return EntityType.Builder.create(EntityLogisticsRequester::new, EntityClassification.MISC)
                 .size(10 / 16F, 9 / 16F)
                 .immuneToFire()
                 .setTrackingRange(3)

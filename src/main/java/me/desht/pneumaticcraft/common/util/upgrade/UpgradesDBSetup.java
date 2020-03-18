@@ -11,29 +11,38 @@ import net.minecraft.inventory.EquipmentSlotType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class UpgradesDBSetup {
-    private static int MAX_VOLUME = 25;
+    private static final int MAX_VOLUME = 25;
 
-    private static final Object[] DRONE_UPGRADES = new Object[] {
-            EnumUpgrade.VOLUME, MAX_VOLUME,
-            EnumUpgrade.INVENTORY, 35,
-            EnumUpgrade.ITEM_LIFE, 10,
-            EnumUpgrade.SECURITY, 3,
-            EnumUpgrade.SPEED, 10,
-            EnumUpgrade.ENTITY_TRACKER, 1,
-            EnumUpgrade.MAGNET, 6,
-            EnumUpgrade.RANGE, 16
-    };
-    private static final Object[] BASIC_DRONE_UPGRADES = new Object[] {
-            EnumUpgrade.VOLUME, MAX_VOLUME,
-            EnumUpgrade.ITEM_LIFE, 10,
-            EnumUpgrade.SECURITY, 3,
-            EnumUpgrade.SPEED, 10,
-            EnumUpgrade.MAGNET, 6,
-            EnumUpgrade.STANDBY, 1
-    };
+    private static final Builder DRONE_UPGRADES = new Builder()
+            .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+            .with(EnumUpgrade.INVENTORY, 35)
+            .with(EnumUpgrade.ITEM_LIFE, 10)
+            .with(EnumUpgrade.SECURITY, 3)
+            .with(EnumUpgrade.SPEED, 10)
+            .with(EnumUpgrade.MINIGUN, 1)
+            .with(EnumUpgrade.MAGNET, 6)
+            .with(EnumUpgrade.RANGE, 16);
+    
+    private static final Builder BASIC_DRONE_UPGRADES = new Builder()
+            .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+            .with(EnumUpgrade.ITEM_LIFE, 10)
+            .with(EnumUpgrade.SECURITY, 3)
+            .with(EnumUpgrade.SPEED, 10)
+            .with(EnumUpgrade.MAGNET, 6)
+            .with(EnumUpgrade.STANDBY, 1);
+
+    private static final Builder GUARD_DRONE_UPGRADES = new Builder(BASIC_DRONE_UPGRADES)
+            .with(EnumUpgrade.MAGNET, 0)
+            .with(EnumUpgrade.MINIGUN, 1)
+            .with(EnumUpgrade.RANGE, 16);
+
+    private static final Builder COLLECTOR_DRONE_UPGRADES = new Builder(BASIC_DRONE_UPGRADES)
+            .with(EnumUpgrade.RANGE, 16)
+            .with(EnumUpgrade.INVENTORY, 35);
 
     public static void init() {
         initTileEntities();
@@ -47,45 +56,42 @@ public class UpgradesDBSetup {
         db.addApplicableUpgrades(ModItems.DRONE.get(), DRONE_UPGRADES);
         db.addApplicableUpgrades(ModItems.LOGISTICS_DRONE.get(), BASIC_DRONE_UPGRADES);
         db.addApplicableUpgrades(ModItems.HARVESTING_DRONE.get(), BASIC_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModItems.GUARD_DRONE.get(), GUARD_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModItems.COLLECTOR_DRONE.get(), COLLECTOR_DRONE_UPGRADES);
 
-        db.addApplicableUpgrades(ModItems.MINIGUN.get(),
-                EnumUpgrade.SPEED, 3,
-                EnumUpgrade.RANGE, 6,
-                EnumUpgrade.DISPENSER, 3,
-                EnumUpgrade.ITEM_LIFE, 4,
-                EnumUpgrade.ENTITY_TRACKER, 4,
-                EnumUpgrade.SECURITY, 1);
+        db.addApplicableUpgrades(ModItems.MINIGUN.get(), new Builder()
+                .with(EnumUpgrade.SPEED, 3)
+                .with(EnumUpgrade.RANGE, 6)
+                .with(EnumUpgrade.DISPENSER, 3)
+                .with(EnumUpgrade.ITEM_LIFE, 4)
+                .with(EnumUpgrade.ENTITY_TRACKER, 4)
+                .with(EnumUpgrade.SECURITY, 1));
 
         // Pneumatic Armor
-        List<List<Object>> armor = new ArrayList<>();
-        for (EquipmentSlotType ignored : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-            armor.add(new ArrayList<>());
-        }
+        List<Builder> armor = Arrays.asList(new Builder(), new Builder(), new Builder(), new Builder());
         for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
             // upgrades automatically added due to an upgrade handler being registered
-            UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).forEach(
-                    handler -> Arrays.stream(handler.getRequiredUpgrades())
-                            .forEach(upgrade -> {
-                                addUpgrade(armor.get(slot.getIndex()), upgrade, handler.getMaxInstallableUpgrades(upgrade));
-                            })
+            UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).forEach(handler ->
+                    Arrays.stream(handler.getRequiredUpgrades()).forEach(upgrade -> {
+                        armor.get(slot.getIndex()).with(upgrade, handler.getMaxInstallableUpgrades(upgrade));
+                    })
             );
             // upgrades common to all armor pieces without a specific upgrade handler
-            addUpgrade(armor.get(slot.getIndex()), EnumUpgrade.SPEED, 10);
-            addUpgrade(armor.get(slot.getIndex()), EnumUpgrade.VOLUME, MAX_VOLUME);
-            addUpgrade(armor.get(slot.getIndex()), EnumUpgrade.ITEM_LIFE, PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES);
-            addUpgrade(armor.get(slot.getIndex()), EnumUpgrade.ARMOR, 4);
-            addUpgrade(armor.get(slot.getIndex()), EnumUpgrade.THAUMCRAFT, 1);
+            armor.get(slot.getIndex()).with(EnumUpgrade.SPEED, 10)
+                    .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                    .with(EnumUpgrade.ITEM_LIFE, PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES)
+                    .with(EnumUpgrade.ARMOR, 4)
+                    .with(EnumUpgrade.THAUMCRAFT, 1);
         }
         // piece-specific upgrades which don't have a specific upgrade handler
-        addUpgrade(armor.get(EquipmentSlotType.HEAD.getIndex()), EnumUpgrade.RANGE, 5);
-        addUpgrade(armor.get(EquipmentSlotType.HEAD.getIndex()), EnumUpgrade.SECURITY, 64);
-        addUpgrade(armor.get(EquipmentSlotType.CHEST.getIndex()), EnumUpgrade.SECURITY, 1);
-        addUpgrade(armor.get(EquipmentSlotType.FEET.getIndex()), EnumUpgrade.FLIPPERS, 1);
+        armor.get(EquipmentSlotType.HEAD.getIndex()).with(EnumUpgrade.RANGE, 5).with(EnumUpgrade.SECURITY, 64);
+        armor.get(EquipmentSlotType.CHEST.getIndex()).with(EnumUpgrade.SECURITY, 1);
+        armor.get(EquipmentSlotType.FEET.getIndex()).with(EnumUpgrade.FLIPPERS, 1);
 
-        db.addApplicableUpgrades(ModItems.PNEUMATIC_HELMET.get(), armor.get(EquipmentSlotType.HEAD.getIndex()).toArray(new Object[0]));
-        db.addApplicableUpgrades(ModItems.PNEUMATIC_CHESTPLATE.get(), armor.get(EquipmentSlotType.CHEST.getIndex()).toArray(new Object[0]));
-        db.addApplicableUpgrades(ModItems.PNEUMATIC_LEGGINGS.get(), armor.get(EquipmentSlotType.LEGS.getIndex()).toArray(new Object[0]));
-        db.addApplicableUpgrades(ModItems.PNEUMATIC_BOOTS.get(), armor.get(EquipmentSlotType.FEET.getIndex()).toArray(new Object[0]));
+        db.addApplicableUpgrades(ModItems.PNEUMATIC_HELMET.get(), armor.get(EquipmentSlotType.HEAD.getIndex()));
+        db.addApplicableUpgrades(ModItems.PNEUMATIC_CHESTPLATE.get(), armor.get(EquipmentSlotType.CHEST.getIndex()));
+        db.addApplicableUpgrades(ModItems.PNEUMATIC_LEGGINGS.get(), armor.get(EquipmentSlotType.LEGS.getIndex()));
+        db.addApplicableUpgrades(ModItems.PNEUMATIC_BOOTS.get(), armor.get(EquipmentSlotType.FEET.getIndex()));
     }
 
     private static void initEntities() {
@@ -94,145 +100,162 @@ public class UpgradesDBSetup {
         db.addApplicableUpgrades(ModEntities.DRONE.get(), DRONE_UPGRADES);
         db.addApplicableUpgrades(ModEntities.LOGISTICS_DRONE.get(), BASIC_DRONE_UPGRADES);
         db.addApplicableUpgrades(ModEntities.HARVESTING_DRONE.get(), BASIC_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntities.GUARD_DRONE.get(), BASIC_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntities.COLLECTOR_DRONE.get(), COLLECTOR_DRONE_UPGRADES);
     }
 
     private static void initTileEntities() {
         ApplicableUpgradesDB db = ApplicableUpgradesDB.getInstance();
 
-        db.addApplicableUpgrades(ModTileEntities.AIR_CANNON.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.RANGE, 8,
-                EnumUpgrade.ITEM_LIFE, 8,
-                EnumUpgrade.ENTITY_TRACKER, 1,
-                EnumUpgrade.BLOCK_TRACKER, 1,
-                EnumUpgrade.DISPENSER, 1,
-                EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntities.AIR_COMPRESSOR.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntities.ADVANCED_AIR_COMPRESSOR.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntities.ASSEMBLY_CONTROLLER.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntities.CHARGING_STATION.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10,
-                EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntities.ELEVATOR_BASE.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10,
-                EnumUpgrade.CHARGING, 4);
-        db.addApplicableUpgrades(ModTileEntities.PNEUMATIC_DOOR_BASE.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10,
-                EnumUpgrade.RANGE, 8);
-        db.addApplicableUpgrades(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(),
-                EnumUpgrade.SPEED, 10,
-                EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME);
-        db.addApplicableUpgrades(ModTileEntities.VACUUM_PUMP.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntities.UV_LIGHT_BOX.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.DISPENSER, 1,
-                EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntities.SECURITY_STATION.get(),
-                EnumUpgrade.ENTITY_TRACKER, 4,
-                EnumUpgrade.SECURITY, 64,
-                EnumUpgrade.RANGE, 14);
-        db.addApplicableUpgrades(ModTileEntities.AERIAL_INTERFACE.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntities.ELECTROSTATIC_COMPRESSOR.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME);
-        db.addApplicableUpgrades(ModTileEntities.OMNIDIRECTIONAL_HOPPER.get(),
-                EnumUpgrade.SPEED, 11,
-                EnumUpgrade.CREATIVE, 1,
-                EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntities.LIQUID_HOPPER.get(),
-                EnumUpgrade.SPEED, 11,
-                EnumUpgrade.CREATIVE, 1,
-                EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntities.LIQUID_COMPRESSOR.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntities.ADVANCED_LIQUID_COMPRESSOR.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntities.PROGRAMMABLE_CONTROLLER.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10,
-                EnumUpgrade.INVENTORY, 35);
-        db.addApplicableUpgrades(ModTileEntities.GAS_LIFT.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10,
-                EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntities.SENTRY_TURRET.get(),
-                EnumUpgrade.RANGE, 16);
-        db.addApplicableUpgrades(ModTileEntities.FLUX_COMPRESSOR.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntities.PNEUMATIC_DYNAMO.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME,
-                EnumUpgrade.SPEED, 10);
-        db.addApplicableUpgrades(ModTileEntities.THERMAL_COMPRESSOR.get(),
-                EnumUpgrade.SECURITY, 1,
-                EnumUpgrade.VOLUME, MAX_VOLUME);
-        db.addApplicableUpgrades(ModTileEntities.TANK_SMALL.get(),
-                EnumUpgrade.SPEED, 7,
-                EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntities.TANK_MEDIUM.get(),
-                EnumUpgrade.SPEED, 7,
-                EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntities.TANK_LARGE.get(),
-                EnumUpgrade.SPEED, 7,
-                EnumUpgrade.DISPENSER, 1);
-        db.addApplicableUpgrades(ModTileEntities.SMART_CHEST.get(),
-                EnumUpgrade.SPEED, 9,
-                EnumUpgrade.DISPENSER, 1,
-                EnumUpgrade.MAGNET, 1,
-                EnumUpgrade.RANGE, 4);
+        db.addApplicableUpgrades(ModTileEntities.AIR_CANNON.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.RANGE, 8)
+                .with(EnumUpgrade.ITEM_LIFE, 8)
+                .with(EnumUpgrade.ENTITY_TRACKER, 1)
+                .with(EnumUpgrade.BLOCK_TRACKER, 1)
+                .with(EnumUpgrade.DISPENSER, 1)
+                .with(EnumUpgrade.SPEED, 10));
+        db.addApplicableUpgrades(ModTileEntities.AIR_COMPRESSOR.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10));
+        db.addApplicableUpgrades(ModTileEntities.ADVANCED_AIR_COMPRESSOR.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10));
+        db.addApplicableUpgrades(ModTileEntities.ASSEMBLY_CONTROLLER.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10));
+        db.addApplicableUpgrades(ModTileEntities.CHARGING_STATION.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10)
+                .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.ELEVATOR_BASE.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10)
+                .with(EnumUpgrade.CHARGING, 4));
+        db.addApplicableUpgrades(ModTileEntities.PNEUMATIC_DOOR_BASE.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10)
+                .with(EnumUpgrade.RANGE, 8));
+        db.addApplicableUpgrades(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), new Builder()
+                .with(EnumUpgrade.SPEED, 10)
+                .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME));
+        db.addApplicableUpgrades(ModTileEntities.VACUUM_PUMP.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10));
+        db.addApplicableUpgrades(ModTileEntities.UV_LIGHT_BOX.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.DISPENSER, 1)
+                .with(EnumUpgrade.SPEED, 10));
+        db.addApplicableUpgrades(ModTileEntities.SECURITY_STATION.get(), new Builder()
+                .with(EnumUpgrade.ENTITY_TRACKER, 4)
+                .with(EnumUpgrade.SECURITY, 64)
+                .with(EnumUpgrade.RANGE, 14));
+        db.addApplicableUpgrades(ModTileEntities.AERIAL_INTERFACE.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.ELECTROSTATIC_COMPRESSOR.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME));
+        db.addApplicableUpgrades(ModTileEntities.OMNIDIRECTIONAL_HOPPER.get(), new Builder()
+                .with(EnumUpgrade.SPEED, 11)
+                .with(EnumUpgrade.CREATIVE, 1)
+                .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.LIQUID_HOPPER.get(), new Builder()
+                .with(EnumUpgrade.SPEED, 11)
+                .with(EnumUpgrade.CREATIVE, 1)
+                .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.LIQUID_COMPRESSOR.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10));
+        db.addApplicableUpgrades(ModTileEntities.ADVANCED_LIQUID_COMPRESSOR.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10));
+        db.addApplicableUpgrades(ModTileEntities.PROGRAMMABLE_CONTROLLER.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10)
+                .with(EnumUpgrade.INVENTORY, 35));
+        db.addApplicableUpgrades(ModTileEntities.GAS_LIFT.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10)
+                .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.SENTRY_TURRET.get(), new Builder()
+                .with(EnumUpgrade.RANGE, 16));
+        db.addApplicableUpgrades(ModTileEntities.FLUX_COMPRESSOR.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10));
+        db.addApplicableUpgrades(ModTileEntities.PNEUMATIC_DYNAMO.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SPEED, 10));
+        db.addApplicableUpgrades(ModTileEntities.THERMAL_COMPRESSOR.get(), new Builder()
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME));
+        db.addApplicableUpgrades(ModTileEntities.TANK_SMALL.get(), new Builder()
+                .with(EnumUpgrade.SPEED, 7)
+                .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.TANK_MEDIUM.get(), new Builder()
+                .with(EnumUpgrade.SPEED, 7)
+                .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.TANK_LARGE.get(), new Builder()
+                .with(EnumUpgrade.SPEED, 7)
+                .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.SMART_CHEST.get(), new Builder()
+                .with(EnumUpgrade.SPEED, 9)
+                .with(EnumUpgrade.DISPENSER, 1)
+                .with(EnumUpgrade.MAGNET, 1)
+                .with(EnumUpgrade.RANGE, 4));
 
         // universal sensor needs some dynamic calculation...
-        List<Object> l = new ArrayList<>();
-        SensorHandler.getInstance().getUniversalSensorUpgrades().forEach(upgrade -> addUpgrade(l, upgrade, 1));
-        addUpgrade(l, EnumUpgrade.RANGE, 64);
-        addUpgrade(l, EnumUpgrade.SECURITY, 1);
-        addUpgrade(l, EnumUpgrade.VOLUME, MAX_VOLUME);
-        db.addApplicableUpgrades(ModTileEntities.UNIVERSAL_SENSOR.get(), l.toArray(new Object[0]));
+        Builder sensorBuilder = new Builder();
+        SensorHandler.getInstance().getUniversalSensorUpgrades().forEach(upgrade -> sensorBuilder.with(upgrade, 1));
+        sensorBuilder.with(EnumUpgrade.RANGE, 64).with(EnumUpgrade.SECURITY, 1).with(EnumUpgrade.VOLUME, MAX_VOLUME);
+        db.addApplicableUpgrades(ModTileEntities.UNIVERSAL_SENSOR.get(), sensorBuilder);
     }
 
-    private static void addUpgrade(List<Object> l, EnumUpgrade upgrade, int n) {
-        if (upgrade.isDepLoaded()) {
-            l.add(upgrade);
-            l.add(n);
+    static class Builder {
+        private final List<Integer> l;
+
+        Builder() {
+            l = new ArrayList<>(Collections.nCopies(EnumUpgrade.values().length, 0));
+        }
+
+        Builder(Builder copy) {
+            l = new ArrayList<>(copy.upgrades());
+        }
+
+        Builder with(EnumUpgrade upgrade, int amount) {
+            l.set(upgrade.ordinal(), amount);
+            return this;
+        }
+
+        List<Integer> upgrades() {
+            return l;
+        }
+
+        public int[] build() {
+            return l.stream().mapToInt(Integer::intValue).toArray();
         }
     }
-
 }

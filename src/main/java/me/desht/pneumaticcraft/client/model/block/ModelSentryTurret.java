@@ -12,7 +12,6 @@ import net.minecraft.util.math.BlockPos;
 public class ModelSentryTurret extends AbstractTileModelRenderer.BaseModel {
     private final ModelDroneMinigun model = new ModelDroneMinigun();
     private TileEntitySentryTurret fakeTurret;
-    private RenderMinigunTracers minigunTracersRenderer;
 
     public ModelSentryTurret() {
     }
@@ -26,15 +25,12 @@ public class ModelSentryTurret extends AbstractTileModelRenderer.BaseModel {
             }
             model.renderMinigun(fakeTurret.getMinigun(), 1 / 16F, partialTicks, false);
         } else {
-            if (minigunTracersRenderer == null) {
-                minigunTracersRenderer = new RenderMinigunTracers(te.getMinigun());
-            }
             model.renderMinigun(te.getMinigun(), 1 / 16F, partialTicks, false);
             GlStateManager.pushMatrix();
             GlStateManager.scaled(1.0F, -1, -1F);
             GlStateManager.translated(0, -1.45F, 0);
             BlockPos pos = te.getPos();
-            minigunTracersRenderer.render(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1.2);
+            RenderMinigunTracers.instance().render(te.getMinigun(),pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1.2);
             GlStateManager.popMatrix();
         }
         GlStateManager.popMatrix();

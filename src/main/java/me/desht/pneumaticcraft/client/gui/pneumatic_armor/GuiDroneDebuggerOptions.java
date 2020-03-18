@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
@@ -89,6 +90,7 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
 
         followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, " " + I18n.format("gui.progWidget.debug.followActive"));
         followCheckbox.x = 180 - followCheckbox.getWidth();
+        gui.addWidget(followCheckbox);
 
         Screen guiScreen = getGuiScreen().getScreen();
         programmingStartX = PROGRAMMING_MARGIN;
@@ -186,6 +188,7 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
                                 int guiTop, int width, int height, Rectangle2d bounds,
                                 int translatedX, int translatedY, int lastZoom) {
             super(progWidgets, fontRenderer, guiLeft, guiTop, width, height, bounds, translatedX, translatedY, lastZoom);
+            TileEntityProgrammer.updatePuzzleConnections(progWidgets);
         }
 
         @Override

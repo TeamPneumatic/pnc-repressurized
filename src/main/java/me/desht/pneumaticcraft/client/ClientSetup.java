@@ -24,10 +24,7 @@ import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModParticleTypes;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
-import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
+import me.desht.pneumaticcraft.common.entity.living.*;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
@@ -97,6 +94,8 @@ public class ClientSetup {
         RenderingRegistry.registerEntityRenderingHandler(EntityAmadrone.class, RenderDrone.AMADRONE_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityLogisticsDrone.class, RenderDrone.LOGISTICS_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityHarvestingDrone.class, RenderDrone.HARVESTING_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(EntityGuardDrone.class, RenderDrone.GUARD_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(EntityCollectorDrone.class, RenderDrone.COLLECTOR_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, RenderDrone.REGULAR_FACTORY);
 
         // semiblocks

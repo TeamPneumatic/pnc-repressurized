@@ -50,11 +50,7 @@ public class EntityMicromissile extends ThrowableEntity {
     private boolean outOfFuel = false;
     private FireMode fireMode = FireMode.SMART;
 
-    public static EntityMicromissile create(EntityType<EntityMicromissile> type, World world) {
-        return new EntityMicromissile(type, world);
-    }
-
-    private EntityMicromissile(EntityType<EntityMicromissile> type, World worldIn) {
+    public EntityMicromissile(EntityType<EntityMicromissile> type, World worldIn) {
         super(type, worldIn);
     }
 

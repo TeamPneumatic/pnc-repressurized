@@ -23,7 +23,7 @@ public class GuiDrone extends GuiPneumaticInventoryItem {
 
         addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
                 .setText("gui.tab.info.item.drone");
-        addUpgradeTabs(itemStack.getItem(), "drone");
+        addUpgradeTabs(itemStack.getItem(), itemStack.getItem().getRegistryName().getPath(), "drone");
     }
 
     @Override

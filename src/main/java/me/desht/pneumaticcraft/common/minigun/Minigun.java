@@ -102,6 +102,10 @@ public abstract class Minigun {
         return this;
     }
 
+    public boolean isValid() {
+        return true;
+    }
+
     public abstract boolean isMinigunActivated();
 
     public abstract void setMinigunActivated(boolean activated);

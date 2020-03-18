@@ -4,11 +4,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
 
 public class EntityLogisticsDefaultStorage extends EntityLogisticsStorage {
-    public static EntityLogisticsDefaultStorage createDefault(EntityType<EntityLogisticsDefaultStorage> type, World world) {
-        return new EntityLogisticsDefaultStorage(type, world);
-    }
-
-    private EntityLogisticsDefaultStorage(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityLogisticsDefaultStorage(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
 

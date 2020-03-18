@@ -18,6 +18,7 @@ import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.util.ITooltipFlag;
@@ -232,6 +233,12 @@ public class ItemPneumaticArmor extends ArmorItem
     public static String getEntityFilter(ItemStack helmetStack) {
         if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, NBT_ENTITY_FILTER)) return "";
         return NBTUtil.getString(helmetStack, NBT_ENTITY_FILTER);
+    }
+
+    public static boolean isPlayerDebuggingEntity(PlayerEntity player, Entity e) {
+        ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+        return helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()
+                && NBTUtil.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == e.getEntityId();
     }
 
     @Override

@@ -12,18 +12,16 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
 import me.desht.pneumaticcraft.common.network.PacketUpdateDebuggingDrone;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.HangingEntity;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -76,7 +74,7 @@ public class RenderEntityTarget {
             player.world.playSound(player.posX, player.posY, player.posZ, ModSounds.HUD_ENTITY_LOCK.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
         }
 
-        boolean tagged = NBTUtil.getInteger(player.getItemStackFromSlot(EquipmentSlotType.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId();
+        boolean tagged = ItemPneumaticArmor.isPlayerDebuggingEntity(player, entity);
         circle1.setRenderingAsTagged(tagged);
         circle2.setRenderingAsTagged(tagged);
         circle1.update();
@@ -224,8 +222,13 @@ public class RenderEntityTarget {
     public void selectAsDebuggingTarget() {
         if (isInitialized() && isPlayerLookingAtTarget() && entity instanceof EntityDrone) {
             GuiDroneDebuggerOptions.clearAreaShowWidgetId();
-            NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getEntityId()));
-            Minecraft.getInstance().player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
+            if (ItemPneumaticArmor.isPlayerDebuggingEntity(ClientUtils.getClientPlayer(), entity)) {
+                NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(-1));
+                Minecraft.getInstance().player.playSound(ModSounds.SCI_FI.get(), 1.0f, 2.0f);
+            } else {
+                NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getEntityId()));
+                Minecraft.getInstance().player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
+            }
         }
     }
 

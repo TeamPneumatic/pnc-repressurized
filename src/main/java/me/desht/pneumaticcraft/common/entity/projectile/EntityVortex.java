@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
-import me.desht.pneumaticcraft.common.core.ModEntities;
 import net.minecraft.block.Block;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.WebBlock;
@@ -26,12 +25,8 @@ public class EntityVortex extends ThrowableEntity {
     // clientside: rendering X offset of vortex, depends on which hand the vortex was fired from
     private float renderOffsetX = -Float.MAX_VALUE;
 
-    public static EntityVortex create(EntityType<? extends EntityVortex> type, World world) {
-        return new EntityVortex(world);
-    }
-
-    private EntityVortex(World world) {
-        super(ModEntities.VORTEX.get(), world);
+    public EntityVortex(EntityType<? extends EntityVortex> type, World world) {
+        super(type, world);
     }
 
     @Override

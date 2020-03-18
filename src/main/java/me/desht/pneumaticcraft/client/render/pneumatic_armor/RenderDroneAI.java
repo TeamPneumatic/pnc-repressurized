@@ -1,8 +1,11 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -55,17 +58,27 @@ public class RenderDroneAI {
             wireframe.getKey().render(partialTicks);
         }
 
-        if (pos != null) {
+        if (ItemPneumaticArmor.isPlayerDebuggingEntity(ClientUtils.getClientPlayer(), drone)) {
             IProgWidget activeWidget = drone.getActiveWidget();
             if (activeWidget != null) {
-                double x = getInterpolated(pos.getX(), oldPos.getX(), partialTicks);
-                double y = getInterpolated(pos.getY(), oldPos.getY(), partialTicks);
-                double z = getInterpolated(pos.getZ(), oldPos.getZ(), partialTicks);
+                double x, y, z;
+                if (pos != null) {
+                    x = getInterpolated(pos.getX(), oldPos.getX(), partialTicks);
+                    y = getInterpolated(pos.getY(), oldPos.getY(), partialTicks);
+                    z = getInterpolated(pos.getZ(), oldPos.getZ(), partialTicks);
+                } else {
+                    x = MathHelper.lerp(partialTicks, drone.prevPosX, drone.posX);
+                    y = MathHelper.lerp(partialTicks, drone.prevPosY, drone.posY) + 0.5;
+                    z = MathHelper.lerp(partialTicks, drone.prevPosZ, drone.posZ);
+                }
+                GlStateManager.enableTexture();
                 GlStateManager.enableBlend();
                 GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
                 GlStateManager.pushMatrix();
-                GlStateManager.translated(x + 0.5, y + 1.5, z + 0.5);
+                GlStateManager.translated(x, y + 0.5, z);
+                GlStateManager.scaled(0.01, 0.01, 0.01);
                 GlStateManager.rotated(180, 1, 0, 0);
+                GlStateManager.rotated(180 + Minecraft.getInstance().getRenderManager().playerViewY, 0, 1, 0);
                 activeWidget.render();
                 GlStateManager.popMatrix();
                 GlStateManager.disableBlend();

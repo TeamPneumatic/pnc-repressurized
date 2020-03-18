@@ -165,8 +165,6 @@ public class ModBlocks {
             BlockFluxCompressor::new);
     public static final RegistryObject<BlockPneumaticDynamo> PNEUMATIC_DYNAMO = register("pneumatic_dynamo",
             BlockPneumaticDynamo::new);
-    public static final RegistryObject<BlockFakeIce> FAKE_ICE = registerNoItem("fake_ice",
-            BlockFakeIce::new);
     public static final RegistryObject<BlockThermalCompressor> THERMAL_COMPRESSOR = register("thermal_compressor",
             BlockThermalCompressor::new);
     public static final RegistryObject<BlockHeatPipe> HEAT_PIPE = register("heat_pipe",

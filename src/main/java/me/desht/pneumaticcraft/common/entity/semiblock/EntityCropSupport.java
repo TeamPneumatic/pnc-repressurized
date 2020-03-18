@@ -14,11 +14,7 @@ import static me.desht.pneumaticcraft.common.config.PNCConfig.Common.Machines.cr
 public class EntityCropSupport extends EntitySemiblockBase {
     private static final AxisAlignedBB BOUNDS = new AxisAlignedBB(3 / 16D, 0D, 3 / 16D, 13 / 16D, 9 / 16D, 13 / 16D);
 
-    public static EntityCropSupport create(EntityType<EntityCropSupport> type, World world) {
-        return new EntityCropSupport(type, world);
-    }
-
-    private EntityCropSupport(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityCropSupport(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
 

@@ -120,6 +120,7 @@ public class PNCConfig {
             public static int weightedAmmoCartridgeSize;
             public static double weightedAmmoDamageMultiplier;
             public static double weightedAmmoRangeMultiplier;
+            public static boolean blockHitParticles;
         }
 
         public static class Recipes {

@@ -7,13 +7,13 @@
   ],
   "key": {
     "S": {
-      "tag": "forge:crops"
+      "item": "minecraft:hopper"
     },
     "R": {
       "item": "pneumaticcraft:turbine_rotor"
     }
   },
   "result": {
-    "item": "pneumaticcraft:harvesting_drone"
+    "item": "pneumaticcraft:collector_drone"
   }
 }

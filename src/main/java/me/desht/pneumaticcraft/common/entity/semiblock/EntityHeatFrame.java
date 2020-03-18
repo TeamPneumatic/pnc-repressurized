@@ -59,11 +59,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
     private SyncedTemperature syncedTemperature = new SyncedTemperature();
 
-    public static EntityHeatFrame create(EntityType<EntityHeatFrame> type, World world) {
-        return new EntityHeatFrame(type, world);
-    }
-
-    private EntityHeatFrame(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityHeatFrame(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
 
         heatCap = LazyOptional.of(() -> logic);

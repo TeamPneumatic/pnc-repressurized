@@ -24,7 +24,7 @@ public interface IDroneRegistry {
 
     /**
      * This will add a custom puzzle piece that has only an Area whitelist/blacklist parameter (similar to a GoTo piece).
-     * It will do the specified behaviour. This can be used, for example, to create energy import/export widgets for
+     * It will do the specified behaviour. This can be used, for example, to create energy import/export widgets for a
      * custom energy type (i.e. other than Forge Energy).
      * <p>This <strong>must</strong> be called
      * from a registry event handler for {@link RegistryEvent.Register&lt;ProgWidgetType&gt;} to ensure registration

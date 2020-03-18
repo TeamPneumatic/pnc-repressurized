@@ -9,11 +9,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
 public class EntityLogisticsActiveProvider extends EntityLogisticsFrame implements ISpecificProvider {
-    public static EntityLogisticsActiveProvider create(EntityType<EntityLogisticsActiveProvider> type, World world) {
-        return new EntityLogisticsActiveProvider(type, world);
-    }
-
-    EntityLogisticsActiveProvider(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityLogisticsActiveProvider(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
 

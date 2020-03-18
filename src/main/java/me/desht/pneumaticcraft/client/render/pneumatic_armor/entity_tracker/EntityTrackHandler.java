@@ -18,10 +18,9 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Hac
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
@@ -34,7 +33,6 @@ import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.monster.SlimeEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
@@ -127,10 +125,14 @@ public class EntityTrackHandler {
             curInfo.add(I18n.format("entityTracker.info.drone.routine", ((EntityDrone) entity).getLabel()));
             PlayerEntity player = ClientUtils.getClientPlayer();
             if (DroneDebugUpgradeHandler.enabledForPlayer(player)) {
-                if (NBTUtil.getInteger(player.getItemStackFromSlot(EquipmentSlotType.HEAD), NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == entity.getEntityId()) {
+                if (ItemPneumaticArmor.isPlayerDebuggingEntity(player, entity)) {
                     curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.debugging"));
                     curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.debugging.key",
                             KeyHandler.getInstance().keybindOpenOptions.getLocalizedName()));
+                    if (isLookingAtTarget) {
+                        curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.stopDebugging.key",
+                                KeyHandler.getInstance().keybindDebuggingDrone.getLocalizedName()));
+                    }
                 } else if (isLookingAtTarget) {
                     curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.pressDebugKey",
                             KeyHandler.getInstance().keybindDebuggingDrone.getLocalizedName()));

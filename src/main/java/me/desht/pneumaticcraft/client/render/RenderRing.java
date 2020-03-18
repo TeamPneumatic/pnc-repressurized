@@ -10,6 +10,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
+import static net.minecraft.util.math.MathHelper.lerp;
+
 public class RenderRing extends RenderProgressingLine {
     private final int color;
 
@@ -21,8 +23,8 @@ public class RenderRing extends RenderProgressingLine {
     @OnlyIn(Dist.CLIENT)
     public void renderInterpolated(RenderProgressingLine lastTickLine, float partialTick, float rotationYaw, float rotationPitch) {
         GlStateManager.pushMatrix();
-        double renderProgress = getInter(progress, lastTickLine.progress, partialTick);
-        GlStateManager.translated((getInter(endX, lastTickLine.endX, partialTick) - startX) * renderProgress, (getInter(endY, lastTickLine.endY, partialTick) - startY) * renderProgress, (getInter(endZ, lastTickLine.endZ, partialTick) - startZ) * renderProgress);
+        double renderProgress = lerp(partialTick, progress, lastTickLine.progress);
+        GlStateManager.translated((lerp(partialTick, endX, lastTickLine.endX) - startX) * renderProgress, (lerp(partialTick, endY, lastTickLine.endY) - startY) * renderProgress, (lerp(partialTick, endZ, lastTickLine.endZ) - startZ) * renderProgress);
         GlStateManager.rotated(rotationYaw, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotated(rotationPitch, 0.0F, 0.0F, 1.0F);
         BufferBuilder wr = Tessellator.getInstance().getBuffer();

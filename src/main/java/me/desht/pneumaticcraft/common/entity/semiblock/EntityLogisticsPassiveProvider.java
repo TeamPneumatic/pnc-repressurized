@@ -4,11 +4,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.world.World;
 
 public class EntityLogisticsPassiveProvider extends EntityLogisticsActiveProvider {
-    public static EntityLogisticsPassiveProvider createPassive(EntityType<EntityLogisticsPassiveProvider> type, World world) {
-        return new EntityLogisticsPassiveProvider(type, world);
-    }
-
-    private EntityLogisticsPassiveProvider(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityLogisticsPassiveProvider(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
 

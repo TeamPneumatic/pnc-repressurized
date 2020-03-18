@@ -24,10 +24,11 @@ public class RenderDrone extends MobRenderer<EntityDroneBase,ModelDrone> {
     public static final IRenderFactory<EntityDroneBase> REGULAR_FACTORY = RenderDrone::new;
     public static final IRenderFactory<EntityDroneBase> LOGISTICS_FACTORY = manager -> new RenderDrone(manager, 0xFFFF0000);
     public static final IRenderFactory<EntityDroneBase> HARVESTING_FACTORY = manager -> new RenderDrone(manager, 0xFF006102);
+    public static final IRenderFactory<EntityDroneBase> GUARD_FACTORY = manager -> new RenderDrone(manager, 0xFF4B7FDE);
+    public static final IRenderFactory<EntityDroneBase> COLLECTOR_FACTORY = manager -> new RenderDrone(manager, 0xFFCACA27);
     public static final IRenderFactory<EntityDroneBase> AMADRONE_FACTORY = manager -> new RenderDrone(manager, 0xFFFF8000);
 
     private final RenderLaser laserRenderer = new RenderLaser();
-    private RenderMinigunTracers minigunTracersRenderer;
 
     private RenderDrone(EntityRendererManager manager) {
         super(manager, new ModelDrone(), 0);
@@ -111,13 +112,10 @@ public class RenderDrone extends MobRenderer<EntityDroneBase,ModelDrone> {
     }
 
     private void renderMinigunTracers(EntityDrone drone, float partialTicks) {
-        if (minigunTracersRenderer == null) {
-            minigunTracersRenderer = new RenderMinigunTracers(drone.getMinigun());
-        }
         double x1 = drone.lastTickPosX + (drone.posX - drone.lastTickPosX) * partialTicks;
         double y1 = drone.lastTickPosY + (drone.posY - drone.lastTickPosY) * partialTicks;
         double z1 = drone.lastTickPosZ + (drone.posZ - drone.lastTickPosZ) * partialTicks;
-        minigunTracersRenderer.render(x1, y1, z1, 0.6);
+        RenderMinigunTracers.instance().render(drone.getMinigun(), x1, y1, z1, 0.6);
     }
 
     private void renderHeldItem(@Nonnull ItemStack droneHeldItem) {

@@ -196,6 +196,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 'S', Blocks.COBBLESTONE_SLAB
         ).build(consumer);
 
+        shaped(ModItems.COLLECTOR_DRONE.get(), ModItems.TURBINE_ROTOR.get(),
+                " R /RSR/ R ",
+                'S', Items.HOPPER,
+                'R', ModItems.TURBINE_ROTOR.get()
+        ).build(consumer);
+
         shaped(ModBlocks.COMPRESSED_IRON_BLOCK.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "III/III/III",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
@@ -304,6 +310,12 @@ public class ModRecipeProvider extends RecipeProvider {
         shapeless(ModItems.GPS_AREA_TOOL.get(), ModItems.PLASTIC.get(),
                 ModItems.GPS_TOOL.get(), ModItems.GPS_TOOL.get()).build(consumer);
 
+        shaped(ModItems.GUARD_DRONE.get(), ModItems.TURBINE_ROTOR.get(),
+                " R /RSR/ R ",
+                'S', Items.IRON_SWORD,
+                'R', ModItems.TURBINE_ROTOR.get()
+        ).build(consumer);
+
         shapeless(ModItems.GUN_AMMO.get(), ModItems.MINIGUN.get(),
                 Tags.Items.GUNPOWDER, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, Tags.Items.INGOTS_GOLD
         ).build(consumer);
@@ -314,7 +326,7 @@ public class ModRecipeProvider extends RecipeProvider {
         miniGunAmmo(ModItems.GUN_AMMO_WEIGHTED.get(), Tags.Items.STORAGE_BLOCKS_GOLD, Tags.Items.OBSIDIAN).build(consumer);
 
         shaped(ModItems.HARVESTING_DRONE.get(), ModItems.TURBINE_ROTOR.get(),
-                " S /SRS/ S ",
+                " R /RSR/ R ",
                 'S', Tags.Items.CROPS,
                 'R', ModItems.TURBINE_ROTOR.get()
         ).build(consumer);
@@ -796,6 +808,7 @@ public class ModRecipeProvider extends RecipeProvider {
         standardUpgrade(EnumUpgrade.SECURITY, ModItems.SAFETY_TUBE_MODULE.get(), Blocks.OBSIDIAN).build(consumer);
         standardUpgrade(EnumUpgrade.VOLUME, ModItems.AIR_CANISTER.get(), ModItems.COMPRESSED_IRON_INGOT.get()).build(consumer);
         standardUpgrade(EnumUpgrade.FLIPPERS, Items.BLACK_WOOL, ModItems.PLASTIC.get()).build(consumer);
+        standardUpgrade(EnumUpgrade.MINIGUN, ModItems.MINIGUN.get(), Items.GUNPOWDER).build(consumer);
 
         // non-standard upgrade patterns
         ItemStack nightVisionPotion = new ItemStack(Items.POTION);

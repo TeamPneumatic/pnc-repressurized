@@ -19,16 +19,11 @@ public class EntityAmadrone extends EntityDrone {
     private String buyingPlayer;
     private AmadronAction amadronAction;
 
-    public static EntityAmadrone create(EntityType<? extends EntityDrone> type, World world) {
-        return new EntityAmadrone(type, world);
-    }
-
     public EntityAmadrone(EntityType<? extends EntityDrone> type, World world) {
         super(type, world, null);
 
         getAirHandler().addAir(100000);
         setCustomName(new TranslationTextComponent("drone.amadronDeliveryDrone"));
-        naturallySpawned = true; // Don't let the drone be dropped when wrenching it.
     }
 
     public void setHandlingOffer(ResourceLocation offerId, int times, @Nonnull ItemStack usedTablet, String buyingPlayer, AmadronAction amadronAction) {
@@ -57,6 +52,11 @@ public class EntityAmadrone extends EntityDrone {
 
     public String getBuyingPlayer() {
         return buyingPlayer;
+    }
+
+    @Override
+    public boolean shouldDropAsItem() {
+        return false;
     }
 
     @Override

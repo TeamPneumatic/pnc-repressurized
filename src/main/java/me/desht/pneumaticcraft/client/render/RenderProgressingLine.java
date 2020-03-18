@@ -9,6 +9,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
+import static net.minecraft.util.math.MathHelper.lerp;
+
 public class RenderProgressingLine {
     public double startX;
     public double startY;
@@ -93,16 +95,19 @@ public class RenderProgressingLine {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void renderInterpolated(RenderProgressingLine lastTickLine, float partialTick) {
+    public void renderInterpolated(RenderProgressingLine prev, float partialTick) {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-        wr.pos(getInter(startX, lastTickLine.startX, partialTick), getInter(startY, lastTickLine.startY, partialTick), getInter(startZ, lastTickLine.startZ, partialTick)).endVertex();
-        wr.pos(getInter(startX, lastTickLine.startX, partialTick) + (getInter(endX, lastTickLine.endX, partialTick) - getInter(startX, lastTickLine.startX, partialTick)) * progress, getInter(startY, lastTickLine.startY, partialTick) + (getInter(startY, lastTickLine.startY, partialTick) - getInter(endY, lastTickLine.endY, partialTick)) * progress, getInter(startZ, lastTickLine.startZ, partialTick) + (getInter(endZ, lastTickLine.endZ, partialTick) - getInter(startZ, lastTickLine.startZ, partialTick)) * progress).endVertex();
+        wr.pos(lerp(partialTick, startX, prev.startX),
+                lerp(partialTick, startY, prev.startY),
+                lerp(partialTick, startZ, prev.startZ))
+                .endVertex();
+        wr.pos(
+                lerp(partialTick, startX, prev.startX) + (lerp(partialTick, endX, prev.endX) - lerp(partialTick, startX, prev.startX)) * progress,
+                lerp(partialTick, startY, prev.startY) + (lerp(partialTick, startY, prev.startY) - lerp(partialTick, endY, prev.endY)) * progress,
+                lerp(partialTick, startZ, prev.startZ) + (lerp(partialTick, endZ, prev.endZ) - lerp(partialTick, startZ, prev.startZ)) * progress)
+                .endVertex();
         Tessellator.getInstance().draw();
-    }
-
-    protected double getInter(double cur, double old, float partialTick) {
-        return old + (cur - old) * partialTick;
     }
 
     public int getPointedSlotNumber(GuiSecurityStationBase gui) {

@@ -53,7 +53,6 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
         drone.initFromItemStack(iStack);
         world.addEntity(drone);
 
-        drone.naturallySpawned = false;
         drone.onInitialSpawn(world, world.getDifficultyForLocation(placePos), SpawnReason.TRIGGERED, new ILivingEntityData() {}, null);
     }
 

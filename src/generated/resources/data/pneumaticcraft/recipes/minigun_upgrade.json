@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
+  "key": {
+    "L": {
+      "tag": "pneumaticcraft:upgrade_component"
+    },
+    "X": {
+      "item": "minecraft:gunpowder"
+    },
+    "C": {
+      "item": "pneumaticcraft:minigun"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:minigun_upgrade"
+  }
+}

@@ -16,11 +16,7 @@ public class EntityRing extends Entity {
     private final Entity targetEntity;
     public final int color;
 
-    public static EntityRing create(EntityType<EntityRing> type, World world) {
-        return new EntityRing(type, world);
-    }
-
-    private EntityRing(EntityType<EntityRing> type, World world) {
+    public EntityRing(EntityType<EntityRing> type, World world) {
         super(type, world);
 
         targetEntity = null;

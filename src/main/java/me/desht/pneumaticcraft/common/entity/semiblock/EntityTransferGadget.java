@@ -46,11 +46,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     private int counter;
     public Vec3d renderingOffset;
 
-    public static EntityTransferGadget create(EntityType<EntityTransferGadget> type, World world) {
-        return new EntityTransferGadget(type, world);
-    }
-
-    private EntityTransferGadget(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityTransferGadget(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
 

@@ -11,16 +11,14 @@ import java.util.Random;
 
 import static me.desht.pneumaticcraft.common.minigun.Minigun.MAX_GUN_SPEED;
 
-public class RenderMinigunTracers {
-    private final Minigun minigun;
-    private final RenderProgressingLine minigunFire;
+public enum RenderMinigunTracers {
+    INSTANCE;
 
-    public RenderMinigunTracers(Minigun minigun) {
-        this.minigun = minigun;
-        this.minigunFire = new RenderProgressingLine().setProgress(1);
+    public static RenderMinigunTracers instance() {
+        return INSTANCE;
     }
 
-    public void render(double x, double y, double z, double gunRadius) {
+    public void render(Minigun minigun, double x, double y, double z, double gunRadius) {
         LivingEntity attackTarget = minigun.getAttackTarget();
 
         if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == MAX_GUN_SPEED && minigun.isGunAimedAtTarget() && attackTarget != null) {
@@ -30,8 +28,9 @@ public class RenderMinigunTracers {
             GlStateManager.disableTexture();
             GL11.glEnable(GL11.GL_LINE_STIPPLE);
             RenderUtils.glColorHex(0xFF000000 | minigun.getAmmoColor());
-            Random rand = attackTarget.getEntityWorld().rand;
             Vec3d vec = new Vec3d(attackTarget.posX - x, attackTarget.posY - y, attackTarget.posZ - z).normalize();
+            RenderProgressingLine minigunFire = new RenderProgressingLine().setProgress(1);
+            Random rand = attackTarget.getEntityWorld().rand;
             minigunFire.startX = x + vec.x * gunRadius;
             minigunFire.startY = y + vec.y * gunRadius;
             minigunFire.startZ = z + vec.z * gunRadius;

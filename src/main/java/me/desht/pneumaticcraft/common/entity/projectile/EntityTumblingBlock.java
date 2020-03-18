@@ -47,11 +47,7 @@ public class EntityTumblingBlock extends ThrowableEntity {
     private static final DataParameter<ItemStack> STATE_STACK = EntityDataManager.createKey(EntityTumblingBlock.class, DataSerializers.ITEMSTACK);
     private static FakePlayer fakePlayer;
 
-    public static EntityTumblingBlock create(EntityType<EntityTumblingBlock> type, World world) {
-        return new EntityTumblingBlock(type, world);
-    }
-
-    private EntityTumblingBlock(EntityType<EntityTumblingBlock> type, World worldIn) {
+    public EntityTumblingBlock(EntityType<EntityTumblingBlock> type, World worldIn) {
         super(type, worldIn);
     }
 

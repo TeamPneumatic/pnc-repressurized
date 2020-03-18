@@ -10,11 +10,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
 public class EntityLogisticsStorage extends EntityLogisticsFrame implements ISpecificProvider, ISpecificRequester {
-    public static EntityLogisticsStorage create(EntityType<EntityLogisticsStorage> type, World world) {
-        return new EntityLogisticsStorage(type, world);
-    }
-
-    EntityLogisticsStorage(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityLogisticsStorage(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
 

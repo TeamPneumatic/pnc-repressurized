@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.util;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,15 +68,15 @@ public class DroneProgramBuilder {
         }
 
         private void sanityCheck(IProgWidget mainInstruction, List<IProgWidget> whitelist) {
-            int nParams = mainInstruction.getParameters().size();
-            Validate.isTrue(whitelist.size() <= nParams, "Must supply at most " + nParams + " parameters for the whitelist!");
-            for (int i = 0; i < whitelist.size(); i++) {
-                Validate.isTrue(whitelist.get(i).getType() == mainInstruction.getParameters().get(i),
-                        String.format("Expected type %s, got %s for param %d",
-                                mainInstruction.getParameters().get(i).getRegistryName(),
-                                whitelist.get(i).getTypeID(), i));
-
-            }
+//            int nParams = mainInstruction.getParameters().size();
+//            Validate.isTrue(whitelist.size() <= nParams, "Must supply at most " + nParams + " parameters for the whitelist!");
+//            for (int i = 0; i < whitelist.size(); i++) {
+//                Validate.isTrue(whitelist.get(i).getType() == mainInstruction.getParameters().get(i),
+//                        String.format("Expected type %s, got %s for param %d",
+//                                mainInstruction.getParameters().get(i).getRegistryName(),
+//                                whitelist.get(i).getTypeID(), i));
+//
+//            }
         }
     }
 }

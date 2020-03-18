@@ -41,9 +41,11 @@ public class PacketUpdateDebuggingDrone {
             ItemStack stack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
             if (!stack.isEmpty()) {
                 NBTUtil.setInteger(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE, entityId);
-                Entity entity = player.world.getEntityByID(entityId);
-                if (entity instanceof EntityDrone) {
-                    ((EntityDrone) entity).trackAsDebugged(player);
+                if (entityId > 0) {
+                    Entity entity = player.world.getEntityByID(entityId);
+                    if (entity instanceof EntityDrone) {
+                        ((EntityDrone) entity).trackAsDebugged(player);
+                    }
                 }
             }
         });

@@ -11,11 +11,11 @@ import net.minecraft.world.World;
 public class EntityProgrammableController extends EntityDroneBase {
     private TileEntityProgrammableController controller;
 
-    public static EntityProgrammableController createProgrammableController(EntityType<EntityProgrammableController> type, World world) {
-        return new EntityProgrammableController(type, world);
-    }
+//    public static EntityProgrammableController createProgrammableController(EntityType<EntityProgrammableController> type, World world) {
+//        return new EntityProgrammableController(type, world);
+//    }
 
-    private EntityProgrammableController(EntityType<EntityProgrammableController> type, World world) {
+    public EntityProgrammableController(EntityType<EntityProgrammableController> type, World world) {
         super(type, world);
 
         this.preventEntitySpawning = false;

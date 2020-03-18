@@ -16,11 +16,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     private int minItems = 1;
     private int minFluid = 1;
 
-    public static EntityLogisticsRequester create(EntityType<EntityLogisticsRequester> type, World world) {
-        return new EntityLogisticsRequester(type, world);
-    }
-
-    private EntityLogisticsRequester(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityLogisticsRequester(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
 

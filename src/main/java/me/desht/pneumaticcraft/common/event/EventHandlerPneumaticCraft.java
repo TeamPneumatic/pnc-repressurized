@@ -148,9 +148,6 @@ public class EventHandlerPneumaticCraft {
         if (!HackableEnderman.onEndermanTeleport(e)) {
             event.setCanceled(true);
         }
-        if (e.getEntityWorld().getBlockState(e.getPosition()).getBlock() == ModBlocks.FAKE_ICE.get()) {
-            event.setCanceled(true);
-        }
     }
 
     @SubscribeEvent

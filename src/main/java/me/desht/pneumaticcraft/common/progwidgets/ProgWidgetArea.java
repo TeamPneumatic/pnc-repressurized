@@ -74,10 +74,14 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         return fromPositions(p1, p1);
     }
 
-    public static ProgWidgetArea fromPosAndExpansions(BlockPos p1, int expX, int expY, int expZ) {
-        int x = expX / 2;
-        int y = expY / 2;
-        int z = expZ / 2;
+    public static ProgWidgetArea fromPosition(BlockPos p1, int expand) {
+        return fromPosition(p1, expand, expand, expand);
+    }
+
+    public static ProgWidgetArea fromPosition(BlockPos p1, int expandX, int expandY, int expandZ) {
+        int x = expandX / 2;
+        int y = expandY / 2;
+        int z = expandZ / 2;
         return fromPositions(p1.add(-x, -y, -z), p1.add(x, y, z));
     }
 
