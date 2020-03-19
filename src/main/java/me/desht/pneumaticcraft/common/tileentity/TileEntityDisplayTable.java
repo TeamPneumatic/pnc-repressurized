@@ -79,7 +79,7 @@ public class TileEntityDisplayTable extends TileEntityBase implements IComparato
 
             if (slot == 0) {
                 itemId = Item.getIdFromItem(getStackInSlot(0).getItem());
-                sendDescriptionPacket();
+                if (!world.isRemote) sendDescriptionPacket();
             }
         }
 
