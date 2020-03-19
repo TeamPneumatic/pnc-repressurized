@@ -1,12 +1,10 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
 import me.desht.pneumaticcraft.common.core.ModEntities;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -24,12 +22,7 @@ public class EntityGuardDrone extends EntityBasicDrone {
     }
 
     @Override
-    protected Item getDroneItem() {
-        return ModItems.GUARD_DRONE.get();
-    }
-
-    @Override
-    public void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
+    public boolean addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
         DroneProgramBuilder builder = new DroneProgramBuilder();
         builder.add(new ProgWidgetStart());
         // no item filter because we don't know what type of sword or ammo could be in the inventory
@@ -38,5 +31,7 @@ public class EntityGuardDrone extends EntityBasicDrone {
         maybeAddStandbyInstruction(builder, droneStack);
         builder.add(new ProgWidgetWait(), ProgWidgetText.withText("10"));
         widgets.addAll(builder.build());
+
+        return true;
     }
 }

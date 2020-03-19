@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
-import me.desht.pneumaticcraft.common.item.ItemBasicDrone;
+import me.desht.pneumaticcraft.common.item.ItemDrone;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -21,7 +21,7 @@ public class DroneUpgradeCrafting extends SpecialRecipe {
         boolean hasDrone = false, hasPCB = false;
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
-            if (stack.getItem() instanceof ItemBasicDrone) {
+            if (isBasicDrone(stack)) {
                 if (!hasDrone) hasDrone = true;
                 else return false;
             } else if (stack.getItem() == ModItems.PRINTED_CIRCUIT_BOARD.get()) {
@@ -37,7 +37,7 @@ public class DroneUpgradeCrafting extends SpecialRecipe {
         ItemStack basicDrone = ItemStack.EMPTY;
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
-            if (stack.getItem() instanceof ItemBasicDrone) {
+            if (isBasicDrone(stack)) {
                 basicDrone = stack.copy();
                 break;
             }
@@ -50,6 +50,10 @@ public class DroneUpgradeCrafting extends SpecialRecipe {
         }
         drone.setTag(droneTag);
         return drone;
+    }
+
+    private boolean isBasicDrone(ItemStack stack) {
+        return stack.getItem() instanceof ItemDrone && ((ItemDrone) stack.getItem()).canProgram(stack);
     }
 
     @Override

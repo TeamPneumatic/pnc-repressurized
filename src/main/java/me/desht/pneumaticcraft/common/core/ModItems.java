@@ -4,10 +4,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.tubes.*;
-import me.desht.pneumaticcraft.common.entity.living.EntityCollectorDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityGuardDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityHarvestingDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityLogisticsDrone;
+import me.desht.pneumaticcraft.common.entity.living.*;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
@@ -104,15 +101,15 @@ public class ModItems {
     public static final RegistryObject<ItemNetworkComponent> NETWORK_NODE = register(NetworkComponentType.NETWORK_NODE);
 
     public static final RegistryObject<ItemDrone> DRONE = register("drone",
-            ItemDrone::new);
-    public static final RegistryObject<ItemBasicDrone> LOGISTICS_DRONE = register("logistics_drone",
-            () -> new ItemBasicDrone(EntityLogisticsDrone::new));
-    public static final RegistryObject<ItemBasicDrone> HARVESTING_DRONE = register("harvesting_drone",
-            () -> new ItemBasicDrone(EntityHarvestingDrone::new));
-    public static final RegistryObject<ItemBasicDrone> GUARD_DRONE = register("guard_drone",
-            () -> new ItemBasicDrone(EntityGuardDrone::new));
-    public static final RegistryObject<ItemBasicDrone> COLLECTOR_DRONE = register("collector_drone",
-            () -> new ItemBasicDrone(EntityCollectorDrone::new));
+            () -> new ItemDrone(EntityDrone::new, true));
+    public static final RegistryObject<ItemDrone> LOGISTICS_DRONE = register("logistics_drone",
+            () -> new ItemDrone(EntityLogisticsDrone::new, false));
+    public static final RegistryObject<ItemDrone> HARVESTING_DRONE = register("harvesting_drone",
+            () -> new ItemDrone(EntityHarvestingDrone::new, false));
+    public static final RegistryObject<ItemDrone> GUARD_DRONE = register("guard_drone",
+            () -> new ItemDrone(EntityGuardDrone::new, false));
+    public static final RegistryObject<ItemDrone> COLLECTOR_DRONE = register("collector_drone",
+            () -> new ItemDrone(EntityCollectorDrone::new, false));
 
     public static final RegistryObject<ItemLogisticsFrameRequester> LOGISTICS_FRAME_REQUESTER = register("logistics_frame_requester",
             ItemLogisticsFrameRequester::new);

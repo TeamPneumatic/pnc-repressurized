@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
@@ -10,10 +9,7 @@ import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -34,22 +30,22 @@ public abstract class EntityBasicDrone extends EntityDrone {
         super(type, world);
     }
 
-    @Override
-    protected ItemStack getDroppedStack() {
-        CompoundNBT tag = new CompoundNBT();
-        tag.putInt("color", getDroneColor());
-        CompoundNBT invTag = new CompoundNBT();
-        writeAdditional(invTag);
-        tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, invTag.get(UpgradableItemUtils.NBT_UPGRADE_TAG));
-        ItemStack drone = new ItemStack(getDroneItem());
-        drone.setTag(tag);
-        drone.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> h.addAir(getAirHandler().getAir()));
-        return drone;
-    }
+//    @Override
+//    protected ItemStack getDroppedStack() {
+//        CompoundNBT tag = new CompoundNBT();
+//        tag.putInt("color", getDroneColor());
+//        CompoundNBT invTag = new CompoundNBT();
+//        writeAdditional(invTag);
+//        tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, invTag.get(UpgradableItemUtils.NBT_UPGRADE_TAG));
+//        ItemStack drone = new ItemStack(getDroneItem());
+//        drone.setTag(tag);
+//        drone.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> h.addAir(getAirHandler().getAir()));
+//        return drone;
+//    }
+//
+//    protected abstract Item getDroneItem();
     
-    protected abstract Item getDroneItem();
-    
-    public abstract void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets);
+//    public abstract boolean addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets);
 
     void maybeAddStandbyInstruction(DroneProgramBuilder builder, ItemStack droneStack) {
         if (UpgradableItemUtils.getUpgrades(droneStack, EnumUpgrade.STANDBY) > 0) {

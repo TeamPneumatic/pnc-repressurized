@@ -76,7 +76,7 @@ public class HackUpgradeHandler implements IUpgradeRenderHandler {
 
     public static void addKeybindTooltip(List<String> curInfo) {
         if (KeyHandler.getInstance().keybindHack.getKey().getKeyCode() != 0) {
-            curInfo.add(TextFormatting.GOLD + "Press [" + KeyHandler.getInstance().keybindHack.getKeyDescription() + "] to hack");
+            curInfo.add(TextFormatting.GOLD + "Press [" + KeyHandler.getInstance().keybindHack.getLocalizedName() + "] to hack");
         }
     }
 }

@@ -1,14 +1,12 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
 import me.desht.pneumaticcraft.common.core.ModEntities;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -27,12 +25,7 @@ public class EntityHarvestingDrone extends EntityBasicDrone {
     }
 
     @Override
-    protected Item getDroneItem(){
-        return ModItems.HARVESTING_DRONE.get();
-    }
-
-    @Override
-    public void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
+    public boolean addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
         TileEntity te = world.getTileEntity(clickPos);
         ProgWidgetHarvest harvestPiece = new ProgWidgetHarvest();
         harvestPiece.setRequiresTool(IOHelper.getInventoryForTE(te, facing).isPresent());
@@ -47,5 +40,7 @@ public class EntityHarvestingDrone extends EntityBasicDrone {
         // Wait 10 seconds for performance reasons.
         builder.add(new ProgWidgetWait(), ProgWidgetText.withText("10s"));
         widgets.addAll(builder.build());
+
+        return true;
     }
 }

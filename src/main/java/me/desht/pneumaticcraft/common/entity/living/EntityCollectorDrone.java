@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.entity.living;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModEntities;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -31,12 +30,7 @@ public class EntityCollectorDrone extends EntityBasicDrone {
     }
 
     @Override
-    protected Item getDroneItem() {
-        return ModItems.COLLECTOR_DRONE.get();
-    }
-
-    @Override
-    public void addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
+    public boolean addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
         DroneProgramBuilder builder = new DroneProgramBuilder();
         builder.add(new ProgWidgetStart());
 
@@ -69,6 +63,8 @@ public class EntityCollectorDrone extends EntityBasicDrone {
         builder.add(new ProgWidgetWait(), ProgWidgetText.withText("2s"));  // be kind to server
 
         widgets.addAll(builder.build());
+
+        return true;
     }
 
     private BlockPos findAdjacentInventory(BlockPos pos) {

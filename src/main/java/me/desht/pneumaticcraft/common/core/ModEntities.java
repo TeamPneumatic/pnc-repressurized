@@ -22,8 +22,6 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<EntityDrone>> DRONE
             = register("drone", ModEntities::drone);
-    public static final RegistryObject<EntityType<EntityAmadrone>> AMADRONE
-            = register("amadrone", ModEntities::amadrone);
     public static final RegistryObject<EntityType<EntityLogisticsDrone>> LOGISTICS_DRONE
             = register("logistics_drone", ModEntities::logisticsDrone);
     public static final RegistryObject<EntityType<EntityHarvestingDrone>> HARVESTING_DRONE
@@ -32,6 +30,9 @@ public class ModEntities {
             = register("guard_drone", ModEntities::guardDrone);
     public static final RegistryObject<EntityType<EntityCollectorDrone>> COLLECTOR_DRONE
             = register("collector_drone", ModEntities::collectorDrone);
+
+    public static final RegistryObject<EntityType<EntityAmadrone>> AMADRONE
+            = register("amadrone", ModEntities::amadrone);
     public static final RegistryObject<EntityType<EntityProgrammableController>> PROGRAMMABLE_CONTROLLER
             = register("programmable_controller", ModEntities::programmableController);
 

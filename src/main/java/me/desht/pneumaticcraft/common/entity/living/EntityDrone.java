@@ -20,9 +20,11 @@ import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.item.ItemDrone;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -59,10 +61,12 @@ import net.minecraft.entity.passive.IFlyingAnimal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -98,11 +102,14 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -171,7 +178,6 @@ public class EntityDrone extends EntityDroneBase implements
     private DroneGoToOwner gotoOwnerAI;
     private final DroneAIManager aiManager = new DroneAIManager(this);
 
-//    public boolean naturallySpawned = true; // determines if it should drop a drone when it dies.
     private double speed;
     private int healingInterval;
     private int suffocationCounter = 40; // Drones are immune to suffocation for this time.
@@ -190,21 +196,25 @@ public class EntityDrone extends EntityDroneBase implements
     // so it can persist, for performance reasons; DroneAILogistics is a short-lived object
     private LogisticsManager logisticsManager;
 
-
     public EntityDrone(EntityType<? extends EntityDrone> type, World world) {
         super(type, world);
         moveController = new DroneMovementController(this);
         goalSelector.addGoal(1, chargeAI = new DroneGoToChargingStation(this));
     }
 
-    public EntityDrone(EntityType<? extends EntityDrone> type, World world, PlayerEntity player) {
+    EntityDrone(EntityType<? extends EntityDrone> type, World world, PlayerEntity player) {
         this(type, world);
         if (player != null) {
             playerUUID = player.getGameProfile().getId();
             playerName = player.getName().getFormattedText();
         } else {
             playerUUID = getUniqueID(); // Anonymous drone used for Amadron or spawned with a Dispenser
+            playerName = "Drone";
         }
+    }
+
+    public EntityDrone(World world, PlayerEntity player) {
+        this(ModEntities.DRONE.get(), world, player);
     }
 
     @SubscribeEvent
@@ -226,21 +236,46 @@ public class EntityDrone extends EntityDroneBase implements
         return nav;
     }
 
-    public void initFromItemStack(ItemStack iStack) {
-        CompoundNBT stackTag = iStack.getTag();
+    /**
+     * Deserialize stored itemstack data when a drone item is deployed.
+     * @param droneStack the drone itemstack
+     */
+    public void readFromItemStack(ItemStack droneStack) {
+        Validate.isTrue(droneStack.getItem() instanceof ItemDrone);
+
+        CompoundNBT stackTag = droneStack.getTag();
         if (stackTag != null) {
             upgradeInventory.deserializeNBT(stackTag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
-            int air = iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                    .map(IAirHandler::getAir)
-                    .orElseThrow(RuntimeException::new);
+            int air = droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getAir();
             getAirHandler().addAir(air);
-            progWidgets = TileEntityProgrammer.getWidgetsFromNBT(stackTag);
-            TileEntityProgrammer.updatePuzzleConnections(progWidgets);
+            if (((ItemDrone) droneStack.getItem()).canProgram(droneStack)) {
+                progWidgets = TileEntityProgrammer.getWidgetsFromNBT(stackTag);
+                TileEntityProgrammer.updatePuzzleConnections(progWidgets);
+            }
             setDroneColor(stackTag.getInt("color"));
         }
-        if (iStack.hasDisplayName()) setCustomName(iStack.getDisplayName());
+        if (droneStack.hasDisplayName()) setCustomName(droneStack.getDisplayName());
     }
 
+    /**
+     * Serialize the necessary data to a drone item when the drone dies.
+     * @param droneStack the drone itemstack
+     */
+    private void writeToItemStack(ItemStack droneStack) {
+        Validate.isTrue(droneStack.getItem() instanceof ItemDrone);
+
+        CompoundNBT tag = new CompoundNBT();
+        tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeInventory.serializeNBT());
+        if (((ItemDrone) droneStack.getItem()).canProgram(droneStack)) {
+            TileEntityProgrammer.putWidgetsToNBT(progWidgets, tag);
+        }
+        tag.putInt("color", getDroneColor());
+        droneStack.setTag(tag);
+
+        droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).addAir(getAirHandler().getAir());
+
+        if (hasCustomName()) droneStack.setDisplayName(getCustomName());
+    }
 
     @Override
     protected void registerData() {
@@ -286,12 +321,20 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
+    public IPacket<?> createSpawnPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
+    }
+
+    @Override
     public void writeSpawnData(PacketBuffer buffer) {
-        buffer.writeString(getFakePlayer().getName().getFormattedText());
+        buffer.writeLong(playerUUID.getMostSignificantBits());
+        buffer.writeLong(playerUUID.getLeastSignificantBits());
+        buffer.writeString(playerName);
     }
 
     @Override
     public void readSpawnData(PacketBuffer buffer) {
+        playerUUID = new UUID(buffer.readLong(), buffer.readLong());
         playerName = buffer.readString();
     }
 
@@ -736,7 +779,12 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
-    public void onDeath(DamageSource par1DamageSource) {
+    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
+        super.dropSpecialItems(source, looting, recentlyHitIn);
+    }
+
+    @Override
+    protected void dropInventory() {
         DroneItemHandler dih = getDroneItemHandler();
         for (int i = 0; i < dih.getSlots(); i++) {
             if (!dih.getStackInSlot(i).isEmpty()) {
@@ -744,43 +792,49 @@ public class EntityDrone extends EntityDroneBase implements
                 dih.setStackInSlot(i, ItemStack.EMPTY);
             }
         }
-        restoreFluidBlocks(false);
-        if (shouldDropAsItem()) {
-            ItemStack drone = getDroppedStack();
-            if (hasCustomName()) drone.setDisplayName(getCustomName());
-            entityDropItem(drone, 0);
+    }
 
+    @Override
+    public void onDeath(DamageSource damageSource) {
+        super.onDeath(damageSource);
+
+        restoreFluidBlocks(false);
+
+        if (shouldDropAsItem()) {
+            ItemStack stack = new ItemStack(getDroneItem());
+            writeToItemStack(stack);
+            entityDropItem(stack, 0);
             if (!world.isRemote) {
-                PlayerEntity owner = getOwner();
-                if (owner != null) {
-                    int x = (int) Math.floor(posX);
-                    int y = (int) Math.floor(posY);
-                    int z = (int) Math.floor(posZ);
-                    ITextComponent msg = hasCustomName() ?
-                            new TranslationTextComponent("death.drone.named", getCustomName().getFormattedText(), x, y, z) :
-                            new TranslationTextComponent("death.drone", x, y, z);
-                    msg = msg.appendSibling(new StringTextComponent(" - ")).appendSibling(par1DamageSource.getDeathMessage(this));
-                    owner.sendStatusMessage(msg, false);
-                }
+                reportDroneDeath(getOwner(), damageSource);
             }
         }
+
         if (!world.isRemote && getDugBlock() != null) {
-            // 3rd & 4th parameters are unimportant here
+            // stop any in-progress digging - 3rd & 4th parameters are unimportant here
             getFakePlayer().interactionManager.func_225416_a(getDugBlock(), CPlayerDiggingPacket.Action.ABORT_DESTROY_BLOCK, UP, 0);
         }
+
         setCustomName(new StringTextComponent(""));  // keep other mods (like CoFH Core) quiet about death message broadcasts
-        super.onDeath(par1DamageSource);
+
         MinecraftForge.EVENT_BUS.unregister(this);
     }
 
-    protected ItemStack getDroppedStack() {
-        CompoundNBT tag = new CompoundNBT();
-        writeAdditional(tag);
-        ItemStack drone = new ItemStack(ModItems.DRONE.get());
-        drone.setTag(tag);
-        drone.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new)
-                .addAir(getAirHandler().getAir());
-        return drone;
+    private void reportDroneDeath(PlayerEntity owner, DamageSource damageSource) {
+        if (owner != null) {
+            int x = (int) Math.floor(posX);
+            int y = (int) Math.floor(posY);
+            int z = (int) Math.floor(posZ);
+            ITextComponent msg = hasCustomName() ?
+                    new TranslationTextComponent("death.drone.named", getCustomName().getFormattedText(), x, y, z) :
+                    new TranslationTextComponent("death.drone", x, y, z);
+            msg = msg.appendSibling(new StringTextComponent(" - ")).appendSibling(damageSource.getDeathMessage(this));
+            owner.sendStatusMessage(msg, false);
+        }
+    }
+
+    private Item getDroneItem() {
+        // return the item which has the same name as our entity type
+        return ForgeRegistries.ITEMS.getValue(getType().getRegistryName());
     }
 
     @Override
@@ -841,7 +895,6 @@ public class EntityDrone extends EntityDroneBase implements
         super.writeAdditional(tag);
 
         TileEntityProgrammer.putWidgetsToNBT(progWidgets, tag);
-//        tag.putBoolean("naturallySpawned", naturallySpawned);
         tag.put("airHandler", getAirHandler().serializeNBT());
         tag.putFloat("propSpeed", propSpeed);
         tag.putBoolean("disabledByHacking", disabledByHacking);
@@ -853,6 +906,10 @@ public class EntityDrone extends EntityDroneBase implements
         tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeInventory.serializeNBT());
 
         fluidTank.writeToNBT(tag);
+
+        tag.putString("owner", playerName);
+        tag.putLong("ownerUUID_M", playerUUID.getMostSignificantBits());
+        tag.putLong("ownerUUID_L", playerUUID.getLeastSignificantBits());
 
         if (!displacedLiquids.isEmpty()) {
             ListNBT disp = new ListNBT();
@@ -874,7 +931,6 @@ public class EntityDrone extends EntityDroneBase implements
 
         progWidgets = TileEntityProgrammer.getWidgetsFromNBT(tag);
         TileEntityProgrammer.updatePuzzleConnections(progWidgets);
-//        naturallySpawned = tag.getBoolean("naturallySpawned");
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");
         setGoingToOwner(tag.getBoolean("hackedByOwner"));
@@ -895,6 +951,9 @@ public class EntityDrone extends EntityDroneBase implements
         fluidTank.readFromNBT(tag);
 
         energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
+
+        if (tag.contains("owner")) playerName = tag.getString("owner");
+        if (tag.contains("ownerUUID_M")) playerUUID = new UUID(tag.getLong("ownerUUID_M"), tag.getLong("ownerUUID_L"));
 
         if (tag.contains("displacedLiquids")) {
             for (INBT inbt : tag.getList("displacedLiquids", Constants.NBT.TAG_LIST)) {
@@ -921,35 +980,35 @@ public class EntityDrone extends EntityDroneBase implements
         return playerUUID;
     }
 
-    /**
-     * This and read() are _not_ being transfered from/to the Drone item.
-     */
-    @Override
-    public CompoundNBT writeWithoutTypeId(CompoundNBT tag) {
-        super.writeWithoutTypeId(tag);
-        // this can be called client-side, e.g. TheOneProbe
-        // but this data isn't sync'd to the client
-        if (!getEntityWorld().isRemote) {
-            if (playerName != null) {
-                tag.putString("owner", playerName);
-                tag.putString("ownerUUID", getOwnerUUID().toString());
-            }
-        }
-        return tag;
-    }
-
-    @Override
-    public void read(CompoundNBT tag) {
-        if (!getEntityWorld().isRemote) {
-            if (tag.contains("owner")) {
-                playerName = tag.getString("owner");
-                playerUUID = tag.contains("ownerUUID") ? UUID.fromString(tag.getString("ownerUUID")) : null;
-            }
-        }
-        super.read(tag);
-        // see writeWithoutTypeId() above
-
-    }
+//    /**
+//     * This and read() are _not_ being transfered from/to the Drone item.
+//     */
+//    @Override
+//    public CompoundNBT writeWithoutTypeId(CompoundNBT tag) {
+//        super.writeWithoutTypeId(tag);
+//        // this can be called client-side, e.g. TheOneProbe
+//        // but this data isn't sync'd to the client
+//        if (!getEntityWorld().isRemote) {
+//            if (playerName != null) {
+//                tag.putString("owner", playerName);
+//                tag.putString("ownerUUID", getOwnerUUID().toString());
+//            }
+//        }
+//        return tag;
+//    }
+//
+//    @Override
+//    public void read(CompoundNBT tag) {
+//        if (!getEntityWorld().isRemote) {
+//            if (tag.contains("owner")) {
+//                playerName = tag.getString("owner");
+//                playerUUID = tag.contains("ownerUUID") ? UUID.fromString(tag.getString("ownerUUID")) : null;
+//            }
+//        }
+//        super.read(tag);
+//        // see writeWithoutTypeId() above
+//
+//    }
 
     public int getUpgrades(EnumUpgrade upgrade) {
         return upgradeCache.getUpgrades(upgrade);
@@ -1119,13 +1178,8 @@ public class EntityDrone extends EntityDroneBase implements
         return fluidTank;
     }
 
-    /**
-     * Returns the owning player. Returns null when the player is not online.
-     *
-     * @return the owning player
-     */
     public PlayerEntity getOwner() {
-        return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(playerName);
+        return world.getServer().getPlayerList().getPlayerByUsername(playerName);
     }
 
     public void setStandby(boolean standby) {
@@ -1311,6 +1365,22 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public void onUpgradesChanged() {
         energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
+    }
+
+    /**
+     * Add an initial program to a drone that's about to be placed. This is called right before the entity is spawned.
+     * Programmable drones don't do anything here (program is created by the programmer and stored in item NBT), but
+     * subclasses will add their static program here.
+     *
+     * @param clickPos block the drone item is clicked against
+     * @param facing side of the clicked block
+     * @param placePos blockpos the drone will appear in
+     * @param droneStack the drone itemstack
+     * @param progWidgets add the program to this list, ideally using {@link me.desht.pneumaticcraft.common.util.DroneProgramBuilder}
+     * @return true if a program was added, false otherwise
+     */
+    public boolean addProgram(BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack droneStack, List<IProgWidget> progWidgets) {
+        return false;
     }
 
     public class MinigunDrone extends Minigun {

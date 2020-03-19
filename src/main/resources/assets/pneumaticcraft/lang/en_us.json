@@ -391,7 +391,7 @@
 
   "_comment": "Info",
   "gui.tab.info": "Information",
-  "gui.tab.info.assistIGW": "For more detailed info, install IGW-Mod or Patchouli.",
+  "gui.tab.info.assistIGW": "For more detailed info, install Patchouli.",
 
   "gui.tab.info.tubeModule": "§0In this interface you can define exactly how a module should behave, dependent on the redstone signal. The signal will be proportional to the pressure interpolated between the lower and higher bounds.",
   "gui.tab.info.heat": "This machine requires or produces heat. Heat can be applied by placing a block that generates heat next to this machine. Think of a Vortex Tube (fast, but requires power), but also Lava (slow) and Torches (very slow). To cool down a machine, remove the heat sources and/or speed up the process by placing down Ice.",
