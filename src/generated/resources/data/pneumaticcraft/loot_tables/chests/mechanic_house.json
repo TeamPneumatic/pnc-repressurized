@@ -2,7 +2,7 @@
   "type": "minecraft:chest",
   "pools": [
     {
-      "rolls": 6,
+      "rolls": 4,
       "entries": [
         {
           "type": "minecraft:item",
@@ -113,7 +113,7 @@
               "function": "minecraft:set_count",
               "count": {
                 "min": 2.0,
-                "max": 7.0,
+                "max": 4.0,
                 "type": "minecraft:uniform"
               }
             }
@@ -199,7 +199,7 @@
               "function": "minecraft:set_count",
               "count": {
                 "min": 2.0,
-                "max": 7.0,
+                "max": 3.0,
                 "type": "minecraft:uniform"
               }
             }
