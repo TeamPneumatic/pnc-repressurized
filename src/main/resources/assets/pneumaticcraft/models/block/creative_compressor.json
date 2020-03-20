@@ -2,6 +2,7 @@
   "loader": "forge:obj",
   "model": "pneumaticcraft:models/block/creative_compressor.obj",
   "flip-v": true,
+  "detectCullableFaces": false,
   "textures": {
     "particle": "pneumaticcraft:block/compressed_iron_block"
   }
