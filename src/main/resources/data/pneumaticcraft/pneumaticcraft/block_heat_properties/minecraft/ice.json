@@ -1,5 +1,12 @@
 {
   "block": "minecraft:ice",
   "temperature": 263,
-  "thermalResistance": 500
+  "thermalResistance": 500,
+  "heatCapacity": 2000,
+  "transformHot": {
+    "fluid": "minecraft:water"
+  },
+  "transformCold": {
+    "block": "minecraft:packed_ice"
+  }
 }

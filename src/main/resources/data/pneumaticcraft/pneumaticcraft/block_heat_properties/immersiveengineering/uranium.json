@@ -5,5 +5,5 @@
   "transformCold": {
     "block": "immersiveengineering:storage_lead"
   },
-  "totalHeatCapacity": 250000
+  "heatCapacity": 250000
 }

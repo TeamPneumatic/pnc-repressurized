@@ -1,5 +1,9 @@
 {
   "block": "minecraft:blue_ice",
   "temperature": 233,
-  "thermalResistance": 200
+  "thermalResistance": 200,
+  "heatCapacity": 5000,
+  "transformHot": {
+    "block": "minecraft:packed_ice"
+  }
 }

@@ -1,7 +1,7 @@
 {
-  "block": "snow",
+  "block": "minecraft:snow",
   "temperature": 268,
-  "thermalResistance": 50,
+  "thermalResistance": 300,
   "heatCapacity": 150,
   "transformHot": {
     "block": "minecraft:air"

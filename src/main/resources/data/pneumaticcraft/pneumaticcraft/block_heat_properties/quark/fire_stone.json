@@ -1,7 +1,7 @@
 {
   "block": "quark:fire_stone",
   "temperature": 423,
-  "totalHeatCapacity": 5000,
+  "heatCapacity": 5000,
   "transformCold": {
     "block": "minecraft:cobblestone"
   }

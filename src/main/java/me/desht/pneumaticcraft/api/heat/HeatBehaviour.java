@@ -100,13 +100,13 @@ public abstract class HeatBehaviour<T extends TileEntity> implements INBTSeriali
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT tag = new CompoundNBT();
-        NBTUtil.writeBlockPos(pos);
+        tag.put("BlockPos", NBTUtil.writeBlockPos(pos));
         return tag;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        pos = NBTUtil.readBlockPos(nbt);
+        pos = NBTUtil.readBlockPos(nbt.getCompound("BlockPos"));
     }
 
     @Override

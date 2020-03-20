@@ -38,9 +38,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
 
     @Override
     public boolean isApplicable() {
-        if (!super.isApplicable()) return false;
-
-        return heatEntry != null && heatEntry.getHeatCapacity() != 0;
+        return super.isApplicable() && heatEntry != null && heatEntry.getHeatCapacity() > 0;
     }
 
     @Override
@@ -92,6 +90,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
     private void transformFluidBlocks(BlockState turningBlockSource, BlockState turningBlockFlowing) {
         if (FluidUtils.isSourceFluidBlock(getWorld(), getPos())) {
             getWorld().setBlockState(getPos(), turningBlockSource);
+            onTransition(getPos());
         } else {
             Set<BlockPos> traversed = new HashSet<>();
             Stack<BlockPos> pending = new Stack<>();

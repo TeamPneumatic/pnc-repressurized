@@ -89,7 +89,7 @@ public enum BlockHeatProperties {
             transformCold = Blocks.OBSIDIAN.getDefaultState();
             transformColdFlowing = Blocks.COBBLESTONE.getDefaultState();
         } else {
-            transformHot = Blocks.STONE.getDefaultState();
+            transformHot = Blocks.AIR.getDefaultState();
             transformHotFlowing = Blocks.AIR.getDefaultState();
             transformCold = Blocks.ICE.getDefaultState();
             transformColdFlowing = Blocks.SNOW.getDefaultState();
@@ -217,6 +217,8 @@ public enum BlockHeatProperties {
                 throw new JsonSyntaxException("heat properties entry must have a \"block\" or \"fluid\" field!");
             }
 
+            if (block == Blocks.AIR) return null;
+
             // blocks with a total heat capacity will transform into something else if too much heat is added/removed
             int totalHeat = 0;
             if (json.has("heatCapacity")) {
@@ -270,7 +272,7 @@ public enum BlockHeatProperties {
             return logic;
         }
 
-        public boolean testPredicates(BlockState state) {
+        boolean testPredicates(BlockState state) {
             if (predicates.isEmpty()) return true;
             for (Map.Entry<String, String> entry : predicates.entrySet()) {
                 IProperty<?> iproperty = state.getBlock().getStateContainer().getProperty(entry.getKey());
@@ -278,6 +280,8 @@ public enum BlockHeatProperties {
                     return false;
                 }
                 Comparable<?> comparable = iproperty.parseValue(entry.getValue()).orElse(null);
+                // looks dubious, but should be OK, at least for boolean/enum/integer
+                //noinspection EqualsBetweenInconvertibleTypes
                 if (comparable == null || state.get(iproperty) != comparable) {
                     return false;
                 }
@@ -286,7 +290,7 @@ public enum BlockHeatProperties {
         }
 
         private static void validateBlock(ResourceLocation blockId, Block block) {
-            if (block == null || block == Blocks.AIR) {
+            if (block == Blocks.AIR) {
                 String mod = blockId.getNamespace();
                 if (ModList.get().isLoaded(mod)) {
                     throw new JsonSyntaxException("unknown block id: " + blockId.toString());
