@@ -10,7 +10,7 @@
       "tag": "forge:ingots/compressed_iron"
     },
     "C": {
-      "tag": "forge:chests"
+      "tag": "forge:chests/wooden"
     }
   },
   "result": {

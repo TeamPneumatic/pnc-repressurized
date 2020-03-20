@@ -420,7 +420,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shapedPressure(ModItems.MINIGUN.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "A  /CIB/GL ",
                 'A', ModItems.AIR_CANISTER.get(),
-                'C', Tags.Items.CHESTS,
+                'C', Tags.Items.CHESTS_WOODEN,
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'B', ModItems.CANNON_BARREL.get(),
                 'G', Tags.Items.INGOTS_GOLD,
@@ -430,7 +430,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.OMNIDIRECTIONAL_HOPPER.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "I I/ICI/ I ",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-                'C', Tags.Items.CHESTS
+                'C', Tags.Items.CHESTS_WOODEN
         ).build(consumer);
 
         shapedPressure(ModItems.PNEUMATIC_BOOTS.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
@@ -488,7 +488,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), 16, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "III/IGI/III",
-                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'I', ModBlocks.REINFORCED_BRICKS.get(),
                 'G', Tags.Items.GLASS
         ).build(consumer);
         shapeless(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
@@ -618,7 +618,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'W', ModBlocks.REINFORCED_BRICK_WALL.get(),
                 'O', Tags.Blocks.OBSIDIAN,
-                'C', Tags.Items.CHESTS
+                'C', Tags.Items.CHESTS_WOODEN
         ).build(consumer);
 
         shaped(ModItems.REMOTE.get(), ModItems.TRANSISTOR.get(),
@@ -628,7 +628,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 'G', ModItems.GPS_TOOL.get(),
                 'T', ModItems.TRANSISTOR.get()
         ).build(consumer);
-
 
         shaped(ModItems.SAFETY_TUBE_MODULE.get(), ModItems.PRESSURE_GAUGE.get(),
                 " G /LTL",
@@ -824,7 +823,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 "LWL/WCW/LWL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENT,
                 'W', ItemTags.PLANKS,
-                'C', Tags.Items.CHESTS
+                'C', Tags.Items.CHESTS_WOODEN
         ).build(consumer);
 
         shaped(EnumUpgrade.SCUBA.getItem(), ModItems.PNEUMATIC_HELMET.get(),
@@ -1026,7 +1025,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private ShapedRecipeBuilder networkComponent(Item result, int count, Item edge, Tag<Item> dyeCorner) {
-        return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS);
+        return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS_WOODEN);
     }
 
     private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedPressurizableRecipeBuilder pneumaticTool(T result, Object dye) {

@@ -10,7 +10,7 @@
       "item": "pneumaticcraft:air_canister"
     },
     "C": {
-      "tag": "forge:chests"
+      "tag": "forge:chests/wooden"
     },
     "I": {
       "tag": "forge:ingots/compressed_iron"

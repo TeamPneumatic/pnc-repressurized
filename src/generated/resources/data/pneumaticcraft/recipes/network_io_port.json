@@ -13,7 +13,7 @@
       "item": "pneumaticcraft:capacitor"
     },
     "X": {
-      "tag": "forge:chests"
+      "tag": "forge:chests/wooden"
     }
   },
   "result": {

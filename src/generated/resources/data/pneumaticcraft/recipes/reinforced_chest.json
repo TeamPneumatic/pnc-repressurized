@@ -19,7 +19,7 @@
       "tag": "forge:obsidian"
     },
     "C": {
-      "tag": "forge:chests"
+      "tag": "forge:chests/wooden"
     }
   },
   "result": {

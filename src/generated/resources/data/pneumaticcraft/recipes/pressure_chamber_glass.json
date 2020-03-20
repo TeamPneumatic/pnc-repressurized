@@ -7,7 +7,7 @@
   ],
   "key": {
     "I": {
-      "tag": "forge:ingots/compressed_iron"
+      "item": "pneumaticcraft:reinforced_bricks"
     },
     "G": {
       "tag": "forge:glass"

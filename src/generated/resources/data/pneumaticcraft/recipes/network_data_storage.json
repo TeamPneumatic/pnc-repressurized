@@ -13,7 +13,7 @@
       "item": "pneumaticcraft:plastic"
     },
     "X": {
-      "tag": "forge:chests"
+      "tag": "forge:chests/wooden"
     }
   },
   "result": {
