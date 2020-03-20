@@ -5,7 +5,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Compressed air is the $(pncr) $(thing)power system/$, based on real-world pressure mechanics.$(p)$(li)Compressed air is $(italic)produced/$ by a class of machines called $(thing)Compressors/$, of which there are several types.$(li)All pressurizable machines and tools have a $(thing)volume/$ (measured in mL), which is the amount of air they can store at standard atmospheric pressure, or $(ttcolor)$(t:This mod uses 0 bar to represent standard atmospheric pressure, unlike real-world pressure, which uses 1 bar)0 bar/$."
+      "text": "Compressed air is the $(pncr) $(thing)power system/$, based on real-world pressure mechanics.$(p)$(li)Compressed air is $(italic)produced/$ by a class of machines called $(thing)Compressors/$, of which there are several types.$(li)All pressurizable machines and tools have a $(thing)volume/$ (measured in mL), which is the amount of air they can store at standard atmospheric pressure, or $(ttcolor)$(t:This mod uses 0 bar to represent standard atmospheric pressure, also known as Gauge Pressure)0 bar/$."
     },
     {
       "type": "text",

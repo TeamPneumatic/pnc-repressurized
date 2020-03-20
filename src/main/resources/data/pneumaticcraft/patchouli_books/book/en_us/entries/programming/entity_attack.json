@@ -21,7 +21,7 @@
     {
       "type": "text",
       "title": "Ranged Attacks",
-      "text": "By inserting an $(l:base_concepts/upgrades#entity_tracker)Entity Tracker Upgrade/$ into the $(l:tools/drone)Drone/$, it will have a $(l:tools/minigun)Minigun/$ attached to it. When provided with $(l:tools/minigun_ammo)Gun Ammo/$ (using an $(l:programming/inventory_import)Inventory Import/$ widget) the $(item)Drone/$ will use this Minigun to perform ranged attacks on its foes.$(p)The default range is 16 blocks, which can be upgraded by inserting up to 16 $(l:base_concepts/upgrades#range_upgrade)Range Upgrades/$, for a maximum range of 32 blocks."
+      "text": "By inserting an $(l:base_concepts/upgrades#minigun)Minigun Upgrade/$ into the $(l:tools/drone)Drone/$, it will have a $(l:tools/minigun)Minigun/$ attached to it. When provided with $(l:tools/minigun_ammo)Gun Ammo/$ (using an $(l:programming/inventory_import)Inventory Import/$ widget) the $(item)Drone/$ will use this Minigun to perform ranged attacks on its foes.$(p)The default range is 16 blocks, which can be upgraded by inserting up to 16 $(l:base_concepts/upgrades#range_upgrade)Range Upgrades/$, for a maximum range of 32 blocks."
     },
     {
       "type": "image",

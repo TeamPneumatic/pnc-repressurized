@@ -18,7 +18,7 @@
     },
     {
       "type": "text",
-      "text": "A network of Logistics Modules is defined by all the modules connected to each other by $(l:tubes/pressure_tubes)Pressure Tubes/$; note that pneumatic machines do $(italic)not/$ form part of the network.$(p)You can right-click a Logistics Module with any $(item)dye/$ to color it; only Logistics Modules of the same color will communicate with each other, effectively giving you 16 $(thing)channels/$ on each network."
+      "text": "A network of Logistics Modules is defined by all the modules connected to each other by $(l:tubes/pressure_tubes)Pressure Tubes/$; note that pneumatic machines do $(italic)not/$ form part of the network.$(p)You can select a channel via the module GUI, or by right-clicking with any $(item)dye/$; only Logistics Modules of the same color will communicate with each other, effectively giving you 16 $(thing)channels/$ on each network."
     },
     {
       "type": "text",
@@ -31,8 +31,7 @@
     {
       "type": "crafting",
       "text": "Creating the Logistics Module",
-      "recipe": "pneumaticcraft:logistics_module_1",
-      "recipe2": "pneumaticcraft:logistics_module_2"
+      "recipe": "pneumaticcraft:logistics_module"
     }
   ]
 }

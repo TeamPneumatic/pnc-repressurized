@@ -7,7 +7,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(thing)Pressure Chamber/$ is a multi-block structure used to compress various materials into other materials. Due to its large air storage capacity, it can also double as a useful \"battery\".$(p)The following rules for multiblock construction apply:$(p)$(li)The overall multiblock must be a hollow 3x3x3, 4x4x4 or 5x5x5 structure."
+      "text": "The $(thing)Pressure Chamber/$ is a multi-block structure used to compress various materials into other materials. Due to its large air storage capacity, it can also serve as a useful \"battery\".$(p)The following rules for multiblock construction apply:$(p)$(li)The overall multiblock must be a hollow 3x3x3, 4x4x4 or 5x5x5 structure."
     },
     {
       "type": "text",
@@ -35,11 +35,11 @@
       "type": "spotlight",
       "anchor": "interface",
       "item": "pneumaticcraft:pressure_chamber_interface",
-      "text": "The $(item)Pressure Chamber Interface/$ is used to automate the insertion and extraction of items to the $(thing)Pressure Chamber/$. Items $(italic)must/$ be piped in via $(item)Hoppers/$ or other mod piping systems. It is recommended to have at least two interfaces: one with the 'I' facing out (the $(thing)input interface/$), and one with the 'O' facing out (the $(thing)output interface/$)."
+      "text": "The $(item)Pressure Chamber Interface/$ is used to automate the insertion and extraction of items to the $(thing)Pressure Chamber/$. Items $(italic)must/$ be piped in via $(item)Hoppers/$ or other mod piping systems. You should have at least two interfaces: one with the 'I' facing out (the $(thing)input interface/$), and one with the 'O' facing out (the $(thing)output interface/$)."
     },
     {
       "type": "text",
-      "text": "There are several ways to select which items should be imported/exported by an $(item)Interface/$. You can switch between them by clicking on the button in the $(thing)Filter/$ tab:$(li)$(bold)Item/$ - matches by item type; leaving the filter empty will allow import/export of any item.$(li)$(bold)Name Contains/$ - matches when the item name contains the given string$(li)$(bold)Name Starts With/$ - matches when the item starts with the given string"
+      "text": "Input-mode Interfaces will only accept items which are ingredients for a Pressure Chamber recipe.  Output-mode Interfaces will (by default) only export crafted items, but there is a button in the GUI to allow export of $(i)all/$ items if you need to.$(p)$(italic)Note that this behaviour has changed since 1.12.2 days and is much more user-friendly now./$"
     },
     {
       "type": "text",
@@ -47,7 +47,7 @@
     },
     {
       "type": "text",
-      "text": "$(bold)Tips/$$(p)$(li)When compressing $(item)Iron/$, compress $(item)Block of Iron/$, since it will use only 1/9th of the air.$(li)When adding a new item to an (empty) output Interface filter, set the Interface to run on a $(#f00)redstone signal/$. This will prevent it immediately pulling out items before the chamber even has a chance to compress them.$(li)$(l:components/transistor)Transistors/$ and $(l:components/capacitor)Capacitors/$ can be filtered by $(bold)Name Contains/$ 'tor'."
+      "text": "$(bold)Tips/$$(p)$(li)When compressing $(item)Iron/$, compress $(item)Block of Iron/$, since it will use only 1/9th of the air to move items in & out of the chamber.$(li)If you need to pressurize a large chamber quickly, extra valves can be helpful (assuming you have sufficient compressors to produce the necessary air)."
     },
     {
       "type": "crafting",
@@ -56,8 +56,13 @@
     },
     {
       "type": "crafting",
-      "recipe": "pneumaticcraft:pressure_chamber_valve",
-      "recipe2": "pneumaticcraft:pressure_chamber_interface"
+      "recipe": "pneumaticcraft:pressure_chamber_interface",
+      "recipe2": "pneumaticcraft:pressure_chamber_valve_x1"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:pressure_chamber_valve_x4",
+      "recipe2": "pneumaticcraft:pressure_chamber_valve"
     }
   ]
 }

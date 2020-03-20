@@ -11,7 +11,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:vortex_tube",
-      "text": "When you place down or rotate a $(thing)Vortex Tube/$, the hot side is highlighted $(#c00)red/$ for a couple of seconds, and the cold side is highlighted $(#00c)blue/$.$(p)Pressurized air is required to make the $(thing)Vortex Tube/$ work. Higher pressure leads to greater temperature differentials, but air will also be used at a greater rate."
+      "text": "When you place down or rotate a $(thing)Vortex Tube/$, the hot end will face toward you. Note that each end has a narrow red or blue band indicating which is which.$(p)Pressurized air is required to make the $(thing)Vortex Tube/$ work. Higher pressure leads to greater temperature differentials, but air will also be used at a greater rate."
     },
     {
       "type": "crafting",

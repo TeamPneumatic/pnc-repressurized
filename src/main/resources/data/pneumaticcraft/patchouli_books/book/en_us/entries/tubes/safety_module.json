@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "To set the threshold pressure $(formula)Pt/$ at which the module operates, apply a $(#f00)redstone signal/$ (to the side the module faces) of strength $(formula)S/$:$(p)$(formula)  S = 15 - (2 x Pt)/$$(p)E.g. to limit the pressure to 4.5 bar, apply a signal of strength 6 (15 - 2 x 4.5)."
+      "text": "The default threshold level of the $(item)Safety Module/$ is 0.1 bar below the tube's danger level:$(li)4.9 bar for basic $(item)Pressure Tubes/$$(li)19.9 bar for $(item)Advanced Pressure Tubes/$$(p)Note that this has changed since 1.12.2, where a redstone signal was required to set the threshold."
     },
     {
       "type": "text",

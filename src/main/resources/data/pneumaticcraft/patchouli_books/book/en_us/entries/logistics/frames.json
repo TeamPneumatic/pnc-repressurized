@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "The following frame properties can be configured:$(li)All Frames support $(thing)filtering/$ to control what items/fluids they will provide or accept.$(li)The $(thing)Filter/$ side tab lets you configure whether filters match by $(thing)item metadata/$ or $(thing)item NBT/$, and also whether the filter should be applied as a whitelist (default) or blacklist.$(li)The $(thing)Facing/$ tab lets you configure which side of the framed inventory should be accessed by $(ttcolor)$(t:Logistics Modules ignore this and always use the side of the inventory they're facing)Logistic Drones/$."
+      "text": "The following frame properties can be configured:$(li)All Frames support $(thing)filtering/$ to control what items/fluids they will provide or accept. See also $(l:tools/tag_filter)Tag Filters/$.$(li)The $(thing)Filter/$ side tab lets you configure whether filters match by $(thing)item NBT/$ or $(thing)mod ID/$, and also whether the filter should be applied as a whitelist (default) or blacklist.$(li)The $(thing)Facing/$ tab lets you configure which side of the framed inventory should be accessed by $(ttcolor)$(t:Logistics Modules ignore this and always use the side of the inventory they're facing)Logistic Drones/$."
     },
     {
       "type": "text",

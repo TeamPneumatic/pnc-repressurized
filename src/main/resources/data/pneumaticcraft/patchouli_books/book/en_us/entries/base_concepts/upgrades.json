@@ -166,6 +166,18 @@
         },
         {
             "type": "crafting",
+            "anchor": "standby",
+            "recipe": "pneumaticcraft:standby_upgrade",
+            "text": "Creating a Standby Upgrade"
+        },
+        {
+            "type": "crafting",
+            "anchor": "minigun",
+            "recipe": "pneumaticcraft:minigun_upgrade",
+            "text": "Creating a Minigun Upgrade"
+        },
+        {
+            "type": "crafting",
             "flag": "mod:toughasnails",
             "anchor": "air_conditioning",
             "recipe": "pneumaticcraft:air_conditioning_upgrade",

@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "This module exchanges $(#f00)redstone signals/$ with other Redstone Modules on connected tubes, effectively using the tube as a redstone conduit.$(p)Up to 16 independent channels can be selected by right-clicking the module with any $(item)Dye/$ (which won't be used up).$(p)Right-click the module with a $(item)wrench/$ to toggle it between input and output mode."
+      "text": "This module exchanges $(#f00)redstone signals/$ with other Redstone Modules on connected tubes, effectively using the tube as a redstone conduit.$(p)Up to 16 independent channels can be selected via the module GUI, or by right-clicking the module with any $(item)Dye/$.$(p)Right-click the module with a $(item)wrench/$ to toggle it between input and output mode."
     },
     {
       "type": "image",

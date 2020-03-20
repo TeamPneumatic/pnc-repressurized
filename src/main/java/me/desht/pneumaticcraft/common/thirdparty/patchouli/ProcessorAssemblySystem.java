@@ -45,13 +45,13 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
 
     private IAssemblyRecipe findRecipe(ItemStack result) {
         for (IAssemblyRecipe recipe : PneumaticCraftRecipes.assemblyLaserDrillRecipes.values()) {
-            if (ItemStack.areItemStacksEqual(recipe.getOutput(), result)) return recipe;
+            if (ItemStack.areItemsEqual(recipe.getOutput(), result)) return recipe;
         }
         for (IAssemblyRecipe recipe : PneumaticCraftRecipes.assemblyLaserRecipes.values()) {
-            if (ItemStack.areItemStacksEqual(recipe.getOutput(), result)) return recipe;
+            if (ItemStack.areItemsEqual(recipe.getOutput(), result)) return recipe;
         }
         for (IAssemblyRecipe recipe : PneumaticCraftRecipes.assemblyDrillRecipes.values()) {
-            if (ItemStack.areItemStacksEqual(recipe.getOutput(), result)) return recipe;
+            if (ItemStack.areItemsEqual(recipe.getOutput(), result)) return recipe;
         }
         return null;
     }

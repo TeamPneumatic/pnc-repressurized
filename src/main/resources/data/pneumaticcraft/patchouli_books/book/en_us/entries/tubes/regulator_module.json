@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The Regulator Tube Module is an $(thing)in-line/$ module used to limit the $(l:base_concepts/pressure)pressure/$ allowed through the tube. To set a threshold pressure $(formula)Pt/$, apply a $(#f00)redstone signal/$ of level $(formula)S/$:$(p)$(formula)  Pt = (15 - S) / 2/$$(p)E.g. a $(#f00)redstone signal/$ of level 6 will enforce a pressure threshold of $(formula) (15 - 6) / 2 = 4.5 bar/$."
+      "text": "The Regulator Tube Module is an $(thing)in-line/$ module used to limit the $(l:base_concepts/pressure)pressure/$ allowed through the tube. By default, the module will regulate the pressure to 0.1 bar below the tube's danger level with no redstone signal, reducing toward 0 as the signal rises toward 15. This means a lever right beside a regulator closes it, preventing any air flow through it."
     },
     {
       "type": "text",
@@ -14,12 +14,12 @@
     },
     {
       "type": "text",
-      "text": "The $(thing)Regulator Module/$ $(italic)only/$ allows air to travel from the input (wide) to the output (narrow); air is never allowed to travel in the other direction. This means this module can be used as a one-way valve.$(p)Note that the $(thing)Regulator/$ does $(italic)not/$ actively reduce pressure on its narrow side; it only prevents air flow if the pressure would rise above the threshold."
+      "text": "Interestingly, the $(thing)Regulator Module/$ allows unrestricted flow of air in the opposite direction (from the narrow side to the wide side) regardless of the redstone signal; this means a regulator with a full redstone signal can be used as a one-way valve.$(p)Note that the $(thing)Regulator/$ does $(italic)not/$ actively reduce pressure on its narrow side; it only prevents air flow if the pressure would rise above the threshold."
     },
     {
       "type": "text",
       "title": "Advanced PCB",
-      "text": "When you apply an $(l:components/advanced_pcb)Advanced PCB/$ to the Regulator Module, the module gains a GUI providing far more control over the threshold level. You can set a precise threshold in the GUI, or with the $(bold)Advanced Config/$ checkbox, configure interpolated threshold levels based on the signal. This functions exactly like the $(l:tubes/safety_module)Safety Module/$."
+      "text": "When you apply an $(l:components/advanced_pcb)Advanced PCB/$ to the Regulator Module, the module gains a GUI providing far more control over the threshold level. You can set a precise threshold in the GUI, or with the $(bold)Advanced Config/$ checkbox, configure interpolated threshold levels based on the redstone signal. This functions exactly like the $(l:tubes/safety_module)Safety Module/$."
     },
     {
       "type": "crafting",

@@ -7,15 +7,15 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(item)Refinery/$ is a machine which uses $(l:base_concepts/heat)heat/$ to refine $(l:base_concepts/oil)Oil/$ into various fuels. It starts to work at 100°C. The higher the temperature applied, the faster it refines. The fuels that can be produced are, sorted from lightest to heaviest:$(li)$(thing)LPG (Liquefied Petroleum Gas)/$$(li)$(thing)Gasoline/$$(li)$(thing)Kerosene/$$(li)$(thing)Diesel/$"
+      "text": "The $(item)Refinery/$ is a multiblock machine which uses $(l:base_concepts/heat)heat/$ to refine $(l:base_concepts/oil)Oil/$ into various fuels. It starts to work at 100°C. The higher the temperature applied, the faster it refines. The fuels that can be produced are, sorted from lightest to heaviest:$(li)$(thing)LPG (Liquefied Petroleum Gas)/$$(li)$(thing)Gasoline/$$(li)$(thing)Kerosene/$$(li)$(thing)Diesel/$"
     },
     {
       "type": "text",
-      "text": "$(item)Refineries/$ cannot operate with a single block: between 2 and 4 Refineries need to be stacked on top of each other to operate. $(p)Different multiblock sizes give different yields; given 10mB of oil as input:$(p)$(bold)2 Refineries/$$(br)$(li)$(thing)LPG/$ (2mB)$(li)$(thing)Diesel/$ (4mB)$(br)$(bold)3 Refineries/$$(li)$(thing)LPG/$ (2mB)$(li)$(thing)Kerosene/$ (3mB)$(li)$(thing)Diesel/$ (2mB)"
+      "text": "The $(thing)Refinery/$ is a multiblock structure: place down a $(item)Refinery Controller/$, then stack 2-4 $(item)Refinery Outputs/$ on top of or beside the Controller. $(p)Different multiblock sizes give different yields; given 10mB of oil as input:$(p)$(bold)2 Outputs/$$(br)$(li)$(thing)LPG/$ (2mB)$(li)$(thing)Diesel/$ (4mB)$(br)$(bold)3 Outputs/$$(li)$(thing)LPG/$ (2mB)$(li)$(thing)Kerosene/$ (3mB)$(li)$(thing)Diesel/$ (2mB)"
     },
     {
       "type": "text",
-      "text": "$(bold)4 Refineries/$$(br)$(li)$(thing)LPG/$ (2mB)$(li)$(thing)Gasoline/$ (3mB)$(li)$(thing)Kerosene/$ (3mB)$(li)$(thing)Diesel/$ (2mB)$(p)The lightest fuel will always end up in the top $(item)Refinery/$, the heaviest in the bottom.  If you add more $(item)Refinery/$ blocks to an existing stack, the multiblock will do its best to automatically rearrange any existing output liquids into their correct block, to keep the system running."
+      "text": "$(bold)4 Outputs/$$(br)$(li)$(thing)LPG/$ (2mB)$(li)$(thing)Gasoline/$ (3mB)$(li)$(thing)Kerosene/$ (3mB)$(li)$(thing)Diesel/$ (2mB)$(p)The lightest fuel will always end up in the top $(item)Refinery Output/$, the heaviest in the bottom.  If you add more $(item)Refinery Outputs/$ to an existing stack, the multiblock will do its best to automatically rearrange any existing output liquids into their correct block, to keep the system running."
     },
     {
       "type": "text",
@@ -46,7 +46,8 @@
     {
       "type": "crafting",
       "text": "Creating the Refinery",
-      "recipe": "pneumaticcraft:refinery"
+      "recipe": "pneumaticcraft:refinery",
+      "recipe2": "pneumaticcraft:refinery_output"
     }
   ]
 }

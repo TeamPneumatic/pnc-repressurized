@@ -17,7 +17,18 @@
     {
       "type": "text",
       "title": "Improving Yields",
-      "text": "An alternative way to solidify $(item)Plastic Sheets/$ is to place a bucket or tank of $(item)Molten Plastic/$ into an inventory with a $(l:semiblocks/heat_frame)Heat Frame/$ attached, and chill the Heat Frame, ideally to below -80C (the colder the better). $(item)Molten Plastic/$ will be consumed from the bucket or tank, and you will have a chance for a second $(item)Plastic Sheet/$ for each 1000mB of Molten Plastic consumed."
+      "text": "An alternative way to solidify $(item)Plastic Sheets/$ is to place a bucket or $(l:machines/tanks)tank/$ of $(item)Molten Plastic/$ into an inventory with a $(l:semiblocks/heat_frame)Heat Frame/$ attached, and chill the Heat Frame, ideally to below -80C (the colder the better). $(item)Molten Plastic/$ will be consumed from the bucket or tank, and you will have a chance for a second $(item)Plastic Sheet/$ for each 1000mB of Molten Plastic consumed."
+    },
+    {
+      "type": "spotlight",
+      "title": "Plastic Construction Brick™",
+      "item": "pneumaticcraft:plastic_brick_red",
+      "text": "These bricks are formed with $(item)Plastic Sheets/$ and any dye, and are suitable for building with. Don't walk on these with bare feet, because it hurts an unreasonable amount!$(p)$(italic)Compatible with other leading brands of construction brick./$"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:plastic_brick_red",
+      "text": "You can guess the recipes for the other colours"
     }
   ]
 }

@@ -36,12 +36,12 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:gun_ammo_explosive",
-      "text": "$(item)Explosive Minigun Ammo/$ has a cartridge size of 125. It has a chance to create a small explosion when it hits; beware, this explosion can also injure you. Explosions will not damage terrain $(ttcolor)$(t:See 'B:explosiveAmmoTerrainDamage' in config)by default/$."
+      "text": "$(item)Explosive Minigun Ammo/$ has a cartridge size of 125. It has a chance to create a small but highly effective explosion when it hits; beware, this explosion can also injure you. Explosions will not damage terrain $(ttcolor)$(t:See 'B:explosiveAmmoTerrainDamage' in config)by default/$."
     },
     {
       "type": "spotlight",
       "item": "pneumaticcraft:gun_ammo_freezing",
-      "text": "$(item)Freezing Minigun Ammo/$ has a cartridge size of 250. It slows targets that it hits, and has a chance to encase them in damaging 'ice'.$(p)It does extra damage against fire-resistant targets, so is an excellent choice for fighting in the $(#800)Nether/$."
+      "text": "$(item)Freezing Minigun Ammo/$ has a cartridge size of 250. It slows targets that it hits, and has a chance to encase them in a damaging freezing cloud; beware, this cloud can also injure you.$(p)It does extra damage against fire-resistant targets, so is an excellent choice for fighting in the $(#800)Nether/$."
     },
     {
       "type": "text",

@@ -1,0 +1,26 @@
+{
+  "name": "Guard Drone",
+  "icon": "pneumaticcraft:guard_drone",
+  "category": "tools",
+  "advancement": "pneumaticcraft:pressure_chamber",
+  "pages": [
+    {
+      "type": "text",
+      "text": "A $(item)Guard Drone/$ is a specialized non-programmable type of $(l:tools/drone)Drone/$ which should be deployed against any inventory block. It will import one item to use as a weapon and attack any nearby mobs (within a 31x31x31 cube) with it.$(p)Like any other Drone, they require $(l:base_concepts/pressure)air/$ to operate, and will automatically seek out a $(l:machines/charging_station)Charging Station/$ if low on air."
+    },
+    {
+      "type": "text",
+      "text": "The $(thing)Guard Drone/$ does not care what is in the inventory, so take care that you a put a useful melee weapon in there. If & when the weapon breaks and there are no replacements in the inventory, the drone will continue to fight unarmed, which is very ineffective.$(p)The drone may be equipped with a $(l:base_concepts/upgrades#minigun)Minigun Upgrade/$, in which case you should add $(l:tools/minigun_ammo)Minigun Ammo/$ to the inventory instead."
+    },
+    {
+      "type": "entity",
+      "entity": "pneumaticcraft:guard_drone",
+      "offset": -0.3
+    },
+    {
+      "type": "crafting",
+      "text": "Creating a Guard Drone",
+      "recipe": "pneumaticcraft:guard_drone"
+    }
+  ]
+}
