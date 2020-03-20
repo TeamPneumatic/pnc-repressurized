@@ -70,6 +70,9 @@ repositories {
 }
 
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+ext.configFile = file('gradle.properties')
+ext.config = parseConfig(configFile)
+
 version = "${mc_version}-${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
 group = "me.desht.pneumaticcraft"
 archivesBaseName = "pneumaticcraft-repressurized"
@@ -91,7 +94,16 @@ allprojects {
 
 jar {
     manifest {
-        attributes 'FMLAT': 'accesstransformer.cfg'
+        attributes([
+            'FMLAT': 'accesstransformer.cfg',
+            "Specification-Title": "${config.mod_id}",
+            "Specification-Vendor": "desht",
+            "Specification-Version": "1", // We are version 1 of ourselves
+            "Implementation-Title": "${config.mod_id}",
+            "Implementation-Version": "${version}",
+            "Implementation-Vendor" :"desht",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
     }
 }
 
@@ -208,6 +220,26 @@ dependencies {
 //    compileOnly "blusunrize:ImmersiveEngineering:${immersive_engineering_version}"
 //    compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
 //    compileOnly "com.github.glitchfiend.biomesoplenty:ToughAsNails:${tan_version}:universal"
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include 'META-INF/mods.toml'
+        expand 'version': project.version
+    }
+
+    // copy everything else, thats not the mods.toml
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'META-INF/mods.toml'
+    }
+}
+
+def parseConfig(File config) {
+    config.withReader {
+        def prop = new Properties()
+        prop.load(it)
+        return (new ConfigSlurper().parse(prop))
+    }
 }
 
 //idea { module { inheritOutputDirs = true } }
