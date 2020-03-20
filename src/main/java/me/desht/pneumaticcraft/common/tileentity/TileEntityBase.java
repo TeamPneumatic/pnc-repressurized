@@ -396,7 +396,9 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     public void onNeighborBlockUpdate() {
         poweredRedstone = PneumaticCraftUtils.getRedstoneLevel(getWorld(), getPos());
-        initializeHullHeatExchangers();
+        if (getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
+            initializeHullHeatExchangers();
+        }
         for (TileEntityCache cache : getTileCache()) {
             cache.update();
         }

@@ -50,7 +50,7 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
             int newComparatorOutput = HeatUtil.getComparatorOutput((int) heatExchanger.getTemperature());
             if (comparatorOutput != newComparatorOutput) {
                 comparatorOutput = newComparatorOutput;
-                updateNeighbours();
+                world.updateComparatorOutputLevel(getPos(), getBlockState().getBlock());
             }
         }
     }
