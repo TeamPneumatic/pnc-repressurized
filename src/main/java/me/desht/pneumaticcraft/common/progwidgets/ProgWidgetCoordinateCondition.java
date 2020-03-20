@@ -28,7 +28,7 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.COORDINATE.get(), ModProgWidgets.COORDINATE.get(), ModProgWidgets.TEXT.get());
     }
 

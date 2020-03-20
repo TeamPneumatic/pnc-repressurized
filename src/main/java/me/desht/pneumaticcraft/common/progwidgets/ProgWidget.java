@@ -282,12 +282,14 @@ public abstract class ProgWidget implements IProgWidget {
         y = buf.readVarInt();
     }
 
-    static List getConnectedWidgetList(IProgWidget widget, int parameterIndex) {
+    static <T extends IProgWidget> List<T> getConnectedWidgetList(IProgWidget widget, int parameterIndex, ProgWidgetType<T> type) {
+        validateType(widget, parameterIndex, type);
+
         IProgWidget connectingWidget = widget.getConnectedParameters()[parameterIndex];
         if (connectingWidget != null) {
-            List<IProgWidget> list = new ArrayList<>();
+            List<T> list = new ArrayList<>();
             while (connectingWidget != null) {
-                list.add(connectingWidget);
+                list.add(type.cast(connectingWidget));  // should be safe; we checked the type above
                 connectingWidget = connectingWidget.getConnectedParameters()[0];
             }
             return list;
@@ -295,6 +297,16 @@ public abstract class ProgWidget implements IProgWidget {
             return null;
         }
     }
+
+    private static <T extends IProgWidget> void validateType(IProgWidget widget, int parameterIndex, ProgWidgetType<T> type) {
+        int l = widget.getParameters().size();
+        if (parameterIndex >= l) parameterIndex -= l;  // blacklist side
+        if (type != widget.getParameters().get(parameterIndex)) {
+            throw new IllegalArgumentException(String.format("invalid type %s for parameter %d (expected %s)",
+                    type, parameterIndex, widget.getParameters().get(parameterIndex)));
+        }
+    }
+
 
     @Override
     public boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget) {

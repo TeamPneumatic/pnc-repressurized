@@ -37,7 +37,7 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
     }
 

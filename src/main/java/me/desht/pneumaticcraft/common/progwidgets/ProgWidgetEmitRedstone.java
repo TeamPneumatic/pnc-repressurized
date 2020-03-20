@@ -152,7 +152,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.TEXT.get());
     }
 

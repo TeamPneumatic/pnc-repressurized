@@ -56,7 +56,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.COORDINATE.get());
     }
 

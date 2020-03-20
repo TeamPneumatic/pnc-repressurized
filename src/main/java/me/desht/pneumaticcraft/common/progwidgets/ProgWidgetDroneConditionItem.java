@@ -17,7 +17,7 @@ public class ProgWidgetDroneConditionItem extends ProgWidgetDroneCondition imple
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
     }
 
@@ -41,8 +41,8 @@ public class ProgWidgetDroneConditionItem extends ProgWidgetDroneCondition imple
     @Override
     public boolean isItemValidForFilters(ItemStack item) {
         return ProgWidgetItemFilter.isItemValidForFilters(item,
-                ProgWidget.getConnectedWidgetList(this, 0),
-                ProgWidget.getConnectedWidgetList(this, getParameters().size()),
+                ProgWidget.getConnectedWidgetList(this, 0, ModProgWidgets.ITEM_FILTER.get()),
+                ProgWidget.getConnectedWidgetList(this, getParameters().size(), ModProgWidgets.ITEM_FILTER.get()),
                 null);
     }
 

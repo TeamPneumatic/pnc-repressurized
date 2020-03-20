@@ -39,7 +39,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     private IVariableProvider variableProvider;
     public AreaType type = new AreaTypeBox();
 
-    public static final Map<String, Supplier<? extends AreaType>> areaTypes = new LinkedHashMap<>(); //We want to preserve order in the GUI
+    private static final Map<String, Supplier<? extends AreaType>> areaTypes = new LinkedHashMap<>(); // We want to preserve order in the GUI
     private static final Map<Class<? extends AreaType>, String> typeToIDs = new HashMap<>();
 
     static {
@@ -157,18 +157,6 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         z2 = p.getZ();
     }
 
-    public void setAreaPoint(BlockPos p, int index) {
-        if (index == 0) {
-            setP1(p);
-        } else {
-            setP2(p);
-        }
-    }
-
-    public BlockPos getRawAreaPoint(int index) {
-        return index == 0 ? new BlockPos(x1, y1, z1) : new BlockPos(x2, y2, z2);
-    }
-
     private BlockPos[] getAreaPoints() {
         BlockPos c1;
         if (coord1Variable.equals("")) {
@@ -204,7 +192,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.AREA.get());
     }
 
@@ -414,10 +402,6 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public void setAIManager(DroneAIManager aiManager) {
         this.aiManager = aiManager;
         this.variableProvider = aiManager;
-    }
-
-    public void setVariableProvider(IVariableProvider variableProvider) {
-        this.variableProvider = variableProvider;
     }
 
     @Override

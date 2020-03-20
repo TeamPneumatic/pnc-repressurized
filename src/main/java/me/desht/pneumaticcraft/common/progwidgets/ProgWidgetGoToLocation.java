@@ -76,7 +76,7 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.AREA.get());
     }
 

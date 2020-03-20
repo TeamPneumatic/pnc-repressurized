@@ -9,7 +9,6 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.ResourceLocation;
 
 public class ProgWidgetTeleport extends ProgWidgetGoToLocation {
-
     public ProgWidgetTeleport() {
         super(ModProgWidgets.TELEPORT.get());
     }
@@ -23,5 +22,4 @@ public class ProgWidgetTeleport extends ProgWidgetGoToLocation {
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
         return new DroneAITeleport((EntityDrone) drone, (ProgWidget) widget);
     }
-
 }

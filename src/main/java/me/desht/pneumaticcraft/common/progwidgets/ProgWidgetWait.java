@@ -29,7 +29,7 @@ public class ProgWidgetWait extends ProgWidget {
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.TEXT.get());
     }
 

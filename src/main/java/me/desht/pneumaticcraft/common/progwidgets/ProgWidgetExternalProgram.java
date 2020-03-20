@@ -37,7 +37,7 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.AREA.get());
     }
 

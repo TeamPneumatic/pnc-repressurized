@@ -16,14 +16,14 @@ import java.util.List;
 
 public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition implements IEntityProvider {
 
-    private EntityFilterPair entityFilters;
+    private EntityFilterPair<ProgWidgetDroneConditionEntity> entityFilters;
 
     public ProgWidgetDroneConditionEntity() {
         super(ModProgWidgets.DRONE_CONDITION_ENTITY.get());
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.TEXT.get(), ModProgWidgets.TEXT.get());
     }
 
@@ -62,7 +62,7 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition imp
     @Override
     public boolean isEntityValid(Entity entity) {
         if (entityFilters == null) {
-            entityFilters = new EntityFilterPair(this);
+            entityFilters = new EntityFilterPair<>(this);
         }
         return entityFilters.isEntityValid(entity);
     }

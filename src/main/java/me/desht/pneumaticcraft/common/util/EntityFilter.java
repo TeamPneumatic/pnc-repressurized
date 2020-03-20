@@ -56,9 +56,9 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
         }
     }
 
-    public static EntityFilter fromProgWidget(IProgWidget widget, boolean whitelist) {
+    public static <T extends IProgWidget & IEntityProvider> EntityFilter fromProgWidget(T widget, boolean whitelist) {
         if (widget.getParameters().size() > 1) {
-            int pos = ((IEntityProvider) widget).getEntityFilterPosition();
+            int pos = widget.getEntityFilterPosition();
             IProgWidget w = widget.getConnectedParameters()[whitelist ? pos : widget.getParameters().size() + pos];
             List<String> l = new ArrayList<>();
             if (w instanceof ProgWidgetText) {

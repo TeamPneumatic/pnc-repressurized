@@ -26,7 +26,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvider, IEntityProvider {
 
-    private EntityFilterPair entityFilters;
+    private EntityFilterPair<ProgWidgetEntityRightClick> entityFilters;
 
     public ProgWidgetEntityRightClick() {
         super(ModProgWidgets.ENTITY_RIGHT_CLICK.get());
@@ -52,7 +52,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
     }
 
@@ -102,7 +102,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     @Override
     public List<Entity> getValidEntities(World world) {
         if (entityFilters == null) {
-            entityFilters = new EntityFilterPair(this);
+            entityFilters = new EntityFilterPair<>(this);
         }
         return entityFilters.getValidEntities(world);
     }
@@ -110,7 +110,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     @Override
     public boolean isEntityValid(Entity entity) {
         if (entityFilters == null) {
-            entityFilters = new EntityFilterPair(this);
+            entityFilters = new EntityFilterPair<>(this);
         }
         return entityFilters.isEntityValid(entity);
     }

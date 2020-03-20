@@ -22,7 +22,7 @@ public class ProgWidgetDroneConditionEnergy extends ProgWidgetDroneCondition {
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.TEXT.get());
     }
 

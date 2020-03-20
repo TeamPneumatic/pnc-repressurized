@@ -43,7 +43,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get());
     }
 

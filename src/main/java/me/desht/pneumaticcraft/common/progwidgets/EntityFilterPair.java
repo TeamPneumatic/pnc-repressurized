@@ -14,20 +14,20 @@ import java.util.Set;
 /**
  * Represents a pair of entity filters: a whitelist and a blacklist, as used by programming puzzle pieces.
  */
-class EntityFilterPair {
-    private final IProgWidget widget;
+class EntityFilterPair<T extends IProgWidget & IEntityProvider> {
+    private final T widget;
     private final EntityFilter entityWhitelist;
     private final EntityFilter entityBlacklist;
     private String errorWhite = "", errorBlack = "";
 
-    EntityFilterPair(IProgWidget widget) {
+    EntityFilterPair(T widget) {
         this.widget = widget;
         entityWhitelist = getFilter(widget, true);
         entityBlacklist = getFilter(widget, false);
     }
 
-    public static void addErrors(IProgWidget widget, List<ITextComponent> errors) {
-        EntityFilterPair filter = new EntityFilterPair(widget);
+    public static <T extends IProgWidget & IEntityProvider> void addErrors(T widget, List<ITextComponent> errors) {
+        EntityFilterPair filter = new EntityFilterPair<>(widget);
         if (!filter.errorWhite.isEmpty()) {
             errors.add(new StringTextComponent("Invalid whitelist filter: " + filter.errorWhite));
         }
@@ -36,7 +36,7 @@ class EntityFilterPair {
         }
     }
 
-    private EntityFilter getFilter(IProgWidget widget, boolean whitelist) {
+    private EntityFilter getFilter(T widget, boolean whitelist) {
         try {
             return EntityFilter.fromProgWidget(widget, whitelist);
         } catch (IllegalArgumentException e) {

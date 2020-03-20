@@ -51,7 +51,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.LIQUID_FILTER.get());
     }
 

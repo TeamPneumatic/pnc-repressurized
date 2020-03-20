@@ -612,7 +612,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         if (returnValue != null) {
             for (IProgWidget widget : te.progWidgets) {
                 if (widget != draggingWidget && Math.abs(widget.getX() + widget.getWidth() / 2 - draggingWidget.getX()) <= FAULT_MARGIN) {
-                    List<ProgWidgetType> parameters = widget.getParameters();
+                    List<ProgWidgetType<?>> parameters = widget.getParameters();
                     for (int i = 0; i < parameters.size(); i++) {
                         if (widget.canSetParameter(i) && parameters.get(i) == returnValue
                                 && Math.abs(widget.getY() + i * 11 - draggingWidget.getY()) <= FAULT_MARGIN) {
@@ -625,7 +625,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
 
         // check for connection to the right of the dragged widget.
-        List<ProgWidgetType> parameters = draggingWidget.getParameters();
+        List<ProgWidgetType<?>> parameters = draggingWidget.getParameters();
         if (!parameters.isEmpty()) {
             for (IProgWidget widget : te.progWidgets) {
                 IProgWidget outerPiece = draggingWidget;
@@ -642,7 +642,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                             }
                         }
                     } else {
-                        List<ProgWidgetType> checkingPieceParms = widget.getParameters();
+                        List<ProgWidgetType<?>> checkingPieceParms = widget.getParameters();
                         for (int i = 0; i < checkingPieceParms.size(); i++) {
                             if (widget.canSetParameter(i + parameters.size()) && checkingPieceParms.get(i) == parameters.get(0) && Math.abs(widget.getY() + i * 11 - draggingWidget.getY()) <= FAULT_MARGIN) {
                                 setConnectingWidgetsToXY(draggingWidget, widget.getX() - draggingWidget.getWidth() / 2 - (outerPiece.getX() - draggingWidget.getX()), widget.getY() + i * 11);

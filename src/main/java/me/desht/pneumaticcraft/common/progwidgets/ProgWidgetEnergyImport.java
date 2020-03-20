@@ -18,7 +18,7 @@ public class ProgWidgetEnergyImport extends ProgWidgetInventoryBase {
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.AREA.get());
     }
 

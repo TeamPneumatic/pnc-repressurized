@@ -19,7 +19,7 @@ public class ProgWidgetRedstoneCondition extends ProgWidgetCondition {
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
     }
 

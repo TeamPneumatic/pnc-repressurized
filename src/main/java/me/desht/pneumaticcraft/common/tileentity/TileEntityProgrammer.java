@@ -234,7 +234,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public static void updatePuzzleConnections(List<IProgWidget> progWidgets) {
         for (IProgWidget widget : progWidgets) {
             widget.setParent(null);
-            List<ProgWidgetType> parameters = widget.getParameters();
+            List<ProgWidgetType<?>> parameters = widget.getParameters();
             for (int i = 0; i < parameters.size() * 2; i++) {
                 widget.setParameter(i, null);
             }
@@ -243,7 +243,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
 
         for (IProgWidget checkedWidget : progWidgets) {
             // check for connection to the right of the checked widget.
-            List<ProgWidgetType> parameters = checkedWidget.getParameters();
+            List<ProgWidgetType<?>> parameters = checkedWidget.getParameters();
             if (!parameters.isEmpty()) {
                 for (IProgWidget widget : progWidgets) {
                     if (widget != checkedWidget && checkedWidget.getX() + checkedWidget.getWidth() / 2 == widget.getX()) {
@@ -277,7 +277,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         for (IProgWidget checkedWidget : progWidgets) {
             if (checkedWidget.returnType() == null) {
                 // this is a program widget rather than a parameter widget (area, item filter).
-                List<ProgWidgetType> parameters = checkedWidget.getParameters();
+                List<ProgWidgetType<?>> parameters = checkedWidget.getParameters();
                 for (int i = 0; i < parameters.size(); i++) {
                     if (checkedWidget.canSetParameter(i)) {
                         for (IProgWidget widget : progWidgets) {

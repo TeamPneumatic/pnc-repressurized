@@ -25,7 +25,7 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.LIQUID_FILTER.get());
     }
 

@@ -42,7 +42,7 @@ public class ProgWidgetSuicide extends ProgWidget {
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return Collections.emptyList();
     }
 

@@ -30,7 +30,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     private Map<String, BlockPos> areaVariableStates;
     protected DroneAIManager aiManager;
     private boolean canCache = true;
-    private EntityFilterPair entityFilters;
+    private EntityFilterPair<ProgWidgetAreaItemBase> entityFilters;
 
     public ProgWidgetAreaItemBase(ProgWidgetType<?> type) {
         super(type);
@@ -47,7 +47,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.ITEM_FILTER.get());
     }
 
@@ -178,8 +178,8 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
 
     public boolean isItemValidForFilters(ItemStack item, BlockState blockState) {
         return ProgWidgetItemFilter.isItemValidForFilters(item,
-                ProgWidget.getConnectedWidgetList(this, 1),
-                ProgWidget.getConnectedWidgetList(this, getParameters().size() + 1),
+                ProgWidget.getConnectedWidgetList(this, 1, ModProgWidgets.ITEM_FILTER.get()),
+                ProgWidget.getConnectedWidgetList(this, getParameters().size() + 1, ModProgWidgets.ITEM_FILTER.get()),
                 blockState
         );
     }
@@ -192,14 +192,14 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         return getEntitiesInArea(
                 (ProgWidgetArea) getConnectedParameters()[0],
                 (ProgWidgetArea) getConnectedParameters()[getParameters().size()],
-                world, filter, null
+                world, filter
         );
     }
 
     @Override
     public List<Entity> getValidEntities(World world) {
         if (entityFilters == null) {
-            entityFilters = new EntityFilterPair(this);
+            entityFilters = new EntityFilterPair<>(this);
         }
         return entityFilters.getValidEntities(world);
     }
@@ -207,13 +207,13 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     @Override
     public boolean isEntityValid(Entity entity) {
         if (entityFilters == null) {
-            entityFilters = new EntityFilterPair(this);
+            entityFilters = new EntityFilterPair<>(this);
         }
         return entityFilters.isEntityValid(entity);
     }
 
     private static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world,
-                                                  Predicate<? super Entity> whitelistPredicate, Predicate<? super Entity> blacklistPredicate) {
+                                                  Predicate<? super Entity> whitelistPredicate) {
         if (whitelistWidget == null) return new ArrayList<>();
         Set<Entity> entities = new HashSet<>();
         ProgWidgetArea widget = whitelistWidget;
@@ -227,9 +227,9 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
             entities.removeAll(widget.getEntitiesWithinArea(world, whitelistPredicate));
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
-        if (blacklistPredicate != null) {
-            entities.removeIf(blacklistPredicate);
-        }
+//        if (blacklistPredicate != null) {
+//            entities.removeIf(blacklistPredicate);
+//        }
         return new ArrayList<>(entities);
     }
 

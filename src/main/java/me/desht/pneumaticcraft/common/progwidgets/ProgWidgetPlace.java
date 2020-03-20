@@ -49,7 +49,7 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace implements ISidedWidg
         return Direction.DOWN;
     }
 
-    public static boolean[] getSidesFromDir(Direction dir) {
+    private static boolean[] getSidesFromDir(Direction dir) {
         boolean[] dirs = new boolean[6];
         dirs[dir.ordinal()] = true;
         return dirs;

@@ -52,24 +52,39 @@ public interface IProgWidget extends IProgWidgetBase {
     default boolean freeToUse() { return false; }
 
     /**
+     * Get the AI for this progwidget
      * @param drone the drone
-     * @param widget Will be 'this' most of the times, but not when controlled by ComputerCraft.
-     * @return
+     * @param widget will be 'this' most of the time, but not when controlled externally (e.g. ComputerCraft)
+     * @return widget AI
+     */
+    Goal getWidgetAI(IDroneBase drone, IProgWidget widget);
+
+    /**
+     * Get the targeting AI for this progwidget
+     * @param drone the drone
+     * @param widget Will be 'this' most of the time, but not when controlled externally (e.g. ComputerCraft)
+     * @return widget targeting AI
      */
     Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget);
 
-    Goal getWidgetAI(IDroneBase drone, IProgWidget widget);
-
+    /**
+     * Set the output widget for this widget, i.e. next in the program.  Called when building the program.
+     * @param widget the next widget in the program
+     */
     void setOutputWidget(IProgWidget widget);
 
+    /**
+     * Get the next widget in the program.
+     * @return the next widget to run
+     */
     IProgWidget getOutputWidget();
 
     /**
      * This one will be called when running in an actual program.
      *
-     * @param drone
-     * @param allWidgets
-     * @return
+     * @param drone the drone
+     * @param allWidgets a list of widgets
+     * @return the next widget to run
      */
     IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets);
 
@@ -89,7 +104,7 @@ public interface IProgWidget extends IProgWidgetBase {
      * @return a list of widget types, or an empty list if no widgets can be added to the side of this widget
      */
     @Nonnull
-    List<ProgWidgetType> getParameters();
+    List<ProgWidgetType<?>> getParameters();
 
     void setParameter(int index, IProgWidget parm);
 
@@ -114,7 +129,7 @@ public interface IProgWidget extends IProgWidgetBase {
      * At least do <code>tag.putString("name", getTypeID().toString());</code>
      * <p>Note that the base implementation {@link ProgWidget} does this.</p>
      *
-     * @param tag
+     * @param tag NBT tag to write to
      */
     void writeToNBT(CompoundNBT tag);
 

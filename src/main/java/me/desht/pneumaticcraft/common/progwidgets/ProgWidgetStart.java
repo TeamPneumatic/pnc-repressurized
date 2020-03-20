@@ -34,7 +34,7 @@ public class ProgWidgetStart extends ProgWidget {
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return Collections.emptyList();
     }
 

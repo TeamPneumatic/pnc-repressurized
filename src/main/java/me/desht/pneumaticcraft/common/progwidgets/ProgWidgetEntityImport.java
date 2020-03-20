@@ -20,7 +20,7 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, IAreaProvider, IEntityProvider {
-    private EntityFilterPair entityFilters;
+    private EntityFilterPair<ProgWidgetEntityImport> entityFilters;
 
     public ProgWidgetEntityImport() {
         super(ModProgWidgets.ENTITY_IMPORT.get());
@@ -51,7 +51,7 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
     }
 
@@ -78,7 +78,7 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     @Override
     public List<Entity> getValidEntities(World world) {
         if (entityFilters == null) {
-            entityFilters = new EntityFilterPair(this);
+            entityFilters = new EntityFilterPair<>(this);
         }
         return entityFilters.getValidEntities(world);
     }
@@ -86,7 +86,7 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     @Override
     public boolean isEntityValid(Entity entity) {
         if (entityFilters == null) {
-            entityFilters = new EntityFilterPair(this);
+            entityFilters = new EntityFilterPair<>(this);
         }
         return entityFilters.isEntityValid(entity);
     }

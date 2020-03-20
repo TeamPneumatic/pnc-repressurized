@@ -17,7 +17,7 @@ public class ProgWidgetDroneConditionFluid extends ProgWidgetDroneCondition impl
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return ImmutableList.of(ModProgWidgets.LIQUID_FILTER.get(), ModProgWidgets.TEXT.get());
     }
 

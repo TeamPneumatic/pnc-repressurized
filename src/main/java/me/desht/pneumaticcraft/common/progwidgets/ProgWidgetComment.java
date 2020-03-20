@@ -21,7 +21,7 @@ public class ProgWidgetComment extends ProgWidgetText {
     }
 
     @Override
-    public List<ProgWidgetType> getParameters() {
+    public List<ProgWidgetType<?>> getParameters() {
         return Collections.emptyList();
     }
 
