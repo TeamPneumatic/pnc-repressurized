@@ -23,7 +23,7 @@ public class VillagerTradesRegistration {
                     .build()
             );
             trades.get(1).add(new RandomTradeBuilder(16, 4, 0.05F)
-                    .setEmeraldPrice(3, 7)
+                    .setEmeraldPrice(7, 11)
                     .setForSale((rand) -> new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK.get()))
                     .build()
             );
@@ -43,11 +43,11 @@ public class VillagerTradesRegistration {
                     .build()
             );
             trades.get(2).add(new RandomTradeBuilder(16, 6, 0.05f)
-                    .setEmeraldPriceFor(3, 4, ModItems.TRANSISTOR.get(), 3)
+                    .setEmeraldPriceFor(3, 4, ModItems.TRANSISTOR.get(), 2)
                     .build()
             );
             trades.get(2).add(new RandomTradeBuilder(16, 6, 0.05f)
-                    .setEmeraldPriceFor(3, 4, ModItems.CAPACITOR.get(), 3)
+                    .setEmeraldPriceFor(3, 4, ModItems.CAPACITOR.get(), 2)
                     .build()
             );
             trades.get(2).add(new RandomTradeBuilder(16, 4, 0.05f)
@@ -60,6 +60,14 @@ public class VillagerTradesRegistration {
             );
             trades.get(3).add(new RandomTradeBuilder(8, 15, 0.05F)
                     .setEmeraldPriceFor(10, 20, ModItems.HARVESTING_DRONE.get(), 1)
+                    .build()
+            );
+            trades.get(3).add(new RandomTradeBuilder(8, 15, 0.05F)
+                    .setEmeraldPriceFor(10, 20, ModItems.COLLECTOR_DRONE.get(), 1)
+                    .build()
+            );
+            trades.get(3).add(new RandomTradeBuilder(8, 15, 0.05F)
+                    .setEmeraldPriceFor(10, 20, ModItems.GUARD_DRONE.get(), 1)
                     .build()
             );
             trades.get(3).add(new RandomTradeBuilder(16, 10, 0.05F)

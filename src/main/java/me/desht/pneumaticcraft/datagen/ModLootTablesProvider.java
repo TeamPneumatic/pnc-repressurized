@@ -101,7 +101,7 @@ public class ModLootTablesProvider extends LootTableProvider {
         @Override
         public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
             LootPool.Builder lootPool = LootPool.builder();
-            lootPool.rolls(new ConstantRange(6))
+            lootPool.rolls(new ConstantRange(4))
                     .addEntry(createEntry(ModItems.COMPRESSED_IRON_INGOT.get(), 10, 4, 12))
                     .addEntry(createEntry(ModItems.AMADRON_TABLET.get(), 2, 1, 1))
                     .addEntry(createEntry(ModItems.AIR_CANISTER.get(), 10, 1, 5))
@@ -109,13 +109,13 @@ public class ModLootTablesProvider extends LootTableProvider {
                     .addEntry(createEntry(ModItems.LOGISTICS_CORE.get(), 8, 4, 8))
                     .addEntry(createEntry(ModItems.CAPACITOR.get(), 4, 4, 8))
                     .addEntry(createEntry(ModItems.TRANSISTOR.get(), 4, 4, 8))
-                    .addEntry(createEntry(ModItems.TURBINE_ROTOR.get(), 5, 2, 7))
+                    .addEntry(createEntry(ModItems.TURBINE_ROTOR.get(), 5, 2, 4))
                     .addEntry(createEntry(ModBlocks.COMPRESSED_IRON_BLOCK.get(), 2, 1, 2))
                     .addEntry(createEntry(ModBlocks.VORTEX_TUBE.get(), 5, 1, 1))
                     .addEntry(createEntry(ModBlocks.PRESSURE_TUBE.get(), 10, 3, 8))
                     .addEntry(createEntry(ModBlocks.ADVANCED_PRESSURE_TUBE.get(), 4, 3, 8))
                     .addEntry(createEntry(ModBlocks.HEAT_PIPE.get(), 8, 3, 8))
-                    .addEntry(createEntry(ModBlocks.APHORISM_TILE.get(), 5, 2, 7));
+                    .addEntry(createEntry(ModBlocks.APHORISM_TILE.get(), 5, 2, 3));
 
             LootTable.Builder lootTable = LootTable.builder();
             lootTable.addLootPool(lootPool);
