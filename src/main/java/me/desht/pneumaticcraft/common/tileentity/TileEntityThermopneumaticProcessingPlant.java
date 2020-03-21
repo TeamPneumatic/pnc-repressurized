@@ -137,7 +137,13 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     private boolean hasEnoughPressure() {
-        return getMinWorkingPressure() > 0 ? getPressure() >= getMinWorkingPressure() : getPressure() < getMinWorkingPressure();
+        if (getMinWorkingPressure() == 0) {
+            return true;
+        } else if (getMinWorkingPressure() > 0) {
+            return getPressure() >= getMinWorkingPressure();
+        } else {
+            return getPressure() <= getMinWorkingPressure();
+        }
     }
 
     private IThermopneumaticProcessingPlantRecipe getValidRecipe() {
