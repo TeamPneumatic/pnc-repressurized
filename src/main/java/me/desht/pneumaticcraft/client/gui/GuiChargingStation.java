@@ -52,7 +52,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
 
     @Override
     protected PointXY getInvTextOffset() {
-        return new PointXY(0, 3);
+        return null;
     }
 
     @Override

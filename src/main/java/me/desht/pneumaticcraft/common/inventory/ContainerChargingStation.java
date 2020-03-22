@@ -32,7 +32,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
 
         addUpgradeSlots(42, 29);
 
-        addArmorSlots(inventoryPlayer, 9, 8);
+        addArmorSlots(inventoryPlayer, 8, 19);
 
         addPlayerSlots(inventoryPlayer, 95);
     }

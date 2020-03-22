@@ -28,12 +28,12 @@ public class ContainerChargingStationItemInventory extends ContainerPneumaticBas
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                addSlot(new UpgradeSlot(te, i * 3 + j, 31 + j * 18, 24 + i * 18));
+                addSlot(new UpgradeSlot(te, i * 3 + j, 44 + j * 18, 29 + i * 18));
             }
         }
 
-        addPlayerSlots(inventoryPlayer, 84);
-        addArmorSlots(inventoryPlayer, 9, 8);
+        addPlayerSlots(inventoryPlayer, 95);
+        addArmorSlots(inventoryPlayer, 8, 19);
     }
 
     public static ContainerChargingStationItemInventory createMinigunContainer(int windowId, PlayerInventory inv, PacketBuffer data) {

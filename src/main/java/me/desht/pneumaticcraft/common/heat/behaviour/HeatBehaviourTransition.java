@@ -17,7 +17,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
     private double maxExchangedHeat;
-    private double blockTemp = -1;
+    private double blockTemp = -1;  // -1 = not yet init'd (init on first tick)
     private LazyOptional<IHeatExchangerLogic> logic;
     private HeatExtractionTracker tracker;
 
@@ -44,14 +44,12 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
 
     @Override
     public void tick() {
-        logic.ifPresent(exchanger -> {
-            // should always be present, we validated that in isApplicable()
-            if (blockTemp == -1) {
-                // first run
+        if (blockTemp == -1) {
+            logic.ifPresent(exchanger -> {
                 blockTemp = exchanger.getTemperature();
                 maxExchangedHeat = getMaxExchangedHeat() * (exchanger.getThermalResistance() + getHeatExchanger().getThermalResistance());
-            }
-        });
+            });
+        }
 
         double extractedHeat = tracker.getHeatExtracted(getPos());
         if (extractedHeat < Math.abs(maxExchangedHeat)) {

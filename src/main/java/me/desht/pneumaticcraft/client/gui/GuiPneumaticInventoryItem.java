@@ -33,6 +33,8 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
     GuiPneumaticInventoryItem(ContainerChargingStationItemInventory container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
         itemStack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
+
+        ySize = 176;
     }
 
     @Override
@@ -46,7 +48,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        guiBackButton = new WidgetButtonExtended(xStart + 90, yStart + 15, 25, 20, GuiConstants.ARROW_LEFT_SHORT).withTag("close_upgrades");
+        guiBackButton = new WidgetButtonExtended(xStart + 152, yStart + 4, 18, 18, GuiConstants.ARROW_LEFT_SHORT).withTag("close_upgrades");
         addButton(guiBackButton);
     }
 
@@ -92,8 +94,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         String containerName = itemStack.getDisplayName().getFormattedText();
-        font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f, 4, 0x404040);
-        font.drawString(I18n.format("gui.tab.upgrades"), 36, 14, 0x404040);
+        font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f, 5, 0x404040);
     }
 
     @Override
@@ -104,7 +105,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
             int xStart = (width - xSize) / 2;
             int yStart = (height - ySize) / 2;
             GuiUtils.drawPressureGauge(font, 0, h.maxPressure(), h.maxPressure(), 0,
-                    te.chargingItemPressure, xStart + xSize * 3 / 4 + 8, yStart + ySize / 4 + 4);
+                    te.chargingItemPressure, xStart + xSize * 3 / 4 + 10, yStart + ySize / 4 + 4);
         });
     }
 
