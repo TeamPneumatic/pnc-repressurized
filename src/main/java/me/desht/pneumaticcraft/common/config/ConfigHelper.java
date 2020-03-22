@@ -139,6 +139,10 @@ public class ConfigHelper {
         PNCConfig.Common.Amadron.notifyOfDealMade = common.amadron.notifyOfDealMade.get();
         PNCConfig.Common.Amadron.notifyOfTradeAddition = common.amadron.notifyOfTradeAddition.get();
         PNCConfig.Common.Amadron.notifyOfTradeRemoval = common.amadron.notifyOfTradeRemoval.get();
+
+        PNCConfig.Common.Logistics.itemTransportCost = common.logistics.itemTransportCost.get();
+        PNCConfig.Common.Logistics.fluidTransportCost = common.logistics.fluidTransportCost.get();
+        PNCConfig.Common.Logistics.minPressure = common.logistics.minPressure.get();
     }
 
     private static void setValueAndSave(final net.minecraftforge.fml.config.ModConfig modConfig, final String path, final Object newValue) {

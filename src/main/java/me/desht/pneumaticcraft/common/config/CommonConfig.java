@@ -114,6 +114,13 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue airThermalResistance;
     }
 
+    public class Logistics {
+        ForgeConfigSpec.DoubleValue itemTransportCost;
+        ForgeConfigSpec.DoubleValue fluidTransportCost;
+        ForgeConfigSpec.DoubleValue minPressure;
+    }
+
+
     public final General general = new General();
     public final Machines machines = new Machines();
     public final Armor armor = new Armor();
@@ -124,6 +131,7 @@ public class CommonConfig {
     public final Recipes recipes = new Recipes();
     public final Amadron amadron = new Amadron();
     public final Heat heat = new Heat();
+    public final Logistics logistics = new Logistics();
 
     CommonConfig(final ForgeConfigSpec.Builder builder) {
         builder.push("General");
@@ -493,6 +501,21 @@ public class CommonConfig {
                 .comment("Ambient temperature modifier by height (in degrees per block above 80 or below 40)")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.ambientTemperatureHeightModifier")
                 .defineInRange("ambientTemperatureHeightModifier", 0.1, 0.0, 10.0);
+        builder.pop();
+
+        builder.push("Logistics");
+        logistics.itemTransportCost = builder
+                .comment("Air usage per item per block distance")
+                .translation("pneumaticcraft.config.common.logistics.itemTransportCost")
+                .defineInRange("item_transport_cost", 1.0, 0.0, Double.MAX_VALUE);
+        logistics.fluidTransportCost = builder
+                .comment("Air usage per mB of fluid per block distance")
+                .translation("pneumaticcraft.config.common.logistics.fluidTransportCost")
+                .defineInRange("fluid_transport_cost", 0.02, 0.0, Double.MAX_VALUE);
+        logistics.minPressure = builder
+                .comment("Minimum pressure for a Logistics Module to function")
+                .translation("pneumaticcraft.config.common.logistics.minPressure")
+                .defineInRange("min_pressure", 3.0, 0.0, 20.0);
         builder.pop();
     }
 }

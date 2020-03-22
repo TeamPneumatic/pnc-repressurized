@@ -145,5 +145,11 @@ public class PNCConfig {
             public static double ambientTempBiomeModifier;
             public static double ambientTempHeightModifier;
         }
+
+        public static class Logistics {
+            public static double itemTransportCost;
+            public static double fluidTransportCost;
+            public static double minPressure;
+        }
     }
 }

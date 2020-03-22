@@ -32,10 +32,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 public class ModuleLogistics extends TubeModule implements INetworkedModule {
-    private static final double MIN_PRESSURE = 3;
-    private static final double ITEM_TRANSPORT_COST = 2.5;  // per item per block distance
-    private static final double FLUID_TRANSPORT_COST = 0.05;  // per mB per block distance
-
     private EntityLogisticsFrame cachedFrame;
     private int colorChannel;
     private int ticksSinceAction = -1; // client sided timer used to display the blue color when doing a logistic task.
@@ -138,7 +134,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         super.update();
         if (cachedFrame != null && !cachedFrame.isValid()) cachedFrame = null;
         if (!getTube().getWorld().isRemote) {
-            if (powered != getTube().getPressure() >= MIN_PRESSURE) {
+            if (powered != getTube().getPressure() >= PNCConfig.Common.Logistics.minPressure) {
                 powered = !powered;
                 NetworkHandler.sendToAllAround(new PacketUpdateLogisticsModule(this, 0), getTube().getWorld());
             }
@@ -211,7 +207,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         ItemStack extractedStack = IOHelper.extract(providingHandler, toTransfer, IOHelper.ExtractCount.UP_TO, true, false);
         if (!extractedStack.isEmpty()) {
             requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(receiverAirHandler -> {
-                int airUsed = (int) (ITEM_TRANSPORT_COST * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getPos(), requestingModule.getTube().getPos()));
+                int airUsed = (int) (PNCConfig.Common.Logistics.itemTransportCost * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getPos(), requestingModule.getTube().getPos()));
                 if (airUsed > receiverAirHandler.getAir()) {
                     // not enough air to move all the items - scale back the number to be moved
                     double scale = receiverAirHandler.getAir() / (double) airUsed;
@@ -249,7 +245,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         FluidStack extractedFluid = providingHandler.drain(toTransfer, IFluidHandler.FluidAction.SIMULATE);
         if (!extractedFluid.isEmpty()) {
             requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(receiverAirHandler -> {
-                double airUsed = (FLUID_TRANSPORT_COST * extractedFluid.getAmount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getPos(), requestingModule.getTube().getPos()));
+                double airUsed = (PNCConfig.Common.Logistics.fluidTransportCost * extractedFluid.getAmount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getPos(), requestingModule.getTube().getPos()));
                 if (airUsed > receiverAirHandler.getAir()) {
                     // not enough air to move it all - scale back the amount of fluid to be moved
                     double scale = receiverAirHandler.getAir() / airUsed;
