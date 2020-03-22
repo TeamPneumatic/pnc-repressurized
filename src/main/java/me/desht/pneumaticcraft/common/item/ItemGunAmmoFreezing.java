@@ -71,7 +71,7 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
         cloud.setPotion(Potions.SLOWNESS);
         cloud.setOwner(minigun.getPlayer());
         cloud.addEffect(new EffectInstance(Effects.SLOWNESS, 100, 3));
-        cloud.addEffect(new EffectInstance(Effects.INSTANT_DAMAGE, 20, 1));
+        cloud.addEffect(new EffectInstance(Effects.WITHER, 20, 1));
         cloud.setRadius(2.0f);
         cloud.setDuration(60);
         cloud.setRadiusOnUse(-0.5f);
