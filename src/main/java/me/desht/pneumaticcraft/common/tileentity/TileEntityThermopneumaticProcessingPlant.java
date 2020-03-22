@@ -154,7 +154,13 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     private boolean hasEnoughPressure() {
-        return getMinWorkingPressure() > 0 ? getPressure() >= getMinWorkingPressure() : getPressure() < getMinWorkingPressure();
+        if (getMinWorkingPressure() == 0) {
+            return true;
+        } else if (getMinWorkingPressure() > 0) {
+            return getPressure() >= getMinWorkingPressure();
+        } else {
+            return getPressure() <= getMinWorkingPressure();
+        }
     }
 
     /**
@@ -170,15 +176,6 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                 if (filled == recipe.getOutputFluid().getAmount() && excess.isEmpty()) {
                     return recipe;
                 }
-//                if (outputTank.getFluid().isEmpty()) {
-//                    return recipe;
-//                } else {
-//                    FluidStack output = recipe.getOutputFluid();
-//                    if (output.getFluid() == outputTank.getFluid().getFluid()
-//                            && output.getAmount() <= outputTank.getCapacity() - outputTank.getFluidAmount()) {
-//                        return recipe;
-//                    }
-//                }
             }
         }
         return null;
