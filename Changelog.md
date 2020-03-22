@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.12-392 (22 Mar 2020)
+#### Fixes
+* Hotfix for bug introduced in last release: Thermopneumatic Processing Plant wasn't working for recipes needing no pressure (Plastic & Lubricant by default)
+* Also fixed TPP GUI temperature gauge not always working
+
 ### 0.11.11-390 (13 Mar 2020)
 #### Updates
 * Thermopneumatic Processing Plant now supports custom recipes with a pressure < 0 bar.

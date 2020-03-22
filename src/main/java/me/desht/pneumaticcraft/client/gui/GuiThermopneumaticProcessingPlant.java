@@ -32,7 +32,18 @@ public class GuiThermopneumaticProcessingPlant extends
         super.initGui();
         addWidget(new WidgetTank(-1, guiLeft + 13, guiTop + 15, te.getInputTank()));
         addWidget(new WidgetTank(-1, guiLeft + 79, guiTop + 15, te.getOutputTank()));
-        tempWidget = new WidgetTemperature(-1, guiLeft + 98, guiTop + 15, 273, (int)te.requiredTemperature, te.getHeatExchangerLogic(null), (int) te.requiredTemperature) {
+        int min, max;
+        if (te.requiredTemperature == 0) {
+            min = 273;
+            max = 673;
+        } else if (te.requiredTemperature < 0) {
+            min = 0;
+            max = 273;
+        } else {
+            min = 273;
+            max = (int)te.requiredTemperature + 100;
+        }
+        tempWidget = new WidgetTemperature(-1, guiLeft + 98, guiTop + 15, min, max, te.getHeatExchangerLogic(null), (int) te.requiredTemperature) {
             @Override
             public void addTooltip(int mouseX, int mouseY, List<String> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
