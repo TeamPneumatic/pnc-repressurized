@@ -195,7 +195,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo {
                 if (module == null) return false;
                 if (simulate) module.markFake();
                 tePT.setModule(module, side);
-                if (!simulate) {
+                if (!simulate && !world.isRemote) {
                     neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side));
                     world.notifyNeighborsOfStateChange(pos, this, true);
                     if (!player.capabilities.isCreativeMode) heldStack.shrink(1);
