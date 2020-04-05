@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  * Extension of GuiButtonExt that add: 1) a string tag which is sent to the server when clicked (PacketGuiButton),
  * 2) ability to draw itemstack or textured icons & 3) can render its area when invisible
  */
-public class WidgetButtonExtended extends GuiButtonExt implements ITaggedWidget, ITooltipProvider {
+public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidget, ITooltipProvider {
     public enum IconPosition { MIDDLE, LEFT, RIGHT }
     private ItemStack[] renderedStacks;
 
@@ -128,13 +128,14 @@ public class WidgetButtonExtended extends GuiButtonExt implements ITaggedWidget,
         if (visible) {
             if (renderedStacks != null) {
                 int startX = getIconX();
-                GlStateManager.enableRescaleNormal();
-                RenderHelper.enableGUIStandardItemLighting();
+                RenderSystem.enableRescaleNormal();
+                RenderHelper.enableStandardItemLighting();
+//                RenderHelper.enableGUIStandardItemLighting();
                 for (int i = 0; i < renderedStacks.length; i++) {
                     itemRenderer.renderItemAndEffectIntoGUI(renderedStacks[i], startX + i * 18, this.y + 2);
                 }
                 RenderHelper.disableStandardItemLighting();
-                GlStateManager.disableRescaleNormal();
+                RenderSystem.disableRescaleNormal();
             }
             if (resLoc != null) {
                 GuiUtils.drawTexture(resLoc, this.x + width / 2 - 8, this.y + 2);

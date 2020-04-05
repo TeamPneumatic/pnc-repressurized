@@ -84,9 +84,9 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
                 }
                 World world = entityItem.getEntityWorld();
                 if (world.rand.nextInt(15) == 0) {
-                    double x = entityItem.posX + world.rand.nextDouble() * 0.3 - 0.15;
-                    double y = entityItem.posY - 0.15;
-                    double z = entityItem.posZ + world.rand.nextDouble() * 0.3 - 0.15;
+                    double x = entityItem.getPosX() + world.rand.nextDouble() * 0.3 - 0.15;
+                    double y = entityItem.getPosY() - 0.15;
+                    double z = entityItem.getPosZ() + world.rand.nextDouble() * 0.3 - 0.15;
                     world.addParticle(ParticleTypes.CLOUD, x, y, z, 0.0, 0.05, 0.0);
                 }
             } else if (!entityItem.world.isRemote) {
@@ -108,7 +108,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
                 // Only when we have failed items and the existing item entity wasn't reused already for the failed items.
                 if (successCount > 0 && failedCount > 0) {
                     ItemStack failedStack = new ItemStack(ModItems.FAILED_PCB.get(), failedCount);
-                    entityItem.world.addEntity(new ItemEntity(entityItem.world, entityItem.posX, entityItem.posY, entityItem.posZ, failedStack));
+                    entityItem.world.addEntity(new ItemEntity(entityItem.world, entityItem.getPosX(), entityItem.getPosY(), entityItem.getPosZ(), failedStack));
                 }
             }
         }

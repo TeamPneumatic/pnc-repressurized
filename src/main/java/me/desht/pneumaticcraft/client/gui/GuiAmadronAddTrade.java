@@ -178,7 +178,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
 
         if (getFocused() instanceof WidgetTextField) {
             WidgetTextField tf = (WidgetTextField) getFocused();
-            return tf.keyPressed(keyCode, scanCode, modifiers) || tf.func_212955_f() || super.keyPressed(keyCode, scanCode, modifiers);
+            return tf.keyPressed(keyCode, scanCode, modifiers) || tf.canWrite() || super.keyPressed(keyCode, scanCode, modifiers);
         } else {
             return super.keyPressed(keyCode, scanCode, modifiers);
         }

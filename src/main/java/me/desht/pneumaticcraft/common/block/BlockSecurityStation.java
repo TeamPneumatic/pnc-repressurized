@@ -14,6 +14,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -65,9 +66,9 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (player.isSneaking()) {
-            return false;
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+        if (player.isSteppingCarefully()) {
+            return ActionResultType.PASS;
         } else {
             if (!world.isRemote) {
                 TileEntitySecurityStation te = (TileEntitySecurityStation) world.getTileEntity(pos);
@@ -85,7 +86,7 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
                     }
                 }
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
     }
 

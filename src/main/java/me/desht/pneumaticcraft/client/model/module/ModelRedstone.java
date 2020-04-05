@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelRedstone extends ModelModuleBase<ModuleRedstone> {
+public class ModelRedstone extends AbstractModelRenderer<ModuleRedstone> {
     private final RendererModel redstone_connector;
     private final RendererModel faceplate;
     private final RendererModel tube_connector;

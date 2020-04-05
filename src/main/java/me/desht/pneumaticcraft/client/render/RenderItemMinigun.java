@@ -1,12 +1,14 @@
 package me.desht.pneumaticcraft.client.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.model.entity.ModelDroneMinigun;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +19,7 @@ public class RenderItemMinigun extends ItemStackTileEntityRenderer {
     private final ModelDroneMinigun model = new ModelDroneMinigun();
 
     @Override
-    public void renderByItem(ItemStack stack) {
+    public void render(ItemStack stack, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         if (stack.getItem() == ModItems.MINIGUN.get() && stack.hasTag()) {
             Minecraft mc = Minecraft.getInstance();
             PlayerEntity player = mc.player;
@@ -25,28 +27,28 @@ public class RenderItemMinigun extends ItemStackTileEntityRenderer {
             Entity owningPlayer = Minecraft.getInstance().world.getEntityByID(id);
             if (owningPlayer instanceof PlayerEntity) {
                 Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, (PlayerEntity) owningPlayer);
-                GlStateManager.pushMatrix();
+                matrixStack.push();
                 if (mc.gameSettings.thirdPersonView != 0 || player.getEntityId() != owningPlayer.getEntityId()) {
                     // rendering our own gun in 3rd person, or rendering someone else's gun
-                    GlStateManager.scaled(1, -1, 1);
-                    GlStateManager.rotated(-90, 1, 0, 0);
-                    GlStateManager.translated(0.5, -2, -0.3);
+                    matrixStack.scale(1f, -1f, -1f);
+                    matrixStack.rotate(Vector3f.XP.rotationDegrees(-90f));
+                    matrixStack.translate(0.5, -2, -0.3);
                 } else if (mc.currentScreen instanceof InventoryScreen) {
                     // our own gun in the rendered player model in inventory screen
-                    GlStateManager.rotated(90, 1, 0, 0);
-                    GlStateManager.translated(0.5, -1, -0.5);
+                    matrixStack.rotate(Vector3f.XP.rotationDegrees(90f));
+                    matrixStack.translate(0.5, -1, -0.5);
                 } else {
                     // our own gun in 1st person
-                    GlStateManager.scaled(1.5, 1.5, 1.5);
-                    GlStateManager.rotated(-90, 0, 0, 1);
+                    matrixStack.scale(1.5f, 1.5f, 1.5f);
+                    matrixStack.rotate(Vector3f.ZP.rotationDegrees(-90f));
                     if (mc.gameSettings.mainHand == HandSide.RIGHT) {
-                        GlStateManager.translated(0, -0.6, -0.1);
+                        matrixStack.translate(0, -0.6, -0.1);
                     } else {
-                        GlStateManager.translated(0, -1.9, -0.05);
+                        matrixStack.translate(0, -1.9, -0.05);
                     }
                 }
-                model.renderMinigun(minigun, 1 / 16F, mc.getRenderPartialTicks(), false);
-                GlStateManager.popMatrix();
+                model.renderMinigun(matrixStack, buffer, combinedLightIn, combinedOverlayIn, minigun, mc.getRenderPartialTicks(), false);
+                matrixStack.pop();
             }
         }
     }

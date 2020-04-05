@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelPressureRegulator extends ModelModuleBase<ModuleRegulatorTube> {
+public class ModelPressureRegulator extends AbstractModelRenderer<ModuleRegulatorTube> {
     private final RendererModel shape1;
     private final RendererModel valve;
 

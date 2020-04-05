@@ -1,24 +1,27 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import me.desht.pneumaticcraft.client.model.block.ModelSentryTurret;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.client.model.entity.ModelDroneMinigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
-import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 
-public class RenderSentryTurret extends AbstractTileModelRenderer<TileEntitySentryTurret> {
-    private final ModelSentryTurret model;
+public class RenderSentryTurret extends TileEntityRenderer<TileEntitySentryTurret> {
+    private final ModelDroneMinigun model;
 
-    public RenderSentryTurret() {
-        model = new ModelSentryTurret();
+    public RenderSentryTurret(TileEntityRendererDispatcher dispatcher) {
+        super(dispatcher);
+
+        model = new ModelDroneMinigun();
     }
 
     @Override
-    ResourceLocation getTexture(TileEntitySentryTurret te) {
-        return Textures.MODEL_SENTRY_TURRET;
-    }
+    public void render(TileEntitySentryTurret te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        matrixStackIn.push();
 
-    @Override
-    void renderModel(TileEntitySentryTurret te, float partialTicks) {
-        model.renderModel(0.0625f, te, partialTicks);
+        model.renderMinigun(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, te.getMinigun(), partialTicks, true);
+
+        matrixStackIn.pop();
     }
 }

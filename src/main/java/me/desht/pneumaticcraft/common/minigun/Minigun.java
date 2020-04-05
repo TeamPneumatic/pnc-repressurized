@@ -28,19 +28,19 @@ import javax.annotation.Nonnull;
 import java.util.Random;
 
 public abstract class Minigun {
-    public static final double MAX_GUN_SPEED = 0.4;
-    private static final double MAX_GUN_YAW_CHANGE = 10;
-    private static final double MAX_GUN_PITCH_CHANGE = 10;
+    public static final float MAX_GUN_SPEED = 0.4f;
+    private static final float MAX_GUN_YAW_CHANGE = 10f;
+    private static final float MAX_GUN_PITCH_CHANGE = 10f;
 
     private final boolean requiresTarget;
 
-    private double minigunSpeed;
+    private float minigunSpeed;
     private int minigunTriggerTimeOut;
     private int minigunSoundCounter = -1;
     private final Random rand = new Random();
-    private double minigunRotation, oldMinigunRotation;
-    public double minigunYaw, oldMinigunYaw;
-    public double minigunPitch, oldMinigunPitch;
+    private float minigunRotation, oldMinigunRotation;
+    public float minigunYaw, oldMinigunYaw;
+    public float minigunPitch, oldMinigunPitch;
     private boolean sweeping; // When true, the yaw of the minigun will sweep with a sinus pattern when not targeting.
     private double sweepingProgress;
 
@@ -134,11 +134,11 @@ public abstract class Minigun {
         return player;
     }
 
-    public double getMinigunSpeed() {
+    public float getMinigunSpeed() {
         return minigunSpeed;
     }
 
-    public void setMinigunSpeed(double minigunSpeed) {
+    public void setMinigunSpeed(float minigunSpeed) {
         this.minigunSpeed = minigunSpeed;
     }
 
@@ -158,19 +158,19 @@ public abstract class Minigun {
         this.minigunSoundCounter = minigunSoundCounter;
     }
 
-    public double getMinigunRotation() {
+    public float getMinigunRotation() {
         return minigunRotation;
     }
 
-    public void setMinigunRotation(double minigunRotation) {
+    public void setMinigunRotation(float minigunRotation) {
         this.minigunRotation = minigunRotation;
     }
 
-    public double getOldMinigunRotation() {
+    public float getOldMinigunRotation() {
         return oldMinigunRotation;
     }
 
-    public void setOldMinigunRotation(double oldMinigunRotation) {
+    public void setOldMinigunRotation(float oldMinigunRotation) {
         this.oldMinigunRotation = oldMinigunRotation;
     }
 
@@ -257,14 +257,14 @@ public abstract class Minigun {
             }
         }
         if (isMinigunActivated()) {
-            double speedBonus = getUpgrades(EnumUpgrade.SPEED) * 0.0033D;
-            double lastSpeed = getMinigunSpeed();
-            setMinigunSpeed(Math.min(getMinigunSpeed() + 0.01D + speedBonus, MAX_GUN_SPEED));
+            float speedBonus = getUpgrades(EnumUpgrade.SPEED) * 0.0033F;
+            float lastSpeed = getMinigunSpeed();
+            setMinigunSpeed(Math.min(getMinigunSpeed() + 0.01F + speedBonus, MAX_GUN_SPEED));
             if (getMinigunSpeed() > lastSpeed && getMinigunSpeed() >= MAX_GUN_SPEED && !world.isRemote) {
                 NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), world.getDimension().getType());
             }
         } else {
-            setMinigunSpeed(Math.max(0, getMinigunSpeed() - 0.003D));
+            setMinigunSpeed(Math.max(0F, getMinigunSpeed() - 0.003F));
         }
 
         setMinigunRotation(getMinigunRotation() + getMinigunSpeed());
@@ -272,8 +272,8 @@ public abstract class Minigun {
         double targetYaw;
         double targetPitch = 0;
         if (attackTarget != null) {
-            double deltaX = posX - attackTarget.posX;
-            double deltaZ = posZ - attackTarget.posZ;
+            double deltaX = posX - attackTarget.getPosX();
+            double deltaZ = posZ - attackTarget.getPosZ();
 
             if (deltaX >= 0 && deltaZ < 0) {
                 targetYaw = Math.atan(Math.abs(deltaX / deltaZ)) / Math.PI * 180D;
@@ -289,17 +289,17 @@ public abstract class Minigun {
             } else if (minigunYaw - targetYaw > 180) {
                 targetYaw += 360;
             }
-            targetPitch = Math.toDegrees(Math.atan((posY - attackTarget.posY - attackTarget.getHeight() / 2) / PneumaticCraftUtils.distBetween(posX, posZ, attackTarget.posX, attackTarget.posZ)));
+            targetPitch = Math.toDegrees(Math.atan((posY - attackTarget.getPosY() - attackTarget.getHeight() / 2) / PneumaticCraftUtils.distBetween(posX, posZ, attackTarget.getPosX(), attackTarget.getPosZ())));
 
-            minigunPitch = moveToward(minigunPitch, targetPitch, MAX_GUN_PITCH_CHANGE);
-            minigunYaw = minigunPitch < -80 || minigunPitch > 80 ? targetYaw : moveToward(minigunYaw, targetYaw, MAX_GUN_YAW_CHANGE);
+            minigunPitch = moveToward(minigunPitch, (float) targetPitch, MAX_GUN_PITCH_CHANGE);
+            minigunYaw = minigunPitch < -80 || minigunPitch > 80 ? (float) targetYaw : moveToward(minigunYaw, (float) targetYaw, MAX_GUN_YAW_CHANGE);
             gunAimedAtTarget = minigunYaw == targetYaw && minigunPitch == targetPitch;
         } else if (isSweeping()) {
             minigunYaw -= Math.cos(sweepingProgress) * 22;
             sweepingProgress += 0.05D;
             minigunYaw += Math.cos(sweepingProgress) * 22;
 
-            minigunPitch = moveToward(minigunPitch, targetPitch, MAX_GUN_PITCH_CHANGE);
+            minigunPitch = moveToward(minigunPitch, (float) targetPitch, MAX_GUN_PITCH_CHANGE);
         }
 
         if (!world.isRemote && isMinigunActivated() && getMinigunSpeed() == MAX_GUN_SPEED
@@ -311,7 +311,7 @@ public abstract class Minigun {
         if (getMinigunSoundCounter() > 0) setMinigunSoundCounter(getMinigunSoundCounter() - 1);
     }
 
-    private double moveToward(double val, double target, double amount) {
+    private float moveToward(float val, float target, float amount) {
         if (val > target) {
             val = Math.max(val - amount, target);
         } else {

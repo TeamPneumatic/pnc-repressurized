@@ -1,11 +1,13 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -53,9 +55,9 @@ public class RenderDroneAI {
         }
     }
 
-    public void render(float partialTicks) {
+    public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
         for (Pair<RenderCoordWireframe, Integer> wireframe : blackListWireframes) {
-            wireframe.getKey().render(partialTicks);
+            wireframe.getKey().render(matrixStack, buffer, partialTicks);
         }
 
         if (ItemPneumaticArmor.isPlayerDebuggingEntity(ClientUtils.getClientPlayer(), drone)) {
@@ -67,9 +69,9 @@ public class RenderDroneAI {
                     y = getInterpolated(pos.getY(), oldPos.getY(), partialTicks);
                     z = getInterpolated(pos.getZ(), oldPos.getZ(), partialTicks);
                 } else {
-                    x = MathHelper.lerp(partialTicks, drone.prevPosX, drone.posX);
-                    y = MathHelper.lerp(partialTicks, drone.prevPosY, drone.posY) + 0.5;
-                    z = MathHelper.lerp(partialTicks, drone.prevPosZ, drone.posZ);
+                    x = MathHelper.lerp(partialTicks, drone.prevPosX, drone.getPosX());
+                    y = MathHelper.lerp(partialTicks, drone.prevPosY, drone.getPosY()) + 0.5;
+                    z = MathHelper.lerp(partialTicks, drone.prevPosZ, drone.getPosZ());
                 }
                 GlStateManager.enableTexture();
                 GlStateManager.enableBlend();

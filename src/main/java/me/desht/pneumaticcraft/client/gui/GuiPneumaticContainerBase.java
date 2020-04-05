@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -52,7 +53,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     private WidgetAnimatedStat redstoneTab;
     WidgetAnimatedStat problemTab;
     private WidgetButtonExtended redstoneButton;
-    protected boolean firstUpdate = true;
+    boolean firstUpdate = true;
     private final List<IGuiAnimatedStat> statWidgets = new ArrayList<>();
     private int sendDelay = -1;
     boolean redstoneAllows;
@@ -313,8 +314,8 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         renderHoveredToolTip(x, y);
 
         List<String> tooltip = new ArrayList<>();
-        GlStateManager.color4f(1, 1, 1, 1);
-        GlStateManager.disableLighting();
+        RenderSystem.color4f(1, 1, 1, 1);
+        RenderSystem.disableLighting();
         for (Widget widget : buttons) {
             if (widget instanceof ITooltipProvider && widget.isHovered() && widget.visible) {
                 ((ITooltipProvider) widget).addTooltip(x, y, tooltip, Screen.hasShiftDown());
@@ -465,7 +466,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     void drawHoveringString(List<String> text, int x, int y, FontRenderer fontRenderer) {
-        net.minecraftforge.fml.client.config.GuiUtils.drawHoveringText(text, x, y, width, height, -1, fontRenderer);
+        net.minecraftforge.fml.client.gui.GuiUtils.drawHoveringText(text, x, y, width, height, -1, fontRenderer);
     }
 
     WidgetButtonExtended getButtonFromRectangle(String tag, Rectangle2d buttonSize, String buttonText, Button.IPressable pressable) {
@@ -497,7 +498,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     void refreshScreen() {
-        MainWindow mw = Minecraft.getInstance().mainWindow;
+        MainWindow mw = Minecraft.getInstance().getMainWindow();
         int i = mw.getScaledWidth();
         int j = mw.getScaledHeight();
         init(Minecraft.getInstance(), i, j);

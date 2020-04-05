@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.api.universal_sensor.IEventSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.GuiUniversalSensor;
-import me.desht.pneumaticcraft.client.render.RenderRangeLines;
+import me.desht.pneumaticcraft.client.util.RangeLines;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
@@ -75,7 +75,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     private final Set<BlockPos> positions = new HashSet<>();
 
     private int oldSensorRange; // range used by the range line renderer, to figure out if the range has been changed.
-    private final RenderRangeLines rangeLineRenderer = new RenderRangeLines(0x600060FF);
+    public final RangeLines rangeLines = new RangeLines(0x600060FF);
 
     // todo 1.14 computercraft
     // keep track of the computers so we can raise a os.pullevent.
@@ -104,9 +104,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
             int sensorRange = getRange();
             if (oldSensorRange != sensorRange || oldSensorRange == 0) {
                 oldSensorRange = sensorRange;
-                if (!firstRun) rangeLineRenderer.resetRendering(sensorRange);
+                if (!firstRun) rangeLines.startRendering(sensorRange);
             }
-            rangeLineRenderer.update();
+            rangeLines.tick(world.rand);
         }
         super.tick();
 
@@ -190,19 +190,15 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     @Override
     public void showRangeLines() {
         if (getWorld().isRemote) {
-            rangeLineRenderer.resetRendering(getRange());
+            rangeLines.startRendering(getRange());
         } else {
             NetworkHandler.sendToAllAround(new PacketRenderRangeLines(this), getWorld(), TileEntityConstants.PACKET_UPDATE_DISTANCE + getRange());
         }
     }
 
-    public void renderRangeLines() {
-        rangeLineRenderer.render();
-    }
-
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        if (rangeLineRenderer == null || !rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
+        if (rangeLines == null || !rangeLines.shouldRender()) return super.getRenderBoundingBox();
         int range = getRange();
         return new AxisAlignedBB(getPos().getX() - range, getPos().getY() - range, getPos().getZ() - range, getPos().getX() + 1 + range, getPos().getY() + 1 + range, getPos().getZ() + 1 + range);
     }

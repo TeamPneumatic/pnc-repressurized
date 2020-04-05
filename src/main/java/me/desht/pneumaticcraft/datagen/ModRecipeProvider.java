@@ -23,7 +23,7 @@ import net.minecraft.tags.Tag;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.IngredientNBT;
+import net.minecraftforge.common.crafting.NBTIngredient;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -1111,7 +1111,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private CustomRecipeBuilder specialRecipe(SpecialRecipeSerializer<?> recipe) {
-        return CustomRecipeBuilder.func_218656_a(recipe);
+        return CustomRecipeBuilder.customRecipe(recipe);
     }
 
     private String getId(String s) {
@@ -1131,7 +1131,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     // this wrapper is due to lack of any public constructor method for IngredientNBT
-    private static class IngredientNBTWrapper extends IngredientNBT {
+    private static class IngredientNBTWrapper extends NBTIngredient {
         IngredientNBTWrapper(ItemStack stack) {
             super(stack);
         }

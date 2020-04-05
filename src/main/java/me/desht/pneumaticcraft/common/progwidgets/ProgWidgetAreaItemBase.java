@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.Region;
 import net.minecraft.world.World;
 
@@ -64,7 +64,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         EntityFilterPair.addErrors(this, curInfo);
     }
 
-    public static IWorldReader getCache(Collection<BlockPos> area, World world) {
+    public static IBlockReader getCache(Collection<BlockPos> area, World world) {
         if (area.isEmpty()) return world;
         AxisAlignedBB aabb = getExtents(area);
         return new Region(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ));

@@ -8,16 +8,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IEnviromentBlockReader;
-import net.minecraft.world.LightType;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     public BlockElevatorCaller() {
@@ -30,7 +27,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityElevatorCaller) {
             TileEntityElevatorCaller teEC = (TileEntityElevatorCaller) te;
@@ -39,7 +36,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
                 if (floor >= 0) setSurroundingElevators(world, pos, floor);
             }
         }
-        return getRotation(state).getOpposite() == brtr.getFace();
+        return getRotation(state).getOpposite() == brtr.getFace() ? ActionResultType.SUCCESS : ActionResultType.PASS;
     }
 
     private int getFloorForHit(TileEntityElevatorCaller teEC, Direction side, double hitX, double hitY, double hitZ) {
@@ -177,11 +174,11 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
         return true;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public int getPackedLightmapCoords(BlockState state, IEnviromentBlockReader worldIn, BlockPos pos) {
-        int i = worldIn.getLightFor(LightType.SKY, pos);
-        return (i << 20) | 0xF0;
-    }
+//    @OnlyIn(Dist.CLIENT)
+//    public int getPackedLightmapCoords(BlockState state, IEnviromentBlockReader worldIn, BlockPos pos) {
+//        int i = worldIn.getLightFor(LightType.SKY, pos);
+//        return (i << 20) | 0xF0;
+//    }
 
 //    @Override
 //    public boolean isOpaqueCube(BlockState state) {

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.gui.FontRenderer;
 import org.lwjgl.glfw.GLFW;
@@ -74,7 +74,7 @@ public class WidgetComboBox extends WidgetTextField {
 
         if (enabled && active && isFocused()) {
             List<String> applicableElements = getApplicableElements();
-            GlStateManager.translated(0, 0, 300);
+            RenderSystem.translated(0, 0, 300);
             fill(x - 1, y + height + 1, x + width + 1, y + height + 3 + applicableElements.size() * fontRenderer.FONT_HEIGHT, 0xFFA0A0A0);
             fill(x,     y + height + 1, x + width,     y + height + 2 + applicableElements.size() * fontRenderer.FONT_HEIGHT, 0xFF000000);
             for (int i = 0; i < applicableElements.size(); i++) {
@@ -82,7 +82,7 @@ public class WidgetComboBox extends WidgetTextField {
                 fontRenderer.drawStringWithShadow(fontRenderer.trimStringToWidth(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.FONT_HEIGHT, 0xE0E0E0);
             }
             fontRenderer.drawString(GuiConstants.TRIANGLE_UP, x + width - 7, y + 2, 0xc0c0c0);
-            GlStateManager.translated(0, 0, -300);
+            RenderSystem.translated(0, 0, -300);
         } else {
             fontRenderer.drawString(GuiConstants.TRIANGLE_DOWN, x + width - 7, y + 2, 0xc0c0c0);
         }

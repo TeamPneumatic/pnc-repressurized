@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.List;
 
@@ -38,8 +39,10 @@ public class HackableDispenser implements IHackableBlock {
 
     @Override
     public void onHackFinished(World world, BlockPos pos, PlayerEntity player) {
-        BlockState state = world.getBlockState(pos);
-        state.tick(world, pos, player.getRNG());
+        if (world instanceof ServerWorld) {
+            BlockState state = world.getBlockState(pos);
+            state.tick((ServerWorld) world, pos, player.getRNG());
+        }
     }
 
     @Override

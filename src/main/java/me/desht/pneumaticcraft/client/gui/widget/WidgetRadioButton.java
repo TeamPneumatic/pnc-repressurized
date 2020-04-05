@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
@@ -59,10 +59,10 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
         float f1 = (color >> 16 & 255) / 255.0F;
         float f2 = (color >> 8 & 255) / 255.0F;
         float f3 = (color & 255) / 255.0F;
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.color4f(f1, f2, f3, f);
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        RenderSystem.color4f(f1, f2, f3, f);
         wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
         int points = 12;
         for (int i = 0; i < points; i++) {
@@ -71,8 +71,8 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
             wr.pos(x + sin * radius, y + cos * radius, 0.0).endVertex();
         }
         Tessellator.getInstance().draw();
-        GlStateManager.enableTexture();
-        GlStateManager.disableBlend();
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
     }
 
     public Rectangle2d getBounds() {

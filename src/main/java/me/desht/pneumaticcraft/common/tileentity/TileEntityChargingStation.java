@@ -18,7 +18,6 @@ import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -51,7 +50,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
     @DescSynced
     private ItemStack chargingStackSynced = ItemStack.EMPTY;  // the item being charged, minus any nbt - for client display purposes
-    public ItemEntity chargingStackEntity;
 
     private ChargingStationHandler itemHandler;  // holds the item being charged
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
@@ -79,8 +77,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     public void onDescUpdate() {
         camoState = ICamouflageableTE.getStateForStack(camoStack);
-        chargingStackEntity = new ItemEntity(EntityType.ITEM, world);
-        chargingStackEntity.setItem(chargingStackSynced);
+//        chargingStackEntity = new ItemEntity(EntityType.ITEM, world);
+//        chargingStackEntity.setItem(chargingStackSynced);
 
         super.onDescUpdate();
     }
@@ -89,6 +87,9 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public ItemStack getChargingStack() {
         return itemHandler.getStackInSlot(CHARGE_INVENTORY_INDEX);
     }
+
+    @Nonnull
+    public ItemStack getChargingStackSynced() { return chargingStackSynced; }
 
     @Override
     public void tick() {

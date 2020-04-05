@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -32,10 +32,10 @@ public class WidgetFluidStack extends WidgetFluidFilter {
             int fluidAmount = fluidStack.getAmount() / 1000;
             if (fluidAmount > 1) {
                 FontRenderer fr = Minecraft.getInstance().fontRenderer;
-                GlStateManager.translated(0, 0, 400);  // ensure amount is drawn in front of the fluid texture
+                RenderSystem.translated(0, 0, 400);  // ensure amount is drawn in front of the fluid texture
                 String s = fluidAmount + "B";
                 fr.drawStringWithShadow(s, x - fr.getStringWidth(s) + 17, y + 9, 0xFFFFFFFF);
-                GlStateManager.translated(0, 0, -400);
+                RenderSystem.translated(0, 0, -400);
             }
         }
     }

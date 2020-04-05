@@ -1,16 +1,20 @@
 package me.desht.pneumaticcraft.client.util;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
+
+import static net.minecraft.util.math.MathHelper.lerp;
 
 public class RenderUtils {
     public static void glColorHex(int color, float brightness) {
@@ -32,6 +36,29 @@ public class RenderUtils {
 
     public static void glColorHex(int color, int alpha) {
         glColorHex(color | alpha << 24);
+    }
+
+    /**
+     * Decompose a 32-bit color into ARGB 8-bit int values
+     * @param color color to decompose
+     * @return 4-element array of ints
+     */
+    public static int[] decomposeColor(int color) {
+        int[] res = new int[4];
+        res[0] = color >> 24 & 0xff;
+        res[0] = color >> 16 & 0xff;
+        res[1] = color >> 8  & 0xff;
+        res[2] = color       & 0xff;
+        return res;
+    }
+
+    public static float[] decomposeColorF(int color) {
+        float[] res = new float[4];
+        res[0] = (color >> 24 & 0xff) / 255f;
+        res[0] = (color >> 16 & 0xff) / 255f;
+        res[1] = (color >> 8  & 0xff) / 255f;
+        res[2] = (color       & 0xff) / 255f;
+        return res;
     }
 
     public static void render3DArrow() {
@@ -133,21 +160,22 @@ public class RenderUtils {
     /**
      * Rotates the render matrix dependant on the rotation of a block. Used in many render methods.
      *
+     * @param matrixStack the matrix stack
      * @param facing block facing direction
      * @return the angle (in degrees) of resulting rotation around the Y axis
      */
-    public static double rotateMatrixForDirection(Direction facing) {
+    public static float rotateMatrixForDirection(MatrixStack matrixStack, Direction facing) {
         float yRotation;
         switch (facing) {
             case UP:
                 yRotation = 0;
-                GlStateManager.rotated(90, 1, 0, 0);
-                GlStateManager.translated(0, -1, -1);
+                matrixStack.rotate(Vector3f.XP.rotationDegrees(90f));
+                matrixStack.translate(0, -1, -1);
                 break;
             case DOWN:
                 yRotation = 0;
-                GlStateManager.rotated(-90, 1, 0, 0);
-                GlStateManager.translated(0, -1, 1);
+                matrixStack.rotate(Vector3f.XP.rotationDegrees(-90f));
+                matrixStack.translate(0, -1, 1);
                 break;
             case NORTH:
                 yRotation = 0;
@@ -162,21 +190,59 @@ public class RenderUtils {
                 yRotation = 270;
                 break;
         }
-        GlStateManager.rotated(yRotation, 0, 1, 0);
+        matrixStack.rotate(Vector3f.YP.rotationDegrees(yRotation));
         return yRotation;
     }
 
-    public static void renderItemAt(ItemStack stack, double x, double y, double z) {
-        GlStateManager.pushMatrix();
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.enableLighting();
+    public static void renderRangeLines(RangeLines rangeLines, MatrixStack matrixStack, IVertexBuilder builder) {
+        if (!rangeLines.shouldRender()) return;
 
-        GlStateManager.translated(x, y, z);
-        Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND);
+        matrixStack.push();
 
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.disableLighting();
-        GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
+        PlayerEntity player = ClientUtils.getClientPlayer();
+        BlockPos pos = rangeLines.getPos();
+        if (pos != null) {
+            matrixStack.translate(pos.getX() - player.getPosX() + 0.5, pos.getY() - player.getPosY() + 0.5, pos.getZ() - player.getPosZ() + 0.5);
+        }
+        for (ProgressingLine line : rangeLines.getLines()) {
+            renderProgressingLine(line, matrixStack, builder, rangeLines.getColor());
+        }
+
+        matrixStack.pop();
+    }
+
+    public static void renderProgressingLine(ProgressingLine line, MatrixStack matrixStack, IVertexBuilder builder, int color) {
+        int[] cols = decomposeColor(color);
+        double startX = line.startX;
+        double startY = line.startY;
+        double startZ = line.startZ;
+        double endX = line.endX;
+        double endY = line.endY;
+        double endZ = line.endZ;
+        float progress = line.getProgress();
+        builder.pos(startX, startY, startZ).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+        builder.pos(startX + (endX - startX) * progress, startY + (endY - startY) * progress, startZ + (endZ - startZ) * progress).endVertex();
+    }
+
+    public static void renderProgressingLine(ProgressingLine prev, ProgressingLine line, float partialTick, MatrixStack matrixStack, IVertexBuilder builder, int color) {
+        int[] cols = decomposeColor(color);
+        double startX = line.startX;
+        double startY = line.startY;
+        double startZ = line.startZ;
+        double endX = line.endX;
+        double endY = line.endY;
+        double endZ = line.endZ;
+        float progress = line.getProgress();
+        builder.pos(lerp(partialTick, startX, prev.startX),
+                lerp(partialTick, startY, prev.startY),
+                lerp(partialTick, startZ, prev.startZ))
+                .color(cols[1], cols[2], cols[3], cols[0])
+                .endVertex();
+        builder.pos(
+                lerp(partialTick, startX, prev.startX) + (lerp(partialTick, endX, prev.endX) - lerp(partialTick, startX, prev.startX)) * progress,
+                lerp(partialTick, startY, prev.startY) + (lerp(partialTick, startY, prev.startY) - lerp(partialTick, endY, prev.endY)) * progress,
+                lerp(partialTick, startZ, prev.startZ) + (lerp(partialTick, endZ, prev.endZ) - lerp(partialTick, startZ, prev.startZ)) * progress)
+                .color(cols[1], cols[2], cols[3], cols[0])
+                .endVertex();
     }
 }

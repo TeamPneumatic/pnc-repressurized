@@ -13,6 +13,10 @@ public class RenderProgressBar {
         render(minX, minY, maxX, maxY, zLevel, progress, 0xAA37FD12);
     }
 
+    public static void render(double minX, double minY, double maxX, double maxY, double zLevel, float progress, int color) {
+        render(minX, minY, maxX, maxY, zLevel, progress, color, color);
+    }
+
     public static void render(double minX, double minY, double maxX, double maxY, double zLevel, float progress, int color1, int color2) {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         GlStateManager.pushMatrix();
@@ -59,10 +63,5 @@ public class RenderProgressBar {
         GlStateManager.disableBlend();
         GlStateManager.disableRescaleNormal();
         GlStateManager.popMatrix();
-    }
-
-    public static void render(double minX, double minY, double maxX, double maxY, double zLevel, float progress, int color) {
-        render(minX, minY, maxX, maxY, zLevel, progress, color, color);
-
     }
 }

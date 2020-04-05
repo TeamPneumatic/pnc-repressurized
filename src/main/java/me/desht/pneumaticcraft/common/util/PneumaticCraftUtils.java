@@ -444,9 +444,9 @@ public class PneumaticCraftUtils {
     public static Pair<Vec3d, Vec3d> getStartAndEndLookVec(LivingEntity entity, float maxDistance) {
         Vec3d entityVec;
         if (entity.world.isRemote && entity instanceof PlayerEntity) {
-            entityVec = new Vec3d(entity.posX, entity.posY + 1.6200000000000001D, entity.posZ);
+            entityVec = new Vec3d(entity.getPosX(), entity.getPosY() + 1.6200000000000001D, entity.getPosZ());
         } else {
-            entityVec = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight() - (entity.isSneaking() ? 0.08 : 0), entity.posZ);
+            entityVec = new Vec3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight() - (entity.isSteppingCarefully() ? 0.08 : 0), entity.getPosZ());
         }
         Vec3d entityLookVec = entity.getLook(1.0F);
         Vec3d maxDistVec = entityVec.add(entityLookVec.scale(maxDistance));
@@ -692,7 +692,7 @@ public class PneumaticCraftUtils {
                 this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(CoordTrackUpgradeHandler.SEARCH_RANGE);
             }
         };
-        dummy.setPosition(player.posX, player.posY, player.posZ);
+        dummy.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
         return dummy;
     }
 

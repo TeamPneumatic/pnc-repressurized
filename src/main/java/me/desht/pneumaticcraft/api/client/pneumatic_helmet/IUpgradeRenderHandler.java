@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 
@@ -45,9 +47,11 @@ public interface IUpgradeRenderHandler {
     /**
      * Called in the 3D render stage (called from {@link net.minecraftforge.client.event.RenderWorldLastEvent})
      *
+     * @param matrixStack the matrix stack
+     * @param buffer the render type buffer
      * @param partialTicks partial ticks since last world tick
      */
-    void render3D(float partialTicks);
+    void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks);
 
     /**
      * Called in the 2D render stage (called from {@link net.minecraftforge.event.TickEvent.RenderTickEvent})
@@ -143,7 +147,7 @@ public interface IUpgradeRenderHandler {
         }
 
         @Override
-        public void render3D(float partialTicks) {
+        public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
         }
 
         @Override

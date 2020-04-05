@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -136,12 +136,13 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public void render() {
+        // FIXME this won't work for in-world rendering (drone debugging)
         Minecraft.getInstance().getTextureManager().bindTexture(getTexture());
         int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);//(getParameters() != null && getParameters().size() > 0 ? 10 : 0);
         int height = getHeight() + (hasStepOutput() ? 10 : 0);
-        Pair<Double, Double> maxUV = getMaxUV();
-        double u = maxUV.getLeft();
-        double v = maxUV.getRight();
+        Pair<Float,Float> maxUV = getMaxUV();
+        float u = maxUV.getLeft();
+        float v = maxUV.getRight();
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         wr.pos(0, 0, 0).tex(0, 0).endVertex();
@@ -154,8 +155,8 @@ public abstract class ProgWidget implements IProgWidget {
     @Override
     public void renderExtraInfo() {
         if (getExtraStringInfo() != null) {
-            GlStateManager.pushMatrix();
-            GlStateManager.scaled(0.5, 0.5, 0.5);
+            RenderSystem.pushMatrix();
+            RenderSystem.scaled(0.5, 0.5, 0.5);
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
             List<String> splittedInfo = PneumaticCraftUtils.splitString(getExtraStringInfo(), 20);
             for (int i = 0; i < splittedInfo.size(); i++) {
@@ -165,18 +166,18 @@ public abstract class ProgWidget implements IProgWidget {
                 AbstractGui.fill(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
                 fr.drawString(splittedInfo.get(i), startX * 2, startY * 2, 0xFF000000);
             }
-            GlStateManager.popMatrix();
-            GlStateManager.color4f(1, 1, 1, 1);
+            RenderSystem.popMatrix();
+            RenderSystem.color4f(1, 1, 1, 1);
         }
     }
 
     @Override
-    public Pair<Double, Double> getMaxUV() {
+    public Pair<Float,Float> getMaxUV() {
         int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);
         int height = getHeight() + (hasStepOutput() ? 10 : 0);
         int textureSize = getTextureSize();
-        double u = (double) width / textureSize;
-        double v = (double) height / textureSize;
+        float u = (float) width / textureSize;
+        float v = (float) height / textureSize;
         return new ImmutablePair<>(u, v);
     }
 

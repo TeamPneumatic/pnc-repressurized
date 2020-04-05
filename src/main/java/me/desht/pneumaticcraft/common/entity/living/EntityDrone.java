@@ -12,7 +12,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
+import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft.DamageSourceDroneOverload;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.ai.*;
@@ -165,8 +165,8 @@ public class EntityDrone extends EntityDroneBase implements
     private final int[] emittingRedstoneValues = new int[6];
     private float propSpeed;
 
-    private RenderProgressingLine targetLine;
-    private RenderProgressingLine oldTargetLine;
+    private ProgressingLine targetLine;
+    private ProgressingLine oldTargetLine;
 
     public List<IProgWidget> progWidgets = new ArrayList<>();
 
@@ -405,9 +405,7 @@ public class EntityDrone extends EntityDroneBase implements
             }
 
             FakePlayer fp = getFakePlayer();
-            fp.posX = posX;
-            fp.posY = posY;
-            fp.posZ = posZ;
+            fp.setPosition(getPosX(), getPosY(), getPosZ());
             fp.tick();
             if (isAlive()) {
                 for (int i = 0; i < 4; i++) {
@@ -427,9 +425,9 @@ public class EntityDrone extends EntityDroneBase implements
             }
 
             if (isAccelerating() && rand.nextBoolean()) {
-                int x = (int) Math.floor(posX);
-                int y = (int) Math.floor(posY - 1);
-                int z = (int) Math.floor(posZ);
+                int x = (int) Math.floor(getPosX());
+                int y = (int) Math.floor(getPosY() - 1);
+                int z = (int) Math.floor(getPosZ());
                 BlockPos pos = new BlockPos(x, y, z);
                 BlockState state = null;
                 for (int i = 0; i < 3; i++) {
@@ -439,10 +437,10 @@ public class EntityDrone extends EntityDroneBase implements
                 }
 
                 if (state.getMaterial() != Material.AIR && world.rand.nextBoolean()) {
-                    Vec3d vec = new Vec3d(posY - y, 0, 0);
+                    Vec3d vec = new Vec3d(getPosY() - y, 0, 0);
                     vec = vec.rotateYaw((float) (rand.nextFloat() * Math.PI * 2));
                     IParticleData data = new BlockParticleData(ParticleTypes.BLOCK, state);
-                    world.addParticle(data, posX + vec.x, y + 1, posZ + vec.z, vec.x, 0, vec.z);
+                    world.addParticle(data, getPosX() + vec.x, y + 1, getPosZ() + vec.z, vec.x, 0, vec.z);
                 }
             }
         }
@@ -459,7 +457,7 @@ public class EntityDrone extends EntityDroneBase implements
         super.tick();
 
         if (hasMinigun()) {
-            getMinigun().setAttackTarget(getAttackTarget()).update(posX, posY, posZ);
+            getMinigun().setAttackTarget(getAttackTarget()).update(getPosX(), getPosY(), getPosZ());
         }
 
         if (!world.isRemote && isAlive()) {
@@ -488,8 +486,8 @@ public class EntityDrone extends EntityDroneBase implements
     private void handleRedstoneEmission() {
         for (Direction d : Direction.values()) {
             if (getEmittingRedstone(d) > 0) {
-                if (world.isAirBlock(new BlockPos((int) Math.floor(posX + getWidth() / 2), (int) Math.floor(posY), (int) Math.floor(posZ + getWidth() / 2)))) {
-                    world.setBlockState(new BlockPos((int) Math.floor(posX + getWidth() / 2), (int) Math.floor(posY), (int) Math.floor(posZ + getWidth() / 2)), ModBlocks.DRONE_REDSTONE_EMITTER.get().getDefaultState());
+                if (world.isAirBlock(new BlockPos((int) Math.floor(getPosX() + getWidth() / 2), (int) Math.floor(getPosY()), (int) Math.floor(getPosZ() + getWidth() / 2)))) {
+                    world.setBlockState(new BlockPos((int) Math.floor(getPosX() + getWidth() / 2), (int) Math.floor(getPosY()), (int) Math.floor(getPosZ() + getWidth() / 2)), ModBlocks.DRONE_REDSTONE_EMITTER.get().getDefaultState());
                 }
                 break;
             }
@@ -499,9 +497,9 @@ public class EntityDrone extends EntityDroneBase implements
     private void handleFluidDisplacement() {
         restoreFluidBlocks(true);
 
-        for (int x = (int) posX - 1; x <= (int) (posX + getWidth()); x++) {
-            for (int y = (int) posY - 1; y <= (int) (posY + getHeight() + 1); y++) {
-                for (int z = (int) posZ - 2; z <= (int) (posZ + getWidth()); z++) {
+        for (int x = (int) getPosX() - 1; x <= (int) (getPosX() + getWidth()); x++) {
+            for (int y = (int) getPosY() - 1; y <= (int) (getPosY() + getHeight() + 1); y++) {
+                for (int z = (int) getPosZ() - 2; z <= (int) (getPosZ() + getWidth()); z++) {
                     if (PneumaticCraftUtils.isBlockLiquid(world.getBlockState(new BlockPos(x, y, z)).getBlock())) {
                         BlockPos pos = new BlockPos(x, y, z);
                         if (securityUpgradeCount == 2) displacedLiquids.put(pos, world.getBlockState(pos));
@@ -660,12 +658,12 @@ public class EntityDrone extends EntityDroneBase implements
                 targetEntity = null;
             }
             if (targetEntity != null) {
-                if (targetLine == null) targetLine = new RenderProgressingLine(0, -getHeight() / 2, 0, 0, 0, 0);
-                if (oldTargetLine == null) oldTargetLine = new RenderProgressingLine(0, -getHeight() / 2, 0, 0, 0, 0);
+                if (targetLine == null) targetLine = new ProgressingLine(0, -getHeight() / 2, 0, 0, 0, 0);
+                if (oldTargetLine == null) oldTargetLine = new ProgressingLine(0, -getHeight() / 2, 0, 0, 0, 0);
 
-                targetLine.endX = targetEntity.posX - posX;
-                targetLine.endY = targetEntity.posY + targetEntity.getHeight() / 2 - posY;
-                targetLine.endZ = targetEntity.posZ - posZ;
+                targetLine.endX = targetEntity.getPosX() - getPosX();
+                targetLine.endY = targetEntity.getPosY() + targetEntity.getHeight() / 2 - getPosY();
+                targetLine.endZ = targetEntity.getPosZ() - getPosZ();
                 oldTargetLine.endX = targetEntity.prevPosX - prevPosX;
                 oldTargetLine.endY = targetEntity.prevPosY + targetEntity.getHeight() / 2 - prevPosY;
                 oldTargetLine.endZ = targetEntity.prevPosZ - prevPosZ;
@@ -688,11 +686,11 @@ public class EntityDrone extends EntityDroneBase implements
         onGround = true; //set onGround to true so AI pathfinding will keep updating.
     }
 
-    public RenderProgressingLine getTargetLine() {
+    public ProgressingLine getTargetLine() {
         return targetLine;
     }
 
-    public RenderProgressingLine getOldTargetLine() {
+    public ProgressingLine getOldTargetLine() {
         return oldTargetLine;
     }
 
@@ -759,7 +757,7 @@ public class EntityDrone extends EntityDroneBase implements
         while (iter.hasNext()) {
             Map.Entry<BlockPos, BlockState> entry = iter.next();
             BlockPos pos = entry.getKey();
-            if (!distCheck || pos.distanceSq(posX, posY, posZ, true) > 1) {
+            if (!distCheck || pos.distanceSq(getPosX(), getPosY(), getPosZ(), true) > 1) {
                 if (world.isAirBlock(pos) || PneumaticCraftUtils.isBlockLiquid(world.getBlockState(pos).getBlock())) {
                     world.setBlockState(pos, entry.getValue(), 2);
                 }
@@ -821,9 +819,9 @@ public class EntityDrone extends EntityDroneBase implements
 
     private void reportDroneDeath(PlayerEntity owner, DamageSource damageSource) {
         if (owner != null) {
-            int x = (int) Math.floor(posX);
-            int y = (int) Math.floor(posY);
-            int z = (int) Math.floor(posZ);
+            int x = (int) Math.floor(getPosX());
+            int y = (int) Math.floor(getPosY());
+            int z = (int) Math.floor(getPosZ());
             ITextComponent msg = hasCustomName() ?
                     new TranslationTextComponent("death.drone.named", getCustomName().getFormattedText(), x, y, z) :
                     new TranslationTextComponent("death.drone", x, y, z);
@@ -1067,7 +1065,7 @@ public class EntityDrone extends EntityDroneBase implements
     public void setEmittingRedstone(Direction side, int value) {
         if (emittingRedstoneValues[side.ordinal()] != value) {
             emittingRedstoneValues[side.ordinal()] = value;
-            BlockPos pos = new BlockPos((int) Math.floor(posX + getWidth() / 2), (int) Math.floor(posY), (int) Math.floor(posZ + getWidth() / 2));
+            BlockPos pos = new BlockPos((int) Math.floor(getPosX() + getWidth() / 2), (int) Math.floor(getPosY()), (int) Math.floor(getPosZ() + getWidth() / 2));
             BlockState state = world.getBlockState(pos);
             world.notifyBlockUpdate(pos, state, state, 3);
         }
@@ -1193,7 +1191,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public Vec3d getDronePos() {
-        return new Vec3d(posX, posY, posZ);
+        return getPositionVector();
     }
 
     @Override
@@ -1226,15 +1224,17 @@ public class EntityDrone extends EntityDroneBase implements
         if (entity == null) {
             for (Entity e : getCarryingEntities()) {
                 e.stopRiding();
+                double y = e.getPosY();
                 if (e instanceof AbstractMinecartEntity || e instanceof BoatEntity) {
                     // little kludge to prevent the dropped minecart/boat immediately picking up the drone
-                    e.posY -= 2;
+                    y -= 2;
                     if (world.getBlockState(e.getPosition()).isNormalCube(world, e.getPosition())) {
-                        e.posY++;
+                        y++;
                     }
                     // minecarts have their own tick() which doesn't decrement rideCooldown
                     if (e instanceof AbstractMinecartEntity) e.rideCooldown = 0;
                 }
+                if (y != e.getPosY()) e.setPosition(e.getPosX(), y, e.getPosZ());
             }
         } else {
             entity.startRiding(this);
@@ -1415,7 +1415,7 @@ public class EntityDrone extends EntityDroneBase implements
 
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
-            NetworkHandler.sendToAllAround(new PacketPlaySound(soundName, SoundCategory.NEUTRAL, posX, posY, posZ, volume, pitch, true), world);
+            NetworkHandler.sendToAllAround(new PacketPlaySound(soundName, SoundCategory.NEUTRAL, getPosX(), getPosY(), getPosZ(), volume, pitch, true), world);
         }
 
         @Override

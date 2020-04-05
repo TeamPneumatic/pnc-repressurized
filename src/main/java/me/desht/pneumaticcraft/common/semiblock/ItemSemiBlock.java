@@ -66,7 +66,7 @@ public class ItemSemiBlock extends Item {
             }
 
             if (!eSemi.canPlace(direction)) {
-                eSemi.setPosition(eSemi.posX + direction.getXOffset(), eSemi.posY + direction.getYOffset(), eSemi.posZ + direction.getZOffset());
+                eSemi.setPosition(eSemi.getPosX() + direction.getXOffset(), eSemi.getPosY() + direction.getYOffset(), eSemi.getPosZ() + direction.getZOffset());
                 if (!eSemi.canPlace(direction)) {
                     return ActionResultType.FAIL;
                 }

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.base.Strings;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.event.ClientEventHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
@@ -120,7 +120,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     public WidgetAnimatedStat(Screen gui, String title, StatIcon icon, int backGroundColor,
                               IGuiAnimatedStat affectingStat, ArmorHUDLayout.LayoutItem layout) {
         this(gui, title, 0, 0, backGroundColor, affectingStat, layout.isLeftSided());
-        MainWindow mw = Minecraft.getInstance().mainWindow;
+        MainWindow mw = Minecraft.getInstance().getMainWindow();
         int x = layout.getX() == -1 ? mw.getScaledWidth() - 2 : (int) (mw.getScaledWidth() * layout.getX());
         setBaseX(x);
         setBaseY((int) (mw.getScaledHeight() * layout.getY()));
@@ -349,7 +349,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             ContainerScreen gc = (ContainerScreen) gui;
             availableWidth = leftSided ? gc.getGuiLeft() : gc.width - (gc.getGuiLeft() + gc.getXSize());
         } else {
-            availableWidth = Minecraft.getInstance().mainWindow.getScaledWidth();
+            availableWidth = Minecraft.getInstance().getMainWindow().getScaledWidth();
         }
 
         // calculate the width and height needed for the box to fit the strings.
@@ -416,9 +416,9 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
         if (leftSided) renderWidth *= -1;
         AbstractGui.fill(renderBaseX, renderAffectedY, renderBaseX + renderWidth, renderAffectedY + renderHeight, backGroundColor);
-        GlStateManager.disableTexture();
-        GlStateManager.lineWidth(3.0F);
-        GlStateManager.color4f(0, 0, 0, 1);
+        RenderSystem.disableTexture();
+        RenderSystem.lineWidth(3.0F);
+        RenderSystem.color4f(0, 0, 0, 1);
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
         float[] c1 = leftSided ? bgColorLo.getComponents(null) : bgColorHi.getComponents(null);
@@ -430,17 +430,17 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         wr.pos(renderBaseX + renderWidth, renderAffectedY + renderHeight, zLevel).color(c3[0], c3[1], c3[2],c3[3]).endVertex();
         wr.pos(renderBaseX, renderAffectedY + renderHeight, zLevel).color(c4[0], c4[1], c4[2], c4[3]).endVertex();
         Tessellator.getInstance().draw();
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
         if (leftSided) renderWidth *= -1;
 
         // if done expanding, draw the information
         int titleYoffset = title.isEmpty() ? 3 : 12;
         if (doneExpanding) {
-            GlStateManager.pushMatrix();
+            RenderSystem.pushMatrix();
 
-            GlStateManager.translated(renderBaseX + (leftSided ? -renderWidth : 16), renderAffectedY, 0);
-            GlStateManager.scaled(textSize, textSize, textSize);
-            GlStateManager.translated(-renderBaseX - (leftSided ? -renderWidth : 16), -renderAffectedY, 0);
+            RenderSystem.translated(renderBaseX + (leftSided ? -renderWidth : 16), renderAffectedY, 0);
+            RenderSystem.scaled(textSize, textSize, textSize);
+            RenderSystem.translated(-renderBaseX - (leftSided ? -renderWidth : 16), -renderAffectedY, 0);
             if (!title.isEmpty()) {
                 fontRenderer.drawStringWithShadow(title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, 0xFFFF00);
             }
@@ -451,16 +451,16 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
                     fontRenderer.drawStringWithShadow(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF);
                 }
             }
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
 
-            GlStateManager.pushMatrix();
-            GlStateManager.translated(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
-            GlStateManager.enableTexture();
+            RenderSystem.pushMatrix();
+            RenderSystem.translated(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
+            RenderSystem.enableTexture();
 
             for (Widget widget : subWidgets)
                 widget.render(mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks);
 
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
         if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
             statIcon.render(renderBaseX, renderAffectedY, leftSided);
@@ -689,15 +689,15 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         }
 
         void render(int x, int y, boolean leftSided) {
-            GlStateManager.color4f(1, 1, 1, 1);
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            RenderSystem.color4f(1, 1, 1, 1);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             if (texture != null) {
                 GuiUtils.drawTexture(texture, x - (leftSided ? 16 : 0), y);
             } else if (!stack.isEmpty()) {
                 GuiUtils.drawItemStack(stack, x - (leftSided ? 16 : 0), y);
             }
-            GlStateManager.disableBlend();
+            RenderSystem.disableBlend();
         }
     }
 }

@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.client.render.RenderRangeLines;
+import me.desht.pneumaticcraft.client.util.RangeLines;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationMain;
@@ -26,8 +26,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.IItemHandler;
@@ -61,7 +59,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     private String textFieldText = "";
     private int securityRange;
     private int oldSecurityRange; //range used by the range line renderer, to figure out if the range has been changed.
-    private RenderRangeLines rangeLineRenderer;
+    public RangeLines rangeLines;
 
     @GuiSynced
     public int redstoneMode;
@@ -83,7 +81,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     public void validate(){
         super.validate();
         GlobalTileEntityCacheManager.getInstance().securityStations.add(this);
-        rangeLineRenderer = new RenderRangeLines(0x33FF0000, getPos());
+        rangeLines = new RangeLines(0x33FF0000, getPos());
     }
 
     @Override
@@ -98,10 +96,10 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         }
         if (getWorld().isRemote && !firstRun) {
             if (oldSecurityRange != getSecurityRange() || oldSecurityRange == 0) {
-                rangeLineRenderer.resetRendering(getSecurityRange());
+                rangeLines.startRendering(getSecurityRange());
                 oldSecurityRange = getSecurityRange();
             }
-            rangeLineRenderer.update();
+            rangeLines.tick(world.rand);
         }
         if (/* !getWorld().isRemote && */oldRedstoneStatus != shouldEmitRedstone()) {
             oldRedstoneStatus = shouldEmitRedstone();
@@ -128,7 +126,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     @Override
     public void showRangeLines() {
         if (getWorld().isRemote) {
-            rangeLineRenderer.resetRendering(getSecurityRange());
+            rangeLines.startRendering(getSecurityRange());
         } else {
             NetworkHandler.sendToAllAround(new PacketRenderRangeLines(this), getWorld(), TileEntityConstants.PACKET_UPDATE_DISTANCE + getSecurityRange());
         }
@@ -137,11 +135,6 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     @Override
     protected LazyOptional<IItemHandler> getInventoryCap() {
         return invCap;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void renderRangeLines() {
-        rangeLineRenderer.render();
     }
 
     @Override
@@ -215,7 +208,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        if (rangeLineRenderer == null || !rangeLineRenderer.isCurrentlyRendering()) return super.getRenderBoundingBox();
+        if (rangeLines == null || !rangeLines.shouldRender()) return super.getRenderBoundingBox();
         return getAffectedBoundingBox();
     }
 

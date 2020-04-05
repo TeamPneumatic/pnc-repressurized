@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -12,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 import static net.minecraft.util.math.MathHelper.lerp;
 
-public class RenderRing extends RenderProgressingLine {
+public class RenderRing extends ProgressingLine {
     private final int color;
 
     public RenderRing(double startX, double startY, double startZ, double endX, double endY, double endZ, int color) {
@@ -21,7 +22,7 @@ public class RenderRing extends RenderProgressingLine {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void renderInterpolated(RenderProgressingLine lastTickLine, float partialTick, float rotationYaw, float rotationPitch) {
+    public void renderInterpolated(ProgressingLine lastTickLine, float partialTick, float rotationYaw, float rotationPitch) {
         GlStateManager.pushMatrix();
         double renderProgress = lerp(partialTick, progress, lastTickLine.progress);
         GlStateManager.translated((lerp(partialTick, endX, lastTickLine.endX) - startX) * renderProgress, (lerp(partialTick, endY, lastTickLine.endY) - startY) * renderProgress, (lerp(partialTick, endZ, lastTickLine.endZ) - startZ) * renderProgress);

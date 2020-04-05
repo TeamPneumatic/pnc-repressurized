@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -41,9 +41,9 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
     @Override
     public void renderButton(int mouseX, int mouseY, float partialTick) {
         if (this.visible) {
-            GlStateManager.disableLighting();
+            RenderSystem.disableLighting();
             Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_TEMPERATURE);
-            GlStateManager.color4f(1, 1, 1, 1);
+            RenderSystem.color4f(1, 1, 1, 1);
             AbstractGui.blit(x + 6, y, 6, 0, 7, 50, 18, 50);
 
             int h = height - 2;

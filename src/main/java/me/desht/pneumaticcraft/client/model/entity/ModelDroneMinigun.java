@@ -6,153 +6,123 @@
 
 package me.desht.pneumaticcraft.client.model.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.model.RendererModel;
-import net.minecraft.client.renderer.model.Model;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.client.renderer.model.ModelRenderer;
 
-public class ModelDroneMinigun extends Model {
+public class ModelDroneMinigun {
     //fields
-    private final RendererModel barrel;
-    private final RendererModel support1;
-    private final RendererModel support2;
-    private final RendererModel support3;
-    private final RendererModel support4;
-    private final RendererModel support5;
-    private final RendererModel main;
-    private final RendererModel magazine;
-    private final RendererModel mount;
-    private final RendererModel magazineColor;
+    private final ModelRenderer barrel;
+    private final ModelRenderer support1;
+    private final ModelRenderer support2;
+    private final ModelRenderer support3;
+    private final ModelRenderer support4;
+    private final ModelRenderer support5;
+    private final ModelRenderer main;
+    private final ModelRenderer magazine;
+    private final ModelRenderer mount;
+    private final ModelRenderer magazineColor;
 
     public ModelDroneMinigun() {
-        textureWidth = 64;
-        textureHeight = 32;
-
-        barrel = new RendererModel(this, 30, 15);
+        barrel = new ModelRenderer(64, 64, 30, 15);
         barrel.addBox(-0.5F, 1.5F, 0F, 1, 1, 16);
         barrel.setRotationPoint(0F, 20.96667F, -8F);
-        barrel.setTextureSize(64, 32);
         barrel.mirror = true;
-        setRotation(barrel, 0F, 0F, 0F);
-        support1 = new RendererModel(this, 0, 0);
+        support1 = new ModelRenderer(64, 64, 0, 0);
         support1.addBox(-1.5F, -1.5F, 0F, 3, 3, 1);
         support1.setRotationPoint(0F, 21F, -6F);
-        support1.setTextureSize(64, 32);
         support1.mirror = true;
-        setRotation(support1, 0F, 0F, 0F);
-        support2 = new RendererModel(this, 0, 4);
+        support2 = new ModelRenderer(64, 64, 0, 4);
         support2.addBox(-1F, 1.5F, 0F, 2, 1, 1);
         support2.setRotationPoint(0F, 21F, -6F);
-        support2.setTextureSize(64, 32);
         support2.mirror = true;
-        setRotation(support2, 0F, 0F, 0F);
-        support3 = new RendererModel(this, 0, 6);
+        support3 = new ModelRenderer(64, 64, 0, 6);
         support3.addBox(-1F, -2.5F, 0F, 2, 1, 1);
         support3.setRotationPoint(0F, 21F, -6F);
-        support3.setTextureSize(64, 32);
         support3.mirror = true;
-        setRotation(support3, 0F, 0F, 0F);
-        support4 = new RendererModel(this, 0, 8);
+        support4 = new ModelRenderer(64, 64, 0, 8);
         support4.addBox(1.5F, -1F, 0F, 1, 2, 1);
         support4.setRotationPoint(0F, 21F, -6F);
-        support4.setTextureSize(64, 32);
         support4.mirror = true;
-        setRotation(support4, 0F, 0F, 0F);
-        support5 = new RendererModel(this, 0, 11);
+        support5 = new ModelRenderer(64, 64, 0, 11);
         support5.addBox(-2.5F, -1F, 0F, 1, 2, 1);
         support5.setRotationPoint(0F, 21F, -6F);
-        support5.setTextureSize(64, 32);
         support5.mirror = true;
-        setRotation(support5, 0F, 0F, 0F);
-        main = new RendererModel(this, 36, 0);
+        main = new ModelRenderer(64, 64, 36, 0);
         main.addBox(0F, 0F, 0F, 6, 6, 8);
         main.setRotationPoint(-3F, 18F, 8F);
-        main.setTextureSize(64, 32);
         main.mirror = true;
-        setRotation(main, 0F, 0F, 0F);
-        magazine = new RendererModel(this, 0, 14);
+        magazine = new ModelRenderer(64, 64, 0, 14);
         magazine.addBox(0F, 0F, 0F, 2, 3, 6);
         magazine.setRotationPoint(3F, 22F, 9F);
-        magazine.setTextureSize(64, 32);
         magazine.mirror = true;
-        setRotation(magazine, 0F, 0F, 0F);
-        mount = new RendererModel(this, 0, 23);
+        mount = new ModelRenderer(64, 64, 0, 23);
         mount.addBox(0F, 0F, 0F, 2, 4, 2);
         mount.setRotationPoint(-1F, 15F, 11F);
-        mount.setTextureSize(64, 32);
         mount.mirror = true;
-        setRotation(mount, 0F, 0F, 0F);
-        magazineColor = new RendererModel(this, 8, 0);
+        magazineColor = new ModelRenderer(64, 64, 8, 0);
         magazineColor.addBox(0F, 0F, 0F, 1, 2, 4);
         magazineColor.setRotationPoint(4.3F, 22.5F, 10F);
-        magazineColor.setTextureSize(64, 32);
         magazineColor.mirror = true;
-        setRotation(magazineColor, 0F, 0F, 0F);
     }
 
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-//        super.render(entity, f, f1, f2, f3, f4, f5);
-//        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-        EntityDrone drone = (EntityDrone) entity;
-        renderMinigun(drone != null ? drone.getMinigun() : null, f5, 0, true);
-    }
+//    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+////        super.render(entity, f, f1, f2, f3, f4, f5);
+////        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
+//        EntityDrone drone = (EntityDrone) entity;
+//        renderMinigun(drone != null ? drone.getMinigun() : null, f5, 0, true);
+//    }
 
-    public void renderMinigun(Minigun minigun, float size, float partialTick, boolean renderMount) {
-        Minecraft.getInstance().getTextureManager().bindTexture(Textures.MODEL_DRONE_MINIGUN);
-        GlStateManager.color4f(1, 1, 1, 1);
-        GlStateManager.pushMatrix();
+    public void renderMinigun(MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay, Minigun minigun, float partialTick, boolean renderMount) {
+        IVertexBuilder builder = buffer.getBuffer(RenderType.getEntityCutout(Textures.MODEL_DRONE_MINIGUN));
+        matrixStack.push();
+
         if (renderMount) {
-            GlStateManager.translated(0, 5 / 16D, -12 / 16D);
-            mount.render(size);
-            GlStateManager.translated(0, -5 / 16D, 12 / 16D);
+            matrixStack.push();
+            matrixStack.translate(0, 5 / 16D, -12 / 16D);
+            mount.render(matrixStack, builder, combinedLight, combinedOverlay);
+            matrixStack.pop();
         }
 
         float barrelRotation = 0;
         if (minigun != null) {
-            barrelRotation = (float) (minigun.getOldMinigunRotation() + partialTick * (minigun.getMinigunRotation() - minigun.getOldMinigunRotation()));
-            double yaw = minigun.oldMinigunYaw + partialTick * (minigun.minigunYaw - minigun.oldMinigunYaw);
-            double pitch = minigun.oldMinigunPitch + partialTick * (minigun.minigunPitch - minigun.oldMinigunPitch);
+            barrelRotation = minigun.getOldMinigunRotation() + partialTick * (minigun.getMinigunRotation() - minigun.getOldMinigunRotation());
+            float yaw = minigun.oldMinigunYaw + partialTick * (minigun.minigunYaw - minigun.oldMinigunYaw);
+            float pitch = minigun.oldMinigunPitch + partialTick * (minigun.minigunPitch - minigun.oldMinigunPitch);
 
-            GlStateManager.translated(0, 23 / 16D, 0);
-            GlStateManager.rotated((float)yaw, 0, 1, 0);
-            GlStateManager.rotated((float)pitch, 1, 0, 0);
-            GlStateManager.translated(0, -18 / 16D, -12 / 16D);
+            matrixStack.translate(0, 23 / 16D, 0);
+            matrixStack.rotate(Vector3f.YP.rotationDegrees(yaw));
+            matrixStack.rotate(Vector3f.XP.rotationDegrees(pitch));
+            matrixStack.translate(0, -18 / 16D, -12 / 16D);
         }
         barrel.rotateAngleY = 0;
         barrel.rotateAngleX = 0;
         for (int i = 0; i < 6; i++) {
             barrel.rotateAngleZ = (float) (Math.PI / 3 * i) + barrelRotation;
-            barrel.render(size);
+            barrel.render(matrixStack, builder, combinedLight, combinedOverlay);
         }
         support1.rotateAngleZ = barrelRotation;
         support2.rotateAngleZ = barrelRotation;
         support3.rotateAngleZ = barrelRotation;
         support4.rotateAngleZ = barrelRotation;
         support5.rotateAngleZ = barrelRotation;
-        support1.render(size);
-        support2.render(size);
-        support3.render(size);
-        support4.render(size);
-        support5.render(size);
-        magazine.render(size);
-        main.render(size);
-        GlStateManager.disableTexture();
-        RenderUtils.glColorHex(minigun != null ? 0xFF000000 | minigun.getAmmoColor() : 0xFF313131);
-        magazineColor.render(size);
-        GlStateManager.color4f(1, 1, 1, 1);
-        GlStateManager.enableTexture();
-        GlStateManager.popMatrix();
-    }
+        support1.render(matrixStack, builder, combinedLight, combinedOverlay);
+        support2.render(matrixStack, builder, combinedLight, combinedOverlay);
+        support3.render(matrixStack, builder, combinedLight, combinedOverlay);
+        support4.render(matrixStack, builder, combinedLight, combinedOverlay);
+        support5.render(matrixStack, builder, combinedLight, combinedOverlay);
+        magazine.render(matrixStack, builder, combinedLight, combinedOverlay);
+        main.render(matrixStack, builder, combinedLight, combinedOverlay);
 
-    private void setRotation(RendererModel model, float x, float y, float z) {
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
-    }
+        float[] cols = RenderUtils.decomposeColorF(minigun != null ? 0xFF000000 | minigun.getAmmoColor() : 0xFF313131);
+        magazineColor.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
 
+        matrixStack.pop();
+    }
 }

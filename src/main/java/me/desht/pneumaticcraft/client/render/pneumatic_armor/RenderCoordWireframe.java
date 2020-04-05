@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
@@ -32,7 +34,8 @@ public class RenderCoordWireframe {
         }
     }
 
-    public void render(float partialTicks) {
+    // FIXME
+    public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
         double minX = 0;
         double minY = 0;
         double minZ = 0;

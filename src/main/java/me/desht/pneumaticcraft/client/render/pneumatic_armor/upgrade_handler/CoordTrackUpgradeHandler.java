@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
@@ -21,6 +22,7 @@ import me.desht.pneumaticcraft.common.network.PacketCoordTrackUpdate;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -103,11 +105,11 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void render3D(float partialTicks) {
+    public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
         if (coordTracker != null) {
             if (Minecraft.getInstance().player.world.getDimension().getType() != coordTracker.world.getDimension().getType())
                 return;
-            coordTracker.render(partialTicks);
+            coordTracker.render(matrixStack, buffer, partialTicks);
             if (PNCConfig.Client.Armor.pathEnabled && navigator != null) {
                 navigator.render(PNCConfig.Client.Armor.wirePath, PNCConfig.Client.Armor.xRayEnabled, partialTicks);
             }
@@ -189,7 +191,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
     public static Path getDronePath(PlayerEntity player, BlockPos pos) {
         World world = player.world;
         EntityDrone drone = new EntityDrone(ModEntities.DRONE.get(), world);
-        drone.setPosition(player.posX, player.posY, player.posZ);
+        drone.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
         return new EntityPathNavigateDrone(drone, world).getPathToPos(pos, 0);
     }
 

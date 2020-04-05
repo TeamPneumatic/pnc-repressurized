@@ -56,7 +56,7 @@ public class NBTToJsonConverter {
                 }
                 keyObject.add("value", array);
             } else {
-                throw new IllegalArgumentException("NBT to JSON converter doesn't support the nbt tag: " + INBT.NBT_TYPES[nbt.getId()] + ", tag: " + nbt);
+                throw new IllegalArgumentException("NBT to JSON converter doesn't support the nbt tag: " + nbt.getId() + ", tag: " + nbt);
             }
         }
         return jsonRoot;

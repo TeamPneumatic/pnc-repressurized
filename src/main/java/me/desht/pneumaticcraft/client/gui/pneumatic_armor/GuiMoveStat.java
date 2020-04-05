@@ -18,7 +18,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.config.GuiSlider;
+import net.minecraftforge.fml.client.gui.widget.Slider;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     private final ArmorHUDLayout.LayoutTypes layoutItem;
 
     private WidgetCheckBox snapToGrid;
-    private GuiSlider gridSlider;
+    private Slider gridSlider;
 
     private static boolean snap = false;
     private static int gridSize = 4;
@@ -83,7 +83,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         snapToGrid.checked = snap;
         addButton(snapToGrid);
 
-        gridSlider = new GuiSlider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getWidth(), 10,
+        gridSlider = new Slider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getWidth(), 10,
                 "", "", 1, 12, gridSize, false, true, b -> {}, null);
         addButton(gridSlider);
     }
@@ -189,7 +189,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     }
 
     private void save() {
-        MainWindow sr = minecraft.mainWindow;
+        MainWindow sr = minecraft.getMainWindow();
         ArmorHUDLayout.INSTANCE.updateLayout(layoutItem,
                 ((float) movedStat.getBaseX() / (float) sr.getScaledWidth()),
                 ((float) movedStat.getBaseY() / (float) sr.getScaledHeight()),

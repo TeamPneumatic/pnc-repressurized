@@ -26,7 +26,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.ILightReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -109,7 +109,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction face, Hand hand) {
         BlockState state = world.getBlockState(pos);
-        if (player != null && player.isSneaking()) {
+        if (player != null && player.isSteppingCarefully()) {
             Direction outputDir = getRotation(state);
             outputDir = Direction.byIndex(outputDir.ordinal() + 1);
             if (outputDir == getInputDirection(world, pos)) outputDir = Direction.byIndex(outputDir.ordinal() + 1);
@@ -124,7 +124,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
     }
 
     @Override
-    public int getTintColor(BlockState state, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityAbstractHopper) {

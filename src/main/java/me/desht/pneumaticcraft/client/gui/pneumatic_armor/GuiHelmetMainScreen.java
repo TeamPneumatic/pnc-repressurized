@@ -53,7 +53,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     public static void initHelmetMainScreen() {
         if (instance == null) {
             instance = new GuiHelmetMainScreen();
-            MainWindow mw = Minecraft.getInstance().mainWindow;
+            MainWindow mw = Minecraft.getInstance().getMainWindow();
             int width = mw.getScaledWidth();
             int height = mw.getScaledHeight();
             instance.init(Minecraft.getInstance(), width, height);  // causes init() to be called

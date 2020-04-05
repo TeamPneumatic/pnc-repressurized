@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -97,11 +97,11 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
                     break;
             }
             if (scale != 1.0f) {
-                GlStateManager.pushMatrix();
-                GlStateManager.scaled(scale, scale, scale);
-                GlStateManager.translated(drawX, y, 0);
+                RenderSystem.pushMatrix();
+                RenderSystem.scaled(scale, scale, scale);
+                RenderSystem.translated(drawX, y, 0);
                 fr.drawString(getMessage(), drawX, y, color);
-                GlStateManager.popMatrix();
+                RenderSystem.popMatrix();
             } else {
                 fr.drawString(getMessage(), drawX, y, color);
             }

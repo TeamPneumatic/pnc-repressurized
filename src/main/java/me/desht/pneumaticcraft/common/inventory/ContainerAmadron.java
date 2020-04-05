@@ -259,7 +259,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                     }
                 }
                 if (placed && player instanceof ServerPlayerEntity) {
-                    NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.2f, 1.0f, false), (ServerPlayerEntity) player);
+                    NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 0.2f, 1.0f, false), (ServerPlayerEntity) player);
                 }
             }
             Arrays.fill(shoppingAmounts, 0);

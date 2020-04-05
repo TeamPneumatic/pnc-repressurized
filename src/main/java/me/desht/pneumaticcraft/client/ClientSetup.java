@@ -20,28 +20,24 @@ import me.desht.pneumaticcraft.client.render.entity.*;
 import me.desht.pneumaticcraft.client.render.fluid.*;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.tileentity.*;
-import me.desht.pneumaticcraft.common.core.ModContainers;
-import me.desht.pneumaticcraft.common.core.ModParticleTypes;
-import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
-import me.desht.pneumaticcraft.common.entity.EntityRing;
-import me.desht.pneumaticcraft.common.entity.living.*;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
-import me.desht.pneumaticcraft.common.entity.semiblock.*;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
+import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.progwidgets.*;
-import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.DramaSplash;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.util.InputMappings;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry2;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -62,6 +58,8 @@ public class ClientSetup {
     public static void init() {
         modelInit();
 
+        setBlockRenderLayers();
+
         registerEntityRenderers();
         registerTESRs();
         registerScreenFactories();
@@ -74,12 +72,35 @@ public class ClientSetup {
         DramaSplash.getInstance();
     }
 
+    private static void setBlockRenderLayers() {
+        RenderTypeLookup.setRenderLayer(ModBlocks.APHORISM_TILE.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.ELEVATOR_FRAME.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(ModBlocks.ETCHING_TANK.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.KEROSENE_LAMP.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.LIQUID_HOPPER.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_TUBE.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(ModBlocks.REFINERY.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.REFINERY_OUTPUT.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.TANK_SMALL.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.TANK_MEDIUM.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.TANK_LARGE.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.UV_LIGHT_BOX.get(), RenderType.getCutoutMipped());
+
+        // camouflageable blocks need to render in all layers, since their camo could render in any layer
+        for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
+            if (ro.get() instanceof BlockPneumaticCraftCamo) {
+                RenderTypeLookup.setRenderLayer(ro.get(), r -> true);
+            }
+        }
+    }
+
     private static void modelInit() {
-        // this will become just ModelLoaderRegistry in 1.15
-        ModelLoaderRegistry2.registerLoader(RL("camouflaged"), CamouflageModel.Loader.INSTANCE);
-        ModelLoaderRegistry2.registerLoader(RL("pressure_glass"), PressureGlassModel.Loader.INSTANCE);
-        ModelLoaderRegistry2.registerLoader(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
-        ModelLoaderRegistry2.registerLoader(RL("rendered_item"), RenderedItemModel.Loader.INSTANCE);
+        ModelLoaderRegistry.registerLoader(RL("camouflaged"), CamouflageModel.Loader.INSTANCE);
+        ModelLoaderRegistry.registerLoader(RL("pressure_glass"), PressureGlassModel.Loader.INSTANCE);
+        ModelLoaderRegistry.registerLoader(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
+        ModelLoaderRegistry.registerLoader(RL("rendered_item"), RenderedItemModel.Loader.INSTANCE);
     }
 
     @SubscribeEvent
@@ -90,59 +111,63 @@ public class ClientSetup {
 
     private static void registerEntityRenderers() {
         // drones
-        RenderingRegistry.registerEntityRenderingHandler(EntityDrone.class, RenderDrone.REGULAR_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityAmadrone.class, RenderDrone.AMADRONE_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityLogisticsDrone.class, RenderDrone.LOGISTICS_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityHarvestingDrone.class, RenderDrone.HARVESTING_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityGuardDrone.class, RenderDrone.GUARD_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityCollectorDrone.class, RenderDrone.COLLECTOR_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityProgrammableController.class, RenderDrone.REGULAR_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.DRONE.get(), RenderDrone.REGULAR_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.AMADRONE.get(), RenderDrone.AMADRONE_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.LOGISTICS_DRONE.get(), RenderDrone.LOGISTICS_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.HARVESTING_DRONE.get(), RenderDrone.HARVESTING_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.GUARD_DRONE.get(), RenderDrone.GUARD_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.COLLECTOR_DRONE.get(), RenderDrone.COLLECTOR_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.PROGRAMMABLE_CONTROLLER.get(), RenderDrone.REGULAR_FACTORY);
 
         // semiblocks
-        RenderingRegistry.registerEntityRenderingHandler(EntityCropSupport.class, RenderCropSupport.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntitySpawnerAgitator.class, RenderSpawnerAgitator.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityHeatFrame.class, RenderHeatFrame.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityTransferGadget.class, RenderTransferGadget.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityLogisticsFrame.class, RenderLogisticsFrame.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.CROP_SUPPORT.get(), RenderCropSupport.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.SPAWNER_AGITATOR.get(), RenderSpawnerAgitator.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.HEAT_FRAME.get(), RenderHeatFrame.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.TRANSFER_GADGET.get(), RenderTransferGadget.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.LOGISTICS_FRAME_ACTIVE_PROVIDER.get(), RenderLogisticsFrame.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.LOGISTICS_FRAME_PASSIVE_PROVIDER.get(), RenderLogisticsFrame.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.LOGISTICS_FRAME_STORAGE.get(), RenderLogisticsFrame.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.LOGISTICS_FRAME_DEFAULT_STORAGE.get(), RenderLogisticsFrame.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.LOGISTICS_FRAME_REQUESTER.get(), RenderLogisticsFrame.FACTORY);
 
         // misc
-        RenderingRegistry.registerEntityRenderingHandler(EntityVortex.class, RenderEntityVortex.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityRing.class, RenderEntityRing.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityMicromissile.class, RenderMicromissile.FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(EntityTumblingBlock.class, RenderTumblingBlock.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.VORTEX.get(), RenderEntityVortex.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.RING.get(), RenderEntityRing.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.MICROMISSILE.get(), RenderMicromissile.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.TUMBLING_BLOCK.get(), RenderTumblingBlock.FACTORY);
     }
 
     private static void registerTESRs() {
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureTube.class, new RenderPressureTubeModule());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAphorismTile.class, new RenderAphorismTile());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAirCannon.class, new RenderAirCannon());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPneumaticDoor.class, new RenderPneumaticDoor());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPneumaticDoorBase.class, new RenderPneumaticDoorBase());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyController.class, new RenderAssemblyController());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyIOUnit.class, new RenderAssemblyIOUnit());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyPlatform.class, new RenderAssemblyPlatform());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyLaser.class, new RenderAssemblyLaser());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssemblyDrill.class, new RenderAssemblyDrill());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityChargingStation.class, new RenderChargingStation());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDisplayTable.class, new RenderDisplayTable());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorBase.class, new RenderElevatorBase());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityElevatorCaller.class, new RenderElevatorCaller());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEtchingTank.class, new RenderEtchingTank());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityKeroseneLamp.class, new RenderKeroseneLamp());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiquidHopper.class, new RenderLiquidHopper());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureChamberValve.class, new RenderPressureChamber());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPressureChamberInterface.class, new RenderPressureChamberInterface());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefineryController.class, new RenderRefineryController());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRefineryOutput.class, new RenderRefineryOutput());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySecurityStation.class, new RenderSecurityStation());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySentryTurret.class, new RenderSentryTurret());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFluidTank.Small.class, new RenderFluidTank());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFluidTank.Medium.class, new RenderFluidTank());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFluidTank.Large.class, new RenderFluidTank());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTagWorkbench.class, new RenderTagWorkbench());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityThermopneumaticProcessingPlant.class, new RenderThermopneumaticProcessingPlant());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityUniversalSensor.class, new RenderUniversalSensor());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVacuumPump.class, new RenderVacuumPump());
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.APHORISM_TILE.get(), RenderAphorismTile::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.AIR_CANNON.get(), RenderAirCannon::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.PNEUMATIC_DOOR.get(), RenderPneumaticDoor::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.PNEUMATIC_DOOR_BASE.get(), RenderPneumaticDoorBase::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.ASSEMBLY_CONTROLLER.get(), RenderAssemblyController::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.ASSEMBLY_IO_UNIT.get(), RenderAssemblyIOUnit::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.ASSEMBLY_PLATFORM.get(), RenderAssemblyPlatform::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.ASSEMBLY_LASER.get(), RenderAssemblyLaser::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.ASSEMBLY_DRILL.get(), RenderAssemblyDrill::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.CHARGING_STATION.get(), RenderChargingStation::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.DISPLAY_TABLE.get(), RenderDisplayTable::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.ELEVATOR_BASE.get(), RenderElevatorBase::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.ELEVATOR_CALLER.get(), RenderElevatorCaller::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.ETCHING_TANK.get(), RenderEtchingTank::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.KEROSENE_LAMP.get(), RenderKeroseneLamp::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.LIQUID_HOPPER.get(), RenderLiquidHopper::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), RenderPressureChamber::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), RenderPressureChamberInterface::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.REFINERY.get(), RenderRefineryController::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.REFINERY_OUTPUT.get(), RenderRefineryOutput::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.SECURITY_STATION.get(), RenderSecurityStation::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.SENTRY_TURRET.get(), RenderSentryTurret::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.TANK_SMALL.get(), RenderFluidTank::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.TANK_MEDIUM.get(), RenderFluidTank::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.TANK_LARGE.get(), RenderFluidTank::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.TAG_WORKBENCH.get(), RenderTagWorkbench::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderThermopneumaticProcessingPlant::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.UNIVERSAL_SENSOR.get(), RenderUniversalSensor::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.VACUUM_PUMP.get(), RenderVacuumPump::new);
     }
 
     private static void registerScreenFactories() {

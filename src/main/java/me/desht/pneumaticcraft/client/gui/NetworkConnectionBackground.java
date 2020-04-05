@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
+import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 
@@ -43,7 +43,7 @@ public class NetworkConnectionBackground extends NetworkConnectionHandler {
                 removeConnection(node, node - 6);
             }
         }
-        for (RenderProgressingLine line : lineList)
+        for (ProgressingLine line : lineList)
             //Don't use the super update, as we don't want the load speed to be influenced by the node rating.
             line.incProgress(TileEntityConstants.NETWORK_NORMAL_BRIDGE_SPEED);
     }

@@ -47,7 +47,7 @@ public class ModLootTablesProvider extends LootTableProvider {
     }
 
     @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationResults validationresults) {
+    protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationresults) {
         // ...
     }
 
@@ -132,7 +132,7 @@ public class ModLootTablesProvider extends LootTableProvider {
         {
             StandaloneLootEntry.Builder<?> ret = ItemLootEntry.builder(item.getItem()).weight(weight);
             if(item.hasTag())
-                ret.acceptFunction(SetNBT.func_215952_a(item.getOrCreateTag()));
+                ret.acceptFunction(SetNBT.builder(item.getOrCreateTag()));
             return ret;
         }
     }

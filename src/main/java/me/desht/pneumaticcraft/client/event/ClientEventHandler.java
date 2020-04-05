@@ -1,13 +1,14 @@
 package me.desht.pneumaticcraft.client.event;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
-import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -30,9 +31,7 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Quaternion;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.BipedRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.model.BipedModel;
@@ -53,10 +52,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import java.nio.FloatBuffer;
 import java.util.Random;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -67,7 +64,7 @@ public class ClientEventHandler {
 
     private static float currentScreenRoll = 0F;
 
-    private final static RenderProgressingLine minigunFire = new RenderProgressingLine().setProgress(1);
+    private final static ProgressingLine minigunFire = new ProgressingLine().setProgress(1);
     private static int lastWidth = -1;
     private static int lastHeight = -1;
 
@@ -110,7 +107,7 @@ public class ClientEventHandler {
                 && ClientUtils.getClientPlayer() != null
                 && (ModuleRegulatorTube.inverted || !ModuleRegulatorTube.inLine)) {
             Minecraft mc = Minecraft.getInstance();
-            MainWindow mw = mc.mainWindow;
+            MainWindow mw = mc.getMainWindow();
             FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
             String warning = TextFormatting.RED + I18n.format("gui.regulatorTube.hudMessage." + (ModuleRegulatorTube.inverted ? "inverted" : "notInLine"));
             fontRenderer.drawStringWithShadow(warning, mw.getScaledWidth() / 2f - fontRenderer.getStringWidth(warning) / 2f, mw.getScaledHeight() / 2f + 30, 0xFFFFFFFF);
@@ -136,21 +133,21 @@ public class ClientEventHandler {
                 if (!ammo.isEmpty()) {
                     GuiUtils.drawItemStack(ammo,w / 2 + 16, h / 2 - 7);
                     int remaining = ammo.getMaxDamage() - ammo.getDamage();
-                    GlStateManager.pushMatrix();
-                    GlStateManager.translated(w / 2f + 32, h / 2f - 1, 0);
-                    GlStateManager.scaled(MINIGUN_TEXT_SIZE, MINIGUN_TEXT_SIZE, 1.0);
+                    RenderSystem.pushMatrix();
+                    RenderSystem.translated(w / 2f + 32, h / 2f - 1, 0);
+                    RenderSystem.scaled(MINIGUN_TEXT_SIZE, MINIGUN_TEXT_SIZE, 1.0);
                     String text = remaining + "/" + ammo.getMaxDamage();
                     mc.fontRenderer.drawString(text, 1, 0, 0);
                     mc.fontRenderer.drawString(text, -1, 0, 0);
                     mc.fontRenderer.drawString(text, 0, 1, 0);
                     mc.fontRenderer.drawString(text, 0, -1, 0);
                     mc.fontRenderer.drawString(text, 0, 0, minigun.getAmmoColor());
-                    GlStateManager.popMatrix();
+                    RenderSystem.popMatrix();
                 }
                 mc.getTextureManager().bindTexture(Textures.MINIGUN_CROSSHAIR);
-                GlStateManager.enableBlend();
-                GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                GlStateManager.color4f(0.2f, 1.0f, 0.2f, 0.6f);
+                RenderSystem.enableBlend();
+                RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                RenderSystem.color4f(0.2f, 1.0f, 0.2f, 0.6f);
                 AbstractGui.blit(w / 2 - 7, h / 2 - 7, 0, 0, 16, 16, 16, 16);
                 event.setCanceled(true);
             }
@@ -158,10 +155,10 @@ public class ClientEventHandler {
     }
 
     private static void drawBulletTraces2D(int color, int w, int h) {
-        GlStateManager.pushMatrix();
-        GlStateManager.disableTexture();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        RenderSystem.pushMatrix();
+        RenderSystem.disableTexture();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glEnable(GL11.GL_LINE_STIPPLE);
         RenderUtils.glColorHex(color);
 
@@ -172,28 +169,41 @@ public class ClientEventHandler {
         for (int i = 0; i < 5; i++) {
             int stipple = 0xFFFF & ~(3 << rand.nextInt(16));
             GL11.glLineStipple(4, (short) stipple);
-            GlStateManager.begin(GL11.GL_LINES);
-            GL11.glVertex2f(x + rand.nextInt(12) - 6, y + rand.nextInt(12) - 6);
+            BufferBuilder bb = Tessellator.getInstance().getBuffer();
             float f = Minecraft.getInstance().gameSettings.mainHand == HandSide.RIGHT ? 0.665F : 0.335F;
-            GL11.glVertex2f(w * f, h * 0.685F);
-            GlStateManager.end();
+            bb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+            bb.pos(x + rand.nextInt(12) - 6, y + rand.nextInt(12) - 6, 0);
+            bb.pos(w * f, h * 0.685F, 0);
+            Tessellator.getInstance().draw();
+//            GlStateManager.begin(GL11.GL_LINES);
+//            GL11.glVertex2f(x + rand.nextInt(12) - 6, y + rand.nextInt(12) - 6);
+//            GL11.glVertex2f(w * f, h * 0.685F);
+//            GlStateManager.end();
         }
-        GlStateManager.color4f(1, 1, 1, 1);
+        RenderSystem.color4f(1, 1, 1, 1);
         GL11.glDisable(GL11.GL_LINE_STIPPLE);
-        GlStateManager.disableBlend();
-        GlStateManager.enableTexture();
-        GlStateManager.popMatrix();
+        RenderSystem.disableBlend();
+        RenderSystem.enableTexture();
+        RenderSystem.popMatrix();
     }
 
     @SubscribeEvent
     public static void onWorldRender(RenderWorldLastEvent event) {
         // render everyone else's (and ours in 3rd person camera) minigun bullet traces
         PlayerEntity thisPlayer = Minecraft.getInstance().player;
-        double playerX = thisPlayer.prevPosX + (thisPlayer.posX - thisPlayer.prevPosX) * event.getPartialTicks();
-        double playerY = thisPlayer.prevPosY + (thisPlayer.posY - thisPlayer.prevPosY) * event.getPartialTicks();
-        double playerZ = thisPlayer.prevPosZ + (thisPlayer.posZ - thisPlayer.prevPosZ) * event.getPartialTicks();
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(-playerX, -playerY, -playerZ);
+//        double playerX = thisPlayer.prevPosX + (thisPlayer.getPosX() - thisPlayer.prevPosX) * event.getPartialTicks();
+//        double playerY = thisPlayer.prevPosY + (thisPlayer.getPosY() - thisPlayer.prevPosY) * event.getPartialTicks();
+//        double playerZ = thisPlayer.prevPosZ + (thisPlayer.getPosZ() - thisPlayer.prevPosZ) * event.getPartialTicks();
+
+        MatrixStack matrixStack = event.getMatrixStack();
+        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+
+        matrixStack.push();
+        Vec3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
+
+//        GlStateManager.pushMatrix();
+//        GlStateManager.translated(-playerX, -playerY, -playerZ);
 
         for (PlayerEntity player : Minecraft.getInstance().world.getPlayers()) {
             if (thisPlayer == player && Minecraft.getInstance().gameSettings.thirdPersonView == 0) continue;
@@ -201,15 +211,17 @@ public class ClientEventHandler {
             if (curItem.getItem() == ModItems.MINIGUN.get()) {
                 Minigun minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
                 if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-                    GlStateManager.pushMatrix();
-                    playerX = player.prevPosX + (player.posX - player.prevPosX) * event.getPartialTicks();
-                    playerY = player.prevPosY + (player.posY - player.prevPosY) * event.getPartialTicks();
-                    playerZ = player.prevPosZ + (player.posZ - player.prevPosZ) * event.getPartialTicks();
-                    GlStateManager.translated(playerX, playerY + 0.5, playerZ);
-                    GlStateManager.disableTexture();
-                    GlStateManager.enableBlend();
-                    GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                    RenderUtils.glColorHex(0x40000000 | minigun.getAmmoColor());
+                    matrixStack.push();
+//                    GlStateManager.pushMatrix();
+                    double playerX = player.prevPosX + (player.getPosX() - player.prevPosX) * event.getPartialTicks();
+                    double playerY = player.prevPosY + (player.getPosY() - player.prevPosY) * event.getPartialTicks();
+                    double playerZ = player.prevPosZ + (player.getPosZ() - player.prevPosZ) * event.getPartialTicks();
+                    matrixStack.translate(playerX, playerY + 0.5, playerZ);
+//                    GlStateManager.translated(playerX, playerY + 0.5, playerZ);
+//                    GlStateManager.disableTexture();
+//                    GlStateManager.enableBlend();
+//                    GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+//                    RenderUtils.glColorHex(0x40000000 | minigun.getAmmoColor());
                     Vec3d directionVec = player.getLookVec().normalize();
                     Vec3d vec = new Vec3d(directionVec.x, 0, directionVec.z).normalize();
                     vec.rotateYaw((float) Math.toRadians(-15 + (player.rotationYawHead - player.renderYawOffset)));
@@ -220,15 +232,18 @@ public class ClientEventHandler {
                         minigunFire.endX = directionVec.x * 20 + player.getRNG().nextDouble() - 0.5;
                         minigunFire.endY = directionVec.y * 20 + player.getEyeHeight() + player.getRNG().nextDouble() - 0.5;
                         minigunFire.endZ = directionVec.z * 20 + player.getRNG().nextDouble() - 0.5;
-                        minigunFire.render();
+                        minigunFire.render(matrixStack, buffer.getBuffer(RenderType.LINES), 0x40000000 | minigun.getAmmoColor());
                     }
-                    GlStateManager.color4f(1, 1, 1, 1);
-                    GlStateManager.enableTexture();
-                    GlStateManager.popMatrix();
+//                    GlStateManager.color4f(1, 1, 1, 1);
+//                    GlStateManager.enableTexture();
+//                    GlStateManager.popMatrix();
+                    matrixStack.pop();
                 }
             }
         }
-        GlStateManager.popMatrix();
+
+        matrixStack.pop();
+//        GlStateManager.popMatrix();
     }
 
     @SubscribeEvent
@@ -275,7 +290,7 @@ public class ClientEventHandler {
         }
     }
 
-    private static final FloatBuffer BUF_FLOAT_16 = BufferUtils.createFloatBuffer(16);
+//    private static final FloatBuffer BUF_FLOAT_16 = BufferUtils.createFloatBuffer(16);
 
     @SubscribeEvent
     public static void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
@@ -283,45 +298,48 @@ public class ClientEventHandler {
         JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(player);
         JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
         if (state != null && state.shouldRotatePlayer()) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translated(event.getX(), event.getY(), event.getZ());
-            GlStateManager.multMatrix(quatToGlMatrix(makeQuaternion(player)));
-            GlStateManager.translated(-event.getX(), -event.getY(), -event.getZ());
+            MatrixStack matrixStack = event.getMatrixStack();
+            matrixStack.push();
+            matrixStack.rotate(makeQuaternion(player));
+//            GlStateManager.pushMatrix();
+//            GlStateManager.translated(event.getX(), event.getY(), event.getZ());
+//            GlStateManager.multMatrix(quatToGlMatrix(makeQuaternion(player)));
+//            GlStateManager.translated(-event.getX(), -event.getY(), -event.getZ());
             player.limbSwingAmount = player.prevLimbSwingAmount = 0F;
         }
     }
 
-    private static FloatBuffer quatToGlMatrix(Quaternion quaternionIn) {
-        // lifted from 1.12.2 GlStateManager
-        ClientEventHandler.BUF_FLOAT_16.clear();
-        float f = quaternionIn.getX() * quaternionIn.getX();
-        float f1 = quaternionIn.getX() * quaternionIn.getY();
-        float f2 = quaternionIn.getX() * quaternionIn.getZ();
-        float f3 = quaternionIn.getX() * quaternionIn.getW();
-        float f4 = quaternionIn.getY() * quaternionIn.getY();
-        float f5 = quaternionIn.getY() * quaternionIn.getZ();
-        float f6 = quaternionIn.getY() * quaternionIn.getW();
-        float f7 = quaternionIn.getZ() * quaternionIn.getZ();
-        float f8 = quaternionIn.getZ() * quaternionIn.getW();
-        ClientEventHandler.BUF_FLOAT_16.put(1.0F - 2.0F * (f4 + f7));
-        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f1 + f8));
-        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f2 - f6));
-        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f1 - f8));
-        ClientEventHandler.BUF_FLOAT_16.put(1.0F - 2.0F * (f + f7));
-        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f5 + f3));
-        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f2 + f6));
-        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f5 - f3));
-        ClientEventHandler.BUF_FLOAT_16.put(1.0F - 2.0F * (f + f4));
-        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-        ClientEventHandler.BUF_FLOAT_16.put(1.0F);
-        ClientEventHandler.BUF_FLOAT_16.rewind();
-        return ClientEventHandler.BUF_FLOAT_16;
-    }
+//    private static FloatBuffer quatToGlMatrix(Quaternion quaternionIn) {
+//        // lifted from 1.12.2 GlStateManager
+//        ClientEventHandler.BUF_FLOAT_16.clear();
+//        float f = quaternionIn.getX() * quaternionIn.getX();
+//        float f1 = quaternionIn.getX() * quaternionIn.getY();
+//        float f2 = quaternionIn.getX() * quaternionIn.getZ();
+//        float f3 = quaternionIn.getX() * quaternionIn.getW();
+//        float f4 = quaternionIn.getY() * quaternionIn.getY();
+//        float f5 = quaternionIn.getY() * quaternionIn.getZ();
+//        float f6 = quaternionIn.getY() * quaternionIn.getW();
+//        float f7 = quaternionIn.getZ() * quaternionIn.getZ();
+//        float f8 = quaternionIn.getZ() * quaternionIn.getW();
+//        ClientEventHandler.BUF_FLOAT_16.put(1.0F - 2.0F * (f4 + f7));
+//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f1 + f8));
+//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f2 - f6));
+//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
+//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f1 - f8));
+//        ClientEventHandler.BUF_FLOAT_16.put(1.0F - 2.0F * (f + f7));
+//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f5 + f3));
+//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
+//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f2 + f6));
+//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f5 - f3));
+//        ClientEventHandler.BUF_FLOAT_16.put(1.0F - 2.0F * (f + f4));
+//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
+//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
+//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
+//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
+//        ClientEventHandler.BUF_FLOAT_16.put(1.0F);
+//        ClientEventHandler.BUF_FLOAT_16.rewind();
+//        return ClientEventHandler.BUF_FLOAT_16;
+//    }
 
     @SubscribeEvent
     public static void playerPostRotateEvent(RenderPlayerEvent.Post event) {
@@ -329,7 +347,8 @@ public class ClientEventHandler {
         JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(player);
         JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
         if (state != null && state.shouldRotatePlayer()) {
-            GlStateManager.popMatrix();
+            event.getMatrixStack().pop();
+//            GlStateManager.popMatrix();
         }
     }
 
@@ -341,7 +360,7 @@ public class ClientEventHandler {
             return new Quaternion(0F, 1F, 0F, (float)Math.PI);
         }
         if (Math.abs (dot - 1) < 0.000001) {
-            return new Quaternion(); //identity
+            return new Quaternion(0, 0, 0, 1); //identity
         }
 
         Vec3d rotAxis = new Vec3d(0, 1, 0).crossProduct(forward).normalize();
@@ -387,8 +406,8 @@ public class ClientEventHandler {
         // with thanks to V0idWa1k3r
         // https://github.com/V0idWa1k3r/ExPetrum/blob/master/src/main/java/v0id/exp/client/ExPHandlerClient.java#L235
         if (event.getGui() instanceof ContainerScreen) {
-            GlStateManager.disableTexture();
-            GlStateManager.color4f(1F, 1F, 1F, 1F);
+            RenderSystem.disableTexture();
+            RenderSystem.color4f(1F, 1F, 1F, 1F);
             BufferBuilder bb = Tessellator.getInstance().getBuffer();
             ContainerScreen container = (ContainerScreen) event.getGui();
             int i = container.getGuiLeft();
@@ -421,7 +440,7 @@ public class ClientEventHandler {
                 }
             }
             Tessellator.getInstance().draw();
-            GlStateManager.enableTexture();
+            RenderSystem.enableTexture();
         }
     }
 
@@ -429,7 +448,7 @@ public class ClientEventHandler {
     public static void handleResolutionChange(GuiScreenEvent.InitGuiEvent event) {
         Screen gui = event.getGui();
         if (gui.getMinecraft().world != null) {
-            MainWindow mw = gui.getMinecraft().mainWindow;
+            MainWindow mw = gui.getMinecraft().getMainWindow();
             if (mw.getScaledWidth() != lastWidth || mw.getScaledHeight() != lastHeight) {
                 HUDHandler.instance().onResolutionChanged();
                 lastWidth = mw.getScaledWidth();

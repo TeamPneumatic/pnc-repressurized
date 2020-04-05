@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -7,6 +8,7 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -68,7 +70,7 @@ public class RenderSearchItemBlock {
         renderSearch(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, getSearchedItemCount(), totalCount, partialTicks);
     }
 
-    public static void renderSearch(double x, double y, double z, int itemCount, int totalCount, float partialTicks) {
+    public static void renderSearch(MatrixStack matrixStack, IRenderTypeBuffer buffer, double x, double y, double z, int itemCount, int totalCount, float partialTicks) {
         Minecraft mc = Minecraft.getInstance();
         GlStateManager.pushMatrix();
         GlStateManager.translated(x, y, z);

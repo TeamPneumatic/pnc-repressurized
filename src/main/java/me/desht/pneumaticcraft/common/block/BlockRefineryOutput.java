@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -38,12 +38,7 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
-    }
-
-    @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityRefineryOutput) {
             // normally, activating any refinery block would open the controller TE's gui, but if we
@@ -62,9 +57,9 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
                     NetworkHooks.openGui((ServerPlayerEntity) player, master, master.getPos());
                 }
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
     private boolean couldTransferFluidOut(IFluidHandler h1, IFluidHandler h2) {

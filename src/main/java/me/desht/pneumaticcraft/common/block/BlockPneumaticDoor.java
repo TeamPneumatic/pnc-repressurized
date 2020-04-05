@@ -22,6 +22,7 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -165,7 +166,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
         if (isTopDoor(state)) {
             return onWrenched(world, player, pos.offset(Direction.DOWN), face, hand);
         }
-        if (player != null && player.isSneaking()) {
+        if (player != null && player.isSteppingCarefully()) {
             if (!player.isCreative()) {
                 TileEntity te = world.getTileEntity(pos);
                 Block.spawnDrops(world.getBlockState(pos), world, pos, te);
@@ -183,7 +184,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         TileEntityPneumaticDoorBase doorBase = getDoorBase(world, pos);
         if (!world.isRemote) {
             DyeColor dyeColor =  DyeColor.getColor(player.getHeldItem(hand));
@@ -195,15 +196,13 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
                         player.getHeldItem(hand).shrink(1);
                     }
                 }
-                return true;
             } else if (doorBase != null && doorBase.redstoneMode == 2
                     && doorBase.getPressure() >= doorBase.getMinWorkingPressure() && hand == Hand.MAIN_HAND) {
                 doorBase.setOpening(!doorBase.isOpening());
                 doorBase.setNeighborOpening(doorBase.isOpening());
-                return true;
             }
         }
-        return true;
+        return ActionResultType.SUCCESS;
     }
 
     @Override

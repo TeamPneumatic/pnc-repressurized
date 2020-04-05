@@ -52,7 +52,7 @@ public class ItemRemote extends Item {
         if (!world.isRemote) {
             openGui(player, stack, handIn);
         }
-        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
+        return ActionResult.resultSuccess(stack);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ItemRemote extends Item {
         PlayerEntity player = ctx.getPlayer();
         World world = ctx.getWorld();
         BlockPos pos = ctx.getPos();
-        if (!world.isRemote && !player.isSneaking() && isAllowedToEdit(player, remote)) {
+        if (!world.isRemote && !player.isSteppingCarefully() && isAllowedToEdit(player, remote)) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntitySecurityStation) {
                 if (((TileEntitySecurityStation) te).doesAllowPlayer(player)) {
@@ -93,7 +93,7 @@ public class ItemRemote extends Item {
     }
 
     private void openGui(PlayerEntity player, ItemStack remote, Hand hand) {
-        if (player.isSneaking()) {
+        if (player.isCrouching()) {
             if (isAllowedToEdit(player, remote)) {
                 NetworkHooks.openGui((ServerPlayerEntity) player, new RemoteEditorContainerProvider(remote, hand), buf -> buf.writeBoolean(hand == Hand.MAIN_HAND));
                 NetworkHandler.sendToPlayer(new PacketNotifyVariablesRemote(GlobalVariableManager.getInstance().getAllActiveVariableNames()), (ServerPlayerEntity) player);

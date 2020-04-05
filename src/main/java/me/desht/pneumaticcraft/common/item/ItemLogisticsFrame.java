@@ -17,7 +17,6 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -50,7 +49,7 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
                 }
             }, (buffer) -> buffer.writeVarInt(-1));
         }
-        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
+        return ActionResult.resultSuccess(stack);
     }
 
     protected abstract ContainerType<?> getContainerType();

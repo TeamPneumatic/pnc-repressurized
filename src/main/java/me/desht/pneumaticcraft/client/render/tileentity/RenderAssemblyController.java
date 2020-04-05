@@ -1,46 +1,54 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.model.block.ModelAssemblyControllerScreen;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 
-public class RenderAssemblyController extends AbstractTileModelRenderer<TileEntityAssemblyController> {
-    private final ModelAssemblyControllerScreen model;
+public class RenderAssemblyController extends TileEntityRenderer<TileEntityAssemblyController> {
+    private static final float TEXT_SIZE = 0.01F;
+    private final ModelRenderer screen;
 
-    public RenderAssemblyController() {
-        model = new ModelAssemblyControllerScreen();
+    public RenderAssemblyController(TileEntityRendererDispatcher dispatcher) {
+        super(dispatcher);
+        screen = new ModelRenderer(64, 32, 33, 32);
+        screen.addBox(0F, 0F, 0F, 10, 6, 1);
+        screen.setRotationPoint(-5F, 8F, 1F);
+        screen.mirror = true;
+        screen.rotateAngleX = -0.5934119F;
     }
 
     @Override
-    ResourceLocation getTexture(TileEntityAssemblyController te) {
-        return Textures.MODEL_ASSEMBLY_CONTROLLER;
-    }
+    public void render(TileEntityAssemblyController te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        matrixStackIn.push();
 
-    @Override
-    void renderModel(TileEntityAssemblyController te, float partialTicks) {
-        RenderUtils.rotateMatrixForDirection(Direction.NORTH);
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_ASSEMBLY_CONTROLLER));
 
         // have the screen face the player
-        GlStateManager.rotated(180 + Minecraft.getInstance().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getYaw()));
 
-        model.renderModel(0.0625f);
+        screen.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
-        // status text & possible problem icon
-        double textSize = 1 / 100D;
-        GlStateManager.translated(-0.25D, 0.53D, 0.04D);
-        GlStateManager.rotated(-34, 1, 0, 0);
-        GlStateManager.scaled(textSize, textSize, textSize);
-        GlStateManager.disableLighting();
-        Minecraft.getInstance().fontRenderer.drawString(te.displayedText, 1, 4, 0xFFFFFFFF);
-        if(te.hasProblem) {
-            GuiUtils.drawTexture(Textures.GUI_PROBLEMS_TEXTURE, 28, 12);
+        // status text
+        matrixStackIn.translate(-0.25D, 0.53D, 0.04D);
+        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-34));
+        matrixStackIn.scale(TEXT_SIZE, TEXT_SIZE, TEXT_SIZE);
+        Minecraft.getInstance().fontRenderer.renderString(te.displayedText, 1, 4, 0xFFFFFFFF, false,  matrixStackIn.getLast().getMatrix(), bufferIn, false, 0, 15728880);
+
+        // possible problem icon
+        if (te.hasProblem) {
+            GuiUtils.drawTexture(Textures.GUI_PROBLEMS_TEXTURE, 28, 12, bufferIn.getBuffer(ModRenderTypes.TEXTURE));
         }
-        GlStateManager.enableLighting();
+
+        matrixStackIn.pop();
     }
 }

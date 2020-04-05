@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
@@ -18,6 +19,7 @@ import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
 import me.desht.pneumaticcraft.common.network.PacketUpdateDebuggingDrone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.HangingEntity;
 import net.minecraft.entity.monster.IMob;
@@ -71,7 +73,7 @@ public class RenderEntityTarget {
 
         if (ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;
-            player.world.playSound(player.posX, player.posY, player.posZ, ModSounds.HUD_ENTITY_LOCK.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
+            player.world.playSound(player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.HUD_ENTITY_LOCK.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
         }
 
         boolean tagged = ItemPneumaticArmor.isPlayerDebuggingEntity(player, entity);
@@ -99,13 +101,13 @@ public class RenderEntityTarget {
         return ticksExisted > 120;
     }
 
-    public void render(float partialTicks, boolean justRenderWhenHovering) {
+    public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, boolean justRenderWhenHovering) {
         for (IEntityTrackEntry tracker : trackEntries) {
-            tracker.render(entity, partialTicks);
+            tracker.render(matrixStack, buffer, entity, partialTicks);
         }
-        double x = entity.prevPosX + (entity.posX - entity.prevPosX) * partialTicks;
-        double y = entity.prevPosY + (entity.posY - entity.prevPosY) * partialTicks + entity.getHeight() / 2D;
-        double z = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks;
+        double x = entity.prevPosX + (entity.getPosX() - entity.prevPosX) * partialTicks;
+        double y = entity.prevPosY + (entity.getPosY() - entity.prevPosY) * partialTicks + entity.getHeight() / 2D;
+        double z = entity.prevPosZ + (entity.getPosZ() - entity.prevPosZ) * partialTicks;
 
         GlStateManager.depthMask(false);
         GlStateManager.disableDepthTest();
@@ -204,7 +206,7 @@ public class RenderEntityTarget {
         // code used from the Enderman player looking code.
         PlayerEntity player = Minecraft.getInstance().player;
         Vec3d vec3 = player.getLook(1.0F).normalize();
-        Vec3d vec31 = new Vec3d(entity.posX - player.posX, entity.getBoundingBox().minY + entity.getHeight() / 2.0F - (player.posY + player.getEyeHeight()), entity.posZ - player.posZ);
+        Vec3d vec31 = new Vec3d(entity.getPosX() - player.getPosX(), entity.getBoundingBox().minY + entity.getHeight() / 2.0F - (player.getPosY() + player.getEyeHeight()), entity.getPosZ() - player.getPosZ());
         double d0 = vec31.length();
         vec31 = vec31.normalize();
         double d1 = vec3.dotProduct(vec31);

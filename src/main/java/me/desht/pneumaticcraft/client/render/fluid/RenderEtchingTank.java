@@ -2,13 +2,18 @@ package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityEtchingTank;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.List;
 
-public class RenderEtchingTank extends FastFluidTESR<TileEntityEtchingTank> {
+public class RenderEtchingTank extends AbstractFluidTESR<TileEntityEtchingTank> {
     private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(2.5/16f, 2/16f, 2.5/16f, 13.5/16f, 15/16f, 13.5/16f);
+
+    public RenderEtchingTank(TileEntityRendererDispatcher dispatcher) {
+        super(dispatcher);
+    }
 
     @Override
     List<TankRenderInfo> getTanksToRender(TileEntityEtchingTank te) {

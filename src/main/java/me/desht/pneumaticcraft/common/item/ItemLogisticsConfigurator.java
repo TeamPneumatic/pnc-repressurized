@@ -32,7 +32,7 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
                 && stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> h.getPressure() > 0.1).orElseThrow(RuntimeException::new)) {
             Stream<ISemiBlock> semiBlocks = SemiblockTracker.getInstance().getAllSemiblocks(world, pos, side);
 
-            if (player.isSneaking()) {
+            if (player.isSteppingCarefully()) {
                 semiBlocks.filter(s -> !(s instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) s).getSide() == side)
                         .forEach(s -> s.removeSemiblock(player));
                 return ActionResultType.SUCCESS;

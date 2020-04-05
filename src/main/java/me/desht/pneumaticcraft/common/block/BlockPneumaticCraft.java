@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.IComparatorSupport;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -99,23 +100,23 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         ItemStack heldItem = player.getHeldItem(hand);
         TileEntity te = world.getTileEntity(pos);
-        if (player.isSneaking()
+        if (player.isSteppingCarefully()
                 || !(te instanceof INamedContainerProvider)
                 || isRotatable() && (heldItem.getItem() == ModItems.MANOMETER.get() || ModdedWrenchUtils.getInstance().isModdedWrench(heldItem))
                 || hand == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(player.getHeldItemMainhand())) {
-            return false;
+            return ActionResultType.PASS;
         } else {
             if (!world.isRemote) {
                 if (te instanceof TileEntityBase) {
                     if (FluidUtils.tryFluidInsertion(te, null, player, hand)) {
                         world.playSound(null, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                        return true;
+                        return ActionResultType.SUCCESS;
                     } else if (FluidUtils.tryFluidExtraction(te, null, player, hand)) {
                         world.playSound(null, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                        return true;
+                        return ActionResultType.SUCCESS;
                     }
                     if (te instanceof INamedContainerProvider) {
                         NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
@@ -123,7 +124,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                 }
             }
 
-            return true;
+            return ActionResultType.SUCCESS;
         }
     }
 
@@ -225,7 +226,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
-        if (player != null && player.isSneaking()) {
+        if (player != null && player.isSteppingCarefully()) {
             TileEntity te = world.getTileEntity(pos);
             boolean preserve = false;
             if (te instanceof TileEntityBase) {
@@ -245,7 +246,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                     if (rotateForgeWay()) {
                         if (!canRotateToTopOrBottom()) side = Direction.UP;
                         if (getRotation(world, pos).getAxis() != side.getAxis()) {
-                            setRotation(world, pos, getRotation(world, pos).rotateAround(side.getAxis()));
+                            setRotation(world, pos, DirectionUtil.rotateAround(getRotation(world, pos), side.getAxis()));
                         }
                     } else {
                         Direction f = getRotation(world, pos);

@@ -1,7 +1,7 @@
 # The mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[28,)" #mandatory (24 is current forge version)
+loaderVersion="[31,)" #mandatory (24 is current forge version)
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/TeamPneumatic/pnc-repressurized/issues"
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -22,7 +22,7 @@ version="${version}" #mandatory
  # A display name for the mod
 displayName="PneumaticCraft: Repressurized"
 # A URL to query for updates for this mod. See the JSON update specification <here>
-updateJSONURL="https://raw.githubusercontent.com/TeamPneumatic/pnc-repressurized/1.14/release_info.json" #optional
+updateJSONURL="https://raw.githubusercontent.com/TeamPneumatic/pnc-repressurized/1.15/release_info.json" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 PneumaticCraft: Repressurized: doing cool stuff with compressed air.
@@ -31,12 +31,12 @@ PneumaticCraft: Repressurized: doing cool stuff with compressed air.
 [[dependencies.pneumaticcraft]]
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[28.2.3,)" #mandatory
+    versionRange="[31.1.27,)" #mandatory
     ordering="NONE"
     side="BOTH"
 [[dependencies.pneumaticcraft]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.14.4]"
+    versionRange="[1.15.2]"
     ordering="NONE"
     side="BOTH"

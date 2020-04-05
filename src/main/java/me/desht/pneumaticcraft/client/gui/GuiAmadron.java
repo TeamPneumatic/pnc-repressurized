@@ -136,7 +136,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         }
 
         return searchBar.keyPressed(keyCode, scanCode, modifiers)
-                || searchBar.func_212955_f()
+                || searchBar.canWrite()
                 || super.keyPressed(keyCode, scanCode, modifiers);
     }
 

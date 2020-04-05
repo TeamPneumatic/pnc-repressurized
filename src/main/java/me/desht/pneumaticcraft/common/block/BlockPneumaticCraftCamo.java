@@ -7,13 +7,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.ILightReader;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.util.Constants;
@@ -25,7 +23,7 @@ import net.minecraftforge.common.util.Constants;
 //@Optional.Interface (iface = "team.chisel.ctm.api.IFacade", modid = "ctm-api")
 public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*implements IFacade*/ {
     public static final ModelProperty<BlockState> CAMO_STATE = new ModelProperty<>();
-    public static final ModelProperty<IEnviromentBlockReader> BLOCK_ACCESS = new ModelProperty<>();
+    public static final ModelProperty<ILightReader> BLOCK_ACCESS = new ModelProperty<>();
     public static final ModelProperty<BlockPos> BLOCK_POS = new ModelProperty<>();
 
     protected BlockPneumaticCraftCamo(Properties props) {
@@ -59,15 +57,15 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
         return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
     }
 
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
-    }
+//    @Override
+//    public BlockRenderLayer getRenderLayer() {
+//        return BlockRenderLayer.CUTOUT_MIPPED;
+//    }
 
-    @Override
-    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-        return true;
-    }
+//    @Override
+//    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
+//        return true;
+//    }
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
@@ -93,11 +91,11 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
         return camo != null ? camo.getCamouflage().getRenderShape(worldIn, pos) : super.getRenderShape(state, worldIn, pos);
     }
 
-    @Override
-    public boolean doesSideBlockRendering(BlockState state, IEnviromentBlockReader world, BlockPos pos, Direction face) {
-        ICamouflageableTE camo = getCamoState(world, pos);
-        return camo == null || camo.getCamouflage().doesSideBlockRendering(world, pos, face);
-    }
+//    @Override
+//    public boolean doesSideBlockRendering(BlockState state, ILightReader world, BlockPos pos, Direction face) {
+//        ICamouflageableTE camo = getCamoState(world, pos);
+//        return camo == null || camo.getCamouflage().doesSideBlockRendering(world, pos, face);
+//    }
 
     @Override
     public int getOpacity(BlockState state, IBlockReader world, BlockPos pos) {

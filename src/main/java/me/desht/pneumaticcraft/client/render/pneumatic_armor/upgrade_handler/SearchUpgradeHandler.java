@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
@@ -16,6 +17,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -69,7 +71,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void render3D(float partialTicks) {
+    public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
         GlStateManager.enableRescaleNormal();
         GlStateManager.enableTexture();
         GlStateManager.depthMask(false);
@@ -82,10 +84,10 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
 
         searchedItems.forEach((item, value) -> {
             float height = MathHelper.sin((item.getAge() + partialTicks) / 10.0F + item.hoverStart) * 0.1F + 0.2F;
-            RenderSearchItemBlock.renderSearch(
-                    item.lastTickPosX + (item.posX - item.lastTickPosX) * partialTicks,
-                    item.lastTickPosY + (item.posY - item.lastTickPosY) * partialTicks + height,
-                    item.lastTickPosZ + (item.posZ - item.lastTickPosZ) * partialTicks, value,
+            RenderSearchItemBlock.renderSearch(matrixStack, buffer,
+                    item.lastTickPosX + (item.getPosX() - item.lastTickPosX) * partialTicks,
+                    item.lastTickPosY + (item.getPosY() - item.lastTickPosY) * partialTicks + height,
+                    item.lastTickPosZ + (item.getPosZ() - item.lastTickPosZ) * partialTicks, value,
                     totalSearchedItemCount, partialTicks
             );
         });

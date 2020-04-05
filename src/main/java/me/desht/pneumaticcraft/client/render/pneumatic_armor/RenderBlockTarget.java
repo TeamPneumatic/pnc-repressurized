@@ -1,9 +1,12 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
@@ -14,6 +17,8 @@ import me.desht.pneumaticcraft.common.network.PacketHackingBlockStart;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -21,7 +26,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.GuiScreenEvent;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,31 +137,42 @@ public class RenderBlockTarget {
         }
     }
 
-    public void render(float partialTicks) {
+    private static final Vector3f ROT_X = new Vector3f(1f, 0f, 0f);
+    private static final Vector3f ROT_Y = new Vector3f(1f, 0f, 0f);
+
+    public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+
+        IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.BLOCK_TRACKER);
 
         double x = pos.getX() + 0.5D;
         double y = pos.getY() + 0.5D;
         double z = pos.getZ() + 0.5D;
 
-        GlStateManager.disableTexture();
-        GlStateManager.pushMatrix();
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.IS_RUNNING_ON_MAC);
-        GlStateManager.translated(x, y, z);
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        matrixStack.push();
+        matrixStack.translate(x, y, z);
+
+//        GlStateManager.disableTexture();
+//        GlStateManager.pushMatrix();
+//        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.IS_RUNNING_ON_MAC);
+//        GlStateManager.translated(x, y, z);
+//        GlStateManager.enableBlend();
+//        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         if (!world.isAirBlock(pos)) {
             highlightRenderer.render(world, pos, partialTicks);
         }
 
-        float targetAcquireProgress = (ticksExisted + partialTicks) / 1.20f;
+        float targetAcquireProgress = (ticksExisted + partialTicks) / 1.2f;
 
-        GlStateManager.rotated(180.0F - Minecraft.getInstance().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotated(180.0F - Minecraft.getInstance().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+        matrixStack.rotate(Vector3f.YP.rotationDegrees(180f - Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getYaw()));
+        matrixStack.rotate(Vector3f.XP.rotationDegrees(180f - Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getPitch()));
+//        GlStateManager.rotated(180.0F - Minecraft.getInstance().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+//        GlStateManager.rotated(180.0F - Minecraft.getInstance().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
         if (ticksExisted <= 120 && ticksExisted > 50) {
             RenderProgressBar.render(0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress, 0xD0FFFF00, 0xD000FF00);
         }
 
+        // FIXME
         GlStateManager.enableTexture();
         if (!world.isAirBlock(pos)) {
             FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;

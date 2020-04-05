@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.EntityTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
@@ -18,6 +19,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.HangingEntity;
@@ -130,13 +132,14 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     static AxisAlignedBB getAABBFromRange(PlayerEntity player, int rangeUpgrades) {
         double entityTrackRange = ENTITY_TRACKING_RANGE + Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
 
-        return new AxisAlignedBB(player.posX - entityTrackRange, player.posY - entityTrackRange, player.posZ - entityTrackRange, player.posX + entityTrackRange, player.posY + entityTrackRange, player.posZ + entityTrackRange);
+        return new AxisAlignedBB(player.getPosition()).grow(entityTrackRange);
+//        return new AxisAlignedBB(player.getPosX() - entityTrackRange, player.getPosY() - entityTrackRange, player.getPosZ() - entityTrackRange, player.posX + entityTrackRange, player.posY + entityTrackRange, player.posZ + entityTrackRange);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void render3D(float partialTicks) {
-        targets.values().forEach(target -> target.render(partialTicks, shouldStopSpamOnEntityTracking));
+    public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+        targets.values().forEach(target -> target.render(matrixStack, buffer, partialTicks, shouldStopSpamOnEntityTracking));
     }
 
     @Override

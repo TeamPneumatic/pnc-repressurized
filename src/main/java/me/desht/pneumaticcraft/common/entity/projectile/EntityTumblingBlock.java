@@ -102,9 +102,9 @@ public class EntityTumblingBlock extends ThrowableEntity {
 
     @Override
     public void tick() {
-        this.prevPosX = this.posX;
-        this.prevPosY = this.posY;
-        this.prevPosZ = this.posZ;
+        this.prevPosX = this.getPosX();
+        this.prevPosY = this.getPosY();
+        this.prevPosZ = this.getPosZ();
 
         super.tick();  // handles nearly all of the in-flight logic
 
@@ -163,9 +163,7 @@ public class EntityTumblingBlock extends ThrowableEntity {
             fakePlayer = FakePlayerFactory.get((ServerWorld) world, new GameProfile(null, "[Tumbling Block]"));
             fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
         }
-        fakePlayer.posX = posX;
-        fakePlayer.posY = posY;
-        fakePlayer.posZ = posZ;
+        fakePlayer.setPosition(getPosX(), getPosY(), getPosZ());
         fakePlayer.setHeldItem(Hand.MAIN_HAND, getStack());
         return fakePlayer;
     }

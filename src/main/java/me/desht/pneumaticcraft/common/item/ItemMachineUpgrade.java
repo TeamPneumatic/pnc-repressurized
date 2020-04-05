@@ -74,7 +74,7 @@ public class ItemMachineUpgrade extends Item implements IUpgradeItem {
             if (!worldIn.isRemote) {
                 setDirection(playerIn, handIn, null);
             }
-            return ActionResult.newResult(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
+            return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }

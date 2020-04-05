@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -26,15 +27,16 @@ public class EntityRing extends Entity {
     public EntityRing(World par1World, double startX, double startY, double startZ, Entity targetEntity, int color) {
         super(ModEntities.RING.get(), par1World);
 
-        posX = lastTickPosX = startX;
-        posY = lastTickPosY = startY;
-        posZ = lastTickPosZ = startZ;
+        setPosition(startX, startY, startZ);
+        lastTickPosX = startX;
+        lastTickPosY = startY;
+        lastTickPosZ = startZ;
         this.targetEntity = targetEntity;
         this.color = color;
 
-        double dx = targetEntity.posX - posX;
-        double dy = targetEntity.posY - posY;
-        double dz = targetEntity.posZ - posZ;
+        double dx = targetEntity.getPosX() - getPosX();
+        double dy = targetEntity.getPosY() - getPosY();
+        double dz = targetEntity.getPosZ() - getPosZ();
         float f = MathHelper.sqrt(dx * dx + dz * dz);
         prevRotationYaw = rotationYaw = (float) (Math.atan2(dx, dz) * 180.0D / Math.PI);
         prevRotationPitch = rotationPitch = (float) (Math.atan2(dy, f) * 180.0D / Math.PI);
@@ -53,14 +55,12 @@ public class EntityRing extends Entity {
     public void tick() {
         if (targetEntity == null) return;
 
-        double endX = targetEntity.posX;
-        double endY = targetEntity.posY;
-        double endZ = targetEntity.posZ;
+        Vec3d end = targetEntity.getPositionVector();
         prevRotationYaw = rotationYaw;
         prevRotationPitch = rotationPitch;
 
         if (ring == null) {
-            ring = new RenderRing(posX, posY, posZ, endX, endY, endZ, color);
+            ring = new RenderRing(getPosX(), getPosY(), getPosZ(), end.x, end.y, end.z, color);
         } else {
             if (oldRing == null) {
                 oldRing = new RenderRing(ring.startX, ring.startY, ring.startZ, ring.endX, ring.endY, ring.endZ, color);
@@ -69,13 +69,13 @@ public class EntityRing extends Entity {
                 oldRing.endY = ring.endY;
                 oldRing.endZ = ring.endZ;
             }
-            ring.endX = endX;
-            ring.endY = endY;
-            ring.endZ = endZ;
+            ring.endX = end.x;
+            ring.endY = end.y;
+            ring.endZ = end.z;
 
-            double dx = endX - posX;
-            double dy = endY - posY;
-            double dz = endZ - posZ;
+            double dx = end.x - getPosX();
+            double dy = end.y - getPosY();
+            double dz = end.z - getPosZ();
             float f = MathHelper.sqrt(dx * dx + dz * dz);
             rotationYaw = (float) (Math.atan2(dx, dz) * 180.0D / Math.PI);
             rotationPitch = (float) (Math.atan2(dy, f) * 180.0D / Math.PI);

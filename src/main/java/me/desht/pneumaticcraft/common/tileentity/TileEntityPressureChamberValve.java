@@ -35,7 +35,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -288,7 +287,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     }
 
     private boolean checkForGlass() {
-        MutableBlockPos mPos = new MutableBlockPos();
+        BlockPos.Mutable mPos = new BlockPos.Mutable();
         for (int x = 0; x < multiBlockSize; x++) {
             for (int y = 0; y < multiBlockSize; y++) {
                 for (int z = 0; z < multiBlockSize; z++) {
@@ -483,7 +482,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
 
     private static boolean checkForCubeOfSize(int size, World world, int baseX, int baseY, int baseZ) {
         List<TileEntityPressureChamberValve> valveList = new ArrayList<>();
-        MutableBlockPos mPos = new MutableBlockPos();
+        BlockPos.Mutable mPos = new BlockPos.Mutable();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 for (int z = 0; z < size; z++) {

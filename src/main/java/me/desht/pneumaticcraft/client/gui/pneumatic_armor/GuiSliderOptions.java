@@ -12,12 +12,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.fml.client.config.GuiSlider;
+import net.minecraftforge.fml.client.gui.widget.Slider;
 import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class GuiSliderOptions<T extends IUpgradeRenderHandler> extends IOptionPage.SimpleToggleableOptions<T>
-        implements GuiSlider.ISlider {
-    private GuiSlider slider;
+        implements Slider.ISlider {
+    private Slider slider;
     private Integer pendingVal = null;
 
     GuiSliderOptions(IGuiScreen screen, T handler) {
@@ -48,13 +48,13 @@ public abstract class GuiSliderOptions<T extends IUpgradeRenderHandler> extends 
             initVal = ItemPneumaticArmor.getIntData(leggings, getTagName(), range.getRight());
         }
         PointXY pos = getSliderPos();
-        slider = new GuiSlider(pos.x, pos.y, 150, 20,  getPrefix(), getSuffix(),
+        slider = new Slider(pos.x, pos.y, 150, 20,  getPrefix(), getSuffix(),
                 range.getLeft(), range.getRight(), initVal, false, true, b -> { }, this);
         gui.addWidget(slider);
     }
 
     @Override
-    public void onChangeSliderValue(GuiSlider slider) {
+    public void onChangeSliderValue(Slider slider) {
         pendingVal = slider.getValueInt();
     }
 

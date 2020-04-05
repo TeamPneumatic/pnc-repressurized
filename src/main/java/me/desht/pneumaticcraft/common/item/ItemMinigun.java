@@ -50,7 +50,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     public static final String NBT_LOCKED_SLOT = "LockedSlot";
 
     public ItemMinigun() {
-        super(ModItems.defaultProps().setTEISR(() -> RenderItemMinigun::new), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
+        super(ModItems.defaultProps().setISTER(() -> RenderItemMinigun::new), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
 
     public static MagazineHandler getMagazine(ItemStack stack) {
@@ -71,7 +71,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
             minigun.setMinigunActivated(false);
             minigun.setMinigunTriggerTimeOut(0);
         } else {
-            minigun.update(player.posX, player.posY, player.posZ);
+            minigun.update(player.getPosX(), player.getPosY(), player.getPosZ());
         }
 
         if (world.isRemote && currentItem && minigun.getMinigunSpeed() > 0) {
@@ -127,7 +127,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getHeldItem(handIn);
         if (!world.isRemote) {
-            if (player.isSneaking()) {
+            if (player.isSteppingCarefully()) {
                 NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
                     @Override
                     public ITextComponent getDisplayName() {
@@ -153,12 +153,12 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
                         magazineHandler.save();
                     }
                 } else {
-                    NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 1.0f, false), (ServerPlayerEntity) player);
+                    NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
                     player.sendStatusMessage(new TranslationTextComponent("message.minigun.outOfAmmo"), true);
                 }
             }
         }
-        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
+        return ActionResult.resultSuccess(stack);
     }
 
     @Override

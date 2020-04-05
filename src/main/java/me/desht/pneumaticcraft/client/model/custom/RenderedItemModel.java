@@ -2,12 +2,10 @@ package me.desht.pneumaticcraft.client.model.custom;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.*;
-import net.minecraft.client.renderer.texture.ISprite;
-import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
@@ -17,25 +15,21 @@ import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.vecmath.Matrix4f;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 
-import static org.apache.commons.lang3.tuple.Pair.of;
-
 /**
  * An item with a TEISR (ISTER) with a base (static) model.  When in hand, the item will have an empty static model,
  * otherwise it will use the base model.  And isBuiltinRenderer() is true to allow ISTER drawing to happen.
  */
 public class RenderedItemModel implements IDynamicBakedModel {
-    private static final TextureAtlasSprite MISSING = MissingTextureSprite.func_217790_a();
+//    private static final TextureAtlasSprite MISSING = MissingTextureSprite.func_217790_a();
     private final IBakedModel bakedBaseModel;
 
     private RenderedItemModel(IBakedModel bakedBaseModel) {
@@ -59,13 +53,18 @@ public class RenderedItemModel implements IDynamicBakedModel {
     }
 
     @Override
+    public boolean func_230044_c_() {
+        return false;
+    }
+
+    @Override
     public boolean isBuiltInRenderer() {
         return true;
     }
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
-        return MISSING;
+        return bakedBaseModel.getParticleTexture();
     }
 
     @Override
@@ -74,17 +73,16 @@ public class RenderedItemModel implements IDynamicBakedModel {
     }
 
     @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
+    public IBakedModel handlePerspective(ItemCameraTransforms.TransformType cameraTransformType, MatrixStack mat) {
         switch (cameraTransformType) {
             case GROUND:
             case HEAD:
             case NONE:
             case GUI:
             case FIXED:
-                return bakedBaseModel.handlePerspective(cameraTransformType);
+                return bakedBaseModel.handlePerspective(cameraTransformType, mat);
         }
-        // item is being held: use this (empty) model with isBuiltinRenderer = true for ISTER rendering
-        return of(this, null);
+        return this;
     }
 
     private static class Geometry implements IModelGeometry<Geometry> {
@@ -95,12 +93,12 @@ public class RenderedItemModel implements IDynamicBakedModel {
         }
 
         @Override
-        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<ResourceLocation, TextureAtlasSprite> spriteGetter, ISprite sprite, VertexFormat format, ItemOverrideList overrides) {
-            return new RenderedItemModel(baseModel.bake(bakery, spriteGetter, sprite, format));
+        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
+            return new RenderedItemModel(baseModel.bakeModel(bakery, baseModel, spriteGetter, modelTransform, modelLocation, true));
         }
 
         @Override
-        public Collection<ResourceLocation> getTextureDependencies(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<String> missingTextureErrors) {
+        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> missingTextureErrors) {
             return baseModel.getTextures(modelGetter, missingTextureErrors);
         }
     }

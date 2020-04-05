@@ -1,13 +1,16 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.event.ClientTickHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
@@ -15,22 +18,22 @@ import java.util.List;
 
 public class RenderPressureChamber extends TileEntityRenderer<TileEntityPressureChamberValve> {
 
+    public RenderPressureChamber(TileEntityRendererDispatcher dispatcher) {
+        super(dispatcher);
+    }
+
     @Override
-    public void render(TileEntityPressureChamberValve te, double x, double y, double z, float partialTicks, int destroyStage) {
-        if (te.multiBlockSize == 0 || !te.hasGlass) return;
+    public void render(TileEntityPressureChamberValve te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+       if (te.multiBlockSize == 0 || !te.hasGlass) return;
 
         List<ItemStack> stacks = te.renderedItems;
         if (!stacks.isEmpty()){
-            x += te.multiBlockX - te.getPos().getX() + te.multiBlockSize / 2D;
-            y += te.multiBlockY - te.getPos().getY() + 1.1; //Set to '+ 1' for normal y value.
-            z += te.multiBlockZ - te.getPos().getZ() + te.multiBlockSize / 2D;
-            
-            GlStateManager.pushMatrix();
-            GlStateManager.translated(x, y, z);
-            
-            EntityRendererManager renderManager = Minecraft.getInstance().getRenderManager();
-            boolean fancySetting = renderManager.options.fancyGraphics;
-            renderManager.options.fancyGraphics = true;
+            double x = te.multiBlockX - te.getPos().getX() + te.multiBlockSize / 2D;
+            double y = te.multiBlockY - te.getPos().getY() + 1.1; // Set to '+ 1' for normal y value.
+            double z = te.multiBlockZ - te.getPos().getZ() + te.multiBlockSize / 2D;
+
+            matrixStackIn.push();
+            matrixStackIn.translate(x, y, z);
 
             // render single item centered (looks best), multiple items arranged in a circle
             // around the centre of the chamber, radius dependent on chamber size
@@ -42,23 +45,19 @@ public class RenderPressureChamber extends TileEntityRenderer<TileEntityPressure
             float yBob = MathHelper.sin(((float) ticks  / 10) % 360) * 0.01f;
             float yRot = (float) (ticks / 2) % 360;
 
-            int light = te.getWorld().getCombinedLight(te.getPos().offset(te.getRotation()), 0);  // otherwise it will render unlit
-            GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float) (light & 0xFFFF), (float) ((light >> 16) & 0xFFFF));
+            for (int i = 0; i < stacks.size(); i++) {
+                matrixStackIn.push();
+                matrixStackIn.rotate(Vector3f.YP.rotationDegrees(i * degreesPerStack));
+                matrixStackIn.translate(circleRadius, yBob, 0);
+                matrixStackIn.rotate(Vector3f.YP.rotationDegrees(yRot));
 
-            for (int i = 0; i < stacks.size(); i++){
-                GlStateManager.pushMatrix();
-                GlStateManager.rotated(i * degreesPerStack, 0, 1, 0);
-                GlStateManager.translated(circleRadius, yBob, 0);
+                ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+                IBakedModel ibakedmodel = itemRenderer.getItemModelWithOverrides(stacks.get(i), te.getWorld(), null);
+                itemRenderer.renderItem(stacks.get(i), ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
 
-                GlStateManager.rotated(yRot, 0, 1, 0);
-                Minecraft.getInstance().getItemRenderer().renderItem(stacks.get(i), ItemCameraTransforms.TransformType.GROUND);
-
-                GlStateManager.popMatrix();
+                matrixStackIn.pop();
             }
-
-            renderManager.options.fancyGraphics = fancySetting;
-            
-            GlStateManager.popMatrix();
+            matrixStackIn.pop();
         }
     }
 }

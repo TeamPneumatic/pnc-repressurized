@@ -3,15 +3,16 @@ package me.desht.pneumaticcraft.client.model.custom;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.client.render.fluid.FluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.*;
-import net.minecraft.client.renderer.texture.ISprite;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
@@ -27,7 +28,7 @@ import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
-import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
+import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.fluids.IFluidTank;
 
 import javax.annotation.Nonnull;
@@ -38,11 +39,9 @@ import java.util.function.Function;
 public class FluidItemModel implements IDynamicBakedModel {
     private final IBakedModel bakedBaseModel;
     private final ItemOverrideList overrideList = new FluidOverridesList(this);
-    private final VertexFormat format;
     private List<TankRenderInfo> tanksToRender;
 
-    private FluidItemModel(VertexFormat format, IBakedModel bakedBaseModel) {
-        this.format = format;
+    private FluidItemModel(IBakedModel bakedBaseModel) {
         this.bakedBaseModel = bakedBaseModel;
     }
 
@@ -55,9 +54,10 @@ public class FluidItemModel implements IDynamicBakedModel {
             for (TankRenderInfo info : tanksToRender) {
                 IFluidTank tank = info.getTank();
                 if (tank.getFluid().isEmpty()) continue;
-                Fluid f = tank.getFluid().getFluid();
-                TextureAtlasSprite still = Minecraft.getInstance().getTextureMap().getAtlasSprite(f.getAttributes().getStill(tank.getFluid()).toString());
-                int color = f.getAttributes().getColor(tank.getFluid());
+                Fluid fluid = tank.getFluid().getFluid();
+                ResourceLocation texture = fluid.getAttributes().getStillTexture(tank.getFluid());
+                TextureAtlasSprite still = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(texture);
+                int color = fluid.getAttributes().getColor(tank.getFluid());
                 float[] cols = new float[]{(color >> 24 & 0xFF) / 255F, (color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F};
                 AxisAlignedBB bounds = getRenderBounds(tank, info.getBounds());
                 float bx1 = (float) (bounds.minX * 16);
@@ -109,35 +109,44 @@ public class FluidItemModel implements IDynamicBakedModel {
     }
 
     private BakedQuad createQuad(List<Vec3d> vecs, float[] cols, TextureAtlasSprite sprite, Direction face, float u1, float u2, float v1, float v2) {
-        UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);
-        builder.setTexture(sprite);
+        BakedQuadBuilder builder = new BakedQuadBuilder(sprite);
         Vec3d normal = new Vec3d(face.getDirectionVec());
-        putVertex(builder, cols, normal, vecs.get(0).x, vecs.get(0).y, vecs.get(0).z, sprite, u1, v1);
-        putVertex(builder, cols, normal, vecs.get(1).x, vecs.get(1).y, vecs.get(1).z, sprite, u1, v2);
-        putVertex(builder, cols, normal, vecs.get(2).x, vecs.get(2).y, vecs.get(2).z, sprite, u2, v2);
-        putVertex(builder, cols, normal, vecs.get(3).x, vecs.get(3).y, vecs.get(3).z, sprite, u2, v1);
+        putVertex(builder, normal, vecs.get(0).x, vecs.get(0).y, vecs.get(0).z, u1, v1, sprite, cols);
+        putVertex(builder, normal, vecs.get(1).x, vecs.get(1).y, vecs.get(1).z, u1, v2, sprite, cols);
+        putVertex(builder, normal, vecs.get(2).x, vecs.get(2).y, vecs.get(2).z, u2, v2, sprite, cols);
+        putVertex(builder, normal, vecs.get(3).x, vecs.get(3).y, vecs.get(3).z, u2, v1, sprite, cols);
         builder.setQuadOrientation(face);
         return builder.build();
     }
 
-    private void putVertex(UnpackedBakedQuad.Builder builder, float[] cols, Vec3d normal, double x, double y, double z, TextureAtlasSprite sprite, float u, float v) {
-        for (int e = 0; e < format.getElementCount(); e++) {
-            switch (format.getElement(e).getUsage()) {
+    private void putVertex(BakedQuadBuilder builder, Vec3d normal,
+                           double x, double y, double z, float u, float v, TextureAtlasSprite sprite, float[] col) {
+        ImmutableList<VertexFormatElement> elements = builder.getVertexFormat().getElements().asList();
+        for (int e = 0; e < elements.size(); e++) {
+            switch (elements.get(e).getUsage()) {
                 case POSITION:
-                    builder.put(e, (float)x, (float)y, (float)z, 1.0f);
+                    builder.put(e, (float)x, (float)y, (float)z);
                     break;
                 case COLOR:
-                    builder.put(e, cols[1], cols[2], cols[3], cols[0]);
+                    builder.put(e, col[0], col[1], col[2], col[3]);
                     break;
                 case UV:
-                    if (format.getElement(e).getIndex() == 0) {
-                        u = sprite.getInterpolatedU(u);
-                        v = sprite.getInterpolatedV(v);
-                        builder.put(e, u, v, 0f, 1f);
-                        break;
+                    switch (elements.get(e).getIndex()) {
+                        case 0:
+                            float iu = sprite.getInterpolatedU(u);
+                            float iv = sprite.getInterpolatedV(v);
+                            builder.put(e, iu, iv);
+                            break;
+                        case 2:
+                            builder.put(e, 0f, 1f);
+                            break;
+                        default:
+                            builder.put(e);
+                            break;
                     }
+                    break;
                 case NORMAL:
-                    builder.put(e, (float) normal.x, (float) normal.y, (float) normal.z, 0f);
+                    builder.put(e, (float) normal.x, (float) normal.y, (float) normal.z);
                     break;
                 default:
                     builder.put(e);
@@ -154,6 +163,11 @@ public class FluidItemModel implements IDynamicBakedModel {
     @Override
     public boolean isGui3d() {
         return bakedBaseModel.isGui3d();
+    }
+
+    @Override
+    public boolean func_230044_c_() {
+        return false;
     }
 
     @Override
@@ -184,12 +198,12 @@ public class FluidItemModel implements IDynamicBakedModel {
         }
 
         @Override
-        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<ResourceLocation, TextureAtlasSprite> spriteGetter, ISprite sprite, VertexFormat format, ItemOverrideList overrides) {
-            return new FluidItemModel(format, baseModel.bake(bakery, spriteGetter, sprite, format));
+        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
+            return new FluidItemModel(baseModel.bakeModel(bakery, baseModel, spriteGetter, modelTransform, modelLocation, true));
         }
 
         @Override
-        public Collection<ResourceLocation> getTextureDependencies(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<String> missingTextureErrors) {
+        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
             return baseModel.getTextures(modelGetter, missingTextureErrors);
         }
     }

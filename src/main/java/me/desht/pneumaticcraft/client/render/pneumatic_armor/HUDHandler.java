@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -23,7 +25,7 @@ import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +33,9 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -64,6 +68,9 @@ public class HUDHandler implements IKeyListener {
         return UpgradeRenderHandlerList.instance().getRenderHandler(clazz);
     }
 
+    /**
+     * Handles the 3D drawing for armor components
+     */
     @SubscribeEvent
     public void renderWorldLastEvent(RenderWorldLastEvent event) {
         Minecraft mc = Minecraft.getInstance();
@@ -71,8 +78,13 @@ public class HUDHandler implements IKeyListener {
 
         PlayerEntity player = mc.player;
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(-TileEntityRendererDispatcher.staticPlayerX, -TileEntityRendererDispatcher.staticPlayerY, -TileEntityRendererDispatcher.staticPlayerZ);
+        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+        MatrixStack matrixStack = event.getMatrixStack();
+
+        matrixStack.push();
+
+        Vec3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 
         ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
         CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer(player);
@@ -83,20 +95,121 @@ public class HUDHandler implements IKeyListener {
                     List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
                     for (int i = 0; i < renderHandlers.size(); i++) {
                         if (comHudHandler.isUpgradeRendererInserted(slot, i) && WidgetKeybindCheckBox.fromKeyBindingName(renderHandlers.get(i).getUpgradeID()).checked)
-                            renderHandlers.get(i).render3D(event.getPartialTicks());
+                            renderHandlers.get(i).render3D(matrixStack, buffer, event.getPartialTicks());
                     }
                     GlStateManager.enableTexture();
                 }
             }
         }
-        GlStateManager.popMatrix();
+
+        matrixStack.pop();
     }
 
+    /**
+     * Handles the 2D overlay drawing for the armor components
+     */
     @SubscribeEvent
-    public void renderTick(TickEvent.RenderTickEvent event) {
+    public void renderTick(RenderGameOverlayEvent event) {
         Minecraft mc = Minecraft.getInstance();
-        if (event.phase == TickEvent.Phase.END && !mc.gameSettings.hideGUI && mc.player != null) {
-            render2D(event.renderTickTime);
+        PlayerEntity player = mc.player;
+
+        if (mc.gameSettings.hideGUI || player == null || mc.currentScreen != null || !ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(player)) {
+            return;
+        }
+
+        float partialTicks = event.getPartialTicks();
+
+        MainWindow mw = event.getWindow();
+        RenderSystem.depthMask(false);
+        RenderSystem.disableCull();
+        RenderSystem.disableTexture();
+        RenderSystem.pushMatrix();
+        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, IS_RUNNING_ON_MAC);
+        RenderSystem.color4f(0, 1, 0, 0.8F);
+        CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer(player);
+
+        boolean anyArmorInInit = false;
+        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+            ItemStack armorStack = player.getItemStackFromSlot(slot);
+            if (armorStack.getItem() instanceof ItemPneumaticArmor && !comHudHandler.isArmorReady(slot)) {
+                anyArmorInInit = true;
+                break;
+            }
+        }
+
+        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+            ItemStack armorStack = player.getItemStackFromSlot(slot);
+            if (!(armorStack.getItem() instanceof ItemPneumaticArmor) || comHudHandler.getArmorPressure(slot) < 0.0001F) {
+                continue;
+            }
+            if (anyArmorInInit) {
+                // draw initialization progress bar(s)
+                gaveEmptyWarning[slot.getIndex()] = false;
+                gaveNearlyEmptyWarning[slot.getIndex()] = false;
+                if (comHudHandler.isArmorEnabled()) {
+                    int xLeft = mw.getScaledWidth() / 2;
+                    int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
+                    float progress = comHudHandler.getTicksSinceEquipped(slot) * 100f / comHudHandler.getStartupTime(slot);
+                    progress = Math.min(100, progress + event.getPartialTicks());
+                    RenderProgressBar.render(mw.getScaledWidth() / 2.0, yOffset,
+                            mw.getScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
+                            progress,0xAAFFC000, 0xAA00FF00);
+                    RenderSystem.enableTexture();
+                    GuiUtils.drawItemStack(armorStack,xLeft + 2, yOffset);
+                }
+            }
+            if (comHudHandler.isArmorReady(slot)) {
+                String itemName = armorStack.getDisplayName().getFormattedText();
+                float pressure = comHudHandler.getArmorPressure(slot);
+                // low/no pressure warnings
+                if (pressure < 0.05F && !gaveEmptyWarning[slot.getIndex()]) {
+                    addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.outOfAir", itemName), 100, 0x70FF0000));
+                    gaveEmptyWarning[slot.getIndex()] = true;
+                }
+                if (pressure > 0.2F && pressure < 0.5F && !gaveNearlyEmptyWarning[slot.getIndex()]) {
+                    addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.almostOutOfAir", itemName), 60, 0x70FF8000));
+                    gaveNearlyEmptyWarning[slot.getIndex()] = true;
+                }
+                // all enabled upgrades do their 2D rendering here
+                if (WidgetKeybindCheckBox.getCoreComponents().checked) {
+                    List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
+                    for (int i = 0; i < renderHandlers.size(); i++) {
+                        IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
+                        if (comHudHandler.isUpgradeRendererInserted(slot, i) && comHudHandler.isUpgradeRendererEnabled(slot, i)) {
+                            IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
+                            if (stat != null) {
+                                stat.render(-1, -1, partialTicks);
+                            }
+                            upgradeRenderHandler.render2D(partialTicks, pressure > 0F);
+                        }
+                    }
+                }
+            }
+        }
+
+        // chestplate launcher upgrade (if installed)
+        if (LauncherTracker.INSTANCE.getLauncherProgress() > 0) {
+            LauncherTracker.INSTANCE.render(mw, partialTicks);
+        }
+
+        // render every pending message
+        for (ArmorMessage message : messageList) {
+            message.renderMessage(partialTicks);
+        }
+
+        RenderSystem.popMatrix();
+        RenderSystem.enableCull();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableTexture();
+
+        // show armor initialisation percentages
+        if (comHudHandler.isArmorEnabled() && anyArmorInInit) {
+            for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+                if (isPneumaticArmorPiece(player, slot) && comHudHandler.getArmorPressure(slot) > 0F) {
+                    String text = Math.min(100, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot)) + "%";
+                    mc.fontRenderer.drawStringWithShadow(text, mw.getScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40);
+                }
+            }
         }
     }
 
@@ -147,104 +260,6 @@ public class HUDHandler implements IKeyListener {
                 LauncherTracker.INSTANCE.trigger();
             } else {
                 LauncherTracker.INSTANCE.chargeLauncher();
-            }
-        }
-    }
-
-    private void render2D(float partialTicks) {
-        Minecraft mc = Minecraft.getInstance();
-        PlayerEntity player = mc.player;
-        if (mc.currentScreen == null && ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(player)) {
-            MainWindow mw = mc.mainWindow;
-            GlStateManager.depthMask(false);
-            GlStateManager.disableCull();
-            GlStateManager.disableTexture();
-            GlStateManager.pushMatrix();
-            GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, IS_RUNNING_ON_MAC);
-            GlStateManager.color4f(0, 1, 0, 0.8F);
-            CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer(player);
-
-            boolean anyArmorInInit = false;
-            for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                ItemStack armorStack = player.getItemStackFromSlot(slot);
-                if (armorStack.getItem() instanceof ItemPneumaticArmor && !comHudHandler.isArmorReady(slot)) {
-                    anyArmorInInit = true;
-                    break;
-                }
-            }
-            for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                ItemStack armorStack = player.getItemStackFromSlot(slot);
-                if (!(armorStack.getItem() instanceof ItemPneumaticArmor) || comHudHandler.getArmorPressure(slot) < 0.0001F) {
-                    continue;
-                }
-                if (anyArmorInInit) {
-                    // initialization progress bar(s)
-                    gaveEmptyWarning[slot.getIndex()] = false;
-                    gaveNearlyEmptyWarning[slot.getIndex()] = false;
-                    if (comHudHandler.isArmorEnabled()) {
-                        int xLeft = mw.getScaledWidth() / 2;
-                        int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
-                        float progress = comHudHandler.getTicksSinceEquipped(slot) * 100f / comHudHandler.getStartupTime(slot);
-                        progress = Math.min(100, progress + partialTicks);
-                        RenderProgressBar.render(mw.getScaledWidth() / 2.0, yOffset,
-                                mw.getScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
-                                progress,0xAAFFC000, 0xAA00FF00);
-                        GlStateManager.enableTexture();
-                        GuiUtils.drawItemStack(armorStack,xLeft + 2, yOffset);
-                    }
-                }
-                if (comHudHandler.isArmorReady(slot)) {
-                    String itemName = armorStack.getDisplayName().getFormattedText();
-                    float pressure = comHudHandler.getArmorPressure(slot);
-                    // low/no pressure warnings
-                    if (pressure < 0.05F && !gaveEmptyWarning[slot.getIndex()]) {
-                        addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.outOfAir", itemName), 100, 0x70FF0000));
-                        gaveEmptyWarning[slot.getIndex()] = true;
-                    }
-                    if (pressure > 0.2F && pressure < 0.5F && !gaveNearlyEmptyWarning[slot.getIndex()]) {
-                        addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.almostOutOfAir", itemName), 60, 0x70FF8000));
-                        gaveNearlyEmptyWarning[slot.getIndex()] = true;
-                    }
-                    // all enabled upgrades do their 2D rendering here
-                    if (WidgetKeybindCheckBox.getCoreComponents().checked) {
-                        List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
-                        for (int i = 0; i < renderHandlers.size(); i++) {
-                            IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
-                            if (comHudHandler.isUpgradeRendererInserted(slot, i) && comHudHandler.isUpgradeRendererEnabled(slot, i)) {
-                                IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
-                                if (stat != null) {
-                                    stat.render(-1, -1, partialTicks);
-                                }
-                                upgradeRenderHandler.render2D(partialTicks, pressure > 0F);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // chestplate launcher upgrade (if installed)
-            if (LauncherTracker.INSTANCE.getLauncherProgress() > 0) {
-                LauncherTracker.INSTANCE.render(mw, partialTicks);
-            }
-
-            // render every pending message
-            for (ArmorMessage message : messageList) {
-                message.renderMessage(partialTicks);
-            }
-
-            GlStateManager.popMatrix();
-            GlStateManager.enableCull();
-            GlStateManager.depthMask(true);
-            GlStateManager.enableTexture();
-
-            // show armor initialisation percentages
-            if (comHudHandler.isArmorEnabled() && anyArmorInInit) {
-                for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                    if (isPneumaticArmorPiece(player, slot) && comHudHandler.getArmorPressure(slot) > 0F) {
-                        String text = Math.min(100, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot)) + "%";
-                        mc.fontRenderer.drawStringWithShadow(text, mw.getScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40);
-                    }
-                }
             }
         }
     }
@@ -309,7 +324,7 @@ public class HUDHandler implements IKeyListener {
     private void playArmorInitSound(PlayerEntity player, SoundEvent sound, float pitch) {
         long when = player.world.getGameTime();
         if (when - lastArmorInitSound >= 30) {
-            player.world.playSound(player.posX, player.posY, player.posZ, sound, SoundCategory.PLAYERS, 0.2F, pitch, true);
+            player.world.playSound(player.getPosX(), player.getPosY(), player.getPosZ(), sound, SoundCategory.PLAYERS, 0.2F, pitch, true);
         }
         lastArmorInitSound = when;
     }

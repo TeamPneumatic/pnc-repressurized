@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
+import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSecurityStationAddHacker;
@@ -93,7 +93,7 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
                     NetworkHandler.sendToServer(new PacketUseItem(new ItemStack(ModItems.NUKE_VIRUS.get())));
                     PneumaticCraftUtils.consumeInventoryItem(player.inventory, ModItems.NUKE_VIRUS.get());
                     for (int i = linesBefore; i < lineList.size(); i++) {
-                        RenderProgressingLine line = lineList.get(i);
+                        ProgressingLine line = lineList.get(i);
                         line.setProgress(1);
                         slotHacked[slot.slotNumber] = true;
                         onSlotHack(slot.slotNumber, true);

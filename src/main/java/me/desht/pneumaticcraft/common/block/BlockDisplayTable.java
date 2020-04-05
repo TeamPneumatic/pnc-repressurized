@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -52,10 +53,10 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         TileEntity te = world.getTileEntity(pos);
         ItemStack heldStack = player.getHeldItem(hand);
-        if (player.isSneaking() || te instanceof INamedContainerProvider
+        if (player.isSteppingCarefully() || te instanceof INamedContainerProvider
                 || heldStack.getItem() == ModItems.PNEUMATIC_WRENCH.get() || ModdedWrenchUtils.getInstance().isModdedWrench(heldStack))
         {
             return super.onBlockActivated(state, world, pos, player, hand, brtr);
@@ -72,8 +73,8 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
                     PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, world, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5);
                 }
             }
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        return false;
+        return ActionResultType.PASS;
     }
 }

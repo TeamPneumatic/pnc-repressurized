@@ -115,11 +115,11 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
                         entity.addPotionEffect(new EffectInstance(effect));
                     }
                     NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_SPLASH_POTION_BREAK, SoundCategory.PLAYERS,
-                            entity.posX, entity.posY, entity.posZ, 1.0f, 1.0f, true), entity.world);
+                            entity.getPosX(), entity.getPosY(), entity.getPosZ(), 1.0f, 1.0f, true), entity.world);
                 } else if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
                     PotionEntity entityPotion = new PotionEntity(shooter.world, shooter);
                     entityPotion.setItem(potion);
-                    entityPotion.setPosition(entity.posX, entity.posY, entity.posZ);
+                    entityPotion.setPosition(entity.getPosX(), entity.getPosY(), entity.getPosZ());
                     shooter.world.addEntity(entityPotion);
                 }
             }

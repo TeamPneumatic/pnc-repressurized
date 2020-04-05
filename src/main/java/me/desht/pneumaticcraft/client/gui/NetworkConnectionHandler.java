@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.event.ClientTickHandler;
-import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
+import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.item.ItemStack;
@@ -18,7 +18,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
     private int baseY;
     private final int nodeSpacing;
     protected final int color;
-    final List<RenderProgressingLine> lineList = new ArrayList<>();
+    final List<ProgressingLine> lineList = new ArrayList<>();
     final boolean[] slotHacked = new boolean[35];
     final boolean[] slotFortified = new boolean[35];
     private final float baseBridgeSpeed;
@@ -41,8 +41,8 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
             slotHacked[i] = copy.slotHacked[i];
             slotFortified[i] = copy.slotFortified[i];
         }
-        for (RenderProgressingLine line : copy.lineList) {
-            lineList.add(new RenderProgressingLine(line));
+        for (ProgressingLine line : copy.lineList) {
+            lineList.add(new ProgressingLine(line));
         }
     }
 
@@ -57,7 +57,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         this(copy);
         this.baseX = baseX;
         this.baseY = baseY;
-        for (RenderProgressingLine line : lineList) { //adjust the copied lines for the new baseX and baseY
+        for (ProgressingLine line : lineList) { //adjust the copied lines for the new baseX and baseY
             line.startX = line.startX - copy.baseX + baseX;
             line.startY = line.startY - copy.baseY + baseY;
             line.endX = line.endX - copy.baseX + baseX;
@@ -74,8 +74,8 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         GlStateManager.disableTexture();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.color4f(f1, f2, f3, f);
-        for (RenderProgressingLine line : lineList) {
-            line.render();
+        for (ProgressingLine line : lineList) {
+            line.render(matrixStack, builder, color);
         }
         GlStateManager.enableTexture();
         GlStateManager.disableBlend();
@@ -83,7 +83,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
 
     @Override
     public void update() {
-        for (RenderProgressingLine line : lineList) {
+        for (ProgressingLine line : lineList) {
             int slot = line.getPointedSlotNumber(gui);
             ItemStack stack = station.getPrimaryInventory().getStackInSlot(slot);
             boolean done = line.incProgress(baseBridgeSpeed * (1 / (TileEntityConstants.NETWORK_NOTE_RATING_MULTIPLIER * (stack.isEmpty() ? 1 : stack.getCount() + (slotFortified[slot] ? 1 : 0)))));
@@ -104,10 +104,10 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         double startY = baseY + firstSlot / 5.0 * nodeSpacing;
         double endX = baseX + secondSlot % 5.0 * nodeSpacing;
         double endY = baseY + secondSlot / 5.0 * nodeSpacing;
-        for (RenderProgressingLine line : lineList) {
+        for (ProgressingLine line : lineList) {
             if (line.hasLineSameProperties(startX, startY, 0, endX, endY, 0)) return;
         }
-        lineList.add(new RenderProgressingLine(startX, startY, endX, endY));
+        lineList.add(new ProgressingLine(startX, startY, endX, endY));
     }
 
     void removeConnection(int firstSlot, int secondSlot) {
@@ -115,7 +115,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         double startY = baseY + firstSlot / 5.0 * nodeSpacing;
         double endX = baseX + secondSlot % 5.0 * nodeSpacing;
         double endY = baseY + secondSlot / 5.0 * nodeSpacing;
-        for (RenderProgressingLine line : lineList) {
+        for (ProgressingLine line : lineList) {
             if (line.hasLineSameProperties(startX, startY, 0, endX, endY, 0)) {
                 lineList.remove(line);
                 return;

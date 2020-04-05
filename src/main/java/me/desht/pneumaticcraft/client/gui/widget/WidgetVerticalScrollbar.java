@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
@@ -71,16 +71,16 @@ public class WidgetVerticalScrollbar extends Widget {
     @Override
     public void renderButton(int mouseX, int mouseY, float partialTick) {
         if (visible) {
-            GlStateManager.color4f(1, 1, 1, 1);
+            RenderSystem.color4f(1, 1, 1, 1);
             Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_VERTICAL_SCROLLBAR);
             blit(x, y, 12, 0, width, 1, 26, 15);
             for (int i = 0; i < height - 2; i++)
                 blit(x, y + 1 + i, 12, 1, width, 1, 26, 15);
             blit(x, y + height - 1, 12, 14, width, 1, 26, 15);
 
-            if (!active) GlStateManager.color4f(0.6F, 0.6F, 0.6F, 1);
+            if (!active) RenderSystem.color4f(0.6F, 0.6F, 0.6F, 1);
             blit(x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
-            GlStateManager.color4f(1, 1, 1, 1);
+            RenderSystem.color4f(1, 1, 1, 1);
         }
     }
 

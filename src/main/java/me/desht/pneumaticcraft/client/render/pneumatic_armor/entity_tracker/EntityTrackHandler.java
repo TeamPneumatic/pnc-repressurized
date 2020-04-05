@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry.EntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
@@ -92,7 +93,7 @@ public class EntityTrackHandler {
         return trackers;
     }
 
-    public static class EntityTrackEntryDrone extends EntityTrackEntry {
+    public static class EntityTrackEntryDrone implements IEntityTrackEntry {
         private RenderDroneAI droneAIRenderer;
 
         @Override
@@ -115,8 +116,8 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void render(Entity entity, float partialTicks) {
-            droneAIRenderer.render(partialTicks);
+        public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, Entity entity, float partialTicks) {
+            droneAIRenderer.render(matrixStack, buffer, partialTicks);
         }
 
         @Override
@@ -141,7 +142,7 @@ public class EntityTrackHandler {
         }
     }
 
-    public static class EntityTrackEntryPressurizable extends EntityTrackEntry {
+    public static class EntityTrackEntryPressurizable implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
             return entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).isPresent();
@@ -156,7 +157,7 @@ public class EntityTrackHandler {
         }
     }
 
-    public static class EntityTrackEntryLivingBase extends EntityTrackEntry {
+    public static class EntityTrackEntryLivingBase implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
             return entity instanceof LivingEntity;
@@ -169,7 +170,7 @@ public class EntityTrackHandler {
         }
     }
 
-    public static class EntityTrackEntrySlime extends EntityTrackEntry {
+    public static class EntityTrackEntrySlime implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
             return entity instanceof SlimeEntity;
@@ -194,7 +195,7 @@ public class EntityTrackHandler {
         }
     }
 
-    public static class EntityTrackEntryMob extends EntityTrackEntry {
+    public static class EntityTrackEntryMob implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
             return entity instanceof MonsterEntity;
@@ -211,7 +212,7 @@ public class EntityTrackHandler {
 
     // TODO this doesn't fully work since the client doesn't get the full age data of an entity
     // but is it worth going to the trouble of requesting extra server data?
-    public static class EntityTrackEntryAgeable extends EntityTrackEntry {
+    public static class EntityTrackEntryAgeable implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
             return entity instanceof AgeableEntity;
@@ -230,7 +231,7 @@ public class EntityTrackHandler {
         }
     }
 
-    public static class EntityTrackEntryTameable extends EntityTrackEntry {
+    public static class EntityTrackEntryTameable implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
             return entity instanceof TameableEntity;
@@ -247,7 +248,7 @@ public class EntityTrackHandler {
         }
     }
 
-    public static class EntityTrackEntryCreeper extends EntityTrackEntry {
+    public static class EntityTrackEntryCreeper implements IEntityTrackEntry {
         private int creeperInFuseTime;
 
         @Override
@@ -278,7 +279,7 @@ public class EntityTrackHandler {
         }
     }
 
-    public static class EntityTrackEntryPlayer extends EntityTrackEntry {
+    public static class EntityTrackEntryPlayer implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
             return entity instanceof PlayerEntity;
@@ -308,7 +309,7 @@ public class EntityTrackHandler {
         return stacks.stream().filter(stack -> !stack.isEmpty()).toArray(ItemStack[]::new);
     }
 
-    public static class EntityTrackEntryHackable extends EntityTrackEntry {
+    public static class EntityTrackEntryHackable implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
             return HackUpgradeHandler.enabledForPlayer(ClientUtils.getClientPlayer());
@@ -345,7 +346,7 @@ public class EntityTrackHandler {
         }
     }
 
-    public static class EntityTrackEntryPainting extends EntityTrackEntry {
+    public static class EntityTrackEntryPainting implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
             return entity instanceof PaintingEntity;
@@ -361,7 +362,7 @@ public class EntityTrackHandler {
         }
     }
 
-    public static class EntityTrackEntryItemFrame extends EntityTrackEntry {
+    public static class EntityTrackEntryItemFrame implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
             return entity instanceof ItemFrameEntity;

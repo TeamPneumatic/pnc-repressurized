@@ -83,7 +83,7 @@ public class EntityVortex extends ThrowableEntity {
             Block block = world.getBlockState(pos).getBlock();
             if (vortexBreakable(block)) {
                 if (!world.isRemote) {
-                    BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos);
+                    BlockPos.Mutable mPos = new BlockPos.Mutable(pos);
                     if (tryCutPlants(pos)) {
                         int plantsCut = 1;
                         for (int x = -2; x <= 2; x++) {

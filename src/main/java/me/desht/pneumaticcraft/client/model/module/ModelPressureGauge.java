@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelPressureGauge extends ModelModuleBase<ModulePressureGauge> {
+public class ModelPressureGauge extends AbstractModelRenderer<ModulePressureGauge> {
     private final RendererModel shape1;
     private final RendererModel shape2;
 

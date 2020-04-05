@@ -7,20 +7,20 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.GenerationSettings;
-import net.minecraft.world.gen.placement.LakeChanceConfig;
+import net.minecraft.world.gen.placement.ChanceConfig;
 import net.minecraft.world.gen.placement.Placement;
 
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class LakeOil extends Placement<LakeChanceConfig> {
-    LakeOil(Function<Dynamic<?>, ? extends LakeChanceConfig> configFactoryIn) {
+public class LakeOil extends Placement<ChanceConfig> {
+    LakeOil(Function<Dynamic<?>, ? extends ChanceConfig> configFactoryIn) {
         super(configFactoryIn);
     }
 
     @Override
-    public Stream<BlockPos> getPositions(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generatorIn, Random random, LakeChanceConfig configIn, BlockPos pos) {
+    public Stream<BlockPos> getPositions(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generatorIn, Random random, ChanceConfig configIn, BlockPos pos) {
         if (!blacklisted(worldIn) && random.nextInt(100) < configIn.chance) {
             int i = random.nextInt(16);
             int j = random.nextInt(random.nextInt(generatorIn.getMaxHeight() - 8) + 8);

@@ -60,9 +60,9 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
         String g2 = TextFormatting.GREEN.toString();
 
         if (jbStat.isClicked()) {
-            double mx = player.posX - player.prevPosX;
-            double my = player.posY - player.prevPosY;
-            double mz = player.posZ - player.prevPosZ;
+            double mx = player.getPosX() - player.prevPosX;
+            double my = player.getPosY() - player.prevPosY;
+            double mz = player.getPosZ() - player.prevPosZ;
             double v = Math.sqrt(mx * mx + my * my + mz * mz);
             double vg = Math.sqrt(mx * mx + mz * mz);
             int heading = MathHelper.floor((double)(player.rotationYaw * 8.0F / 360.0F) + 0.5D) & 0x7;

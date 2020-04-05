@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.entity.model.RendererModel;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelSafetyValve extends ModelModuleBase<ModuleSafetyValve> {
+public class ModelSafetyValve extends AbstractModelRenderer<ModuleSafetyValve> {
     private final RendererModel shape1;
     private final RendererModel shape2;
     private final RendererModel shape3;

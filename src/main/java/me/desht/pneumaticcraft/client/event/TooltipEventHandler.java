@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.event;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
@@ -23,6 +23,9 @@ import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BucketItem;
@@ -185,26 +188,27 @@ public class TooltipEventHandler {
             width = Math.max(width, renderString(fr, (I18n.format("gui.micromissile.damage")), event.getX(), y + fr.FONT_HEIGHT * 2));
             int barX = event.getX() + width + 2;
             int barW = event.getWidth() - width - 10;
-            GlStateManager.disableTexture();
-            GlStateManager.lineWidth(10);
+            RenderSystem.disableTexture();
+            RenderSystem.lineWidth(10);
             GL11.glEnable(GL11.GL_LINE_STIPPLE);
             GL11.glLineStipple(1, (short)0xFEFE);
             RenderUtils.glColorHex(0x00C000, 255);
-            GlStateManager.begin(GL11.GL_LINES);
-            GL11.glVertex2i(barX, y + 4);
-            GL11.glVertex2i(barX + (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED)), y + 4);
-            GlStateManager.end();
-            GlStateManager.begin(GL11.GL_LINES);
-            GL11.glVertex2i(barX, y + 4 + fr.FONT_HEIGHT);
-            GL11.glVertex2i(barX + (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED)), y + 4 + fr.FONT_HEIGHT);
-            GlStateManager.end();
-            GlStateManager.begin(GL11.GL_LINES);
-            GL11.glVertex2i(barX, y + 4 + fr.FONT_HEIGHT * 2);
-            GL11.glVertex2i(barX + (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_DAMAGE)), y + 4 + fr.FONT_HEIGHT * 2);
-            GlStateManager.end();
-            GlStateManager.lineWidth(1);
+
+            drawLine(barX, y, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED)));
+            drawLine(barX, y + fr.FONT_HEIGHT, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED)));
+            drawLine(barX, y + 2 * fr.FONT_HEIGHT, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_DAMAGE)));
+
+            RenderSystem.lineWidth(1);
             GL11.glDisable(GL11.GL_LINE_STIPPLE);
         }
+    }
+
+    private static void drawLine(int x, int y, int length) {
+        BufferBuilder bb = Tessellator.getInstance().getBuffer();
+        bb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+        bb.pos(x, y + 4, 0);
+        bb.pos(x + length, y + 4, 0);
+        Tessellator.getInstance().draw();
     }
 
     private static int renderString(FontRenderer fr, String s, int x, int y) {

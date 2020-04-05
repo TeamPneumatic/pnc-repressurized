@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
@@ -49,17 +49,17 @@ public enum LauncherTracker {
     }
 
     public void render(MainWindow sr, float partialTicks) {
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         if (Minecraft.getInstance().player.getPrimaryHand() == HandSide.LEFT) {
-            GlStateManager.translated(sr.getScaledWidth() - 30, sr.getScaledHeight() - 30, -90);
-            GlStateManager.scaled(-1, 1, 1);
+            RenderSystem.translated(sr.getScaledWidth() - 30, sr.getScaledHeight() - 30, -90);
+            RenderSystem.scaled(-1, 1, 1);
         } else {
-            GlStateManager.translated(30, sr.getScaledHeight() - 30, -90);
+            RenderSystem.translated(30, sr.getScaledHeight() - 30, -90);
         }
-        GlStateManager.rotated(-60, 0, 0, 1);
+        RenderSystem.rotatef(-60, 0, 0, 1);
         float progress = Math.min(100f, (launcherProgress + partialTicks) * 100f / LauncherTracker.MAX_PROGRESS);
         RenderProgressBar.render(0, 0, sr.getScaledWidth() / 6.0 - 30, 12, 0,
                 progress, 0xAA0000A0, 0xAA40A0FF);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 }

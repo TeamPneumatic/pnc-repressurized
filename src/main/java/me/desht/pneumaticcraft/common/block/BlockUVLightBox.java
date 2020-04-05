@@ -9,13 +9,12 @@ import net.minecraft.block.RedstoneTorchBlock;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.ILightReader;
 
 import javax.annotation.Nullable;
 
@@ -58,12 +57,7 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
-    }
-
-    @Override
-    public int getTintColor(BlockState state, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
             boolean lightsOn = world.getBlockState(pos).get(BlockUVLightBox.LIT);
             return lightsOn ? 0xFF4000FF : 0xFFAFAFE4;

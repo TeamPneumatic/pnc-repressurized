@@ -7,6 +7,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.IPlantable;
 
 import static me.desht.pneumaticcraft.common.config.PNCConfig.Common.Machines.cropSticksGrowthBoostChance;
@@ -29,7 +30,7 @@ public class EntityCropSupport extends EntitySemiblockBase {
 
         if (world.rand.nextDouble() < cropSticksGrowthBoostChance && !getBlockState().isAir(world, getBlockPos())) {
             if (!world.isRemote) {
-                getBlockState().tick(world, getBlockPos(), world.rand);
+                getBlockState().tick((ServerWorld) world, getBlockPos(), world.rand);
             } else {
                 world.addParticle(ParticleTypes.HAPPY_VILLAGER, getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, 0, 0, 0);
             }

@@ -13,7 +13,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
@@ -61,18 +60,16 @@ public class ItemMicromissiles extends Item {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
 
-        if (playerIn.isSneaking()) {
+        if (playerIn.isSteppingCarefully()) {
             if (worldIn.isRemote) {
                 GuiMicromissile.openGui(stack.getDisplayName(), handIn);
             }
-            return ActionResult.newResult(ActionResultType.SUCCESS, stack);
+            return ActionResult.resultSuccess(stack);
         }
 
         EntityMicromissile missile = new EntityMicromissile(worldIn, playerIn, stack);
-        Vec3d directionVec = playerIn.getLookVec().normalize();
-        missile.posX += directionVec.x;
-        missile.posY += directionVec.y + 0.1;
-        missile.posZ += directionVec.z;
+        Vec3d newPos = missile.getPositionVector().add(playerIn.getLookVec().normalize());
+        missile.setPosition(newPos.x, newPos.y, newPos.z);
         missile.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, getInitialVelocity(stack), 0.0F);
 
         playerIn.getCooldownTracker().setCooldown(this, PNCConfig.Common.Micromissiles.launchCooldown);
@@ -91,7 +88,7 @@ public class ItemMicromissiles extends Item {
         if (!playerIn.isCreative()) {
             stack.damageItem(1, playerIn, playerEntity -> { });
         }
-        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
+        return ActionResult.resultSuccess(stack);
     }
 
     private float getInitialVelocity(ItemStack stack) {

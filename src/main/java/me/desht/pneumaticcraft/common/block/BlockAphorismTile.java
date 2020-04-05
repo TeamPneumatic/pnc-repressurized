@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -31,10 +31,8 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.ILightReader;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
@@ -70,12 +68,6 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         return this.getDefaultState().with(directionProperty(), ctx.getFace().getOpposite());
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
     @Override
@@ -118,8 +110,8 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (world.isRemote && hand != Hand.OFF_HAND && player.getHeldItem(hand).isEmpty() && !player.isSneaking()) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+        if (world.isRemote && hand != Hand.OFF_HAND && player.getHeldItem(hand).isEmpty() && !player.isSteppingCarefully()) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityAphorismTile) {
                 GuiAphorismTile.openGui((TileEntityAphorismTile) te);
@@ -145,7 +137,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
                 }
             }
         }
-        return true;
+        return ActionResultType.SUCCESS;
     }
 
     private boolean clickedBorder(BlockState state, Vec3d hitVec) {
@@ -180,7 +172,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
 
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction face, Hand hand) {
-        if (player != null && player.isSneaking()) {
+        if (player != null && player.isSteppingCarefully()) {
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileEntityAphorismTile) {
                 TileEntityAphorismTile teAt = (TileEntityAphorismTile) tile;
@@ -201,7 +193,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
     }
 
     @Override
-    public int getTintColor(BlockState state, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityAphorismTile) {

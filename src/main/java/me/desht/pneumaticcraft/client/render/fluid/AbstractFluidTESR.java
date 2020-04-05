@@ -1,40 +1,58 @@
 package me.desht.pneumaticcraft.client.render.fluid;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.client.model.animation.TileEntityRendererFast;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidTank;
 
 import java.util.List;
 
-public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntityRendererFast<T> {
+public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEntityRenderer<T> {
+    AbstractFluidTESR(TileEntityRendererDispatcher dispatcher) {
+        super(dispatcher);
+    }
+
     @Override
-    public void renderTileEntityFast(T te, double x, double y, double z, float partialTicks, int destroyStage, BufferBuilder buffer) {
-        if (!te.getWorld().getChunkProvider().getChunk(te.getPos().getX() >> 4, te.getPos().getZ() >> 4, true).isEmpty()) {
+    public void render(T te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
+        if (te.getWorld().isAreaLoaded(te.getPos(), 0)) {
+//        if (!te.getWorld().getChunkProvider().getChunk(te.getPos().getX() >> 4, te.getPos().getZ() >> 4, true).isEmpty()) {
+            IVertexBuilder builder = buffer.getBuffer(RenderType.getTranslucent());
+
             for (TankRenderInfo tankRenderInfo : getTanksToRender(te)) {
-                doRender(te, x, y, z, buffer, tankRenderInfo);
+                doRender(te, builder, tankRenderInfo);
             }
         }
     }
 
-    private void doRender(T te, double x, double y, double z, BufferBuilder buffer, TankRenderInfo tankRenderInfo) {
+    private void doRender(T te, IVertexBuilder buffer, TankRenderInfo tankRenderInfo) {
         IFluidTank tank = tankRenderInfo.getTank();
         if (tank.getFluidAmount() == 0) return;
 
-        Fluid f = tank.getFluid().getFluid();
-        TextureAtlasSprite still = Minecraft.getInstance().getTextureMap().getAtlasSprite(f.getAttributes().getStill(tank.getFluid()).toString());
-        int color = f.getAttributes().getColor(tank.getFluid());
+        World w = Minecraft.getInstance().world;
+        Fluid fluid = tank.getFluid().getFluid();
+        ResourceLocation texture = fluid.getAttributes().getStillTexture(tank.getFluid());
+        //noinspection deprecation
+        TextureAtlasSprite still = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(texture);
+        int color = fluid.getAttributes().getColor(tank.getFluid());
         float alpha = (color >> 24 & 0xFF) / 255F;
         float red = (color >> 16 & 0xFF) / 255F;
         float green = (color >> 8 & 0xFF) / 255F;
         float blue = (color & 0xFF) / 255F;
 
-        buffer.setTranslation(x,y,z);
+//        buffer.setTranslation(x,y,z);
 
         AxisAlignedBB bounds = getRenderBounds(tank, tankRenderInfo.getBounds());
         double bx1 = bounds.minX * 16;
@@ -45,7 +63,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
         double bz2 = bounds.maxZ * 16;
 
         if (tankRenderInfo.shouldRender(Direction.DOWN)) {
-            int downCombined = getWorld().getCombinedLight(te.getPos().down(), 0);
+            int downCombined = WorldRenderer.getCombinedLight(w, te.getPos().down());
             int downLMa = downCombined >> 16 & 65535;
             int downLMb = downCombined & 65535;
             float u1 = still.getInterpolatedU(bx1);
@@ -59,7 +77,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
         }
 
         if (tankRenderInfo.shouldRender(Direction.UP)) {
-            int upCombined = getWorld().getCombinedLight(te.getPos().up(), 0);
+            int upCombined = WorldRenderer.getCombinedLight(w, te.getPos().up());
             int upLMa = upCombined >> 16 & 65535;
             int upLMb = upCombined & 65535;
             float u1 = still.getInterpolatedU(bx1);
@@ -73,7 +91,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
         }
 
         if (tankRenderInfo.shouldRender(Direction.NORTH)) {
-            int northCombined = getWorld().getCombinedLight(te.getPos().north(), 0);
+            int northCombined = WorldRenderer.getCombinedLight(w, te.getPos().north());
             int northLMa = northCombined >> 16 & 65535;
             int northLMb = northCombined & 65535;
             float u1 = still.getInterpolatedU(bx1);
@@ -87,7 +105,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
         }
 
         if (tankRenderInfo.shouldRender(Direction.SOUTH)) {
-            int southCombined = getWorld().getCombinedLight(te.getPos().south(), 0);
+            int southCombined = WorldRenderer.getCombinedLight(w, te.getPos().south());
             int southLMa = southCombined >> 16 & 65535;
             int southLMb = southCombined & 65535;
             float u1 = still.getInterpolatedU(bx1);
@@ -101,7 +119,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
         }
 
         if (tankRenderInfo.shouldRender(Direction.WEST)) {
-            int westCombined = getWorld().getCombinedLight(te.getPos().west(), 0);
+            int westCombined = WorldRenderer.getCombinedLight(w, te.getPos().west());
             int westLMa = westCombined >> 16 & 65535;
             int westLMb = westCombined & 65535;
             float u1 = still.getInterpolatedU(by1);
@@ -115,7 +133,7 @@ public abstract class FastFluidTESR<T extends TileEntityBase> extends TileEntity
         }
 
         if (tankRenderInfo.shouldRender(Direction.EAST)) {
-            int eastCombined = getWorld().getCombinedLight(te.getPos().east(), 0);
+            int eastCombined = WorldRenderer.getCombinedLight(w, te.getPos().east());
             int eastLMa = eastCombined >> 16 & 65535;
             int eastLMb = eastCombined & 65535;
             float u1 = still.getInterpolatedU(by1);

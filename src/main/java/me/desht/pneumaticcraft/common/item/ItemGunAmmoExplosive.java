@@ -34,7 +34,7 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.explosiveAmmoExplosionChance)) {
             Explosion.Mode mode = PNCConfig.Common.Minigun.explosiveAmmoTerrainDamage ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
-            minigun.getWorld().createExplosion(null, target.posX, target.posY, target.posZ,
+            minigun.getWorld().createExplosion(null, target.getPosX(), target.getPosY(), target.getPosZ(),
                     (float) PNCConfig.Common.Minigun.explosiveAmmoExplosionPower, mode);
         }
         return super.onTargetHit(minigun, ammo, target);

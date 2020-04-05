@@ -49,7 +49,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         if (!worldIn.isRemote) {
             openGui(playerIn, handIn);
         }
-        return ActionResult.newResult(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
+        return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
     }
 
     @Override

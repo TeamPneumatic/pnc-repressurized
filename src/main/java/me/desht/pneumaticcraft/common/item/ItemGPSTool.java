@@ -50,7 +50,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
         if (worldIn.isRemote) {
             GuiGPSTool.showGUI(stack, handIn, getGPSLocation(worldIn, stack));
         }
-        return ActionResult.newResult(ActionResultType.SUCCESS, stack);
+        return ActionResult.resultSuccess(stack);
     }
 
     @Override

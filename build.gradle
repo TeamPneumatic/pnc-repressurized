@@ -147,7 +147,7 @@ sourceSets.main.resources {
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: '20191125-1.14.3'
+    mappings channel: 'snapshot', version: '20200323-1.15.1'
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
     //accessTransformer = file('my_at.cfg')
     runs {
@@ -186,15 +186,14 @@ minecraft {
 }
 
 dependencies {
-//    minecraft "net.minecraftforge:forge:1.14.4-28.2.3-model-system-rework"
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     compile fg.deobf (project.dependencies.create("mcp.mobius.waila:Hwyla:${hwyla_version}") {
         transitive = false
     })
-    compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.14:${top_version}:api")
-    runtime fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.14:${top_version}")
-    compileOnly fg.deobf("mezz.jei:jei-1.14.4:${jei_version}:api")
-    runtime fg.deobf("mezz.jei:jei-1.14.4:${jei_version}")
+    compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}:api")
+    runtime fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}")
+    compileOnly fg.deobf("mezz.jei:jei-1.15.2:${jei_version}:api")
+    runtime fg.deobf("mezz.jei:jei-1.15.2:${jei_version}")
     compileOnly fg.deobf("top.theillusivec4.curios:curios:${curios_version}:api")
     runtime fg.deobf("top.theillusivec4.curios:curios:${curios_version}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
@@ -207,7 +206,7 @@ dependencies {
 //    compileOnly "mcp.mobius.waila:Hwyla:${hwyla_version}"
 //    compileOnly "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
 //    compileOnly "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
-    compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.14.4:${crafttweaker_version}")
+//    compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.14.4:${crafttweaker_version}")
 //    compileOnly "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
 //    compileOnly "igwmod:IGW-Mod-1.12.2:${igwmod_version}:universal"  // using universal instead of userdev for now
 //    compileOnly "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
@@ -216,7 +215,7 @@ dependencies {
 //    compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
 //    compileOnly("appeng:appliedenergistics2:${ae2_version}:api")
 //    //compileOnly "elucent:albedo:${albedo_version}"
-    compile fg.deobf("vazkii.patchouli:Patchouli-1.14.4:${patchouli_version}")
+    compile fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 //    compileOnly "blusunrize:ImmersiveEngineering:${immersive_engineering_version}"
 //    compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
 //    compileOnly "com.github.glitchfiend.biomesoplenty:ToughAsNails:${tan_version}:universal"

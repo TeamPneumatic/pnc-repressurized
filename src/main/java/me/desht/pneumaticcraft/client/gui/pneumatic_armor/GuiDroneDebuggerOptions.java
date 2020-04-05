@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
@@ -123,10 +123,10 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
             Minecraft.getInstance().fontRenderer.drawStringWithShadow("Routine: " + selectedDrone.getLabel(), screenWidth / 2f, screenHeight - 15, 0xFFFFFFFF);
         }
 
-        GlStateManager.translated(0, 0, 300);
+        RenderSystem.translated(0, 0, 300);
         programmerUnit.render(x, y, true, true);
         programmerUnit.renderForeground(x, y, null);
-        GlStateManager.translated(0, 0, -300);
+        RenderSystem.translated(0, 0, -300);
 
         followCheckbox.render(x, y, partialTicks);
 

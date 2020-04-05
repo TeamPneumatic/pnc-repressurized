@@ -18,7 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -29,7 +28,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.ILightReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -65,11 +64,6 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
-    }
-
-    @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return size.cls;
     }
@@ -94,7 +88,7 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
 
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
-        if (!player.isSneaking()) {
+        if (!player.isSteppingCarefully()) {
             RayTraceResult rtr = PneumaticCraftUtils.getMouseOverServer(player, 5);
             if (rtr.getType() == RayTraceResult.Type.BLOCK) {
                 BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
@@ -139,7 +133,7 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
     }
 
     @Override
-    public int getTintColor(BlockState state, @Nullable IEnviromentBlockReader world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
         if (tintIndex == 1) {
             return size.tintColor;
         }

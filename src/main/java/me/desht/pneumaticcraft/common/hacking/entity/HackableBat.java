@@ -38,7 +38,7 @@ public class HackableBat implements IHackableEntity {
     public void onHackFinished(Entity entity, PlayerEntity player) {
         if (!entity.world.isRemote) {
             entity.remove();
-            entity.world.createExplosion(null, entity.posX, entity.posY, entity.posZ, 0, Explosion.Mode.NONE);
+            entity.world.createExplosion(null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), 0, Explosion.Mode.NONE);
         }
     }
 

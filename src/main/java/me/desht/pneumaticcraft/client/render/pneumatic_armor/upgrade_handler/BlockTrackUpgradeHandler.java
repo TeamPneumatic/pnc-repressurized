@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiBlockTrackOptions;
@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -24,7 +25,6 @@ import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +56,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
 
         long now = System.nanoTime();
 
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        BlockPos.Mutable pos = new BlockPos.Mutable();
         for (int i = 0; i < HARD_MAX_BLOCKS_PER_TICK; i++) {
             // 1% of a tick = 500,000ns
             if ((i & 0xff) == 0 && System.nanoTime() - now > PNCConfig.Client.Armor.blockTrackerMaxTimePerTick * 500000) {
@@ -135,7 +135,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     /**
      * Advance the scan position but be clever about it; we never need to scan blocks behind the player
      */
-    private void nextScanPos(BlockPos.MutableBlockPos pos, PlayerEntity player, int range) {
+    private void nextScanPos(BlockPos.Mutable pos, PlayerEntity player, int range) {
         Direction dir = PneumaticCraftUtils.getDirectionFacing(player, true);
         switch (dir) {
             case UP:
@@ -211,7 +211,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
                 }
                 break;
         }
-        pos.setPos(player.posX + xOff, MathHelper.clamp(player.posY + yOff, 0, 255), player.posZ + zOff);
+        pos.setPos(player.getPosX() + xOff, MathHelper.clamp(player.getPosY() + yOff, 0, 255), player.getPosZ() + zOff);
     }
 
     private void updateBlockTypeCounts() {
@@ -281,19 +281,19 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public void render3D(float partialTicks) {
-        GlStateManager.depthMask(false);
-        GlStateManager.disableDepthTest();
-        GlStateManager.disableCull();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+    public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+//        GlStateManager.depthMask(false);
+//        GlStateManager.disableDepthTest();
+//        GlStateManager.disableCull();
+//        GlStateManager.enableBlend();
+//        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-        blockTargets.values().forEach(t -> t.render(partialTicks));
+        blockTargets.values().forEach(t -> t.render(matrixStack, buffer, partialTicks));
 
-        GlStateManager.enableCull();
-        GlStateManager.enableDepthTest();
-        GlStateManager.disableBlend();
-        GlStateManager.depthMask(true);
+//        GlStateManager.enableCull();
+//        GlStateManager.enableDepthTest();
+//        GlStateManager.disableBlend();
+//        GlStateManager.depthMask(true);
     }
 
     @Override

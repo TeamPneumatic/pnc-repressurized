@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.math.MathHelper;
@@ -119,7 +120,7 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
         int h = mc.fontRenderer.FONT_HEIGHT;
         int lines = height / h;
 
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(x * sf, (y + height) * sf, width * sf, height * sf);
         if (inverseSelected && selected >= 0) {
@@ -127,13 +128,13 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
             fill(x, y + h * selected, x + width, y + h * (selected + 1), 0xFF000000 | selectedBg);
             GlStateManager.enableTexture();
         }
-        GlStateManager.translated(x, y, 0);
-        GlStateManager.scaled(0.75, 1, 1);
+        RenderSystem.translated(x, y, 0);
+        RenderSystem.scaled(0.75, 1, 1);
         for (int i = 0; i < items.size() && i < lines; i++) {
             mc.fontRenderer.drawString(items.get(i).toString(), 0, i * h, i == selected ? selectedFg : fgColor);
         }
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     @Override

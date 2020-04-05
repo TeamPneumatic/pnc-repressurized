@@ -33,7 +33,7 @@ public interface IProgWidget extends IProgWidgetBase {
 
     ResourceLocation getTexture();
 
-    Pair<Double, Double> getMaxUV();
+    Pair<Float,Float> getMaxUV();
 
     int getTextureSize();
 

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
@@ -49,21 +49,21 @@ public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipPro
             fill(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, active ? 0xFFA0A0A0 : 0xFF999999);
             fill(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, active ? 0xFF202020 : 0xFFAAAAAA);
             if (checked) {
-                GlStateManager.disableTexture();
+                RenderSystem.disableTexture();
                 if (active) {
-                    GlStateManager.color4f(0.5f, 1, 0.5f, 1);
+                    RenderSystem.color4f(0.5f, 1, 0.5f, 1);
                 } else {
-                    GlStateManager.color4f(0.8f, 0.8f, 0.8f, 1);
+                    RenderSystem.color4f(0.8f, 0.8f, 0.8f, 1);
                 }
                 BufferBuilder wr = Tessellator.getInstance().getBuffer();
-                GlStateManager.lineWidth(2);
+                RenderSystem.lineWidth(2);
                 wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
                 wr.pos(x + 2, y + 5, 0.0).endVertex();
                 wr.pos(x + 5, y + 7, 0.0).endVertex();
                 wr.pos(x + 8, y + 3, 0.0).endVertex();
                 Tessellator.getInstance().draw();
-                GlStateManager.enableTexture();
-                GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1);
+                RenderSystem.enableTexture();
+                RenderSystem.color4f(0.25f, 0.25f, 0.25f, 1);
             }
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
             fr.drawString(I18n.format(getMessage()), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2f - fr.FONT_HEIGHT / 2f, active ? color : 0xFF888888);

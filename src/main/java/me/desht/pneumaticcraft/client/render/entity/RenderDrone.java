@@ -4,7 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.model.entity.ModelDrone;
 import me.desht.pneumaticcraft.client.render.RenderLaser;
 import me.desht.pneumaticcraft.client.render.RenderMinigunTracers;
-import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
+import me.desht.pneumaticcraft.client.util.ProgressingLine;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
@@ -97,14 +98,15 @@ public class RenderDrone extends MobRenderer<EntityDroneBase,ModelDrone> {
     }
 
     private void renderTargetLine(EntityDrone drone, float partialTicks) {
-        RenderProgressingLine targetLine = drone.getTargetLine();
-        RenderProgressingLine oldTargetLine = drone.getOldTargetLine();
+        ProgressingLine targetLine = drone.getTargetLine();
+        ProgressingLine oldTargetLine = drone.getOldTargetLine();
         if (targetLine != null && oldTargetLine != null) {
             GlStateManager.pushMatrix();
             GlStateManager.scaled(1, -1, 1);
             GlStateManager.disableTexture();
             GlStateManager.color4f(1, 0, 0, 1);
-            targetLine.renderInterpolated(oldTargetLine, partialTicks);
+            RenderUtils.renderProgressingLine(oldTargetLine, targetLine, partialTicks, matrixStack, builder, 0xFFFF0000);
+//            targetLine.renderInterpolated(oldTargetLine, partialTicks);
             GlStateManager.color4f(1, 1, 1, 1);
             GlStateManager.enableTexture();
             GlStateManager.popMatrix();

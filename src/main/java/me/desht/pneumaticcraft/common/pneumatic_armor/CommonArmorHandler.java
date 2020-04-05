@@ -199,7 +199,7 @@ public class CommonArmorHandler {
                             float oldPressure = addAir(slot, (int) -airUsage);
                             if (oldPressure > 0F && getArmorPressure(slot) == 0F) {
                                 // out of air!
-                                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 2.0f, false), (ServerPlayerEntity) player);
+                                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 1.0f, 2.0f, false), (ServerPlayerEntity) player);
                             }
                         }
                     }
@@ -253,7 +253,7 @@ public class CommonArmorHandler {
                 break;
             case FEET:
                 if (getArmorPressure(EquipmentSlotType.FEET) > 0.0F && isStepAssistEnabled()) {
-                    player.stepHeight = player.isSneaking() ? 0.6001F : 1.25F;
+                    player.stepHeight = player.isSteppingCarefully() ? 0.6001F : 1.25F;
                 } else {
                     player.stepHeight = 0.6F;
                 }
@@ -323,12 +323,12 @@ public class CommonArmorHandler {
         }
         if (!player.world.isRemote && speedBoost > 0) {
             Vec3d prev = moveMap.get(player.getUniqueID());
-            boolean moved = prev != null && (Math.abs(player.posX - prev.x) > 0.0001 || Math.abs(player.posZ - prev.z) > 0.0001);
+            boolean moved = prev != null && (Math.abs(player.getPosX() - prev.x) > 0.0001 || Math.abs(player.getPosZ() - prev.z) > 0.0001);
             if (moved && player.onGround && !player.isInWater()) {
                 int airUsage = (int) Math.ceil(PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedBoost * 8);
                 addAir(EquipmentSlotType.LEGS, -airUsage);
             }
-            moveMap.put(player.getUniqueID(), new Vec3d(player.posX, player.posY, player.posZ));
+            moveMap.put(player.getUniqueID(), player.getPositionVector());
         }
     }
 
@@ -365,7 +365,7 @@ public class CommonArmorHandler {
             if (isJetBootsActive()) {
                 if (jetBootsBuilderMode && jetbootsCount >= JetBootsUpgradeHandler.BUILDER_MODE_LEVEL) {
                     // builder mode - rise vertically (or hover if sneaking and firing)
-                    setYMotion(player, player.isSneaking() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
+                    setYMotion(player, player.isSteppingCarefully() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
                     jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount / 2.5F);
                 } else {
                     // jetboots firing - move in direction of looking
@@ -380,9 +380,9 @@ public class CommonArmorHandler {
                 jetBootsActiveTicks++;
             } else if (isJetBootsEnabled() && !player.onGround) {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
-                setYMotion(player, player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount);
+                setYMotion(player, player.isSteppingCarefully() ? -0.45 : -0.1 + 0.02 * jetbootsCount);
                 player.fallDistance = 0;
-                jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F));
+                jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * (player.isSteppingCarefully() ? 0.25F : 0.5F));
                 flightAccel = 1.0F;
             } else {
                 flightAccel = 1.0F;
@@ -477,7 +477,7 @@ public class CommonArmorHandler {
                     && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
                     && !item.getPersistentData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
                 if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) break;
-                item.setPosition(player.posX, player.posY, player.posZ);
+                item.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
                 if (item instanceof ItemEntity) ((ItemEntity) item).setPickupDelay(0);
                 addAir(EquipmentSlotType.CHEST, -PneumaticValues.MAGNET_AIR_USAGE);
             }
@@ -505,7 +505,7 @@ public class CommonArmorHandler {
                 if (++hackTime >= hackableEntity.getHackTime(hackedEntity, player)) {
                     hackableEntity.onHackFinished(hackedEntity, player);
                     HackTickHandler.instance().trackEntity(hackedEntity, hackableEntity);
-                    NetworkHandler.sendToAllAround(new PacketHackingEntityFinish(hackedEntity), new PacketDistributor.TargetPoint(hackedEntity.posX, hackedEntity.posY, hackedEntity.posZ, 64, hackedEntity.world.getDimension().getType()));
+                    NetworkHandler.sendToAllAround(new PacketHackingEntityFinish(hackedEntity), new PacketDistributor.TargetPoint(hackedEntity.getPosX(), hackedEntity.getPosY(), hackedEntity.getPosZ(), 64, hackedEntity.world.getDimension().getType()));
                     setHackedEntity(null);
                     AdvancementTriggers.ENTITY_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side
                 }

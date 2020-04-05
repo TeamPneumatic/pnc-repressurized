@@ -41,11 +41,11 @@ public class HackableCow implements IHackableEntity {
         if (!entity.world.isRemote) {
             entity.remove();
             MooshroomEntity entitycow = new MooshroomEntity(EntityType.MOOSHROOM, entity.world);
-            entitycow.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
+            entitycow.setLocationAndAngles(entity.getPosX(), entity.getPosY(), entity.getPosZ(), entity.rotationYaw, entity.rotationPitch);
             entitycow.setHealth(((CowEntity) entity).getHealth());
             entitycow.renderYawOffset = ((CowEntity) entity).renderYawOffset;
             entity.world.addEntity(entitycow);
-            entity.world.addParticle(ParticleTypes.EXPLOSION, entity.posX, entity.posY + entity.getHeight() / 2.0F, entity.posZ, 0.0D, 0.0D, 0.0D);
+            entity.world.addParticle(ParticleTypes.EXPLOSION, entity.getPosX(), entity.getPosY() + entity.getHeight() / 2.0F, entity.getPosZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 

@@ -44,7 +44,7 @@ public class ModBlocks {
     }
 
     private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block, final Supplier<Callable<ItemStackTileEntityRenderer>> renderMethod) {
-        return () -> new BlockItem(block.get(), new Item.Properties().group(ModItems.ItemGroups.PNC_CREATIVE_TAB).setTEISR(renderMethod));
+        return () -> new BlockItem(block.get(), new Item.Properties().group(ModItems.ItemGroups.PNC_CREATIVE_TAB).setISTER(renderMethod));
     }
 
     private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block, final ItemGroup itemGroup) {

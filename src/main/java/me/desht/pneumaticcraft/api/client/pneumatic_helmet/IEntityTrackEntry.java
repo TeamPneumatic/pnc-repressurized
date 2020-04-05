@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
 
 import java.util.List;
@@ -33,7 +35,7 @@ public interface IEntityTrackEntry {
      *
      * @param entity the tracked entity
      */
-    void update(Entity entity);
+    default void update(Entity entity) { }
 
     /**
      * Called every render tick, this method can be used to render additional info. Used for Drone AI visualisation.
@@ -41,18 +43,18 @@ public interface IEntityTrackEntry {
      * @param entity the tracked entity
      * @param partialTicks partial ticks since last full ticks
      */
-    void render(Entity entity, float partialTicks);
+    default void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, Entity entity, float partialTicks) { }
 
-    /**
-     * Just a basic implementation class that can be used if an update and render method isn't needed.
-     */
-    abstract class EntityTrackEntry implements IEntityTrackEntry {
-        @Override
-        public void update(Entity entity) {
-        }
-
-        @Override
-        public void render(Entity entity, float partialTicks) {
-        }
-    }
+//    /**
+//     * Just a basic implementation class that can be used if an update and render method isn't needed.
+//     */
+//    abstract class EntityTrackEntry implements IEntityTrackEntry {
+//        @Override
+//        public void update(Entity entity) {
+//        }
+//
+//        @Override
+//        public void render(Entity entity, float partialTicks) {
+//        }
+//    }
 }

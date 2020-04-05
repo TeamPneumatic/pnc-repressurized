@@ -29,7 +29,7 @@ public class CapabilityAirHandler {
         @Nullable
         @Override
         public INBT writeNBT(Capability<T> capability, T instance, Direction side) {
-            return new IntNBT(instance.getAir());
+            return IntNBT.valueOf(instance.getAir());
         }
 
         @Override

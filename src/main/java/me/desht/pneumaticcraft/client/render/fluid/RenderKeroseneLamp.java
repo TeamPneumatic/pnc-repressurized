@@ -2,13 +2,18 @@ package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.List;
 
-public class RenderKeroseneLamp extends FastFluidTESR<TileEntityKeroseneLamp> {
+public class RenderKeroseneLamp extends AbstractFluidTESR<TileEntityKeroseneLamp> {
     private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(6/16f, 1/16f, 6/16f, 10/16f, 9/16f, 10/16f);
+
+    public RenderKeroseneLamp(TileEntityRendererDispatcher dispatcher) {
+        super(dispatcher);
+    }
 
     @Override
     List<TankRenderInfo> getTanksToRender(TileEntityKeroseneLamp te) {

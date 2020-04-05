@@ -113,7 +113,7 @@ public class EntityMicromissile extends ThrowableEntity {
 
         if (ticksExisted == 1) {
             if (getEntityWorld().isRemote) {
-                getEntityWorld().playSound(posX, posY, posZ, SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.PLAYERS, 1.0f, 0.8f, true);
+                getEntityWorld().playSound(getPosX(), getPosY(), getPosZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.PLAYERS, 1.0f, 0.8f, true);
             } else {
                 dataManager.set(MAX_VEL_SQ, maxVelocitySq);
                 dataManager.set(ACCEL, accel);
@@ -150,13 +150,13 @@ public class EntityMicromissile extends ThrowableEntity {
 
             if (getEntityWorld().isRemote) {
                 Vec3d m = getMotion();
-                world.addParticle(AirParticleData.DENSE, posX, posY, posZ, -m.x/2, -m.y/2, -m.z/2);
+                world.addParticle(AirParticleData.DENSE, getPosX(), getPosY(), getPosZ(), -m.x/2, -m.y/2, -m.z/2);
             }
         }
     }
 
     private Entity tryFindNewTarget() {
-        AxisAlignedBB aabb = new AxisAlignedBB(posX, posY, posZ, posX, posY, posZ).grow(SEEK_RANGE);
+        AxisAlignedBB aabb = new AxisAlignedBB(getPosX(), getPosY(), getPosZ(), getPosX(), getPosY(), getPosZ()).grow(SEEK_RANGE);
         List<Entity> l = getEntityWorld().getEntitiesWithinAABB(LivingEntity.class, aabb, EntityPredicates.IS_ALIVE);
         l.sort(new TargetSorter());
         Entity tgt = null;
@@ -181,7 +181,7 @@ public class EntityMicromissile extends ThrowableEntity {
         if (thrower != null) {
             if (e.equals(thrower)
                     || e instanceof TameableEntity && thrower.equals(((TameableEntity) e).getOwner())
-                    || e instanceof EntityDrone && thrower.getUniqueID().toString().equals(((EntityDrone) e).getOwnerUUID())
+                    || e instanceof EntityDrone && thrower.getUniqueID().equals(((EntityDrone) e).getOwnerUUID())
                     || e instanceof HorseEntity && thrower.getUniqueID().equals(((HorseEntity) e).getOwnerUniqueId())) {
                 return false;
             }
@@ -204,7 +204,7 @@ public class EntityMicromissile extends ThrowableEntity {
     private void explode() {
         remove();
         Explosion.Mode mode = PNCConfig.Common.Micromissiles.damageTerrain ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
-        getEntityWorld().createExplosion(this, posX, posY, posZ, (float) PNCConfig.Common.Micromissiles.baseExplosionDamage * explosionPower, false, mode);
+        getEntityWorld().createExplosion(this, getPosX(), getPosY(), getPosZ(), (float) PNCConfig.Common.Micromissiles.baseExplosionDamage * explosionPower, false, mode);
     }
 
     @Override
@@ -267,7 +267,7 @@ public class EntityMicromissile extends ThrowableEntity {
         private final Vec3d vec;
 
         TargetSorter() {
-            vec = new Vec3d(posX, posY, posZ);
+            vec = getPositionVec();
         }
 
         @Override

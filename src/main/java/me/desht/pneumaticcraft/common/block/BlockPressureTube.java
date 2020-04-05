@@ -227,21 +227,15 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         return SHAPE_CACHE[idx];
     }
 
-
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
-    }
-
-    @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         if (tryPlaceModule(player, world, pos, brtr.getFace(), hand, false)) {
-            return true;
+            return ActionResultType.SUCCESS;
         }
-        if (!player.isSneaking()) {
+        if (!player.isSteppingCarefully()) {
             TubeModule module = getFocusedModule(world, pos, player);
             if (module != null) {
-                return module.onActivated(player, hand);
+                return module.onActivated(player, hand) ? ActionResultType.SUCCESS : ActionResultType.PASS;
             }
         }
         return super.onBlockActivated(state, world, pos, player, hand, brtr);
@@ -429,7 +423,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         TileEntityPressureTube tube = getPressureTube(world, pos);
         if (tube == null) return false;
         TubeModule module = getFocusedModule(world, pos, player);
-        if (player.isSneaking()) {
+        if (player.isSteppingCarefully()) {
             if (module != null) {
                 // detach and drop the module as an item
                 if (!player.isCreative()) {

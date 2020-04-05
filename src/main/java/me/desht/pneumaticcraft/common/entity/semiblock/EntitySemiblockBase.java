@@ -63,7 +63,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
 
     private void dropItem(ItemStack stack) {
         if (!stack.isEmpty()) {
-            ItemEntity itemEntity = new ItemEntity(world, posX + dropOffset.getX(), posY + dropOffset.getY(), posZ + dropOffset.getZ(), stack);
+            ItemEntity itemEntity = new ItemEntity(world, getPosX() + dropOffset.getX(), getPosY() + dropOffset.getY(), getPosZ() + dropOffset.getZ(), stack);
             itemEntity.setDefaultPickupDelay();
             if (captureDrops() != null)
                 captureDrops().add(itemEntity);
@@ -108,7 +108,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         }
 
         if (player.getHeldItem(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get()) {
-            if (player.isSneaking()) {
+            if (player.isSteppingCarefully()) {
                 removeSemiblock(player);
                 return ActionResultType.SUCCESS;
             } else {
@@ -122,12 +122,12 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
             }
         } else {
             // allow right-clicks to pass through to the inventory block being covered
-            if (player.isSneaking()) {
+            if (player.isSteppingCarefully()) {
                 ItemUseContext itemCtx = new ItemUseContext(player, hand, brtr);
                 ActionResultType res = player.getHeldItem(hand).onItemUseFirst(itemCtx);
                 return res == ActionResultType.PASS ? player.getHeldItem(hand).onItemUse(itemCtx) : res;
             } else {
-                return getBlockState().onBlockActivated(world, player, hand, brtr) ? ActionResultType.SUCCESS : ActionResultType.PASS;
+                return getBlockState().onBlockActivated(world, player, hand, brtr);
             }
         }
     }
@@ -152,19 +152,24 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     public void setPosition(double x, double y, double z) {
         // a semiblock is positioned when added to world, and not again
         if (!isAddedToWorld()) {
-            this.posX = x;
-            this.posY = y;
-            this.posZ = z;
+            super.setPosition(x, y, z);
             this.blockPos = new BlockPos(x, y, z);
         }
     }
 
     @Override
-    public int getBrightnessForRender() {
+    public float getBrightness() {
         // cheat a bit here - semiblocks on solid blocks will be unlit otherwise
-        // instead we use the brightness at the top of the world (hoping there isn't a block there...)
+        // instead we use the brightness at the top of the world (hoping there isn't a block there...
         return ClientUtils.getBrightnessAtWorldHeight();
     }
+
+//    @Override
+//    public int getBrightnessForRender() {
+//        // cheat a bit here - semiblocks on solid blocks will be unlit otherwise
+//        // instead we use the brightness at the top of the world (hoping there isn't a block there...)
+//        return ClientUtils.getBrightnessAtWorldHeight();
+//    }
 
     /**
      * Get the blockstate at the semiblock's position

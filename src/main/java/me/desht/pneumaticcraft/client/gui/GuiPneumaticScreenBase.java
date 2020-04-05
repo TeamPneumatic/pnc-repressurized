@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.widget.ITickableWidget;
 import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -61,8 +62,8 @@ public abstract class GuiPneumaticScreenBase extends Screen {
         }
         super.render(x, y, partialTicks);
 
-        GlStateManager.enableTexture();
-        GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1.0f);
+        RenderSystem.enableTexture();
+        RenderSystem.color4f(0.25f, 0.25f, 0.25f, 1.0f);
 
         List<String> tooltip = new ArrayList<>();
         boolean shift = Screen.hasShiftDown();
@@ -81,8 +82,8 @@ public abstract class GuiPneumaticScreenBase extends Screen {
                 }
             }
             renderTooltip(localizedTooltip, x, y, font);
-            RenderHelper.enableGUIStandardItemLighting();
+            RenderHelper.enableStandardItemLighting();
         }
-        GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1.0f);
+        RenderSystem.color4f(0.25f, 0.25f, 0.25f, 1.0f);
     }
 }

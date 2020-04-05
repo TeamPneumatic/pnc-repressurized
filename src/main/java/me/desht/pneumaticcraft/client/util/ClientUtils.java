@@ -57,7 +57,7 @@ public class ClientUtils {
     }
 
     public static boolean isKeyDown(int keyCode) {
-        return InputMappings.isKeyDown(Minecraft.getInstance().mainWindow.getHandle(), keyCode);
+        return InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), keyCode);
     }
 
     public static void openContainerGui(ContainerType<? extends Container> type, ITextComponent displayString) {
@@ -123,7 +123,7 @@ public class ClientUtils {
      * @return true if the screen res > 700x512
      */
     public static boolean isScreenHiRes() {
-        MainWindow mw = Minecraft.getInstance().mainWindow;
+        MainWindow mw = Minecraft.getInstance().getMainWindow();
         return mw.getScaledWidth() > 700 && mw.getScaledHeight() > 512;
     }
 
@@ -131,10 +131,16 @@ public class ClientUtils {
         return ((ClientWorld) world).getAllEntities();
     }
 
-    public static int getBrightnessAtWorldHeight() {
+    public static float getBrightnessAtWorldHeight() {
         PlayerEntity player = getClientPlayer();
-        BlockPos blockpos = new BlockPos(player.posX, getClientWorld().getMaxHeight(), player.posZ);
-        return getClientWorld().isAreaLoaded(blockpos, 1) ? getClientWorld().getCombinedLight(blockpos, 0) : 0;
+        BlockPos pos = new BlockPos.Mutable(player.getPosX(), player.world.getMaxHeight(), player.getPosZ());
+        if (player.world.isBlockLoaded(pos)) {
+            return player.world.getDimension().getLightBrightness(player.world.getLight(pos));
+        } else {
+            return 0.0F;
+        }
+//        BlockPos blockpos = new BlockPos(player.posX, getClientWorld().getMaxHeight(), player.posZ);
+//        return getClientWorld().isAreaLoaded(blockpos, 1) ? getClientWorld().getCombinedLight(blockpos, 0) : 0;
     }
 
     public static int getStringWidth(String line) {

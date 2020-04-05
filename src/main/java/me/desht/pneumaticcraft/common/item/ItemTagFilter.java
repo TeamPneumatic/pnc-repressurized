@@ -58,7 +58,7 @@ public class ItemTagFilter extends Item implements ITagFilteringItem {
 
     public static void setConfiguredTagList(ItemStack stack, Set<ResourceLocation> tags) {
         ListNBT l = new ListNBT();
-        tags.forEach(rl -> l.add(new StringNBT(rl.toString())));
+        tags.forEach(rl -> l.add(StringNBT.valueOf(rl.toString())));
         stack.getOrCreateTag().put("TagList", l);
     }
 

@@ -39,7 +39,7 @@ public class HackableCaveSpider implements IHackableEntity {
         if (!entity.world.isRemote) {
             entity.remove();
             SpiderEntity spider = new SpiderEntity(EntityType.SPIDER, entity.world);
-            spider.setPositionAndRotation(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
+            spider.setPositionAndRotation(entity.getPosX(), entity.getPosY(), entity.getPosZ(), entity.rotationYaw, entity.rotationPitch);
             spider.setHealth(((SpiderEntity) entity).getHealth());
             spider.renderYawOffset = ((SpiderEntity) entity).renderYawOffset;
             entity.world.addEntity(spider);

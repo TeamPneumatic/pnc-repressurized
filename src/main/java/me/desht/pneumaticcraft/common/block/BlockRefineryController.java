@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -23,11 +22,6 @@ public class BlockRefineryController extends BlockPneumaticCraft {
     @Override
     public boolean isRotatable() {
         return true;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
     @Override

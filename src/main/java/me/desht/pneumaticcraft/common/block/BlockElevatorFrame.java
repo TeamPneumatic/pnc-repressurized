@@ -13,16 +13,15 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.*;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
@@ -74,12 +73,12 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public int getPackedLightmapCoords(BlockState state, IEnviromentBlockReader worldIn, BlockPos pos) {
-//        return 0xFFFF;
-        int i = worldIn.getLightFor(LightType.SKY, pos);
-        return (i << 20) | 0xF;
-    }
+//    @OnlyIn(Dist.CLIENT)
+//    public int getPackedLightmapCoords(BlockState state, IEnviromentBlockReader worldIn, BlockPos pos) {
+////        return 0xFFFF;
+//        int i = worldIn.getLightFor(LightType.SKY, pos);
+//        return (i << 20) | 0xF;
+//    }
 
     @Override
     public IFluidState getFluidState(BlockState state) {
@@ -159,15 +158,10 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
-    }
-
-    @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         TileEntityElevatorBase te = getElevatorTE(world, pos);
         if (te != null && te.oldExtension != te.extension) {
-            if (Math.abs(entity.posY - (te.getPos().getY() + te.extension)) < 2.5) {
+            if (Math.abs(entity.getPosY() - (te.getPos().getY() + te.extension)) < 2.5) {
                 AxisAlignedBB box = entity.getBoundingBox();
                 int x = te.getPos().getX();
                 int z = te.getPos().getZ();
@@ -181,7 +175,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
                 } else if (box.maxZ > z + 1.1) {
                     entity.addVelocity(0, 0, -0.02);
                 }
-                entity.setPosition(entity.posX, te.getPos().getY() + 1 + te.extension, entity.posZ);
+                entity.setPosition(entity.getPosX(), te.getPos().getY() + 1 + te.extension, entity.getPosZ());
             }
             entity.fallDistance = 0;
         }

@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.client.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -141,27 +143,27 @@ public class GuiUtils {
     }
 
     public static void drawItemStack(ItemStack stack, int x, int y) {
-        GlStateManager.enableRescaleNormal();
-        RenderHelper.enableGUIStandardItemLighting();
+        RenderSystem.enableRescaleNormal();
+        RenderHelper.enableStandardItemLighting();
         GlStateManager.enableDepthTest();
         itemRenderer.renderItemAndEffectIntoGUI(stack, x, y);
         RenderHelper.disableStandardItemLighting();
-        GlStateManager.disableRescaleNormal();
+        RenderSystem.disableRescaleNormal();
     }
 
     public static void drawItemStack(@Nonnull ItemStack stack, int x, int y, String text) {
-        GlStateManager.enableRescaleNormal();
+        RenderSystem.enableRescaleNormal();
         GlStateManager.enableDepthTest();
-        RenderHelper.enableGUIStandardItemLighting();
-        GlStateManager.pushMatrix();
+        RenderHelper.enableStandardItemLighting();
+        RenderSystem.pushMatrix();
         FontRenderer font = null;
         if (!stack.isEmpty()) font = stack.getItem().getFontRenderer(stack);
         if (font == null) font = Minecraft.getInstance().fontRenderer;
         itemRenderer.renderItemAndEffectIntoGUI(stack, x, y);
         itemRenderer.renderItemOverlayIntoGUI(font, stack, x, y, text);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         RenderHelper.disableStandardItemLighting();
-        GlStateManager.disableRescaleNormal();
+        RenderSystem.disableRescaleNormal();
     }
 
     private static final int TEX_WIDTH = 16;
@@ -173,12 +175,10 @@ public class GuiUtils {
         }
 
         Fluid fluid = fluidStack.getFluid();
-        AtlasTexture textureMapBlocks = Minecraft.getInstance().getTextureMap();
-        ResourceLocation fluidStill = fluid.getAttributes().getStill(fluidStack);
-        TextureAtlasSprite fluidStillSprite = null;
-        if (fluidStill != null) {
-            fluidStillSprite = textureMapBlocks.getSprite(fluidStill);
-        }
+        ResourceLocation fluidStill = fluid.getAttributes().getStillTexture(fluidStack);
+        TextureAtlasSprite fluidStillSprite = fluidStill != null ?
+                Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(fluidStill) :
+                null;
 
         int fluidColor = fluid.getAttributes().getColor(fluidStack);
 
@@ -216,12 +216,12 @@ public class GuiUtils {
     }
 
     private static void drawFluidTexture(double xCoord, double yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, double zLevel) {
-        double uMin = textureSprite.getMinU();
-        double uMax = textureSprite.getMaxU();
-        double vMin = textureSprite.getMinV();
-        double vMax = textureSprite.getMaxV();
-        uMax = uMax - maskRight / 16.0 * (uMax - uMin);
-        vMax = vMax - maskTop / 16.0 * (vMax - vMin);
+        float uMin = textureSprite.getMinU();
+        float uMax = textureSprite.getMaxU();
+        float vMin = textureSprite.getMinV();
+        float vMax = textureSprite.getMaxV();
+        uMax = uMax - maskRight / 16.0f * (uMax - uMin);
+        vMax = vMax - maskTop / 16.0f * (vMax - vMin);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder worldrenderer = tessellator.getBuffer();
@@ -248,7 +248,7 @@ public class GuiUtils {
             x = (screen.width - boxWidth) / 2;
             y = (screen.height - boxHeight) / 2;
         }
-        GlStateManager.translated(0, 0, 400);
+        RenderSystem.translated(0, 0, 400);
         AbstractGui.fill(x - 4, y - 4, x + boxWidth + 8, y + boxHeight + 8, 0xC0000000);
         AbstractGui.fill(x - 4, y - 4, x + boxWidth + 8, y - 3, 0xFF808080);
         AbstractGui.fill(x - 4, y + boxHeight + 8, x + boxWidth + 8, y + boxHeight + 9, 0xFF808080);
@@ -259,19 +259,26 @@ public class GuiUtils {
             fontRenderer.drawString(s, x, y, 0xFFE0E0E0);
             y += fontRenderer.FONT_HEIGHT;
         }
-        GlStateManager.translated(0, 0, -300);
+        RenderSystem.translated(0, 0, -400);
     }
 
     public static void drawTexture(ResourceLocation texture, int x, int y) {
-        Minecraft.getInstance().getTextureManager().bindTexture(texture);
-        GlStateManager.enableTexture();
-        GlStateManager.color4f(1, 1, 1, 1);
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        wr.pos(x, y + 16, 0).tex(0.0, 1.0).endVertex();
-        wr.pos(x + 16, y + 16, 0).tex(1.0, 1.0).endVertex();
-        wr.pos(x + 16, y, 0).tex(1.0, 0.0).endVertex();
-        wr.pos(x, y, 0).tex(0.0, 0.0).endVertex();
+        RenderSystem.enableTexture();
+        RenderSystem.color4f(1, 1, 1, 1);
+        BufferBuilder builder = Tessellator.getInstance().getBuffer();
+        builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        builder.pos(x, y + 16, 0).tex(0.0f, 1.0f).endVertex();
+        builder.pos(x + 16, y + 16, 0).tex(1.0f, 1.0f).endVertex();
+        builder.pos(x + 16, y, 0).tex(1.0f, 0.0f).endVertex();
+        builder.pos(x, y, 0).tex(0.0f, 0.0f).endVertex();
         Tessellator.getInstance().draw();
+    }
+
+    public static void drawTexture(ResourceLocation texture, int x, int y, IVertexBuilder builder) {
+        Minecraft.getInstance().getTextureManager().bindTexture(texture);
+        builder.pos(x, y + 16, 0).tex(0.0f, 1.0f).endVertex();
+        builder.pos(x + 16, y + 16, 0).tex(1.0f, 1.0f).endVertex();
+        builder.pos(x + 16, y, 0).tex(1.0f, 0.0f).endVertex();
+        builder.pos(x, y, 0).tex(0.0f, 0.0f).endVertex();
     }
 }

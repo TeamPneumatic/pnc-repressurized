@@ -67,7 +67,7 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
 
     private void createFreezeCloud(Minigun minigun, Entity target) {
         World world = target.getEntityWorld();
-        AreaEffectCloudEntity cloud = new AreaEffectCloudEntity(world, target.posX, target.posY, target.posZ);
+        AreaEffectCloudEntity cloud = new AreaEffectCloudEntity(world, target.getPosX(), target.getPosY(), target.getPosZ());
         cloud.setPotion(Potions.SLOWNESS);
         cloud.setOwner(minigun.getPlayer());
         cloud.addEffect(new EffectInstance(Effects.SLOWNESS, 100, 3));
