@@ -41,7 +41,7 @@ public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
 
     @Override
     public String getEntryName() {
-        return Blocks.END_PORTAL_FRAME.getTranslationKey() + ".name";
+        return "blockTracker.module.end_portal";
     }
 
 }

@@ -257,7 +257,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
             blockTrackInfo.setTitle("Current tracked blocks:");
 
             blockTypeCount.forEach((k, v) -> {
-                if (v > 0 && WidgetKeybindCheckBox.fromKeyBindingName(k).checked) textList.add(v + " " + I18n.format(k));
+                if (v > 0 && WidgetKeybindCheckBox.fromKeyBindingName(k).checked) textList.add(v + " " + I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + k));
             });
 
             if (textList.size() == 0) textList.add("Tracking no blocks currently.");

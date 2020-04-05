@@ -5,10 +5,9 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
+import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.TickEvent;
@@ -21,7 +20,7 @@ import java.util.Map;
 public enum HackTickHandler {
     INSTANCE;
 
-    private final Map<GlobalPos, IHackableBlock> hackedBlocks = new HashMap<>();
+    private final Map<WorldAndCoord, IHackableBlock> hackedBlocks = new HashMap<>();
 
     public static HackTickHandler instance() {
         return INSTANCE;
@@ -30,23 +29,19 @@ public enum HackTickHandler {
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            Iterator<Map.Entry<GlobalPos, IHackableBlock>> blockIterator = hackedBlocks.entrySet().iterator();
+            Iterator<Map.Entry<WorldAndCoord, IHackableBlock>> blockIterator = hackedBlocks.entrySet().iterator();
             while (blockIterator.hasNext()) {
-                Map.Entry<GlobalPos, IHackableBlock> entry = blockIterator.next();
+                Map.Entry<WorldAndCoord, IHackableBlock> entry = blockIterator.next();
                 IHackableBlock hackableBlock = entry.getValue();
-                GlobalPos gPos = entry.getKey();
-                World world = GlobalPosUtils.getWorldForGlobalPos(gPos);
-
+                WorldAndCoord hackedBlock = entry.getKey();
                 boolean found = false;
                 for (Map.Entry<Block, Class<? extends IHackableBlock>> registeredEntry : PneumaticHelmetRegistry.getInstance().hackableBlocks.entrySet()) {
-                    if (hackableBlock.getClass() == registeredEntry.getValue()) {
-                        if (world.getBlockState(gPos.getPos()).getBlock() == registeredEntry.getKey()) {
-                            if (!hackableBlock.afterHackTick(world, gPos.getPos())) {
-                                blockIterator.remove();
-                            }
-                            found = true;
-                            break;
+                    if (hackableBlock.getClass() == registeredEntry.getValue() && hackedBlock.getBlock() == registeredEntry.getKey()) {
+                        if (!hackableBlock.afterHackTick((World) hackedBlock.world, hackedBlock.pos)) {
+                            blockIterator.remove();
                         }
+                        found = true;
+                        break;
                     }
                 }
                 if (!found) blockIterator.remove();
@@ -73,7 +68,7 @@ public enum HackTickHandler {
         return world.isRemote ? ClientUtils.getAllEntities(world) : ((ServerWorld)world).getEntities()::iterator;
     }
 
-    public void trackBlock(GlobalPos coord, IHackableBlock iHackable) {
+    public void trackBlock(WorldAndCoord coord, IHackableBlock iHackable) {
         hackedBlocks.put(coord, iHackable);
     }
 

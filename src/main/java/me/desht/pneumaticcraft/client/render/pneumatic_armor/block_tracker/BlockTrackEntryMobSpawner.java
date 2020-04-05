@@ -60,6 +60,6 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
 
     @Override
     public String getEntryName() {
-        return Blocks.SPAWNER.getTranslationKey() + ".name";
+        return "blockTracker.module.mob_spawner";
     }
 }

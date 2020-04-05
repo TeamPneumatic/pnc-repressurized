@@ -1139,7 +1139,9 @@
   "pneumaticHelmet.upgrade.blockTracker.module.ic2": "IC2 Power Blocks",
   "pneumaticHelmet.upgrade.blockTracker.module.rf": "RF Power Blocks",
   "pneumaticHelmet.upgrade.blockTracker.module.thaumcraft": "Thaumcraft Aspect Blocks",
-  "pneumaticHelmet.upgrade.blockTracker.module.peripheral": "ComputerCraft Peripheral",
+  "pneumaticHelmet.upgrade.blockTracker.module.peripheral": "ComputerCraft Peripherals",
+  "pneumaticHelmet.upgrade.blockTracker.module.end_portal": "End Portal Frames",
+  "pneumaticHelmet.upgrade.blockTracker.module.mob_spawner": "Mob Spawners",
 
   "blockTracker.info.bcEnergy": "BuildCraft Energy Block",
   "blockTracker.info.hydraulicraft": "Hydraulicraft Power Block",
