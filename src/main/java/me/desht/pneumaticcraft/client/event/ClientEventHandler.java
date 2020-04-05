@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
 import me.desht.pneumaticcraft.client.render.RenderProgressingLine;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -436,6 +437,11 @@ public class ClientEventHandler {
                 lastHeight = mw.getScaledHeight();
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin(ClientPlayerNetworkEvent.LoggedInEvent event) {
+        PneumaticHelmetRegistry.getInstance().resolveBlockTags();
     }
 
     public static Pair<Integer,Integer> getScaledScreenSize() {

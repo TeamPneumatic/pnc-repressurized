@@ -7,7 +7,9 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.Block
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
@@ -20,6 +22,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     public final Map<Block, Class<? extends IHackableBlock>> hackableBlocks = new HashMap<>();
     public final Map<String, Class<? extends IHackableEntity>> stringToEntityHackables = new HashMap<>();
     public final Map<String, Class<? extends IHackableBlock>> stringToBlockHackables = new HashMap<>();
+    private final Map<ResourceLocation, Class<? extends IHackableBlock>> pendingBlockTags = new HashMap<>();
 
     public static PneumaticHelmetRegistry getInstance() {
         return INSTANCE;
@@ -76,9 +79,15 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
 
     @Override
     public void addHackable(Tag<Block> blockTag, Class<? extends IHackableBlock> iHackable) {
-        for (Block b : blockTag.getAllElements()) {
-            addHackable(b, iHackable);
-        }
+        // can't add these yet because tags aren't populated at this point
+        // we'll resolve them later (server started event & client logged in event)
+        // TODO doesn't handle tag changes due to resource reload, but that's not the end of the world
+        pendingBlockTags.put(blockTag.getId(), iHackable);
+    }
+
+    public void resolveBlockTags() {
+        pendingBlockTags.forEach((id, hackable) -> BlockTags.getCollection().get(id).getAllElements().forEach(block -> addHackable(block, hackable)));
+        pendingBlockTags.clear();
     }
 
     @Override

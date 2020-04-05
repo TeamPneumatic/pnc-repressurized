@@ -5,11 +5,10 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -23,12 +22,8 @@ public class PacketHackingBlockFinish extends LocationIntPacket {
     public PacketHackingBlockFinish() {
     }
 
-    public PacketHackingBlockFinish(BlockPos pos) {
-        super(pos);
-    }
-
-    public PacketHackingBlockFinish(GlobalPos gPos) {
-        super(gPos.getPos());
+    public PacketHackingBlockFinish(WorldAndCoord gPos) {
+        super(gPos.pos);
     }
 
     public PacketHackingBlockFinish(PacketBuffer buffer) {
@@ -41,7 +36,7 @@ public class PacketHackingBlockFinish extends LocationIntPacket {
             IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(player.world, pos, player);
             if (hackableBlock != null) {
                 hackableBlock.onHackFinished(player.world, pos, player);
-                HackTickHandler.instance().trackBlock(GlobalPos.of(player.world.getDimension().getType(), pos), hackableBlock);
+                HackTickHandler.instance().trackBlock(new WorldAndCoord(player.world, pos), hackableBlock);
                 CommonArmorHandler.getHandlerForPlayer(player).setHackedBlockPos(null);
                 player.playSound(ModSounds.HELMET_HACK_FINISH.get(), 1.0F, 1.0F);
             }

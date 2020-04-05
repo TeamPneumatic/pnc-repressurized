@@ -48,8 +48,7 @@ public class HackableLever implements IHackableBlock {
     @Override
     public void onHackFinished(World world, BlockPos pos, PlayerEntity player) {
         BlockState state = world.getBlockState(pos);
-        // button's onBlockActivated ignores the BlockRayTraceResult so we can pass null here
-        state.onBlockActivated(world, player, Hand.MAIN_HAND, null);
+        fakeRayTrace(player, pos).ifPresent(rtr -> state.onBlockActivated(world, player, Hand.MAIN_HAND, rtr));
     }
 
     @Override

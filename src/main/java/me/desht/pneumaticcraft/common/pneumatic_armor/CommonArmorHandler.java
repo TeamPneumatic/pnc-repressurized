@@ -16,11 +16,11 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Names;
@@ -42,11 +42,10 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.World;
+import net.minecraft.world.IBlockReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.util.LazyOptional;
@@ -80,7 +79,7 @@ public class CommonArmorHandler {
     private boolean isValid; // true if the handler is valid; gets invalidated if player disconnects
 
     private int hackTime;
-    private GlobalPos hackedBlockPos;
+    private WorldAndCoord hackedBlockPos;
     private Entity hackedEntity;
 
     private boolean armorEnabled;
@@ -488,9 +487,10 @@ public class CommonArmorHandler {
         if (hackedBlockPos != null) {
             IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(hackedBlockPos, player);
             if (hackableBlock != null) {
-                World world = GlobalPosUtils.getWorldForGlobalPos(hackedBlockPos);
-                if (world != null && ++hackTime >= hackableBlock.getHackTime(world, hackedBlockPos.getPos(), player)) {
-                    hackableBlock.onHackFinished(player.world, hackedBlockPos.getPos(), player);
+//                World world = GlobalPosUtils.getWorldForGlobalPos(hackedBlockPos);
+                IBlockReader world = hackedBlockPos.world;
+                if (world != null && ++hackTime >= hackableBlock.getHackTime(world, hackedBlockPos.pos, player)) {
+                    hackableBlock.onHackFinished(player.world, hackedBlockPos.pos, player);
                     HackTickHandler.instance().trackBlock(hackedBlockPos, hackableBlock);
                     NetworkHandler.sendToAllAround(new PacketHackingBlockFinish(hackedBlockPos), player.world);
                     setHackedBlockPos(null);
@@ -633,7 +633,7 @@ public class CommonArmorHandler {
         return startupTimes[slot.getIndex()];
     }
 
-    public void setHackedBlockPos(GlobalPos blockPos) {
+    public void setHackedBlockPos(WorldAndCoord blockPos) {
         hackedBlockPos = blockPos;
         hackedEntity = null;
         hackTime = 0;

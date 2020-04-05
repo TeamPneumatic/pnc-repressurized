@@ -14,7 +14,6 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.block.*;
 import me.desht.pneumaticcraft.common.hacking.entity.*;
-import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -30,13 +29,9 @@ import net.minecraft.entity.passive.horse.HorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,7 +39,7 @@ import java.util.Map;
 
 public class HackableHandler {
     private final Map<Entity, IHackableEntity> trackedHackableEntities = new HashMap<>();
-    private final Map<GlobalPos, IHackableBlock> trackedHackableBlocks = new HashMap<>();
+    private final Map<WorldAndCoord, IHackableBlock> trackedHackableBlocks = new HashMap<>();
     private static HackableHandler clientInstance, serverInstance;
 
     private static HackableHandler getInstance() {
@@ -124,36 +119,32 @@ public class HackableHandler {
         return hackable;
     }
 
-    public static IHackableBlock getHackableForCoord(GlobalPos coord, PlayerEntity player) {
-        World w = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), coord.getDimension(), false, false);
-        return getHackableForCoord(w, coord.getPos(), player);
+    public static IHackableBlock getHackableForCoord(WorldAndCoord coord, PlayerEntity player) {
+        return getHackableForCoord(coord.world, coord.pos, player);
     }
 
-    public static IHackableBlock getHackableForCoord(World world, BlockPos pos, PlayerEntity player) {
+    public static IHackableBlock getHackableForCoord(IBlockReader world, BlockPos pos, PlayerEntity player) {
         //clean up the map
-        Iterator<Map.Entry<GlobalPos, IHackableBlock>> iterator = getInstance().trackedHackableBlocks.entrySet().iterator();
+        Iterator<Map.Entry<WorldAndCoord, IHackableBlock>> iterator = getInstance().trackedHackableBlocks.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<GlobalPos, IHackableBlock> entry = iterator.next();
-            World gWorld = GlobalPosUtils.getWorldForGlobalPos(entry.getKey());
-            Block b = gWorld.getBlockState(entry.getKey().getPos()).getBlock();
-            Class<? extends IHackableBlock> hackableBlockClazz = PneumaticHelmetRegistry.getInstance().hackableBlocks.get(b);
+            Map.Entry<WorldAndCoord, IHackableBlock> entry = iterator.next();
+            Class<? extends IHackableBlock> hackableBlockClazz = PneumaticHelmetRegistry.getInstance().hackableBlocks.get(entry.getKey().getBlock());
             if (hackableBlockClazz != entry.getValue().getClass()
-                    || !entry.getValue().canHack(gWorld, entry.getKey().getPos(), player)
-                    && !isInDisplayCooldown(entry.getValue(), gWorld, entry.getKey().getPos(), player))
+                    || !entry.getValue().canHack(entry.getKey().world, entry.getKey().pos, player)
+                    && !isInDisplayCooldown(entry.getValue(), entry.getKey().world, entry.getKey().pos, player))
                 iterator.remove();
         }
 
         Block block = world.getBlockState(pos).getBlock();
         if (block instanceof IHackableBlock && ((IHackableBlock) block).canHack(world, pos, player))
             return (IHackableBlock) block;
-        GlobalPos gPos = GlobalPos.of(world.getDimension().getType(), pos);
-        IHackableBlock hackable = getInstance().trackedHackableBlocks.get(gPos);
+        IHackableBlock hackable = getInstance().trackedHackableBlocks.get(new WorldAndCoord(world, pos));
         if (hackable == null) {
             if (!PneumaticHelmetRegistry.getInstance().hackableBlocks.containsKey(block)) return null;
             try {
                 hackable = PneumaticHelmetRegistry.getInstance().hackableBlocks.get(block).newInstance();
                 if (hackable.canHack(world, pos, player)) {
-                    getInstance().trackedHackableBlocks.put(gPos, hackable);
+                    getInstance().trackedHackableBlocks.put(new WorldAndCoord(world, pos), hackable);
                 } else {
                     hackable = null;
                 }

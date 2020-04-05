@@ -1,12 +1,19 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Use this interface to specify any hackable block. When it's your block, you can simply implement this interface in
@@ -69,4 +76,20 @@ public interface IHackableBlock {
      * @return
      */
     boolean afterHackTick(World world, BlockPos pos);
+
+    /**
+     * Fake up a ray trace result for a targetted block. This is intended to be passed into
+     * {@link BlockState#onBlockActivated(World, PlayerEntity, Hand, BlockRayTraceResult)}, which needs a non-null
+     * ray trace result to get the block's position.
+     *
+     * @param player player doing the hacking
+     * @param targetPos position of the to-be-hacked block
+     * @return a ray trace result, or null if the result can't be found
+     */
+    default Optional<BlockRayTraceResult> fakeRayTrace(PlayerEntity player, BlockPos targetPos) {
+        BlockState state = player.world.getBlockState(targetPos);
+        AxisAlignedBB aabb = state.getShape(player.world, targetPos).getBoundingBox().offset(targetPos);
+        Optional<Vec3d> hit = aabb.rayTrace(player.getEyePosition(1f), aabb.getCenter());
+        return hit.map(v -> new BlockRayTraceResult(v, PneumaticCraftUtils.getDirectionFacing(player, true).getOpposite(), targetPos, false));
+    }
 }
