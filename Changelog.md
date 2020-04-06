@@ -6,6 +6,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.13-395 (6 Apr 2020)
+#### Updates
+* Thermopneumatic Processing Plant GUI "Dump Input" button is now "Move Input" by default, which moves the input fluid to the output tank if possible.
+  * Hold down Shift to get the old "Dump Input" behaviour back
+  * Gives players a chance to reclaim fluids from the TPP rather than forcing them to be voided
+#### Fixes
+* Fixed an extended Elevator not always rendering (depending on player view angle)
+* Elevator now renders any camouflage on the extending elevator floor instead of the default flat grey colour
+* Stopped screen roll when flying in Jet Boots builder mode
+* Fixed client trying to send some network packets intended for server->client communication when placing tube modules
+
 ### 0.11.12-392 (22 Mar 2020)
 #### Fixes
 * Hotfix for bug introduced in last release: Thermopneumatic Processing Plant wasn't working for recipes needing no pressure (Plastic & Lubricant by default)
@@ -25,7 +36,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Pressure Chamber enchanting/disenchanting fixes
   * Conflicting enchantments (e.g. Smite & Sharpness) will no longer be applied to items
   * Pressure Chamber will no longer drop excess items in-world, but rather hold them in a hidden overflow buffer, and stall crafting until the main pressure chamber has had some items removed.  Prevents a mess of items and needing to break the chamber to get them out.
-  * Fix possible crash with disenchanting (  not one I could reproduce myself but added some extra sanity checking)
+  * Fix possible crash with disenchanting (not one I could reproduce myself but added some extra sanity checking)
 * Possibly fix a Pneumatic Armor init client-side crash (not one I could reproduce myself, but possibly related some other mod cancelling a GUI-init event)
 * Assembly IO Unit can no longer have items piped into it (an item handler capability was exposed by mistake)
   
