@@ -42,6 +42,7 @@ public class ClientUtils {
     }
 
     public static double[] getTextureUV(IBlockState state, EnumFacing face) {
+        if (state == null) return null;
         IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state);
         List<BakedQuad> quads = model.getQuads(state, face, 0L);
         if (!quads.isEmpty()) {
