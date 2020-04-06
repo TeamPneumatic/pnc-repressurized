@@ -26,4 +26,10 @@ public class RenderElevatorBase extends AbstractModelRenderer<TileEntityElevator
     void renderModel(TileEntityElevatorBase te, float partialTicks) {
         model.renderModel(0.0625f, te.oldExtension + (te.extension - te.oldExtension) * partialTicks);
     }
+
+    @Override
+    public boolean isGlobalRenderer(TileEntityElevatorBase te) {
+        // since we can be very tall...
+        return true;
+    }
 }
