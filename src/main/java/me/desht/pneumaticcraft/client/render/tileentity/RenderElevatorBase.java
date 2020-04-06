@@ -29,4 +29,10 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
 //        GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float) (light & 0xFFFF), (float) ((light >> 16) & 0xFFFF));
         model.renderModel(0.0625f, MathHelper.lerp(partialTicks, te.oldExtension, te.extension));
     }
+
+    @Override
+    public boolean isGlobalRenderer(TileEntityElevatorBase te) {
+        // since we can be very tall...
+        return true;
+    }
 }
