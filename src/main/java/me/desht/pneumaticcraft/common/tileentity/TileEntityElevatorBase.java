@@ -356,10 +356,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     public void onDescUpdate() {
         IBlockState oldCamo = camoState;
         camoState = ICamouflageableTE.getStateForStack(camoStack);
-        if (oldCamo == null && camoState != null
-                || oldCamo != null && camoState == null
-                || oldCamo != null && camoState.getBlock() != oldCamo.getBlock()) {
-            fakeFloorTextureUV = camoState == null ? null : ClientUtils.getTextureUV(camoState, EnumFacing.UP);
+        if (oldCamo != camoState) {
+            // cache the UV's for the camouflaged texture (top face of the camo block)
+            // for efficiently rendering it on the moving elevator floor
+            fakeFloorTextureUV = ClientUtils.getTextureUV(camoState, EnumFacing.UP);
         }
 
         super.onDescUpdate();
