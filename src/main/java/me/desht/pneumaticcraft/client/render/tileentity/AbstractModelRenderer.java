@@ -34,6 +34,8 @@ public abstract class AbstractModelRenderer<T extends TileEntityBase> extends Ti
         renderModel(te, partialTicks);
 
         GlStateManager.popMatrix();
+
+        renderExtras(te, x, y, z, partialTicks);
     }
 
     public static abstract class BaseModel extends ModelBase {
@@ -42,6 +44,9 @@ public abstract class AbstractModelRenderer<T extends TileEntityBase> extends Ti
             model.rotateAngleY = y;
             model.rotateAngleZ = z;
         }
+    }
+
+    protected void renderExtras(T te, double x, double y, double z, float partialTicks) {
     }
 
     public static class NoBobItemRenderer extends RenderEntityItem {

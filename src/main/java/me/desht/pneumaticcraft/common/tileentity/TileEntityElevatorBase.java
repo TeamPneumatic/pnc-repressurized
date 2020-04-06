@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
 import me.desht.pneumaticcraft.common.block.Blockss;
 import me.desht.pneumaticcraft.common.config.ConfigHandler;
@@ -66,6 +67,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;
     private IBlockState camoState;
+    public double[] fakeFloorTextureUV;
 
     public TileEntityElevatorBase() {
         super(PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
@@ -352,7 +354,13 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
     @Override
     public void onDescUpdate() {
+        IBlockState oldCamo = camoState;
         camoState = ICamouflageableTE.getStateForStack(camoStack);
+        if (oldCamo == null && camoState != null
+                || oldCamo != null && camoState == null
+                || oldCamo != null && camoState.getBlock() != oldCamo.getBlock()) {
+            fakeFloorTextureUV = camoState == null ? null : ClientUtils.getTextureUV(camoState, EnumFacing.UP);
+        }
 
         super.onDescUpdate();
     }
