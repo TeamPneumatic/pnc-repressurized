@@ -23,6 +23,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
@@ -237,6 +238,10 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
             redstoneMode++;
             if (redstoneMode > 2) redstoneMode = 0;
         } else if (buttonID == 1) {
+            // move input fluid to output if poss.
+            FluidUtil.tryFluidTransfer(outputTank, inputTank, inputTank.getFluidAmount(), true);
+        } else if (buttonID == 2) {
+            // dump input fluid
             inputTank.drain(inputTank.getCapacity(), true);
         }
     }

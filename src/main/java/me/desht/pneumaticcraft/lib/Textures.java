@@ -234,6 +234,7 @@ public class Textures {
     public static final ResourceLocation GUI_INFO_LOCATION = new ResourceLocation(GUI_LOCATION + "gui_info.png");
     public static final ResourceLocation GUI_UPGRADES_LOCATION = new ResourceLocation(GUI_LOCATION + "gui_upgrade.png");
     public static final ResourceLocation GUI_X_BUTTON = new ResourceLocation(GUI_LOCATION + "gui_x_button.png");
+    public static final ResourceLocation GUI_RIGHT_ARROW = new ResourceLocation(GUI_LOCATION + "gui_right_arrow.png");
     public static final ResourceLocation GUI_PASTEBIN_ICON_LOCATION = new ResourceLocation(GUI_LOCATION + "gui_pastebin_icon.png");
     public static final ResourceLocation GUI_UNDO_ICON_LOCATION = new ResourceLocation(GUI_LOCATION + "gui_undo_icon.png");
     public static final ResourceLocation GUI_REDO_ICON_LOCATION = new ResourceLocation(GUI_LOCATION + "gui_redo.png");

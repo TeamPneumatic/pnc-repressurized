@@ -381,7 +381,7 @@ public class ClientEventHandler {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 float targetRoll;
                 float div = 50F;
-                if (handler.isJetBootsActive()) {
+                if (handler.isJetBootsActive() && !handler.isJetBootsBuilderMode()) {
                     float roll = player.rotationYawHead - player.prevRotationYawHead;
                     if (Math.abs(roll) < 0.0001) {
                         targetRoll = 0F;

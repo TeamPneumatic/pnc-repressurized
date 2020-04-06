@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessi
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -18,7 +19,8 @@ import java.util.List;
 
 public class GuiThermopneumaticProcessingPlant extends
         GuiPneumaticContainerBase<TileEntityThermopneumaticProcessingPlant> {
-
+    private GuiButtonSpecial dumpButton;
+    private GuiButtonSpecial moveButton;
     private WidgetTemperature tempWidget;
     private int nExposedFaces;
 
@@ -56,9 +58,15 @@ public class GuiThermopneumaticProcessingPlant extends
 
         addWidget(tempWidget);
 
-        GuiButtonSpecial dumpButton = new GuiButtonSpecial(1, guiLeft + 12, guiTop + 81, 18, 20, "");
+        moveButton = new GuiButtonSpecial(1, guiLeft + 12, guiTop + 81, 18, 20, "");
+        moveButton.setRenderedIcon(Textures.GUI_RIGHT_ARROW);
+        moveButton.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.thermopneumatic.moveInput")));
+        addWidget(moveButton);
+
+        dumpButton = new GuiButtonSpecial(2, guiLeft + 12, guiTop + 81, 18, 20, "");
         dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
         dumpButton.setTooltipText(PneumaticCraftUtils.convertStringIntoList(I18n.format("gui.thermopneumatic.dumpInput")));
+        dumpButton.setVisible(false);
         addWidget(dumpButton);
 
         nExposedFaces = HeatUtil.countExposedFaces(Collections.singletonList(te));
@@ -68,6 +76,11 @@ public class GuiThermopneumaticProcessingPlant extends
     public void updateScreen() {
         tempWidget.setScales((int) te.requiredTemperature);
         super.updateScreen();
+        boolean shift = GuiScreen.isShiftKeyDown();
+        dumpButton.setVisible(shift);
+        dumpButton.visible = shift;
+        moveButton.setVisible(!shift);
+        moveButton.visible = !shift;
     }
 
     @Override
