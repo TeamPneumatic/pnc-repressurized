@@ -49,8 +49,8 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
      * Returns the path to the given EntityLiving
      */
     @Override
-    public Path getPathToEntityLiving(Entity par1Entity, int p2) {
-        BlockPos pos = new BlockPos(par1Entity.posX, par1Entity.getBoundingBox().minY, par1Entity.posZ);
+    public Path getPathToEntity(Entity par1Entity, int p2) {
+        BlockPos pos = new BlockPos(par1Entity.getPosX(), par1Entity.getBoundingBox().minY, par1Entity.getPosZ());
 
         if ((par1Entity instanceof ItemEntity && !pathfindingEntity.isBlockValidPathfindBlock(pos)) || par1Entity instanceof AbstractMinecartEntity) {
             // items can end up with a blockpos of the ground they're sitting on,
@@ -115,10 +115,10 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         return path;
     }
 
-    @Override
-    public float getPathSearchRange() {
-        return (float) pathfindingEntity.getRange();
-    }
+//    @Override
+//    public float getPathSearchRange() {
+//        return (float) pathfindingEntity.getRange();
+//    }
 
     @Override
     public boolean isGoingToTeleport() {
@@ -134,7 +134,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     public void tick() {
         if (isGoingToTeleport()) {
             if (teleportCounter == 0 || teleportCounter == 60) {
-                NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.HUD_INIT.get(), SoundCategory.PLAYERS, pathfindingEntity.posX, pathfindingEntity.posY, pathfindingEntity.posZ, 0.1F, teleportCounter == 0 ? 0.7F : 1F, true), pathfindingEntity.world);
+                NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.HUD_INIT.get(), SoundCategory.PLAYERS, pathfindingEntity.getPosX(), pathfindingEntity.getPosY(), pathfindingEntity.getPosZ(), 0.1F, teleportCounter == 0 ? 0.7F : 1F, true), pathfindingEntity.world);
             }
 
             if (teleportCounter < TELEPORT_TICKS - 40) {
@@ -142,7 +142,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
                 float f = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f1 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f2 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
-                NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.PORTAL, pathfindingEntity.posX, pathfindingEntity.posY, pathfindingEntity.posZ, f, f1, f2), pathfindingEntity.world);
+                NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.PORTAL, pathfindingEntity.getPosX(), pathfindingEntity.getPosY(), pathfindingEntity.getPosZ(), f, f1, f2), pathfindingEntity.world);
             }
 
             if (++teleportCounter > TELEPORT_TICKS) {
@@ -182,9 +182,9 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
             float f = (rand.nextFloat() - 0.5F) * 0.2F;
             float f1 = (rand.nextFloat() - 0.5F) * 0.2F;
             float f2 = (rand.nextFloat() - 0.5F) * 0.2F;
-            double d7 = pathfindingEntity.posX + (telPos.getX() + 0.5 - pathfindingEntity.posX) * d6 + (rand.nextDouble() - 0.5D) * width * 2.0D;
-            double d8 = pathfindingEntity.posY + (telPos.getY() - pathfindingEntity.posY) * d6 + rand.nextDouble() * height;
-            double d9 = pathfindingEntity.posZ + (telPos.getZ() + 0.5 - pathfindingEntity.posZ) * d6 + (rand.nextDouble() - 0.5D) * width * 2.0D;
+            double d7 = pathfindingEntity.getPosX() + (telPos.getX() + 0.5 - pathfindingEntity.getPosX()) * d6 + (rand.nextDouble() - 0.5D) * width * 2.0D;
+            double d8 = pathfindingEntity.getPosY() + (telPos.getY()       - pathfindingEntity.getPosY()) * d6 + rand.nextDouble() * height;
+            double d9 = pathfindingEntity.getPosZ() + (telPos.getZ() + 0.5 - pathfindingEntity.getPosZ()) * d6 + (rand.nextDouble() - 0.5D) * width * 2.0D;
             NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.PORTAL, d7, d8, d9, f, f1, f2), pathfindingEntity.world);
         }
 

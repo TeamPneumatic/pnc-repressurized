@@ -61,7 +61,7 @@ public class TheOneProbe implements IThirdParty {
                     if (entity instanceof ISemiBlock) {
                         List<ITextComponent> tip = new ArrayList<>();
                         CompoundNBT tag = ((ISemiBlock) entity).serializeNBT(new CompoundNBT());
-                        ((ISemiBlock) entity).addTooltip(tip, player, tag, player.isSneaking());
+                        ((ISemiBlock) entity).addTooltip(tip, player, tag, player.isSteppingCarefully());
                         tip.forEach(text -> probeInfo.text(text.getFormattedText()));
                     }
                     entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {

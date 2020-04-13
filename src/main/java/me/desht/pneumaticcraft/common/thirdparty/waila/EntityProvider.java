@@ -52,7 +52,7 @@ public class EntityProvider {
                 tooltip.add(HeatUtil.formatHeatString(accessor.getServerData().getInt("Temperature")));
             }
             if (accessor.getEntity() instanceof ISemiBlock) {
-                ((ISemiBlock) accessor.getEntity()).addTooltip(tooltip, accessor.getPlayer(), accessor.getServerData(), accessor.getPlayer().isSneaking());
+                ((ISemiBlock) accessor.getEntity()).addTooltip(tooltip, accessor.getPlayer(), accessor.getServerData(), accessor.getPlayer().isSteppingCarefully());
             }
         }
 

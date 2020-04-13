@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -41,15 +41,13 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
     @Override
     public void render() {
         super.render();
-        GlStateManager.enableBlend();
-        // GlStateManager.disableTexture2D();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.color4f(1, 1, 1, 0.5F);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        RenderSystem.color4f(1, 1, 1, 0.5F);
         for (GuiStatBalloon balloon : balloons) {
             balloon.render();
         }
-        // GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
+        RenderSystem.disableBlend();
     }
 
     @Override

@@ -22,26 +22,28 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
     public void render(TileEntityAphorismTile te, float v, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
         matrixStack.push();
 
+        matrixStack.translate(0.5, 1.5, 0.5);
         matrixStack.scale(1, -1, -1);
         RenderUtils.rotateMatrixForDirection(matrixStack, te.getRotation());
         matrixStack.translate(0, 1, 0.5 - BBConstants.APHORISM_TILE_THICKNESS - 0.01);
 
+        FontRenderer fr = Minecraft.getInstance().getRenderManager().getFontRenderer();
+        int fh = fr.FONT_HEIGHT;
+
         String[] textLines = te.getTextLines();
         int lineWidth = te.getMaxLineWidth();
-        int lineHeight = 10 * textLines.length;
+        int lineHeight = fh * textLines.length;
         float textScale = Math.min(14 / 16F / lineWidth, 14 / 16F / lineHeight);
         matrixStack.scale(textScale, textScale, textScale);
         matrixStack.rotate(Vector3f.ZP.rotationDegrees(te.textRotation * 90));
 
         int editedLine = getEditedLine(te);
 
-        FontRenderer f = Minecraft.getInstance().getRenderManager().getFontRenderer();
-        int h = f.FONT_HEIGHT;
         for (int i = 0; i < textLines.length; i++) {
             String textLine = editedLine == i ? ">" + textLines[i] + "<" : textLines[i];
-            float x = -f.getStringWidth(textLine) / 2f;
-            float y = -(textLines.length * h) / 2 + i * h + 1;
-            f.renderString(textLine, x, y, 0xFF000000, false, matrixStack.getLast().getMatrix(), buffer, false, 0, 15728880);
+            float x = -fr.getStringWidth(textLine) / 2f;
+            float y = -(textLines.length * fh) / 2 + i * fh + 1;
+            fr.renderString(textLine, x, y, 0xFF000000, false, matrixStack.getLast().getMatrix(), buffer, false, 0, 15728880);
         }
 
         matrixStack.pop();

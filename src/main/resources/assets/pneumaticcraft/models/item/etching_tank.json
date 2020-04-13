@@ -1,4 +1,3 @@
 {
-  "parent": "pneumaticcraft:block/etching_tank",
-  "transform": "forge:default-block"
+  "parent": "pneumaticcraft:block/etching_tank"
 }

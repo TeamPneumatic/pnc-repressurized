@@ -1,5 +1,5 @@
 {
-  "parent": "block/block",
+  "parent": "forge:block/default",
   "textures": {
     "particle": "pneumaticcraft:block/programmable_controller",
     "north": "pneumaticcraft:block/programmable_controller",

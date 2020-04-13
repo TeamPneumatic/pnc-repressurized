@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -194,9 +195,9 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-        GlStateManager.enableTexture();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.enableTexture();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (Pair<Integer, Item> p : filter) {
             int slot = p.getLeft();
             if (slot < te.getLastSlot()) {
@@ -205,11 +206,11 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                 if (container.inventorySlots.get(slot).getStack().isEmpty()) {
                     ItemStack stack = new ItemStack(p.getRight());
                     GuiUtils.drawItemStack(stack, sx, sy);
-                    GlStateManager.translated(0, 0, 300);
+                    RenderSystem.translated(0, 0, 300);
                 }
                 fill(sx, sy, sx + 16, sy + 16, 0x8080D080);
                 if (container.inventorySlots.get(slot).getStack().isEmpty()) {
-                    GlStateManager.translated(0, 0, -300);
+                    RenderSystem.translated(0, 0, -300);
                 }
             }
         }
@@ -221,7 +222,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
             int sy = 18 + (slot / N_COLS) * 18;
             fill(sx, sy, sx + 16, sy + 16, 0x40FF6060);
         }
-        GlStateManager.disableBlend();
+        RenderSystem.disableBlend();
     }
 
     @Override

@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "textures": {
     "all": "pneumaticcraft:block/heat_sink",
     "particle": "pneumaticcraft:block/heat_sink"

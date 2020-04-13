@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.client.util.PressureGaugeRenderer;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -36,24 +36,18 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
 
         font.drawString("+", 32, 47, 0xFF00AA00);
         font.drawString("-", 138, 47, 0xFFFF0000);
-    }
-
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(opacity, x, y);
-
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
 
         float pressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
-                .map(IAirHandlerMachine::getPressure)
-                .orElseThrow(RuntimeException::new);
-        GuiUtils.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, pressure, xStart + xSize / 5, yStart + ySize / 5 + 4);
+                .orElseThrow(RuntimeException::new).getPressure();
+        PressureGaugeRenderer.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
+                PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, pressure,
+                xSize / 5, ySize / 5 + 4);
 
         float vacPressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide())
-                .map(IAirHandlerMachine::getPressure)
-                .orElseThrow(RuntimeException::new);
-        GuiUtils.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, vacPressure, xStart + xSize * 4 / 5, yStart + ySize / 5 + 4);
+                .orElseThrow(RuntimeException::new).getPressure();
+        PressureGaugeRenderer.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
+                PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, vacPressure,
+                xSize * 4 / 5, ySize / 5 + 4);
     }
 
     @Override

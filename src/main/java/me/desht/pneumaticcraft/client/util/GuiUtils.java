@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.client.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -21,126 +20,10 @@ import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class GuiUtils {
-    private static final HashMap<String, ResourceLocation> resourceMap = new HashMap<>();
-    private static final int CIRCLE_POINTS = 500;
-    public static final double PRESSURE_GAUGE_RADIUS = 20D;
-    private static final double START_ANGLE = 240D / 180D * Math.PI;
-    private static final double STOP_ANGLE = -60D / 180D * Math.PI;
-    private static final int GAUGE_POINTS = (int) ((START_ANGLE - STOP_ANGLE) / (2D * Math.PI) * CIRCLE_POINTS);
     private static final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-
-    public static void drawPressureGauge(FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos) {
-        drawPressureGauge(fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos, 0xFF000000);
-    }
-
-    public static void drawPressureGauge(FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, int fgColor) {
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        GlStateManager.disableTexture();
-        GlStateManager.lineWidth(2.0F);
-        // Draw the green and red surface in the gauge.
-        GlStateManager.color4f(0.7F, 0, 0, 1);
-        wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
-        wr.pos(xPos, yPos, 0.0).endVertex();
-        // System.out.println("gauge points: "+ GAUGE_POINTS);
-        int explodeBoundary = GAUGE_POINTS - (int) ((dangerPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
-        int workingBoundary = GAUGE_POINTS - (int) ((minWorkingPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
-        boolean changedColorGreen = false;
-        boolean changedColorYellow = false;
-        for (int i = 0; i < GAUGE_POINTS; i++) {
-            if (i == explodeBoundary && !changedColorGreen) {
-                Tessellator.getInstance().draw();
-                if (minWorkingPressure < 0 && minWorkingPressure >= -1) {
-                    GlStateManager.color4f(0.9F, 0.9F, 0, 1);
-                } else {
-                    GlStateManager.color4f(0, 0.7F, 0, 1);
-                }
-                wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
-                wr.pos(xPos, yPos, 0.0).endVertex();
-                i--;
-                changedColorGreen = true;
-            }
-            if (i == workingBoundary && !changedColorYellow) {
-                Tessellator.getInstance().draw();
-                if (minWorkingPressure < 0 && minWorkingPressure >= -1) {
-                    GlStateManager.color4f(0, 0.7F, 0, 1);
-                } else {
-                    GlStateManager.color4f(0.9F, 0.9F, 0, 1);
-                }
-                wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
-                wr.pos(xPos, yPos, 0.0).endVertex();
-                i--;
-                changedColorYellow = true;
-            }
-            double angle = (double) -i / (double) CIRCLE_POINTS * 2D * Math.PI - STOP_ANGLE;
-            wr.pos(Math.cos(angle) * PRESSURE_GAUGE_RADIUS + xPos, Math.sin(angle) * PRESSURE_GAUGE_RADIUS + yPos, 0.0).endVertex();
-        }
-        Tessellator.getInstance().draw();
-
-        float fgR = (float)(fgColor >> 16 & 255) / 255.0F;
-        float fgB = (float)(fgColor >> 8 & 255) / 255.0F;
-        float fgG = (float)(fgColor & 255) / 255.0F;
-        float fgA = (float)(fgColor >> 24 & 255) / 255.0F;
-
-        // Draw the black surrounding circle
-        GlStateManager.color4f(fgR, fgG, fgB, fgA);
-
-        wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
-        for (int i = 0; i < CIRCLE_POINTS; i++) {
-            double angle = (double) i / (double) CIRCLE_POINTS * 2D * Math.PI;
-            wr.pos(Math.cos(angle) * PRESSURE_GAUGE_RADIUS + xPos, Math.sin(angle) * PRESSURE_GAUGE_RADIUS + yPos, 0.0).endVertex();
-        }
-        Tessellator.getInstance().draw();
-
-        // Draw the scale
-        int currentScale = (int) maxPressure;
-        List<int[]> textScalers = new ArrayList<>();
-        wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-        for (int i = 0; i <= GAUGE_POINTS; i++) {
-            double angle = (double) -i / (double) CIRCLE_POINTS * 2D * Math.PI - STOP_ANGLE;
-            if (i == GAUGE_POINTS - (int) ((currentScale - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS)) {
-                textScalers.add(new int[]{currentScale, (int) (Math.cos(angle) * PRESSURE_GAUGE_RADIUS * 1.3D), (int) (Math.sin(angle) * PRESSURE_GAUGE_RADIUS * 1.3D)});
-                currentScale--;
-                // System.out.println("curr: "+ currentScale);
-                wr.pos(Math.cos(angle) * PRESSURE_GAUGE_RADIUS * 0.9D + xPos, Math.sin(angle) * PRESSURE_GAUGE_RADIUS * 0.9D + yPos, 0.0).endVertex();
-                wr.pos(Math.cos(angle) * PRESSURE_GAUGE_RADIUS * 1.1D + xPos, Math.sin(angle) * PRESSURE_GAUGE_RADIUS * 1.1D + yPos, 0.0).endVertex();
-
-            }
-        }
-        Tessellator.getInstance().draw();
-
-        // Draw the needle.
-        GlStateManager.color4f(fgR, fgG, fgB, fgA);
-        double angleIndicator = GAUGE_POINTS - (int) ((currentPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
-        angleIndicator = -angleIndicator / CIRCLE_POINTS * 2D * Math.PI - STOP_ANGLE;
-        wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
-        wr.pos(Math.cos(angleIndicator + 0.89D * Math.PI) * PRESSURE_GAUGE_RADIUS * 0.3D + xPos, Math.sin(angleIndicator + 0.89D * Math.PI) * PRESSURE_GAUGE_RADIUS * 0.3D + yPos, 0.0).endVertex();
-        wr.pos(Math.cos(angleIndicator + 1.11D * Math.PI) * PRESSURE_GAUGE_RADIUS * 0.3D + xPos, Math.sin(angleIndicator + 1.11D * Math.PI) * PRESSURE_GAUGE_RADIUS * 0.3D + yPos, 0.0).endVertex();
-        wr.pos(Math.cos(angleIndicator) * PRESSURE_GAUGE_RADIUS * 0.8D + xPos, Math.sin(angleIndicator) * PRESSURE_GAUGE_RADIUS * 0.8D + yPos, 0.0).endVertex();
-        Tessellator.getInstance().draw();
-
-        GlStateManager.enableTexture();
-
-        // draw the numbers next to the scaler.
-        while (textScalers.size() > 10) {
-            int divider = textScalers.size() / 5;
-            for (int i = textScalers.size() - 1; i >= 0; i--) {
-                if (i % divider != 0) textScalers.remove(i);
-            }
-        }
-        for (int[] scaler : textScalers) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translated(xPos + scaler[1] - 1.5, yPos + scaler[2] - 1.5, 0);
-            GlStateManager.scaled(0.5, 0.5, 1);
-            fontRenderer.drawString("" + scaler[0], 0, 0, fgColor);
-            GlStateManager.popMatrix();
-        }
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-    }
 
     public static void drawItemStack(ItemStack stack, int x, int y) {
         RenderSystem.enableRescaleNormal();
@@ -153,7 +36,7 @@ public class GuiUtils {
 
     public static void drawItemStack(@Nonnull ItemStack stack, int x, int y, String text) {
         RenderSystem.enableRescaleNormal();
-        GlStateManager.enableDepthTest();
+        RenderSystem.enableDepthTest();
         RenderHelper.enableStandardItemLighting();
         RenderSystem.pushMatrix();
         FontRenderer font = null;
@@ -189,7 +72,7 @@ public class GuiUtils {
         scaledAmount = Math.min(scaledAmount, bounds.getHeight());
 
         Minecraft.getInstance().getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-        RenderUtils.glColorHex(fluidColor, 255);
+        glColorHex(fluidColor, 255);
 
         final int xTileCount = bounds.getWidth() / TEX_WIDTH;
         final int xRemainder = bounds.getWidth() - xTileCount * TEX_WIDTH;
@@ -263,6 +146,7 @@ public class GuiUtils {
     }
 
     public static void drawTexture(ResourceLocation texture, int x, int y) {
+        Minecraft.getInstance().getTextureManager().bindTexture(texture);
         RenderSystem.enableTexture();
         RenderSystem.color4f(1, 1, 1, 1);
         BufferBuilder builder = Tessellator.getInstance().getBuffer();
@@ -274,11 +158,24 @@ public class GuiUtils {
         Tessellator.getInstance().draw();
     }
 
-    public static void drawTexture(ResourceLocation texture, int x, int y, IVertexBuilder builder) {
-        Minecraft.getInstance().getTextureManager().bindTexture(texture);
-        builder.pos(x, y + 16, 0).tex(0.0f, 1.0f).endVertex();
-        builder.pos(x + 16, y + 16, 0).tex(1.0f, 1.0f).endVertex();
-        builder.pos(x + 16, y, 0).tex(1.0f, 0.0f).endVertex();
-        builder.pos(x, y, 0).tex(0.0f, 0.0f).endVertex();
+    public static void glColorHex(int color, float brightness) {
+        float alpha = (color >> 24 & 255) / 255F;
+        float div = 255F / brightness;
+        float red = (color >> 16 & 255) / div;
+        float green = (color >> 8 & 255) / div;
+        float blue = (color & 255) / div;
+        RenderSystem.color4f(red, green, blue, alpha);
+    }
+
+    public static void glColorHex(int color) {
+        float alpha = (color >> 24 & 255) / 255F;
+        float red = (color >> 16 & 255) / 255F;
+        float green = (color >> 8 & 255) / 255F;
+        float blue = (color & 255) / 255F;
+        RenderSystem.color4f(red, green, blue, alpha);
+    }
+
+    public static void glColorHex(int color, int alpha) {
+        glColorHex(color | alpha << 24);
     }
 }

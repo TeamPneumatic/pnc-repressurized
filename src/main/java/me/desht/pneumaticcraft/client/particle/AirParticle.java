@@ -25,7 +25,7 @@ public class AirParticle extends SpriteTexturedParticle {
 //        }
 
         maxAge = 50;
-        particleAlpha = 0.1f;
+        particleAlpha = 0.003f;
         particleScale = scale;
 
         motionX = xSpeedIn + worldIn.rand.nextDouble() * 0.1 - 0.05;

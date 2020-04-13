@@ -133,7 +133,7 @@ public class ItemPneumaticArmor extends ArmorItem
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        if (slot == EquipmentSlotType.HEAD) {
+        if (slot == EquipmentSlotType.HEAD && worldIn != null) {
             addHelmetInformation(stack, worldIn, tooltip, flagIn);
         }
     }

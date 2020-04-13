@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
@@ -19,7 +18,10 @@ import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -154,75 +156,64 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
             return;
         }
 
-        GlStateManager.disableTexture();
-        GlStateManager.disableLighting();
+        RenderSystem.disableTexture();
+        RenderSystem.disableLighting();
+        BufferBuilder wr = Tessellator.getInstance().getBuffer();
         if (point != null) {
             double px = point.x;
             double py = point.y;
-            RenderUtils.glColorHex(0x2020A0, 255);
-            GlStateManager.pushMatrix();
-            GlStateManager.translated(guiLeft + SELECTOR_BOUNDS.getX(), guiTop + SELECTOR_BOUNDS.getY(), 0);
+            GuiUtils.glColorHex(0x2020A0, 255);
+            RenderSystem.pushMatrix();
+            RenderSystem.translated(guiLeft + SELECTOR_BOUNDS.getX(), guiTop + SELECTOR_BOUNDS.getY(), 0);
 
             // crosshairs
             int size = dragging ? 5 : 3;
-            GlStateManager.lineWidth(2);
-            GlStateManager.begin(GL11.GL_LINES);
-            GL11.glVertex2d(px - size, py);
-            GL11.glVertex2d(px + size, py);
-            GlStateManager.end();
-            GlStateManager.begin(GL11.GL_LINES);
-            GL11.glVertex2d(px, py - size);
-            GL11.glVertex2d(px, py + size);
-            GlStateManager.end();
+            RenderSystem.lineWidth(2);
+
+            wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+            wr.pos(px - size, py, 0).endVertex();
+            wr.pos(px + size, py, 0).endVertex();
+            wr.pos(px, py - size, 0).endVertex();
+            wr.pos(px, py + size, 0).endVertex();
+            Tessellator.getInstance().draw();
 
             GL11.glEnable(GL11.GL_LINE_STIPPLE);
             GL11.glLineStipple(1, (short)0xAAAA);
+
+            wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
             // speed line
-            GlStateManager.begin(GL11.GL_LINES);
-            GL11.glVertex2d(px, py);
-            GL11.glVertex2d(SELECTOR_BOUNDS.getWidth() / 2.0, 0);
-            GlStateManager.end();
+            wr.pos(px, py, 0).endVertex();
+            wr.pos(SELECTOR_BOUNDS.getWidth() / 2.0, 0, 0).endVertex();
             // turn speed line
-            GlStateManager.begin(GL11.GL_LINES);
-            GL11.glVertex2d(px, py);
-            GL11.glVertex2d(0, SELECTOR_BOUNDS.getHeight());
-            GlStateManager.end();
+            wr.pos(px, py, 0).endVertex();
+            wr.pos(0, SELECTOR_BOUNDS.getHeight(), 0).endVertex();
             // damage line
-            GlStateManager.begin(GL11.GL_LINES);
-            GL11.glVertex2d(px, py);
-            GL11.glVertex2d(SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight());
-            GlStateManager.end();
+            wr.pos(px, py, 0).endVertex();
+            wr.pos(SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight(), 0).endVertex();
+            Tessellator.getInstance().draw();
 
             GL11.glDisable(GL11.GL_LINE_STIPPLE);
-            GlStateManager.popMatrix();
-            RenderUtils.glColorHex(0xffffff, 255);
+            RenderSystem.popMatrix();
+            GuiUtils.glColorHex(0xffffff, 255);
         }
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(guiLeft, guiTop, 0);
-        GlStateManager.lineWidth(10);
+        RenderSystem.pushMatrix();
+        RenderSystem.translated(guiLeft, guiTop, 0);
+        RenderSystem.lineWidth(10);
         GL11.glEnable(GL11.GL_LINE_STIPPLE);
         GL11.glLineStipple(1, (short)0xFEFE);
-        RenderUtils.glColorHex(0x00C000, 255);
-        GlStateManager.begin(GL11.GL_LINES);
-        GL11.glVertex2i(125, 51);
-        GL11.glVertex2i(125 + (int) (49 * topSpeed), 51);
-        GlStateManager.end();
-        GlStateManager.begin(GL11.GL_LINES);
-        GL11.glVertex2i(125, 71);
-        GL11.glVertex2i(125 + (int) (49 * turnSpeed), 71);
-        GlStateManager.end();
-        GlStateManager.begin(GL11.GL_LINES);
-        GL11.glVertex2i(125, 91);
-        GL11.glVertex2i(125 + (int) (49 * damage), 91);
-        GlStateManager.end();
-        GlStateManager.popMatrix();
+
+        hLine(125, 125 + (int) (49 * topSpeed), 51, 0xFF00C000);
+        hLine(125, 125 + (int) (49 * turnSpeed), 71, 0xFF00C000);
+        hLine(125, 125 + (int) (49 * damage), 91, 0xFF00C000);
+
+        RenderSystem.popMatrix();
 
         GL11.glDisable(GL11.GL_LINE_STIPPLE);
-        GlStateManager.lineWidth(1);
-        GlStateManager.enableLighting();
+        RenderSystem.lineWidth(1);
+        RenderSystem.enableLighting();
 
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
     }
 
     @Override

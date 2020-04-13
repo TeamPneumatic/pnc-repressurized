@@ -1,76 +1,71 @@
 package me.desht.pneumaticcraft.client.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.opengl.GL11;
 
 public class RenderLaser {
-    public void render(float partialTicks, EntityDroneBase drone, double x1, double y1, double z1, double x2, double y2, double z2) {
-        TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+    private static final float LASER_SIZE = 0.4f;
 
-        double laserLength = PneumaticCraftUtils.distBetween(x1, y1, z1, x2, y2, z2);
-        double laserSize = 0.4;
+    public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, EntityDroneBase drone, double x1, double y1, double z1, double x2, double y2, double z2) {
+        float laserLength = (float) PneumaticCraftUtils.distBetween(x1, y1, z1, x2, y2, z2);
 
-        GlStateManager.disableLighting();
-        GlStateManager.disableCull();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        matrixStack.push();
 
-        GlStateManager.translated(x1, y1, z1);
+        matrixStack.translate(x1, y1, z1);
 
         double dx = x2 - x1;
         double dy = y2 - y1;
         double dz = z2 - z1;
         float f3 = MathHelper.sqrt(dx * dx + dz * dz);
-        double rotYaw = Math.atan2(dx, dz) * 180.0D / Math.PI;
-        double rotPitch = 90 - (float) (Math.atan2(dy, f3) * 180.0D / Math.PI);
+        double rotYawRad = Math.atan2(dx, dz);
+        double rotPitchRad = Math.PI / 2.0 - Math.atan2(dy, f3);
 
-        GlStateManager.rotated((float)rotYaw, 0, 1, 0);
-        GlStateManager.rotated((float)rotPitch, 1, 0, 0);
+        matrixStack.rotate(Vector3f.YP.rotation((float) rotYawRad));
+        matrixStack.rotate(Vector3f.XP.rotation((float) rotPitchRad));
 
-        GlStateManager.scaled(laserSize, laserSize, laserSize);
-        GlStateManager.translated(0, 0.6, 0);
-        GlStateManager.rotated((drone.ticksExisted + partialTicks) * 200, 0, 1, 0);
+        matrixStack.scale(LASER_SIZE, LASER_SIZE, LASER_SIZE);
+        matrixStack.translate(0, 0.6, 0);
+        matrixStack.rotate(Vector3f.YP.rotationDegrees(drone.ticksExisted + partialTicks));
 
-        GlStateManager.pushMatrix();
-        GlStateManager.scaled(1, laserLength / laserSize, 1);
+        matrixStack.push();
+        matrixStack.scale(1f, laserLength / LASER_SIZE, 1f);
 
-        textureManager.bindTexture(Textures.RENDER_LASER);
-        renderQuad(drone.getLaserColor());  // glow
-        textureManager.bindTexture(Textures.RENDER_LASER_OVERLAY);
-        renderQuad(drone.getLaserColor());  // core
-        GlStateManager.popMatrix();
+        int[] cols = RenderUtils.decomposeColor(drone.getLaserColor());
 
-        GlStateManager.rotated(180, 1, 0, 0);
-        textureManager.bindTexture(Textures.RENDER_LASER_START);
-        renderQuad(drone.getLaserColor());  // glow
-        textureManager.bindTexture(Textures.RENDER_LASER_START_OVERLAY);
-        renderQuad(drone.getLaserColor());  //core
+        // todo 1.15 consider stitching these 4 into one texture for less state switching
+        IVertexBuilder builder;
 
-        GlStateManager.disableBlend();
-        GlStateManager.enableCull();
-        GlStateManager.enableLighting();
+        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        builder = buffer.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.RENDER_LASER));
+        renderQuad(posMat, builder, cols);  // glow
+        builder = buffer.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.RENDER_LASER_OVERLAY));
+        renderQuad(posMat, builder, cols);  // core
 
-        GlStateManager.color4f(1, 1, 1, 1);
+        matrixStack.pop();
+
+        matrixStack.rotate(Vector3f.XP.rotationDegrees(180));
+
+        posMat = matrixStack.getLast().getMatrix();
+        builder = buffer.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.RENDER_LASER_START));
+        renderQuad(posMat, builder, cols);  // glow
+        builder = buffer.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.RENDER_LASER_START_OVERLAY));
+        renderQuad(posMat, builder, cols);  // core
+
+        matrixStack.pop();
     }
 
-    private void renderQuad(int color) {
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        RenderUtils.glColorHex(color);
-        wr.pos(-0.5, 0, 0).tex(0, 0).endVertex();
-        wr.pos(-0.5, 1, 0).tex(0, 1).endVertex();
-        wr.pos(0.5, 1, 0).tex(1, 1).endVertex();
-        wr.pos(0.5, 0, 0).tex(1, 0).endVertex();
-        Tessellator.getInstance().draw();
+    private void renderQuad(Matrix4f posMat, IVertexBuilder builder, int[] cols) {
+        builder.pos(posMat,-0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(0, 0).lightmap(0x00F00F0).endVertex();
+        builder.pos(posMat,-0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(0, 1).lightmap(0x00F00F0).endVertex();
+        builder.pos(posMat, 0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(1, 1).lightmap(0x00F00F0).endVertex();
+        builder.pos(posMat, 0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(1, 0).lightmap(0x00F00F0).endVertex();
     }
 }

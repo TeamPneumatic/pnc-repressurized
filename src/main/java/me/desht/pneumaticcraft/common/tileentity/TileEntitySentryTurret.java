@@ -115,7 +115,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     private boolean canSeeEntity(Entity entity) {
-        Vec3d entityVec = new Vec3d(entity.posX + entity.getWidth() / 2, entity.posY + entity.getHeight() / 2, entity.posZ + entity.getWidth() / 2);
+        Vec3d entityVec = new Vec3d(entity.getPosX() + entity.getWidth() / 2, entity.getPosY() + entity.getHeight() / 2, entity.getPosZ() + entity.getWidth() / 2);
         RayTraceContext ctx = new RayTraceContext(entityVec, tileVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
         BlockRayTraceResult trace = getWorld().rayTraceBlocks(ctx);
         return trace.getPos().equals(getPos());
@@ -347,7 +347,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         }
 
         private boolean inRange(Entity entity) {
-            return PneumaticCraftUtils.distBetweenSq(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ()), entity.posX, entity.posY, entity.posZ) <= rangeSq;
+            return PneumaticCraftUtils.distBetweenSq(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ()), entity.getPosX(), entity.getPosY(), entity.getPosZ()) <= rangeSq;
         }
 
         private boolean isExcludedBySecurityStations(PlayerEntity player) {

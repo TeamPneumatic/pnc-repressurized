@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -57,6 +58,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
 
     @Override
     public void renderExtraInfo() {
+        ProgWidgetRenderer.renderItemFilterExtras(this);
         if (variable.equals("")) {
             if (!filter.isEmpty()) {
                 GuiUtils.drawItemStack(filter, 10, 2, "");

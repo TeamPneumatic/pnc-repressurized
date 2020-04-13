@@ -48,8 +48,9 @@ public class RenderPressureChamber extends TileEntityRenderer<TileEntityPressure
             for (int i = 0; i < stacks.size(); i++) {
                 matrixStackIn.push();
                 matrixStackIn.rotate(Vector3f.YP.rotationDegrees(i * degreesPerStack));
-                matrixStackIn.translate(circleRadius, yBob, 0);
+                matrixStackIn.translate(circleRadius, yBob + 0.2, 0);
                 matrixStackIn.rotate(Vector3f.YP.rotationDegrees(yRot));
+                matrixStackIn.scale(0.5f, 0.5f, 0.5f);
 
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
                 IBakedModel ibakedmodel = itemRenderer.getItemModelWithOverrides(stacks.get(i), te.getWorld(), null);

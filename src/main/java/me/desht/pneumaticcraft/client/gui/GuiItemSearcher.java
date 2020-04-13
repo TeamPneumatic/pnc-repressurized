@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerItemSearcher;
@@ -137,7 +137,7 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
             onClose();
         }
         return !searchField.keyPressed(keyCode, scanCode, modifiers)
-                && searchField.func_212955_f() || super.keyPressed(keyCode, scanCode, modifiers);
+                && searchField.canWrite() || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void getAllEnchantedBooks(Enchantment enchantment, NonNullList<ItemStack> list) {
@@ -247,8 +247,8 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
 
         super.render(x, y, partialTicks);
 
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.disableLighting();
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableLighting();
 
         renderHoveredToolTip(x, y);
     }

@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -22,7 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class RenderAssemblyIOUnit extends TileEntityRenderer<TileEntityAssemblyIOUnit> {
+public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAssemblyIOUnit> {
     private final ModelRenderer baseTurn;
     private final ModelRenderer baseTurn2;
     private final ModelRenderer armBase1;
@@ -92,17 +91,15 @@ public class RenderAssemblyIOUnit extends TileEntityRenderer<TileEntityAssemblyI
     }
 
     @Override
-    public void render(TileEntityAssemblyIOUnit te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    void renderModel(TileEntityAssemblyIOUnit te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         float[] angles = new float[5];
         for (int i = 0; i < 5; i++) {
             angles[i] = te.oldAngles[i] + (te.angles[i] - te.oldAngles[i]) * partialTicks;
         }
-        
+
         ItemStack heldStack = te.getPrimaryInventory().getStackInSlot(0);
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getTexture(te)));
         Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(MathHelper.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
-        
-        matrixStackIn.push();
 
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(angles[0]));
         baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
@@ -148,8 +145,6 @@ public class RenderAssemblyIOUnit extends TileEntityRenderer<TileEntityAssemblyI
                 itemRenderer.renderItem(heldStack, ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
             }
         }
-
-        matrixStackIn.pop();
     }
 
     private Pair<IAssemblyRenderOverriding, Float> getClawTranslation(float clawProgress, ItemStack heldStack) {

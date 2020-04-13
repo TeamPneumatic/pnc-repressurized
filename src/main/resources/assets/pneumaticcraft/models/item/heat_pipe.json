@@ -1,4 +1,3 @@
 {
-  "parent": "pneumaticcraft:block/heat_pipe_center",
-  "transform": "forge:default-block"
+  "parent": "pneumaticcraft:block/heat_pipe_center"
 }

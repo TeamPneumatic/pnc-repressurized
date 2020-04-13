@@ -1,17 +1,16 @@
 package me.desht.pneumaticcraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
-
-import javax.annotation.Nullable;
 
 public class RenderMicromissile extends EntityRenderer<EntityMicromissile> {
     public static final IRenderFactory<EntityMicromissile> FACTORY = RenderMicromissile::new;
@@ -21,70 +20,51 @@ public class RenderMicromissile extends EntityRenderer<EntityMicromissile> {
     }
 
     @Override
-    public void doRender(EntityMicromissile entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        // mostly lifted from RenderArrow
-        this.bindEntityTexture(entity);
+    public void render(EntityMicromissile entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+        // mostly lifted from ArrowRenderer
+        matrixStackIn.push();
 
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.pushMatrix();
-        GlStateManager.disableLighting();
-        GlStateManager.translated((float)x, (float)y, (float)z);
-        GlStateManager.rotated(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotated(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.prevRotationYaw, entityIn.rotationYaw) - 90.0F));
+        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.prevRotationPitch, entityIn.rotationPitch)));
+        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(45.0F));
 
-        GlStateManager.enableRescaleNormal();
+        matrixStackIn.scale(0.05625F, 0.05625F, 0.05625F);
+        matrixStackIn.translate(-4.0D, 0.0D, 0.0D);
 
-        GlStateManager.rotated(45.0F, 1.0F, 0.0F, 0.0F);
-        GlStateManager.scaled(0.05625F, 0.05625F, 0.05625F);
-        GlStateManager.translated(-4.0F, 0.0F, 0.0F);
-
-        if (this.renderOutlines) {
-            GlStateManager.enableColorMaterial();
-            GlStateManager.setupSolidRenderingTextureCombine(this.getTeamColor(entity));
-        }
-
-        GlStateManager.normal3f(0.05625F, 0.0F, 0.0F);
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(-7.0D, -2.0D, -2.0D).tex(0.0D, 0.15625D).endVertex();
-        bufferbuilder.pos(-7.0D, -2.0D, 2.0D).tex(0.15625D, 0.15625D).endVertex();
-        bufferbuilder.pos(-7.0D, 2.0D, 2.0D).tex(0.15625D, 0.3125D).endVertex();
-        bufferbuilder.pos(-7.0D, 2.0D, -2.0D).tex(0.0D, 0.3125D).endVertex();
-        tessellator.draw();
-        GlStateManager.normal3f(-0.05625F, 0.0F, 0.0F);
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(-7.0D, 2.0D, -2.0D).tex(0.0D, 0.15625D).endVertex();
-        bufferbuilder.pos(-7.0D, 2.0D, 2.0D).tex(0.15625D, 0.15625D).endVertex();
-        bufferbuilder.pos(-7.0D, -2.0D, 2.0D).tex(0.15625D, 0.3125D).endVertex();
-        bufferbuilder.pos(-7.0D, -2.0D, -2.0D).tex(0.0D, 0.3125D).endVertex();
-        tessellator.draw();
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(this.getEntityTexture(entityIn)));
+        Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
+        Matrix3f matrix3f = matrixStackIn.getLast().getNormal();
+        vertex(matrix4f, matrix3f, builder, -7, -2, -2, 0.0F, 0.15625F, -1, 0, 0, packedLightIn);
+        vertex(matrix4f, matrix3f, builder, -7, -2, 2, 0.15625F, 0.15625F, -1, 0, 0, packedLightIn);
+        vertex(matrix4f, matrix3f, builder, -7, 2, 2, 0.15625F, 0.3125F, -1, 0, 0, packedLightIn);
+        vertex(matrix4f, matrix3f, builder, -7, 2, -2, 0.0F, 0.3125F, -1, 0, 0, packedLightIn);
+        vertex(matrix4f, matrix3f, builder, -7, 2, -2, 0.0F, 0.15625F, 1, 0, 0, packedLightIn);
+        vertex(matrix4f, matrix3f, builder, -7, 2, 2, 0.15625F, 0.15625F, 1, 0, 0, packedLightIn);
+        vertex(matrix4f, matrix3f, builder, -7, -2, 2, 0.15625F, 0.3125F, 1, 0, 0, packedLightIn);
+        vertex(matrix4f, matrix3f, builder, -7, -2, -2, 0.0F, 0.3125F, 1, 0, 0, packedLightIn);
 
         for (int j = 0; j < 4; ++j) {
-            GlStateManager.rotated(90.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.normal3f(0.0F, 0.0F, 0.05625F);
-            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-            bufferbuilder.pos(-8.0D, -2.0D, 0.0D).tex(0.0D, 0.0D).endVertex();
-            bufferbuilder.pos(8.0D, -2.0D, 0.0D).tex(0.5D, 0.0D).endVertex();
-            bufferbuilder.pos(8.0D, 2.0D, 0.0D).tex(0.5D, 0.15625D).endVertex();
-            bufferbuilder.pos(-8.0D, 2.0D, 0.0D).tex(0.0D, 0.15625D).endVertex();
-            tessellator.draw();
+            matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90.0F));
+            vertex(matrix4f, matrix3f, builder, -8, -2, 0, 0.0F, 0.0F, 0, 1, 0, packedLightIn);
+            vertex(matrix4f, matrix3f, builder, 8, -2, 0, 0.5F, 0.0F, 0, 1, 0, packedLightIn);
+            vertex(matrix4f, matrix3f, builder, 8, 2, 0, 0.5F, 0.15625F, 0, 1, 0, packedLightIn);
+            vertex(matrix4f, matrix3f, builder, -8, 2, 0, 0.0F, 0.15625F, 0, 1, 0, packedLightIn);
         }
 
-        if (this.renderOutlines) {
-            GlStateManager.tearDownSolidRenderingTextureCombine();
-            GlStateManager.disableColorMaterial();
-        }
-
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.enableLighting();
-        GlStateManager.popMatrix();
-        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+        matrixStackIn.pop();
     }
 
-    @Nullable
+    public void vertex(Matrix4f matrix4f, Matrix3f matrix3f, IVertexBuilder builder, float x, float y, float z, float u, float v, float nx, float ny, float nz, int lightmap) {
+        builder.pos(matrix4f, x, y, z)
+                .color(255, 255, 255, 255)
+                .tex(u, v).overlay(OverlayTexture.NO_OVERLAY)
+                .lightmap(lightmap)
+                .normal(matrix3f, nx, nz, ny)
+                .endVertex();
+    }
+
     @Override
-    protected ResourceLocation getEntityTexture(EntityMicromissile entity) {
-        return Textures.MICROMISSILE_TEXTURE;
+    public ResourceLocation getEntityTexture(EntityMicromissile entity) {
+        return Textures.MICROMISSILE_ENTITY;
     }
 }

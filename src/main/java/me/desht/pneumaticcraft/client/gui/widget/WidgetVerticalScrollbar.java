@@ -1,13 +1,20 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 
-public class WidgetVerticalScrollbar extends Widget {
+import static me.desht.pneumaticcraft.client.util.RenderUtils.*;
+
+public class WidgetVerticalScrollbar extends Widget implements ICanRender3d {
     public float currentScroll;
     private int states;
     private boolean listening;
@@ -87,4 +94,47 @@ public class WidgetVerticalScrollbar extends Widget {
     public boolean isDragging() {
         return dragging;
     }
+
+    @Override
+    public void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+        if (visible) {
+            renderWithType(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(Textures.WIDGET_VERTICAL_SCROLLBAR, true), (posMat, builder)-> {
+                blit3d(builder, posMat, x, y, 12, 0, width, 1, 26, 15);
+                for (int i = 0; i < height - 2; i++) {
+                    blit3d(builder, posMat, x, y + 1 + i, 12, 1, width, 1, 26, 15);
+                }
+                blit3d(builder, posMat, x, y + height - 1, 12, 14, width, 1, 26, 15);
+                blit3d(builder, posMat, x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
+            });
+        }
+    }
+
+    private void blit3d(IVertexBuilder builder, Matrix4f posMat, int x, int y, int textureX, int textureY, int width, int height, int textureWidth, int textureHeight) {
+        float u1 = (float) textureX / textureWidth;
+        float u2 = (float) (textureX + width) / textureWidth;
+        float v1 = (float) textureY / textureHeight;
+        float v2 = (float) (textureY + height) / textureHeight;
+
+        posF(builder, posMat, x, y + height, 0)
+                .color(255, 255, 255, 255)
+                .tex(u1, v2)
+                .lightmap(FULL_BRIGHT)
+                .endVertex();
+        posF(builder, posMat, x + width, y + height, 0)
+                .color(255, 255, 255, 255)
+                .tex(u2, v2)
+                .lightmap(FULL_BRIGHT)
+                .endVertex();
+        posF(builder, posMat, x + width, y, 0)
+                .color(255, 255, 255, 255)
+                .tex(u2, v1)
+                .lightmap(FULL_BRIGHT)
+                .endVertex();
+        posF(builder, posMat, x, y, 0)
+                .color(255, 255, 255, 255)
+                .tex(u1, v1)
+                .lightmap(FULL_BRIGHT)
+                .endVertex();
+    }
+
 }

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.render.area;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
@@ -13,17 +13,17 @@ import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,7 +34,6 @@ public class AreaRenderManager {
     private World world;
     private DroneDebugUpgradeHandler droneDebugger;
 
-    private List<BlockPos> cachedPositionProviderData;
     private List<AreaRenderer> cachedPositionProviderShowers;
     private AreaRenderer camoPositionShower;
     private BlockPos lastPlayerPos;
@@ -48,26 +47,26 @@ public class AreaRenderManager {
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity player = mc.player;
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(-TileEntityRendererDispatcher.staticPlayerX, -TileEntityRendererDispatcher.staticPlayerY, -TileEntityRendererDispatcher.staticPlayerZ);
+        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+        MatrixStack matrixStack = event.getMatrixStack();
 
-        GlStateManager.disableTexture();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        matrixStack.push();
 
+        Vec3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
+
+        // tile entity controlled renderers
         for (AreaRenderer handler : showHandlers.values()) {
-            handler.render();
+            handler.render(matrixStack, buffer);
         }
 
         // some special rendering for certain items
-        maybeRenderPositionProvider(player);
-        maybeRenderCamo(player);
-        maybeRenderDroneDebug(player);
-        maybeRenderAreaTool(player);
+        maybeRenderPositionProvider(matrixStack, buffer, player);
+        maybeRenderCamo(matrixStack, buffer, player);
+        maybeRenderDroneDebug(matrixStack, buffer, player);
+        maybeRenderAreaTool(matrixStack, buffer, player);
 
-        GlStateManager.enableTexture();
-        GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     @SubscribeEvent
@@ -85,18 +84,18 @@ public class AreaRenderManager {
         }
     }
 
-    private void maybeRenderAreaTool(PlayerEntity player) {
+    private void maybeRenderAreaTool(MatrixStack matrixStack, IRenderTypeBuffer.Impl buffer, PlayerEntity player) {
         ItemStack curItem = getHeldPositionProvider(player);
         if (curItem.getItem() instanceof ItemGPSAreaTool) {
             // show the raw P1/P2 positions; the area is shown by getHeldPositionProvider()
             BlockPos p1 = ItemGPSAreaTool.getGPSLocation(player.getEntityWorld(), curItem, 0);
             BlockPos p2 = ItemGPSAreaTool.getGPSLocation(player.getEntityWorld(), curItem, 1);
-            new AreaRenderer(Collections.singleton(p1), 0xE0FF6060, true).render();
-            new AreaRenderer(Collections.singleton(p2), 0xE060FF60, true).render();
+            new AreaRenderer(Collections.singleton(p1), 0x80FF6060, true).render(matrixStack, buffer);
+            new AreaRenderer(Collections.singleton(p2), 0x8060FF60, true).render(matrixStack, buffer);
         }
     }
 
-    private void maybeRenderDroneDebug(PlayerEntity player) {
+    private void maybeRenderDroneDebug(MatrixStack matrixStack, IRenderTypeBuffer.Impl buffer, PlayerEntity player) {
         ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
         if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()) {
             if (droneDebugger == null) {
@@ -104,8 +103,8 @@ public class AreaRenderManager {
             }
             Set<BlockPos> posSet = droneDebugger.getShowingPositions();
             Set<BlockPos> areaSet = droneDebugger.getShownArea();
-            new AreaRenderer(posSet, 0x90FF0000, true).render();
-            new AreaRenderer(areaSet, 0x4040FFA0, true).render();
+            new AreaRenderer(posSet, 0x90FF0000, true).render(matrixStack, buffer);
+            new AreaRenderer(areaSet, 0x4040FFA0, true).render(matrixStack, buffer);
         }
     }
 
@@ -119,7 +118,7 @@ public class AreaRenderManager {
         }
     }
 
-    private void maybeRenderPositionProvider(PlayerEntity player) {
+    private void maybeRenderPositionProvider(MatrixStack matrixStack, IRenderTypeBuffer.Impl buffer, PlayerEntity player) {
         ItemStack curItem = getHeldPositionProvider(player);
         if (curItem.getItem() instanceof IPositionProvider && curItem.hasTag()) {
             int thisHash = curItem.getTag().hashCode();
@@ -140,17 +139,16 @@ public class AreaRenderManager {
                         positionsForColor.add(posList.get(i));
                     }
                 }
-                cachedPositionProviderData = posList;
                 cachedPositionProviderShowers = new ArrayList<>(colorsToPositions.size());
                 colorsToPositions.int2ObjectEntrySet().forEach((entry) ->
                         cachedPositionProviderShowers.add(new AreaRenderer(entry.getValue(), entry.getIntKey(), positionProvider.disableDepthTest())));
             }
 
-            cachedPositionProviderShowers.forEach(AreaRenderer::render);
+            cachedPositionProviderShowers.forEach(renderer -> renderer.render(matrixStack, buffer));
         }
     }
 
-    private void maybeRenderCamo(PlayerEntity player) {
+    private void maybeRenderCamo(MatrixStack matrixStack, IRenderTypeBuffer.Impl buffer, PlayerEntity player) {
         if (!(player.getHeldItemMainhand().getItem() instanceof ItemCamoApplicator)) {
             return;
         }
@@ -160,10 +158,10 @@ public class AreaRenderManager {
                     .filter(te -> te instanceof ICamouflageableTE && te.getPos().distanceSq(lastPlayerPos) < 144)
                     .map(TileEntity::getPos)
                     .collect(Collectors.toSet());
-            camoPositionShower = new AreaRenderer(s, 0x608080FF, 0.75, true, true);
+            camoPositionShower = new AreaRenderer(s, 0x608080FF, 0.75f, true, true);
         }
         if (camoPositionShower != null) {
-            camoPositionShower.render();
+            camoPositionShower.render(matrixStack, buffer);
         }
     }
 

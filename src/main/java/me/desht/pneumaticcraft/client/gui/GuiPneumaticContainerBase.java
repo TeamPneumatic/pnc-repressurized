@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
@@ -9,7 +8,7 @@ import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.client.util.PressureGaugeRenderer;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -257,7 +256,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int i, int j) {
         if (shouldDrawBackground()) {
-            RenderUtils.glColorHex(0xFF000000 | getBackgroundTint());
+            GuiUtils.glColorHex(0xFF000000 | getBackgroundTint());
             bindGuiTexture();
             int xStart = (width - xSize) / 2;
             int yStart = (height - ySize) / 2;
@@ -280,7 +279,8 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             PointXY gaugeLocation = getGaugeLocation();
             if (gaugeLocation != null) {
                 TileEntityPneumaticBase pneu = (TileEntityPneumaticBase) te;
-                GuiUtils.drawPressureGauge(font, -1, pneu.criticalPressure, pneu.dangerPressure, te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE, pneu.getPressure(), gaugeLocation.x - guiLeft, gaugeLocation.y - guiTop);
+                float minWorking = te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE;
+                PressureGaugeRenderer.drawPressureGauge(font, -1, pneu.criticalPressure, pneu.dangerPressure, minWorking, pneu.getPressure(), gaugeLocation.x - guiLeft, gaugeLocation.y - guiTop);
             }
         }
     }
@@ -289,7 +289,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         ResourceLocation guiTexture = getGuiTexture();
         if (guiTexture != null) {
             minecraft.getTextureManager().bindTexture(guiTexture);
-            GlStateManager.enableTexture();
+            RenderSystem.enableTexture();
         }
     }
 

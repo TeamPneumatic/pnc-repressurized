@@ -19,9 +19,9 @@ public class DroneGoToOwner extends Goal {
         if (owner == null) return false;
 
         Vec3d lookVec = owner.getLookVec().scale(2.0);
-        double x = owner.posX + lookVec.x;
-        double z = owner.posZ + lookVec.z;
-        return drone.getDistanceSq(owner) > 6 && drone.getNavigator().tryMoveToXYZ(x, owner.posY, z, drone.getSpeed());
+        double x = owner.getPosX() + lookVec.x;
+        double z = owner.getPosZ() + lookVec.z;
+        return drone.getDistanceSq(owner) > 6 && drone.getNavigator().tryMoveToXYZ(x, owner.getPosY(), z, drone.getSpeed());
     }
 
     @Override

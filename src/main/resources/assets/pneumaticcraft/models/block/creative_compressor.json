@@ -1,8 +1,10 @@
 {
+  "parent": "forge:block/default",
   "loader": "forge:obj",
   "model": "pneumaticcraft:models/block/creative_compressor.obj",
   "flip-v": true,
   "detectCullableFaces": false,
+  "diffuseLighting": true,
   "textures": {
     "particle": "pneumaticcraft:block/compressed_iron_block"
   }

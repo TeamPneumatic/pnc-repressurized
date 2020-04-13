@@ -54,8 +54,8 @@ public class PacketPneumaticKick {
     private void handleKick(PlayerEntity player, int upgrades) {
         Vec3d lookVec = player.getLookVec().normalize();
 
-        double playerFootY = player.posY - player.getHeight() / 4;
-        AxisAlignedBB box = new AxisAlignedBB(player.posX, playerFootY, player.posZ, player.posX, playerFootY, player.posZ)
+        double playerFootY = player.getPosY() - player.getHeight() / 4;
+        AxisAlignedBB box = new AxisAlignedBB(player.getPosX(), playerFootY, player.getPosZ(), player.getPosX(), playerFootY, player.getPosZ())
                 .grow(1.0, 1.0, 1.0).offset(lookVec);
         List<Entity> entities = player.world.getEntitiesWithinAABBExcludingEntity(player, box);
         if (entities.isEmpty()) return;
@@ -67,9 +67,9 @@ public class PacketPneumaticKick {
         }
         target.setMotion(target.getMotion().add(lookVec.scale(1.0 + upgrades * 0.5f)));
 
-        NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PUNCH.get(), SoundCategory.PLAYERS, target.posX, target.posY, target.posZ, 1.0f, 1.0f, false), player.world);
+        NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PUNCH.get(), SoundCategory.PLAYERS, target.getPosX(), target.getPosY(), target.getPosZ(), 1.0f, 1.0f, false), player.world);
         NetworkHandler.sendToAllAround(new PacketSetEntityMotion(target, target.getMotion()), player.world);
-        NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.posX, target.posY, target.posZ, 1.0D, 0.0D, 0.0D), player.world);
+        NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.getPosX(), target.getPosY(), target.getPosZ(), 1.0D, 0.0D, 0.0D), player.world);
         CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlotType.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * (2 << upgrades));
     }
 }

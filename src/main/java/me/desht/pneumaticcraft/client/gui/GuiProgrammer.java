@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
@@ -11,6 +12,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -416,7 +418,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         lastMouseX = mouseX;
         lastMouseY = mouseY;
 
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         renderBackground();
         bindGuiTexture();
         int xStart = (width - xSize) / 2;
@@ -431,7 +433,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
             int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight(); // 171 or 427
 
-            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             bindGuiTexture();
             int width = (int)MathHelper.lerp(partialTicks, (float)oldShowingWidgetProgress, (float)showingWidgetProgress);
             for (int i = 0; i < width; i++) {
@@ -442,37 +444,38 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             if (showingAllWidgets && draggingWidget != null) toggleShowWidgets();
         }
         // draw widgets in the widget tray
-        GlStateManager.enableTexture();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.enableTexture();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
             IProgWidget widget = visibleSpawnWidgets.get(i);
-            GlStateManager.pushMatrix();
-            GlStateManager.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-            GlStateManager.scaled(0.5, 0.5, 1);
+            RenderSystem.pushMatrix();
+            RenderSystem.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+            RenderSystem.scaled(0.5, 0.5, 1);
             if (showingAllWidgets && filteredSpawnWidgets != null && !filteredSpawnWidgets.get(i)) {
-                GlStateManager.color4f(1, 1, 1, 0.2f);
+                RenderSystem.color4f(1, 1, 1, 0.2f);
             } else {
-                GlStateManager.color4f(1, 1, 1, 1);
+                RenderSystem.color4f(1, 1, 1, 1);
             }
-            widget.render();
-            GlStateManager.popMatrix();
+            ProgWidgetRenderer.renderProgWidget2d(widget);
+            RenderSystem.popMatrix();
         }
-        GlStateManager.disableBlend();
 
         // draw the widget currently being dragged, if any
         float scale = programmerUnit.getScale();
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
-        GlStateManager.scaled(scale, scale, 1);
+        RenderSystem.pushMatrix();
+        RenderSystem.translated(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
+        RenderSystem.scaled(scale, scale, 1);
         if (draggingWidget != null) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translated(draggingWidget.getX() + guiLeft, draggingWidget.getY() + guiTop, 0);
-            GlStateManager.scaled(0.5, 0.5, 1);
-            draggingWidget.render();
-            GlStateManager.popMatrix();
+            RenderSystem.pushMatrix();
+            RenderSystem.translated(draggingWidget.getX() + guiLeft, draggingWidget.getY() + guiTop, 0);
+            RenderSystem.scaled(0.5, 0.5, 1);
+            ProgWidgetRenderer.renderProgWidget2d(draggingWidget);
+            RenderSystem.popMatrix();
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
+
+        RenderSystem.disableBlend();
 
         if (!removingWidgets.isEmpty()) drawRemovingWidgets();
     }
@@ -482,29 +485,32 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
      */
     private void drawRemovingWidgets() {
         Iterator<RemovingWidget> iter = removingWidgets.iterator();
-        int h = minecraft.mainWindow.getScaledHeight();
+        int h = minecraft.getMainWindow().getScaledHeight();
         float scale = programmerUnit.getScale();
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
-        GlStateManager.scaled(scale, scale, 1);
+        RenderSystem.pushMatrix();
+        RenderSystem.translated(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
+        RenderSystem.scaled(scale, scale, 1);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         while (iter.hasNext()) {
             RemovingWidget rw = iter.next();
             IProgWidget w = rw.widget;
             if (w.getY() + rw.ty > h / scale) {
                 iter.remove();
             } else {
-                GlStateManager.pushMatrix();
-                GlStateManager.translated(w.getX() + rw.tx + guiLeft, w.getY() + rw.ty + guiTop, 0);
-                GlStateManager.scaled(0.5, 0.5, 1);
-                w.render();
-                GlStateManager.popMatrix();
+                RenderSystem.pushMatrix();
+                RenderSystem.translated(w.getX() + rw.tx + guiLeft, w.getY() + rw.ty + guiTop, 0);
+                RenderSystem.scaled(0.5, 0.5, 1);
+                ProgWidgetRenderer.renderProgWidget2d(w);
+                RenderSystem.popMatrix();
                 rw.ty += rw.velY;
                 rw.tx += rw.velX;
                 rw.velY += 0.3;
 
             }
         }
-        GlStateManager.popMatrix();
+        RenderSystem.disableBlend();
+        RenderSystem.popMatrix();
     }
 
     @Override
@@ -1152,9 +1158,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         public void renderButton(int x, int y, float partialTicks) {
             // this is needed to force the textfield to draw on top of any
             // widgets in the programming area
-            GlStateManager.translated(0, 0, 300);
+            RenderSystem.translated(0, 0, 300);
             super.renderButton(x, y, partialTicks);
-            GlStateManager.translated(0, 0, -300);
+            RenderSystem.translated(0, 0, -300);
         }
     }
 

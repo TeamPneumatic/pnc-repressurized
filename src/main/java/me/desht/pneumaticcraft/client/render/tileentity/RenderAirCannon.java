@@ -9,10 +9,9 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 
-public class RenderAirCannon extends TileEntityRenderer<TileEntityAirCannon> {
+public class RenderAirCannon extends AbstractTileModelRenderer<TileEntityAirCannon> {
     private final ModelRenderer baseTurn;
     private final ModelRenderer baseFrame1;
     private final ModelRenderer baseFrame2;
@@ -81,17 +80,15 @@ public class RenderAirCannon extends TileEntityRenderer<TileEntityAirCannon> {
     }
 
     @Override
-    public void render(TileEntityAirCannon te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        matrixStackIn.push();
-
+    void renderModel(TileEntityAirCannon te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_AIR_CANNON));
 
         float angle = RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
         float rotationAngle = te.rotationAngle - angle + 180F;
 
-        matrixStackIn.translate(0.0, 0.0, -15/16D);
+        matrixStackIn.translate(0.0, 0.0, -0.09375D);
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rotationAngle));
-        matrixStackIn.translate(0.0, 0.0, 15/16D);
+        matrixStackIn.translate(0.0, 0.0, 0.09375D);
         baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         baseFrame1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         baseFrame2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
@@ -100,15 +97,13 @@ public class RenderAirCannon extends TileEntityRenderer<TileEntityAirCannon> {
         baseFrame5.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         baseFrame6.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
-        matrixStackIn.translate(0.0D, 1.0D, -15/16D);
+        matrixStackIn.translate(0.0D, 1.0D, -0.09375D);
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(te.heightAngle));
-        matrixStackIn.translate(0.0D, -1.0D, 15/16D);
+        matrixStackIn.translate(0.0D, -1.0D, 0.09375D);
         cannon1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         cannon2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         cannon3.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         cannon4.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         cannon5.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-
-        matrixStackIn.pop();
     }
 }

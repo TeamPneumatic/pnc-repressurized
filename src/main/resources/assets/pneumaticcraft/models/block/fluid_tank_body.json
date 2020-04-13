@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "credit": "Made with Blockbench",
   "textures": {
     "glass": "pneumaticcraft:block/tank_glass",

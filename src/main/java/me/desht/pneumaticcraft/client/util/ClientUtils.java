@@ -3,12 +3,16 @@ package me.desht.pneumaticcraft.client.util;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.FirstPersonRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -19,11 +23,14 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.data.EmptyModelData;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * Miscellaneous client-side utilities
@@ -149,5 +156,17 @@ public class ClientUtils {
 
     public static boolean isGuiOpen() {
         return Minecraft.getInstance().currentScreen != null;
+    }
+
+    public static float[] getTextureUV(BlockState state, Direction face) {
+        if (state == null) return null;
+        IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
+        List<BakedQuad> quads = model.getQuads(state, face, Minecraft.getInstance().world.rand, EmptyModelData.INSTANCE);
+        if (!quads.isEmpty()) {
+            TextureAtlasSprite sprite = quads.get(0).func_187508_a();
+            return new float[] { sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV() };
+        } else {
+            return null;
+        }
     }
 }

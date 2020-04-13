@@ -40,9 +40,9 @@ public class MovingSoundJetBoots extends TickableSound {
             donePlaying = true;
         }
 
-        x = (float) player.posX;
-        y = (float) player.posY;
-        z = (float) player.posZ;
+        x = (float) player.getPosX();
+        y = (float) player.getPosY();
+        z = (float) player.getPosZ();
 
         if (endTimer > 0) {
             targetPitch = 0.5F;

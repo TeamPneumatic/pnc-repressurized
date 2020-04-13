@@ -166,7 +166,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
 
     @Override
     public int getRenderColor(int index) {
-        return 0x90FFFF00;
+        return 0x60FFFF00;
     }
     
     @Override

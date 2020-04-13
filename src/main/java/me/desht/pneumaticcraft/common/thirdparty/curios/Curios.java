@@ -20,6 +20,8 @@ import java.util.function.Predicate;
 public class Curios implements IThirdParty {
     public static boolean available = false;
 
+    public static final Pair<String,Integer> NONE = Pair.of("", -1);
+
     @Override
     public void preInit() {
         available = true;
@@ -75,8 +77,8 @@ public class Curios implements IThirdParty {
                     }
                 }
             }
-            return null;
-        }).orElse(null);
+            return NONE;
+        }).orElse(NONE);
     }
 
     /**

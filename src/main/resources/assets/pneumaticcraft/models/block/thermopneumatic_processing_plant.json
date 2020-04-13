@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "loader": "forge:obj",
   "model": "pneumaticcraft:models/block/thermopneumatic_processing_plant.obj",
   "flip-v": true,

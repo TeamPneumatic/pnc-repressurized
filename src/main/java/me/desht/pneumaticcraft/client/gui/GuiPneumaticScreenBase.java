@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.widget.ITickableWidget;
 import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
@@ -55,7 +54,7 @@ public abstract class GuiPneumaticScreenBase extends Screen {
 
     @Override
     public void render(int x, int y, float partialTicks) {
-        GlStateManager.color4f(1f, 1f, 1f, 1.0f);
+        RenderSystem.color4f(1f, 1f, 1f, 1.0f);
         if (getTexture() != null) {
             minecraft.getTextureManager().bindTexture(getTexture());
             blit(guiLeft, guiTop, 0, 0, xSize, ySize);

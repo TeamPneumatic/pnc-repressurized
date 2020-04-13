@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiSearchUpgradeOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
@@ -16,7 +17,6 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +31,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +55,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void update(PlayerEntity player, int rangeUpgrades) {
+    public void tick(PlayerEntity player, int rangeUpgrades) {
         ticksExisted++;
 
         if ((ticksExisted & 0xf) == 0) {
@@ -72,19 +71,11 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.enableTexture();
-        GlStateManager.depthMask(false);
-        GlStateManager.disableDepthTest();
-        GlStateManager.disableCull();
-        GlStateManager.enableBlend();
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.IS_RUNNING_ON_MAC);
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        Minecraft.getInstance().getTextureManager().bindTexture(Textures.GLOW_RESOURCE);
+        IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.GLOW_RESOURCE, true));
 
         searchedItems.forEach((item, value) -> {
             float height = MathHelper.sin((item.getAge() + partialTicks) / 10.0F + item.hoverStart) * 0.1F + 0.2F;
-            RenderSearchItemBlock.renderSearch(matrixStack, buffer,
+            RenderSearchItemBlock.renderSearch(matrixStack, builder,
                     item.lastTickPosX + (item.getPosX() - item.lastTickPosX) * partialTicks,
                     item.lastTickPosY + (item.getPosY() - item.lastTickPosY) * partialTicks + height,
                     item.lastTickPosZ + (item.getPosZ() - item.lastTickPosZ) * partialTicks, value,
@@ -92,14 +83,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
             );
         });
 
-        trackedInventories.values().forEach(entry -> entry.renderSearchBlock(totalSearchedItemCount, partialTicks));
-
-        GlStateManager.enableCull();
-        GlStateManager.enableDepthTest();
-        GlStateManager.disableBlend();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableTexture();
-        GlStateManager.disableRescaleNormal();
+        trackedInventories.values().forEach(entry -> entry.renderSearchBlock(matrixStack, builder, totalSearchedItemCount, partialTicks));
     }
 
     @Override
@@ -108,10 +92,10 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
         Item item = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
         List<String> textList = new ArrayList<>();
         if (item == null) {
-            textList.add("press '" + KeyHandler.getInstance().keybindOpenOptions.getKeyDescription() + "' to configure");
+            textList.add("press '" + KeyHandler.getInstance().keybindOpenOptions.getLocalizedName() + "' to configure");
         } else {
             if (searchedStack.getItem() != item) searchedStack = new ItemStack(item);
-            textList.add(searchedStack.getDisplayName() + " (" + totalSearchedItemCount + " found)");
+            textList.add(searchedStack.getDisplayName().getFormattedText() + " (" + totalSearchedItemCount + " found)");
         }
         searchInfo.setText(textList);
     }

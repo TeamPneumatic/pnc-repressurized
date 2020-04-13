@@ -3,18 +3,17 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyLaser;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.math.MathHelper;
 
-public class RenderAssemblyLaser extends TileEntityRenderer<TileEntityAssemblyLaser> {
+public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAssemblyLaser> {
     private final ModelRenderer baseTurn;
     private final ModelRenderer baseTurn2;
     private final ModelRenderer armBase1;
@@ -73,7 +72,7 @@ public class RenderAssemblyLaser extends TileEntityRenderer<TileEntityAssemblyLa
     }
 
     @Override
-    public void render(TileEntityAssemblyLaser te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightMapIn, int combinedOverlayIn) {
+    public void renderModel(TileEntityAssemblyLaser te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         float[] angles = new float[5];
         for (int i = 0; i < 5; i++) {
             angles[i] = MathHelper.lerp(partialTicks, te.oldAngles[i], te.angles[i]);
@@ -81,40 +80,36 @@ public class RenderAssemblyLaser extends TileEntityRenderer<TileEntityAssemblyLa
 
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
 
-        matrixStackIn.push();
-
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(angles[0]));
-        baseTurn.render(matrixStackIn, builder, combinedLightMapIn, combinedOverlayIn);
-        baseTurn2.render(matrixStackIn, builder, combinedLightMapIn, combinedOverlayIn);
+        baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        baseTurn2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         matrixStackIn.translate(0, 18 / 16F, 0);
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(angles[1]));
         matrixStackIn.translate(0, -18 / 16F, 0);
-        armBase1.render(matrixStackIn, builder, combinedLightMapIn, combinedOverlayIn);
-        armBase2.render(matrixStackIn, builder, combinedLightMapIn, combinedOverlayIn);
-        supportMiddle.render(matrixStackIn, builder, combinedLightMapIn, combinedOverlayIn);
+        armBase1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        armBase2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        supportMiddle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         matrixStackIn.translate(0, 18 / 16F, 6 / 16F);
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(angles[2]));
         matrixStackIn.translate(0, -18 / 16F, -6 / 16F);
-        armMiddle1.render(matrixStackIn, builder, combinedLightMapIn, combinedOverlayIn);
-        armMiddle2.render(matrixStackIn, builder, combinedLightMapIn, combinedOverlayIn);
+        armMiddle1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        armMiddle2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         matrixStackIn.translate(0, 3 / 16F, 6 / 16F);
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(angles[3]));
         matrixStackIn.translate(0, -3 / 16F, -6 / 16F);
 
-        laserBase.render(matrixStackIn, builder, combinedLightMapIn, combinedOverlayIn);
+        laserBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         if (te.isLaserOn) {
             matrixStackIn.push();
             matrixStackIn.translate(0, 2.75 / 16D, 1 / 16D);
             matrixStackIn.scale(1/8f, 1/8f, 1/8f);
-            laser.render(matrixStackIn, builder, combinedLightMapIn, combinedOverlayIn, 1f, 0.1f, 0f, 1f);
+            laser.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 1f, 0.1f, 0f, 1f);
             matrixStackIn.pop();
         }
 
         matrixStackIn.scale(TEXTURE_SIZE, TEXTURE_SIZE, TEXTURE_SIZE);
         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-90));
         matrixStackIn.translate(0, 0, 18);
-        GuiUtils.drawTexture(Textures.GUI_LASER_DANGER, -8, -65, bufferIn.getBuffer(ModRenderTypes.TEXTURE));
-
-        matrixStackIn.pop();
+        RenderUtils.drawTexture(matrixStackIn, bufferIn.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.GUI_LASER_DANGER)), -8, -65, combinedLightIn);
     }
 }

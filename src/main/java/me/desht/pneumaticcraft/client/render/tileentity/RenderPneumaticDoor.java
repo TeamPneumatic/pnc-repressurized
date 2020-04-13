@@ -10,12 +10,11 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.math.MathHelper;
 
-public class RenderPneumaticDoor extends TileEntityRenderer<TileEntityPneumaticDoor> {
+public class RenderPneumaticDoor extends AbstractTileModelRenderer<TileEntityPneumaticDoor> {
     private final ModelRenderer shape1;
     private final ModelRenderer shape2;
     private final ModelRenderer shape3;
@@ -68,7 +67,7 @@ public class RenderPneumaticDoor extends TileEntityRenderer<TileEntityPneumaticD
     }
 
     @Override
-    public void render(TileEntityPneumaticDoor te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(TileEntityPneumaticDoor te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (te.getBlockState().get(BlockPneumaticDoor.TOP_DOOR)) return;
 
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_PNEUMATIC_DOOR_DYNAMIC));
@@ -76,8 +75,6 @@ public class RenderPneumaticDoor extends TileEntityRenderer<TileEntityPneumaticD
         float rotation = MathHelper.lerp(partialTicks, te.oldRotationAngle, te.rotationAngle);
         boolean rightGoing = te.rightGoing;
         float[] rgb = DyeColor.byId(te.color).getColorComponentValues();
-
-        matrixStackIn.push();
 
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
 
@@ -94,7 +91,5 @@ public class RenderPneumaticDoor extends TileEntityRenderer<TileEntityPneumaticD
         shape7.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, rgb[0], rgb[1], rgb[2], 1f);
         shape8.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, rgb[0], rgb[1], rgb[2], 1f);
         shape9.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, rgb[0], rgb[1], rgb[2], 1f);
-        
-        matrixStackIn.pop();
     }
 }

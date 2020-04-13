@@ -1,4 +1,3 @@
 {
-  "parent": "pneumaticcraft:block/electrostatic_compressor",
-  "transform": "forge:default-block"
+  "parent": "pneumaticcraft:block/electrostatic_compressor"
 }

@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
 import me.desht.pneumaticcraft.client.model.module.*;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.render.entity.*;
+import me.desht.pneumaticcraft.client.render.entity.drone.RenderDrone;
 import me.desht.pneumaticcraft.client.render.fluid.*;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.tileentity.*;

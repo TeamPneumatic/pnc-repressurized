@@ -30,7 +30,7 @@ public class EntityLogisticsDrone extends EntityBasicDrone {
         builder.add(new ProgWidgetLogistics(), standard16x16x16Area(pos));
         maybeAddStandbyInstruction(builder, droneStack);
         widgets.addAll(builder.build());
-        addBasicProgram(pos, widgets, new ProgWidgetLogistics());
+//        addBasicProgram(pos, widgets, new ProgWidgetLogistics());
 
         return true;
     }

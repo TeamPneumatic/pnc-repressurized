@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -86,10 +86,10 @@ public class GuiThermopneumaticProcessingPlant extends
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         String containerName = title.getFormattedText();
-        GlStateManager.pushMatrix();
-        GlStateManager.scaled(0.95, 0.97, 1);
+        RenderSystem.pushMatrix();
+        RenderSystem.scaled(0.95, 0.97, 1);
         font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f + 1, 5, 0x404040);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
         super.drawGuiContainerForegroundLayer(x, y);
 
     }

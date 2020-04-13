@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.event;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
@@ -116,7 +117,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void renderFirstPersonMinigun(RenderGameOverlayEvent.Pre event) {
+    public static void renderFirstPersonMinigunTraces(RenderGameOverlayEvent.Pre event) {
         if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS && Minecraft.getInstance().gameSettings.thirdPersonView == 0) {
             PlayerEntity player = Minecraft.getInstance().player;
             Minecraft mc = Minecraft.getInstance();
@@ -161,27 +162,24 @@ public class ClientEventHandler {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glEnable(GL11.GL_LINE_STIPPLE);
-        RenderUtils.glColorHex(color);
 
         int x = w / 2;
         int y = h / 2;
 
+        int[] cols = RenderUtils.decomposeColor(color);
         Random rand = Minecraft.getInstance().world.rand;
+        BufferBuilder bb = Tessellator.getInstance().getBuffer();
+        float f = Minecraft.getInstance().gameSettings.mainHand == HandSide.RIGHT ? 0.665F : 0.335F;
+        float endX = w * f;
+        float endY = h * 0.685F;
         for (int i = 0; i < 5; i++) {
             int stipple = 0xFFFF & ~(3 << rand.nextInt(16));
             GL11.glLineStipple(4, (short) stipple);
-            BufferBuilder bb = Tessellator.getInstance().getBuffer();
-            float f = Minecraft.getInstance().gameSettings.mainHand == HandSide.RIGHT ? 0.665F : 0.335F;
-            bb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-            bb.pos(x + rand.nextInt(12) - 6, y + rand.nextInt(12) - 6, 0);
-            bb.pos(w * f, h * 0.685F, 0);
+            bb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+            bb.pos(x + rand.nextInt(12) - 6, y + rand.nextInt(12) - 6, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+            bb.pos(endX, endY, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
             Tessellator.getInstance().draw();
-//            GlStateManager.begin(GL11.GL_LINES);
-//            GL11.glVertex2f(x + rand.nextInt(12) - 6, y + rand.nextInt(12) - 6);
-//            GL11.glVertex2f(w * f, h * 0.685F);
-//            GlStateManager.end();
         }
-        RenderSystem.color4f(1, 1, 1, 1);
         GL11.glDisable(GL11.GL_LINE_STIPPLE);
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
@@ -189,22 +187,16 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onWorldRender(RenderWorldLastEvent event) {
+    public static void renderThirdPersonMinigunTraces(RenderWorldLastEvent event) {
         // render everyone else's (and ours in 3rd person camera) minigun bullet traces
         PlayerEntity thisPlayer = Minecraft.getInstance().player;
-//        double playerX = thisPlayer.prevPosX + (thisPlayer.getPosX() - thisPlayer.prevPosX) * event.getPartialTicks();
-//        double playerY = thisPlayer.prevPosY + (thisPlayer.getPosY() - thisPlayer.prevPosY) * event.getPartialTicks();
-//        double playerZ = thisPlayer.prevPosZ + (thisPlayer.getPosZ() - thisPlayer.prevPosZ) * event.getPartialTicks();
-
         MatrixStack matrixStack = event.getMatrixStack();
         IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+        IVertexBuilder builder = buffer.getBuffer(RenderType.LINES);
 
         matrixStack.push();
         Vec3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
-
-//        GlStateManager.pushMatrix();
-//        GlStateManager.translated(-playerX, -playerY, -playerZ);
 
         for (PlayerEntity player : Minecraft.getInstance().world.getPlayers()) {
             if (thisPlayer == player && Minecraft.getInstance().gameSettings.thirdPersonView == 0) continue;
@@ -213,38 +205,24 @@ public class ClientEventHandler {
                 Minigun minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
                 if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
                     matrixStack.push();
-//                    GlStateManager.pushMatrix();
-                    double playerX = player.prevPosX + (player.getPosX() - player.prevPosX) * event.getPartialTicks();
-                    double playerY = player.prevPosY + (player.getPosY() - player.prevPosY) * event.getPartialTicks();
-                    double playerZ = player.prevPosZ + (player.getPosZ() - player.prevPosZ) * event.getPartialTicks();
-                    matrixStack.translate(playerX, playerY + 0.5, playerZ);
-//                    GlStateManager.translated(playerX, playerY + 0.5, playerZ);
-//                    GlStateManager.disableTexture();
-//                    GlStateManager.enableBlend();
-//                    GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-//                    RenderUtils.glColorHex(0x40000000 | minigun.getAmmoColor());
-                    Vec3d directionVec = player.getLookVec().normalize();
-                    Vec3d vec = new Vec3d(directionVec.x, 0, directionVec.z).normalize();
-                    vec.rotateYaw((float) Math.toRadians(-15 + (player.rotationYawHead - player.renderYawOffset)));
-                    minigunFire.startX = vec.x * MINIGUN_RADIUS;
-                    minigunFire.startY = vec.y * MINIGUN_RADIUS - player.getYOffset();
-                    minigunFire.startZ = vec.z * MINIGUN_RADIUS;
+                    Vec3d startVec = player.getPositionVec().add(0, player.getEyeHeight() / 2, 0).add(player.getLookVec());
+                    Vec3d endVec = startVec.add(player.getLookVec().scale(20));
+                    minigunFire.startX = startVec.x;
+                    minigunFire.startY = startVec.y;
+                    minigunFire.startZ = startVec.z;
                     for (int i = 0; i < 5; i++) {
-                        minigunFire.endX = directionVec.x * 20 + player.getRNG().nextDouble() - 0.5;
-                        minigunFire.endY = directionVec.y * 20 + player.getEyeHeight() + player.getRNG().nextDouble() - 0.5;
-                        minigunFire.endZ = directionVec.z * 20 + player.getRNG().nextDouble() - 0.5;
-                        minigunFire.render(matrixStack, buffer.getBuffer(RenderType.LINES), 0x40000000 | minigun.getAmmoColor());
+                        minigunFire.endX = endVec.x + + player.getRNG().nextDouble() - 0.5;
+                        minigunFire.endY = endVec.y + + player.getRNG().nextDouble() - 0.5;
+                        minigunFire.endZ = endVec.z + + player.getRNG().nextDouble() - 0.5;
+                        RenderUtils.renderProgressingLine(minigunFire, matrixStack, builder, 0xFF000000 | minigun.getAmmoColor());
                     }
-//                    GlStateManager.color4f(1, 1, 1, 1);
-//                    GlStateManager.enableTexture();
-//                    GlStateManager.popMatrix();
+                    buffer.finish(RenderType.LINES);
                     matrixStack.pop();
                 }
             }
         }
 
         matrixStack.pop();
-//        GlStateManager.popMatrix();
     }
 
     @SubscribeEvent

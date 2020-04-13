@@ -44,7 +44,7 @@ public class WidgetColorSelector extends WidgetButtonExtended {
         vLine(x + width - 4, y + 3, y + height - 3, 0xFF606060);
 
         if (expanded) {
-            RenderSystem.translated(0, 0, 300);
+            RenderSystem.translated(0, 0, 500);
             fill(x, y - 1 + height, x + width * 4, y -1 + height * 5, 0xFF000000);
             fill(x + 1, y + height, x + width * 4 - 1, y - 2 + height * 5, 0xFF808080);
             for (DyeColor color : DyeColor.values()) {
@@ -54,7 +54,7 @@ public class WidgetColorSelector extends WidgetButtonExtended {
                 hLine(dx + 3, dx + 13, dy + 13, 0xFF606060);
                 vLine(dx + 13, dy + 3, dy + 13, 0xFF606060);
             }
-            RenderSystem.translated(0, 0, -300);
+            RenderSystem.translated(0, 0, -500);
         }
     }
 

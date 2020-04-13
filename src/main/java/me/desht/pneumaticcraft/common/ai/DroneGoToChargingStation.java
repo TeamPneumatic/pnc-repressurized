@@ -51,7 +51,7 @@ public class DroneGoToChargingStation extends Goal {
             }
         });
 
-        validChargingStations.sort(Comparator.comparingDouble(arg -> PneumaticCraftUtils.distBetweenSq(arg.getPos().getX(), arg.getPos().getY(), arg.getPos().getZ(), drone.posX, drone.posY, drone.posZ)));
+        validChargingStations.sort(Comparator.comparingDouble(arg -> PneumaticCraftUtils.distBetweenSq(arg.getPos().getX(), arg.getPos().getY(), arg.getPos().getZ(), drone.getPosX(), drone.getPosX(), drone.getPosX())));
 
         for (TileEntityChargingStation station : validChargingStations) {
             boolean protect = PneumaticCraftUtils.getProtectingSecurityStations(drone.world, station.getPos(), drone.getFakePlayer(), false, false) > 0;

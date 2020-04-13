@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "loader": "forge:obj",
   "model": "pneumaticcraft:models/block/charging_station.obj",
   "flip-v": true,

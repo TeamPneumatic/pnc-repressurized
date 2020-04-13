@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModRegistries;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
@@ -192,7 +192,7 @@ public class TooltipEventHandler {
             RenderSystem.lineWidth(10);
             GL11.glEnable(GL11.GL_LINE_STIPPLE);
             GL11.glLineStipple(1, (short)0xFEFE);
-            RenderUtils.glColorHex(0x00C000, 255);
+            GuiUtils.glColorHex(0x00C000, 255);
 
             drawLine(barX, y, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED)));
             drawLine(barX, y + fr.FONT_HEIGHT, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED)));

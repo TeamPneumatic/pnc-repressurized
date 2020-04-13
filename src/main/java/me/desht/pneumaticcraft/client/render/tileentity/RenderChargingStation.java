@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.ChunkPos;
 
 public class RenderChargingStation extends TileEntityRenderer<TileEntityChargingStation> {
     public RenderChargingStation(TileEntityRendererDispatcher dispatcher) {
@@ -19,10 +18,10 @@ public class RenderChargingStation extends TileEntityRenderer<TileEntityCharging
 
     @Override
     public void render(TileEntityChargingStation te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (!te.getWorld().getChunkProvider().isChunkLoaded(new ChunkPos(te.getPos())) || te.getChargingStackSynced().isEmpty())
-            return;
+        if (te.getChargingStackSynced().isEmpty() || !te.getWorld().isAreaLoaded(te.getPos(), 0)) return;
 
         matrixStackIn.push();
+
         matrixStackIn.translate(0.5, 0.5, 0.5);
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
         matrixStackIn.scale(0.5F, 0.5F, 0.5F);
@@ -30,5 +29,7 @@ public class RenderChargingStation extends TileEntityRenderer<TileEntityCharging
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         IBakedModel ibakedmodel = itemRenderer.getItemModelWithOverrides(te.getChargingStackSynced(), te.getWorld(), null);
         itemRenderer.renderItem(te.getChargingStackSynced(), ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
+
+        matrixStackIn.pop();
     }
 }

@@ -12,9 +12,9 @@ public class DroneMovementController extends MovementController {
     public DroneMovementController(EntityDroneBase par1EntityLiving) {
         super(par1EntityLiving);
         entity = par1EntityLiving;
-        x = entity.posX;
-        y = entity.posY;
-        z = entity.posZ;
+        x = entity.getPosX();
+        y = entity.getPosY();
+        z = entity.getPosZ();
     }
 
     @Override
@@ -35,9 +35,9 @@ public class DroneMovementController extends MovementController {
     public void tick() {
         if (entity.isAccelerating()) {
             entity.setMotion(
-                    Math.max(-speed, Math.min(speed, x - entity.posX)),
-                    Math.max(-speed, Math.min(speed, y - entity.posY)),
-                    Math.max(-speed, Math.min(speed, z - entity.posZ))
+                    Math.max(-speed, Math.min(speed, x - entity.getPosX())),
+                    Math.max(-speed, Math.min(speed, y - entity.getPosY())),
+                    Math.max(-speed, Math.min(speed, z - entity.getPosZ()))
             );
 
             EntityPathNavigateDrone navigator = (EntityPathNavigateDrone)entity.getNavigator();

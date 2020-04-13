@@ -42,13 +42,19 @@ public class GuiSearchUpgradeOptions extends IOptionPage.SimpleToggleableOptions
                 b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getUpgradeHandler(), ArmorHUDLayout.LayoutTypes.ITEM_SEARCH))));
 
         if (searchGui != null && !player.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()) {
-            ItemStack searchStack = searchGui.getSearchStack();
-            Item searchedItem = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
-            ItemStack helmetStack = new ItemStack(searchedItem);
-            if (searchStack.isEmpty() && !helmetStack.isEmpty() || !searchStack.isEmpty() && helmetStack.isEmpty()
-                    || !searchStack.isEmpty() && !helmetStack.isEmpty() && !searchStack.isItemEqual(helmetStack)) {
-                NetworkHandler.sendToServer(new PacketUpdateSearchItem(searchedItem));
+//            ItemStack searchStack = searchGui.getSearchStack();
+            ItemStack helmetStack = ClientUtils.getWornArmor(EquipmentSlotType.HEAD);
+            Item newSearchedItem = searchGui.getSearchStack().getItem();
+            Item oldSearchedItem = ItemPneumaticArmor.getSearchedItem(helmetStack);
+            if (newSearchedItem != oldSearchedItem) {
+                ItemPneumaticArmor.setSearchedItem(helmetStack, newSearchedItem);
+                NetworkHandler.sendToServer(new PacketUpdateSearchItem(newSearchedItem));
             }
+//            ItemStack helmetStack = new ItemStack(oldSearchedItem);
+//            if (searchStack.isEmpty() && !helmetStack.isEmpty() || !searchStack.isEmpty() && helmetStack.isEmpty()
+//                    || !searchStack.isEmpty() && !helmetStack.isEmpty() && !searchStack.isItemEqual(helmetStack)) {
+//                NetworkHandler.sendToServer(new PacketUpdateSearchItem(searchStack.getItem()));
+//            }
         }
     }
 

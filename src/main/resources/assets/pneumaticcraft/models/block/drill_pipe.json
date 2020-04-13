@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "textures": {
     "pipe": "minecraft:block/gray_concrete",
     "particle": "minecraft:block/gray_concrete"

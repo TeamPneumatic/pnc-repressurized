@@ -2,6 +2,7 @@
   "loader": "forge:obj",
   "model": "pneumaticcraft:models/block/air_compressor_active.obj",
   "flip-v": true,
+  "diffuseLighting": true,
   "textures": {
     "particle": "pneumaticcraft:block/compressed_iron_block"
   }

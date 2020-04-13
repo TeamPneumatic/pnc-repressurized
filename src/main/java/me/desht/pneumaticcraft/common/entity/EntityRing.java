@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.entity;
 
-import me.desht.pneumaticcraft.client.render.RenderRing;
+import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -13,7 +13,8 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 public class EntityRing extends Entity {
 
-    public RenderRing ring, oldRing;
+//    public RenderRing ring, oldRing;
+    public ProgressingLine ring, oldRing;
     private final Entity targetEntity;
     public final int color;
 
@@ -60,10 +61,10 @@ public class EntityRing extends Entity {
         prevRotationPitch = rotationPitch;
 
         if (ring == null) {
-            ring = new RenderRing(getPosX(), getPosY(), getPosZ(), end.x, end.y, end.z, color);
+            ring = new ProgressingLine(getPosX(), getPosY(), getPosZ(), end.x, end.y, end.z);
         } else {
             if (oldRing == null) {
-                oldRing = new RenderRing(ring.startX, ring.startY, ring.startZ, ring.endX, ring.endY, ring.endZ, color);
+                oldRing = new ProgressingLine(ring.startX, ring.startY, ring.startZ, ring.endX, ring.endY, ring.endZ);
             } else {
                 oldRing.endX = ring.endX;
                 oldRing.endY = ring.endY;

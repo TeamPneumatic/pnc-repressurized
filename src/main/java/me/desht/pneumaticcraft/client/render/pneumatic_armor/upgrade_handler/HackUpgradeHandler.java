@@ -24,7 +24,7 @@ public class HackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public void update(PlayerEntity player, int rangeUpgrades) {
+    public void tick(PlayerEntity player, int rangeUpgrades) {
 
     }
 

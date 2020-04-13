@@ -2,6 +2,5 @@
   "loader": "pneumaticcraft:fluid_container_item",
   "base_model": {
     "parent": "pneumaticcraft:block/fluid_tank_inv"
-  },
-  "transform": "forge:default-block"
+  }
 }

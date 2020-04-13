@@ -50,6 +50,7 @@ public enum LauncherTracker {
 
     public void render(MainWindow sr, float partialTicks) {
         RenderSystem.pushMatrix();
+        RenderSystem.disableTexture();
         if (Minecraft.getInstance().player.getPrimaryHand() == HandSide.LEFT) {
             RenderSystem.translated(sr.getScaledWidth() - 30, sr.getScaledHeight() - 30, -90);
             RenderSystem.scaled(-1, 1, 1);
@@ -58,8 +59,9 @@ public enum LauncherTracker {
         }
         RenderSystem.rotatef(-60, 0, 0, 1);
         float progress = Math.min(100f, (launcherProgress + partialTicks) * 100f / LauncherTracker.MAX_PROGRESS);
-        RenderProgressBar.render(0, 0, sr.getScaledWidth() / 6.0 - 30, 12, 0,
+        RenderProgressBar.render2d(0, 0, sr.getScaledWidth() / 6.0 - 30, 12, 0,
                 progress, 0xAA0000A0, 0xAA40A0FF);
+        RenderSystem.enableTexture();
         RenderSystem.popMatrix();
     }
 }

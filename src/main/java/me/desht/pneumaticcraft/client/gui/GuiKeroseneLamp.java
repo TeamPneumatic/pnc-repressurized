@@ -9,14 +9,14 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.client.config.GuiSlider;
+import net.minecraftforge.fml.client.gui.widget.Slider;
 
 import java.util.List;
 
-public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKeroseneLamp,TileEntityKeroseneLamp> implements GuiSlider.ISlider {
+public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKeroseneLamp,TileEntityKeroseneLamp> implements Slider.ISlider {
 
     private WidgetLabel rangeLabel;
-    private GuiSlider slider;
+    private Slider slider;
 
     public GuiKeroseneLamp(ContainerKeroseneLamp container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -29,7 +29,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
         addButton(new WidgetTank(guiLeft + 152, guiTop + 15, te.getTank()));
         addButton(rangeLabel = new WidgetLabel(guiLeft + 20, guiTop + 55, ""));
 
-        addButton(slider = new GuiSlider(guiLeft + 7, guiTop + 30, 118, 20, I18n.format("gui.keroseneLamp.maxRange") + " ", "", 1, TileEntityKeroseneLamp.MAX_RANGE, te.getTargetRange(), false, true, b -> { }, this));
+        addButton(slider = new Slider(guiLeft + 7, guiTop + 30, 118, 20, I18n.format("gui.keroseneLamp.maxRange") + " ", "", 1, TileEntityKeroseneLamp.MAX_RANGE, te.getTargetRange(), false, true, b -> { }, this));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
     }
 
     @Override
-    public void onChangeSliderValue(GuiSlider slider) {
+    public void onChangeSliderValue(Slider slider) {
         sendDelayed(5);
     }
 

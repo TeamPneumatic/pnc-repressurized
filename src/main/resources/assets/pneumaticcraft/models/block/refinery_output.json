@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "textures": {
     "refinery": "pneumaticcraft:block/refinery",
     "particle": "pneumaticcraft:block/refinery"

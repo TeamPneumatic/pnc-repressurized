@@ -30,7 +30,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nonnull;
@@ -58,7 +58,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void update(PlayerEntity player, int rangeUpgrades) {
+    public void tick(PlayerEntity player, int rangeUpgrades) {
         SearchUpgradeHandler searchHandler = HUDHandler.instance().getSpecificRenderer(SearchUpgradeHandler.class);
 
         if (searchHandler != null && (Minecraft.getInstance().world.getGameTime() & 0xf) == 0) {
@@ -203,7 +203,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         getTargetsStream().forEach(RenderEntityTarget::selectAsDebuggingTarget);
     }
 
-    public boolean scroll(GuiScreenEvent.MouseScrollEvent.Post event) {
+    public boolean scroll(InputEvent.MouseScrollEvent event) {
         return getTargetsStream().anyMatch(target -> target.scroll(event));
     }
 

@@ -1,4 +1,3 @@
 {
-  "parent": "pneumaticcraft:block/pressure_chamber_glass_inv",
-  "transform": "forge:default-block"
+  "parent": "pneumaticcraft:block/pressure_chamber_glass_inv"
 }

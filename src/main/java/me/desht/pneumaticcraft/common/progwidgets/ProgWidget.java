@@ -1,15 +1,8 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -19,7 +12,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,6 +50,7 @@ public abstract class ProgWidget implements IProgWidget {
         }
     }
 
+    @Override
     public String getExtraStringInfo() {
         return null;
     }
@@ -134,41 +127,27 @@ public abstract class ProgWidget implements IProgWidget {
         return parent;
     }
 
-    @Override
-    public void render() {
-        // FIXME this won't work for in-world rendering (drone debugging)
-        Minecraft.getInstance().getTextureManager().bindTexture(getTexture());
-        int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);//(getParameters() != null && getParameters().size() > 0 ? 10 : 0);
-        int height = getHeight() + (hasStepOutput() ? 10 : 0);
-        Pair<Float,Float> maxUV = getMaxUV();
-        float u = maxUV.getLeft();
-        float v = maxUV.getRight();
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        wr.pos(0, 0, 0).tex(0, 0).endVertex();
-        wr.pos(0, height, 0).tex(0, v).endVertex();
-        wr.pos(width, height, 0).tex(u, v).endVertex();
-        wr.pos(width, 0, 0).tex(u, 0).endVertex();
-        Tessellator.getInstance().draw();
-    }
+//    @Override
+//    public void render() {
+//        // FIXME this won't work for in-world rendering (drone debugging)
+//        Minecraft.getInstance().getTextureManager().bindTexture(getTexture());
+//        int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);//(getParameters() != null && getParameters().size() > 0 ? 10 : 0);
+//        int height = getHeight() + (hasStepOutput() ? 10 : 0);
+//        Pair<Float,Float> maxUV = getMaxUV();
+//        float u = maxUV.getLeft();
+//        float v = maxUV.getRight();
+//        BufferBuilder wr = Tessellator.getInstance().getBuffer();
+//        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+//        wr.pos(0, 0, 0).tex(0, 0).endVertex();
+//        wr.pos(0, height, 0).tex(0, v).endVertex();
+//        wr.pos(width, height, 0).tex(u, v).endVertex();
+//        wr.pos(width, 0, 0).tex(u, 0).endVertex();
+//        Tessellator.getInstance().draw();
+//    }
 
     @Override
     public void renderExtraInfo() {
-        if (getExtraStringInfo() != null) {
-            RenderSystem.pushMatrix();
-            RenderSystem.scaled(0.5, 0.5, 0.5);
-            FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            List<String> splittedInfo = PneumaticCraftUtils.splitString(getExtraStringInfo(), 20);
-            for (int i = 0; i < splittedInfo.size(); i++) {
-                int stringLength = fr.getStringWidth(splittedInfo.get(i));
-                int startX = getWidth() / 2 - stringLength / 4;
-                int startY = getHeight() / 2 - (fr.FONT_HEIGHT + 1) * (splittedInfo.size() - 1) / 4 + (fr.FONT_HEIGHT + 1) * i / 2 - fr.FONT_HEIGHT / 4;
-                AbstractGui.fill(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
-                fr.drawString(splittedInfo.get(i), startX * 2, startY * 2, 0xFF000000);
-            }
-            RenderSystem.popMatrix();
-            RenderSystem.color4f(1, 1, 1, 1);
-        }
+        ProgWidgetRenderer.renderExtras(this);
     }
 
     @Override

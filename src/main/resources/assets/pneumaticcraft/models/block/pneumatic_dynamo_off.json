@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "textures": {
     "particle": "pneumaticcraft:block/pneumatic_dynamo_off",
     "dynamo": "pneumaticcraft:block/pneumatic_dynamo_off"

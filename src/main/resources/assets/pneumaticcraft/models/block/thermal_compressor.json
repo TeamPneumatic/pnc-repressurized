@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "textures": {
     "particle": "pneumaticcraft:block/thermal_compressor",
     "face": "pneumaticcraft:block/thermal_compressor"

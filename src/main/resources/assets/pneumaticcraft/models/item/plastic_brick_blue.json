@@ -1,4 +1,3 @@
 {
-  "parent": "pneumaticcraft:block/plastic_brick_inv",
-  "transform": "forge:default-block"
+  "parent": "pneumaticcraft:block/plastic_brick_inv"
 }

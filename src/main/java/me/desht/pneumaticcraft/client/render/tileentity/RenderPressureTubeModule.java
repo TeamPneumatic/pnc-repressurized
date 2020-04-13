@@ -56,6 +56,9 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
 //        GlStateManager.translated((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 //        GlStateManager.scaled(1.0F, -1F, -1F);
 
+        matrixStack.translate(0.5, 1.5, 0.5);
+        matrixStack.scale(1f, -1f, -1f);
+
         // "fake" module is for showing a preview of where the module would be placed
         if (holdingModule != null) attachFakeModule(mc, tile, holdingModule);
 

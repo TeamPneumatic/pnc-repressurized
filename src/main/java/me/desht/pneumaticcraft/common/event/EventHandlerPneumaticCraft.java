@@ -227,7 +227,7 @@ public class EventHandlerPneumaticCraft {
     public void quetziMoo(ServerChatEvent event) {
         if (event.getUsername().equals("Quetzz") && event.getMessage().equals("m00")) {
             for (int i = 0; i < 4; i++)
-                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.ENTITY_COW_AMBIENT, SoundCategory.NEUTRAL, event.getPlayer().posX, event.getPlayer().posY, event.getPlayer().posZ, 1, 1, true), event.getPlayer());
+                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.ENTITY_COW_AMBIENT, SoundCategory.NEUTRAL, event.getPlayer().getPosX(), event.getPlayer().getPosY(), event.getPlayer().getPosZ(), 1, 1, true), event.getPlayer());
         }
     }
 

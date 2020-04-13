@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "loader": "forge:obj",
   "model": "pneumaticcraft:models/block/vortex_tube.obj",
   "flip-v": true,

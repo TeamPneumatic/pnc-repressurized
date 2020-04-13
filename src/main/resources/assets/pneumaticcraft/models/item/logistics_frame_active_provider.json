@@ -1,4 +1,3 @@
 {
-   "parent": "pneumaticcraft:block/logistics_frame",
-   "transform": "forge:default-block"
+   "parent": "pneumaticcraft:block/logistics_frame"
 }

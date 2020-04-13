@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.event.ClientTickHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -139,7 +139,7 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
     @Override
     protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(opacity, x, y);
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         playerBackgroundBridges.render();
         aiBackgroundBridges.render();
@@ -205,8 +205,8 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
     }
 
     public void addExtraHackInfo(List<ITextComponent> currenttip) {
-        int mouseX = (int)minecraft.mouseHelper.getMouseX() * this.width / this.minecraft.mainWindow.getWidth();
-        int mouseY = this.height - (int)minecraft.mouseHelper.getMouseY() * this.height / this.minecraft.mainWindow.getHeight() - 1;
+        int mouseX = (int)minecraft.mouseHelper.getMouseX() * this.width / this.minecraft.getMainWindow().getWidth();
+        int mouseY = this.height - (int)minecraft.mouseHelper.getMouseY() * this.height / this.minecraft.getMainWindow().getHeight() - 1;
         Slot slot = getSlotAtPosition(mouseX, mouseY);
         if (slot != null) {
             if (hackerBridges.slotHacked[slot.slotNumber]) {

@@ -128,21 +128,15 @@ public class FluidItemModel implements IDynamicBakedModel {
                     builder.put(e, (float)x, (float)y, (float)z);
                     break;
                 case COLOR:
-                    builder.put(e, col[0], col[1], col[2], col[3]);
+                    builder.put(e, col[1], col[2], col[3], col[0]);
                     break;
                 case UV:
-                    switch (elements.get(e).getIndex()) {
-                        case 0:
-                            float iu = sprite.getInterpolatedU(u);
-                            float iv = sprite.getInterpolatedV(v);
-                            builder.put(e, iu, iv);
-                            break;
-                        case 2:
-                            builder.put(e, 0f, 1f);
-                            break;
-                        default:
-                            builder.put(e);
-                            break;
+                    if (elements.get(e).getIndex() == 0) {
+                        float iu = sprite.getInterpolatedU(u);
+                        float iv = sprite.getInterpolatedV(v);
+                        builder.put(e, iu, iv);
+                    } else {
+                        builder.put(e);
                     }
                     break;
                 case NORMAL:
@@ -189,6 +183,18 @@ public class FluidItemModel implements IDynamicBakedModel {
     public ItemOverrideList getOverrides() {
         return overrideList;
     }
+
+    @Override
+    public boolean doesHandlePerspectives() {
+        return true;
+    }
+
+    // TODO how do I get the right item transform in here?
+
+//    @Override
+//    public IBakedModel handlePerspective(ItemCameraTransforms.TransformType cameraTransformType, MatrixStack mat) {
+//
+//    }
 
     public static class Geometry implements IModelGeometry<Geometry> {
         private final BlockModel baseModel;

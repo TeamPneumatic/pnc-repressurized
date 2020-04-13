@@ -1,8 +1,7 @@
 {
-  "parent": "block/cube_column",
+  "parent": "pneumaticcraft:block/pressure_chamber_valve",
   "textures": {
     "side": "pneumaticcraft:block/pressure_chamber/valve_side",
     "end": "pneumaticcraft:block/pressure_chamber/valve"
-  },
-  "transform": "forge:default-block"
+  }
 }

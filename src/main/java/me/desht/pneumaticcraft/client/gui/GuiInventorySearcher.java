@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -130,15 +130,15 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
         for (int i = 0; i < this.container.inventorySlots.size() - 1; ++i) {
             Slot slot = this.container.inventorySlots.get(i);
             if (!stackPredicate.test(slot.getStack())) {
-                GlStateManager.disableLighting();
-                GlStateManager.disableDepthTest();
+                RenderSystem.disableLighting();
+                RenderSystem.disableDepthTest();
                 int x = slot.xPos;
                 int y = slot.yPos;
-                GlStateManager.colorMask(true, true, true, false);
+                RenderSystem.colorMask(true, true, true, false);
                 this.fillGradient(x, y, x + 16, y + 16, 0xC0202020, 0xC0202020);
-                GlStateManager.colorMask(true, true, true, true);
-                GlStateManager.enableLighting();
-                GlStateManager.enableDepthTest();
+                RenderSystem.colorMask(true, true, true, true);
+                RenderSystem.enableLighting();
+                RenderSystem.enableDepthTest();
             }
         }
     }

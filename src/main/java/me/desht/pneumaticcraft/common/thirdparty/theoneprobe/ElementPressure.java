@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.netty.buffer.ByteBuf;
 import mcjty.theoneprobe.api.IElement;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.PressureGaugeRenderer;
 import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
 import me.desht.pneumaticcraft.common.tileentity.IMinWorkingPressure;
 import net.minecraft.client.Minecraft;
@@ -33,12 +33,12 @@ public class ElementPressure implements IElement {
 
     @Override
     public void render(int x, int y) {
-        GlStateManager.pushMatrix();
-        GlStateManager.scaled(SCALE, SCALE, SCALE);
+        RenderSystem.pushMatrix();
+        RenderSystem.scaled(SCALE, SCALE, SCALE);
         int x1 = (int)((x + getWidth() / 2) / SCALE);
         int y1 = (int)((y + getHeight() / 2) / SCALE);
-        GuiUtils.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, crit, danger, min, pressure, x1, y1,0xFFC0C0C0);
-        GlStateManager.popMatrix();
+        PressureGaugeRenderer.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, crit, danger, min, pressure, x1, y1,0xFFC0C0C0);
+        RenderSystem.popMatrix();
     }
 
     @Override

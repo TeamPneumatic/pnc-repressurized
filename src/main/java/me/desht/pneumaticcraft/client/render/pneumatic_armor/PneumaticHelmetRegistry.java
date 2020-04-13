@@ -21,7 +21,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     public final Map<Class<? extends Entity>, Class<? extends IHackableEntity>> hackableEntities = new HashMap<>();
     public final Map<Block, Class<? extends IHackableBlock>> hackableBlocks = new HashMap<>();
     public final Map<String, Class<? extends IHackableEntity>> stringToEntityHackables = new HashMap<>();
-    public final Map<String, Class<? extends IHackableBlock>> stringToBlockHackables = new HashMap<>();
+    private final Map<String, Class<? extends IHackableBlock>> stringToBlockHackables = new HashMap<>();
     private final Map<ResourceLocation, Class<? extends IHackableBlock>> pendingBlockTags = new HashMap<>();
 
     public static PneumaticHelmetRegistry getInstance() {

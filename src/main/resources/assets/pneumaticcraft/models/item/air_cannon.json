@@ -1,6 +1,6 @@
 {
+  "parent": "forge:block/default",
   "loader": "forge:obj",
   "model": "pneumaticcraft:models/block/air_cannon_inv.obj",
-  "flip-v": true,
-  "transform": "forge:default-block"
+  "flip-v": true
 }

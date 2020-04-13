@@ -51,7 +51,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
         super.writeToPacket(tag);
 
         CompoundNBT subTag = new CompoundNBT();
-        subTag.put(NBT_TEXT_LINES, Arrays.stream(textLines).map(StringNBT::new).collect(Collectors.toCollection(ListNBT::new)));
+        subTag.put(NBT_TEXT_LINES, Arrays.stream(textLines).map(StringNBT::valueOf).collect(Collectors.toCollection(ListNBT::new)));
         subTag.putInt(NBT_TEXT_ROTATION, textRotation);
         subTag.putInt(NBT_BORDER_COLOR, borderColor);
         subTag.putInt(NBT_BACKGROUND_COLOR, backgroundColor);

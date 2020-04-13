@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
@@ -124,9 +123,9 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(x * sf, (y + height) * sf, width * sf, height * sf);
         if (inverseSelected && selected >= 0) {
-            GlStateManager.disableTexture();
+            RenderSystem.disableTexture();
             fill(x, y + h * selected, x + width, y + h * (selected + 1), 0xFF000000 | selectedBg);
-            GlStateManager.enableTexture();
+            RenderSystem.enableTexture();
         }
         RenderSystem.translated(x, y, 0);
         RenderSystem.scaled(0.75, 1, 1);

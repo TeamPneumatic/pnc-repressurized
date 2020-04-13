@@ -48,9 +48,9 @@ public class MovingSoundMinigun extends TickableSound {
                 donePlaying = true;
                 return;
             }
-            x = (float) entity.posX;
-            y = (float) entity.posY;
-            z = (float) entity.posZ;
+            x = (float) entity.getPosX();
+            y = (float) entity.getPosY();
+            z = (float) entity.getPosZ();
             if (entity instanceof PlayerEntity) {
                 PlayerEntity player = (PlayerEntity) entity;
                 ItemStack curItem = player.getHeldItemMainhand();

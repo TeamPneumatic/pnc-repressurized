@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -105,13 +105,13 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         } else {
             int xSpace = xSize - 96;
             int size = font.getStringWidth(folders[folders.length - 1]);
-            GlStateManager.pushMatrix();
-            GlStateManager.translated(92, 24, 0);
+            RenderSystem.pushMatrix();
+            RenderSystem.translated(92, 24, 0);
             if (size > xSpace) {
-                GlStateManager.scaled((float)xSpace / (float)size, 1, 1);
+                RenderSystem.scaled((float)xSpace / (float)size, 1, 1);
             }
             font.drawString(folders[folders.length - 1], 0, 0, 0x4040A0);
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
@@ -127,7 +127,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         }
 
         return nameFilterField.keyPressed(keyCode, scanCode, modifiers)
-                || nameFilterField.func_212955_f()
+                || nameFilterField.canWrite()
                 || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -142,9 +142,9 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
         if (sensor != null) {
-            GlStateManager.translated(guiLeft, guiTop, 0);
+            RenderSystem.translated(guiLeft, guiTop, 0);
             sensor.drawAdditionalInfo(font);
-            GlStateManager.translated(-guiLeft, -guiTop, 0);
+            RenderSystem.translated(-guiLeft, -guiTop, 0);
         }
     }
 
@@ -165,7 +165,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         if (!te.getSensorSetting().equals("")) {
             addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 18, 20, 20, ARROW_LEFT_SHORT).withTag("back"));
         } else {
-            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.universalSensor.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
         }
 
         String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(te.getSensorSetting());
@@ -247,8 +247,8 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
     private List<String> getUpgradeText() {
         List<String> upgradeInfo = new ArrayList<>();
-        upgradeInfo.add("gui.tab.upgrades.volume");
-        upgradeInfo.add("gui.tab.upgrades.security");
+        upgradeInfo.add("gui.tab.upgrades.generic.volume");
+        upgradeInfo.add("gui.tab.upgrades.generic.security");
         upgradeInfo.addAll(SensorHandler.getInstance().getUpgradeInfo());
         return upgradeInfo;
     }

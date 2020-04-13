@@ -134,13 +134,13 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     public static class ElevatorButton {
-        public final double posX, posY, width, height;
+        public final float posX, posY, width, height;
         public final int floorNumber;
         public final int floorHeight;
         public float red, green, blue;
         public String buttonText;
 
-        ElevatorButton(double posX, double posY, double width, double height, int floorNumber, int floorHeight) {
+        ElevatorButton(float posX, float posY, float width, float height, int floorNumber, int floorHeight) {
             this.posX = posX;
             this.posY = posY;
             this.width = width;
@@ -151,10 +151,10 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         }
 
         ElevatorButton(CompoundNBT tag) {
-            this.posX = tag.getDouble("posX");
-            this.posY = tag.getDouble("posY");
-            this.width = tag.getDouble("width");
-            this.height = tag.getDouble("height");
+            this.posX = tag.getFloat("posX");
+            this.posY = tag.getFloat("posY");
+            this.width = tag.getFloat("width");
+            this.height = tag.getFloat("height");
             this.buttonText = tag.getString("buttonText");
             this.floorNumber = tag.getInt("floorNumber");
             this.floorHeight = tag.getInt("floorHeight");
@@ -170,10 +170,10 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         }
 
         public CompoundNBT writeToNBT(CompoundNBT tag) {
-            tag.putDouble("posX", posX);
-            tag.putDouble("posY", posY);
-            tag.putDouble("width", width);
-            tag.putDouble("height", height);
+            tag.putFloat("posX", posX);
+            tag.putFloat("posY", posY);
+            tag.putFloat("width", width);
+            tag.putFloat("height", height);
             tag.putString("buttonText", buttonText);
             tag.putInt("floorNumber", floorNumber);
             tag.putInt("floorHeight", floorHeight);

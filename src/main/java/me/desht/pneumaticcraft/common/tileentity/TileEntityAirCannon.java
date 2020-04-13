@@ -228,9 +228,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                 Map<BlockPos, Direction> positions = new HashMap<>();
                 double range = 0.2;
                 for (Direction d : Direction.values()) {
-                    double posX = item.posX + d.getXOffset() * range;
-                    double posY = item.posY + d.getYOffset() * range;
-                    double posZ = item.posZ + d.getZOffset() * range;
+                    double posX = item.getPosX() + d.getXOffset() * range;
+                    double posY = item.getPosY() + d.getYOffset() * range;
+                    double posZ = item.getPosZ() + d.getZOffset() * range;
                     positions.put(new BlockPos((int) Math.floor(posX), (int) Math.floor(posY), (int) Math.floor(posZ)), d.getOpposite());
                 }
                 for (Entry<BlockPos, Direction> entry : positions.entrySet()) {
@@ -598,7 +598,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                 getUpgrades(EnumUpgrade.DISPENSER) > 0, false);
         if (e instanceof ItemEntity) {
             // 1200 ticks left to live = 60s
-            ((ItemEntity) e).setAgeToCreativeDespawnTime();
+            ((ItemEntity) e).age = 4800; //setAgeToCreativeDespawnTime();
             // + 30s per item life upgrade, to a max of 5 mins
             ((ItemEntity) e).lifespan += Math.min(getUpgrades(EnumUpgrade.ITEM_LIFE) * 600, 4800);
         }
@@ -609,9 +609,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         if (fakePlayer == null) {
             fakePlayer = FakePlayerFactory.get((ServerWorld) getWorld(), new GameProfile(null, "[Air Cannon]"));
             fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
-            fakePlayer.posX = getPos().getX() + 0.5;
-            fakePlayer.posY = getPos().getY() + 0.5;
-            fakePlayer.posZ = getPos().getZ() + 0.5;
+            fakePlayer.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
         }
         return fakePlayer;
     }
@@ -715,7 +713,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, new AxisAlignedBB(getPos().add(-entityUpgrades, -entityUpgrades, -entityUpgrades), getPos().add(1 + entityUpgrades, 1 + entityUpgrades, 1 + entityUpgrades)));
             Entity closestEntity = null;
             for (Entity entity : entities) {
-                if (closestEntity == null || PneumaticCraftUtils.distBetween(closestEntity.posX, closestEntity.posY, closestEntity.posZ, getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5) > PneumaticCraftUtils.distBetween(entity.posX, entity.posY, entity.posZ, getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5)) {
+                double d1 = PneumaticCraftUtils.distBetweenSq(closestEntity.getPosX(), closestEntity.getPosY(), closestEntity.getPosZ(), getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
+                double d2 = PneumaticCraftUtils.distBetweenSq(entity.getPosX(), entity.getPosY(), entity.getPosZ(), getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
+                if (closestEntity == null || d1 > d2) {
                     closestEntity = entity;
                 }
             }

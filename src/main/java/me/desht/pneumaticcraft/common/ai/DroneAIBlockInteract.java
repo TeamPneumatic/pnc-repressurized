@@ -80,9 +80,9 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction<ProgWidgetArea
             boolean bypass = fakePlayer.getHeldItemMainhand().doesSneakBypassUse(world, pos, fakePlayer);
             ActionResultType result = ActionResultType.PASS;
 
-            if (!fakePlayer.isSneaking() || bypass || event.getUseBlock() == Event.Result.ALLOW) {
+            if (!fakePlayer.isSteppingCarefully() || bypass || event.getUseBlock() == Event.Result.ALLOW) {
                 if (event.getUseBlock() != Event.Result.DENY) {
-                    if (world.getBlockState(pos).onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, brtr)) {
+                    if (world.getBlockState(pos).onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, brtr) == ActionResultType.SUCCESS) {
                         result = ActionResultType.SUCCESS;
                     }
                 }

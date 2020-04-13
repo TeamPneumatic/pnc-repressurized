@@ -34,7 +34,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
@@ -46,7 +46,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
-import static net.minecraft.client.Minecraft.IS_RUNNING_ON_MAC;
 
 public class HUDHandler implements IKeyListener {
     private static final int PROGRESS_BAR_HEIGHT = 17;
@@ -72,7 +71,7 @@ public class HUDHandler implements IKeyListener {
      * Handles the 3D drawing for armor components
      */
     @SubscribeEvent
-    public void renderWorldLastEvent(RenderWorldLastEvent event) {
+    public void renderHUD3d(RenderWorldLastEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if (!WidgetKeybindCheckBox.getCoreComponents().checked || mc.gameSettings.hideGUI) return;
 
@@ -109,7 +108,9 @@ public class HUDHandler implements IKeyListener {
      * Handles the 2D overlay drawing for the armor components
      */
     @SubscribeEvent
-    public void renderTick(RenderGameOverlayEvent event) {
+    public void renderHUD2d(RenderGameOverlayEvent.Post event) {
+        if (event.getType() != RenderGameOverlayEvent.ElementType.HELMET) return;
+
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity player = mc.player;
 
@@ -120,11 +121,11 @@ public class HUDHandler implements IKeyListener {
         float partialTicks = event.getPartialTicks();
 
         MainWindow mw = event.getWindow();
-        RenderSystem.depthMask(false);
-        RenderSystem.disableCull();
-        RenderSystem.disableTexture();
         RenderSystem.pushMatrix();
-        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, IS_RUNNING_ON_MAC);
+//        RenderSystem.depthMask(false);
+//        RenderSystem.disableCull();
+//        RenderSystem.disableTexture();
+//        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, IS_RUNNING_ON_MAC);
         RenderSystem.color4f(0, 1, 0, 0.8F);
         CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer(player);
 
@@ -151,9 +152,13 @@ public class HUDHandler implements IKeyListener {
                     int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
                     float progress = comHudHandler.getTicksSinceEquipped(slot) * 100f / comHudHandler.getStartupTime(slot);
                     progress = Math.min(100, progress + event.getPartialTicks());
-                    RenderProgressBar.render(mw.getScaledWidth() / 2.0, yOffset,
+                    RenderSystem.disableTexture();
+                    RenderSystem.enableBlend();
+                    RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                    RenderProgressBar.render2d(mw.getScaledWidth() / 2.0, yOffset,
                             mw.getScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
                             progress,0xAAFFC000, 0xAA00FF00);
+                    RenderSystem.disableBlend();
                     RenderSystem.enableTexture();
                     GuiUtils.drawItemStack(armorStack,xLeft + 2, yOffset);
                 }
@@ -197,10 +202,12 @@ public class HUDHandler implements IKeyListener {
             message.renderMessage(partialTicks);
         }
 
+        RenderSystem.disableBlend();
         RenderSystem.popMatrix();
-        RenderSystem.enableCull();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableTexture();
+//        RenderSystem.enableCull();
+//        RenderSystem.depthMask(true);
+//        RenderSystem.enableTexture();
+        RenderSystem.color4f(1, 1, 1, 1);
 
         // show armor initialisation percentages
         if (comHudHandler.isArmorEnabled() && anyArmorInInit) {
@@ -223,7 +230,7 @@ public class HUDHandler implements IKeyListener {
                 CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer();
                 for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                     if (isPneumaticArmorPiece(player, slot)) {
-                        update(mc.player, slot, comHudHandler);
+                        updateArmorPiece(mc.player, slot, comHudHandler);
                         armorEquipped = true;
                     }
                 }
@@ -264,7 +271,7 @@ public class HUDHandler implements IKeyListener {
         }
     }
 
-    private void update(PlayerEntity player, EquipmentSlotType slot, CommonArmorHandler comHudHandler) {
+    private void updateArmorPiece(PlayerEntity player, EquipmentSlotType slot, CommonArmorHandler comHudHandler) {
         boolean armorEnabled = WidgetKeybindCheckBox.getCoreComponents().checked;
         List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
 
@@ -294,7 +301,7 @@ public class HUDHandler implements IKeyListener {
                         }
                         stat.tickWidget();
                     }
-                    upgradeRenderHandler.update(player, comHudHandler.getUpgradeCount(slot, EnumUpgrade.RANGE));
+                    upgradeRenderHandler.tick(player, comHudHandler.getUpgradeCount(slot, EnumUpgrade.RANGE));
                 }
             }
         }
@@ -374,8 +381,15 @@ public class HUDHandler implements IKeyListener {
         }
     }
 
+//    @SubscribeEvent
+//    public void onMouseEvent(GuiScreenEvent.MouseScrollEvent.Post event) {
+//        boolean isCaptured = getSpecificRenderer(BlockTrackUpgradeHandler.class).scroll(event);
+//        if (!isCaptured) isCaptured = getSpecificRenderer(EntityTrackUpgradeHandler.class).scroll(event);
+//        if (isCaptured) event.setCanceled(true);
+//    }
+
     @SubscribeEvent
-    public void onMouseEvent(GuiScreenEvent.MouseScrollEvent.Post event) {
+    public void onMouseScroll(InputEvent.MouseScrollEvent event) {
         boolean isCaptured = getSpecificRenderer(BlockTrackUpgradeHandler.class).scroll(event);
         if (!isCaptured) isCaptured = getSpecificRenderer(EntityTrackUpgradeHandler.class).scroll(event);
         if (isCaptured) event.setCanceled(true);

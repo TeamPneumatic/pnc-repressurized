@@ -219,7 +219,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                 }
                 if (stack.isEmpty() && Curios.available) {
                     Pair<String,Integer> p1 = Curios.findStack(player, ItemMemoryStick::shouldAbsorbXPOrbs);
-                    if (p1 == null) {
+                    if (p1 == Curios.NONE) {
                         stack = ItemStack.EMPTY;
                     } else {
                         stack = Curios.getStack(player, p1.getKey(), p1.getValue());

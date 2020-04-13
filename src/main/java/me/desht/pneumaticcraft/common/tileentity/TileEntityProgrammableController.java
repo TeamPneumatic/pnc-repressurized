@@ -169,9 +169,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             for (int i = 0; i < 4; i++) {
                 fp.interactionManager.tick();
             }
-            fp.posX = curX;
-            fp.posY = curY;
-            fp.posZ = curZ;
+            fp.setPosition(curX, curY, curZ);
             fp.tick();
 
             if (getPressure() >= getMinWorkingPressure()) {
@@ -182,9 +180,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             if (drone == null || !drone.isAlive()) {
                 drone = ModEntities.PROGRAMMABLE_CONTROLLER.get().create(getWorld());
                 drone.setController(this);
-                drone.posX = curX;
-                drone.posY = curY;
-                drone.posZ = curZ;
+                drone.setPosition(curX, curY, curZ);
                 if (world instanceof ClientWorld) {  // should always be the case
                     ((ClientWorld) getWorld()).addEntity(drone.getEntityId(), drone);
                 }
@@ -475,7 +471,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
             @Override
             public boolean moveToEntity(Entity entity) {
-                return moveToXYZ(entity.posX, entity.posY + 0.3, entity.posZ);
+                return moveToXYZ(entity.getPosX(), entity.getPosY() + 0.3, entity.getPosZ());
             }
 
             @Override

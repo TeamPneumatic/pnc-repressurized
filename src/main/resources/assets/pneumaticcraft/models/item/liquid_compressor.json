@@ -1,4 +1,3 @@
 {
-  "parent": "pneumaticcraft:block/liquid_compressor",
-  "transform": "forge:default-block"
+  "parent": "pneumaticcraft:block/liquid_compressor"
 }

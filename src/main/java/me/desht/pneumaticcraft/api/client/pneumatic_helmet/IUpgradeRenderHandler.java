@@ -36,13 +36,13 @@ public interface IUpgradeRenderHandler {
     default void saveToConfig() {}
 
     /**
-     * This method will be called every client tick, and should be used to update logic like the tracking and velocities
+     * This method is called every client tick, and should be used to update logic like the tracking and velocities
      * of stuff.
      *
      * @param player the player wearing the pneumatic helmet
      * @param rangeUpgrades number of range upgrades installed in the armor piece
      */
-    void update(PlayerEntity player, int rangeUpgrades);
+    void tick(PlayerEntity player, int rangeUpgrades);
 
     /**
      * Called in the 3D render stage (called from {@link net.minecraftforge.client.event.RenderWorldLastEvent})
@@ -143,7 +143,7 @@ public interface IUpgradeRenderHandler {
      */
     abstract class SimpleToggleableRenderHandler implements IUpgradeRenderHandler {
         @Override
-        public void update(PlayerEntity player, int rangeUpgrades) {
+        public void tick(PlayerEntity player, int rangeUpgrades) {
         }
 
         @Override

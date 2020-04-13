@@ -10,7 +10,7 @@ import net.minecraft.network.play.client.CPlayerDiggingPacket;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootParameters;
@@ -26,7 +26,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
     protected boolean isValidPosition(BlockPos pos) {
         BlockState blockState = worldCache.getBlockState(pos);
         Block block = blockState.getBlock();
-        if (!worldCache.isAirBlock(pos) && !ignoreBlock(block)) {
+        if (!worldCache.getBlockState(pos).isAir(worldCache, pos) && !ignoreBlock(block)) {
             for (ItemStack droppedStack : getDrops(worldCache, pos, drone)) {
                 if (progWidget.isItemValidForFilters(droppedStack, blockState)) {
                     return swapBestItemToFirstSlot(pos) || !progWidget.requiresTool();
@@ -109,7 +109,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         }
     }
 
-    public static boolean isBlockValidForFilter(IWorldReader worldCache, BlockPos pos, IDroneBase drone, ProgWidgetAreaItemBase widget) {
+    public static boolean isBlockValidForFilter(IBlockReader worldCache, BlockPos pos, IDroneBase drone, ProgWidgetAreaItemBase widget) {
         BlockState blockState = worldCache.getBlockState(pos);
         Block block = blockState.getBlock();
 
@@ -124,7 +124,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         return false;
     }
 
-    private static List<ItemStack> getDrops(IWorldReader worldCache, BlockPos pos, IDroneBase drone) {
+    private static List<ItemStack> getDrops(IBlockReader worldCache, BlockPos pos, IDroneBase drone) {
         BlockState state = worldCache.getBlockState(pos);
         return state.getDrops(
                 new LootContext.Builder((ServerWorld) drone.world())

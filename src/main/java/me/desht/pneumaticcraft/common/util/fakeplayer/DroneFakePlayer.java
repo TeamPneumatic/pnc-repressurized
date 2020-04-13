@@ -24,7 +24,7 @@ public class DroneFakePlayer extends FakePlayer {
     }
 
     @Override
-    public boolean isSneaking() {
+    public boolean isSteppingCarefully() {
         return sneaking;
     }
 

@@ -6,14 +6,14 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.math.MathHelper;
 
-public class RenderVacuumPump extends TileEntityRenderer<TileEntityVacuumPump> {
+public class RenderVacuumPump extends AbstractTileModelRenderer<TileEntityVacuumPump> {
     private static final int BLADE_COUNT = 3;
     private static final int CASE_POINTS = 20;
 
@@ -39,10 +39,8 @@ public class RenderVacuumPump extends TileEntityRenderer<TileEntityVacuumPump> {
     }
 
     @Override
-    public void render(TileEntityVacuumPump te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(TileEntityVacuumPump te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityTranslucent(Textures.MODEL_VACUUM_PUMP));
-
-        matrixStackIn.push();
 
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(-90));
@@ -50,8 +48,6 @@ public class RenderVacuumPump extends TileEntityRenderer<TileEntityVacuumPump> {
         renderBlades(te, partialTicks, matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         renderCase(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         renderPlusAndMinus(matrixStackIn, bufferIn);
-
-        matrixStackIn.pop();
     }
 
     private static final float PLUS_MINUS_SCALE = 0.05F;
@@ -85,6 +81,11 @@ public class RenderVacuumPump extends TileEntityRenderer<TileEntityVacuumPump> {
     }
 
     private void renderCase(MatrixStack matrixStackIn, IVertexBuilder builder, int combinedLightIn, int combinedOverlayIn) {
+
+        matrixStackIn.translate(0, -0.01, 0);
+        top.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 1f, 1f, 1f, 0.4f);
+        matrixStackIn.translate(0, 0.01, 0);
+
         matrixStackIn.push();
         for (int i = 0; i < CASE_POINTS; i++) {
             matrixStackIn.push();
@@ -104,8 +105,6 @@ public class RenderVacuumPump extends TileEntityRenderer<TileEntityVacuumPump> {
             matrixStackIn.pop();
         }
         matrixStackIn.pop();
-
-        top.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 1f, 1f, 1f, 0.4f);
     }
 
     private void renderPlusAndMinus(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn) {
@@ -118,16 +117,18 @@ public class RenderVacuumPump extends TileEntityRenderer<TileEntityVacuumPump> {
         matrixStackIn.scale(PLUS_MINUS_SCALE, PLUS_MINUS_SCALE, PLUS_MINUS_SCALE);
 
         // green plus
-        builder.pos(-1, 0, 0).color(0, 1, 0, 1).endVertex();
-        builder.pos(1, 0, 0).color(0, 1, 0, 1).endVertex();
-        builder.pos(0, -1, 0).color(0, 1, 0, 1).endVertex();
-        builder.pos(0, 1, 0).color(0, 1, 0, 1).endVertex();
+        Matrix4f posMat = matrixStackIn.getLast().getMatrix();
+        builder.pos(posMat, -1, 0, 0).color(0, 255, 0, 255).endVertex();
+        builder.pos(posMat, 1, 0, 0).color(0, 255, 0, 255).endVertex();
+        builder.pos(posMat, 0, -1, 0).color(0, 255, 0, 255).endVertex();
+        builder.pos(posMat, 0, 1, 0).color(0, 255, 0, 255).endVertex();
 
         matrixStackIn.translate(-0.52D / PLUS_MINUS_SCALE, 0, 0);
 
         // red minus
-        builder.pos(-1, 0, 0).color(1, 0, 0, 1).endVertex();
-        builder.pos(1, 0, 0).color(1, 0, 0, 1).endVertex();
+        posMat = matrixStackIn.getLast().getMatrix();
+        builder.pos(posMat, -1, 0, 0).color(255, 0, 0, 255).endVertex();
+        builder.pos(posMat, 1, 0, 0).color(255, 0, 0, 255).endVertex();
 
         matrixStackIn.pop();
     }

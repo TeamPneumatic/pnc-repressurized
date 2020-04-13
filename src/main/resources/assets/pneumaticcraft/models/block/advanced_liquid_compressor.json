@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "loader": "forge:obj",
   "model": "pneumaticcraft:models/block/advanced_liquid_compressor.obj",
   "flip-v": true,

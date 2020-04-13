@@ -227,7 +227,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
         CompoundNBT tag = new CompoundNBT();
         ListNBT l = new ListNBT();
         for (byte face : faces) {
-            l.add(new ByteNBT(face));
+            l.add(ByteNBT.valueOf(face));
         }
         tag.put("faces", l);
         return tag;

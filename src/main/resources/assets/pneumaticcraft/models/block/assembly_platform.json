@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "loader": "forge:obj",
   "model": "pneumaticcraft:models/block/assembly_platform.obj",
   "flip-v": true,

@@ -4,7 +4,7 @@
 // Keep in mind that you still need to fill in some blanks
 // - ZeuX
 
-package me.desht.pneumaticcraft.client.model.entity;
+package me.desht.pneumaticcraft.client.model;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -16,7 +16,13 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRenderer;
 
-public class ModelDroneMinigun {
+/**
+ * Used in three different places:
+ * 1. Drones's minigun (in DroneMinigunLayer)
+ * 2. ISTER for the minigun item (RenderItemMinigun)
+ * 3. Sentry turrent TER model (RenderSentryTurret)
+ */
+public class ModelMinigun {
     //fields
     private final ModelRenderer barrel;
     private final ModelRenderer support1;
@@ -29,55 +35,48 @@ public class ModelDroneMinigun {
     private final ModelRenderer mount;
     private final ModelRenderer magazineColor;
 
-    public ModelDroneMinigun() {
-        barrel = new ModelRenderer(64, 64, 30, 15);
+    public ModelMinigun() {
+        barrel = new ModelRenderer(64, 32, 30, 15);
         barrel.addBox(-0.5F, 1.5F, 0F, 1, 1, 16);
         barrel.setRotationPoint(0F, 20.96667F, -8F);
         barrel.mirror = true;
-        support1 = new ModelRenderer(64, 64, 0, 0);
+        support1 = new ModelRenderer(64, 32, 0, 0);
         support1.addBox(-1.5F, -1.5F, 0F, 3, 3, 1);
         support1.setRotationPoint(0F, 21F, -6F);
         support1.mirror = true;
-        support2 = new ModelRenderer(64, 64, 0, 4);
+        support2 = new ModelRenderer(64, 32, 0, 4);
         support2.addBox(-1F, 1.5F, 0F, 2, 1, 1);
         support2.setRotationPoint(0F, 21F, -6F);
         support2.mirror = true;
-        support3 = new ModelRenderer(64, 64, 0, 6);
+        support3 = new ModelRenderer(64, 32, 0, 6);
         support3.addBox(-1F, -2.5F, 0F, 2, 1, 1);
         support3.setRotationPoint(0F, 21F, -6F);
         support3.mirror = true;
-        support4 = new ModelRenderer(64, 64, 0, 8);
+        support4 = new ModelRenderer(64, 32, 0, 8);
         support4.addBox(1.5F, -1F, 0F, 1, 2, 1);
         support4.setRotationPoint(0F, 21F, -6F);
         support4.mirror = true;
-        support5 = new ModelRenderer(64, 64, 0, 11);
+        support5 = new ModelRenderer(64, 32, 0, 11);
         support5.addBox(-2.5F, -1F, 0F, 1, 2, 1);
         support5.setRotationPoint(0F, 21F, -6F);
         support5.mirror = true;
-        main = new ModelRenderer(64, 64, 36, 0);
+        main = new ModelRenderer(64, 32, 36, 0);
         main.addBox(0F, 0F, 0F, 6, 6, 8);
         main.setRotationPoint(-3F, 18F, 8F);
         main.mirror = true;
-        magazine = new ModelRenderer(64, 64, 0, 14);
+        magazine = new ModelRenderer(64, 32, 0, 14);
         magazine.addBox(0F, 0F, 0F, 2, 3, 6);
         magazine.setRotationPoint(3F, 22F, 9F);
         magazine.mirror = true;
-        mount = new ModelRenderer(64, 64, 0, 23);
+        mount = new ModelRenderer(64, 32, 0, 23);
         mount.addBox(0F, 0F, 0F, 2, 4, 2);
         mount.setRotationPoint(-1F, 15F, 11F);
         mount.mirror = true;
-        magazineColor = new ModelRenderer(64, 64, 8, 0);
+        magazineColor = new ModelRenderer(64, 32, 8, 0);
         magazineColor.addBox(0F, 0F, 0F, 1, 2, 4);
         magazineColor.setRotationPoint(4.3F, 22.5F, 10F);
         magazineColor.mirror = true;
     }
-
-//    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-////        super.render(entity, f, f1, f2, f3, f4, f5);
-////        setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-//        EntityDrone drone = (EntityDrone) entity;
-//        renderMinigun(drone != null ? drone.getMinigun() : null, f5, 0, true);
-//    }
 
     public void renderMinigun(MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay, Minigun minigun, float partialTick, boolean renderMount) {
         IVertexBuilder builder = buffer.getBuffer(RenderType.getEntityCutout(Textures.MODEL_DRONE_MINIGUN));

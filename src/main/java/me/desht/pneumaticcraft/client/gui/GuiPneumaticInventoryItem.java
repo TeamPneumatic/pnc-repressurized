@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.client.util.PressureGaugeRenderer;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -95,17 +95,10 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         String containerName = itemStack.getDisplayName().getFormattedText();
         font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f, 5, 0x404040);
-    }
-
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(opacity, x, y);
 
         itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
-            int xStart = (width - xSize) / 2;
-            int yStart = (height - ySize) / 2;
-            GuiUtils.drawPressureGauge(font, 0, h.maxPressure(), h.maxPressure(), 0,
-                    te.chargingItemPressure, xStart + xSize * 3 / 4 + 10, yStart + ySize / 4 + 4);
+            PressureGaugeRenderer.drawPressureGauge(font, 0, h.maxPressure(), h.maxPressure(), 0,
+                    te.chargingItemPressure, xSize * 3 / 4 + 10, ySize / 4 + 4);
         });
     }
 

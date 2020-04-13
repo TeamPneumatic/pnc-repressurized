@@ -1,24 +1,37 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.HangingEntity;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;
 
 public class RenderTargetCircle {
+    private static final float[] DRONE = { 1f, 1f, 0f };
+    private static final float[] HANGING = { 0f, 1f, 1f };
+    private static final float[] HOSTILE = { 1f, 0f, 0f };
+    private static final float[] DEFAULT = { 0f, 1f, 0f };
+
     private double oldRotationAngle;
     private double rotationAngle = 0;
     private double rotationSpeed = 0;
     private double rotationAcceleration = 0;
     private final Random rand;
     private boolean renderAsTagged;
+    private final float[] cols = new float[4];
 
-    RenderTargetCircle() {
+    RenderTargetCircle(Entity entity) {
         rand = new Random();
+        System.arraycopy(getCircleColour(entity), 0, cols, 0, 3);
+        cols[3] = 0.5f; // alpha
     }
 
     void setRenderingAsTagged(boolean tagged) {
@@ -35,43 +48,54 @@ public class RenderTargetCircle {
         rotationAngle += rotationSpeed;// * 0.05D;
     }
 
-    public void render(double size, float partialTicks) {
-        double renderRotationAngle = oldRotationAngle + (rotationAngle - oldRotationAngle) * partialTicks;
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
+    public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float size, float partialTicks, float alpha) {
+        double renderRotationAngle = MathHelper.lerp(partialTicks, oldRotationAngle, rotationAngle);
 
-        GlStateManager.pushMatrix();
-        GlStateManager.enableRescaleNormal();
+        matrixStack.push();
 
-        // GlStateManager.lineWidth((float)size * 20F);
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        matrixStack.rotate(Vector3f.ZP.rotationDegrees((float) renderRotationAngle));
 
-        GlStateManager.rotated((float) renderRotationAngle, 0, 0, 1);
-        for (int j = 0; j < 2; j++) {
-            wr.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION);
-            for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS / 4; i++) {
-                wr.pos(PneumaticCraftUtils.cos[i] * size, PneumaticCraftUtils.sin[i] * size, 0).endVertex();
-                wr.pos(PneumaticCraftUtils.cos[i] * (size + 0.1D), PneumaticCraftUtils.sin[i] * (size + 0.1D), 0).endVertex();
-            }
-            Tessellator.getInstance().draw();
+        for (int pass = 0; pass < 2; pass++) {
+            RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.TARGET_CIRCLE, (posMat, builder) -> {
+                for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS / 4; i++) {
+                    RenderUtils.posF(builder, posMat,PneumaticCraftUtils.cos[i] * size, PneumaticCraftUtils.sin[i] * size, 0)
+                            .color(cols[0], cols[1], cols[2], alpha)
+                            .endVertex();
+                    RenderUtils.posF(builder, posMat,PneumaticCraftUtils.cos[i] * (size + 0.1F), PneumaticCraftUtils.sin[i] * (size + 0.1F), 0)
+                            .color(cols[0], cols[1], cols[2], alpha)
+                            .endVertex();
+                }
+            });
 
             if (renderAsTagged) {
-                GlStateManager.color4f(1, 0, 0, 1);
-                wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
-                for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS / 4; i++) {
-                    wr.pos(PneumaticCraftUtils.cos[i] * size, PneumaticCraftUtils.sin[i] * size, 0).endVertex();
-                }
-                for (int i = PneumaticCraftUtils.CIRCLE_POINTS / 4 - 1; i >= 0; i--) {
-                    wr.pos(PneumaticCraftUtils.cos[i] * (size + 0.1D), PneumaticCraftUtils.sin[i] * (size + 0.1D), 0).endVertex();
-                }
-                Tessellator.getInstance().draw();
-                GlStateManager.color4f(1, 1, 0, 0.5F);
+                RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getLineLoopsTransparent(3.0), (posMat, builder) -> {
+                    for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS / 4; i++) {
+                        RenderUtils.posF(builder, posMat, PneumaticCraftUtils.cos[i] * size, PneumaticCraftUtils.sin[i] * size, 0)
+                                .color(255, 0, 0, 255)
+                                .endVertex();
+                    }
+                    for (int i = PneumaticCraftUtils.CIRCLE_POINTS / 4 - 1; i >= 0; i--) {
+                        RenderUtils.posF(builder, posMat, PneumaticCraftUtils.cos[i] * (size + 0.1F), PneumaticCraftUtils.sin[i] * (size + 0.1F), 0)
+                                .color(255, 0, 0, 255)
+                                .endVertex();
+                    }
+                });
             }
 
-            GlStateManager.rotated(180, 0, 0, 1);
+            matrixStack.rotate(Vector3f.ZP.rotationDegrees(180));
         }
+        matrixStack.pop();
+    }
 
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.popMatrix();
+    private float[] getCircleColour(Entity entity) {
+        if (entity instanceof EntityDrone) {
+            return DRONE;
+        } else if (entity instanceof IMob) {
+            return HOSTILE;
+        } else if (entity instanceof HangingEntity) {
+            return HANGING;
+        } else {
+            return DEFAULT;
+        }
     }
 }

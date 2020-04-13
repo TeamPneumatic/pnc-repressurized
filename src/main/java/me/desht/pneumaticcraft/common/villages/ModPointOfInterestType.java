@@ -4,7 +4,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.village.PointOfInterestType;
 
-import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -16,9 +15,9 @@ public class ModPointOfInterestType extends PointOfInterestType {
         this.soundSupplier = soundSupplier;
     }
 
-    @Nullable
-    @Override
-    public SoundEvent getWorkSound() {
-        return soundSupplier.get();
-    }
+//    @Nullable
+//    @Override
+//    public SoundEvent getWorkSound() {
+//        return soundSupplier.get();
+//    }
 }

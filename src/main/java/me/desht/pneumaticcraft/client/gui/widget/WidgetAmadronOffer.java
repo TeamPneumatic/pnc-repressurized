@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
@@ -44,7 +44,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
             if (renderBackground) {
                 Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
-                GlStateManager.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, canBuy ? 0.75f : 1f);
+                RenderSystem.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, canBuy ? 0.75f : 1f);
                 AbstractGui.blit(x, y, 0, 0, width, height, 256, 256);
             }
             for (Widget widget : subWidgets) {

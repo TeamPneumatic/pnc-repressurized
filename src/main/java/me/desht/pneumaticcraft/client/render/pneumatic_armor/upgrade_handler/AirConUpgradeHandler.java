@@ -51,8 +51,8 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
     }
 
     @Override
-    public void update(PlayerEntity player, int rangeUpgrades) {
-        super.update(player, rangeUpgrades);
+    public void tick(PlayerEntity player, int rangeUpgrades) {
+        super.tick(player, rangeUpgrades);
 
         if ((player.world.getGameTime() & 0x3) == 0) {
             if (currentAC < deltaTemp)

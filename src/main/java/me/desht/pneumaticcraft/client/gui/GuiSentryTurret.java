@@ -66,7 +66,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
         }
 
         return entityFilter.keyPressed(keyCode, scanCode, modifiers)
-                || entityFilter.func_212955_f()
+                || entityFilter.canWrite()
                 || super.keyPressed(keyCode, scanCode, modifiers);
     }
 

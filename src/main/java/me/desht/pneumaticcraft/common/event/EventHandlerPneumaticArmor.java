@@ -121,9 +121,9 @@ public class EventHandlerPneumaticArmor {
             for (int i = 0; i < event.getDistance() / 2; i++) {
                 float sx = player.getRNG().nextFloat() * 0.6F - 0.3F;
                 float sz = player.getRNG().nextFloat() * 0.6F - 0.3F;
-                NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, player.posX, player.posY, player.posZ, sx, 0.1, sz), player.world);
+                NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX(), player.getPosY(), player.getPosZ(), sx, 0.1, sz), player.world);
             }
-            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.SHORT_HISS.get(), SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.3f, 0.8f, false), player.world);
+            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.SHORT_HISS.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 0.3f, 0.8f, false), player.world);
             handler.addAir(EquipmentSlotType.FEET, (int) -airNeeded);
         }
     }
@@ -143,10 +143,10 @@ public class EventHandlerPneumaticArmor {
                         for (int i = 0; i < 2; i++) {
                             float sx = player.getRNG().nextFloat() * 1.5F - 0.75F;
                             float sz = player.getRNG().nextFloat() * 1.5F - 0.75F;
-                            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, player.posX + sx, player.posY + 1, player.posZ + sz, sx / 4, -0.2, sz / 4), player.world);
+                            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX() + sx, player.getPosY() + 1, player.getPosZ() + sz, sx / 4, -0.2, sz / 4), player.world);
                         }
                         if ((player.ticksExisted & 0xf) == 0) {
-                            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 0.5f, 0.7f, false), player.world);
+                            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 0.5f, 0.7f, false), player.world);
                             tryExtinguish(player);
                         }
                     }
@@ -198,7 +198,7 @@ public class EventHandlerPneumaticArmor {
                     && handler.isJumpBoostEnabled() && handler.getArmorPressure(EquipmentSlotType.LEGS) > 0.01F) {
                 float power = ItemPneumaticArmor.getIntData(stack, ItemPneumaticArmor.NBT_JUMP_BOOST, 100) / 100.0f;
                 int rangeUpgrades = handler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.JUMPING,
-                        player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
+                        player.isSteppingCarefully() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
                 float actualBoost = Math.max(1.0f, rangeUpgrades * power);
                 float scale = player.isSprinting() ? 0.3f * actualBoost : 0.225f * actualBoost;
                 float rotRad = player.rotationYaw * 0.017453292f;  // deg2rad
@@ -220,10 +220,10 @@ public class EventHandlerPneumaticArmor {
      */
     @SubscribeEvent
     public void breakSpeedCheck(PlayerEvent.BreakSpeed event) {
-        PlayerEntity player = event.getEntityPlayer();
+        PlayerEntity player = event.getPlayer();
         int max = PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES;
         if (isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getEntityPlayer());
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getPlayer());
             if (handler.isJetBootsEnabled() && !player.onGround && handler.isJetBootsBuilderMode()) {
                 int n = (max + 1) - handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS, max);
                 if (n < 4) {
@@ -280,10 +280,10 @@ public class EventHandlerPneumaticArmor {
     }
 
     private Vec3d getFeetPos(PlayerEntity player, boolean rotated) {
-        if (!rotated) return new Vec3d(player.posX, player.posY, player.posZ);
+        if (!rotated) return player.getPositionVector();
 
-        double midY = (player.posY + player.getEyePosition(1.0f).y) / 2;
-        return new Vec3d(player.posX, player.posY, player.posZ).add(player.getLookVec().scale(player.posY - midY));
+        double midY = (player.getPosY() + player.getEyePosition(1.0f).y) / 2;
+        return player.getPositionVector().add(player.getLookVec().scale(player.getPosY() - midY));
     }
 
     /**

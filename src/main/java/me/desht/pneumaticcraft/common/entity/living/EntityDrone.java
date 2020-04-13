@@ -526,6 +526,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public int getLaserColor() {
+        // TODO since this is used in rendering, we should cache it for performance reasons
         String name = hasCustomName() ? getCustomName().getFormattedText().toLowerCase() : playerName.toLowerCase();
         return LASER_COLOR_MAP.getOrDefault(name, super.getLaserColor());
     }

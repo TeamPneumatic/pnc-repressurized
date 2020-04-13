@@ -8,7 +8,6 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.Vec3d;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -63,7 +62,7 @@ public class DroneEntityAIPickupItems extends Goal {
     @Override
     public boolean shouldContinueExecuting() {
         if (!curPickingUpEntity.isAlive()) return false;
-        if (new Vec3d(curPickingUpEntity.posX, curPickingUpEntity.posY, curPickingUpEntity.posZ).squareDistanceTo(drone.getDronePos()) < 2.25) {
+        if (curPickingUpEntity.getPositionVector().squareDistanceTo(drone.getDronePos()) < 2.25) {
             ItemStack stack = curPickingUpEntity.getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
                 tryPickupItem(drone, curPickingUpEntity);

@@ -8,12 +8,10 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     public BlockPressureChamberGlass() {
-        super(IBlockPressureChamber.pressureChamberBlockProps());
+        super(IBlockPressureChamber.pressureChamberBlockProps().notSolid());
     }
 
     @Override
@@ -44,8 +42,8 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
         return ourState.getBlock() == theirState.getBlock() || super.isSideInvisible(ourState, theirState, side);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public float func_220080_a(BlockState p_220080_1_, IBlockReader p_220080_2_, BlockPos p_220080_3_) {
+    @Override
+    public float getAmbientOcclusionLightValue(BlockState p_220080_1_, IBlockReader p_220080_2_, BlockPos p_220080_3_) {
         return 1.0F;
     }
 
@@ -54,6 +52,11 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     }
 
     public boolean causesSuffocation(BlockState p_220060_1_, IBlockReader p_220060_2_, BlockPos p_220060_3_) {
+        return false;
+    }
+
+    @Override
+    public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
         return false;
     }
 

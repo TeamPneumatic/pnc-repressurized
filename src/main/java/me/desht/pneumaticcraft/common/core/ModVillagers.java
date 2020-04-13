@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.core;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.common.villages.ModPointOfInterestType;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,12 +18,12 @@ public class ModVillagers {
     public static final DeferredRegister<VillagerProfession> PROFESSIONS = new DeferredRegister<>(ForgeRegistries.PROFESSIONS, Names.MOD_ID);
 
     public static final RegistryObject<PointOfInterestType> MECHANIC_POI = POI.register("mechanic",
-            () -> new ModPointOfInterestType("mechanic", getAllStates(ModBlocks.CHARGING_STATION.get()), 1, ModSounds.SHORT_HISS, 1));
+            () -> new PointOfInterestType("mechanic", getAllStates(ModBlocks.CHARGING_STATION.get()), 1, 1));
     public static final RegistryObject<VillagerProfession> MECHANIC = registerProfession("mechanic", ModVillagers.MECHANIC_POI);
 
     @SuppressWarnings("SameParameterValue")
     private static RegistryObject<VillagerProfession> registerProfession(String name, Supplier<PointOfInterestType> poiType) {
-        return PROFESSIONS.register(name, () -> new VillagerProfession(Names.MOD_ID + ":" + name, poiType.get(), ImmutableSet.of(), ImmutableSet.of()));
+        return PROFESSIONS.register(name, () -> new VillagerProfession(Names.MOD_ID + ":" + name, poiType.get(), ImmutableSet.of(), ImmutableSet.of(), null));
     }
 
     private static Set<BlockState> getAllStates(Block block) {

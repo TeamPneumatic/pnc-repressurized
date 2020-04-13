@@ -14,14 +14,13 @@ import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class RenderAssemblyPlatform extends TileEntityRenderer<TileEntityAssemblyPlatform> {
+public class RenderAssemblyPlatform extends AbstractTileModelRenderer<TileEntityAssemblyPlatform> {
     private static final float ITEM_SCALE = 0.5F;
 
     private final ModelRenderer claw1;
@@ -41,12 +40,10 @@ public class RenderAssemblyPlatform extends TileEntityRenderer<TileEntityAssembl
     }
 
     @Override
-    public void render(TileEntityAssemblyPlatform te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(TileEntityAssemblyPlatform te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         ItemStack heldStack = te.getPrimaryInventory().getStackInSlot(0);
         Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(MathHelper.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_ASSEMBLY_PLATFORM));
-
-        matrixStackIn.push();
 
         matrixStackIn.push();
         matrixStackIn.translate(0, 0, clawTranslation.getRight());
@@ -67,8 +64,6 @@ public class RenderAssemblyPlatform extends TileEntityRenderer<TileEntityAssembl
                 itemRenderer.renderItem(heldStack, ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
             }
         }
-
-        matrixStackIn.pop();
     }
 
     private Pair<IAssemblyRenderOverriding, Float> getClawTranslation(float clawProgress, ItemStack heldStack) {
@@ -77,7 +72,7 @@ public class RenderAssemblyPlatform extends TileEntityRenderer<TileEntityAssembl
         if (!heldStack.isEmpty()) {
             renderOverride = GuiRegistry.renderOverrides.get(heldStack.getItem().getRegistryName());
             if (renderOverride != null) {
-                clawTrans = renderOverride.getIOUnitClawShift(heldStack);
+                clawTrans = renderOverride.getPlatformClawShift(heldStack);
             } else {
                 if (heldStack.getItem() instanceof BlockItem) {
                     clawTrans = 1.5F / 16F - clawProgress * 0.1F / 16F;

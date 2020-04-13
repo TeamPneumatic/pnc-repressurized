@@ -102,7 +102,7 @@ public class PacketUpdateMicromissileSettings {
                         new MicromissileDefaults.Entry(topSpeed, accel, damage, point, entityFilter, fireMode)
                 );
                 MicromissileDefaults.INSTANCE.writeToFile();
-                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.posX, player.posY, player.posZ, 1.0f, 1.0f, false), (ServerPlayerEntity) player);
+                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
             } catch (IOException e) {
                 e.printStackTrace();
             }

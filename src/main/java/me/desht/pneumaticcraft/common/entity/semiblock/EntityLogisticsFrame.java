@@ -333,7 +333,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
     @Override
     public void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
         curInfo.add(PneumaticCraftUtils.xlate("gui.logistics_frame.facing", getFacing()));
-        if (player.isSneaking()) {
+        if (player.isSteppingCarefully()) {
             NonNullList<ItemStack> drops = getDrops();
             if (!drops.isEmpty()) {
                 ItemLogisticsFrame.addLogisticsTooltip(drops.get(0), player.world, curInfo, true);

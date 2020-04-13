@@ -21,7 +21,7 @@ import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.ICollisionReader;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -34,7 +34,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     private final EnumOrder order;
     private BlockPos curPos;
     private final List<BlockPos> area;
-    final IBlockReader worldCache;
+    final ICollisionReader worldCache;
     private final List<BlockPos> blacklist = new ArrayList<>();//a list of position which weren't allowed to be digged in the past.
     private int curY;
     private int lastSuccessfulY;

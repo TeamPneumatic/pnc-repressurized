@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import me.desht.pneumaticcraft.client.model.entity.ModelDroneMinigun;
+import me.desht.pneumaticcraft.client.model.ModelMinigun;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.HandSide;
 
 public class RenderItemMinigun extends ItemStackTileEntityRenderer {
-    private final ModelDroneMinigun model = new ModelDroneMinigun();
+    private final ModelMinigun model = new ModelMinigun();
 
     @Override
     public void render(ItemStack stack, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
@@ -32,7 +32,7 @@ public class RenderItemMinigun extends ItemStackTileEntityRenderer {
                     // rendering our own gun in 3rd person, or rendering someone else's gun
                     matrixStack.scale(1f, -1f, -1f);
                     matrixStack.rotate(Vector3f.XP.rotationDegrees(-90f));
-                    matrixStack.translate(0.5, -2, -0.3);
+                    matrixStack.translate(0.5, -1, -0.3);
                 } else if (mc.currentScreen instanceof InventoryScreen) {
                     // our own gun in the rendered player model in inventory screen
                     matrixStack.rotate(Vector3f.XP.rotationDegrees(90f));

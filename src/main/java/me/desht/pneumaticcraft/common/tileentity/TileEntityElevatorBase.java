@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -56,6 +57,9 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             "gui.tab.redstoneBehaviour.elevator.button.elevatorCallers"
     );
 
+    private static final float BUTTON_HEIGHT = 0.06F;
+    private static final float BUTTON_SPACING = 0.02F;
+
     public float oldExtension;
     @DescSynced
     @LazySynced
@@ -77,6 +81,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;
     private BlockState camoState;
+    public float[] fakeFloorTextureUV;
 
     public TileEntityElevatorBase() {
         super(ModTileEntities.ELEVATOR_BASE.get(), PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
@@ -356,8 +361,13 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
     @Override
     public void onDescUpdate() {
+        BlockState oldCamo = camoState;
         camoState = ICamouflageableTE.getStateForStack(camoStack);
-
+        if (oldCamo != camoState) {
+            // cache the UV's for the camouflaged texture (top face of the camo block)
+            // for efficiently rendering it on the moving elevator floor
+            fakeFloorTextureUV = ClientUtils.getTextureUV(camoState, Direction.UP);
+        }
         super.onDescUpdate();
     }
 
@@ -426,13 +436,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             }
         }
 
-        double buttonHeight = 0.06D;
-        double buttonSpacing = 0.02D;
         TileEntityElevatorCaller.ElevatorButton[] elevatorButtons = new TileEntityElevatorCaller.ElevatorButton[floorHeights.length];
         int columns = (elevatorButtons.length - 1) / 12 + 1;
         for (int j = 0; j < columns; j++) {
             for (int i = j * 12; i < floorHeights.length && i < j * 12 + 12; i++) {
-                elevatorButtons[i] = new TileEntityElevatorCaller.ElevatorButton(0.2D + 0.6D / columns * j, 0.5D + (Math.min(floorHeights.length, 12) - 2) * (buttonSpacing + buttonHeight) / 2 - i % 12 * (buttonHeight + buttonSpacing), 0.58D / columns, buttonHeight, i, floorHeights[i]);
+                elevatorButtons[i] = new TileEntityElevatorCaller.ElevatorButton(0.2F + 0.6F / columns * j, 0.5F + (Math.min(floorHeights.length, 12) - 2) * (BUTTON_SPACING + BUTTON_HEIGHT) / 2 - i % 12 * (BUTTON_HEIGHT + BUTTON_SPACING), 0.58F / columns, BUTTON_HEIGHT, i, floorHeights[i]);
                 elevatorButtons[i].setColor(floorHeights[i] == targetExtension ? 0 : 1, 1, floorHeights[i] == targetExtension ? 0 : 1);
                 String floorName = floorNames.get(floorHeights[i]);
                 if (floorName != null) {

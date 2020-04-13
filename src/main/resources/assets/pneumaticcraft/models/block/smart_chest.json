@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "textures": {
     "down": "pneumaticcraft:block/generic/plain_base",
     "up": "pneumaticcraft:block/generic/top_panel",

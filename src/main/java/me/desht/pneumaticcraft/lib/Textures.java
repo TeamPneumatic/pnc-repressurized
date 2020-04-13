@@ -183,6 +183,7 @@ public class Textures {
     public static final ResourceLocation WIDGET_TANK = guiTexture("widget/widget_tank.png");
     public static final ResourceLocation WIDGET_AMADRON_OFFER = guiTexture("widget/widget_amadron_offer.png");
     public static final ResourceLocation WIDGET_VERTICAL_SCROLLBAR = guiTexture("widget/widget_vertical_scrollbar.png");
+    public static final ResourceLocation JEI_EXPLOSION = guiTexture("jei/explosion.png");
 
     // misc rendering textures
     public static final ResourceLocation MINIGUN_CROSSHAIR = new ResourceLocation(RENDER_LOCATION + "minigun_crosshair.png");
@@ -192,12 +193,10 @@ public class Textures {
     public static final ResourceLocation RENDER_LASER_START_OVERLAY = new ResourceLocation(RENDER_LOCATION + "laser/laser_start_overlay.png");
     public static final ResourceLocation GLOW_RESOURCE = new ResourceLocation(RENDER_LOCATION + "blur.png");
 
-    public static final ResourceLocation JEI_EXPLOSION = guiTexture("jei/explosion.png");
-
     // entities
-    public static final ResourceLocation VORTEX = new ResourceLocation(ENTITY_LOCATION + "vortex");
-    public static final ResourceLocation MODEL_DRONE = new ResourceLocation(ENTITY_LOCATION + "drone.png");
-    public static final ResourceLocation MICROMISSILE_TEXTURE = new ResourceLocation(ENTITY_LOCATION + "micromissile.png");
+    public static final ResourceLocation VORTEX_ENTITY = entityTexture("vortex.png");
+    public static final ResourceLocation DRONE_ENTITY = entityTexture("drone.png");
+    public static final ResourceLocation MICROMISSILE_ENTITY = entityTexture("micromissile.png");
 
     private static ResourceLocation guiTexture(String img) {
         return new ResourceLocation(GUI_LOCATION + img);
@@ -217,5 +216,9 @@ public class Textures {
 
     public static ResourceLocation progWidgetTexture(String img) {
         return new ResourceLocation(PROG_WIDGET_LOCATION + img);
+    }
+
+    public static ResourceLocation entityTexture(String img) {
+        return new ResourceLocation(ENTITY_LOCATION + img);
     }
 }

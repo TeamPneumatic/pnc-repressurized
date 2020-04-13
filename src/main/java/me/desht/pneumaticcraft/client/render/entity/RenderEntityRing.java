@@ -1,13 +1,14 @@
 package me.desht.pneumaticcraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
-
-import javax.annotation.Nonnull;
 
 public class RenderEntityRing extends EntityRenderer<EntityRing> {
 
@@ -18,24 +19,16 @@ public class RenderEntityRing extends EntityRenderer<EntityRing> {
     }
 
     @Override
-    public void doRender(@Nonnull EntityRing ring, double par2, double par4, double par6, float var8, float par9) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translated((float) par2, (float) par4, (float) par6);
+    public void render(EntityRing ring, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
         if (ring.oldRing != null) {
-            GlStateManager.color4f(1, 1, 1, 1);
-            GlStateManager.disableLighting();
-            GlStateManager.disableTexture();
-
-            ring.ring.renderInterpolated(ring.oldRing, par9, ring.prevRotationYaw + (ring.rotationYaw - ring.prevRotationYaw) * par9 - 90.0F, ring.prevRotationPitch + (ring.rotationPitch - ring.prevRotationPitch) * par9);
-            GlStateManager.enableTexture();
-            GlStateManager.enableLighting();
+            float yaw = MathHelper.lerp(partialTicks, ring.prevRotationYaw, ring.rotationYaw);
+            float pitch = MathHelper.lerp(partialTicks, ring.prevRotationPitch, ring.rotationPitch);
+            RenderUtils.renderRing(ring.ring, ring.oldRing, matrixStackIn, bufferIn, partialTicks, yaw, pitch, ring.color);
         }
-        GlStateManager.popMatrix();
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(EntityRing var1) {
+    public ResourceLocation getEntityTexture(EntityRing entity) {
         return null;
     }
-
 }

@@ -40,7 +40,7 @@ public class ItemVortexCannon extends ItemPressurizable {
             if (airHandler.getPressure() > 0.1f) {
                 world.playSound(playerIn, playerIn.getPosX(), playerIn.getPosY(), playerIn.getPosZ(), ModSounds.AIR_CANNON.get(), SoundCategory.PLAYERS, 1.0F, 0.7F + factor * 0.2F);
                 EntityVortex vortex = ModEntities.VORTEX.get().create(world);
-                Vec3d directionVec = playerIn.getLookVec().normalize().scale(-0.25);
+                Vec3d directionVec = playerIn.getLookVec().normalize().scale(playerIn.isSprinting() ? -0.35 : -0.15);
                 Vec3d vortexPos = playerIn.getPositionVector().add(0, playerIn.getEyeHeight() / 2, 0).add(directionVec);
                 vortex.setPosition(vortexPos.x, vortexPos.y, vortexPos.z);
                 vortex.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, 1.5F * factor, 0.0F);

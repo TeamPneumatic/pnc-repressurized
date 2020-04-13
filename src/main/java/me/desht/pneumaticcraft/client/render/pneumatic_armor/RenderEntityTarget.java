@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiDroneDebuggerOptions;
@@ -10,6 +9,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
@@ -18,21 +18,19 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
 import me.desht.pneumaticcraft.common.network.PacketUpdateDebuggingDrone;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.HangingEntity;
-import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.client.event.InputEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RenderEntityTarget {
+    private static final float STAT_SCALE = 0.02f;
 
     public final Entity entity;
     private final RenderTargetCircle circle1;
@@ -45,12 +43,13 @@ public class RenderEntityTarget {
     private List<String> textList = new ArrayList<>();
     private final List<IEntityTrackEntry> trackEntries;
     private int hackTime;
+    private double distToEntity;
 
     public RenderEntityTarget(Entity entity) {
         this.entity = entity;
         trackEntries = EntityTrackHandler.getTrackersForEntity(entity);
-        circle1 = new RenderTargetCircle();
-        circle2 = new RenderTargetCircle();
+        circle1 = new RenderTargetCircle(entity);
+        circle2 = new RenderTargetCircle(entity);
 
         stat = new WidgetAnimatedStat(null, entity.getDisplayName().getFormattedText(), StatIcon.NONE,
                 20, -20, 0x3000AA00, null, false);
@@ -70,6 +69,8 @@ public class RenderEntityTarget {
         stat.tickWidget();
         stat.setTitle(entity.getDisplayName().getFormattedText());
         PlayerEntity player = Minecraft.getInstance().player;
+
+        distToEntity = entity.getDistance(ClientUtils.getClientPlayer());
 
         if (ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;
@@ -102,72 +103,40 @@ public class RenderEntityTarget {
     }
 
     public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, boolean justRenderWhenHovering) {
+
         for (IEntityTrackEntry tracker : trackEntries) {
             tracker.render(matrixStack, buffer, entity, partialTicks);
         }
-        double x = entity.prevPosX + (entity.getPosX() - entity.prevPosX) * partialTicks;
-        double y = entity.prevPosY + (entity.getPosY() - entity.prevPosY) * partialTicks + entity.getHeight() / 2D;
-        double z = entity.prevPosZ + (entity.getPosZ() - entity.prevPosZ) * partialTicks;
 
-        GlStateManager.depthMask(false);
-        GlStateManager.disableDepthTest();
-        GlStateManager.disableCull();
-        GlStateManager.disableTexture();
+        double x = MathHelper.lerp(partialTicks, entity.prevPosX, entity.getPosX());
+        double y = MathHelper.lerp(partialTicks, entity.prevPosY, entity.getPosY()) + entity.getHeight() / 2D;
+        double z = MathHelper.lerp(partialTicks, entity.prevPosZ, entity.getPosZ());
 
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        matrixStack.push();
 
-        GlStateManager.pushMatrix();
-
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.IS_RUNNING_ON_MAC);
-
-        float red;
-        float green;
-        float blue;
-        float alpha = 0.5F;
-        if (entity instanceof EntityDrone) {
-            red = 1;
-            green = 1;
-            blue = 0;
-        } else if (entity instanceof IMob) {
-            red = 1;
-            green = 0;
-            blue = 0;
-        } else if (entity instanceof HangingEntity) {
-            red = 0;
-            green = 1;
-            blue = 1;
-        } else {
-            red = 0;
-            green = 1;
-            blue = 0;
-        }
+        matrixStack.translate(x, y, z);
+        RenderUtils.rotateToPlayerFacing(matrixStack);
 
         float size = entity.getHeight() * 0.5F;
-
+        float alpha = 0.5F;
         if (ticksExisted < 60) {
             size += 5 - Math.abs(ticksExisted) * 0.083F;
             alpha = Math.abs(ticksExisted) * 0.005F;
         }
+        float renderSize = MathHelper.lerp(partialTicks, oldSize, size);
 
-        GlStateManager.translated(x, y, z);
+        circle1.render(matrixStack, buffer, renderSize, partialTicks, alpha);
+        circle2.render(matrixStack, buffer, renderSize + 0.2F, partialTicks, alpha);
 
-        GlStateManager.rotated(180.0F - Minecraft.getInstance().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotated(180.0F - Minecraft.getInstance().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
-        GlStateManager.color4f(red, green, blue, alpha);
-        float renderSize = oldSize + (size - oldSize) * partialTicks;
-        circle1.render(renderSize, partialTicks);
-        circle2.render(renderSize + 0.2D, partialTicks);
         float targetAcquireProgress = ((ticksExisted + partialTicks - 50) / 0.7F);
-        if (ticksExisted <= 120 && ticksExisted > 50) {
-            RenderProgressBar.render(0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress,  0xD0FFFF00, 0xD000FF00);
+        if (ticksExisted > 50 && ticksExisted <= 120) {
+            RenderProgressBar.render3d(matrixStack, buffer, 0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress,  0xD0FFFF00, 0xD000FF00);
         }
 
-        GlStateManager.enableTexture();
+        // a bit of growing or shrinking to keep the stat on screen and/or of legible size
+        float mul = getStatSizeMultiplier(distToEntity);
+        matrixStack.scale(STAT_SCALE * mul, STAT_SCALE * mul, STAT_SCALE * mul);
 
-        FontRenderer fontRenderer = Minecraft.getInstance().getRenderManager().getFontRenderer();
-        GlStateManager.scaled(0.02D, 0.02D, 0.02D);
-        GlStateManager.color4f(red, green, blue, alpha);
         if (ticksExisted > 120) {
             if (justRenderWhenHovering && !isLookingAtTarget) {
                 stat.closeWindow();
@@ -178,24 +147,31 @@ public class RenderEntityTarget {
             for (IEntityTrackEntry tracker : trackEntries) {
                 tracker.addInfo(entity, textList, isLookingAtTarget);
             }
+            textList.add(String.format("Dist: %5.1fm", distToEntity));
             stat.setText(textList);
-            stat.render(-1, -1, partialTicks);
+            stat.render3d(matrixStack, buffer, partialTicks);
         } else if (ticksExisted > 50) {
-            fontRenderer.drawString("Acquiring Target...", 0, 0, 0x7F7F7F);
-            fontRenderer.drawString((int)targetAcquireProgress + "%", 37, 28, 0x002F00);
+            RenderUtils.renderString3d("Acquiring Target...", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
+            RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 28, 0xFF002F00, matrixStack, buffer, false, true);
         } else if (ticksExisted < -30) {
             stat.closeWindow();
-            stat.render(-1, -1, partialTicks);
-            fontRenderer.drawString("Lost Target!", 0, 0, 0xFF0000);
+            stat.render3d(matrixStack, buffer, partialTicks);
+            RenderUtils.renderString3d("Lost Target!", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
         }
 
-        GlStateManager.popMatrix();
-        GlStateManager.enableCull();
-        GlStateManager.enableDepthTest();
-        GlStateManager.disableBlend();
-        GlStateManager.depthMask(true);
+        matrixStack.pop();
 
         oldSize = size;
+    }
+
+    private float getStatSizeMultiplier(double dist) {
+        if (dist < 4) {
+           return (float) (dist / 4);
+        } else if (dist < 10) {
+            return 1f;
+        } else {
+            return (float) (dist / 10);
+        }
     }
 
     public List<String> getEntityText() {
@@ -242,7 +218,7 @@ public class RenderEntityTarget {
         return hackTime;
     }
 
-    public boolean scroll(GuiScreenEvent.MouseScrollEvent.Post event) {
+    public boolean scroll(InputEvent.MouseScrollEvent event) {
         if (isInitialized() && isPlayerLookingAtTarget()) {
             return stat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
         }

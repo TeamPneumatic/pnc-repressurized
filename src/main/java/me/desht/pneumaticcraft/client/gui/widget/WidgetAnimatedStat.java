@@ -1,11 +1,15 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.base.Strings;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.event.ClientEventHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
@@ -19,14 +23,16 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -457,13 +463,89 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             RenderSystem.translated(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
             RenderSystem.enableTexture();
 
-            for (Widget widget : subWidgets)
-                widget.render(mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks);
+            subWidgets.forEach(widget -> widget.render(mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks));
 
             RenderSystem.popMatrix();
         }
         if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
             statIcon.render(renderBaseX, renderAffectedY, leftSided);
+        }
+    }
+
+    public void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+        int renderBaseX = (int) (oldBaseX + (x - oldBaseX) * partialTicks);
+        int renderAffectedY = (int) (oldAffectedY + (affectedY - oldAffectedY) * partialTicks);
+        int renderWidth = (int) (oldWidth + (width - oldWidth) * partialTicks);
+        int renderHeight = (int) (oldHeight + (height - oldHeight) * partialTicks);
+
+        // quad bg
+        int[] cols = RenderUtils.decomposeColor(backGroundColor);
+        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getUntexturedQuad(true), (posMat, builder) -> {
+            int rw = leftSided ? -renderWidth : renderWidth;
+            builder.pos(posMat, (float)renderBaseX, (float)renderAffectedY + renderHeight, 0.0F)
+                    .color(cols[1], cols[2], cols[3], cols[0])
+                    .lightmap(RenderUtils.FULL_BRIGHT)
+                    .endVertex();
+            builder.pos(posMat, (float)renderBaseX + rw, (float)renderAffectedY + renderHeight, 0.0F)
+                    .color(cols[1], cols[2], cols[3], cols[0])
+                    .lightmap(RenderUtils.FULL_BRIGHT)
+                    .endVertex();
+            builder.pos(posMat, (float)renderBaseX + rw, (float)renderAffectedY, 0.0F)
+                    .color(cols[1], cols[2], cols[3], cols[0])
+                    .lightmap(RenderUtils.FULL_BRIGHT)
+                    .endVertex();
+            builder.pos(posMat, (float)renderBaseX, (float)renderAffectedY, 0.0F)
+                    .color(cols[1], cols[2], cols[3], cols[0])
+                    .lightmap(RenderUtils.FULL_BRIGHT)
+                    .endVertex();
+        });
+
+        // line loops border
+        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getLineLoopsTransparent(5.0f), (posMat, builder) -> {
+            int rw = leftSided ? -renderWidth : renderWidth;
+            float[] c1 = leftSided ? bgColorLo.getComponents(null) : bgColorHi.getComponents(null);
+            float[] c2 = bgColorHi.getComponents(null);
+            float[] c3 = leftSided ? bgColorHi.getComponents(null) : bgColorLo.getComponents(null);
+            float[] c4 = bgColorLo.getComponents(null);
+            builder.pos(posMat, renderBaseX, renderAffectedY, 0).color(c1[0], c1[1], c1[2], c1[3]).endVertex();
+            builder.pos(posMat, renderBaseX + rw, renderAffectedY, 0).color(c2[0], c2[1], c2[2], c2[3]).endVertex();
+            builder.pos(posMat, renderBaseX + rw, renderAffectedY + renderHeight, 0).color(c3[0], c3[1], c3[2],c3[3]).endVertex();
+            builder.pos(posMat, renderBaseX, renderAffectedY + renderHeight, 0).color(c4[0], c4[1], c4[2], c4[3]).endVertex();
+        });
+
+        if (doneExpanding) {
+            matrixStack.push();
+            matrixStack.translate(renderBaseX + (leftSided ? -renderWidth : 16), renderAffectedY, 0);
+            matrixStack.scale(textSize, textSize, textSize);
+            matrixStack.translate(-renderBaseX - (leftSided ? -renderWidth : 16), -renderAffectedY, 0);
+            // text title
+            if (!title.isEmpty()) {
+                RenderUtils.renderString3d(TextFormatting.BOLD + title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, 0xFFFFFF00, matrixStack, buffer, false, true);
+            }
+            // text lines
+            int titleYoffset = title.isEmpty() ? 3 : 12;
+            for (int i = curScroll; i < textList.size() && i < curScroll + MAX_LINES; i++) {
+                if (DARK_FORMATTING.matcher(textList.get(i)).find()) {
+                    RenderUtils.renderString3d(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF, matrixStack, buffer, false, true);
+                } else {
+                    RenderUtils.renderString3d(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF, matrixStack, buffer, false, true);
+                }
+            }
+
+            matrixStack.push();
+            matrixStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
+            subWidgets.stream()
+                    .filter(widget -> widget instanceof ICanRender3d)
+                    .forEach(widget -> ((ICanRender3d) widget).render3d(matrixStack, buffer, partialTicks));
+            matrixStack.pop();
+
+            matrixStack.pop();
+        }
+
+        // no subwidget drawing
+
+        if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
+            statIcon.render3d(matrixStack, buffer, renderBaseX, renderAffectedY, leftSided);
         }
     }
 
@@ -698,6 +780,17 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
                 GuiUtils.drawItemStack(stack, x - (leftSided ? 16 : 0), y);
             }
             RenderSystem.disableBlend();
+        }
+
+        public void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, int x, int y, boolean leftSided) {
+            if (texture != null) {
+                RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(texture),
+                        (posMat, builder) -> RenderUtils.drawTexture(matrixStack, builder, x, y, RenderUtils.FULL_BRIGHT));
+            } else {
+                ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+                IBakedModel ibakedmodel = itemRenderer.getItemModelWithOverrides(stack, ClientUtils.getClientWorld(), null);
+                itemRenderer.renderItem(stack, ItemCameraTransforms.TransformType.FIXED, true, matrixStack, buffer, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ibakedmodel);
+            }
         }
     }
 }

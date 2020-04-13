@@ -1,4 +1,3 @@
 {
-  "parent": "pneumaticcraft:block/security_station",
-  "transform": "forge:default-block"
+  "parent": "pneumaticcraft:block/security_station"
 }

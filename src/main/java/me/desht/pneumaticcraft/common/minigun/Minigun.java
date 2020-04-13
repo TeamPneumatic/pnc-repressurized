@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
@@ -293,7 +294,7 @@ public abstract class Minigun {
 
             minigunPitch = moveToward(minigunPitch, (float) targetPitch, MAX_GUN_PITCH_CHANGE);
             minigunYaw = minigunPitch < -80 || minigunPitch > 80 ? (float) targetYaw : moveToward(minigunYaw, (float) targetYaw, MAX_GUN_YAW_CHANGE);
-            gunAimedAtTarget = minigunYaw == targetYaw && minigunPitch == targetPitch;
+            gunAimedAtTarget = MathHelper.epsilonEquals(minigunYaw, targetYaw) && MathHelper.epsilonEquals(minigunPitch, targetPitch);
         } else if (isSweeping()) {
             minigunYaw -= Math.cos(sweepingProgress) * 22;
             sweepingProgress += 0.05D;

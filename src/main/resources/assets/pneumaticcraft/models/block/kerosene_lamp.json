@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "textures": {
     "face": "pneumaticcraft:model/kerosene_lamp",
     "particle": "pneumaticcraft:model/kerosene_lamp"

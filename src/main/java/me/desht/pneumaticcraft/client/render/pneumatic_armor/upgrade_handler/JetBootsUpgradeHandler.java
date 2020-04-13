@@ -53,8 +53,8 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
     }
 
     @Override
-    public void update(PlayerEntity player, int rangeUpgrades) {
-        super.update(player, rangeUpgrades);
+    public void tick(PlayerEntity player, int rangeUpgrades) {
+        super.tick(player, rangeUpgrades);
 
         String g1 = TextFormatting.WHITE.toString();
         String g2 = TextFormatting.GREEN.toString();

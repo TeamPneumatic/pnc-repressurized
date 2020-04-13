@@ -81,7 +81,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void update(PlayerEntity player, int rangeUpgrades) {
+    public void tick(PlayerEntity player, int rangeUpgrades) {
         if (coordTracker != null) {
             coordTracker.ticksExisted++;
         } else {
@@ -111,7 +111,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
                 return;
             coordTracker.render(matrixStack, buffer, partialTicks);
             if (PNCConfig.Client.Armor.pathEnabled && navigator != null) {
-                navigator.render(PNCConfig.Client.Armor.wirePath, PNCConfig.Client.Armor.xRayEnabled, partialTicks);
+                navigator.render(matrixStack, buffer, PNCConfig.Client.Armor.wirePath, PNCConfig.Client.Armor.xRayEnabled, partialTicks);
             }
         }
     }

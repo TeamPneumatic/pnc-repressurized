@@ -1,40 +1,41 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
-import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockStart;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.InputEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RenderBlockTarget {
 
+    private static final float STAT_SCALE = 0.02F;
     private final World world;
     private final BlockPos pos;
-    private final RenderBlockHighlight highlightRenderer = new RenderBlockHighlight();
     public int ticksExisted = 0;
     public final WidgetAnimatedStat stat;
     private final PlayerEntity player;
@@ -57,7 +58,7 @@ public class RenderBlockTarget {
         if (!stack.isEmpty()) {
             title = stack.getDisplayName().getFormattedText();
         }
-        stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, 0x3000AA00, null, false);
+        stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, 0x4000AA00, null, false);
         stat.setMinDimensionsAndReset(0, 0);
     }
 
@@ -137,62 +138,76 @@ public class RenderBlockTarget {
         }
     }
 
-    private static final Vector3f ROT_X = new Vector3f(1f, 0f, 0f);
-    private static final Vector3f ROT_Y = new Vector3f(1f, 0f, 0f);
-
     public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
-
-        IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.BLOCK_TRACKER);
+        matrixStack.push();
 
         double x = pos.getX() + 0.5D;
         double y = pos.getY() + 0.5D;
         double z = pos.getZ() + 0.5D;
 
-        matrixStack.push();
         matrixStack.translate(x, y, z);
 
-//        GlStateManager.disableTexture();
-//        GlStateManager.pushMatrix();
-//        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.IS_RUNNING_ON_MAC);
-//        GlStateManager.translated(x, y, z);
-//        GlStateManager.enableBlend();
-//        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
         if (!world.isAirBlock(pos)) {
-            highlightRenderer.render(world, pos, partialTicks);
+            renderBlockHighlight(matrixStack, buffer, world, pos, partialTicks);
         }
+
+        RenderUtils.rotateToPlayerFacing(matrixStack);
 
         float targetAcquireProgress = (ticksExisted + partialTicks) / 1.2f;
 
-        matrixStack.rotate(Vector3f.YP.rotationDegrees(180f - Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getYaw()));
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(180f - Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getPitch()));
-//        GlStateManager.rotated(180.0F - Minecraft.getInstance().getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-//        GlStateManager.rotated(180.0F - Minecraft.getInstance().getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
-        if (ticksExisted <= 120 && ticksExisted > 50) {
-            RenderProgressBar.render(0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress, 0xD0FFFF00, 0xD000FF00);
+        if (ticksExisted > 50 && ticksExisted <= 120) {
+            RenderProgressBar.render3d(matrixStack, buffer,0D, 0.4D, 1.8D, 0.7D, 0, targetAcquireProgress, 0xD0FFFF00, 0xD000FF00);
         }
 
-        // FIXME
-        GlStateManager.enableTexture();
-        if (!world.isAirBlock(pos)) {
-            FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+        // a bit of growing or shrinking to keep the stat on screen and/or of legible size
+        float mul = getStatSizeMultiplier(MathHelper.sqrt(ClientUtils.getClientPlayer().getDistanceSq(x, y, z)));
+        matrixStack.scale(STAT_SCALE * mul, STAT_SCALE * mul, STAT_SCALE * mul);
 
-            GlStateManager.color4f(0.5F, 1.0F, 0.5F, 0.5F);
+        if (!world.isAirBlock(pos)) {
             if (ticksExisted > 120) {
-                GlStateManager.scaled(0.02D, 0.02D, 0.02D);
-                stat.render(-1, -1, partialTicks);
+                if (isPlayerLookingAtTarget()) {
+                    stat.render3d(matrixStack, buffer, partialTicks);
+                }
             } else if (ticksExisted > 50) {
-                GlStateManager.scaled(0.02D, 0.02D, 0.02D);
-                fontRenderer.drawString("Acquiring Target...", 0, 0, 0x7F7F7F);
-                fontRenderer.drawString((int)targetAcquireProgress + "%", 37, 28, 0x002F00);
+                RenderUtils.renderString3d("Acquiring Target...", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 28, 0xFF002F00, matrixStack, buffer, false, true);
             } else if (ticksExisted < -30) {
-                GlStateManager.scaled(0.03D, 0.03D, 0.03D);
-                stat.render(-1, -1, partialTicks);
-                fontRenderer.drawString("Lost Target!", 0, 0, 0xFF0000);
+                matrixStack.scale(1.5F, 1.5F, 1.5F);
+                stat.render3d(matrixStack, buffer, partialTicks);
+                RenderUtils.renderString3d("Lost Target!", 0, 0, 0xFFFF0000, matrixStack, buffer, false, true);
             }
         }
 
-        GlStateManager.popMatrix();
+        matrixStack.pop();
+    }
+
+    private float getStatSizeMultiplier(double dist) {
+        if (dist < 4) {
+            return Math.max(0.3f, (float) (dist / 4));
+        } else if (dist < 10) {
+            return 1f;
+        } else {
+            return (float) (dist / 10);
+        }
+    }
+
+    private void renderBlockHighlight(MatrixStack matrixStack, IRenderTypeBuffer buffer, World world, BlockPos pos, float partialTicks) {
+        BlockState state = world.getBlockState(pos);
+
+        float progress = ((world.getGameTime() & 0x1f) + partialTicks) / 32f;
+        float cycle = MathHelper.sin((float) (progress * Math.PI));
+        VoxelShape shape = state.getShape(world, pos);
+        float shrink = (shape == VoxelShapes.fullCube() ? 0.05f : 0f) + cycle / 60f;
+        AxisAlignedBB aabb = shape.getBoundingBox().shrink(shrink);
+
+        float alpha = 0.5f;
+        if (blockTracker.getFocusedPos() != null) {
+            alpha = blockTracker.getFocusedPos().equals(pos) ? 0.75f : 0.15f;
+        }
+        matrixStack.push();
+        matrixStack.translate(-0.5, -0.5, -0.5);
+        RenderUtils.renderFrame(matrixStack, buffer, aabb, 1/64f, 0.25f, 0.75f, 0.75f, alpha, RenderUtils.FULL_BRIGHT, true);
+        matrixStack.pop();
     }
 
     private boolean isInitialized() {
@@ -223,7 +238,7 @@ public class RenderBlockTarget {
         return hackTime;
     }
 
-    public boolean scroll(GuiScreenEvent.MouseScrollEvent.Post event) {
+    public boolean scroll(InputEvent.MouseScrollEvent event) {
         if (isInitialized() && isPlayerLookingAtTarget()) {
             return stat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
         }

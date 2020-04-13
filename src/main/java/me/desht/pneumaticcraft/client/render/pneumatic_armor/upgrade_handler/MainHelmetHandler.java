@@ -36,7 +36,7 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public void update(PlayerEntity player, int rangeUpgrades) {
+    public void tick(PlayerEntity player, int rangeUpgrades) {
         List<String> l = Arrays.stream(UpgradeRenderHandlerList.ARMOR_SLOTS)
                 .map(slot -> getPressureStr(player, slot))
                 .collect(Collectors.toList());

@@ -32,7 +32,6 @@ public class PressureGlassModel implements IDynamicBakedModel {
     private static final int TEXTURE_COUNT = 47;
     private static final TextureAtlasSprite[] SPRITE_CACHE = new TextureAtlasSprite[TEXTURE_COUNT];
 
-//    private final VertexFormat format;
     private final Function<Material, TextureAtlasSprite> spriteGetter;
 
     // cached quads, by texture index & face
@@ -54,7 +53,6 @@ public class PressureGlassModel implements IDynamicBakedModel {
     }
 
     private PressureGlassModel(Function<Material, TextureAtlasSprite> spriteGetter) {
-//        this.format = format;
         this.spriteGetter = spriteGetter;
     }
 
@@ -111,18 +109,12 @@ public class PressureGlassModel implements IDynamicBakedModel {
                     builder.put(e, r, g, b, a);
                     break;
                 case UV:
-                    switch (elements.get(e).getIndex()) {
-                        case 0:
-                            float iu = sprite.getInterpolatedU(u);
-                            float iv = sprite.getInterpolatedV(v);
-                            builder.put(e, iu, iv);
-                            break;
-                        case 2:
-                            builder.put(e, 0f, 1f);
-                            break;
-                        default:
-                            builder.put(e);
-                            break;
+                    if (elements.get(e).getIndex() == 0) {
+                        float iu = sprite.getInterpolatedU(u);
+                        float iv = sprite.getInterpolatedV(v);
+                        builder.put(e, iu, iv);
+                    } else {
+                        builder.put(e);
                     }
                     break;
                 case NORMAL:
@@ -134,32 +126,6 @@ public class PressureGlassModel implements IDynamicBakedModel {
             }
         }
     }
-
-//    private void putVertex(UnpackedBakedQuad.Builder builder, Vec3d normal, double x, double y, double z, TextureAtlasSprite sprite, float u, float v) {
-//        for (int e = 0; e < format.getElementCount(); e++) {
-//            switch (format.getElement(e).getUsage()) {
-//                case POSITION:
-//                    builder.put(e, (float)x, (float)y, (float)z, 1.0f);
-//                    break;
-//                case COLOR:
-//                    builder.put(e, 1.0f, 1.0f, 1.0f, 1.0f);
-//                    break;
-//                case UV:
-//                    if (format.getElement(e).getIndex() == 0) {
-//                        u = sprite.getInterpolatedU(u);
-//                        v = sprite.getInterpolatedV(v);
-//                        builder.put(e, u, v, 0f, 1f);
-//                        break;
-//                    }
-//                case NORMAL:
-//                    builder.put(e, (float) normal.x, (float) normal.y, (float) normal.z, 0f);
-//                    break;
-//                default:
-//                    builder.put(e);
-//                    break;
-//            }
-//        }
-//    }
 
     private BakedQuad getCachedQuad(int textureIndex, Direction side) {
         if (QUAD_CACHE[side.getIndex()][textureIndex] == null) {
@@ -188,18 +154,6 @@ public class PressureGlassModel implements IDynamicBakedModel {
         putVertex(builder, normal, v4.x, v4.y, v4.z, 16, 0, sprite, r, g, b, a);
         return builder.build();
     }
-
-//    private BakedQuad createQuad(List<Vec3d> vecs, TextureAtlasSprite sprite, Direction face) {
-//        UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);
-//        builder.setTexture(sprite);
-//        Vec3d normal = new Vec3d(face.getDirectionVec());
-//        putVertex(builder, normal, vecs.get(0).x, vecs.get(0).y, vecs.get(0).z, sprite, 0, 0);
-//        putVertex(builder, normal, vecs.get(1).x, vecs.get(1).y, vecs.get(1).z, sprite, 0, 16);
-//        putVertex(builder, normal, vecs.get(2).x, vecs.get(2).y, vecs.get(2).z, sprite, 16, 16);
-//        putVertex(builder, normal, vecs.get(3).x, vecs.get(3).y, vecs.get(3).z, sprite, 16, 0);
-//        builder.setQuadOrientation(face);
-//        return builder.build();
-//    }
 
     public enum Loader implements IModelLoader<Geometry> {
         INSTANCE;

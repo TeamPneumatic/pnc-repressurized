@@ -73,7 +73,7 @@ public class EntityVortex extends ThrowableEntity {
     protected void onImpact(RayTraceResult rtr) {
         if (rtr.getType() == RayTraceResult.Type.ENTITY) {
             Entity entity = ((EntityRayTraceResult) rtr).getEntity();
-            entity.setMotion(entity.getMotion().add(this.getMotion()));
+            entity.setMotion(entity.getMotion().add(this.getMotion().add(0, 0.4, 0)));
             ItemStack shears = new ItemStack(Items.SHEARS);
             if (entity instanceof LivingEntity) {
                 shears.getItem().itemInteractionForEntity(shears, null, (LivingEntity) entity, Hand.MAIN_HAND);

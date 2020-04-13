@@ -185,7 +185,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
                     item.setItem(excess);
                 }
                 if (excess.getCount() < stack.getCount()) {
-                    NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, item.posX, item.posY + 0.5, item.posZ, 0, 0, 0, 5, 0.5, 0.5, 0.5), world);
+                    NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, item.getPosX(), item.getPosY() + 0.5, item.getPosZ(), 0, 0, 0, 5, 0.5, 0.5, 0.5), world);
                     didWork = true;
                 }
             }

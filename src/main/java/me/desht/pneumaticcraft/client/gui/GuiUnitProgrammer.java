@@ -1,8 +1,10 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
+import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
@@ -13,7 +15,10 @@ import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
@@ -133,7 +138,7 @@ public class GuiUnitProgrammer extends Screen {
     }
 
     public void render(int x, int y, boolean showFlow, boolean showInfo) {
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         if (scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
@@ -143,26 +148,28 @@ public class GuiUnitProgrammer extends Screen {
         }
         lastZoom = scaleScroll.getState();
 
-        MainWindow mw = minecraft.mainWindow;
+        MainWindow mw = minecraft.getMainWindow();
         int sf = minecraft.gameSettings.guiScale;
         GL11.glScissor((guiLeft + startX) * sf, (mw.getScaledHeight() - areaHeight - (guiTop + startY)) * sf, areaWidth * sf, areaHeight * sf);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(translatedX, translatedY, 0);
+        RenderSystem.pushMatrix();
+        RenderSystem.translated(translatedX, translatedY, 0);
 
         float scale = getScale();
-        GlStateManager.scaled(scale, scale, 1);
+        RenderSystem.scaled(scale, scale, 1);
 
         if (showFlow) showFlow();
 
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (IProgWidget widget : progWidgets) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-            GlStateManager.scaled(0.5, 0.5, 1);
-            widget.render();
-            GlStateManager.popMatrix();
+            RenderSystem.pushMatrix();
+            RenderSystem.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+            RenderSystem.scaled(0.5, 0.5, 1);
+            ProgWidgetRenderer.renderProgWidget2d(widget);
+            RenderSystem.popMatrix();
         }
 
         for (IProgWidget widget : progWidgets) {
@@ -181,19 +188,21 @@ public class GuiUnitProgrammer extends Screen {
 
         renderAdditionally();
 
-        GlStateManager.color4f(1, 1, 1, 1);
+        RenderSystem.disableBlend();
+        RenderSystem.color4f(1, 1, 1, 1);
 
         if (showInfo) {
             for (IProgWidget widget : progWidgets) {
-                GlStateManager.pushMatrix();
-                GlStateManager.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-                GlStateManager.scaled(0.5, 0.5, 1);
+                RenderSystem.pushMatrix();
+                RenderSystem.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+                RenderSystem.scaled(0.5, 0.5, 1);
+                ProgWidgetRenderer.renderExtras(widget);
                 widget.renderExtraInfo();
-                GlStateManager.popMatrix();
+                RenderSystem.popMatrix();
             }
         }
 
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
@@ -222,20 +231,25 @@ public class GuiUnitProgrammer extends Screen {
     }
 
     protected void drawBorder(IProgWidget widget, int color, int inset) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-        GlStateManager.scaled(0.5, 0.5, 1);
+        RenderSystem.pushMatrix();
+        RenderSystem.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+        RenderSystem.scaled(0.5, 0.5, 1);
         vLine(inset, inset, widget.getHeight() - inset, color);
         vLine(widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
         hLine(widget.getWidth() - inset, inset, inset, color);
         hLine(widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
+    private static final float ARROW_ANGLE = (float) Math.toRadians(30);
+    private static final float ARROW_SIZE = 5;
+
     private void showFlow() {
-        GlStateManager.lineWidth(1);
-        GlStateManager.disableTexture();
-        GlStateManager.begin(GL11.GL_LINES);
+        RenderSystem.lineWidth(1);
+        RenderSystem.disableTexture();
+
+        BufferBuilder wr = Tessellator.getInstance().getBuffer();
+        wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
 
         for (IProgWidget widget : progWidgets) {
             if (widget instanceof IJump) {
@@ -249,27 +263,26 @@ public class GuiUnitProgrammer extends Screen {
                                 int y2 = w.getY() + w.getHeight() / 4;
                                 float midX = (x2 + x1) / 2F;
                                 float midY = (y2 + y1) / 2F;
-                                GlStateManager.vertex3f(guiLeft + x1, guiTop + y1, 0.0f);
-                                GlStateManager.vertex3f(guiLeft + x2, guiTop + y2, 0.0f);
+                                wr.pos(guiLeft + x1, guiTop + y1, 0.0f).endVertex();
+                                wr.pos(guiLeft + x2, guiTop + y2, 0.0f).endVertex();
                                 Vec3d arrowVec = new Vec3d(x1 - x2, y1 - y2, 0).normalize();
-                                float arrowAngle = (float) Math.toRadians(30);
-                                float arrowSize = 5;
-                                arrowVec = new Vec3d(arrowVec.x * arrowSize, 0, arrowVec.y * arrowSize);
-                                arrowVec = arrowVec.rotateYaw(arrowAngle);
-                                GlStateManager.vertex3f(guiLeft + midX, guiTop + midY, 0.0f);
-                                GlStateManager.vertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
-                                arrowVec = arrowVec.rotateYaw(-2 * arrowAngle);
-                                GlStateManager.vertex3f(guiLeft + midX, guiTop + midY, 0.0f);
-                                GlStateManager.vertex3f(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
+                                arrowVec = new Vec3d(arrowVec.x * ARROW_SIZE, 0, arrowVec.y * ARROW_SIZE);
+                                arrowVec = arrowVec.rotateYaw(ARROW_ANGLE);
+                                wr.pos(guiLeft + midX, guiTop + midY, 0.0f).endVertex();
+                                wr.pos(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
+                                arrowVec = arrowVec.rotateYaw(-2 * ARROW_ANGLE);
+                                wr.pos(guiLeft + midX, guiTop + midY, 0.0f).endVertex();
+                                wr.pos(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
                             }
                         }
                     }
                 }
             }
         }
-        GlStateManager.end();
 
-        GlStateManager.enableTexture();
+        Tessellator.getInstance().draw();
+
+        RenderSystem.enableTexture();
     }
 
     public float getScale() {

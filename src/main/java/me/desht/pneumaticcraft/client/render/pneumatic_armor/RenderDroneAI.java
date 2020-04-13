@@ -1,13 +1,14 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -73,17 +74,13 @@ public class RenderDroneAI {
                     y = MathHelper.lerp(partialTicks, drone.prevPosY, drone.getPosY()) + 0.5;
                     z = MathHelper.lerp(partialTicks, drone.prevPosZ, drone.getPosZ());
                 }
-                GlStateManager.enableTexture();
-                GlStateManager.enableBlend();
-                GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-                GlStateManager.pushMatrix();
-                GlStateManager.translated(x, y + 0.5, z);
-                GlStateManager.scaled(0.01, 0.01, 0.01);
-                GlStateManager.rotated(180, 1, 0, 0);
-                GlStateManager.rotated(180 + Minecraft.getInstance().getRenderManager().playerViewY, 0, 1, 0);
-                activeWidget.render();
-                GlStateManager.popMatrix();
-                GlStateManager.disableBlend();
+                matrixStack.push();
+                matrixStack.translate(x, y + 0.5, z);
+                matrixStack.scale(0.01f, 0.01f, 0.01f);
+                matrixStack.rotate(Vector3f.XP.rotationDegrees(180));
+                matrixStack.rotate(Vector3f.YP.rotationDegrees(Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getYaw()));
+                ProgWidgetRenderer.renderProgWidget3d(matrixStack, buffer, activeWidget);
+                matrixStack.pop();
             }
         }
     }

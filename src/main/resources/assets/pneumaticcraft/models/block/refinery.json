@@ -1,4 +1,5 @@
 {
+	"parent": "forge:block/default",
 	"credit": "Made with Blockbench",
 	"textures": {
 		"wall": "pneumaticcraft:block/refinery",

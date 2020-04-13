@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "credit": "Made with Blockbench",
   "textures": {
     "all": "pneumaticcraft:block/display_table",

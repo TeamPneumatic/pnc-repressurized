@@ -28,6 +28,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.UseAction;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.text.ITextComponent;
@@ -61,6 +62,11 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     }
 
     @Override
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BLOCK;
+    }
+
+    @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean currentItem) {
         super.inventoryTick(stack, world, entity, slot, currentItem);
         PlayerEntity player = (PlayerEntity) entity;
@@ -75,6 +81,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
         }
 
         if (world.isRemote && currentItem && minigun.getMinigunSpeed() > 0) {
+            player.isSwingInProgress = false;
             ClientUtils.suppressItemEquipAnimation();
         }
 
@@ -278,13 +285,13 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
         }
 
         @Override
-        public double getMinigunSpeed() {
-            return NBTUtil.getDouble(minigunStack, "speed");
+        public float getMinigunSpeed() {
+            return NBTUtil.getFloat(minigunStack, "speed");
         }
 
         @Override
-        public void setMinigunSpeed(double minigunSpeed) {
-            NBTUtil.setDouble(minigunStack, "speed", minigunSpeed);
+        public void setMinigunSpeed(float minigunSpeed) {
+            NBTUtil.setFloat(minigunStack, "speed", minigunSpeed);
         }
 
         @Override
@@ -308,23 +315,23 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
         }
 
         @Override
-        public double getMinigunRotation() {
-            return NBTUtil.getDouble(minigunStack, "rotation");
+        public float getMinigunRotation() {
+            return NBTUtil.getFloat(minigunStack, "rotation");
         }
 
         @Override
-        public void setMinigunRotation(double minigunRotation) {
-            NBTUtil.setDouble(minigunStack, "rotation", minigunRotation);
+        public void setMinigunRotation(float minigunRotation) {
+            NBTUtil.setFloat(minigunStack, "rotation", minigunRotation);
         }
 
         @Override
-        public double getOldMinigunRotation() {
-            return NBTUtil.getDouble(minigunStack, "oldRotation");
+        public float getOldMinigunRotation() {
+            return NBTUtil.getFloat(minigunStack, "oldRotation");
         }
 
         @Override
-        public void setOldMinigunRotation(double oldMinigunRotation) {
-            NBTUtil.setDouble(minigunStack, "oldRotation", oldMinigunRotation);
+        public void setOldMinigunRotation(float oldMinigunRotation) {
+            NBTUtil.setFloat(minigunStack, "oldRotation", oldMinigunRotation);
         }
 
         @Override

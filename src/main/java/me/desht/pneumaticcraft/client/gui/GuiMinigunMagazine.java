@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
@@ -72,13 +72,13 @@ public class GuiMinigunMagazine extends GuiPneumaticContainerBase<ContainerMinig
             // highlight the locked slot with a semitransparent green tint
             int minX = 26 + (lockedSlot % 2) * 18;
             int minY = 26 + (lockedSlot / 2) * 18;
-            GlStateManager.lineWidth(3.0F);
-            GlStateManager.disableTexture();
-            GlStateManager.disableLighting();
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            RenderSystem.lineWidth(3.0F);
+            RenderSystem.disableTexture();
+            RenderSystem.disableLighting();
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-            GlStateManager.color4f(0f, 0.8f, 0f, 0.2f);
+            RenderSystem.color4f(0f, 0.8f, 0f, 0.2f);
             BufferBuilder wr = Tessellator.getInstance().getBuffer();
             wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
             wr.pos(minX, minY, 0.0).endVertex();
@@ -87,15 +87,15 @@ public class GuiMinigunMagazine extends GuiPneumaticContainerBase<ContainerMinig
             wr.pos(minX + 16, minY, 0.0).endVertex();
             Tessellator.getInstance().draw();
 
-            GlStateManager.color4f(0f, 0.8f, 0f, 1);
+            RenderSystem.color4f(0f, 0.8f, 0f, 1);
             wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
             wr.pos(minX, minY, 0.0).endVertex();
             wr.pos(minX, minY + 16, 0.0).endVertex();
             wr.pos(minX + 16, minY + 16, 0.0).endVertex();
             wr.pos(minX + 16, minY, 0.0).endVertex();
             Tessellator.getInstance().draw();
-            GlStateManager.lineWidth(1.0F);
-            GlStateManager.enableTexture();
+            RenderSystem.lineWidth(1.0F);
+            RenderSystem.enableTexture();
         }
     }
 }

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.AtlasTexture;
@@ -31,13 +32,15 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
 //        if (!te.getWorld().getChunkProvider().getChunk(te.getPos().getX() >> 4, te.getPos().getZ() >> 4, true).isEmpty()) {
             IVertexBuilder builder = buffer.getBuffer(RenderType.getTranslucent());
 
+            Matrix4f posMat = matrixStack.getLast().getMatrix();
             for (TankRenderInfo tankRenderInfo : getTanksToRender(te)) {
-                doRender(te, builder, tankRenderInfo);
+                doRender(te, builder, tankRenderInfo, posMat);
             }
+
         }
     }
 
-    private void doRender(T te, IVertexBuilder buffer, TankRenderInfo tankRenderInfo) {
+    private void doRender(T te, IVertexBuilder builder, TankRenderInfo tankRenderInfo, Matrix4f posMat) {
         IFluidTank tank = tankRenderInfo.getTank();
         if (tank.getFluidAmount() == 0) return;
 
@@ -55,6 +58,12 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
 //        buffer.setTranslation(x,y,z);
 
         AxisAlignedBB bounds = getRenderBounds(tank, tankRenderInfo.getBounds());
+        float x1 = (float) bounds.minX;
+        float x2 = (float) bounds.maxX;
+        float y1 = (float) bounds.minY;
+        float y2 = (float) bounds.maxY;
+        float z1 = (float) bounds.minZ;
+        float z2 = (float) bounds.maxZ;
         double bx1 = bounds.minX * 16;
         double bx2 = bounds.maxX * 16;
         double by1 = bounds.minY * 16;
@@ -64,86 +73,74 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
 
         if (tankRenderInfo.shouldRender(Direction.DOWN)) {
             int downCombined = WorldRenderer.getCombinedLight(w, te.getPos().down());
-            int downLMa = downCombined >> 16 & 65535;
-            int downLMb = downCombined & 65535;
             float u1 = still.getInterpolatedU(bx1);
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(downLMa, downLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(downLMa, downLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(downLMa, downLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(downLMa, downLMb).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(red, green, blue, alpha).tex(u1, v2).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(red, green, blue, alpha).tex(u1, v1).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(red, green, blue, alpha).tex(u2, v1).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(red, green, blue, alpha).tex(u2, v2).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.UP)) {
             int upCombined = WorldRenderer.getCombinedLight(w, te.getPos().up());
-            int upLMa = upCombined >> 16 & 65535;
-            int upLMb = upCombined & 65535;
             float u1 = still.getInterpolatedU(bx1);
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(upLMa, upLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(upLMa, upLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(upLMa, upLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(upLMa, upLMb).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(red, green, blue, alpha).tex(u1, v2).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(red, green, blue, alpha).tex(u2, v2).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(red, green, blue, alpha).tex(u2, v1).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(red, green, blue, alpha).tex(u1, v1).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.NORTH)) {
             int northCombined = WorldRenderer.getCombinedLight(w, te.getPos().north());
-            int northLMa = northCombined >> 16 & 65535;
-            int northLMb = northCombined & 65535;
             float u1 = still.getInterpolatedU(bx1);
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(by1);
             float v2 = still.getInterpolatedV(by2);
-            buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(northLMa, northLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(northLMa, northLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(northLMa, northLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(northLMa, northLMb).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(red, green, blue, alpha).tex(u1, v1).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(red, green, blue, alpha).tex(u1, v2).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(red, green, blue, alpha).tex(u2, v2).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(red, green, blue, alpha).tex(u2, v1).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.SOUTH)) {
             int southCombined = WorldRenderer.getCombinedLight(w, te.getPos().south());
-            int southLMa = southCombined >> 16 & 65535;
-            int southLMb = southCombined & 65535;
             float u1 = still.getInterpolatedU(bx1);
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(by1);
             float v2 = still.getInterpolatedV(by2);
-            buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(southLMa, southLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(southLMa, southLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(southLMa, southLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(southLMa, southLMb).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(red, green, blue, alpha).tex(u2, v1).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(red, green, blue, alpha).tex(u2, v2).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(red, green, blue, alpha).tex(u1, v2).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(red, green, blue, alpha).tex(u1, v1).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.WEST)) {
             int westCombined = WorldRenderer.getCombinedLight(w, te.getPos().west());
-            int westLMa = westCombined >> 16 & 65535;
-            int westLMb = westCombined & 65535;
             float u1 = still.getInterpolatedU(by1);
             float u2 = still.getInterpolatedU(by2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            buffer.pos(bounds.minX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(westLMa, westLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(westLMa, westLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(westLMa, westLMb).endVertex();
-            buffer.pos(bounds.minX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(westLMa, westLMb).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(red, green, blue, alpha).tex(u1, v2).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(red, green, blue, alpha).tex(u2, v2).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(red, green, blue, alpha).tex(u2, v1).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(red, green, blue, alpha).tex(u1, v1).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.EAST)) {
             int eastCombined = WorldRenderer.getCombinedLight(w, te.getPos().east());
-            int eastLMa = eastCombined >> 16 & 65535;
-            int eastLMb = eastCombined & 65535;
             float u1 = still.getInterpolatedU(by1);
             float u2 = still.getInterpolatedU(by2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            buffer.pos(bounds.maxX, bounds.minY, bounds.minZ).color(red, green, blue, alpha).tex(u1, v1).lightmap(eastLMa, eastLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.minZ).color(red, green, blue, alpha).tex(u2, v1).lightmap(eastLMa, eastLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.maxY, bounds.maxZ).color(red, green, blue, alpha).tex(u2, v2).lightmap(eastLMa, eastLMb).endVertex();
-            buffer.pos(bounds.maxX, bounds.minY, bounds.maxZ).color(red, green, blue, alpha).tex(u1, v2).lightmap(eastLMa, eastLMb).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(red, green, blue, alpha).tex(u1, v1).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(red, green, blue, alpha).tex(u2, v1).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(red, green, blue, alpha).tex(u2, v2).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(red, green, blue, alpha).tex(u1, v2).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
         }
     }
 

@@ -24,8 +24,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
         return HackUpgradeHandler.enabledForPlayer(ClientUtils.getClientPlayer())
-                && world instanceof World
-                && HackableHandler.getHackableForCoord((World) world, pos, ClientUtils.getClientPlayer()) != null;
+                && HackableHandler.getHackableForCoord(world, pos, ClientUtils.getClientPlayer()) != null;
     }
 
     @Override

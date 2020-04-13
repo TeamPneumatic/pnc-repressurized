@@ -1,9 +1,9 @@
 {
+    "parent": "forge:block/default",
     "textures": {
         "all": "pneumaticcraft:block/compressed_iron_block",
         "particle" : "pneumaticcraft:block/compressed_iron_block"
     },
-    "transform": "forge:default-block",
     "elements": [
         {   "from": [ 0.5, 0, 0.5 ],
             "to": [ 1.5, 16, 1.5 ],

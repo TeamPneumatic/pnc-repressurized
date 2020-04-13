@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
 import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
@@ -123,8 +123,8 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         super.render(mouseX, mouseY, partialTicks);
 
         minecraft.getTextureManager().bindTexture(getTexture());
-        GlStateManager.enableTexture();
-        GlStateManager.color4f(1, 1, 1, 1);
+        RenderSystem.enableTexture();
+        RenderSystem.color4f(1, 1, 1, 1);
         blit(guiLeft + 49, guiTop + 51, 186, 0, 18, 18);
         if (PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED) {
             font.drawString(I18n.format("gui.progWidget.itemFilter.variableLabel"), guiLeft + 90, guiTop + 49, 0xFF404040);

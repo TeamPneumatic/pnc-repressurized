@@ -22,7 +22,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
-import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
 
@@ -49,7 +49,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     }
 
     @Override
-    public void update(PlayerEntity player, int rangeUpgrades) {
+    public void tick(PlayerEntity player, int rangeUpgrades) {
         SearchUpgradeHandler searchHandler = HUDHandler.instance().getSpecificRenderer(SearchUpgradeHandler.class);
 
         int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(rangeUpgrades, 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
@@ -351,7 +351,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
         return blockTargets.get(pos);
     }
 
-    public boolean scroll(GuiScreenEvent.MouseScrollEvent.Post event) {
+    public boolean scroll(InputEvent.MouseScrollEvent event) {
         for (RenderBlockTarget target : blockTargets.values()) {
             if (target.scroll(event)) {
                 getAnimatedStat().mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());

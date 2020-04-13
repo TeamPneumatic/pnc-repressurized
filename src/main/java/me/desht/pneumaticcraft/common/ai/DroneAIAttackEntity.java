@@ -88,7 +88,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
         if (isRanged) {
             LivingEntity entitylivingbase = attacker.getAttackTarget();
             if (entitylivingbase == null) return false;
-            double dist = attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getBoundingBox().minY, entitylivingbase.posZ);
+            double dist = attacker.getDistanceSq(entitylivingbase.getPosX(), entitylivingbase.getBoundingBox().minY, entitylivingbase.getPosZ());
             if (attacker.getSlotForAmmo() < 0) return false;
             if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(entitylivingbase))
                 return true;
@@ -106,11 +106,9 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
         boolean needingSuper = true;
         if (isRanged) {
             LivingEntity entitylivingbase = attacker.getAttackTarget();
-            double dist = attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getBoundingBox().minY, entitylivingbase.posZ);
+            double dist = attacker.getDistanceSq(entitylivingbase.getPosX(), entitylivingbase.getBoundingBox().minY, entitylivingbase.getPosZ());
             if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(entitylivingbase)) {
-                attacker.getFakePlayer().posX = attacker.posX;//Knockback direction
-                attacker.getFakePlayer().posY = attacker.posY;
-                attacker.getFakePlayer().posZ = attacker.posZ;
+                attacker.getFakePlayer().setPosition(attacker.getPosX(), attacker.getPosY(), attacker.getPosZ());
                 attacker.tryFireMinigun(entitylivingbase);
                 needingSuper = false;
                 if (dist < Math.pow(rangedAttackRange * 0.75, 2)) {

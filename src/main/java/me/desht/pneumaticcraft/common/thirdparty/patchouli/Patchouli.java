@@ -15,7 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.config.ModConfig;
 import vazkii.patchouli.api.IMultiblock;
 import vazkii.patchouli.api.IStateMatcher;
 import vazkii.patchouli.api.PatchouliAPI;
@@ -98,8 +98,8 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     }
 
     @SubscribeEvent
-    public void onConfigChange(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (event.getModID().equals(Names.MOD_ID)) {
+    public void onConfigChange(ModConfig.Reloading event) {
+        if (event.getConfig().getModId().equals(Names.MOD_ID)) {
             setConfigFlags();
         }
     }

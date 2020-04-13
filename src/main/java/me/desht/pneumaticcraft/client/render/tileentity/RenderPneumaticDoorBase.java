@@ -9,11 +9,10 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.math.MathHelper;
 
-public class RenderPneumaticDoorBase extends TileEntityRenderer<TileEntityPneumaticDoorBase> {
+public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<TileEntityPneumaticDoorBase> {
     private final ModelRenderer cylinder1;
     private final ModelRenderer cylinder2;
     private final ModelRenderer cylinder3;
@@ -36,7 +35,7 @@ public class RenderPneumaticDoorBase extends TileEntityRenderer<TileEntityPneuma
     }
 
     @Override
-    public void render(TileEntityPneumaticDoorBase te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(TileEntityPneumaticDoorBase te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_PNEUMATIC_DOOR_BASE));
 
         float progress = MathHelper.lerp(partialTicks, te.oldProgress, te.progress);
@@ -44,8 +43,6 @@ public class RenderPneumaticDoorBase extends TileEntityRenderer<TileEntityPneuma
         float cosinus = (float) Math.sin(Math.toRadians((1 - progress) * 90)) * 12 / 16F;
         float sinus = 9 / 16F - (float) Math.cos(Math.toRadians((1 - progress) * 90)) * 9 / 16F;
         double extension = Math.sqrt(Math.pow(sinus, 2) + Math.pow(cosinus + 4 / 16F, 2));
-
-        matrixStackIn.push();
 
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
 
@@ -59,7 +56,5 @@ public class RenderPneumaticDoorBase extends TileEntityRenderer<TileEntityPneuma
         cylinder2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 0.8f, 0.8f, 0.8f, 1.0f);
         matrixStackIn.translate(0, 0, extensionPart);
         cylinder3.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 0.6f, 0.6f, 0.6f, 1.0f);
-
-        matrixStackIn.pop();
     }
 }

@@ -8,11 +8,10 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.math.MathHelper;
 
-public class RenderAssemblyDrill extends TileEntityRenderer<TileEntityAssemblyDrill> {
+public class RenderAssemblyDrill extends AbstractTileModelRenderer<TileEntityAssemblyDrill> {
     private final ModelRenderer baseTurn;
     private final ModelRenderer baseTurn2;
     private final ModelRenderer armBase1;
@@ -26,51 +25,51 @@ public class RenderAssemblyDrill extends TileEntityRenderer<TileEntityAssemblyDr
     public RenderAssemblyDrill(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
 
-        baseTurn = new ModelRenderer(64, 32, 0, 17);
+        baseTurn = new ModelRenderer(64, 64, 0, 17);
         baseTurn.addBox(0F, 0F, 0F, 7, 1, 7);
         baseTurn.setRotationPoint(-3.5F, 22F, -3.5F);
         baseTurn.mirror = true;
-        baseTurn2 = new ModelRenderer(64, 32, 28, 17);
+        baseTurn2 = new ModelRenderer(64, 64, 28, 17);
         baseTurn2.addBox(0F, 0F, 0F, 4, 5, 4);
         baseTurn2.setRotationPoint(-2F, 17F, -2F);
         baseTurn2.mirror = true;
 
-        armBase1 = new ModelRenderer(64, 32, 0, 25);
+        armBase1 = new ModelRenderer(64, 64, 0, 25);
         armBase1.addBox(0F, 0F, 0F, 1, 2, 8);
         armBase1.setRotationPoint(2F, 17F, -1F);
         armBase1.mirror = true;
-        armBase2 = new ModelRenderer(64, 32, 0, 25);
+        armBase2 = new ModelRenderer(64, 64, 0, 25);
         armBase2.addBox(0F, 0F, 0F, 1, 2, 8);
         armBase2.setRotationPoint(-3F, 17F, -1F);
         armBase2.mirror = true;
 
-        supportMiddle = new ModelRenderer(64, 32, 0, 57);
+        supportMiddle = new ModelRenderer(64, 64, 0, 57);
         supportMiddle.addBox(0F, 0F, 0F, 2, 1, 1);
         supportMiddle.setRotationPoint(-1F, 17.5F, 5.5F);
         supportMiddle.mirror = true;
 
-        armMiddle1 = new ModelRenderer(64, 32, 0, 35);
+        armMiddle1 = new ModelRenderer(64, 64, 0, 35);
         armMiddle1.addBox(0F, 0F, 0F, 1, 17, 2);
         armMiddle1.setRotationPoint(-2F, 2F, 5F);
         armMiddle1.mirror = true;
-        armMiddle2 = new ModelRenderer(64, 32, 0, 35);
+        armMiddle2 = new ModelRenderer(64, 64, 0, 35);
         armMiddle2.addBox(0F, 0F, 0F, 1, 17, 2);
         armMiddle2.setRotationPoint(1F, 2F, 5F);
         armMiddle2.mirror = true;
 
-        drillBase = new ModelRenderer(64, 32, 8, 38);
+        drillBase = new ModelRenderer(64, 64, 8, 38);
         drillBase.addBox(0F, 0F, 0F, 2, 2, 3);
         drillBase.setRotationPoint(-1F, 2F, 4.5F);
         drillBase.mirror = true;
 
-        drill = new ModelRenderer(64, 32, 23, 54);
+        drill = new ModelRenderer(64, 64, 23, 54);
         drill.addBox(0F, 0F, 0F, 1, 1, 4);
         drill.setRotationPoint(-0.5F, 2.5F, 1F);
         drill.mirror = true;
     }
 
     @Override
-    public void render(TileEntityAssemblyDrill te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    void renderModel(TileEntityAssemblyDrill te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         float[] angles = new float[5];
         for (int i = 0; i < 4; i++) {
             angles[i] = MathHelper.lerp(partialTicks, te.oldAngles[i], te.angles[i]);
@@ -78,8 +77,6 @@ public class RenderAssemblyDrill extends TileEntityRenderer<TileEntityAssemblyDr
         angles[4] = MathHelper.lerp(partialTicks, te.oldDrillRotation, te.drillRotation);
 
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
-
-        matrixStackIn.push();
 
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(angles[0]));
         baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
@@ -103,7 +100,5 @@ public class RenderAssemblyDrill extends TileEntityRenderer<TileEntityAssemblyDr
         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(angles[4]));
         matrixStackIn.translate(0, -3 / 16F, 0);
         drill.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        
-        matrixStackIn.pop();
     }
 }

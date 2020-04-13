@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.Vec3d;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -48,7 +47,7 @@ public abstract class DroneEntityBase<W extends IEntityProvider, E extends Entit
     @Override
     public boolean shouldContinueExecuting() {
         if (!targetedEntity.isAlive()) return false;
-        if (new Vec3d(targetedEntity.posX, targetedEntity.posY, targetedEntity.posZ).squareDistanceTo(drone.getDronePos()) < 2.25) {
+        if (targetedEntity.getPositionVector().squareDistanceTo(drone.getDronePos()) < 2.25) {
             return doAction();
         }
         return !drone.getPathNavigator().hasNoPath();

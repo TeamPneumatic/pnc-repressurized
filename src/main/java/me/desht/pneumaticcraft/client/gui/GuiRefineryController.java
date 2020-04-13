@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
@@ -93,9 +93,9 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
         super.drawGuiContainerBackgroundLayer(f, x, y);
         if (outputs.size() < 4) {
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             fill(guiLeft + 155, guiTop + 5, guiLeft + 171, guiTop + 69, 0x40FF0000);
             if (outputs.size() < 3) {
                 fill(guiLeft + 135, guiTop + 9, guiLeft + 151, guiTop + 73, 0x40FF0000);
@@ -106,7 +106,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
             if (outputs.size() < 1) {
                 fill(guiLeft + 95, guiTop + 17, guiLeft + 111, guiTop + 81, 0x40FF0000);
             }
-            GlStateManager.disableBlend();
+            RenderSystem.disableBlend();
         }
     }
 

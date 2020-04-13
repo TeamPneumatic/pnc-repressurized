@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -132,15 +132,15 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     }
 
     private void renderAir() {
-        GlStateManager.disableTexture();
-        GlStateManager.color4f(1, 1, 1, 1);
-        GlStateManager.lineWidth(2.0F);
+        RenderSystem.disableTexture();
+        RenderSystem.color4f(1, 1, 1, 1);
+        RenderSystem.lineWidth(2.0F);
         int particles = 10;
         for (int i = 0; i < particles; i++) {
             renderAirParticle(renderAirProgress % (1F / particles) + (float) i / particles);
         }
 
-        GlStateManager.enableTexture();
+        RenderSystem.enableTexture();
     }
 
     private void renderAirParticle(float particleProgress) {

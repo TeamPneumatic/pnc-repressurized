@@ -1,16 +1,13 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.renderer.BufferBuilder;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
@@ -34,7 +31,6 @@ public class RenderCoordWireframe {
         }
     }
 
-    // FIXME
     public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
         double minX = 0;
         double minY = 0;
@@ -43,58 +39,40 @@ public class RenderCoordWireframe {
         double maxY = 1;
         double maxZ = 1;
         float progress = (ticksExisted % 20 + partialTicks) / 20;
-        GlStateManager.depthMask(false);
-        GlStateManager.disableDepthTest();
-        GlStateManager.disableCull();
-        GlStateManager.enableBlend();
-        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT, false);
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.disableTexture();
-        GlStateManager.lineWidth(1.0F);
-        // GlStateManager.color(0, 1, 1, progress < 0.5F ? progress + 0.5F : 1.5 - progress);
-        GlStateManager.color4f(0, progress < 0.5F ? progress + 0.5F : 1.5F - progress, 1, 1);
-        GlStateManager.pushMatrix();
-        // GlStateManager.translate(-0.5D, -0.5D, -0.5D);
-        GlStateManager.translated(pos.getX(), pos.getY(), pos.getZ());
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-        wr.pos(minX, minY, minZ).endVertex();
-        wr.pos(minX, maxY, minZ).endVertex();
-        wr.pos(minX, minY, maxZ).endVertex();
-        wr.pos(minX, maxY, maxZ).endVertex();
+        matrixStack.push();
+        matrixStack.translate(pos.getX(), pos.getY(), pos.getZ());
+        float g = progress < 0.5F ? progress + 0.5F : 1.5F - progress;
+        IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.BLOCK_TRACKER);
+        builder.pos(minX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(minX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(minX, minY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.pos(minX, maxY, maxZ).color(0, g, 1, 1).endVertex();
 
-        wr.pos(maxX, minY, minZ).endVertex();
-        wr.pos(maxX, maxY, minZ).endVertex();
-        wr.pos(maxX, minY, maxZ).endVertex();
-        wr.pos(maxX, maxY, maxZ).endVertex();
+        builder.pos(maxX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(maxX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(maxX, minY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.pos(maxX, maxY, maxZ).color(0, g, 1, 1).endVertex();
 
-        wr.pos(minX, minY, minZ).endVertex();
-        wr.pos(maxX, minY, minZ).endVertex();
-        wr.pos(minX, minY, maxZ).endVertex();
-        wr.pos(maxX, minY, maxZ).endVertex();
+        builder.pos(minX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(maxX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(minX, minY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.pos(maxX, minY, maxZ).color(0, g, 1, 1).endVertex();
 
-        wr.pos(minX, maxY, minZ).endVertex();
-        wr.pos(maxX, maxY, minZ).endVertex();
-        wr.pos(minX, maxY, maxZ).endVertex();
-        wr.pos(maxX, maxY, maxZ).endVertex();
+        builder.pos(minX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(maxX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(minX, maxY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.pos(maxX, maxY, maxZ).color(0, g, 1, 1).endVertex();
 
-        wr.pos(minX, minY, minZ).endVertex();
-        wr.pos(minX, minY, maxZ).endVertex();
-        wr.pos(maxX, minY, minZ).endVertex();
-        wr.pos(maxX, minY, maxZ).endVertex();
+        builder.pos(minX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(minX, minY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.pos(maxX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(maxX, minY, maxZ).color(0, g, 1, 1).endVertex();
 
-        wr.pos(minX, maxY, minZ).endVertex();
-        wr.pos(minX, maxY, maxZ).endVertex();
-        wr.pos(maxX, maxY, minZ).endVertex();
-        wr.pos(maxX, maxY, maxZ).endVertex();
+        builder.pos(minX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(minX, maxY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.pos(maxX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.pos(maxX, maxY, maxZ).color(0, g, 1, 1).endVertex();
 
-        Tessellator.getInstance().draw();
-
-        GlStateManager.popMatrix();
-        GlStateManager.enableCull();
-        GlStateManager.enableDepthTest();
-        GlStateManager.disableBlend();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableTexture();
+        matrixStack.pop();
     }
 }

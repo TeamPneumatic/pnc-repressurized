@@ -12,12 +12,12 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.config.GuiSlider;
+import net.minecraftforge.fml.client.gui.widget.Slider;
 
 import java.util.List;
 
-public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox,TileEntityUVLightBox> implements GuiSlider.ISlider {
-    private GuiSlider slider;
+public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox,TileEntityUVLightBox> implements Slider.ISlider {
+    private Slider slider;
 
     public GuiUVLightBox(ContainerUVLightBox container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -29,7 +29,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     public void init() {
         super.init();
 
-        addButton(slider = new GuiSlider(guiLeft + 10, guiTop + 45, 95, 16, I18n.format("gui.uv_light_box.threshold") + " ", "%", 1, 100, te.getThreshold(), false, true, b -> { }, this));
+        addButton(slider = new Slider(guiLeft + 10, guiTop + 45, 95, 16, I18n.format("gui.uv_light_box.threshold") + " ", "%", 1, 100, te.getThreshold(), false, true, b -> { }, this));
     }
 
     @Override
@@ -66,7 +66,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     }
 
     @Override
-    public void onChangeSliderValue(GuiSlider slider) {
+    public void onChangeSliderValue(Slider slider) {
         sendDelayed(5);
     }
 

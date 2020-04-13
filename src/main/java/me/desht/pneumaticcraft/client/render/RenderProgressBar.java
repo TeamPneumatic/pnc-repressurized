@@ -1,67 +1,81 @@
 package me.desht.pneumaticcraft.client.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.MathHelper;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
+import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
+
 public class RenderProgressBar {
+    public static void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, double minX, double minY, double maxX, double maxY, double zLevel, float progress, int color1, int color2) {
+        Pair<float[], float[]> cols = calcColors(color1, color2, progress);
+        float[] f1 = cols.getLeft();
+        float[] f2 = cols.getRight();
 
-    public static void render(double minX, double minY, double maxX, double maxY, double zLevel, float progress) {
-        render(minX, minY, maxX, maxY, zLevel, progress, 0xAA37FD12);
-    }
-
-    public static void render(double minX, double minY, double maxX, double maxY, double zLevel, float progress, int color) {
-        render(minX, minY, maxX, maxY, zLevel, progress, color, color);
-    }
-
-    public static void render(double minX, double minY, double maxX, double maxY, double zLevel, float progress, int color1, int color2) {
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        GlStateManager.pushMatrix();
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.lineWidth(2.0F);
-        GlStateManager.disableTexture();
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        double x = MathHelper.lerp(progress / 100D, minX, maxX);
 
         // draw the bar
-        GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getUntexturedQuad(true), (posMat, builder) -> {
+            RenderUtils.posF(builder, posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).lightmap(FULL_BRIGHT).endVertex();
+            RenderUtils.posF(builder, posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).lightmap(FULL_BRIGHT).endVertex();
+            RenderUtils.posF(builder, posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).lightmap(FULL_BRIGHT).endVertex();
+            RenderUtils.posF(builder, posMat, x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).lightmap(FULL_BRIGHT).endVertex();
+        });
+
+        // draw the outline
+        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getLineLoopsTransparent(1.5), (posMat, builder) -> {
+            RenderUtils.posF(builder, posMat, minX, minY, zLevel).color(0, 0, 0, 255).endVertex();
+            RenderUtils.posF(builder, posMat, minX, maxY, zLevel).color(0, 0, 0, 255).endVertex();
+            RenderUtils.posF(builder, posMat, maxX, maxY, zLevel).color(0, 0, 0, 255).endVertex();
+            RenderUtils.posF(builder, posMat, maxX, minY, zLevel).color(0, 0, 0, 255).endVertex();
+        });
+    }
+
+    public static void render2d(double minX, double minY, double maxX, double maxY, double zLevel, float progress, int color1, int color2) {
+        Pair<float[], float[]> cols = calcColors(color1, color2, progress);
+        float[] f1 = cols.getLeft();
+        float[] f2 = cols.getRight();
+
+        double x = MathHelper.lerp(progress / 100D, minX, maxX);
+
+        RenderSystem.shadeModel(GL11.GL_SMOOTH);
+        BufferBuilder builder = Tessellator.getInstance().getBuffer();
+        builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        builder.pos(minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
+        builder.pos(minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
+        builder.pos(x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
+        builder.pos(x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
+        Tessellator.getInstance().draw();
+
+        RenderSystem.lineWidth(2.0f);
+        builder.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
+        builder.pos(minX, minY, zLevel).color(0, 0, 0, 1f).endVertex();
+        builder.pos(minX, maxY, zLevel).color(0, 0, 0, 1f).endVertex();
+        builder.pos(maxX, maxY, zLevel).color(0, 0, 0, 1f).endVertex();
+        builder.pos(maxX, minY, zLevel).color(0, 0, 0, 1f).endVertex();
+        Tessellator.getInstance().draw();
+        RenderSystem.shadeModel(GL11.GL_FLAT);
+    }
+
+    private static Pair<float[], float[]> calcColors(int color1, int color2, float progress) {
         float[] f1 = new TintColor(color1, true).getComponents(null);
         float[] f2;
         if (color1 != color2) {
             f2 = new TintColor(color2, true).getComponents(null);
-            float p = progress / 100f;
-            f2[0] = f1[0] + (f2[0] - f1[0]) * p;
-            f2[1] = f1[1] + (f2[1] - f1[1]) * p;
-            f2[2] = f1[2] + (f2[2] - f1[2]) * p;
+            for (int i = 0; i < f1.length; i++) {
+                f2[i] = MathHelper.lerp(progress / 100f, f1[i], f2[i]);
+            }
+            return Pair.of(f1, f2);
         } else {
-            f2 = f1;
+            return Pair.of(f1, f1);
         }
-        wr.pos(minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
-        wr.pos(minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
-        double x = minX + (maxX - minX) * progress / 100D;
-        wr.pos(x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
-        wr.pos(x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
-
-        Tessellator.getInstance().draw();
-        GlStateManager.shadeModel(GL11.GL_FLAT);
-
-        // draw the casing
-        GlStateManager.color4f(0, 0, 0, 1);
-        wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION);
-        wr.pos(minX, minY, zLevel).endVertex();
-        wr.pos(minX, maxY, zLevel).endVertex();
-        wr.pos(maxX, maxY, zLevel).endVertex();
-        wr.pos(maxX, minY, zLevel).endVertex();
-        Tessellator.getInstance().draw();
-
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GlStateManager.disableBlend();
-        GlStateManager.disableRescaleNormal();
-        GlStateManager.popMatrix();
     }
 }
