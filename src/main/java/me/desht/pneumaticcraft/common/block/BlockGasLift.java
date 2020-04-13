@@ -21,6 +21,14 @@ public class BlockGasLift extends BlockPneumaticCraft {
 
     public BlockGasLift() {
         super(ModBlocks.defaultProps());
+
+        setDefaultState(getStateContainer().getBaseState()
+                .with(UP, false)
+                .with(NORTH, false)
+                .with(SOUTH, false)
+                .with(WEST, false)
+                .with(EAST, false)
+        );
     }
 
     @Override
@@ -36,6 +44,7 @@ public class BlockGasLift extends BlockPneumaticCraft {
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
-        builder.add(BlockPneumaticCraft.UP, BlockPneumaticCraft.NORTH, BlockPneumaticCraft.SOUTH, BlockPneumaticCraft.WEST, BlockPneumaticCraft.EAST);
+
+        builder.add(UP, NORTH, SOUTH, WEST, EAST);
     }
 }
