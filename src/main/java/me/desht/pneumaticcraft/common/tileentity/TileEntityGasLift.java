@@ -58,7 +58,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     @GuiSynced
-    private final FluidTank tank = new GasLiftFluidTank();
+    private final GasLiftFluidTank tank = new GasLiftFluidTank();
     private LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
 
     private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
@@ -103,6 +103,9 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     @Override
     public void tick() {
         super.tick();
+
+        tank.tick();
+
         if (!getWorld().isRemote) {
             ticker++;
             if (currentDepth > 0) {
@@ -341,9 +344,9 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
         return ImmutableMap.of("Tank", tank);
     }
 
-    private class GasLiftFluidTank extends FluidTank {
+    private class GasLiftFluidTank extends SmartSyncTank {
         GasLiftFluidTank() {
-            super(PneumaticValues.NORMAL_TANK_CAPACITY);
+            super(TileEntityGasLift.this, PneumaticValues.NORMAL_TANK_CAPACITY);
         }
 
         @Nonnull
