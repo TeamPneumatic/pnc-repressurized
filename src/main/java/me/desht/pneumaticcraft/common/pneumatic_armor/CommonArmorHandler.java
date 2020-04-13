@@ -368,7 +368,7 @@ public class CommonArmorHandler {
                     jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount / 2.5F);
                 } else {
                     // jetboots firing - move in direction of looking
-                    Vec3d lookVec = player.getLookVec().scale(0.25 * jetbootsCount);
+                    Vec3d lookVec = player.getLookVec().scale(0.3 * jetbootsCount);
                     flightAccel = MathHelper.clamp(flightAccel + (float)lookVec.y / -16.0F, 0.8F, 4.2F);
                     lookVec = lookVec.scale(flightAccel);
                     if (jetBootsActiveTicks < 10) lookVec = lookVec.scale(jetBootsActiveTicks * 0.1);
