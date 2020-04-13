@@ -381,7 +381,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void drawCustomDurabilityBars(GuiScreenEvent.DrawScreenEvent.Pre event) {
+    public static void drawCustomDurabilityBars(GuiScreenEvent.DrawScreenEvent.Post event) {
         // with thanks to V0idWa1k3r
         // https://github.com/V0idWa1k3r/ExPetrum/blob/master/src/main/java/v0id/exp/client/ExPHandlerClient.java#L235
         if (event.getGui() instanceof ContainerScreen) {
@@ -405,12 +405,6 @@ public class ClientEventHandler {
                     float g = ((c & 0xFF00) >> 8) / 256f;
                     float b = ((c & 0xFF)) / 256f;
                     int yOff = custom.shouldShowCustomDurabilityBar(s.getStack()) ? 0 : 1;
-
-                    bb.pos(i + x + 2, j + y + 14 + yOff, 300).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-                    bb.pos(i + x + 15, j + y + 14 + yOff, 300).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-                    bb.pos(i + x + 15, j + y + 12 + yOff, 300).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-                    bb.pos(i + x + 2, j + y + 12 + yOff, 300).color(0.2F, 0.2F, 0.2F, 1F).endVertex();
-
                     bb.pos(i + x + 2, j + y + 13 + yOff, 300).color(r, g, b, 1F).endVertex();
                     bb.pos(i + x + 2 + 13 * val, j + y + 13 + yOff, 300).color(r, g, b, 1F).endVertex();
                     bb.pos(i + x + 2 + 13 * val, j + y + 12 + yOff, 300).color(r, g, b, 1F).endVertex();
