@@ -1,14 +1,17 @@
 package me.desht.pneumaticcraft.client.model.custom;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.client.render.fluid.FluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -25,6 +28,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
+import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
@@ -38,11 +42,13 @@ import java.util.function.Function;
 
 public class FluidItemModel implements IDynamicBakedModel {
     private final IBakedModel bakedBaseModel;
+    private final ImmutableMap<ItemCameraTransforms.TransformType, TransformationMatrix> transformMap;
     private final ItemOverrideList overrideList = new FluidOverridesList(this);
     private List<TankRenderInfo> tanksToRender;
 
-    private FluidItemModel(IBakedModel bakedBaseModel) {
+    private FluidItemModel(IBakedModel bakedBaseModel, ImmutableMap<ItemCameraTransforms.TransformType, TransformationMatrix> transformMap) {
         this.bakedBaseModel = bakedBaseModel;
+        this.transformMap = transformMap;
     }
 
     @Nonnull
@@ -189,12 +195,10 @@ public class FluidItemModel implements IDynamicBakedModel {
         return true;
     }
 
-    // TODO how do I get the right item transform in here?
-
-//    @Override
-//    public IBakedModel handlePerspective(ItemCameraTransforms.TransformType cameraTransformType, MatrixStack mat) {
-//
-//    }
+    @Override
+    public IBakedModel handlePerspective(ItemCameraTransforms.TransformType cameraTransformType, MatrixStack mat) {
+        return PerspectiveMapWrapper.handlePerspective(this, transformMap, cameraTransformType, mat);
+    }
 
     public static class Geometry implements IModelGeometry<Geometry> {
         private final BlockModel baseModel;
@@ -205,7 +209,7 @@ public class FluidItemModel implements IDynamicBakedModel {
 
         @Override
         public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
-            return new FluidItemModel(baseModel.bakeModel(bakery, baseModel, spriteGetter, modelTransform, modelLocation, true));
+            return new FluidItemModel(baseModel.bakeModel(bakery, baseModel.parent, spriteGetter, modelTransform, modelLocation, true), PerspectiveMapWrapper.getTransforms(baseModel.getAllTransforms()));
         }
 
         @Override
