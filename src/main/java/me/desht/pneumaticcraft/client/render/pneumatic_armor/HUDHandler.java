@@ -222,7 +222,7 @@ public class HUDHandler implements IKeyListener {
 
     @SubscribeEvent
     public void playerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
+        if (event.phase == TickEvent.Phase.END) {
             Minecraft mc = Minecraft.getInstance();
             PlayerEntity player = event.player;
             if (player == mc.player && player.world.isRemote) {
