@@ -139,7 +139,7 @@ public class ClientSetup {
     }
 
     private static void registerTESRs() {
-        ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.ADVANCED_PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.APHORISM_TILE.get(), RenderAphorismTile::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.AIR_CANNON.get(), RenderAirCannon::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PNEUMATIC_DOOR.get(), RenderPneumaticDoor::new);
@@ -158,6 +158,7 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.LIQUID_HOPPER.get(), RenderLiquidHopper::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), RenderPressureChamber::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), RenderPressureChamberInterface::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.REFINERY.get(), RenderRefineryController::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.REFINERY_OUTPUT.get(), RenderRefineryOutput::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.SECURITY_STATION.get(), RenderSecurityStation::new);
