@@ -47,15 +47,6 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
             return;
 
         matrixStack.push();
-
-//        mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-//        GlStateManager.enableTexture();
-//        GlStateManager.disableAlphaTest();
-//        GlStateManager.color3f(1, 1, 1);
-
-//        GlStateManager.translated((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
-//        GlStateManager.scaled(1.0F, -1F, -1F);
-
         matrixStack.translate(0.5, 1.5, 0.5);
         matrixStack.scale(1f, -1f, -1f);
 
@@ -65,27 +56,16 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
         for (int i = 0; i < tile.modules.length; i++) {
             TubeModule module = tile.modules[i];
             if (module != null) {
-//                if (module.isFake()) {
-//                    GlStateManager.enableBlend();
-//                    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-//                    GlStateManager.color4f(1, 1, 1, 0.5f);
-//                }
 
                 // FIXME: map lookup isn't ideal for performance here: need a cached index-based lookup of module->model
                 getModel(module).renderModule(module, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
 
                 if (module.isFake()) {
                     tile.modules[i] = null;
-//                    GlStateManager.disableBlend();
                 }
-//                GlStateManager.color4f(1, 1, 1, 1);
             }
         }
-
-//        GlStateManager.enableAlphaTest();
-
         matrixStack.pop();
-//        GlStateManager.popMatrix();
     }
 
     private AbstractModelRenderer getModel(TubeModule module) {

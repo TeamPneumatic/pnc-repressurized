@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.recipe.IThermopneumaticProcessingPlantRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
-import me.desht.pneumaticcraft.client.util.PressureGaugeRenderer;
+import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;

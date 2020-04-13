@@ -2,10 +2,12 @@ package me.desht.pneumaticcraft.client.model.module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import me.desht.pneumaticcraft.client.util.PressureGaugeRenderer;
+import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer3D;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModulePressureGauge;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -31,7 +33,10 @@ public class ModelPressureGauge extends AbstractModelRenderer<ModulePressureGaug
     protected void renderDynamic(ModulePressureGauge module, MatrixStack matrixStack, IVertexBuilder builder, float partialTicks, int combinedLight, int combinedOverlay, float r, float g, float b, float a) {
         shape1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
         shape2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+    }
 
+    @Override
+    protected void renderExtras(ModulePressureGauge module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
         float pressure = 0f;
         float dangerPressure = 5f;
         float critPressure = 7f;
@@ -41,10 +46,16 @@ public class ModelPressureGauge extends AbstractModelRenderer<ModulePressureGaug
             critPressure = base.criticalPressure;
             dangerPressure = base.dangerPressure;
         }
+
+        matrixStack.push();
+
+        RenderUtils.rotateMatrixForDirection(matrixStack, module.getDirection());
         matrixStack.translate(0, 1, 0.378);
         matrixStack.scale(GAUGE_SCALE, GAUGE_SCALE, GAUGE_SCALE);
         matrixStack.rotate(Vector3f.YP.rotationDegrees(180));
-        PressureGaugeRenderer.drawPressureGauge(matrixStack, builder, -1, critPressure, dangerPressure, -1.001F, pressure, 0, 0, 0);
+        PressureGaugeRenderer3D.drawPressureGauge(matrixStack, buffer, -1, critPressure, dangerPressure, 0, pressure, 0, 0, 0xFF000000);
+
+        matrixStack.pop();
     }
 
     @Override

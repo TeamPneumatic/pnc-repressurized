@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
-import me.desht.pneumaticcraft.client.util.PressureGaugeRenderer;
+import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;

@@ -1,8 +1,8 @@
-package me.desht.pneumaticcraft.client.util;
+package me.desht.pneumaticcraft.client.render.pressure_gauge;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -13,19 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PressureGaugeRenderer {
-    private static final int CIRCLE_POINTS = 500;
-    public static final double RADIUS = 20D;
+    static final int CIRCLE_POINTS = 500;
+    static final double RADIUS = 20D;
     private static final double START_ANGLE = 240D / 180D * Math.PI;
-    private static final double STOP_ANGLE = -60D / 180D * Math.PI;
-    private static final int GAUGE_POINTS = (int) ((START_ANGLE - STOP_ANGLE) / (2D * Math.PI) * CIRCLE_POINTS);
+    static final double STOP_ANGLE = -60D / 180D * Math.PI;
+    static final int GAUGE_POINTS = (int) ((START_ANGLE - STOP_ANGLE) / (2D * Math.PI) * CIRCLE_POINTS);
 
-    private static final float[] RED = new float[] { 0.7f, 0f, 0f, 1f };
-    private static final float[] GREEN = new float[] { 0f, 0.7f, 0f, 1f };
-    private static final float[] YELLOW = new float[] { 0.9f, 0.9f, 0f, 1f };
-
-    public static void drawPressureGauge(MatrixStack matrixStack, IVertexBuilder builder, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, int fgColor) {
-        // todo 1.15 in-world pressure gauge
-    }
+    static final float[] RED = new float[] { 0.7f, 0f, 0f, 1f };
+    static final float[] GREEN = new float[] { 0f, 0.7f, 0f, 1f };
+    static final float[] YELLOW = new float[] { 0.9f, 0.9f, 0f, 1f };
 
     public static void drawPressureGauge(FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos) {
         drawPressureGauge(fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos, 0xFF000000);
@@ -77,7 +73,7 @@ public class PressureGaugeRenderer {
         RenderSystem.enableTexture();
 
         // draw the numbers next to the scaler.
-        drawTextGUI(fontRenderer, xPos, yPos, fgColor, textScalers);
+        drawText(fontRenderer, xPos, yPos, fgColor, textScalers);
     }
 
     private static void drawNeedle(IVertexBuilder builder, int xPos, int yPos, double angle, int fgColor) {
@@ -109,7 +105,7 @@ public class PressureGaugeRenderer {
         }
     }
 
-    private static void drawTextGUI(FontRenderer fontRenderer, int xPos, int yPos, int fgColor, List<TextScaler> textScalers) {
+    private static void drawText(FontRenderer fontRenderer, int xPos, int yPos, int fgColor, List<TextScaler> textScalers) {
         for (int i = 0; i < textScalers.size(); i++) {
             if (textScalers.size() <= 11 || i % 5 == 0) {
                 TextScaler scaler = textScalers.get(i);
@@ -165,12 +161,12 @@ public class PressureGaugeRenderer {
         }
     }
 
-    private static class TextScaler {
+    static class TextScaler {
         final int pressure;
         final int x;
         final int y;
 
-        private TextScaler(int pressure, int x, int y) {
+        TextScaler(int pressure, int x, int y) {
             this.pressure = pressure;
             this.x = x;
             this.y = y;

@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.netty.buffer.ByteBuf;
 import mcjty.theoneprobe.api.IElement;
-import me.desht.pneumaticcraft.client.util.PressureGaugeRenderer;
+import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer;
 import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
 import me.desht.pneumaticcraft.common.tileentity.IMinWorkingPressure;
 import net.minecraft.client.Minecraft;

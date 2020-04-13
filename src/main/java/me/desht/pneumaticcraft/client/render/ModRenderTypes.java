@@ -195,6 +195,16 @@ public class ModRenderTypes extends RenderType {
                         .build(false));
     }
 
+
+    private static final LineState LINE_2 = new LineState(OptionalDouble.of(2.0));
+    public static final RenderType TRIANGLE_FAN = makeType("triangle_fan",
+            DefaultVertexFormats.POSITION_COLOR, GL11.GL_TRIANGLE_FAN, 256,
+            RenderType.State.getBuilder()
+                    .line(LINE_2)
+                    .texture(NO_TEXTURE)
+                    .build(false)
+    );
+
     // drone ai (quads, pos/tex, blend)
 
     // animated_stat
