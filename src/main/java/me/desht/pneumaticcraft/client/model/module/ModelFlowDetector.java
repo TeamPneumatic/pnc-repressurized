@@ -14,7 +14,7 @@ public class ModelFlowDetector extends AbstractModelRenderer<ModuleFlowDetector>
     private final ModelRenderer shape1;
 
     public ModelFlowDetector() {
-        shape1 = new ModelRenderer(32, 32, 0, 8);
+        shape1 = new ModelRenderer(64, 32, 0, 8);
         shape1.addBox(-1F, -3F, -2F, 2, 1, 5);
         shape1.setRotationPoint(0F, 16F, 4.5F);
         shape1.mirror = true;
