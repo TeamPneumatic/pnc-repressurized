@@ -31,7 +31,7 @@ public class ModuleAirGrate extends TubeModule {
     private boolean vacuum;
     private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
     private final RangeLines rangeLineRenderer = new RangeLines(0x5500FF00);
-    private boolean resetRendering = false;
+    private boolean resetRendering = true;
     private EntityFilter entityFilter = null;
     private TileEntity adjacentInsertionTE = null;
     private Direction adjacentInsertionSide;
