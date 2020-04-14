@@ -278,6 +278,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
                             world);
                     ModuleNetworkManager.getInstance(world).invalidateCache();
                 }
+                if (!simulate) module.onPlaced();
                 return true;
             }
         } else if (heldStack.getItem() == ModItems.ADVANCED_PCB.get() && !simulate) {

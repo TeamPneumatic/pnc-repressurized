@@ -30,8 +30,8 @@ public class ModuleAirGrate extends TubeModule {
     private int grateRange;
     private boolean vacuum;
     private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
-    private final RangeLines rangeLineRenderer = new RangeLines(0x5500FF00);
-    private boolean resetRendering = true;
+    private final RangeLines rangeLines = new RangeLines(0x5500FF00);
+    private boolean renderRangeLines;
     private EntityFilter entityFilter = null;
     private TileEntity adjacentInsertionTE = null;
     private Direction adjacentInsertionSide;
@@ -52,13 +52,13 @@ public class ModuleAirGrate extends TubeModule {
         return grateRange;
     }
 
+    public RangeLines getRangeLines() {
+        return rangeLines;
+    }
+
     @Override
     public double getWidth() {
         return 16D;
-    }
-
-    public RangeLines getRangeLineRenderer() {
-        return rangeLineRenderer;
     }
 
     @Override
@@ -78,11 +78,11 @@ public class ModuleAirGrate extends TubeModule {
 
             coolHeatSinks();
         } else {
-            if (resetRendering) {
-                rangeLineRenderer.startRendering(grateRange);
-                resetRendering = false;
+            if (renderRangeLines) {
+                rangeLines.startRendering(grateRange);
+                renderRangeLines = false;
             }
-            rangeLineRenderer.tick(world.rand);
+            rangeLines.tick(world.rand);
         }
 
         pushEntities(world, pos, new Vec3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
@@ -241,9 +241,14 @@ public class ModuleAirGrate extends TubeModule {
 
     @Override
     public boolean onActivated(PlayerEntity player, Hand hand) {
-        if (player.world.isRemote && !rangeLineRenderer.shouldRender()) {
-            resetRendering = true;
+        if (player.world.isRemote && !rangeLines.shouldRender()) {
+            renderRangeLines = true;
         }
         return super.onActivated(player, hand);
+    }
+
+    @Override
+    public void onPlaced() {
+        renderRangeLines = true;
     }
 }

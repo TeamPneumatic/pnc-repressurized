@@ -81,7 +81,7 @@ public class ModelAirGrate extends AbstractModelRenderer<ModuleAirGrate> {
 
     @Override
     protected void renderExtras(ModuleAirGrate module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
-        if (module.getRangeLineRenderer().shouldRender()) {
+        if (module.getRangeLines().shouldRender()) {
             Direction d = module.getDirection();
             int r = -module.getGrateRange() - 1;
 
@@ -89,7 +89,7 @@ public class ModelAirGrate extends AbstractModelRenderer<ModuleAirGrate> {
 
             // negation of X necessary due to the transforms in place for model rendering
             matrixStack.translate(-d.getXOffset() * r, d.getYOffset() * r, d.getZOffset() * r);
-            RenderUtils.renderRangeLines(module.getRangeLineRenderer(), matrixStack, buffer.getBuffer(RenderType.LINES));
+            RenderUtils.renderRangeLines(module.getRangeLines(), matrixStack, buffer.getBuffer(RenderType.LINES));
 
             matrixStack.pop();
         }

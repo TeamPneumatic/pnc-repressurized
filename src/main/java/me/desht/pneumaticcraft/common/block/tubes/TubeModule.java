@@ -231,4 +231,7 @@ public abstract class TubeModule {
     public int hashCode() {
         return Objects.hash(pressureTube.getPos(), dir);
     }
+
+    public void onPlaced() {
+    }
 }
