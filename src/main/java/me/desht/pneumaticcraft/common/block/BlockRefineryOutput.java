@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.IRefineryRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryOutput;
+import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -13,6 +14,10 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
@@ -23,6 +28,11 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class BlockRefineryOutput extends BlockPneumaticCraft {
+    private static final VoxelShape SHAPE1 = makeCuboidShape(0, 0, 4, 16, 16, 12);
+    private static final VoxelShape SHAPE2 = makeCuboidShape(3, 0, 0, 13, 16, 16);
+    private static final VoxelShape SHAPE_EW = VoxelShapes.or(SHAPE1, SHAPE2);
+    private static final VoxelShape SHAPE_NS = VoxelShapeUtils.rotateY(SHAPE_EW, 90);
+
     public BlockRefineryOutput() {
         super(ModBlocks.defaultProps());
     }
@@ -65,6 +75,11 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
     private boolean couldTransferFluidOut(IFluidHandler h1, IFluidHandler h2) {
         FluidStack f = FluidUtil.tryFluidTransfer(h1, h2, 1000, false);
         return !f.isEmpty();
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return getRotation(state).getAxis() == Direction.Axis.X ? SHAPE_EW : SHAPE_NS;
     }
 
     @Override
