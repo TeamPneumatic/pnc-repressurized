@@ -5,7 +5,9 @@ import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import java.util.Collections;
@@ -34,7 +36,7 @@ public class RenderFluidTank extends AbstractFluidTESR<TileEntityFluidTank> {
             bounds = BOUNDS_DOWN;
         else
             bounds = BOUNDS_NONE;
-        return Collections.singletonList(new TankRenderInfo(te.getTank(), bounds));
+        return Collections.singletonList(new FluidTankRenderInfo(te.getTank(), bounds));
     }
 
     public static class ItemInfoProvider extends FluidItemRenderInfoProvider {
@@ -43,6 +45,25 @@ public class RenderFluidTank extends AbstractFluidTESR<TileEntityFluidTank> {
             return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
                     .map(h -> ImmutableList.of(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_NONE)))
                     .orElse(null);
+        }
+    }
+
+    private static class FluidTankRenderInfo extends TankRenderInfo {
+        FluidTankRenderInfo(IFluidTank tank, AxisAlignedBB bounds) {
+            super(tank, bounds);
+        }
+
+        @Override
+        public boolean shouldRender(Direction face) {
+            switch (face) {
+                case UP: return getTank().getFluid().getAmount() < getTank().getCapacity()
+                        && !getTank().getFluid().getFluid().getAttributes().isLighterThanAir();
+                case DOWN:
+                    return getTank().getFluid().getAmount() < getTank().getCapacity()
+                            && getTank().getFluid().getFluid().getAttributes().isLighterThanAir();
+                default:
+                    return true;
+            }
         }
     }
 }

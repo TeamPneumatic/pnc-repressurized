@@ -142,7 +142,7 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
 
         double tankHeight = tankBounds.maxY - tankBounds.minY;
         double y1 = tankBounds.minY, y2 = (tankBounds.minY + (tankHeight * percent));
-        if (tank.getFluid().getFluid().getAttributes().getDensity() < 0) {
+        if (tank.getFluid().getFluid().getAttributes().isLighterThanAir()) {
             double yOff = tankBounds.maxY - y2;  // lighter than air fluids move to the top of the tank
             y1 += yOff; y2 += yOff;
         }
