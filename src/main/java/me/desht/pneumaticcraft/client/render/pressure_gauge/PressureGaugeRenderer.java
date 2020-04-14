@@ -99,8 +99,10 @@ public class PressureGaugeRenderer {
                 double y = Math.sin(angle);
                 textScalers.add(new TextScaler(currentScale, (int) (x * RADIUS * 1.3D), (int) (y * RADIUS * 1.3D)));
                 currentScale--;
-                builder.pos(x * RADIUS * 0.9D + xPos, y * RADIUS * 0.9D + yPos, 0.0).color(0, 0, 0, 1).endVertex();
-                builder.pos(x * RADIUS * 1.1D + xPos, y * RADIUS * 1.1D + yPos, 0.0).color(0, 0, 0, 1).endVertex();
+                double r1 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 0.8D : 0.92D;
+                double r2 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 1.15D : 1.08D;
+                builder.pos(x * RADIUS * r1 + xPos, y * RADIUS * r1 + yPos, 0.0).color(0, 0, 0, 1).endVertex();
+                builder.pos(x * RADIUS * r2 + xPos, y * RADIUS * r2 + yPos, 0.0).color(0, 0, 0, 1).endVertex();
             }
         }
     }

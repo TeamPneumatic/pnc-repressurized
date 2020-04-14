@@ -108,10 +108,12 @@ public class PressureGaugeRenderer3D {
                 double y = Math.sin(angle);
                 textScalers.add(new TextScaler(currentScale, (int) (x * RADIUS * 1.3D), (int) (y * RADIUS * 1.3D)));
                 currentScale--;
-                RenderUtils.posF(builder, posMat,x * RADIUS * 0.9D + xPos, y * RADIUS * 0.9D + yPos, 0.0)
+                double r1 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 0.8D : 0.92D;
+                double r2 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 1.15D : 1.08D;
+                RenderUtils.posF(builder, posMat,x * RADIUS * r1 + xPos, y * RADIUS * r1 + yPos, 0.0)
                         .color(0, 0, 0, 255)
                         .endVertex();
-                RenderUtils.posF(builder, posMat,x * RADIUS * 1.1D + xPos, y * RADIUS * 1.1D + yPos, 0.0)
+                RenderUtils.posF(builder, posMat,x * RADIUS * r2 + xPos, y * RADIUS * r2 + yPos, 0.0)
                         .color(0, 0, 0, 255)
                         .endVertex();
             }
