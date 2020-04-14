@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -90,6 +90,7 @@ public interface IHackableBlock {
         BlockState state = player.world.getBlockState(targetPos);
         AxisAlignedBB aabb = state.getShape(player.world, targetPos).getBoundingBox().offset(targetPos);
         Optional<Vec3d> hit = aabb.rayTrace(player.getEyePosition(1f), aabb.getCenter());
-        return hit.map(v -> new BlockRayTraceResult(v, PneumaticCraftUtils.getDirectionFacing(player, true).getOpposite(), targetPos, false));
+        Direction dir = Direction.getFacingDirections(player)[0];
+        return hit.map(v -> new BlockRayTraceResult(v, dir.getOpposite(), targetPos, false));
     }
 }
