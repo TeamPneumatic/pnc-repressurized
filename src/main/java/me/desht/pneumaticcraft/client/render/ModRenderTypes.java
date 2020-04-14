@@ -49,6 +49,7 @@ public class ModRenderTypes extends RenderType {
                 RenderType.State.getBuilder()
                         .texture(RenderState.NO_TEXTURE)
                         .transparency(TRANSLUCENT_TRANSPARENCY)
+                        .cull(CULL_DISABLED)
                         .lightmap(RenderState.LIGHTMAP_ENABLED)
                         .shadeModel(RenderState.SHADE_ENABLED)
                         .depthTest(disableDepthTest ? DEPTH_ALWAYS : DEPTH_LEQUAL)
