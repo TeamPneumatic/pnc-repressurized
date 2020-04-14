@@ -72,7 +72,9 @@ public class GuiUtils {
         scaledAmount = Math.min(scaledAmount, bounds.getHeight());
 
         Minecraft.getInstance().getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-        glColorHex(fluidColor, 255);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        glColorHex(fluidColor);
 
         final int xTileCount = bounds.getWidth() / TEX_WIDTH;
         final int xRemainder = bounds.getWidth() - xTileCount * TEX_WIDTH;
@@ -96,6 +98,7 @@ public class GuiUtils {
                 }
             }
         }
+        RenderSystem.disableBlend();
     }
 
     private static void drawFluidTexture(double xCoord, double yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, double zLevel) {
