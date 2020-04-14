@@ -42,14 +42,20 @@ public class RenderPressureChamberInterface extends AbstractTileModelRenderer<Ti
 
         float inputProgress = MathHelper.lerp(partialTicks, te.oldInputProgress, te.inputProgress) / MAX_PROGRESS;
         float outputProgress = MathHelper.lerp(partialTicks, te.oldOutputProgress, te.outputProgress) / MAX_PROGRESS;
-        matrixStackIn.push();
-        matrixStackIn.translate((1F - (float)Math.cos(inputProgress * Math.PI)) * 0.37F, 0, 0);
-        input.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        matrixStackIn.pop();
-        matrixStackIn.push();
-        matrixStackIn.translate((1F - (float)Math.cos(outputProgress * Math.PI)) * 0.37F, 0, 0);
-        output.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        matrixStackIn.pop();
+        if (inputProgress < 1f) {
+            matrixStackIn.push();
+            matrixStackIn.translate((1F - (float) Math.cos(inputProgress * Math.PI)) * 0.37F, 0, 0);
+            matrixStackIn.scale(1F - inputProgress, 1, 1);
+            input.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+            matrixStackIn.pop();
+        }
+        if (outputProgress < 1f) {
+            matrixStackIn.push();
+            matrixStackIn.translate((1F - (float) Math.cos(outputProgress * Math.PI)) * 0.37F, 0, 0);
+            matrixStackIn.scale(1F - outputProgress, 1, 1);
+            output.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+            matrixStackIn.pop();
+        }
     }
 
     @Override
