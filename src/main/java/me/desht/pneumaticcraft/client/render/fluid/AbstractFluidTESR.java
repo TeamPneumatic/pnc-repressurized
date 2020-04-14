@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -29,14 +30,12 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
     @Override
     public void render(T te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         if (te.getWorld().isAreaLoaded(te.getPos(), 0)) {
-//        if (!te.getWorld().getChunkProvider().getChunk(te.getPos().getX() >> 4, te.getPos().getZ() >> 4, true).isEmpty()) {
             IVertexBuilder builder = buffer.getBuffer(RenderType.getTranslucent());
 
             Matrix4f posMat = matrixStack.getLast().getMatrix();
             for (TankRenderInfo tankRenderInfo : getTanksToRender(te)) {
                 doRender(te, builder, tankRenderInfo, posMat);
             }
-
         }
     }
 
@@ -49,13 +48,7 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
         ResourceLocation texture = fluid.getAttributes().getStillTexture(tank.getFluid());
         //noinspection deprecation
         TextureAtlasSprite still = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(texture);
-        int color = fluid.getAttributes().getColor(tank.getFluid());
-        float alpha = (color >> 24 & 0xFF) / 255F;
-        float red = (color >> 16 & 0xFF) / 255F;
-        float green = (color >> 8 & 0xFF) / 255F;
-        float blue = (color & 0xFF) / 255F;
-
-//        buffer.setTranslation(x,y,z);
+        int[] cols = RenderUtils.decomposeColor(fluid.getAttributes().getColor(tank.getFluid()));
 
         AxisAlignedBB bounds = getRenderBounds(tank, tankRenderInfo.getBounds());
         float x1 = (float) bounds.minX;
@@ -77,10 +70,10 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y1, z2).color(red, green, blue, alpha).tex(u1, v2).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x1, y1, z1).color(red, green, blue, alpha).tex(u1, v1).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z1).color(red, green, blue, alpha).tex(u2, v1).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z2).color(red, green, blue, alpha).tex(u2, v2).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.UP)) {
@@ -89,10 +82,10 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y2, z2).color(red, green, blue, alpha).tex(u1, v2).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(red, green, blue, alpha).tex(u2, v2).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(red, green, blue, alpha).tex(u2, v1).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(red, green, blue, alpha).tex(u1, v1).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.NORTH)) {
@@ -101,10 +94,10 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(by1);
             float v2 = still.getInterpolatedV(by2);
-            builder.pos(posMat, x1, y1, z1).color(red, green, blue, alpha).tex(u1, v1).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(red, green, blue, alpha).tex(u1, v2).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(red, green, blue, alpha).tex(u2, v2).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x2, y1, z1).color(red, green, blue, alpha).tex(u2, v1).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.SOUTH)) {
@@ -113,10 +106,10 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(by1);
             float v2 = still.getInterpolatedV(by2);
-            builder.pos(posMat, x2, y1, z2).color(red, green, blue, alpha).tex(u2, v1).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(red, green, blue, alpha).tex(u2, v2).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x1, y2, z2).color(red, green, blue, alpha).tex(u1, v2).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x1, y1, z2).color(red, green, blue, alpha).tex(u1, v1).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.WEST)) {
@@ -125,10 +118,10 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
             float u2 = still.getInterpolatedU(by2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y1, z2).color(red, green, blue, alpha).tex(u1, v2).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z2).color(red, green, blue, alpha).tex(u2, v2).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(red, green, blue, alpha).tex(u2, v1).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y1, z1).color(red, green, blue, alpha).tex(u1, v1).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.EAST)) {
@@ -137,10 +130,10 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
             float u2 = still.getInterpolatedU(by2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x2, y1, z1).color(red, green, blue, alpha).tex(u1, v1).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(red, green, blue, alpha).tex(u2, v1).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(red, green, blue, alpha).tex(u2, v2).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z2).color(red, green, blue, alpha).tex(u1, v2).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
         }
     }
 
