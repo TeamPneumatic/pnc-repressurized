@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.model.module;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer3D;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModulePressureGauge;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
@@ -11,6 +12,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 
 public class ModelPressureGauge extends AbstractModelRenderer<ModulePressureGauge> {
     private static final float GAUGE_SCALE = 0.007f;
@@ -37,6 +39,9 @@ public class ModelPressureGauge extends AbstractModelRenderer<ModulePressureGaug
 
     @Override
     protected void renderExtras(ModulePressureGauge module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
+        BlockPos pos = module.getTube().getPos();
+        if (ClientUtils.getClientPlayer().getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 256) return;
+
         float pressure = 0f;
         float dangerPressure = 5f;
         float critPressure = 7f;
