@@ -11,7 +11,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 public abstract class FluidDiesel {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
             RL("block/fluid/generic_fuel_still"), RL("block/fluid/generic_fuel_flow")
-    ).color(0xFFD84008);
+    ).color(0xD0D84008);
 
     private static final ForgeFlowingFluid.Properties PROPS =
             new ForgeFlowingFluid.Properties(ModFluids.DIESEL, ModFluids.DIESEL_FLOWING, ATTRS)

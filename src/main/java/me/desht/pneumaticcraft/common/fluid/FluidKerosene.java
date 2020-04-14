@@ -11,7 +11,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 public abstract class FluidKerosene {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
             RL("block/fluid/generic_fuel_still"), RL("block/fluid/generic_fuel_flow")
-    ).viscosity(750).color(0xFF3BC2EE);
+    ).viscosity(750).color(0xD03BC2EE);
 
     private static final ForgeFlowingFluid.Properties PROPS =
             new ForgeFlowingFluid.Properties(ModFluids.KEROSENE, ModFluids.KEROSENE_FLOWING, ATTRS)
