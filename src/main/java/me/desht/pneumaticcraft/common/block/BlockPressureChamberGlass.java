@@ -44,7 +44,7 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
 
     @Override
     public float getAmbientOcclusionLightValue(BlockState p_220080_1_, IBlockReader p_220080_2_, BlockPos p_220080_3_) {
-        return 1.0F;
+        return 0.2F;
     }
 
     public boolean propagatesSkylightDown(BlockState p_200123_1_, IBlockReader p_200123_2_, BlockPos p_200123_3_) {
