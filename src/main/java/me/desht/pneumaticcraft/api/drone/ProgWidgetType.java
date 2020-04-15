@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.api.drone;
 
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.function.Supplier;
@@ -23,7 +22,7 @@ public class ProgWidgetType<P extends IProgWidgetBase> extends ForgeRegistryEntr
         return "programmingPuzzle." + getRegistryName().toString().replace(':', '.') + ".name";
     }
 
-    public P cast(IProgWidget widget) {
+    public P cast(IProgWidgetBase widget) {
         //noinspection unchecked
         return (P) widget;
     }

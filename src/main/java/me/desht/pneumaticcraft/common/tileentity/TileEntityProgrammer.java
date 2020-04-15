@@ -174,19 +174,24 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         List<IProgWidget> widgets = new ArrayList<>();
         int nWidgets = buf.readVarInt();
         for (int i = 0; i < nWidgets; i++) {
-            ResourceLocation typeID = buf.readResourceLocation();
-            if (!ProgWidgetConfig.blacklistedPieces.contains(typeID)) {
-                ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
-                if (type != null) {
-                    IProgWidget newWidget = IProgWidget.create(type);
-                    newWidget.readFromPacket(buf);
-                    widgets.add(newWidget);
-                } else {
-                    Log.warning("unknown widget type found: " + typeID);
-                }
-            } else {
-                Log.warning("ignoring blacklisted widget type: " + typeID);
+            try {
+                widgets.add(ProgWidget.fromPacket(buf));
+            } catch (IllegalStateException e) {
+                Log.warning(e.getMessage());
             }
+//            ResourceLocation typeID = buf.readResourceLocation();
+//            if (!ProgWidgetConfig.blacklistedPieces.contains(typeID)) {
+//                ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
+//                if (type != null) {
+//                    IProgWidget newWidget = IProgWidget.create(type);
+//                    newWidget.readFromPacket(buf);
+//                    widgets.add(newWidget);
+//                } else {
+//                    Log.warning("unknown widget type found: " + typeID);
+//                }
+//            } else {
+//                Log.warning("ignoring blacklisted widget type: " + typeID);
+//            }
         }
         return widgets;
     }

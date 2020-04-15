@@ -3,6 +3,8 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.config.aux.ProgWidgetConfig;
+import me.desht.pneumaticcraft.common.core.ModRegistries;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -258,6 +260,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public void readFromPacket(PacketBuffer buf) {
+        // note: widget type ID is not read here (see fromPacket() static method)
         x = buf.readVarInt();
         y = buf.readVarInt();
     }
@@ -287,6 +290,21 @@ public abstract class ProgWidget implements IProgWidget {
         }
     }
 
+    public static IProgWidget fromPacket(PacketBuffer buf) {
+        ResourceLocation typeID = buf.readResourceLocation();
+        if (!ProgWidgetConfig.blacklistedPieces.contains(typeID)) {
+            ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
+            if (type != null) {
+                IProgWidget newWidget = IProgWidget.create(type);
+                newWidget.readFromPacket(buf);
+                return newWidget;
+            } else {
+                throw new IllegalStateException("unknown widget type found: " + typeID);
+            }
+        } else {
+            throw new IllegalStateException("ignoring blacklisted widget type: " + typeID);
+        }
+    }
 
     @Override
     public boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget) {
