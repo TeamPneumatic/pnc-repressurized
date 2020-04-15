@@ -361,7 +361,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private synchronized void setTargetAngles(float rotationAngle, float heightAngle) {
         targetRotationAngle = rotationAngle;
         targetHeightAngle = heightAngle;
-        if (!getWorld().isRemote) scheduleDescriptionPacket();
+//        if (!getWorld().isRemote) scheduleDescriptionPacket();
     }
 
     // this function calculates with the parsed in X and Z angles and the force

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.Block;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -41,12 +40,4 @@ public abstract class LocationIntPacket {
     PacketDistributor.TargetPoint getTargetPoint(World world, double updateDistance) {
         return new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), updateDistance, world.getDimension().getType());
     }
-
-    protected Block getBlock(World world) {
-        return world.getBlockState(pos).getBlock();
-    }
-
-//    protected TileEntity getTileEntity(Supplier<NetworkEvent.Context> ctx) {
-//        return PneumaticCraftRepressurized.proxy.getWorldFor(ctx.get()).getTileEntity(pos);
-//    }
 }

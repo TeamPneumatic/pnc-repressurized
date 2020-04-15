@@ -2,14 +2,12 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.EmptyHandler;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
@@ -363,14 +361,13 @@ public abstract class SyncedField<T> {
             case 6:
                 return buf.readItemStack();
             case 7:
-                if (!buf.readBoolean()) return null;
-                return FluidStack.loadFluidStackFromNBT(new PacketBuffer(buf).readCompoundTag());
+                return buf.readFluidStack();
             case 8:
-                PacketBuffer packetBuffer = new PacketBuffer(buf);
-                CompoundNBT tag = packetBuffer.readCompoundTag();
-                if (tag == null) return EmptyHandler.INSTANCE;
-                ItemStackHandler handler = new ItemStackHandler();
-                handler.deserializeNBT(tag);
+                int len = buf.readVarInt();
+                ItemStackHandler handler = new ItemStackHandler(len);
+                for (int i = 0; i < len; i++) {
+                    handler.setStackInSlot(buf.readVarInt(), buf.readItemStack());
+                }
                 return handler;
         }
         throw new IllegalArgumentException("Invalid sync type! " + type);
@@ -400,16 +397,15 @@ public abstract class SyncedField<T> {
                 buf.writeItemStack(value == null ? ItemStack.EMPTY : (ItemStack) value);
                 break;
             case 7:
-                buf.writeBoolean(value != null);
-                if (value != null) {
-                    FluidStack stack = (FluidStack) value;
-                    new PacketBuffer(buf).writeCompoundTag(stack.writeToNBT(new CompoundNBT()));
-                }
+                buf.writeFluidStack((FluidStack) value);
                 break;
             case 8:
-                CompoundNBT tag = ((ItemStackHandler) value).serializeNBT();
-                PacketBuffer packetBuffer = new PacketBuffer(buf);
-                packetBuffer.writeCompoundTag(tag);
+                ItemStackHandler h = (ItemStackHandler) value;
+                buf.writeVarInt(h.getSlots());
+                for (int i = 0; i < h.getSlots(); i++) {
+                    buf.writeVarInt(i);
+                    buf.writeItemStack(h.getStackInSlot(i));
+                }
                 break;
         }
     }

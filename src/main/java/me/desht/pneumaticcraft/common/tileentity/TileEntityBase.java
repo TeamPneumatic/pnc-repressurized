@@ -47,10 +47,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 //@Optional.InterfaceList({
@@ -73,13 +70,16 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     int poweredRedstone; // The redstone strength currently applied to the block.
 
     boolean firstRun = true;  // True only the first time updateEntity invokes in a session
-    private boolean descriptionPacketScheduled;
+    private boolean forceFullSync;
     private List<SyncedField> descriptionFields;
     private TileEntityCache[] tileCache;
     private boolean preserveStateOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
 //    private LuaMethodRegistry luaMethodRegistry = null;
+
+    // tracks which synced fields have changed and need to be synced on the next tick
+    private BitSet fieldsToSync;
 
     public TileEntityBase(TileEntityType type) {
         this(type, 0);
@@ -112,7 +112,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     @Override
     public CompoundNBT getUpdateTag() {
         CompoundNBT compound = super.getUpdateTag();
-        return new PacketDescription(this).writeNBT(compound);
+        return new PacketDescription(this, true).writeNBT(compound);
     }
 
     // client side, chunk sending
@@ -132,9 +132,15 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     @Override
+    public boolean shouldSyncField(int idx) {
+        return fieldsToSync.get(idx);
+    }
+
+    @Override
     public List<SyncedField> getDescriptionFields() {
         if (descriptionFields == null) {
             descriptionFields = NetworkUtils.getSyncedFields(this, DescSynced.class);
+            fieldsToSync = new BitSet(descriptionFields.size());
             for (SyncedField field : descriptionFields) {
                 field.update();
             }
@@ -147,14 +153,16 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     void sendDescriptionPacket(double maxPacketDistance) {
-        NetworkHandler.sendToAllAround(new PacketDescription(this), world, maxPacketDistance);
+        NetworkHandler.sendToAllAround(new PacketDescription(this, forceFullSync), world, maxPacketDistance);
+        fieldsToSync.clear();
+        forceFullSync = false;
     }
 
     /**
      * A way to safely mark a block for an update from another thread (like the CC Lua thread).
      */
     void scheduleDescriptionPacket() {
-        descriptionPacketScheduled = true;
+        forceFullSync = true;
     }
 
     /**
@@ -192,15 +200,14 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
                 ((IAutoFluidEjecting) this).autoExportFluid(this);
             }
 
-            if (descriptionFields == null) descriptionPacketScheduled = true;
-            for (SyncedField field : getDescriptionFields()) {
-                if (field.update()) {
-                    descriptionPacketScheduled = true;
+//            if (descriptionFields == null) forceFullSync = true;
+            for (int i = 0; i < getDescriptionFields().size(); i++) {
+                if (getDescriptionFields().get(i).update()) {
+                    fieldsToSync.set(i);
                 }
             }
 
-            if (descriptionPacketScheduled) {
-                descriptionPacketScheduled = false;
+            if (forceFullSync || !fieldsToSync.isEmpty()) {
                 sendDescriptionPacket();
             }
         }
@@ -307,6 +314,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     @Override
     public void validate() {
         super.validate();
+
         scheduleDescriptionPacket();
     }
 
@@ -432,11 +440,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
      */
     protected BiPredicate<IWorld,BlockPos> heatExchangerBlockFilter() {
         return IHeatExchangerLogic.ALL_BLOCKS;
-    }
-
-    @Override
-    public Type getSyncType() {
-        return Type.TILE_ENTITY;
     }
 
     /**

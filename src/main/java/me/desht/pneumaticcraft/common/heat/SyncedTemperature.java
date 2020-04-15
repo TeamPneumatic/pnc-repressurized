@@ -42,7 +42,7 @@ public class SyncedTemperature {
         if (currentTemp < 73) {
             return false;
         } else if (currentTemp < 473) {
-            return delta >= 20;
+            return delta >= 10;
         } else if (currentTemp < 873) {
             return delta >= 30;
         } else if (currentTemp < 1473) {

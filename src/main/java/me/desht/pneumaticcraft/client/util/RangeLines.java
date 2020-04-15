@@ -58,7 +58,6 @@ public class RangeLines {
         }
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean shouldRender() {
         return rangeLines.size() > 0;
     }

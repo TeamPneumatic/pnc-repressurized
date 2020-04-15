@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.sound;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import net.minecraft.client.audio.TickableSound;
@@ -55,7 +54,7 @@ public class MovingSoundMinigun extends TickableSound {
                 PlayerEntity player = (PlayerEntity) entity;
                 ItemStack curItem = player.getHeldItemMainhand();
                 if (curItem.getItem() == ModItems.MINIGUN.get()) {
-                    minigun = ((ItemMinigun) ModItems.MINIGUN.get()).getMinigun(curItem, player);
+                    minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
                 }
             } else if (entity instanceof EntityDrone) {
                 minigun = ((EntityDrone) entity).getMinigun();

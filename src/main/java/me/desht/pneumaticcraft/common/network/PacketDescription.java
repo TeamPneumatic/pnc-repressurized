@@ -2,39 +2,42 @@ package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.entity.player.PlayerEntity;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
 /**
  * Sent to: CLIENT
- * This is the primary mechanism for syncing TE and Semiblock data to clients when it changes.
+ *
+ * This is the primary mechanism for syncing tile entity data to clients when it changes.
  */
 public class PacketDescription extends LocationIntPacket {
-    private byte[] types;
-    private Object[] values;
+    private boolean fullSync;
+    private List<IndexedField> fields = new ArrayList<>();
     private CompoundNBT extraData;
-    private IDescSynced.Type type;
 
     public PacketDescription() {
     }
 
-    public PacketDescription(IDescSynced te) {
+    public PacketDescription(IDescSynced te, boolean fullSync) {
         super(te.getPosition());
-        type = te.getSyncType();
-        values = new Object[te.getDescriptionFields().size()];
-        types = new byte[values.length];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = te.getDescriptionFields().get(i).getValue();
-            types[i] = SyncedField.getType(te.getDescriptionFields().get(i));
+
+        this.fullSync = fullSync;
+        List<SyncedField> descFields = te.getDescriptionFields();
+        for (int i = 0; i < descFields.size(); i++) {
+            if (fullSync || te.shouldSyncField(i)) {
+                fields.add(new IndexedField(i, SyncedField.getType(descFields.get(i)), descFields.get(i).getValue()));
+            }
         }
         extraData = new CompoundNBT();
         te.writeToPacket(extraData);
@@ -42,13 +45,13 @@ public class PacketDescription extends LocationIntPacket {
 
     public PacketDescription(PacketBuffer buf) {
         super(buf);
-        type = IDescSynced.Type.values()[buf.readByte()];
-        int dataAmount = buf.readInt();
-        types = new byte[dataAmount];
-        values = new Object[dataAmount];
-        for (int i = 0; i < dataAmount; i++) {
-            types[i] = buf.readByte();
-            values[i] = SyncedField.fromBytes(buf, types[i]);
+
+        fullSync = buf.readBoolean();
+        int fieldCount = buf.readVarInt();
+        for (int i = 0; i < fieldCount; i++) {
+            int idx = fullSync ? i : buf.readVarInt();
+            byte type = buf.readByte();
+            fields.add(new IndexedField(idx, type, SyncedField.fromBytes(buf, type)));
         }
         extraData = buf.readCompoundTag();
     }
@@ -56,11 +59,13 @@ public class PacketDescription extends LocationIntPacket {
     @Override
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeByte(type.ordinal());
-        buf.writeInt(values.length);
-        for (int i = 0; i < types.length; i++) {
-            buf.writeByte(types[i]);
-            SyncedField.toBytes(buf, values[i], types[i]);
+
+        buf.writeBoolean(fullSync);
+        buf.writeVarInt(fields.size());
+        for (IndexedField indexedField : fields) {
+            if (!fullSync) buf.writeVarInt(indexedField.idx);
+            buf.writeByte(indexedField.type);
+            SyncedField.toBytes(buf, indexedField.value, indexedField.type);
         }
         buf.writeCompoundTag(extraData);
     }
@@ -71,15 +76,16 @@ public class PacketDescription extends LocationIntPacket {
     }
 
     public void process() {
-        PlayerEntity player = ClientUtils.getClientPlayer();
-        if (player.world.isAreaLoaded(pos, 0)) {
-            Object syncable = getSyncableForType(player, type);
+        if (ClientUtils.getClientWorld().isAreaLoaded(pos, 0)) {
+            TileEntity syncable = ClientUtils.getClientTE(pos);
             if (syncable instanceof IDescSynced) {
                 IDescSynced descSynced = (IDescSynced) syncable;
                 List<SyncedField> descFields = descSynced.getDescriptionFields();
-                if (descFields != null && descFields.size() == types.length) {
-                    for (int i = 0; i < descFields.size(); i++) {
-                        descFields.get(i).setValue(values[i]);
+                if (descFields != null) {
+                    for (IndexedField indexedField : fields) {
+                        if (indexedField.idx < descFields.size()) {
+                            descFields.get(indexedField.idx).setValue(indexedField.value);
+                        }
                     }
                 }
                 descSynced.readFromPacket(extraData);
@@ -88,61 +94,56 @@ public class PacketDescription extends LocationIntPacket {
         }
     }
 
-    private Object getSyncableForType(PlayerEntity player, IDescSynced.Type type) {
-        if (type == IDescSynced.Type.TILE_ENTITY) {
-            return player.world.getTileEntity(pos);
-//            case SEMI_BLOCK:
-//                if (pos.equals(BlockPos.ZERO)) {
-//                    Container container = player.openContainer;
-//                    if (container instanceof ContainerLogistics) {
-//                        return ((ContainerLogistics) container).logistics;
-//                    }
-//                } else {
-//                    List<ISemiBlock> semiBlocks = SemiBlockManager.getInstance(player.world).getSemiBlocksAsList(player.world, pos);
-//                    int index = extraData.getByte("index");
-//                    return index < semiBlocks.size() ? semiBlocks.get(index) : null;
-//                }
-        }
-        return null;
-    }
-
     /********************
      * These two methods are only used for initial chunk sending (getUpdateTag() and handleUpdateTag())
      */
 
     public CompoundNBT writeNBT(CompoundNBT compound) {
-        compound.put("Pos", NBTUtil.writeBlockPos(pos));
-        compound.putInt("SyncType", type.ordinal());
-        compound.putInt("Length", values.length);
+        CompoundNBT subTag = new CompoundNBT();
+
+        subTag.putInt("Length", fields.size());
         PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
         ListNBT list = new ListNBT();
-        for (int i = 0; i < types.length; i++) {
+        for (IndexedField field : fields) {
             CompoundNBT element = new CompoundNBT();
-            element.putByte("Type", types[i]);
+            element.putByte("Type", field.type);
             buf.clear();
-            SyncedField.toBytes(buf, values[i], types[i]);
+            SyncedField.toBytes(buf, field.value, field.type);
             element.putByteArray("Value", Arrays.copyOf(buf.array(), buf.writerIndex()));
             list.add(list.size(), element);
         }
         buf.release();
-        compound.put("Data", list);
-        compound.put("Extra", extraData);
+        subTag.put("Data", list);
+        subTag.put("Extra", extraData);
+        compound.put(Names.MOD_ID, subTag);
 
         return compound;
     }
 
     public PacketDescription(CompoundNBT compound) {
-        super(NBTUtil.readBlockPos(compound.getCompound("Pos")));
-        type = IDescSynced.Type.values()[compound.getInt("SyncType")];
-        values = new Object[compound.getInt("Length")];
-        types = new byte[values.length];
-        ListNBT list = compound.getList("Data", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < values.length; i++) {
+        super(new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z")));
+
+        CompoundNBT subTag = compound.getCompound(Names.MOD_ID);
+        int fieldCount = subTag.getInt("Length");
+        ListNBT list = subTag.getList("Data", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < fieldCount; i++) {
             CompoundNBT element = list.getCompound(i);
-            types[i] = element.getByte("Type");
+            byte type = element.getByte("Type");
             byte[] b = element.getByteArray("Value");
-            values[i] = SyncedField.fromBytes(new PacketBuffer(Unpooled.wrappedBuffer(b)), types[i]);
+            fields.add(new IndexedField(i, type, SyncedField.fromBytes(new PacketBuffer(Unpooled.wrappedBuffer(b)), type)));
         }
-        extraData = compound.getCompound("Extra");
+        extraData = subTag.getCompound("Extra");
+    }
+
+    private static class IndexedField {
+        final int idx;
+        final byte type;
+        final Object value;
+
+        IndexedField(int idx, byte type, Object value) {
+            this.idx = idx;
+            this.type = type;
+            this.value = value;
+        }
     }
 }

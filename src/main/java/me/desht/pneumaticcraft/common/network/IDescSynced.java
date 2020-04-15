@@ -6,12 +6,6 @@ import net.minecraft.util.math.BlockPos;
 import java.util.List;
 
 public interface IDescSynced {
-    enum Type {
-        TILE_ENTITY, SEMI_BLOCK
-    }
-
-    Type getSyncType();
-
     List<SyncedField> getDescriptionFields();
 
     void writeToPacket(CompoundNBT tag);
@@ -21,4 +15,6 @@ public interface IDescSynced {
     BlockPos getPosition();
 
     void onDescUpdate();
+
+    boolean shouldSyncField(int idx);
 }
