@@ -34,13 +34,13 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean b) {
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityPneumaticDoorBase) {
             updateDoorSide((TileEntityPneumaticDoorBase) te);
             Direction dir = ((TileEntityPneumaticDoorBase) te).getRotation();
             if (world.getBlockState(pos.offset(dir)).getBlock() == ModBlocks.PNEUMATIC_DOOR.get()) {
-                ModBlocks.PNEUMATIC_DOOR.get().neighborChanged(world.getBlockState(pos.offset(dir)), world, pos, block, pos.offset(dir), b);
+                ModBlocks.PNEUMATIC_DOOR.get().neighborChanged(world.getBlockState(pos.offset(dir)), world, pos, block, pos.offset(dir), isMoving);
             }
         }
     }

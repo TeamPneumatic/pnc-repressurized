@@ -15,7 +15,6 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
@@ -52,12 +51,6 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
 //        worldIn.getChunkProvider().getLightManager().checkBlock(currentPos);
         return stateIn.with(CONNECTED, getConnectedDirection(worldIn, currentPos));
-    }
-
-    @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean b) {
-        world.setBlockState(pos, state.with(CONNECTED, getConnectedDirection(world, pos)));
-        super.neighborChanged(state, world, pos, block, fromPos, b);
     }
 
     private Direction getConnectedDirection(IWorld world, BlockPos pos) {

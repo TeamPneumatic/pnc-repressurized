@@ -25,8 +25,8 @@ public class BlockRefineryController extends BlockPneumaticCraft {
     }
 
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean b) {
-        super.neighborChanged(state, world, pos, block, fromPos, b);
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+        super.neighborChanged(state, world, pos, block, fromPos, isMoving);
 
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityRefineryController) {

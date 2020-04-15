@@ -293,7 +293,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean b) {
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         if (!world.isRemote) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityBase) {

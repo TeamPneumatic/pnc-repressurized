@@ -206,7 +206,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
     }
 
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean b) {
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         boolean powered = world.getRedstonePowerFromNeighbors(pos) > 0;
         if (!powered) {
             powered = world.getRedstonePowerFromNeighbors(pos.offset(isTopDoor(state) ? Direction.DOWN : Direction.UP)) > 0;
