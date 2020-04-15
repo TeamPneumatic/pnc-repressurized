@@ -713,13 +713,17 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         if (entityUpgrades > 0) {
             entityUpgrades = Math.min(entityUpgrades, 5);
             List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, new AxisAlignedBB(getPos().add(-entityUpgrades, -entityUpgrades, -entityUpgrades), getPos().add(1 + entityUpgrades, 1 + entityUpgrades, 1 + entityUpgrades)));
-            Entity closestEntity = null;
+            if (entities.isEmpty()) return null;
+            Entity closest = entities.get(0);
+            Vec3d pos = PneumaticCraftUtils.getBlockCentre(getPos());
             for (Entity entity : entities) {
-                if (closestEntity == null || PneumaticCraftUtils.distBetween(closestEntity.posX, closestEntity.posY, closestEntity.posZ, getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5) > PneumaticCraftUtils.distBetween(entity.posX, entity.posY, entity.posZ, getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5)) {
-                    closestEntity = entity;
+                double d1 = PneumaticCraftUtils.distBetweenSq(closest.getPosX(), closest.getPosY(), closest.getPosZ(), pos.x, pos.y, pos.z);
+                double d2 = PneumaticCraftUtils.distBetweenSq(entity.getPosX(), entity.getPosY(), entity.getPosZ(), pos.x, pos.y, pos.z);
+                if (d1 > d2) {
+                    closest = entity;
                 }
             }
-            return closestEntity;
+            return closest;
         }
         return null;
     }
