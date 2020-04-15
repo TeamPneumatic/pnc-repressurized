@@ -374,7 +374,7 @@ public class EntityTrackHandler {
             ItemStack stack = frame.getDisplayedItem();
 
             if (!stack.isEmpty()) {
-                curInfo.add(I18n.format("entityTracker.info.itemframe.item", stack.getDisplayName()));
+                curInfo.add(I18n.format("entityTracker.info.itemframe.item", stack.getDisplayName().getFormattedText()));
                 if (frame.getRotation() != 0) {
                     curInfo.add(I18n.format("entityTracker.info.itemframe.rotation", frame.getRotation() * 45));
                 }
