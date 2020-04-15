@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -94,7 +95,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         if (te.isLeaking()) {
             textList.add(I18n.format("gui.tab.problems.airLeak"));
         }
-        if (container.inventorySlots.get(0).getStack().isEmpty()) {
+        if (container.inventorySlots.get(5).getStack().isEmpty() && te.getUpgrades(EnumUpgrade.ENTITY_TRACKER) == 0) {
             textList.add(I18n.format("gui.tab.problems.air_cannon.no_items"));
         }
         if (!te.hasCoordinate()) {
