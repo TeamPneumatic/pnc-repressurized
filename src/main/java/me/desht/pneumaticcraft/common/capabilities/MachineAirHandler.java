@@ -13,7 +13,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
@@ -38,11 +37,11 @@ import java.util.stream.Collectors;
 public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMachine, IManoMeasurable {
     private final float dangerPressure;
     private final float criticalPressure;
-    private float maxPressure;
     private int volumeUpgrades = 0;
     private boolean hasSecurityUpgrade = false;
     private int soundCounter;
     private final BitSet connectedFaces = new BitSet(6);
+    private int prevAir;
 
     private final List<LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new ArrayList<>();
 
@@ -50,7 +49,6 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         super(volume);
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
-        this.maxPressure = dangerPressure + (criticalPressure - dangerPressure) * (float) Math.random();
 
         for (Direction ignored : Direction.VALUES) {
             this.neighbourAirHandlers.add(LazyOptional.empty());
@@ -70,10 +68,6 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     @Override
     public float getCriticalPressure() {
         return criticalPressure;
-    }
-
-    public float getMaxPressure() {
-        return maxPressure;
     }
 
     @Override
@@ -108,41 +102,38 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         }
     }
 
-//    @Override
-//    public void invalidateNeighbours() {
-//        // TODO need to get the side passed in here too
-//        for (int i = 0; i < neighbourAirHandlers.size(); i++) {
-//            neighbourAirHandlers.set(i, LazyOptional.empty());
-//        }
-//    }
-
     @Override
     public void tick(TileEntity ownerTE) {
         World world = ownerTE.getWorld();
         if (!world.isRemote) {
             BlockPos pos = ownerTE.getPos();
             if (hasSecurityUpgrade) {
-                doSecurityAirChecks(ownerTE);
-            }
-
-            float p = getPressure();
-            if (p > maxPressure) {
-                world.createExplosion(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Explosion.Mode.BREAK);
-                world.destroyBlock(pos, false);
-                return;
-            } else if (p > dangerPressure) {
-                float r = criticalPressure - dangerPressure;
-                float d = p - dangerPressure;
-                if (world.rand.nextFloat() * r < d / 50.0f) {
-                    world.playSound(null, ownerTE.getPos(), ModSounds.CREAK.get(), SoundCategory.BLOCKS, 0.7f, 0.6f + world.rand.nextFloat() * 0.8f);
-                }
+                doSecurityChecks(ownerTE);
+            } else {
+                doOverpressureChecks(ownerTE, world, pos);
             }
             disperseAir(ownerTE);
+            prevAir = getAir();
         }
         if (soundCounter > 0) soundCounter--;
     }
 
-    private void doSecurityAirChecks(TileEntity ownerTE) {
+    private void doOverpressureChecks(TileEntity ownerTE, World world, BlockPos pos) {
+        float p = getPressure();
+        if (getAir() > prevAir && p > dangerPressure) {
+            float range = criticalPressure - dangerPressure;
+            float delta = p - dangerPressure;
+            float rnd = world.rand.nextFloat() * range;
+            if (rnd < delta / 125f || p > criticalPressure) {
+                world.createExplosion(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Explosion.Mode.BREAK);
+                world.destroyBlock(pos, false);
+            } else if (rnd < delta / 25f) {
+                world.playSound(null, ownerTE.getPos(), ModSounds.CREAK.get(), SoundCategory.BLOCKS, 0.7f, 0.6f + world.rand.nextFloat() * 0.8f);
+            }
+        }
+    }
+
+    private void doSecurityChecks(TileEntity ownerTE) {
         if (getPressure() >= dangerPressure - 0.1) {
             airLeak(ownerTE, Direction.UP);
         }
@@ -282,19 +273,6 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
         curInfo.add(new TranslationTextComponent("gui.tooltip.pressure",
                 PneumaticCraftUtils.roundNumberTo(getPressure(), 1)));
-    }
-
-    @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT tag = super.serializeNBT();
-        tag.putFloat("maxPressure", maxPressure);
-        return tag;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        maxPressure = nbt.getFloat("maxPressure");
-        super.deserializeNBT(nbt);
     }
 
     private static class ConnectedAirHandler implements IAirHandlerMachine.Connection {
