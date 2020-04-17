@@ -159,18 +159,19 @@ public class RenderBlockTarget {
             RenderProgressBar.render3d(matrixStack, buffer,0D, 0.4D, 1.8D, 0.7D, 0, targetAcquireProgress, 0xD0FFFF00, 0xD000FF00);
         }
 
-        // a bit of growing or shrinking to keep the stat on screen and/or of legible size
-        float mul = getStatSizeMultiplier(MathHelper.sqrt(ClientUtils.getClientPlayer().getDistanceSq(x, y, z)));
-        matrixStack.scale(STAT_SCALE * mul, STAT_SCALE * mul, STAT_SCALE * mul);
+        matrixStack.scale(STAT_SCALE, STAT_SCALE, STAT_SCALE);
 
         if (!world.isAirBlock(pos)) {
             if (ticksExisted > 120) {
                 if (isPlayerLookingAtTarget()) {
+                    // a bit of growing or shrinking to keep the stat on screen and/or of legible size
+                    float mul = getStatSizeMultiplier(MathHelper.sqrt(ClientUtils.getClientPlayer().getDistanceSq(x, y, z)));
+                    matrixStack.scale(mul, mul, mul);
                     stat.render3d(matrixStack, buffer, partialTicks);
                 }
             } else if (ticksExisted > 50) {
                 RenderUtils.renderString3d("Acquiring Target...", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
-                RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 28, 0xFF002F00, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 24, 0xFF002F00, matrixStack, buffer, false, true);
             } else if (ticksExisted < -30) {
                 matrixStack.scale(1.5F, 1.5F, 1.5F);
                 stat.render3d(matrixStack, buffer, partialTicks);

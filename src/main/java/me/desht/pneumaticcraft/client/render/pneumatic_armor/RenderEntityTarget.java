@@ -130,12 +130,10 @@ public class RenderEntityTarget {
 
         float targetAcquireProgress = ((ticksExisted + partialTicks - 50) / 0.7F);
         if (ticksExisted > 50 && ticksExisted <= 120) {
-            RenderProgressBar.render3d(matrixStack, buffer, 0D, 0.4D, 1.8D, 0.9D, 0, targetAcquireProgress,  0xD0FFFF00, 0xD000FF00);
+            RenderProgressBar.render3d(matrixStack, buffer, 0D, 0.4D, 1.8D, 0.7D, 0, targetAcquireProgress,  0xD0FFFF00, 0xD000FF00);
         }
 
-        // a bit of growing or shrinking to keep the stat on screen and/or of legible size
-        float mul = getStatSizeMultiplier(distToEntity);
-        matrixStack.scale(STAT_SCALE * mul, STAT_SCALE * mul, STAT_SCALE * mul);
+        matrixStack.scale(STAT_SCALE, STAT_SCALE, STAT_SCALE);
 
         if (ticksExisted > 120) {
             if (justRenderWhenHovering && !isLookingAtTarget) {
@@ -149,10 +147,13 @@ public class RenderEntityTarget {
             }
             textList.add(String.format("Dist: %5.1fm", distToEntity));
             stat.setText(textList);
+            // a bit of growing or shrinking to keep the stat on screen and/or of legible size
+            float mul = getStatSizeMultiplier(distToEntity);
+            matrixStack.scale(mul, mul, mul);
             stat.render3d(matrixStack, buffer, partialTicks);
         } else if (ticksExisted > 50) {
             RenderUtils.renderString3d("Acquiring Target...", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
-            RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 28, 0xFF002F00, matrixStack, buffer, false, true);
+            RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 24, 0xFF002F00, matrixStack, buffer, false, true);
         } else if (ticksExisted < -30) {
             stat.closeWindow();
             stat.render3d(matrixStack, buffer, partialTicks);
