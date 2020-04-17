@@ -78,7 +78,8 @@ public class GuiAphorismTile extends Screen {
                 break;
             case GLFW.GLFW_KEY_ENTER:
                 cursorY++;
-                textLines = ArrayUtils.insert(cursorY, textLines, "");
+                textLines = insertLine("", cursorY);
+//                textLines = ArrayUtils.insert(cursorY, textLines, "");
                 updateTE = true;
                 break;
             case GLFW.GLFW_KEY_BACKSPACE:
@@ -138,5 +139,18 @@ public class GuiAphorismTile extends Screen {
         minecraft.keyboardListener.enableRepeatEvents(false);
 
         super.onClose();
+    }
+
+    private String[] insertLine(String line, int pos) {
+        String[] newLines = new String[textLines.length + 1];
+
+        newLines[pos] = line;
+        if (pos > 0) {
+            System.arraycopy(textLines, 0, newLines, 0, pos);
+        }
+        if (pos < textLines.length) {
+            System.arraycopy(textLines, pos, newLines, pos + 1, textLines.length - pos);
+        }
+        return newLines;
     }
 }
