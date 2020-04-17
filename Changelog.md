@@ -6,9 +6,20 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.14.4
 
-This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also 
+This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
-## 1.0.0-? (unreleased)
+## 1.0.1-10 (Apr 17 2020)
+
+### Fixes
+* Fixed Block Tracker behaviour (performance and crashes) with Hackables
+  * Also, Block Tracker now picks up blocks added by block tag (doors & buttons)
+* Fixed client crash (NoSuchMethodError) when pressing Return (insert line) in an Aphorism Tile gui, when on dedicated server
+* Fixed Elevator not always rendering when extended
+* Fixed Gas Lift: block model now only shows tube connectors where connected, and GUI now shows fluid in the tank
+* Fixed Air Cannon not being able to fling entities when Entity Tracker upgrade is installed
+* Refinery Output block now has the right block shape
+
+## 1.0.0-8 (Mar 22 2020)
 
 ### Known issues
 * On dedicated server, JEI may not show custom machine recipes when you log in. 
