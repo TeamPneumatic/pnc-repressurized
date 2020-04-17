@@ -3,18 +3,21 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.monster.ElderGuardianEntity;
+import net.minecraft.entity.monster.GuardianEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackableGuardian implements IHackableEntity {
     @Override
-    public String getId() {
-        return "guardian";
+    public ResourceLocation getHackableId() {
+        return RL("guardian");
     }
 
     @Override
@@ -39,7 +42,7 @@ public class HackableGuardian implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        GoalSelector tasks = ((MobEntity) entity).goalSelector;
+        GoalSelector tasks = ((GuardianEntity) entity).goalSelector;
 
         tasks.getRunningGoals()
                 .filter(goal -> Reflections.guardian_aiGuardianAttack.isAssignableFrom(goal.getClass()))

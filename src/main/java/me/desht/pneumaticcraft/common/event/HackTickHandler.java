@@ -3,10 +3,8 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -14,7 +12,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public enum HackTickHandler {
@@ -29,23 +26,18 @@ public enum HackTickHandler {
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            Iterator<Map.Entry<WorldAndCoord, IHackableBlock>> blockIterator = hackedBlocks.entrySet().iterator();
-            while (blockIterator.hasNext()) {
-                Map.Entry<WorldAndCoord, IHackableBlock> entry = blockIterator.next();
-                IHackableBlock hackableBlock = entry.getValue();
-                WorldAndCoord hackedBlock = entry.getKey();
-                boolean found = false;
-                for (Map.Entry<Block, Class<? extends IHackableBlock>> registeredEntry : PneumaticHelmetRegistry.getInstance().hackableBlocks.entrySet()) {
-                    if (hackableBlock.getClass() == registeredEntry.getValue() && hackedBlock.getBlock() == registeredEntry.getKey()) {
-                        if (!hackableBlock.afterHackTick((World) hackedBlock.world, hackedBlock.pos)) {
-                            blockIterator.remove();
-                        }
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) blockIterator.remove();
-            }
+            //                boolean found = false;
+            //                for (Map.Entry<Block, Class<? extends IHackableBlock>> registeredEntry : PneumaticHelmetRegistry.getInstance().hackableBlocks.entrySet()) {
+            //                    if (hackableBlock.getClass() == registeredEntry.getValue() && loc.getBlock() == registeredEntry.getKey()) {
+            //                        if (!hackableBlock.afterHackTick((World) loc.world, loc.pos)) {
+            //                            blockIterator.remove();
+            //                        }
+            //                        found = true;
+            //                        break;
+            //                    }
+            //                }
+            //                if (!found) blockIterator.remove();
+            hackedBlocks.entrySet().removeIf(entry -> !entry.getValue().afterHackTick(entry.getKey().world, entry.getKey().pos));
         }
     }
 
@@ -73,7 +65,7 @@ public enum HackTickHandler {
     }
 
     public void trackEntity(Entity entity, IHackableEntity iHackable) {
-        if (iHackable.getId() != null) {
+        if (iHackable.getHackableId() != null) {
             entity.getCapability(PNCCapabilities.HACKING_CAPABILITY, null).ifPresent(h -> h.addHackable(iHackable));
         }
     }

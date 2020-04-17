@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 import java.util.List;
 
 /**
- * Implement this class and register it with {@link IPneumaticHelmetRegistry#registerEntityTrackEntry(Class)}.
+ * Implement this class and register it with {@link IPneumaticHelmetRegistry#registerEntityTrackEntry(java.util.function.Supplier)}.
  * Your implementation must provide a no-parameter constructor. For every entity that's applicable for this definition,
  * an instance is created.
  */
@@ -38,23 +38,11 @@ public interface IEntityTrackEntry {
     default void update(Entity entity) { }
 
     /**
-     * Called every render tick, this method can be used to render additional info. Used for Drone AI visualisation.
+     * Called every render tick, this method can be used to render additional info. Used for Drone AI visualisation,
+     * for example.
      *
      * @param entity the tracked entity
      * @param partialTicks partial ticks since last full ticks
      */
     default void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, Entity entity, float partialTicks) { }
-
-//    /**
-//     * Just a basic implementation class that can be used if an update and render method isn't needed.
-//     */
-//    abstract class EntityTrackEntry implements IEntityTrackEntry {
-//        @Override
-//        public void update(Entity entity) {
-//        }
-//
-//        @Override
-//        public void render(Entity entity, float partialTicks) {
-//        }
-//    }
 }

@@ -5,13 +5,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.monster.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackableCaveSpider implements IHackableEntity {
     @Override
-    public String getId() {
-        return null;
+    public ResourceLocation getHackableId() {
+        return RL("cave_spider");
     }
 
     @Override

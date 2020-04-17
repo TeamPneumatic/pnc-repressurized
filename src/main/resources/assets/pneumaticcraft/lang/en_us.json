@@ -366,6 +366,7 @@
   "pneumaticHelmet.hacking.result.resumeTasks": "Hack to resume tasks",
   "pneumaticHelmet.hacking.result.kill": "Hack to kill",
   "pneumaticHelmet.hacking.result.resetTrades": "Hack to reset trades",
+  "pneumaticHelmet.hacking.result.changeColor": "Hack to change color",
 
   "pneumaticHelmet.hacking.finished.disarmed": "Disarmed",
   "pneumaticHelmet.hacking.finished.neutralized": "Neutralized",
@@ -386,6 +387,7 @@
   "pneumaticHelmet.hacking.finished.resumedTasks": "Resumed tasks",
   "pneumaticHelmet.hacking.finished.killed": "Killed",
   "pneumaticHelmet.hacking.finished.resetTrades": "Trades reset",
+  "pneumaticHelmet.hacking.finished.changeColor": "Color changed",
 
   "_comment": "######### GUI tabs",
 

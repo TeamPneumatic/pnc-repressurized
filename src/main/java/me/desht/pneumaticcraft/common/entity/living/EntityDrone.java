@@ -115,6 +115,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.util.Direction.UP;
 
@@ -1099,8 +1100,8 @@ public class EntityDrone extends EntityDroneBase implements
      */
 
     @Override
-    public String getId() {
-        return null;
+    public ResourceLocation getHackableId() {
+        return RL("drone");
     }
 
     @Override

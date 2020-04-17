@@ -5,20 +5,23 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.PaintingEntity;
 import net.minecraft.entity.item.PaintingType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackablePainting implements IHackableEntity {
     @Override
-    public String getId() {
-        return "painting";
+    public ResourceLocation getHackableId() {
+        return RL("painting");
     }
 
     @Override
     public boolean canHack(Entity entity, PlayerEntity player) {
-        return entity instanceof PaintingEntity;
+        return true;
     }
 
     @Override
@@ -38,16 +41,14 @@ public class HackablePainting implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        PaintingEntity painting = (PaintingEntity) entity;
-
-        PaintingType art = painting.art;
+        PaintingType art = ((PaintingEntity) entity).art;
         List<PaintingType> candidate = new ArrayList<>();
         for (PaintingType a : ForgeRegistries.PAINTING_TYPES.getValues()) {
             if (a.getHeight() == art.getHeight() && a.getWidth() == art.getWidth()) {
                 candidate.add(a);
             }
         }
-        painting.art = candidate.get(entity.world.rand.nextInt(candidate.size()));
+        ((PaintingEntity) entity).art = candidate.get(entity.world.rand.nextInt(candidate.size()));
     }
 
     @Override

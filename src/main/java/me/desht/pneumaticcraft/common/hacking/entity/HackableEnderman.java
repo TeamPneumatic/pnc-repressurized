@@ -4,15 +4,18 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackableEnderman implements IHackableEntity {
 
     @Override
-    public String getId() {
-        return "enderman";
+    public ResourceLocation getHackableId() {
+        return RL("enderman");
     }
 
     @Override

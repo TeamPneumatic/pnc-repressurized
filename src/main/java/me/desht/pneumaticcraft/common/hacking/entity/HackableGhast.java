@@ -3,16 +3,19 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.GoalSelector;
+import net.minecraft.entity.monster.GhastEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackableGhast implements IHackableEntity {
     @Override
-    public String getId() {
-        return "ghast";
+    public ResourceLocation getHackableId() {
+        return RL("ghast");
     }
 
     @Override
@@ -37,7 +40,7 @@ public class HackableGhast implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        GoalSelector tasks = ((MobEntity) entity).goalSelector;
+        GoalSelector tasks = ((GhastEntity) entity).goalSelector;
 
         tasks.getRunningGoals()
                 .filter(goal -> Reflections.ghast_aiFireballAttack.isAssignableFrom(goal.getClass()))

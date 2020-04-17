@@ -4,13 +4,16 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackableCreeper implements IHackableEntity {
     @Override
-    public String getId() {
-        return "creeper";
+    public ResourceLocation getHackableId() {
+        return RL("creeper");
     }
 
     @Override
@@ -35,7 +38,7 @@ public class HackableCreeper implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        ((CreeperEntity) entity).ignite();
+        ((CreeperEntity)entity).ignite();
     }
 
     @Override

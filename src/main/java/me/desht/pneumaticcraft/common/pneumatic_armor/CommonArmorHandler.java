@@ -485,12 +485,12 @@ public class CommonArmorHandler {
 
     private void handleHacking() {
         if (hackedBlockPos != null) {
-            IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(hackedBlockPos, player);
+            IHackableBlock hackableBlock = HackableHandler.getHackableForBlock(hackedBlockPos.world, hackedBlockPos.pos, player);
             if (hackableBlock != null) {
 //                World world = GlobalPosUtils.getWorldForGlobalPos(hackedBlockPos);
                 IBlockReader world = hackedBlockPos.world;
                 if (world != null && ++hackTime >= hackableBlock.getHackTime(world, hackedBlockPos.pos, player)) {
-                    hackableBlock.onHackFinished(player.world, hackedBlockPos.pos, player);
+                    hackableBlock.onHackComplete(player.world, hackedBlockPos.pos, player);
                     HackTickHandler.instance().trackBlock(hackedBlockPos, hackableBlock);
                     NetworkHandler.sendToAllAround(new PacketHackingBlockFinish(hackedBlockPos), player.world);
                     setHackedBlockPos(null);
@@ -503,11 +503,13 @@ public class CommonArmorHandler {
             IHackableEntity hackableEntity = HackableHandler.getHackableForEntity(hackedEntity, player);
             if (hackableEntity != null) {
                 if (++hackTime >= hackableEntity.getHackTime(hackedEntity, player)) {
-                    hackableEntity.onHackFinished(hackedEntity, player);
-                    HackTickHandler.instance().trackEntity(hackedEntity, hackableEntity);
-                    NetworkHandler.sendToAllAround(new PacketHackingEntityFinish(hackedEntity), new PacketDistributor.TargetPoint(hackedEntity.getPosX(), hackedEntity.getPosY(), hackedEntity.getPosZ(), 64, hackedEntity.world.getDimension().getType()));
+                    if (hackedEntity.isAlive()) {
+                        hackableEntity.onHackFinished(hackedEntity, player);
+                        HackTickHandler.instance().trackEntity(hackedEntity, hackableEntity);
+                        NetworkHandler.sendToAllAround(new PacketHackingEntityFinish(hackedEntity), new PacketDistributor.TargetPoint(hackedEntity.getPosX(), hackedEntity.getPosY(), hackedEntity.getPosZ(), 64, hackedEntity.world.getDimension().getType()));
+                        AdvancementTriggers.ENTITY_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side
+                    }
                     setHackedEntity(null);
-                    AdvancementTriggers.ENTITY_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side
                 }
             } else {
                 setHackedEntity(null);

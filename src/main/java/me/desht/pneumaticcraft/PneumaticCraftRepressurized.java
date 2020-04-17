@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.event.ClientTickHandler;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
@@ -191,7 +190,7 @@ public class PneumaticCraftRepressurized {
     }
 
     private void serverStarted(FMLServerStartedEvent event) {
-        PneumaticHelmetRegistry.getInstance().resolveBlockTags();
+//        PneumaticHelmetRegistry.getInstance().resolveBlockTags(BlockTags.getCollection());
     }
 
     static class ClientHandler {

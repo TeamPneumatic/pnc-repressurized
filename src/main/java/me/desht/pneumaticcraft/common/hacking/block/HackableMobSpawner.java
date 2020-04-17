@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -13,10 +14,12 @@ import net.minecraft.world.spawner.AbstractSpawner;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackableMobSpawner implements IHackableBlock {
     @Override
-    public String getId() {
-        return "mobSpawner";
+    public ResourceLocation getHackableId() {
+        return RL("mob_spawner");
     }
 
     @Override
@@ -30,12 +33,12 @@ public class HackableMobSpawner implements IHackableBlock {
     }
 
     @Override
-    public void addInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
+    public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.result.neutralize");
     }
 
     @Override
-    public void addPostHackInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.finished.neutralized");
     }
 
@@ -45,7 +48,7 @@ public class HackableMobSpawner implements IHackableBlock {
     }
 
     @Override
-    public void onHackFinished(World world, BlockPos pos, PlayerEntity player) {
+    public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
         if (!world.isRemote) {
             CompoundNBT tag = new CompoundNBT();
             TileEntity te = world.getTileEntity(pos);
@@ -61,7 +64,7 @@ public class HackableMobSpawner implements IHackableBlock {
     }
 
     @Override
-    public boolean afterHackTick(World world, BlockPos pos) {
+    public boolean afterHackTick(IBlockReader world, BlockPos pos) {
         AbstractSpawner spawner = ((MobSpawnerTileEntity) world.getTileEntity(pos)).getSpawnerBaseLogic();
         spawner.prevMobRotation = spawner.mobRotation;
         spawner.spawnDelay = 10;

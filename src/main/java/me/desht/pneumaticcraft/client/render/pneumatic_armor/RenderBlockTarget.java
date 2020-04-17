@@ -129,7 +129,7 @@ public class RenderBlockTarget {
         }
 
         if (hackTime > 0) {
-            IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(world, pos, player);
+            IHackableBlock hackableBlock = HackableHandler.getHackableForBlock(world, pos, player);
             if (hackableBlock != null) {
                 hackTime++;
             } else {
@@ -225,7 +225,7 @@ public class RenderBlockTarget {
 
     public void hack() {
         if (isInitialized() && isPlayerLookingAtTarget()) {
-            IHackableBlock block = HackableHandler.getHackableForCoord(world, pos, player);
+            IHackableBlock block = HackableHandler.getHackableForBlock(world, pos, player);
             if (block != null && (hackTime == 0 || hackTime > block.getHackTime(world, pos, player)))
                 NetworkHandler.sendToServer(new PacketHackingBlockStart(pos));
         }

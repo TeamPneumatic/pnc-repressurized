@@ -4,30 +4,28 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackableNoteblock implements IHackableBlock {
     @Override
-    public String getId() {
-        return "noteBlock";
+    public ResourceLocation getHackableId() {
+        return RL("note_block");
     }
 
     @Override
-    public boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
-        return true;
-    }
-
-    @Override
-    public void addInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
+    public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.result.makeSound");
     }
 
     @Override
-    public void addPostHackInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         curInfo.add("pneumaticHelmet.hacking.finished.makingSound");
     }
 
@@ -37,14 +35,8 @@ public class HackableNoteblock implements IHackableBlock {
     }
 
     @Override
-    public void onHackFinished(World world, BlockPos pos, PlayerEntity player) {
+    public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
         BlockState state = world.getBlockState(pos);
         fakeRayTrace(player, pos).ifPresent(rtr -> state.onBlockActivated(world, player, Hand.MAIN_HAND, rtr));
     }
-
-    @Override
-    public boolean afterHackTick(World world, BlockPos pos) {
-        return false;
-    }
-
 }

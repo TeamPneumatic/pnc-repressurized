@@ -20,7 +20,7 @@ import java.util.List;
  * @author MineMaarten
  *
  */
-public abstract class EntityBasicDrone extends EntityDrone {
+abstract class EntityBasicDrone extends EntityDrone {
 
     EntityBasicDrone(EntityType<? extends EntityDrone> type, World world, PlayerEntity player) {
         super(type, world, player);

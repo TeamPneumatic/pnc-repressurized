@@ -32,7 +32,7 @@ public enum UpgradeRenderHandlerList {
         ARMOR_SLOTS[3] = EquipmentSlotType.FEET;
     }
 
-    private UpgradeRenderHandlerList() {
+    UpgradeRenderHandlerList() {
         upgradeRenderers = new ArrayList<>(4);
         for (int i = 0; i < 4; i++) {
             upgradeRenderers.add(new ArrayList<>());

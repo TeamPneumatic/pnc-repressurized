@@ -5,7 +5,9 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.tags.Tag;
 
+import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Retrieve an instance of this via {@link PneumaticRegistry.IPneumaticCraftInterface#getHelmetRegistry()}
@@ -15,7 +17,7 @@ public interface IPneumaticHelmetRegistry {
      * Register an entity tracker for the Pneumatic Helmet.
      * @param entry the entity tracker
      */
-    void registerEntityTrackEntry(Class<? extends IEntityTrackEntry> entry);
+    void registerEntityTrackEntry(Supplier<? extends IEntityTrackEntry> entry);
 
     /**
      * Register a block tracker for the Pneumatic Helmet
@@ -30,7 +32,7 @@ public interface IPneumaticHelmetRegistry {
      * @param entityClazz entity class; subclasses of this entity will also be affected
      * @param iHackable the hack to register
      */
-    void addHackable(Class<? extends Entity> entityClazz, Class<? extends IHackableEntity> iHackable);
+    void addHackable(Class<? extends Entity> entityClazz, Supplier<? extends IHackableEntity> iHackable);
 
     /**
      * Register a "foreign" block with your hackable. This should be used for blocks you didn't create, i.e.
@@ -39,9 +41,9 @@ public interface IPneumaticHelmetRegistry {
      * @param block the block class; subclasses of this block will also be affected
      * @param iHackable the hack to register
      */
-    void addHackable(Block block, Class<? extends IHackableBlock> iHackable);
+    void addHackable(@Nonnull Block block, @Nonnull Supplier<? extends IHackableBlock> iHackable);
 
-    void addHackable(Tag<Block> blockTag, Class<? extends IHackableBlock> iHackable);
+    void addHackable(@Nonnull Tag<Block> blockTag, @Nonnull Supplier<? extends IHackableBlock> iHackable);
 
     /**
      * Get a list of all current successful hacks on a given entity. This is used for example in Enderman hacking, so

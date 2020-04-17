@@ -67,6 +67,8 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
 
             if (!player.world.isAreaLoaded(pos, 0)) break;
 
+            if (player.world.isAirBlock(pos)) continue;
+
             TileEntity te = player.world.getTileEntity(pos);
 
             if (!MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(player.world, pos, te))) {

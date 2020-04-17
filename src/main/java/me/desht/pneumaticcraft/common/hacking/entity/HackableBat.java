@@ -4,14 +4,17 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.Explosion;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackableBat implements IHackableEntity {
     @Override
-    public String getId() {
-        return null;
+    public ResourceLocation getHackableId() {
+        return RL("bat");
     }
 
     @Override

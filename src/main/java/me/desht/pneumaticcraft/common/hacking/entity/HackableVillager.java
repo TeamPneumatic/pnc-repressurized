@@ -3,13 +3,16 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackableVillager implements IHackableEntity {
     @Override
-    public String getId() {
-        return "villager";
+    public ResourceLocation getHackableId() {
+        return RL("villager");
     }
 
     @Override

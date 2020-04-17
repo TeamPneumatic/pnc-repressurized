@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
@@ -62,9 +63,9 @@ public class CapabilityHacking {
             if (!getCurrentHacks().isEmpty()) {
                 ListNBT tagList = new ListNBT();
                 for (IHackableEntity hackableEntity : getCurrentHacks()) {
-                    if (hackableEntity.getId() != null) {
+                    if (hackableEntity.getHackableId() != null) {
                         CompoundNBT tag = new CompoundNBT();
-                        tag.putString("id", hackableEntity.getId());
+                        tag.putString("id", hackableEntity.getHackableId().toString());
                         tagList.add(tagList.size(), tag);
                     }
                 }
@@ -78,14 +79,10 @@ public class CapabilityHacking {
             getCurrentHacks().clear();
             ListNBT tagList = nbt.getList("hackables", Constants.NBT.TAG_COMPOUND);
             for (int i = 0; i < tagList.size(); i++) {
-                String hackableId = tagList.getCompound(i).getString("id");
-                Class<? extends IHackableEntity> hackableClass = PneumaticHelmetRegistry.getInstance().stringToEntityHackables.get(hackableId);
-                if (hackableClass != null) {
-                    try {
-                        getCurrentHacks().add(hackableClass.newInstance());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                ResourceLocation hackableId = new ResourceLocation(tagList.getCompound(i).getString("id"));
+                IHackableEntity hackable = PneumaticHelmetRegistry.getInstance().getEntityById(hackableId);
+                if (hackable != null) {
+                    getCurrentHacks().add(hackable);
                 } else {
                     Log.warning("hackable \"" + hackableId + "\" not found when constructing from NBT. Was it deleted?");
                 }

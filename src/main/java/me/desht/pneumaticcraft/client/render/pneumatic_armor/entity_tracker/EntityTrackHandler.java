@@ -20,7 +20,6 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.AgeableEntity;
@@ -38,56 +37,47 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class EntityTrackHandler {
-    private static final List<IEntityTrackEntry> trackEntries = new ArrayList<>();
+    // list of track entry supplier & reference track entry, which is only used to call .isApplicable()
+    private static final List<Pair<Supplier<? extends IEntityTrackEntry>, IEntityTrackEntry>> trackEntries = new ArrayList<>();
 
     public static void registerDefaultEntries() {
         IPneumaticHelmetRegistry manager = PneumaticRegistry.getInstance().getHelmetRegistry();
-        manager.registerEntityTrackEntry(EntityTrackEntryLivingBase.class);
-        manager.registerEntityTrackEntry(EntityTrackEntryHackable.class);
-        manager.registerEntityTrackEntry(EntityTrackEntryDrone.class);
-        manager.registerEntityTrackEntry(EntityTrackEntryPressurizable.class);
-        manager.registerEntityTrackEntry(EntityTrackEntryAgeable.class);
-        manager.registerEntityTrackEntry(EntityTrackEntryTameable.class);
-        manager.registerEntityTrackEntry(EntityTrackEntryCreeper.class);
-        manager.registerEntityTrackEntry(EntityTrackEntrySlime.class);
-        manager.registerEntityTrackEntry(EntityTrackEntryPlayer.class);
-        manager.registerEntityTrackEntry(EntityTrackEntryMob.class);
-        manager.registerEntityTrackEntry(EntityTrackEntryItemFrame.class);
-        manager.registerEntityTrackEntry(EntityTrackEntryPainting.class);
+
+        manager.registerEntityTrackEntry(EntityTrackEntryLivingBase::new);
+        manager.registerEntityTrackEntry(EntityTrackEntryHackable::new);
+        manager.registerEntityTrackEntry(EntityTrackEntryDrone::new);
+        manager.registerEntityTrackEntry(EntityTrackEntryPressurizable::new);
+        manager.registerEntityTrackEntry(EntityTrackEntryAgeable::new);
+        manager.registerEntityTrackEntry(EntityTrackEntryTameable::new);
+        manager.registerEntityTrackEntry(EntityTrackEntryCreeper::new);
+        manager.registerEntityTrackEntry(EntityTrackEntrySlime::new);
+        manager.registerEntityTrackEntry(EntityTrackEntryPlayer::new);
+        manager.registerEntityTrackEntry(EntityTrackEntryMob::new);
+        manager.registerEntityTrackEntry(EntityTrackEntryItemFrame::new);
+        manager.registerEntityTrackEntry(EntityTrackEntryPainting::new);
     }
 
     public static void init() {
-        for (Class<? extends IEntityTrackEntry> clazz : PneumaticHelmetRegistry.getInstance().entityTrackEntries) {
-            try {
-                trackEntries.add(clazz.newInstance());
-            } catch (InstantiationException e) {
-                Log.error("[Entity Tracker] Couldn't registrate " + clazz.getName() + ". Does it have a parameterless constructor?");
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                Log.error("[Entity Tracker] Couldn't registrate " + clazz.getName() + ". Is it a public class?");
-                e.printStackTrace();
-            }
+        for (Supplier<? extends IEntityTrackEntry> sup : PneumaticHelmetRegistry.getInstance().entityTrackEntries) {
+            trackEntries.add(Pair.of(sup, sup.get()));
         }
     }
 
     public static List<IEntityTrackEntry> getTrackersForEntity(Entity entity) {
         List<IEntityTrackEntry> trackers = new ArrayList<>();
-        for (IEntityTrackEntry tracker : trackEntries) {
-            if (tracker.isApplicable(entity)) {
-                try {
-                    IEntityTrackEntry newTracker = tracker.getClass().newInstance();
-                    newTracker.isApplicable(entity); // just as an initializer.
-                    trackers.add(newTracker);
-                } catch (InstantiationException | IllegalAccessException e) {
-                    // shouldn't get here, since we already tried this in init()
-                    e.printStackTrace();
-                }
+        for (Pair<Supplier<? extends IEntityTrackEntry>, IEntityTrackEntry> pair : trackEntries) {
+            if (pair.getRight().isApplicable(entity)) {
+                IEntityTrackEntry newTracker = pair.getLeft().get();
+                newTracker.isApplicable(entity); // just as an initializer.
+                trackers.add(newTracker);
             }
         }
         return trackers;

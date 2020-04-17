@@ -7,7 +7,10 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.network.PacketSendArmorHUDMessage;
+import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
@@ -27,7 +30,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -285,30 +287,4 @@ public class EventHandlerPneumaticArmor {
         double midY = (player.getPosY() + player.getEyePosition(1.0f).y) / 2;
         return player.getPositionVector().add(player.getLookVec().scale(player.getPosY() - midY));
     }
-
-    /**
-     * Server side: Inform players joining the world of existing players' jet boots status
-     */
-    @SubscribeEvent
-    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        if (!event.getWorld().isRemote && event.getEntity() instanceof ServerPlayerEntity) {
-            ServerPlayerEntity newPlayer = (ServerPlayerEntity) event.getEntity();
-            JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(newPlayer);
-            // inform the new player of any other relevant player's state
-            for (PlayerEntity player : event.getWorld().getPlayers()) {
-                if (player.getEntityId() != newPlayer.getEntityId() && isPneumaticArmorPiece(newPlayer, EquipmentSlotType.FEET)) {
-                    JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
-                    if (state != null) {
-                        NetworkHandler.sendToPlayer(new PacketJetBootsStateSync(player, state), newPlayer);
-                    }
-                }
-            }
-            // inform the other players of the new player's state if necessary
-            if (isPneumaticArmorPiece(newPlayer, EquipmentSlotType.FEET)) {
-                JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(newPlayer);
-                if (state != null) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(newPlayer, state), event.getWorld().getDimension().getType());
-            }
-        }
-    }
-
 }

@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * Use this interface to specify any hackable entity. When it's your entity, you can simply implement this interface in
  * the entity's class. If you don't have access to the entity (i.e. vanilla entities or entities from other mods), you
  * can implement this interface in a separate class and register it using
- * {@link IPneumaticHelmetRegistry#addHackable(Class, Class)}.
+ * {@link IPneumaticHelmetRegistry#addHackable(Class, java.util.function.Supplier)}.
  * Either way, there will be an IHackableEntity instance for every entity.
  */
 public interface IHackableEntity {
@@ -21,7 +22,7 @@ public interface IHackableEntity {
      * @return a unique String id
      */
     @Nullable
-    String getId();
+    ResourceLocation getHackableId();
 
     /**
      * Returning true will allow the player to hack this entity. This can be used to only allow hacking on certain
@@ -37,7 +38,7 @@ public interface IHackableEntity {
      * This method is only called when canHack(Entity) returned true.
      * Any added text will be localized where applicable.
      *
-     * @param entity the potential hacking target
+     * @param entity the potential hack target
      * @param curInfo a string list to append info to
      * @param player the player who is looking at the entity
      */

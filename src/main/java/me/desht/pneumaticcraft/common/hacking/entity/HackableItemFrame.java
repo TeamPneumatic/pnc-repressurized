@@ -5,13 +5,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackableItemFrame implements IHackableEntity {
     @Override
-    public String getId() {
-        return "itemFrame";
+    public ResourceLocation getHackableId() {
+        return RL("item_frame");
     }
 
     @Override

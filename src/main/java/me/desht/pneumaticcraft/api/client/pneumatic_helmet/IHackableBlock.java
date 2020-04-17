@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -14,68 +15,98 @@ import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Use this interface to specify any hackable block. When it's your block, you can simply implement this interface in
  * your block's class. If you don't have access to the class (vanilla blocks or blocks from other mods), you can
  * implement this interface in a separate class and register it using
- * {@link IPneumaticHelmetRegistry#addHackable(Block, Class)} . With the former way there will be one
+ * {@link IPneumaticHelmetRegistry#addHackable(Block, Supplier)} . With the former way there will be one
  * instance only per type. In the latter, there will be an IHackableBlock instance for every block.
  */
 public interface IHackableBlock {
     /**
-     * Should return a unique id to represent this hackable. Used in NBT saving to be able to trigger the afterHackTime after a server restart.
-     * Null is a valid return: afterHackTick will not be triggered at all in that case.
+     * Get a unique id to represent this hackable. Used in NBT saving to be able to trigger the afterHackTime
+     * after a server restart.  Null is a valid return: afterHackTick will not be triggered at all in that case.
+     * <p>
+     * The returned ResourceLocation should be in the namespace of the mod which adds the hack (which is not necessarily
+     * the mod that adds the hackable block).
      * <p>
      * CURRENTLY THIS ISN'T IMPLEMENTED.
      *
-     * @return
+     * @return a unique ID for this hack type
      */
-    String getId();
+    ResourceLocation getHackableId();
 
     /**
      * Returning true will allow the player to hack this block. This can be used to only allow hacking on certain conditions.
+     *
+     * @param world the world
+     * @param pos the block pos
+     * @param player the player observing the block
      */
-    boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player);
+    default boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
+        return true;
+    }
 
     /**
      * Add info that is displayed on the tracker tooltip here. Text like "Hack to explode" can be added.
-     * This method is only called when canHack(World, int, int, int) returned true.
-     * The added lines automatically will be tried to get localized.
+     * This method is only called when {@link #canHack(IBlockReader, BlockPos, PlayerEntity)} has returned true.
+     * Added lines are automatically localised where possible.
+     *
+     * @param world the world
+     * @param pos the block pos
+     * @param curInfo string list to add info to
+     * @param player the player observing the hackable block
      */
-    void addInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player);
+    void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player);
 
     /**
      * Add info that is being displayed after hacking, as long as 'afterHackTick' is returning true.
      * Things like "Neutralized".
-     * The added lines automatically will be tried to get localized.
+     * Added lines are automatically localised where possible.
      *
-     * @param curInfo
-     * @param player
+     * @param world the world
+     * @param pos the block pos
+     * @param curInfo string list to add info to
+     * @param player the player observing the hacked block
      */
-    void addPostHackInfo(World world, BlockPos pos, List<String> curInfo, PlayerEntity player);
+    void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player);
 
     /**
-     * Return the time it takes to hack this block in ticks. For more powerful hacks, a longer required hacking time is adviced.
+     * Get the time it takes to hack this block in ticks. For more powerful hacks, a longer hacking time
+     * is recommended.
+     *
+     * @param world the world
+     * @param pos the block pos
+     * @param player the player observing the hackable block
      */
     int getHackTime(IBlockReader world, BlockPos pos, PlayerEntity player);
 
     /**
-     * When the player hacked the block for getHackTime(World, int, int, int) ticks this will be called on both server and client side.
+     * When the player has been hacking the block for {@link #getHackTime(IBlockReader, BlockPos, PlayerEntity)} ticks,
+     * this will be called on both server and client side.
+     *
+     * @param world the world
+     * @param pos the block pos
+     * @param player the player observing the hacked block
      */
-    void onHackFinished(World world, BlockPos pos, PlayerEntity player);
+    void onHackComplete(World world, BlockPos pos, PlayerEntity player);
 
     /**
-     * Called every tick after the hacking finished (on both server and client side). Returning true will keep this going (for mob spawners, to keep them neutralized),
-     * or false to stop ticking (for door/lever hacking).
+     * Called every tick after the hacking finished (on both server and client side). Returning true will keep this
+     * going (for mob spawners, to keep them neutralized), or false to stop ticking for one-shot hacks (e.g. door/lever
+     * hacking).
      * <p>
      * CURRENTLY THIS METHOD WILL STOP GETTING INVOKED AFTER A SERVER RESTART!
      *
-     * @param world
-     * @param pos
-     * @return
+     * @param world the world
+     * @param pos the block pos
+     * @return true to keep the hack running (e.g. mob spawners), or false for one-shot hacks (e.g. levers/doors)
      */
-    boolean afterHackTick(World world, BlockPos pos);
+    default boolean afterHackTick(IBlockReader world, BlockPos pos) {
+        return false;
+    }
 
     /**
      * Fake up a ray trace result for a targetted block. This is intended to be passed into

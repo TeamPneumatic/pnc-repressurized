@@ -24,7 +24,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
         return HackUpgradeHandler.enabledForPlayer(ClientUtils.getClientPlayer())
-                && HackableHandler.getHackableForCoord(world, pos, ClientUtils.getClientPlayer()) != null;
+                && HackableHandler.getHackableForBlock(world, pos, ClientUtils.getClientPlayer()) != null;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
     @Override
     public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList) {
         PlayerEntity player = ClientUtils.getClientPlayer();
-        IHackableBlock hackableBlock = HackableHandler.getHackableForCoord(world, pos, player);
+        IHackableBlock hackableBlock = HackableHandler.getHackableForBlock(world, pos, player);
         assert hackableBlock != null;
         int hackTime = HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class).getTargetForCoord(pos).getHackTime();
         if (hackTime == 0) {

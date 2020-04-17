@@ -2,21 +2,25 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class HackableTameable implements IHackableEntity {
 
     @Override
-    public String getId() {
-        return null;
+    public ResourceLocation getHackableId() {
+        return RL("tameable");
     }
 
     @Override
     public boolean canHack(Entity entity, PlayerEntity player) {
-        return ((TameableEntity) entity).getOwner() != player;
+        return entity instanceof TameableEntity && ((TameableEntity) entity).getOwner() != player;
     }
 
     @Override
@@ -36,23 +40,23 @@ public class HackableTameable implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        TameableEntity tameable = (TameableEntity) entity;
         if (entity.world.isRemote) {
-            tameable.handleStatusUpdate((byte) 7);
+            entity.handleStatusUpdate((byte) 7);
         } else {
+            TameableEntity tameable = (TameableEntity) entity;
             tameable.getNavigator().clearPath();
             tameable.setAttackTarget(null);
             tameable.setHealth(20.0F);
             tameable.setOwnerId(player.getUniqueID());
-            entity.world.setEntityState(tameable, (byte) 7);
+            tameable.world.setEntityState(entity, (byte) 7);
             tameable.setTamed(true);
 
             // TODO: code smell
-            // Would be better to have a HackableOcelot subclass, but HackableHandler.getHackableForEntity() isn't
-            // set up to prioritise getting an ocelot over a generic tameable.
-//            if (entity instanceof OcelotEntity) {
-//                ((OcelotEntity) entity).setTameSkin(1 + entity.getEntityWorld().rand.nextInt(3));
-//            }
+            // Would be better to have a HackableCat subclass, but HackableHandler.getHackableForEntity() isn't
+            // set up to prioritise getting a cat over a generic tameable.
+            if (entity instanceof CatEntity) {
+                ((CatEntity) entity).setCatType(-1);  // < 0 means "use a random type"
+            }
         }
     }
 

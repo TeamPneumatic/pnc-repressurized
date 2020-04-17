@@ -7,18 +7,22 @@ import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class HackableCow implements IHackableEntity {
     @Override
-    public String getId() {
-        return null;
+    public ResourceLocation getHackableId() {
+        return RL("cow");
     }
 
     @Override
     public boolean canHack(Entity entity, PlayerEntity player) {
-        return entity.getClass() == CowEntity.class;
+        // mooshrooms are also a type of CowEntity
+        return entity.getType() == EntityType.COW;
     }
 
     @Override
