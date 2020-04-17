@@ -35,8 +35,9 @@ public enum HackTickHandler {
                 IHackableBlock hackableBlock = entry.getValue();
                 WorldAndCoord hackedBlock = entry.getKey();
                 boolean found = false;
-                for (Map.Entry<Block, Class<? extends IHackableBlock>> registeredEntry : PneumaticHelmetRegistry.getInstance().hackableBlocks.entrySet()) {
-                    if (hackableBlock.getClass() == registeredEntry.getValue() && hackedBlock.getBlock() == registeredEntry.getKey()) {
+                for (Block block : PneumaticHelmetRegistry.getInstance().allHackableBlocks) {
+                    Class<? extends IHackableBlock> cls = PneumaticHelmetRegistry.getInstance().getHackableBlock(block);
+                    if (hackableBlock.getClass() == cls && hackedBlock.getBlock() == block) {
                         if (!hackableBlock.afterHackTick((World) hackedBlock.world, hackedBlock.pos)) {
                             blockIterator.remove();
                         }

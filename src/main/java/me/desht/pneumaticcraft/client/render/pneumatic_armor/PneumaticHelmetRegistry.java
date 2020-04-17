@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.Block
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.NetworkTagCollection;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.Validate;
@@ -19,7 +19,9 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     private static final PneumaticHelmetRegistry INSTANCE = new PneumaticHelmetRegistry();
     public final List<Class<? extends IEntityTrackEntry>> entityTrackEntries = new ArrayList<>();
     public final Map<Class<? extends Entity>, Class<? extends IHackableEntity>> hackableEntities = new HashMap<>();
-    public final Map<Block, Class<? extends IHackableBlock>> hackableBlocks = new HashMap<>();
+    private final Map<Block, Class<? extends IHackableBlock>> hackableBlocks = new HashMap<>();
+    private final Map<Block, Class<? extends IHackableBlock>> hackableTaggedBlocks = new HashMap<>();
+    public final Set<Block> allHackableBlocks = new HashSet<>();
     public final Map<String, Class<? extends IHackableEntity>> stringToEntityHackables = new HashMap<>();
     public final Map<String, Class<? extends IHackableBlock>> stringToBlockHackables = new HashMap<>();
     private final Map<ResourceLocation, Class<? extends IHackableBlock>> pendingBlockTags = new HashMap<>();
@@ -80,14 +82,19 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     @Override
     public void addHackable(Tag<Block> blockTag, Class<? extends IHackableBlock> iHackable) {
         // can't add these yet because tags aren't populated at this point
-        // we'll resolve them later (server started event & client logged in event)
-        // TODO doesn't handle tag changes due to resource reload, but that's not the end of the world
+        // we'll resolve them later (resolveBlockTags())
         pendingBlockTags.put(blockTag.getId(), iHackable);
     }
 
-    public void resolveBlockTags() {
-        pendingBlockTags.forEach((id, hackable) -> BlockTags.getCollection().get(id).getAllElements().forEach(block -> addHackable(block, hackable)));
-        pendingBlockTags.clear();
+    /**
+     * Called from TagsUpdatedEvent on both server and client
+     */
+    public void resolveBlockTags(NetworkTagCollection<Block> blocks) {
+        hackableTaggedBlocks.clear();
+        pendingBlockTags.forEach((id, hackable) -> blocks.get(id).getAllElements().forEach(block -> hackableTaggedBlocks.put(block, hackable)));
+        allHackableBlocks.clear();
+        allHackableBlocks.addAll(hackableBlocks.keySet());
+        allHackableBlocks.addAll(hackableTaggedBlocks.keySet());
     }
 
     @Override
@@ -104,5 +111,9 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     public void registerRenderHandler(IUpgradeRenderHandler renderHandler) {
         Validate.notNull(renderHandler, "Render handler can't be null!");
         UpgradeRenderHandlerList.instance().addUpgradeRenderer(renderHandler);
+    }
+
+    public Class<? extends IHackableBlock> getHackableBlock(Block block) {
+        return hackableBlocks.getOrDefault(block, hackableTaggedBlocks.get(block));
     }
 }

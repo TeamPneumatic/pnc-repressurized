@@ -717,8 +717,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             Entity closest = entities.get(0);
             Vec3d pos = PneumaticCraftUtils.getBlockCentre(getPos());
             for (Entity entity : entities) {
-                double d1 = PneumaticCraftUtils.distBetweenSq(closest.getPosX(), closest.getPosY(), closest.getPosZ(), pos.x, pos.y, pos.z);
-                double d2 = PneumaticCraftUtils.distBetweenSq(entity.getPosX(), entity.getPosY(), entity.getPosZ(), pos.x, pos.y, pos.z);
+                double d1 = PneumaticCraftUtils.distBetweenSq(closest.posX, closest.posY, closest.posZ, pos.x, pos.y, pos.z);
+                double d2 = PneumaticCraftUtils.distBetweenSq(entity.posX, entity.posY, entity.posZ, pos.x, pos.y, pos.z);
                 if (d1 > d2) {
                     closest = entity;
                 }

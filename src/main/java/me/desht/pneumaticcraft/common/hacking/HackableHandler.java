@@ -128,7 +128,7 @@ public class HackableHandler {
         Iterator<Map.Entry<WorldAndCoord, IHackableBlock>> iterator = getInstance().trackedHackableBlocks.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<WorldAndCoord, IHackableBlock> entry = iterator.next();
-            Class<? extends IHackableBlock> hackableBlockClazz = PneumaticHelmetRegistry.getInstance().hackableBlocks.get(entry.getKey().getBlock());
+            Class<? extends IHackableBlock> hackableBlockClazz = PneumaticHelmetRegistry.getInstance().getHackableBlock(entry.getKey().getBlock());
             if (hackableBlockClazz != entry.getValue().getClass()
                     || !entry.getValue().canHack(entry.getKey().world, entry.getKey().pos, player)
                     && !isInDisplayCooldown(entry.getValue(), entry.getKey().world, entry.getKey().pos, player))
@@ -140,9 +140,10 @@ public class HackableHandler {
             return (IHackableBlock) block;
         IHackableBlock hackable = getInstance().trackedHackableBlocks.get(new WorldAndCoord(world, pos));
         if (hackable == null) {
-            if (!PneumaticHelmetRegistry.getInstance().hackableBlocks.containsKey(block)) return null;
+            Class<? extends IHackableBlock> cls = PneumaticHelmetRegistry.getInstance().getHackableBlock(block);
+            if (cls == null) return null;
             try {
-                hackable = PneumaticHelmetRegistry.getInstance().hackableBlocks.get(block).newInstance();
+                hackable = cls.newInstance();
                 if (hackable.canHack(world, pos, player)) {
                     getInstance().trackedHackableBlocks.put(new WorldAndCoord(world, pos), hackable);
                 } else {
