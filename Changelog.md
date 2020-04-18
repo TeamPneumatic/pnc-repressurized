@@ -6,7 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.11.13-395 (6 Apr 2020)
+### 0.11.14-395 (18 Apr 2020)
+#### Updates
+* Programmable Controller now stores Forge Energy (up to 100,000 FE).  This allows the Import RF & Export RF programming widgets to work as you'd expect.
+* Programmable Controller fake drone entity now has an entity name, mainly for the purposes of blacklisting by Neat (Neat is a mod by Vazkii...)
+  * Use the name "programmableController" in the Neat config to blacklist it
+#### Fixes
+* Added missing "Move Input" GUI icon for the Thermopneumatic Processing Plant GUI (forgot to commit it to github in the last update, sorry)
+
+### 0.11.13-394 (6 Apr 2020)
 #### Updates
 * Thermopneumatic Processing Plant GUI "Dump Input" button is now "Move Input" by default, which moves the input fluid to the output tank if possible.
   * Hold down Shift to get the old "Dump Input" behaviour back
