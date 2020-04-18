@@ -45,6 +45,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -61,10 +62,13 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class TileEntityProgrammableController extends TileEntityPneumaticBase implements IMinWorkingPressure, IDroneBase, ISideConfigurable {
+    private static final int ENERGY_CAPACITY = 100000;
+
     private static final int INVENTORY_SIZE = 1;
     private static final String FALLBACK_NAME = "[ProgController]";
     private static final UUID FALLBACK_UUID = UUID.nameUUIDFromBytes(FALLBACK_NAME.getBytes());
 
+    private final PneumaticEnergyStorage energyStorage;
     private final ProgrammableItemStackHandler inventory;
     private EntityProgrammableController drone;
     private final FluidTank tank = new FluidTank(16000);
@@ -109,6 +113,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         inventory = new ProgrammableItemStackHandler(this);
         addApplicableUpgrade(EnumUpgrade.SPEED, EnumUpgrade.DISPENSER);
         MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(this));
+
+        energyStorage = new PneumaticEnergyStorage(ENERGY_CAPACITY);
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this, 5);
         itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(Itemss.DRONE),
@@ -335,6 +341,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         ownerID = tag.hasKey("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
         ownerName = tag.hasKey("ownerName") ? tag.getString("ownerName") : FALLBACK_NAME;
         itemHandlerSideConfigurator.updateHandler("droneInv", droneInventory);
+        energyStorage.readFromNBT(tag);
 
         if (getDroneSlots() != droneInventory.getSlots() && PneumaticCraftRepressurized.proxy.getClientWorld() == null) {
             Log.warning("drone inventory size mismatch: dispenser upgrades = " + getDroneSlots() + ", saved inv size = " + droneInventory.getSlots());
@@ -360,6 +367,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
         tag.setString("ownerID", ownerID.toString());
         tag.setString("ownerName", ownerName);
 
+        energyStorage.writeToNBT(tag);
+
         return tag;
     }
 
@@ -369,6 +378,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             return true;
         } else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return itemHandlerSideConfigurator.getHandler(facing) != null;
+        } else if (capability == CapabilityEnergy.ENERGY) {
+            return true;
         } else {
             return super.hasCapability(capability, facing);
         }
@@ -381,6 +392,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase im
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(tank);
         } else if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(itemHandlerSideConfigurator.getHandler(facing));
+        } else if (capability == CapabilityEnergy.ENERGY) {
+            return CapabilityEnergy.ENERGY.cast(energyStorage);
         } else {
             return super.getCapability(capability, facing);
         }
