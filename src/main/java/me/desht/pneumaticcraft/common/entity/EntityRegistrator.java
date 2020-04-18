@@ -31,6 +31,7 @@ public class EntityRegistrator {
         registerEntity(r, EntityMicromissile.class, "micromissile", "micromissile", 80, 1, true);
         registerEntity(r, EntityTumblingBlock.class, "tumbling_block", "tumbling_block", 80, 1, true);
         registerEntity(r, EntityRing.class, "ring", Names.MOD_ID + ".ring", 80, 1, true);
+        registerEntity(r, EntityProgrammableController.class, "programmable_controller", "programmableController", 80, 1, true);
     }
 
     private static void registerEntity(IForgeRegistry<EntityEntry> reg, Class<? extends Entity> cls, String id, String name, int range, int freq, boolean sendVelocityUpdates) {

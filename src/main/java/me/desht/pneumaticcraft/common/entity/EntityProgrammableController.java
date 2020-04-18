@@ -10,14 +10,14 @@ import net.minecraft.world.World;
 public class EntityProgrammableController extends EntityDroneBase {
     private final TileEntityProgrammableController controller;
 
-//    public EntityProgrammableController(World world) {
-//        super(world);
-//        controller = null;
-//    }
+    public EntityProgrammableController(World world) {
+        this(world, null);
+    }
 
     public EntityProgrammableController(World world, TileEntityProgrammableController controller) {
         super(world);
-        preventEntitySpawning = false;
+
+        this.preventEntitySpawning = false;
         this.controller = controller;
     }
 
@@ -39,10 +39,12 @@ public class EntityProgrammableController extends EntityDroneBase {
 
     @Override
     public void onUpdate() {
-        if (controller.isInvalid()) setDead();
-        if (digLaser != null) digLaser.update();
-        oldPropRotation = propRotation;
-        propRotation += 1;
+        if (controller != null) {
+            if (controller.isInvalid()) setDead();
+            if (digLaser != null) digLaser.update();
+            oldPropRotation = propRotation;
+            propRotation += 1;
+        }
     }
 
     @Override
@@ -57,11 +59,11 @@ public class EntityProgrammableController extends EntityDroneBase {
 
     @Override
     protected BlockPos getDugBlock() {
-        return controller.getDugPosition();
+        return controller == null ? null : controller.getDugPosition();
     }
 
     @Override
     public ItemStack getDroneHeldItem() {
-        return controller.getFakePlayer().getHeldItemMainhand();
+        return controller == null ? ItemStack.EMPTY : controller.getFakePlayer().getHeldItemMainhand();
     }
 }
