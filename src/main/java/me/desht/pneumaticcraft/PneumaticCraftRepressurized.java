@@ -102,7 +102,7 @@ public class PneumaticCraftRepressurized {
         ModVillagers.PROFESSIONS.register(modBus);
         // Temp. hacky solution: delay adding deferred registration for custom registries
         // Proper forge support under discussion...
-        modBus.addListener(EventPriority.LOW, this::addCustomRegistryDeferredRegisters);
+        modBus.addListener(EventPriority.LOWEST, this::addCustomRegistryDeferredRegisters);
 
         Reflections.init();
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
@@ -143,11 +143,6 @@ public class PneumaticCraftRepressurized {
         VillageStructures.init();
         ModNameCache.init();
         ThirdPartyManager.instance().init();
-
-        // TODO 1.14 loot
-//        if (ConfigHandler.general.enableDungeonLoot) {
-//            LootTableList.register(RL("inject/simple_dungeon_loot"));
-//        }
 
         // stuff to do after every other mod is done initialising
         DeferredWorkQueue.runLater(() -> {

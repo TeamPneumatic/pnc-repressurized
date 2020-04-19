@@ -56,9 +56,12 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -77,12 +80,16 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private static final int INVENTORY_SIZE = 1;
     private static final String FALLBACK_NAME = "[ProgController]";
     private static final UUID FALLBACK_UUID = UUID.nameUUIDFromBytes(FALLBACK_NAME.getBytes());
+    private static final int MAX_ENERGY = 100000;
 
     private final ProgrammableItemStackHandler inventory = new ProgrammableItemStackHandler(this);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     private final FluidTank tank = new FluidTank(16000);
-    private final LazyOptional<IFluidTank> tankCap = LazyOptional.of(() -> tank);
+    private final LazyOptional<IFluidHandler> tankCap = LazyOptional.of(() -> tank);
+
+    private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(MAX_ENERGY);
+    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
     private EntityProgrammableController drone;
     private DroneAIManager aiManager;
@@ -101,6 +108,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private int diggingX, diggingY, diggingZ;
     @DescSynced
     private int speedUpgrades;
+    @DescSynced
+    public boolean isIdle;
 
     public static final Set<ResourceLocation> BLACKLISTED_WIDGETS = ImmutableSet.of(
             RL("computer_craft"),
@@ -152,7 +161,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         }
 
         double speed = getSpeed();
-        if (PneumaticCraftUtils.distBetweenSq(getPos(), targetX, targetY, targetZ) <= speed * speed) {
+        if (PneumaticCraftUtils.distBetweenSq(getPos(), targetX, targetY, targetZ) <= 1 && isIdle) {
             curX = targetX;
             curY = targetY;
             curZ = targetZ;
@@ -204,7 +213,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     private double getSpeed() {
-        return Math.min(10, speedUpgrades) * 0.1 + 0.1;
+        return Math.min(10, speedUpgrades) * 0.05 + 0.15;
     }
 
     private UUID getOwnerUUID() {
@@ -283,10 +292,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             if (!stack.isEmpty() && isProgrammableAndValidForDrone(TileEntityProgrammableController.this, stack)) {
                 progWidgets.addAll(TileEntityProgrammer.getProgWidgets(stack));
                 TileEntityProgrammer.updatePuzzleConnections(progWidgets);
+                isIdle = false;
             } else {
                 setDugBlock(null);
                 targetX = getPos().getX() + 0.5;
-                targetY = getPos().getY() + 0.6;
+                targetY = getPos().getY() + 1.0;
                 targetZ = getPos().getZ() + 0.5;
                 boolean updateNeighbours = false;
                 for (int i = 0; i < redstoneLevels.length; i++) {
@@ -296,6 +306,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                     }
                 }
                 if (updateNeighbours) updateNeighbours();
+                isIdle = true;
             }
             if (!getWorld().isRemote) {
                 getAIManager().setWidgets(progWidgets);
@@ -348,6 +359,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         for (int i = 0; i < tmpInv.getSlots() && i < droneItemHandler.getSlots(); i++) {
             droneItemHandler.setStackInSlot(i, tmpInv.getStackInSlot(i).copy());
         }
+        energy.writeToNBT(tag);
 
         itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
     }
@@ -371,6 +383,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         if (ownerID != null) tag.putString("ownerID", ownerID.toString());
         if (ownerName != null) tag.putString("ownerName", ownerName.getFormattedText());
 
+        energy.readFromNBT(tag);
+
         return tag;
     }
 
@@ -378,9 +392,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return tankCap.cast();
+            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(cap, tankCap);
         } else if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return itemHandlerSideConfigurator.getHandler(side).cast();
+            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, itemHandlerSideConfigurator.getHandler(side));
+        } else if (cap == CapabilityEnergy.ENERGY) {
+            return CapabilityEnergy.ENERGY.orEmpty(cap, energyCap);
         } else {
             return super.getCapability(cap, side);
         }
@@ -395,7 +411,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         calculateUpgrades();
         inventory.onContentsChanged(0);  // force initial read of any installed drone/network api
         curX = targetX = getPos().getX() + 0.5;
-        curY = targetY = getPos().getY() + 0.6;
+        curY = targetY = getPos().getY() + 1.0;
         curZ = targetZ = getPos().getZ() + 0.5;
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -444,7 +460,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public Vec3d getDronePos() {
         if (curX == 0 && curY == 0 && curZ == 0) {
             curX = getPos().getX() + 0.5;
-            curY = getPos().getY() + 0.6;
+            curY = getPos().getY() + 1.0;
             curZ = getPos().getZ() + 0.5;
             targetX = curX;
             targetY = curY;

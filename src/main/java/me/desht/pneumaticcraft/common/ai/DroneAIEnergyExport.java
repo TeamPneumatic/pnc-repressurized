@@ -1,15 +1,15 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryExport;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEnergyExport;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
-public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryExport> {
-    public DroneAIEnergyExport(IDroneBase drone, ProgWidgetInventoryExport widget) {
+public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetEnergyExport> {
+    public DroneAIEnergyExport(IDroneBase drone, ProgWidgetEnergyExport widget) {
         super(drone, widget);
     }
 

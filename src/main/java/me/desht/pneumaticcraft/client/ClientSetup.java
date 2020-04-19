@@ -118,7 +118,7 @@ public class ClientSetup {
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.HARVESTING_DRONE.get(), RenderDrone.HARVESTING_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.GUARD_DRONE.get(), RenderDrone.GUARD_FACTORY);
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.COLLECTOR_DRONE.get(), RenderDrone.COLLECTOR_FACTORY);
-        RenderingRegistry.registerEntityRenderingHandler(ModEntities.PROGRAMMABLE_CONTROLLER.get(), RenderDrone.REGULAR_FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.PROGRAMMABLE_CONTROLLER.get(), RenderDrone.PROGRAMMABLE_CONTROLLER_FACTORY);
 
         // semiblocks
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.CROP_SUPPORT.get(), RenderCropSupport.FACTORY);

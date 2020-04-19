@@ -10,23 +10,13 @@ import net.minecraft.world.World;
 
 public class EntityProgrammableController extends EntityDroneBase {
     private TileEntityProgrammableController controller;
-
-//    public static EntityProgrammableController createProgrammableController(EntityType<EntityProgrammableController> type, World world) {
-//        return new EntityProgrammableController(type, world);
-//    }
+    private float propSpeed = 0f;
 
     public EntityProgrammableController(EntityType<EntityProgrammableController> type, World world) {
         super(type, world);
 
         this.preventEntitySpawning = false;
     }
-
-//    public EntityProgrammableController(World world, TileEntityProgrammableController controller) {
-//        super(ModEntities.DRONE.get(), world);
-//
-//        this.preventEntitySpawning = false;
-//        this.controller = controller;
-//    }
 
     public void setController(TileEntityProgrammableController controller) {
         this.controller = controller;
@@ -50,9 +40,20 @@ public class EntityProgrammableController extends EntityDroneBase {
 
     @Override
     public void tick() {
-        if (controller.isRemoved()) remove();
-        oldPropRotation = propRotation;
-        propRotation += 1;
+        if (controller != null) {
+            if (controller.isRemoved()) {
+                remove();
+            }
+            if (world.isRemote) {
+                if (controller.isIdle) {
+                    propSpeed = Math.max(0, propSpeed - 0.04F);
+                } else {
+                    propSpeed = Math.min(1, propSpeed + 0.04F);
+                }
+                oldPropRotation = propRotation;
+                propRotation += propSpeed;
+            }
+        }
     }
 
     @Override
@@ -61,18 +62,17 @@ public class EntityProgrammableController extends EntityDroneBase {
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource p_70097_1_, float p_70097_2_) {
+    public boolean attackEntityFrom(DamageSource source, float amount) {
         return false;
     }
 
     @Override
     public BlockPos getDugBlock() {
-        return controller.getDugPosition();
+        return controller == null ? null : controller.getDugPosition();
     }
 
     @Override
     public ItemStack getDroneHeldItem() {
-        return controller.getFakePlayer().getHeldItemMainhand();
+        return controller == null ? ItemStack.EMPTY :controller.getFakePlayer().getHeldItemMainhand();
     }
-
 }

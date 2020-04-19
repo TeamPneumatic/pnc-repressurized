@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.util.fakeplayer;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import net.minecraft.entity.item.ExperienceOrbEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
@@ -36,5 +37,10 @@ public class DroneFakePlayer extends FakePlayer {
     @Override
     public void tick() {
         ticksSinceLastSwing++;  // without this, drone's melee will be hopeless
+    }
+
+    @Override
+    protected void playEquipSound(ItemStack stack) {
+        // nothing
     }
 }

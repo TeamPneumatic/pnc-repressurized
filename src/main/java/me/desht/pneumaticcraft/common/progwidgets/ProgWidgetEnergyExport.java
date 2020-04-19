@@ -25,7 +25,7 @@ public class ProgWidgetEnergyExport extends ProgWidgetInventoryBase {
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIEnergyExport(drone, (ProgWidgetInventoryExport) widget);
+        return new DroneAIEnergyExport(drone, (ProgWidgetEnergyExport) widget);
     }
 
     @Override
