@@ -1,24 +1,22 @@
 package me.desht.pneumaticcraft.common.heat;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.heat.HeatRegistrationEvent;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
-import me.desht.pneumaticcraft.common.util.DatapackHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.command.arguments.BlockStateParser;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResourceManager;
-import net.minecraft.resources.IResourceManagerReloadListener;
 import net.minecraft.state.IProperty;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -105,15 +103,17 @@ public enum BlockHeatProperties {
         );
     }
 
-    // can't use the Forge selective listener because it references client-only class ReloadRequirements
-    @SuppressWarnings("deprecation")
-    public static class ReloadListener implements IResourceManagerReloadListener {
-        @Override
-        public void onResourceManagerReload(IResourceManager resourceManager) {
-            Map<ResourceLocation, JsonObject> map = DatapackHelper.loadJSONFiles(resourceManager, BLOCK_HEAT_PROPERTIES, "block heat properties");
+    public static class ReloadListener extends JsonReloadListener {
+        private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
+        public ReloadListener() {
+            super(GSON, BLOCK_HEAT_PROPERTIES);
+        }
+
+        @Override
+        protected void apply(Map<ResourceLocation, JsonObject> resourceList, IResourceManager resourceManagerIn, IProfiler profilerIn) {
             BlockHeatProperties.getInstance().clear();
-            map.forEach((id, json) -> {
+            resourceList.forEach((id, json) -> {
                 try {
                     CustomHeatEntry entry = CustomHeatEntry.fromJson(json);
                     if (entry != null) {

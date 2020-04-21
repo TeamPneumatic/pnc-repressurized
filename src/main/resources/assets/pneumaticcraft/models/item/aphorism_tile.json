@@ -1,5 +1,6 @@
 {
   "parent": "pneumaticcraft:block/aphorism_tile",
+  "gui_light": "front",
   "display": {
     "fixed": {
       "translation": [ 0, 0, -8 ]

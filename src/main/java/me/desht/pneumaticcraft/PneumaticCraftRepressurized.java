@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.recipes.MachineRecipeHandler;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
@@ -68,7 +68,7 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
-    public static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public PneumaticCraftRepressurized() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -84,6 +84,7 @@ public class PneumaticCraftRepressurized {
 
         modBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.addListener(this::serverAboutToStart);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::serverAboutToStartLowest);
         MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
         MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
         MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
@@ -120,6 +121,7 @@ public class PneumaticCraftRepressurized {
         MinecraftForge.EVENT_BUS.register(ItemGPSAreaTool.EventHandler.class);
         MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
     }
+
 
     private void addCustomRegistryDeferredRegisters(RegistryEvent.NewRegistry event) {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -172,8 +174,12 @@ public class PneumaticCraftRepressurized {
     }
 
     private void serverAboutToStart(FMLServerAboutToStartEvent event) {
-        event.getServer().getResourceManager().addReloadListener(new MachineRecipeHandler.ReloadListener());
+        event.getServer().getResourceManager().addReloadListener(new AmadronOfferManager.ReloadListener());
         event.getServer().getResourceManager().addReloadListener(new BlockHeatProperties.ReloadListener());
+    }
+
+    private void serverAboutToStartLowest(FMLServerAboutToStartEvent event) {
+        event.getServer().getResourceManager().addReloadListener(PneumaticCraftRecipeType.getCacheReloadListener());
     }
 
     private void serverStarting(FMLServerStartingEvent event) {
@@ -185,7 +191,6 @@ public class PneumaticCraftRepressurized {
     }
 
     private void serverStarted(FMLServerStartedEvent event) {
-//        PneumaticHelmetRegistry.getInstance().resolveBlockTags(BlockTags.getCollection());
     }
 
     static class ClientHandler {

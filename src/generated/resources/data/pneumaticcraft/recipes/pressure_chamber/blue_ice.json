@@ -1,0 +1,16 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "type": "pneumaticcraft:stacked_item",
+      "item": "minecraft:packed_ice",
+      "count": 4
+    }
+  ],
+  "pressure": 2.5,
+  "results": [
+    {
+      "item": "minecraft:blue_ice"
+    }
+  ]
+}

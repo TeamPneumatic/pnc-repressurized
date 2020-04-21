@@ -1,8 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -21,11 +20,10 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class JEIPressureChamberRecipeCategory implements IRecipeCategory<IPressureChamberRecipe> {
+public class JEIPressureChamberRecipeCategory implements IRecipeCategory<PressureChamberRecipe> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
@@ -60,13 +58,13 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<IPressu
     }
 
     @Override
-    public void setIngredients(IPressureChamberRecipe recipe, IIngredients ingredients) {
+    public void setIngredients(PressureChamberRecipe recipe, IIngredients ingredients) {
         ingredients.setInputIngredients(recipe.getInputsForDisplay());
-        ingredients.setOutputs(VanillaTypes.ITEM, recipe.getResultForDisplay());
+        ingredients.setOutputs(VanillaTypes.ITEM, recipe.getResultsForDisplay());
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, IPressureChamberRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayout recipeLayout, PressureChamberRecipe recipe, IIngredients ingredients) {
         List<Ingredient> inputs = recipe.getInputsForDisplay();
         for (int i = 0; i < inputs.size(); i++) {
             int posX = 18 + i % 3 * 17;
@@ -74,8 +72,8 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<IPressu
             recipeLayout.getItemStacks().init(i, true, posX, posY);
             recipeLayout.getItemStacks().set(i, Arrays.asList(inputs.get(i).getMatchingStacks()));
         }
-        for (int i = 0; i < recipe.getResultForDisplay().size(); i++) {
-            ItemStack stack = recipe.getResultForDisplay().get(i);
+        for (int i = 0; i < recipe.getResultsForDisplay().size(); i++) {
+            ItemStack stack = recipe.getResultsForDisplay().get(i);
             recipeLayout.getItemStacks().init(inputs.size() + i, false, 100 + i % 3 * 18, 58 + i / 3 * 18);
             recipeLayout.getItemStacks().set(inputs.size() + i, stack);
         }
@@ -88,25 +86,25 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<IPressu
     }
 
     @Override
-    public void draw(IPressureChamberRecipe recipe, double mouseX, double mouseY) {
+    public void draw(PressureChamberRecipe recipe, double mouseX, double mouseY) {
         float pressure = recipe.getCraftingPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
         PressureGaugeRenderer.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, recipe.getCraftingPressure(), pressure, 120, 27);
     }
 
     @Override
-    public Class<? extends IPressureChamberRecipe> getRecipeClass() {
-        return IPressureChamberRecipe.class;
+    public Class<? extends PressureChamberRecipe> getRecipeClass() {
+        return PressureChamberRecipe.class;
     }
 
     @Override
-    public List<String> getTooltipStrings(IPressureChamberRecipe recipe, double mouseX, double mouseY) {
+    public List<String> getTooltipStrings(PressureChamberRecipe recipe, double mouseX, double mouseY) {
         if (mouseX >= 100 && mouseY >= 7 && mouseX <= 140 && mouseY <= 47) {
             return ImmutableList.of(I18n.format("gui.tooltip.pressure", recipe.getCraftingPressure()));
         }
         return Collections.emptyList();
     }
 
-    static Collection<IPressureChamberRecipe> getAllRecipes() {
-        return PneumaticCraftRecipes.pressureChamberRecipes.values();
-    }
+//    static Collection<IPressureChamberRecipe> getAllRecipes() {
+//        return PneumaticCraftRecipes.pressureChamberRecipes.values();
+//    }
 }

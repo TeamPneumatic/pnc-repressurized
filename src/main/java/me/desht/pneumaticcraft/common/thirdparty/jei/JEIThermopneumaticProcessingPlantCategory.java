@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.recipe.IThermopneumaticProcessingPlantRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -22,7 +21,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.*;
 
-public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategory<IThermopneumaticProcessingPlantRecipe> {
+public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategory<ThermoPlantRecipe> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
@@ -38,12 +37,12 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
 
     @Override
     public ResourceLocation getUid() {
-        return ModCategoryUid.THERMO_PNEUMATIC;
+        return ModCategoryUid.THERMO_PLANT;
     }
 
     @Override
-    public Class<? extends IThermopneumaticProcessingPlantRecipe> getRecipeClass() {
-        return IThermopneumaticProcessingPlantRecipe.class;
+    public Class<? extends ThermoPlantRecipe> getRecipeClass() {
+        return ThermoPlantRecipe.class;
     }
 
     @Override
@@ -62,7 +61,7 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
     }
 
     @Override
-    public void setIngredients(IThermopneumaticProcessingPlantRecipe recipe, IIngredients ingredients) {
+    public void setIngredients(ThermoPlantRecipe recipe, IIngredients ingredients) {
         if (!recipe.getInputFluid().hasNoMatchingItems()) {
             ingredients.setInputLists(VanillaTypes.FLUID, Collections.singletonList(recipe.getInputFluid().getFluidStacks()));
         }
@@ -78,7 +77,7 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, IThermopneumaticProcessingPlantRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayout recipeLayout, ThermoPlantRecipe recipe, IIngredients ingredients) {
         FluidStack in = ingredients.getInputs(VanillaTypes.FLUID).get(0).get(0);
 
         int inH = 64, outH = 64;
@@ -111,7 +110,7 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
     }
 
     @Override
-    public void draw(IThermopneumaticProcessingPlantRecipe recipe, double mouseX, double mouseY) {
+    public void draw(ThermoPlantRecipe recipe, double mouseX, double mouseY) {
         if (recipe.getRequiredPressure() != 0) {
             float pressure = recipe.getRequiredPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
             PressureGaugeRenderer.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 136, 42);
@@ -123,12 +122,8 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
         w.render((int)mouseX, (int)mouseY, 0f);
     }
 
-    static Collection<IThermopneumaticProcessingPlantRecipe> getAllRecipes() {
-        return PneumaticCraftRecipes.thermopneumaticProcessingPlantRecipes.values();
-    }
-
     @Override
-    public List<String> getTooltipStrings(IThermopneumaticProcessingPlantRecipe recipe, double mouseX, double mouseY) {
+    public List<String> getTooltipStrings(ThermoPlantRecipe recipe, double mouseX, double mouseY) {
         List<String> res = new ArrayList<>();
         WidgetTemperature w = tempWidgets.get(recipe.getId());
         if (w != null && w.isMouseOver(mouseX, mouseY)) {

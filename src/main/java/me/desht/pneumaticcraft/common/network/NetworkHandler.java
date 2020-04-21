@@ -181,12 +181,12 @@ public class NetworkHandler {
 				PacketSendArmorHUDMessage::toBytes, PacketSendArmorHUDMessage::new, PacketSendArmorHUDMessage::handle);
 		registerMessage(PacketChestplateLauncher.class,
 				PacketChestplateLauncher::toBytes, PacketChestplateLauncher::new, PacketChestplateLauncher::handle);
-		registerMessage(PacketSyncRecipes.class,
-				PacketSyncRecipes::toBytes, PacketSyncRecipes::new, PacketSyncRecipes::handle);
 		registerMessage(PacketSyncSemiblock.class,
 				PacketSyncSemiblock::toBytes, PacketSyncSemiblock::new, PacketSyncSemiblock::handle);
-		registerMessage(PacketSmartChestSync.class,
-				PacketSmartChestSync::toBytes, PacketSmartChestSync::new, PacketSmartChestSync::handle);
+		registerMessage(PacketSyncSmartChest.class,
+				PacketSyncSmartChest::toBytes, PacketSyncSmartChest::new, PacketSyncSmartChest::handle);
+		registerMessage(PacketClearRecipeCache.class,
+				PacketClearRecipeCache::toBytes, PacketClearRecipeCache::new, PacketClearRecipeCache::handle);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {

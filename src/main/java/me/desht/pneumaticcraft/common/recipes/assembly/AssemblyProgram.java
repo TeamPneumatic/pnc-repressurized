@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.recipes.assembly;
 
-import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.RegistryObject;
 
 import java.util.Collection;
@@ -47,7 +48,7 @@ public abstract class AssemblyProgram {
 
     public EnumAssemblyProblem curProblem = EnumAssemblyProblem.NO_PROBLEM;
 
-    public IAssemblyRecipe.AssemblyProgramType getType() {
+    public AssemblyRecipe.AssemblyProgramType getType() {
         return getItem().getProgramType();
     }
 
@@ -70,7 +71,7 @@ public abstract class AssemblyProgram {
 
     public abstract void readFromNBT(CompoundNBT tag);
 
-    public abstract Collection<IAssemblyRecipe> getRecipeList();
+    public abstract Collection<AssemblyRecipe> getRecipeList(World world);
 
     /**
      * You can add problem messages here if an assembly program has a problem with a certain step.
@@ -91,11 +92,11 @@ public abstract class AssemblyProgram {
         }
     }
 
-    static boolean isValidInput(IAssemblyRecipe recipe, ItemStack input) {
+    static boolean isValidInput(AssemblyRecipe recipe, ItemStack input) {
         return recipe.matches(input);
     }
 
-    public static AssemblyProgram fromRecipe(IAssemblyRecipe recipe) {
+    public static AssemblyProgram fromRecipe(AssemblyRecipe recipe) {
         return ItemAssemblyProgram.fromProgramType(recipe.getProgramType()).getProgram();
     }
 

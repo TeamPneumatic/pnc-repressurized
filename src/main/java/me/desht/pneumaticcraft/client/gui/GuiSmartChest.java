@@ -14,7 +14,7 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerSmartChest;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSmartChestSync;
+import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest.PushPullMode;
@@ -240,7 +240,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                     }
                     te.setLastSlot(slotId);
                 }
-                NetworkHandler.sendToServer(new PacketSmartChestSync(this.te));
+                NetworkHandler.sendToServer(new PacketSyncSmartChest(this.te));
             } else {
                 // alt-click an item - toggle filtering for it
                 if (te.getFilter(slotId).isEmpty()) {
@@ -249,7 +249,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                     te.setFilter(slotId, ItemStack.EMPTY);
                 }
                 this.filter = te.getFilter();
-                NetworkHandler.sendToServer(new PacketSmartChestSync(this.te));
+                NetworkHandler.sendToServer(new PacketSyncSmartChest(this.te));
             }
         } else {
             super.handleMouseClick(slotIn, slotId, mouseButton, type);

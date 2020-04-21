@@ -1,0 +1,21 @@
+{
+  "type": "pneumaticcraft:refinery",
+  "input": {
+    "type": "pneumaticcraft:fluid",
+    "fluid": "pneumaticcraft:oil",
+    "amount": 10
+  },
+  "temperature": {
+    "min_temp": 373
+  },
+  "results": [
+    {
+      "fluid": "pneumaticcraft:diesel",
+      "amount": 4
+    },
+    {
+      "fluid": "pneumaticcraft:lpg",
+      "amount": 2
+    }
+  ]
+}

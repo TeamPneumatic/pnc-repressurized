@@ -1,0 +1,10 @@
+{
+  "type": "pneumaticcraft:heat_frame_cooling",
+  "input": {
+    "item": "minecraft:water_bucket"
+  },
+  "max_temp": 273,
+  "result": {
+    "item": "minecraft:ice"
+  }
+}

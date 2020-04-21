@@ -1,0 +1,11 @@
+{
+  "type": "pneumaticcraft:assembly_drill",
+  "input": {
+    "item": "pneumaticcraft:compressed_iron_block"
+  },
+  "result": {
+    "item": "pneumaticcraft:pressure_chamber_valve",
+    "count": 20
+  },
+  "program": "drill"
+}

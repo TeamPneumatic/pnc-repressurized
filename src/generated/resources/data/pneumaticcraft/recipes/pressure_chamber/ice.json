@@ -1,0 +1,16 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "type": "pneumaticcraft:stacked_item",
+      "item": "minecraft:snow_block",
+      "count": 4
+    }
+  ],
+  "pressure": 1.5,
+  "results": [
+    {
+      "item": "minecraft:ice"
+    }
+  ]
+}

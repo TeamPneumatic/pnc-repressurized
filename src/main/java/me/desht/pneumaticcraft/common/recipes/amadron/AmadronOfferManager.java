@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
@@ -9,17 +11,23 @@ import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
-import me.desht.pneumaticcraft.common.util.DatapackHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.entity.merchant.villager.VillagerTrades;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MerchantOffer;
+import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.*;
@@ -28,7 +36,7 @@ import java.util.stream.IntStream;
 public enum AmadronOfferManager {
     INSTANCE;
 
-    private static final String STATIC_OFFERS = "pneumaticcraft/amadron_offers";
+    private static final String AMADRON_OFFERS = "pneumaticcraft/amadron_offers";
 
     // static trades, always available: loaded from datapack
     private final List<AmadronOffer> staticOffers = new ArrayList<>();
@@ -151,10 +159,11 @@ public enum AmadronOfferManager {
     /**
      * Called on server start or /reload
      *
+     * @param resourceList a collection of all the amadron offer Json files
      * @param resourceManager the resource manager
      */
-    public void initOffers(IResourceManager resourceManager) {
-        loadFromDatapack(resourceManager);
+    public void initOffers(Map<ResourceLocation, JsonObject> resourceList, IResourceManager resourceManager) {
+        loadFromDatapack(resourceList);
         setupVillagerTrades();
         compileActiveOffersList();
     }
@@ -263,12 +272,10 @@ public enum AmadronOfferManager {
         }
     }
 
-    private void loadFromDatapack(IResourceManager resourceManager) {
-        Map<ResourceLocation, JsonObject> map = DatapackHelper.loadJSONFiles(resourceManager, STATIC_OFFERS, "amadron offer");
-
+    private void loadFromDatapack(Map<ResourceLocation, JsonObject> resourceList) {
         staticOffers.clear();
         periodicOffers.clear();
-        map.forEach((id, json) -> {
+        resourceList.forEach((id, json) -> {
             if (!json.has("id")) {
                 json.addProperty("id", id.toString());
             }
@@ -309,6 +316,27 @@ public enum AmadronOfferManager {
                 });
             }));
             validProfessions.addAll(validSet);
+        }
+    }
+
+    public static class ReloadListener extends JsonReloadListener {
+        private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
+
+        public ReloadListener() {
+            super(GSON, AMADRON_OFFERS);
+        }
+
+        @Override
+        protected void apply(Map<ResourceLocation, JsonObject> resourceList, IResourceManager resourceManagerIn, IProfiler profilerIn) {
+            AmadronOfferManager.getInstance().initOffers(resourceList, resourceManagerIn);
+        }
+    }
+
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class EventListener {
+        @SubscribeEvent
+        public static void serverLogin(PlayerEvent.PlayerLoggedInEvent evt) {
+            NetworkHandler.sendNonLocal((ServerPlayerEntity) evt.getPlayer(), new PacketSyncAmadronOffers());
         }
     }
 }

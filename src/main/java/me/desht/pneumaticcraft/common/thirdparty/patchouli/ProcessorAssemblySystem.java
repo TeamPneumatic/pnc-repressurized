@@ -1,17 +1,19 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariableProvider;
 import vazkii.patchouli.api.PatchouliAPI;
 import vazkii.patchouli.common.util.ItemStackUtil;
 
 public class ProcessorAssemblySystem implements IComponentProcessor {
-    private IAssemblyRecipe recipe = null;
+    private AssemblyRecipe recipe = null;
 
     @Override
     public void setup(IVariableProvider<String> iVariableProvider) {
@@ -43,14 +45,16 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
         return null;
     }
 
-    private IAssemblyRecipe findRecipe(ItemStack result) {
-        for (IAssemblyRecipe recipe : PneumaticCraftRecipes.assemblyLaserDrillRecipes.values()) {
+    private AssemblyRecipe findRecipe(ItemStack result) {
+        World world = Minecraft.getInstance().world;
+
+        for (AssemblyRecipe recipe : PneumaticCraftRecipeType.ASSEMBLY_DRILL.getRecipes(world).values()) {
             if (ItemStack.areItemsEqual(recipe.getOutput(), result)) return recipe;
         }
-        for (IAssemblyRecipe recipe : PneumaticCraftRecipes.assemblyLaserRecipes.values()) {
+        for (AssemblyRecipe recipe : PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipes(world).values()) {
             if (ItemStack.areItemsEqual(recipe.getOutput(), result)) return recipe;
         }
-        for (IAssemblyRecipe recipe : PneumaticCraftRecipes.assemblyDrillRecipes.values()) {
+        for (AssemblyRecipe recipe : PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER.getRecipes(world).values()) {
             if (ItemStack.areItemsEqual(recipe.getOutput(), result)) return recipe;
         }
         return null;

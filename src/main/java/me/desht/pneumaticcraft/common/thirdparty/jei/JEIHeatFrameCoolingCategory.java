@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.recipe.IHeatFrameCoolingRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -18,11 +17,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class JEIHeatFrameCoolingCategory implements IRecipeCategory<IHeatFrameCoolingRecipe> {
+public class JEIHeatFrameCoolingCategory implements IRecipeCategory<HeatFrameCoolingRecipe> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
@@ -42,8 +40,8 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<IHeatFrameCo
     }
 
     @Override
-    public Class<? extends IHeatFrameCoolingRecipe> getRecipeClass() {
-        return IHeatFrameCoolingRecipe.class;
+    public Class<? extends HeatFrameCoolingRecipe> getRecipeClass() {
+        return HeatFrameCoolingRecipe.class;
     }
 
     @Override
@@ -62,18 +60,18 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<IHeatFrameCo
     }
 
     @Override
-    public void draw(IHeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
+    public void draw(HeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
         progressBar.draw(22, 0);
     }
 
     @Override
-    public void setIngredients(IHeatFrameCoolingRecipe recipe, IIngredients ingredients) {
+    public void setIngredients(HeatFrameCoolingRecipe recipe, IIngredients ingredients) {
         ingredients.setInputIngredients(Collections.singletonList(recipe.getInput()));
         ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutput());
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, IHeatFrameCoolingRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayout recipeLayout, HeatFrameCoolingRecipe recipe, IIngredients ingredients) {
         recipeLayout.getItemStacks().init(0, true, 0, 0);
         recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
 
@@ -82,7 +80,7 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<IHeatFrameCo
     }
 
     @Override
-    public List<String> getTooltipStrings(IHeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
+    public List<String> getTooltipStrings(HeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
         List<String> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
             res.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.nei.recipe.heatFrameCooling", recipe.getThresholdTemperature() - 273), 40));
@@ -92,9 +90,5 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<IHeatFrameCo
             }
         }
         return res;
-    }
-
-    static Collection<IHeatFrameCoolingRecipe> getAllRecipes() {
-        return PneumaticCraftRecipes.heatFrameCoolingRecipes.values();
     }
 }

@@ -1,0 +1,25 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "type": "pneumaticcraft:stacked_item",
+      "item": "minecraft:redstone_torch",
+      "count": 2
+    },
+    {
+      "type": "pneumaticcraft:stacked_item",
+      "tag": "forge:nuggets/gold",
+      "count": 3
+    },
+    {
+      "item": "pneumaticcraft:plastic"
+    }
+  ],
+  "pressure": 1.5,
+  "results": [
+    {
+      "item": "pneumaticcraft:empty_pcb",
+      "count": 3
+    }
+  ]
+}

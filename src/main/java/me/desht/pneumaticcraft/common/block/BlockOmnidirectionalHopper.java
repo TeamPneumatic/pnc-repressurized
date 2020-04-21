@@ -72,6 +72,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        // TODO cache (only 30 possible combinations)
         return VoxelShapes.combineAndSimplify(
                 INPUT_SHAPES[state.get(INPUT_FACING).getIndex()],
                 OUTPUT_SHAPES[state.get(directionProperty()).ordinal()],

@@ -1,0 +1,19 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "tag": "forge:ingots/gold"
+    },
+    {
+      "type": "pneumaticcraft:stacked_item",
+      "tag": "forge:dusts/redstone",
+      "count": 2
+    }
+  ],
+  "pressure": 1.0,
+  "results": [
+    {
+      "item": "pneumaticcraft:turbine_blade"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:heat_frame_cooling/plastic"
+    ]
+  },
+  "criteria": {
+    "plastic_bucket": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:plastic_bucket"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:heat_frame_cooling/plastic"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "plastic_bucket",
+      "has_the_recipe"
+    ]
+  ]
+}

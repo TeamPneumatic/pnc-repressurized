@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -91,7 +91,7 @@ public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlastic
     public static Collection<PlasticSolidifyingRecipe> getAllRecipes() {
         return ImmutableList.of(
                 new PlasticSolidifyingRecipe(
-                        new FluidIngredient(ModFluids.PLASTIC.get(), 1000),
+                        FluidIngredient.of(ModFluids.PLASTIC.get(), 1000),
                         new ItemStack(ModItems.PLASTIC.get())
                 ),
                 new PlasticSolidifyingRecipe(

@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
@@ -136,8 +136,8 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
         return false;
     }
 
-    private static ItemStack getDrilledOutputForItem(ItemStack input) {
-        return PneumaticCraftRecipes.assemblyDrillRecipes.values().stream()
+    private ItemStack getDrilledOutputForItem(ItemStack input) {
+        return PneumaticCraftRecipeType.ASSEMBLY_DRILL.stream(world)
                 .filter(recipe -> recipe.matches(input))
                 .findFirst()
                 .map(recipe -> recipe.getOutput().copy())

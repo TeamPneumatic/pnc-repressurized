@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
-import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IBucketPickupHandler;

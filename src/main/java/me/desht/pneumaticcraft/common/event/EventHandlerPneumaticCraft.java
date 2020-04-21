@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketModWrenchBlock;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
-import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipe;
+import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
@@ -99,7 +99,7 @@ public class EventHandlerPneumaticCraft {
                 ItemStack stack = ((ItemEntity) entity).getItem();
                 if (!stack.isEmpty()) {
                     boolean firstItem = true;
-                    for (ItemStack result : ExplosionCraftingRecipe.tryToCraft(stack)) {
+                    for (ItemStack result : ExplosionCraftingRecipeImpl.tryToCraft(event.getWorld(), stack)) {
                         if (firstItem) {
                             // first item in result: just replace the existing entity
                             ((ItemEntity) entity).setItem(result);
@@ -161,7 +161,7 @@ public class EventHandlerPneumaticCraft {
             Block b = event.getWorld().getBlockState(brtr.getPos()).getBlock();
             if (b instanceof FlowingFluidBlock) {
                 Fluid fluid = ((FlowingFluidBlock) b).getFluid();
-                if (TileEntityRefineryController.isInputFluidValid(fluid, 4) && event.getPlayer() instanceof ServerPlayerEntity) {
+                if (TileEntityRefineryController.isInputFluidValid(event.getWorld(), fluid, 4) && event.getPlayer() instanceof ServerPlayerEntity) {
                     AdvancementTriggers.OIL_BUCKET.trigger((ServerPlayerEntity) event.getPlayer());
                 }
             }

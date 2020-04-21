@@ -1,11 +1,10 @@
 package me.desht.pneumaticcraft.common.recipes;
 
-import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
-import me.desht.pneumaticcraft.api.crafting.IModRecipeSerializer;
 import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.*;
-import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe.AssemblyProgramType;
+import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -15,7 +14,6 @@ import net.minecraftforge.fluids.FluidStack;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Supplier;
 
 public enum PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     INSTANCE;
@@ -25,52 +23,47 @@ public enum PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     }
 
     @Override
-    public void registerSerializer(ResourceLocation recipeType, Supplier<IModRecipeSerializer<? extends IModRecipe>> serializer) {
-        ModCraftingHelper.register(recipeType, serializer);
+    public AssemblyRecipe assemblyLaserRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
+        return new AssemblyRecipeImpl(id, input, output, AssemblyProgramType.LASER);
     }
 
     @Override
-    public IAssemblyRecipe assemblyLaserRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
-        return new AssemblyRecipe(id, input, output, AssemblyProgramType.LASER);
+    public AssemblyRecipe assemblyDrillRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
+        return new AssemblyRecipeImpl(id, input, output, AssemblyProgramType.DRILL);
     }
 
     @Override
-    public IAssemblyRecipe assemblyDrillRecipe(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output) {
-        return new AssemblyRecipe(id, input, output, AssemblyProgramType.DRILL);
+    public ExplosionCraftingRecipe explosionCraftingRecipe(ResourceLocation id, Ingredient input, int lossRate, ItemStack... outputs) {
+        return new ExplosionCraftingRecipeImpl(id, input, lossRate, outputs);
     }
 
     @Override
-    public IExplosionCraftingRecipe explosionCraftingRecipe(ResourceLocation id, Ingredient input, int lossRate, ItemStack... outputs) {
-        return new ExplosionCraftingRecipe(id, input, lossRate, outputs);
+    public HeatFrameCoolingRecipe heatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
+        return new HeatFrameCoolingRecipeImpl(id, input, temperature, output, bonusMultiplier, bonusLimit);
     }
 
     @Override
-    public IHeatFrameCoolingRecipe heatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
-        return new HeatFrameCoolingRecipe(id, input, temperature, output, bonusMultiplier, bonusLimit);
+    public HeatFrameCoolingRecipe heatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output) {
+        return new HeatFrameCoolingRecipeImpl(id, input, temperature, output);
     }
 
     @Override
-    public IHeatFrameCoolingRecipe heatFrameCoolingRecipe(ResourceLocation id, Ingredient input, int temperature, ItemStack output) {
-        return new HeatFrameCoolingRecipe(id, input, temperature, output);
+    public PressureChamberRecipe pressureChamberRecipe(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs) {
+        return new PressureChamberRecipeImpl(id, inputs, pressureRequired, outputs);
     }
 
     @Override
-    public IPressureChamberRecipe pressureChamberRecipe(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs) {
-        return new BasicPressureChamberRecipe(id, inputs, pressureRequired, outputs);
+    public RefineryRecipe refineryRecipe(ResourceLocation id, FluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs) {
+        return new RefineryRecipeImpl(id, input, operatingTemp, outputs);
     }
 
     @Override
-    public IRefineryRecipe refineryRecipe(ResourceLocation id, FluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs) {
-        return new RefineryRecipe(id, input, operatingTemp, outputs);
+    public ThermoPlantRecipe thermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure) {
+        return new ThermoPlantRecipeImpl(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, false);
     }
 
     @Override
-    public IThermopneumaticProcessingPlantRecipe thermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure) {
-        return new BasicThermopneumaticProcessingPlantRecipe(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, false);
-    }
-
-    @Override
-    public IThermopneumaticProcessingPlantRecipe exothermicThermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure) {
-        return new BasicThermopneumaticProcessingPlantRecipe(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, true);
+    public ThermoPlantRecipe exothermicThermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure) {
+        return new ThermoPlantRecipeImpl(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, true);
     }
 }

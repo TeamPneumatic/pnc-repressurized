@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:pressure_chamber/packed_ice"
+    ]
+  },
+  "criteria": {
+    "pressure_chamber_valve": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:pressure_chamber_valve"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:pressure_chamber/packed_ice"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "pressure_chamber_valve",
+      "has_the_recipe"
+    ]
+  ]
+}

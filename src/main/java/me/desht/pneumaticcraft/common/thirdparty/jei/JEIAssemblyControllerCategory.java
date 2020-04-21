@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
@@ -22,10 +21,9 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
-public class JEIAssemblyControllerCategory implements IRecipeCategory<IAssemblyRecipe> {
+public class JEIAssemblyControllerCategory implements IRecipeCategory<AssemblyRecipe> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
@@ -45,8 +43,8 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<IAssemblyR
     }
 
     @Override
-    public Class<? extends IAssemblyRecipe> getRecipeClass() {
-        return IAssemblyRecipe.class;
+    public Class<? extends AssemblyRecipe> getRecipeClass() {
+        return AssemblyRecipe.class;
     }
 
     @Override
@@ -65,7 +63,7 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<IAssemblyR
     }
 
     @Override
-    public void setIngredients(IAssemblyRecipe recipe, IIngredients ingredients) {
+    public void setIngredients(AssemblyRecipe recipe, IIngredients ingredients) {
         List<Ingredient> input = new ArrayList<>();
         input.add(recipe.getInput());
         input.add(Ingredient.fromItems(ItemAssemblyProgram.fromProgramType(recipe.getProgramType())));
@@ -77,7 +75,7 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<IAssemblyR
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, IAssemblyRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayout recipeLayout, AssemblyRecipe recipe, IIngredients ingredients) {
         recipeLayout.getItemStacks().init(0, true, 28, 65);
         recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
         recipeLayout.getItemStacks().init(2, true, 132, 21);
@@ -94,7 +92,7 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<IAssemblyR
     }
 
     @Override
-    public void draw(IAssemblyRecipe recipe, double mouseX, double mouseY) {
+    public void draw(AssemblyRecipe recipe, double mouseX, double mouseY) {
         progressBar.draw(68, 75);
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         fontRenderer.drawString("Required Machines", 5, 15, 0xFF404040);
@@ -107,13 +105,5 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<IAssemblyR
             machineStacks[i] = new ItemStack(requiredMachines[i].getMachineBlock());
         }
         return machineStacks;
-    }
-
-    static Collection<IAssemblyRecipe> getAllRecipes() {
-        List<IAssemblyRecipe> res = new ArrayList<>();
-        res.addAll(PneumaticCraftRecipes.assemblyDrillRecipes.values());
-        res.addAll(PneumaticCraftRecipes.assemblyLaserRecipes.values());
-        res.addAll(PneumaticCraftRecipes.assemblyLaserDrillRecipes.values());
-        return res;
     }
 }

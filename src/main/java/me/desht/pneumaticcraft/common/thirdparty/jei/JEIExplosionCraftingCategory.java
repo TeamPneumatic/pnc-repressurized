@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.recipe.IExplosionCraftingRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
@@ -13,11 +12,10 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class JEIExplosionCraftingCategory implements IRecipeCategory<IExplosionCraftingRecipe> {
+public class JEIExplosionCraftingCategory implements IRecipeCategory<ExplosionCraftingRecipe> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
@@ -37,8 +35,8 @@ public class JEIExplosionCraftingCategory implements IRecipeCategory<IExplosionC
     }
 
     @Override
-    public Class<? extends IExplosionCraftingRecipe> getRecipeClass() {
-        return IExplosionCraftingRecipe.class;
+    public Class<? extends ExplosionCraftingRecipe> getRecipeClass() {
+        return ExplosionCraftingRecipe.class;
     }
 
     @Override
@@ -57,13 +55,13 @@ public class JEIExplosionCraftingCategory implements IRecipeCategory<IExplosionC
     }
 
     @Override
-    public void setIngredients(IExplosionCraftingRecipe recipe, IIngredients ingredients) {
+    public void setIngredients(ExplosionCraftingRecipe recipe, IIngredients ingredients) {
         ingredients.setInputIngredients(Collections.singletonList(recipe.getInput()));
         ingredients.setOutputs(VanillaTypes.ITEM, recipe.getOutputs());
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, IExplosionCraftingRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayout recipeLayout, ExplosionCraftingRecipe recipe, IIngredients ingredients) {
         recipeLayout.getItemStacks().init(0, true, 0, 0);
         recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
         recipeLayout.getItemStacks().init(1, false, 64, 0);
@@ -71,20 +69,16 @@ public class JEIExplosionCraftingCategory implements IRecipeCategory<IExplosionC
     }
 
     @Override
-    public void draw(IExplosionCraftingRecipe recipe, double mouseX, double mouseY) {
+    public void draw(ExplosionCraftingRecipe recipe, double mouseX, double mouseY) {
         Helpers.drawIconAt(icon,30, 0);
     }
 
     @Override
-    public List<String> getTooltipStrings(IExplosionCraftingRecipe recipe, double mouseX, double mouseY) {
+    public List<String> getTooltipStrings(ExplosionCraftingRecipe recipe, double mouseX, double mouseY) {
         List<String> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
             res.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.nei.recipe.explosionCrafting", recipe.getLossRate()), 32));
         }
         return res;
-    }
-
-    static Collection<IExplosionCraftingRecipe> getAllRecipes() {
-        return PneumaticCraftRecipes.explosionCraftingRecipes.values();
     }
 }

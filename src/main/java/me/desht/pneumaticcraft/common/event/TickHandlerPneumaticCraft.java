@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketServerTickTime;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,7 +19,7 @@ public class TickHandlerPneumaticCraft {
             World world = event.world;
             DroneClaimManager.getInstance(world).update();
             if (event.world.getGameTime() % 100 == 0) {
-                double tickTime = net.minecraft.util.math.MathHelper.average(ServerLifecycleHooks.getCurrentServer().tickTimeArray) * 1.0E-6D;
+                double tickTime = MathHelper.average(ServerLifecycleHooks.getCurrentServer().tickTimeArray) * 1.0E-6D;
                 // In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.getDimension().getType());
             }

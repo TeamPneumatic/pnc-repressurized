@@ -1,12 +1,13 @@
 package me.desht.pneumaticcraft.common.recipes.assembly;
 
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.World;
 
 import java.util.Collection;
 
@@ -21,8 +22,10 @@ public class ProgramLaser extends AssemblyProgram {
     public boolean executeStep(TileEntityAssemblyController.AssemblySystem system) {
         boolean useAir = true;
 
+        World world = system.getPlatform().getWorld();
+
         if (!system.getPlatform().getHeldStack().isEmpty()) {
-            if (canItemBeLasered(system.getPlatform().getHeldStack())) {
+            if (canItemBeLasered(world, system.getPlatform().getHeldStack())) {
                 system.getLaser().startLasering();
             } else {
                 if (system.getLaser().isIdle()) {
@@ -33,33 +36,28 @@ public class ProgramLaser extends AssemblyProgram {
             if (!system.getExportUnit().isIdle()) {
                 useAir = system.getExportUnit().pickupItem(null);
             } else {
-                useAir = system.getImportUnit().pickupItem(getRecipeList());
+                useAir = system.getImportUnit().pickupItem(getRecipeList(world));
             }
         }
 
         return useAir;
     }
 
-    private boolean canItemBeLasered(ItemStack item) {
-        for (IAssemblyRecipe recipe : getRecipeList()) {
-            if (isValidInput(recipe, item)) return true;
-        }
-        return false;
+    private boolean canItemBeLasered(World world, ItemStack item) {
+        return PneumaticCraftRecipeType.ASSEMBLY_LASER.findFirst(world, r -> r.matches(item)) != null;
     }
 
     @Override
     public void writeToNBT(CompoundNBT tag) {
-
     }
 
     @Override
     public void readFromNBT(CompoundNBT tag) {
-
     }
 
     @Override
-    public Collection<IAssemblyRecipe> getRecipeList() {
-        return PneumaticCraftRecipes.assemblyLaserRecipes.values();
+    public Collection<AssemblyRecipe> getRecipeList(World world) {
+        return PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipes(world).values();
     }
 
     @Override

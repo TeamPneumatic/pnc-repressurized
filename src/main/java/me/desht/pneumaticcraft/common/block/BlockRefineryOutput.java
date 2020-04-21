@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.crafting.recipe.IRefineryRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryOutput;
@@ -92,7 +92,7 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
         while (worldIn.getBlockState(pos.down(down++)).getBlock() instanceof BlockRefineryOutput) {
             nOutputs++;
         }
-        return nOutputs < IRefineryRecipe.MAX_OUTPUTS  && super.isValidPosition(state, worldIn, pos);
+        return nOutputs < RefineryRecipe.MAX_OUTPUTS  && super.isValidPosition(state, worldIn, pos);
     }
 
     @Override

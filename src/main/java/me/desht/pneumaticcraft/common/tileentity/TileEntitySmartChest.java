@@ -8,8 +8,8 @@ import me.desht.pneumaticcraft.common.inventory.ContainerSmartChest;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSmartChestSync;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -283,7 +283,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     @Override
     public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
         if (player instanceof ServerPlayerEntity) {
-            NetworkHandler.sendToPlayer(new PacketSmartChestSync(this), (ServerPlayerEntity) player);
+            NetworkHandler.sendToPlayer(new PacketSyncSmartChest(this), (ServerPlayerEntity) player);
         }
         return new ContainerSmartChest(windowId, inv, getPos());
     }

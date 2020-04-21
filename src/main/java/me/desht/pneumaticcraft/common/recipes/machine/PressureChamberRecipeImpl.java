@@ -1,0 +1,181 @@
+package me.desht.pneumaticcraft.common.recipes.machine;
+
+import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapedRecipe;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.JSONUtils;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.registries.ForgeRegistryEntry;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+public class PressureChamberRecipeImpl extends PressureChamberRecipe {
+    private final float pressureRequired;
+    private final List<Ingredient> inputs;
+    private final NonNullList<ItemStack> outputs;
+
+    public PressureChamberRecipeImpl(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs) {
+        super(id);
+        this.inputs = ImmutableList.copyOf(inputs);
+        this.outputs = NonNullList.from(ItemStack.EMPTY, outputs);
+        this.pressureRequired = pressureRequired;
+    }
+
+    @Override
+    public float getCraftingPressure() {
+        return pressureRequired;
+    }
+
+    @Override
+    public Collection<Integer> findIngredients(IItemHandler chamberHandler) {
+        List<Integer> slots = new ArrayList<>();
+        for (int i = 0; i < chamberHandler.getSlots(); i++) {
+            for (Ingredient ingr : inputs) {
+                if (ingr.test(chamberHandler.getStackInSlot(i))) {
+                    slots.add(i);
+                    break;
+                }
+            }
+            if (slots.size() == inputs.size()) {
+                return slots;
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Ingredient> getInputsForDisplay() {
+        return new ArrayList<>(inputs);
+    }
+
+    @Override
+    public NonNullList<ItemStack> getResultsForDisplay() {
+        return outputs;
+    }
+
+    @Override
+    public IRecipeType<?> getType() {
+        return PneumaticCraftRecipeType.PRESSURE_CHAMBER;
+    }
+
+    @Override
+    public IRecipeSerializer<?> getSerializer() {
+        return ModRecipes.PRESSURE_CHAMBER.get();
+    }
+
+    @Override
+    public String getGroup() {
+        return ModBlocks.PRESSURE_CHAMBER_WALL.get().getRegistryName().getPath();
+    }
+
+    @Override
+    public ItemStack getIcon() {
+        return new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get());
+    }
+
+    @Override
+    public boolean isValidInputItem(ItemStack stack) {
+        ItemStack s2 = ItemHandlerHelper.copyStackWithSize(stack, stack.getMaxStackSize());
+        return inputs.stream().anyMatch(ingr -> ingr.test(s2));
+    }
+
+    @Nonnull
+    @Override
+    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots) {
+        // remove the recipe's input items from the chamber
+        for (Ingredient ingredient : inputs) {
+            if (ingredient.hasNoMatchingItems()) return NonNullList.create(); // sanity check
+            int nItems = ingredient.getMatchingStacks()[0].getCount();
+            for (int i = 0; i < ingredientSlots.size() && nItems > 0; i++) {
+                int slot = ingredientSlots.get(i);
+                if (ingredient.test(chamberHandler.getStackInSlot(slot))) {
+                    ItemStack extracted = chamberHandler.extractItem(slot, nItems, false);
+                    nItems -= extracted.getCount();
+                }
+            }
+        }
+
+        return outputs;
+    }
+
+    @Override
+    public void write(PacketBuffer buffer) {
+        buffer.writeFloat(getCraftingPressure());
+        buffer.writeVarInt(inputs.size());
+        inputs.forEach(i -> i.write(buffer));
+        buffer.writeVarInt(outputs.size());
+        outputs.forEach(buffer::writeItemStack);
+    }
+
+    public static class Serializer<T extends PressureChamberRecipe>
+            extends ForgeRegistryEntry<IRecipeSerializer<?>>
+            implements IRecipeSerializer<T> {
+
+        private final IFactory<T> factory;
+
+        public Serializer(IFactory<T> factory) {
+            this.factory = factory;
+        }
+
+        @Override
+        public T read(ResourceLocation recipeId, JsonObject json) {
+            JsonArray inputs = json.get("inputs").getAsJsonArray();
+            List<Ingredient> inputIngredients = new ArrayList<>();
+            for (JsonElement e : inputs) {
+                inputIngredients.add(Ingredient.deserialize(e.getAsJsonObject()));
+            }
+            float pressure = JSONUtils.getFloat(json, "pressure");
+            JsonArray outputs = json.get("results").getAsJsonArray();
+            NonNullList<ItemStack> results = NonNullList.create();
+            for (JsonElement e : outputs) {
+                results.add(ShapedRecipe.deserializeItem(e.getAsJsonObject()));
+            }
+            return factory.create(recipeId, inputIngredients, pressure, results.toArray(new ItemStack[0]));
+        }
+
+        @Nullable
+        @Override
+        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
+            float pressure = buffer.readFloat();
+            int nInputs = buffer.readVarInt();
+            List<Ingredient> in = new ArrayList<>();
+            for (int i = 0; i < nInputs; i++) {
+                in.add(Ingredient.read(buffer));
+            }
+            int nOutputs = buffer.readVarInt();
+            ItemStack[] out = new ItemStack[nOutputs];
+            for (int i = 0; i < nOutputs; i++) {
+                out[i] = buffer.readItemStack();
+            }
+            return factory.create(recipeId, in, pressure, out);
+        }
+
+        @Override
+        public void write(PacketBuffer buffer, T recipe) {
+            recipe.write(buffer);
+        }
+
+        public interface IFactory<T extends PressureChamberRecipe> {
+            T create(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs);
+        }
+    }
+}

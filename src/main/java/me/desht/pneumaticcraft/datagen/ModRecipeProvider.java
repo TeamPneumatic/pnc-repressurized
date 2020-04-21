@@ -1,15 +1,20 @@
 package me.desht.pneumaticcraft.datagen;
 
-import me.desht.pneumaticcraft.api.crafting.FluidIngredient;
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
+import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
+import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
-import me.desht.pneumaticcraft.datagen.recipe.ShapedPressurizableRecipeBuilder;
+import me.desht.pneumaticcraft.datagen.recipe.*;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.*;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -24,10 +29,13 @@ import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.NBTIngredient;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.ObjectHolder;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
@@ -838,7 +846,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 "LSL/SFS/LSL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENT,
                 'S', Items.SUGAR,
-                'F', new FluidIngredient(ModFluids.LUBRICANT.get(), 1000)
+                'F', FluidIngredient.of(ModFluids.LUBRICANT.get(), 1000)
         ).build(consumer);
 
         shaped(EnumUpgrade.JET_BOOTS.getItem(1), ModItems.PNEUMATIC_BOOTS.get(),
@@ -979,6 +987,8 @@ public class ModRecipeProvider extends RecipeProvider {
         specialRecipe(ModRecipes.GUN_AMMO_POTION_CRAFTING.get()).build(consumer, getId("gun_ammo_potion_crafting"));
         specialRecipe(ModRecipes.ONE_PROBE_HELMET_CRAFTING.get()).build(consumer, getId("one_probe_crafting"));
         specialRecipe(ModRecipes.PATCHOULI_BOOK_CRAFTING.get()).build(consumer, getId("patchouli_book_crafting"));
+        specialRecipe(ModRecipes.PRESSURE_CHAMBER_ENCHANTING.get()).build(consumer, getId("pressure_chamber/pressure_chamber_enchanting"));
+        specialRecipe(ModRecipes.PRESSURE_CHAMBER_DISENCHANTING.get()).build(consumer, getId("pressure_chamber/pressure_chamber_disenchanting"));
 
         // smelting
         CookingRecipeBuilder.blastingRecipe(Ingredient.fromItems(ModItems.FAILED_PCB.get()), ModItems.EMPTY_PCB.get(), 0.25f, 100)
@@ -988,6 +998,141 @@ public class ModRecipeProvider extends RecipeProvider {
                 0.1f, 100)
                 .addCriterion("has_plastic", this.hasItem(ModItems.PLASTIC.get()))
                 .build(consumer, RL("plastic_sheet_from_brick"));
+
+        // pressure chamber
+        pressureChamber(ImmutableList.of(StackedIngredient.fromItems(4, Items.SNOW_BLOCK)),
+                1.5f, new ItemStack(Items.ICE))
+                .build(consumer, RL("pressure_chamber/ice"));
+        pressureChamber(ImmutableList.of(StackedIngredient.fromItems(4, Items.ICE)),
+                2.0f, new ItemStack(Items.PACKED_ICE))
+                .build(consumer, RL("pressure_chamber/packed_ice"));
+        pressureChamber(ImmutableList.of(StackedIngredient.fromItems(4, Items.PACKED_ICE)),
+                2.5f, new ItemStack(Items.BLUE_ICE))
+                .build(consumer, RL("pressure_chamber/blue_ice"));
+        pressureChamber(ImmutableList.of(Ingredient.fromTag(Tags.Items.INGOTS_IRON)),
+                2.0f, new ItemStack(ModItems.COMPRESSED_IRON_INGOT.get()))
+                .build(consumer, RL("pressure_chamber/compressed_iron_ingot"));
+        pressureChamber(ImmutableList.of(Ingredient.fromTag(Tags.Items.STORAGE_BLOCKS_IRON)),
+                2.0f, new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK.get()))
+                .build(consumer, RL("pressure_chamber/compressed_iron_block"));
+        pressureChamber(ImmutableList.of(
+                StackedIngredient.fromItems(2, Items.REDSTONE_TORCH),
+                StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 3),
+                Ingredient.fromItems(ModItems.PLASTIC.get())),
+                1.5f, new ItemStack(ModItems.EMPTY_PCB.get(), 3))
+                .build(consumer, RL("pressure_chamber/empty_pcb"));
+        pressureChamber(ImmutableList.of(
+                StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 2),
+                Ingredient.fromTag(Tags.Items.SLIMEBALLS),
+                Ingredient.fromItems(ModItems.PLASTIC.get())),
+                1f, new ItemStack(ModItems.CAPACITOR.get()))
+                .build(consumer, RL("pressure_chamber/capacitor"));
+        pressureChamber(ImmutableList.of(
+                StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 3),
+                Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE),
+                Ingredient.fromItems(ModItems.PLASTIC.get())),
+                1f, new ItemStack(ModItems.TRANSISTOR.get()))
+                .build(consumer, RL("pressure_chamber/transistor"));
+        pressureChamber(ImmutableList.of(
+                Ingredient.fromItems(ModItems.PLASTIC_BUCKET.get()),
+                StackedIngredient.fromItems(2, Items.ROTTEN_FLESH),
+                StackedIngredient.fromItems(2, Items.SPIDER_EYE),
+                StackedIngredient.fromTag(Tags.Items.GUNPOWDER, 2)),
+                1f, new ItemStack(ModItems.ETCHING_ACID_BUCKET.get()))
+                .build(consumer, RL("pressure_chamber/etching_acid"));
+        pressureChamber(ImmutableList.of(
+                Ingredient.fromItems(Items.MILK_BUCKET),
+                StackedIngredient.fromTag(Tags.Items.DYES_GREEN, 4)),
+                1f, new ItemStack(Items.SLIME_BALL, 4), new ItemStack(Items.BUCKET))
+                .build(consumer, RL("pressure_chamber/milk_to_slime_balls"));
+        pressureChamber(ImmutableList.of(
+                Ingredient.fromTag(Tags.Items.INGOTS_GOLD),
+                StackedIngredient.fromTag(Tags.Items.DUSTS_REDSTONE, 2)),
+                1f, new ItemStack(ModItems.TURBINE_BLADE.get()))
+                .build(consumer, RL("pressure_chamber/turbine_blade"));
+        pressureChamber(ImmutableList.of(StackedIngredient.fromTag(Tags.Items.STORAGE_BLOCKS_COAL, 8)),
+                4f, new ItemStack(Items.DIAMOND))
+                .build(consumer, RL("pressure_chamber/coal_to_diamond"));
+
+        // explosion crafting
+        explosionCrafting(Ingredient.fromTag(Tags.Items.INGOTS_IRON), 20, new ItemStack(ModItems.COMPRESSED_IRON_INGOT.get()))
+                .build(consumer, RL("explosion_crafting/compressed_iron_ingot"));
+        explosionCrafting(Ingredient.fromTag(Tags.Items.STORAGE_BLOCKS_IRON), 20, new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK.get()))
+                .build(consumer, RL("explosion_crafting/compressed_iron_block"));
+
+        // heat frame cooling
+        heatFrameCooling(Ingredient.fromItems(Items.WATER_BUCKET), 273,
+                new ItemStack(Blocks.ICE))
+                .build(consumer, RL("heat_frame_cooling/ice"));
+        heatFrameCooling(Ingredient.fromItems(Items.LAVA_BUCKET), 273,
+                new ItemStack(Blocks.OBSIDIAN))
+                .build(consumer, RL("heat_frame_cooling/obsidian"));
+        heatFrameCooling(FluidIngredient.of(ModFluids.PLASTIC.get(), 1000), 273,
+                new ItemStack(ModItems.PLASTIC.get()), 0.01f, 0.75f)
+                .build(consumer, RL("heat_frame_cooling/plastic"));
+
+        // refinery
+        refinery(FluidIngredient.of(ModFluids.OIL.get(), 10),
+                TemperatureRange.min(373),
+                new FluidStack(ModFluids.DIESEL.get(), 4),
+                new FluidStack(ModFluids.LPG.get(), 2)
+        ).build(consumer, RL("refinery/oil_2"));
+        refinery(FluidIngredient.of(ModFluids.OIL.get(), 10),
+                TemperatureRange.min(373),
+                new FluidStack(ModFluids.DIESEL.get(), 2),
+                new FluidStack(ModFluids.KEROSENE.get(), 3),
+                new FluidStack(ModFluids.LPG.get(), 2)
+        ).build(consumer, RL("refinery/oil_3"));
+        refinery(FluidIngredient.of(ModFluids.OIL.get(), 10),
+                TemperatureRange.min(373),
+                new FluidStack(ModFluids.DIESEL.get(), 2),
+                new FluidStack(ModFluids.KEROSENE.get(), 3),
+                new FluidStack(ModFluids.GASOLINE.get(), 3),
+                new FluidStack(ModFluids.LPG.get(), 2)
+        ).build(consumer, RL("refinery/oil_4"));
+
+        // thermopneumatic processing plant
+        thermoPlant(FluidIngredient.of(ModFluids.DIESEL.get(), 100), Ingredient.EMPTY,
+                new FluidStack(ModFluids.KEROSENE.get(), 80), ItemStack.EMPTY,
+                TemperatureRange.min(573), 2.0f, false
+        ).build(consumer, RL("thermo_plant/kerosene"));
+        thermoPlant(FluidIngredient.of(ModFluids.KEROSENE.get(), 100), Ingredient.EMPTY,
+                new FluidStack(ModFluids.GASOLINE.get(), 80), ItemStack.EMPTY,
+                TemperatureRange.min(573), 2.0f, false
+        ).build(consumer, RL("thermo_plant/gasoline"));
+        thermoPlant(FluidIngredient.of(ModFluids.GASOLINE.get(), 100), Ingredient.EMPTY,
+                new FluidStack(ModFluids.LPG.get(), 80), ItemStack.EMPTY,
+                TemperatureRange.min(573), 2.0f, false
+        ).build(consumer, RL("thermo_plant/lpg"));
+        thermoPlant(FluidIngredient.of(ModFluids.DIESEL.get(), 1000), Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE),
+                new FluidStack(ModFluids.LUBRICANT.get(), 1000), ItemStack.EMPTY,
+                TemperatureRange.min(373), 0f, false
+        ).build(consumer, RL("thermo_plant/lubricant"));
+        thermoPlant(FluidIngredient.of(ModFluids.LPG.get(), 100), Ingredient.fromTag(ItemTags.COALS),
+                new FluidStack(ModFluids.PLASTIC.get(), 1000), ItemStack.EMPTY,
+                TemperatureRange.min(373), 0f, false
+        ).build(consumer, RL("thermo_plant/plastic"));
+        thermoPlant(FluidIngredient.of(Fluids.WATER, 1000), StackedIngredient.fromItems(4, Items.LAPIS_LAZULI),
+                FluidStack.EMPTY, new ItemStack(ModItems.UPGRADE_MATRIX.get(), 4),
+                TemperatureRange.min(273), 2f, false
+        ).build(consumer, RL("thermo_plant/upgrade_matrix"));
+
+        // assembly system
+        assembly(Ingredient.fromItems(ModItems.EMPTY_PCB.get()), new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
+                AssemblyProgramType.LASER)
+                .build(consumer, RL("assembly/unassembled_pcb"));
+        assembly(Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE), new ItemStack(Items.RED_DYE, 2),
+                AssemblyProgramType.DRILL)
+                .build(consumer, RL("assembly/red_dye"));
+        assembly(Ingredient.fromItems(ModBlocks.COMPRESSED_IRON_BLOCK.get()), new ItemStack(ModBlocks.PRESSURE_CHAMBER_VALVE.get(), 20),
+                AssemblyProgramType.DRILL)
+                .build(consumer, RL("assembly/pressure_chamber_valve"));
+        assembly(StackedIngredient.fromItems(20, ModBlocks.PRESSURE_CHAMBER_VALVE.get()), new ItemStack(ModBlocks.ADVANCED_PRESSURE_TUBE.get(), 8),
+                AssemblyProgramType.LASER)
+                .build(consumer, RL("assembly/advanced_pressure_tube"));
+        assembly(Ingredient.fromTag(Tags.Items.STORAGE_BLOCKS_QUARTZ), new ItemStack(ModBlocks.APHORISM_TILE.get(), 4),
+                AssemblyProgramType.LASER)
+                .build(consumer, RL("assembly/aphorism_tile"));
     }
 
     private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, T required, Object... ingredients) {
@@ -1112,6 +1257,42 @@ public class ModRecipeProvider extends RecipeProvider {
 
     private CustomRecipeBuilder specialRecipe(SpecialRecipeSerializer<?> recipe) {
         return CustomRecipeBuilder.customRecipe(recipe);
+    }
+
+    private PressureChamberRecipeBuilder pressureChamber(List<Ingredient> in, float pressure, ItemStack... out) {
+        return new PressureChamberRecipeBuilder(in, pressure, out)
+                .addCriterion(Criteria.has(ModBlocks.PRESSURE_CHAMBER_VALVE.get()));
+    }
+
+    private ExplosionCraftingRecipeBuilder explosionCrafting(Ingredient ingredient, int lossRate, ItemStack result) {
+        return new ExplosionCraftingRecipeBuilder(ingredient, lossRate, result)
+                .addCriterion(Criteria.has(ingredient));
+    }
+
+    private HeatFrameCoolingRecipeBuilder heatFrameCooling(Ingredient ingredient, int maxTemp, ItemStack result) {
+        return heatFrameCooling(ingredient, maxTemp, result, 0f, 0f);
+    }
+
+    private HeatFrameCoolingRecipeBuilder heatFrameCooling(Ingredient ingredient, int maxTemp, ItemStack result, float bonusMult, float bonusLimit) {
+        return new HeatFrameCoolingRecipeBuilder(ingredient, maxTemp, result, bonusMult, bonusLimit)
+                .addCriterion(Criteria.has(ingredient));
+    }
+
+    private RefineryRecipeBuilder refinery(FluidIngredient ingredient, TemperatureRange operatingTemp, FluidStack... outputs) {
+        return new RefineryRecipeBuilder(ingredient, operatingTemp, outputs)
+                .addCriterion(Criteria.has(ModBlocks.REFINERY.get()));
+    }
+
+    private ThermoPlantRecipeBuilder thermoPlant(FluidIngredient inputFluid, @Nullable Ingredient inputItem,
+                                                 FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
+                                                 boolean exothermic) {
+        return new ThermoPlantRecipeBuilder(inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, exothermic)
+                .addCriterion(Criteria.has(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()));
+    }
+
+    private AssemblyRecipeBuilder assembly(Ingredient input, ItemStack output, AssemblyProgramType programType) {
+        return new AssemblyRecipeBuilder(input, output, programType)
+                .addCriterion(Criteria.has(input));
     }
 
     private String getId(String s) {

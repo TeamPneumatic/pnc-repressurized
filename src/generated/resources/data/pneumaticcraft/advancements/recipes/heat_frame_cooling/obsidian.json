@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:heat_frame_cooling/obsidian"
+    ]
+  },
+  "criteria": {
+    "lava_bucket": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:lava_bucket"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:heat_frame_cooling/obsidian"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "lava_bucket",
+      "has_the_recipe"
+    ]
+  ]
+}

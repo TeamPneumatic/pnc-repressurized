@@ -2,15 +2,15 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.api.crafting.recipe.IRefineryRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,6 +23,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -49,7 +50,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> inputTank);
 
     @GuiSynced
-    public final FluidTank[] outputsSynced = new FluidTank[IRefineryRecipe.MAX_OUTPUTS];  // purely for GUI syncing
+    public final FluidTank[] outputsSynced = new FluidTank[RefineryRecipe.MAX_OUTPUTS];  // purely for GUI syncing
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
@@ -69,7 +70,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
 
     private List<LazyOptional<IFluidHandler>> outputCache;
     private TemperatureRange operatingTemp = TemperatureRange.invalid();
-    private IRefineryRecipe currentRecipe;
+    private RefineryRecipe currentRecipe;
     private int workTimer = 0;
     private int comparatorValue;
     private int prevOutputCount = -1;
@@ -78,18 +79,19 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     public TileEntityRefineryController() {
         super(ModTileEntities.REFINERY.get());
 
-        for (int i = 0; i < IRefineryRecipe.MAX_OUTPUTS; i++) {
+        for (int i = 0; i < RefineryRecipe.MAX_OUTPUTS; i++) {
             outputsSynced[i] = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
         }
     }
 
-    public static boolean isInputFluidValid(Fluid fluid, int size) {
-        return PneumaticCraftRecipes.refineryRecipes.values().stream()
-                .anyMatch(r -> r.getOutputs().size() <= size && FluidUtils.matchFluid(r.getInput(), fluid, true));
+    public static boolean isInputFluidValid(World world, Fluid fluid, int size) {
+        RefineryRecipe recipe =  PneumaticCraftRecipeType.REFINERY
+                .findFirst(world, r -> r.getOutputs().size() <= size && FluidUtils.matchFluid(r.getInput(), fluid, true));
+        return recipe != null;
     }
 
-    private IRefineryRecipe getRecipeFor(FluidStack fluid) {
-        return PneumaticCraftRecipes.refineryRecipes.values().stream()
+    private RefineryRecipe getRecipeFor(FluidStack fluid) {
+        return PneumaticCraftRecipeType.REFINERY.stream(world)
                 .filter(r -> r.getOutputs().size() <= outputCount)
                 .filter(r -> FluidUtils.matchFluid(r.getInput(), fluid, true))
                 .max(Comparator.comparingInt(r2 -> r2.getOutputs().size()))
@@ -373,7 +375,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
 
         @Override
         public boolean isFluidValid(FluidStack fluid) {
-            return getFluid().isFluidEqual(fluid) || isInputFluidValid(fluid.getFluid(), 4);
+            return getFluid().isFluidEqual(fluid) || isInputFluidValid(world, fluid.getFluid(), 4);
         }
 
         @Override

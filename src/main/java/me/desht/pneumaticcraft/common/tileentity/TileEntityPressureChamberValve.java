@@ -2,8 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.recipe.IPressureChamberRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -15,6 +14,7 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberValve;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -130,12 +130,18 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                 isSufficientPressureInChamber = false;
                 recipePressure = Float.MAX_VALUE;
                 applicableRecipes.clear();
-                for (IPressureChamberRecipe recipe : PneumaticCraftRecipes.pressureChamberRecipes.values()) {
+                PneumaticCraftRecipeType.PRESSURE_CHAMBER.stream(world).forEach(recipe -> {
                     Collection<Integer> slots = recipe.findIngredients(itemsInChamber);
                     if (!slots.isEmpty()) {
                         applicableRecipes.add(new ApplicableRecipe(recipe, slots));
                     }
-                }
+                });
+//                for (IPressureChamberRecipe recipe : PneumaticCraftRecipes.pressureChamberRecipes.values()) {
+//                    Collection<Integer> slots = recipe.findIngredients(itemsInChamber);
+//                    if (!slots.isEmpty()) {
+//                        applicableRecipes.add(new ApplicableRecipe(recipe, slots));
+//                    }
+//                }
                 isValidRecipeInChamber = !applicableRecipes.isEmpty();
                 recipeRecalcNeeded = false;
             }
@@ -251,7 +257,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
 
     private void processApplicableRecipes() {
         for (ApplicableRecipe applicableRecipe : applicableRecipes) {
-            IPressureChamberRecipe recipe = applicableRecipe.recipe;
+            PressureChamberRecipe recipe = applicableRecipe.recipe;
             boolean pressureOK = recipe.getCraftingPressure() <= getPressure() && recipe.getCraftingPressure() > 0F
                     || recipe.getCraftingPressure() >= getPressure() && recipe.getCraftingPressure() < 0F;
             if (Math.abs(recipe.getCraftingPressure()) < Math.abs(recipePressure)) {
@@ -260,7 +266,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
             if (pressureOK) {
                 // let's craft! (although if the output handler is full, we won't...)
                 isSufficientPressureInChamber = true;
-                if (giveOutput(applicableRecipe.recipe.getResultForDisplay(), true)) {
+                if (giveOutput(applicableRecipe.recipe.getResultsForDisplay(), true)) {
                     giveOutput(recipe.craftRecipe(itemsInChamber, applicableRecipe.slots), false);
                     if (getWorld().getGameTime() - lastSoundTick > 5) {
                         NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, getPos(), 0.7f, 0.8f + getWorld().rand.nextFloat() * 0.4f, false), getWorld());
@@ -658,10 +664,10 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     }
 
     private static class ApplicableRecipe {
-        final IPressureChamberRecipe recipe;
+        final PressureChamberRecipe recipe;
         final List<Integer> slots;
 
-        ApplicableRecipe(IPressureChamberRecipe recipe, Collection<Integer> slots) {
+        ApplicableRecipe(PressureChamberRecipe recipe, Collection<Integer> slots) {
             this.recipe = recipe;
             this.slots = ImmutableList.copyOf(slots);
         }

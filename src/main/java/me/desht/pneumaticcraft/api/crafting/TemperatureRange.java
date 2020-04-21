@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.api.crafting;
 
+import com.google.gson.JsonObject;
+import net.minecraft.util.JSONUtils;
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -123,5 +125,21 @@ public class TemperatureRange {
      */
     public boolean isAny() {
         return this == TemperatureRange.ANY;
+    }
+
+    public JsonObject toJson() {
+        JsonObject json = new JsonObject();
+        if (min > -Integer.MAX_VALUE) json.addProperty("min_temp", min);
+        if (max < Integer.MAX_VALUE) json.addProperty("max_temp", max);
+        return json;
+    }
+
+    public static TemperatureRange fromJson(JsonObject json) {
+        if (!json.has("min_temp") && !json.has("max_temp")) {
+            return TemperatureRange.any();
+        }
+        if (!json.has("min_temp")) return TemperatureRange.max(JSONUtils.getInt(json,"max_temp"));
+        if (!json.has("max_temp")) return TemperatureRange.min(JSONUtils.getInt(json,"min_temp"));
+        return TemperatureRange.of(JSONUtils.getInt(json,"min_temp"), JSONUtils.getInt(json,"max_temp"));
     }
 }

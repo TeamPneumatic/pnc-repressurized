@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.ItemPressurizable;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.recipes.special.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.thirdparty.jei.extension.HelmetOneProbeExtension;
@@ -23,6 +24,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.registration.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -71,12 +73,17 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        registration.addRecipes(JEIAssemblyControllerCategory.getAllRecipes(), ModCategoryUid.ASSEMBLY_CONTROLLER);
-        registration.addRecipes(JEIExplosionCraftingCategory.getAllRecipes(), ModCategoryUid.EXPLOSION_CRAFTING);
-        registration.addRecipes(JEIHeatFrameCoolingCategory.getAllRecipes(), ModCategoryUid.HEAT_FRAME_COOLING);
-        registration.addRecipes(JEIRefineryCategory.getAllRecipes(), ModCategoryUid.REFINERY);
-        registration.addRecipes(JEIThermopneumaticProcessingPlantCategory.getAllRecipes(), ModCategoryUid.THERMO_PNEUMATIC);
-        registration.addRecipes(JEIPressureChamberRecipeCategory.getAllRecipes(), ModCategoryUid.PRESSURE_CHAMBER);
+        // these all use recipes from the vanilla RecipeManager
+        addRecipeType(registration, PneumaticCraftRecipeType.PRESSURE_CHAMBER, ModCategoryUid.PRESSURE_CHAMBER);
+        addRecipeType(registration, PneumaticCraftRecipeType.EXPLOSION_CRAFTING, ModCategoryUid.EXPLOSION_CRAFTING);
+        addRecipeType(registration, PneumaticCraftRecipeType.HEAT_FRAME_COOLING, ModCategoryUid.HEAT_FRAME_COOLING);
+        addRecipeType(registration, PneumaticCraftRecipeType.REFINERY, ModCategoryUid.REFINERY);
+        addRecipeType(registration, PneumaticCraftRecipeType.THERMO_PLANT, ModCategoryUid.THERMO_PLANT);
+        addRecipeType(registration, PneumaticCraftRecipeType.ASSEMBLY_LASER, ModCategoryUid.ASSEMBLY_CONTROLLER);
+        addRecipeType(registration, PneumaticCraftRecipeType.ASSEMBLY_DRILL, ModCategoryUid.ASSEMBLY_CONTROLLER);
+        addRecipeType(registration, PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER, ModCategoryUid.ASSEMBLY_CONTROLLER);
+
+        // these have their own pseudo-recipes
         registration.addRecipes(JEIUVLightBoxCategory.getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
         registration.addRecipes(JEIAmadronTradeCategory.getAllRecipes(), ModCategoryUid.AMADRON_TRADE);
         registration.addRecipes(JEIPlasticSolidifyingCategory.getAllRecipes(), ModCategoryUid.PLASTIC_SOLIDIFYING);
@@ -85,6 +92,10 @@ public class JEIPlugin implements IModPlugin {
         for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
             addStackInfo(registration, new ItemStack(item.get()));
         }
+    }
+
+    private void addRecipeType(IRecipeRegistration registration, PneumaticCraftRecipeType type, ResourceLocation id) {
+        registration.addRecipes(type.getRecipes(Minecraft.getInstance().world).values(), id);
     }
 
     private void addStackInfo(IRecipeRegistration registry, ItemStack stack) {
@@ -100,8 +111,12 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModItems.AMADRON_TABLET.get()), ModCategoryUid.AMADRON_TRADE);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()), ModCategoryUid.ASSEMBLY_CONTROLLER);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), ModCategoryUid.PRESSURE_CHAMBER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_VALVE.get()), ModCategoryUid.PRESSURE_CHAMBER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), ModCategoryUid.PRESSURE_CHAMBER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_GLASS.get()), ModCategoryUid.PRESSURE_CHAMBER);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.REFINERY.get()), ModCategoryUid.REFINERY);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()), ModCategoryUid.THERMO_PNEUMATIC);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.REFINERY_OUTPUT.get()), ModCategoryUid.REFINERY);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()), ModCategoryUid.THERMO_PLANT);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.UV_LIGHT_BOX.get()), ModCategoryUid.UV_LIGHT_BOX);
         registration.addRecipeCatalyst(new ItemStack(ModItems.HEAT_FRAME.get()), ModCategoryUid.HEAT_FRAME_COOLING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.ETCHING_TANK.get()), ModCategoryUid.ETCHING_TANK);
@@ -112,7 +127,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeClickArea(GuiAssemblyController.class, 110, 10, 50, 50, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registration.addRecipeClickArea(GuiPressureChamber.class, 100, 7, 60, 60, ModCategoryUid.PRESSURE_CHAMBER);
         registration.addRecipeClickArea(GuiRefineryController.class, 47, 33, 27, 47, ModCategoryUid.REFINERY);
-        registration.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 31, 48, 20, ModCategoryUid.THERMO_PNEUMATIC);
+        registration.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 31, 48, 20, ModCategoryUid.THERMO_PLANT);
 
         registration.addGlobalGuiHandler(new GuiTabHandler());
 

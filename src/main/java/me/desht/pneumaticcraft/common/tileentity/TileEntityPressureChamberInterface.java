@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -11,6 +10,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -356,7 +356,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         private boolean isValidItem(ItemStack stack) {
             if (TileEntityPressureChamberInterface.this.interfaceMode == InterfaceDirection.IMPORT) {
                 if (acceptedItemCache.contains(stack.getItem())) return true;
-                boolean accepted = PneumaticCraftRecipes.pressureChamberRecipes.values().stream()
+                boolean accepted = PneumaticCraftRecipeType.PRESSURE_CHAMBER.stream(world)
                         .anyMatch(recipe -> recipe.isValidInputItem(stack));
                 if (accepted) acceptedItemCache.add(stack.getItem());
                 return accepted;

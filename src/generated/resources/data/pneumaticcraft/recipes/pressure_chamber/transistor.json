@@ -1,0 +1,22 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "type": "pneumaticcraft:stacked_item",
+      "tag": "forge:nuggets/gold",
+      "count": 3
+    },
+    {
+      "tag": "forge:dusts/redstone"
+    },
+    {
+      "item": "pneumaticcraft:plastic"
+    }
+  ],
+  "pressure": 1.0,
+  "results": [
+    {
+      "item": "pneumaticcraft:transistor"
+    }
+  ]
+}

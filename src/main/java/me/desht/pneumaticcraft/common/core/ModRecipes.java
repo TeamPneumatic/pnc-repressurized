@@ -1,6 +1,9 @@
 package me.desht.pneumaticcraft.common.core;
 
-import me.desht.pneumaticcraft.common.recipes.ShapedPressurizableRecipe;
+import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
+import me.desht.pneumaticcraft.api.crafting.ShapedPressurizableRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.*;
+import me.desht.pneumaticcraft.common.recipes.machine.*;
 import me.desht.pneumaticcraft.common.recipes.special.*;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -11,6 +14,39 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModRecipes {
     public static final DeferredRegister<IRecipeSerializer<?>> RECIPES = new DeferredRegister<>(ForgeRegistries.RECIPE_SERIALIZERS, Names.MOD_ID);
+
+    public static final RegistryObject<IRecipeSerializer<AssemblyRecipe>> ASSEMBLY_LASER
+            = RECIPES.register(PneumaticCraftRecipeTypes.ASSEMBLY_LASER,
+            () -> new AssemblyRecipeImpl.Serializer<>(AssemblyRecipeImpl::new));
+    public static final RegistryObject<IRecipeSerializer<AssemblyRecipe>> ASSEMBLY_DRILL
+            = RECIPES.register(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL,
+            () -> new AssemblyRecipeImpl.Serializer<>(AssemblyRecipeImpl::new));
+
+    public static final RegistryObject<IRecipeSerializer<PressureChamberRecipe>> PRESSURE_CHAMBER
+            = RECIPES.register(PneumaticCraftRecipeTypes.PRESSURE_CHAMBER,
+            () -> new PressureChamberRecipeImpl.Serializer<>(PressureChamberRecipeImpl::new));
+    public static final RegistryObject<SpecialRecipeSerializer<PressureEnchantingRecipe>> PRESSURE_CHAMBER_ENCHANTING
+            = RECIPES.register("pressure_chamber_enchanting",
+            () -> new SpecialRecipeSerializer<>(PressureEnchantingRecipe::new));
+    public static final RegistryObject<SpecialRecipeSerializer<PressureDisenchantingRecipe>> PRESSURE_CHAMBER_DISENCHANTING
+            = RECIPES.register("pressure_chamber_disenchanting",
+            () -> new SpecialRecipeSerializer<>(PressureDisenchantingRecipe::new));
+
+    public static final RegistryObject<IRecipeSerializer<ExplosionCraftingRecipe>> EXPLOSION_CRAFTING
+            = RECIPES.register(PneumaticCraftRecipeTypes.EXPLOSION_CRAFTING,
+            () -> new ExplosionCraftingRecipeImpl.Serializer<>(ExplosionCraftingRecipeImpl::new));
+
+    public static final RegistryObject<IRecipeSerializer<HeatFrameCoolingRecipe>> HEAT_FRAME_COOLING
+            = RECIPES.register(PneumaticCraftRecipeTypes.HEAT_FRAME_COOLING,
+            () -> new HeatFrameCoolingRecipeImpl.Serializer<>(HeatFrameCoolingRecipeImpl::new));
+
+    public static final RegistryObject<IRecipeSerializer<RefineryRecipe>> REFINERY
+            = RECIPES.register(PneumaticCraftRecipeTypes.REFINERY,
+            () -> new RefineryRecipeImpl.Serializer<>(RefineryRecipeImpl::new));
+
+    public static final RegistryObject<IRecipeSerializer<ThermoPlantRecipe>> THERMO_PLANT
+            = RECIPES.register(PneumaticCraftRecipeTypes.THERMO_PLANT,
+            () -> new ThermoPlantRecipeImpl.Serializer<>(ThermoPlantRecipeImpl::new));
 
     public static final RegistryObject<SpecialRecipeSerializer<OneProbeCrafting>> ONE_PROBE_HELMET_CRAFTING
             = RECIPES.register("one_probe_helmet_crafting", () -> new SpecialRecipeSerializer<>(OneProbeCrafting::new));
@@ -24,4 +60,5 @@ public class ModRecipes {
             = RECIPES.register("patchouli_book_crafting", () -> new SpecialRecipeSerializer<>(PatchouliBookCrafting::new));
     public static final RegistryObject<ShapedPressurizableRecipe.Serializer> CRAFTING_SHAPED_PRESSURIZABLE
             = RECIPES.register("crafting_shaped_pressurizable", ShapedPressurizableRecipe.Serializer::new);
+
 }

@@ -2,8 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.recipe.IThermopneumaticProcessingPlantRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -11,6 +10,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessi
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -70,14 +70,14 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     private int inputAmountScaled, outputAmountScaled;
     @DescSynced
     private boolean didWork;
-    private IThermopneumaticProcessingPlantRecipe currentRecipe;
+    private ThermoPlantRecipe currentRecipe;
     private boolean searchForRecipe = true;
 
     private final ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             return stack.isEmpty()
-                    || PneumaticCraftRecipes.thermopneumaticProcessingPlantRecipes.values().stream().anyMatch(r -> r.getInputItem().test(stack));
+                    || PneumaticCraftRecipeType.THERMO_PLANT.stream(world).anyMatch(r -> r.getInputItem().test(stack));
         }
 
         @Override
@@ -168,8 +168,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
      * item slot for the recipe output.
      * @return a recipe, or null for no matching recipe
      */
-    private IThermopneumaticProcessingPlantRecipe findApplicableRecipe() {
-        for (IThermopneumaticProcessingPlantRecipe recipe : PneumaticCraftRecipes.thermopneumaticProcessingPlantRecipes.values()) {
+    private ThermoPlantRecipe findApplicableRecipe() {
+        for (ThermoPlantRecipe recipe : PneumaticCraftRecipeType.THERMO_PLANT.getRecipes(world).values()) {
             if (recipe.matches(inputTank.getFluid(), itemHandler.getStackInSlot(0))) {
                 int filled = outputTank.fill(recipe.getOutputFluid(), FluidAction.SIMULATE);
                 ItemStack excess = outputItemHandler.insertItem(0, recipe.getOutputItem(), true);
@@ -289,7 +289,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         
         @Override
         public boolean isFluidValid(FluidStack fluid){
-            return fluid.isEmpty() || PneumaticCraftRecipes.thermopneumaticProcessingPlantRecipes.values().stream()
+            return fluid.isEmpty() || PneumaticCraftRecipeType.THERMO_PLANT.stream(world)
                     .anyMatch(r -> r.getInputFluid().testFluid(fluid.getFluid()));
         }
 

@@ -1,8 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.recipe.IRefineryRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -18,9 +17,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class JEIRefineryCategory implements IRecipeCategory<IRefineryRecipe> {
+public class JEIRefineryCategory implements IRecipeCategory<RefineryRecipe> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
@@ -40,8 +42,8 @@ public class JEIRefineryCategory implements IRecipeCategory<IRefineryRecipe> {
     }
 
     @Override
-    public Class<? extends IRefineryRecipe> getRecipeClass() {
-        return IRefineryRecipe.class;
+    public Class<? extends RefineryRecipe> getRecipeClass() {
+        return RefineryRecipe.class;
     }
 
     @Override
@@ -60,13 +62,13 @@ public class JEIRefineryCategory implements IRecipeCategory<IRefineryRecipe> {
     }
 
     @Override
-    public void setIngredients(IRefineryRecipe recipe, IIngredients ingredients) {
+    public void setIngredients(RefineryRecipe recipe, IIngredients ingredients) {
         ingredients.setInputLists(VanillaTypes.FLUID, Collections.singletonList(recipe.getInput().getFluidStacks()));
         ingredients.setOutputs(VanillaTypes.FLUID, recipe.getOutputs());
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, IRefineryRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayout recipeLayout, RefineryRecipe recipe, IIngredients ingredients) {
         FluidStack in = ingredients.getInputs(VanillaTypes.FLUID).get(0).get(0);
 
         recipeLayout.getFluidStacks().init(0, true, 2, 10, 16, 64, in.getAmount(), true, Helpers.makeTankOverlay(64));
@@ -83,7 +85,7 @@ public class JEIRefineryCategory implements IRecipeCategory<IRefineryRecipe> {
     }
 
     @Override
-    public void draw(IRefineryRecipe recipe, double mouseX, double mouseY) {
+    public void draw(RefineryRecipe recipe, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
                 id -> Helpers.makeTemperatureWidget(26, 18, recipe.getOperatingTemp().getMin()));
         w.setTemperature(tickTimer.getValue() * (w.getScales()[0] - 273.0) / tickTimer.getMaxValue() + 273.0);
@@ -91,15 +93,11 @@ public class JEIRefineryCategory implements IRecipeCategory<IRefineryRecipe> {
     }
 
     @Override
-    public List<String> getTooltipStrings(IRefineryRecipe recipe, double mouseX, double mouseY) {
+    public List<String> getTooltipStrings(RefineryRecipe recipe, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.get(recipe.getId());
         if (w != null && w.isMouseOver(mouseX, mouseY)) {
             return ImmutableList.of(HeatUtil.formatHeatString(recipe.getOperatingTemp().getMin()).getFormattedText());
         }
         return Collections.emptyList();
-    }
-
-    static Collection<IRefineryRecipe> getAllRecipes() {
-        return PneumaticCraftRecipes.refineryRecipes.values();
     }
 }

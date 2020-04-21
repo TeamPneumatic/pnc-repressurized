@@ -1,0 +1,10 @@
+{
+  "type": "pneumaticcraft:heat_frame_cooling",
+  "input": {
+    "item": "minecraft:lava_bucket"
+  },
+  "max_temp": 273,
+  "result": {
+    "item": "minecraft:obsidian"
+  }
+}

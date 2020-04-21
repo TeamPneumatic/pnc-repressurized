@@ -2,13 +2,13 @@ package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipes;
-import me.desht.pneumaticcraft.api.crafting.RegisterMachineRecipesEvent;
-import me.desht.pneumaticcraft.api.crafting.recipe.IHeatFrameCoolingRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.EntityType;
@@ -27,8 +27,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -47,14 +45,12 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     private static final byte COOKING = 1;
     private static final byte COOLING = 2;
 
-    // caching this to avoid recipe searching
-    private static int MAX_COOLING_TEMP = 0;
-
     private final IHeatExchangerLogic logic = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private final LazyOptional<IHeatExchangerLogic> heatCap;
 
+    private final LazyOptional<IHeatExchangerLogic> heatCap;
     private int lastValidSlot; // cache the current cooking slot for performance boost
     private int cookingProgress;
+
     private int coolingProgress;
 
     private SyncedTemperature syncedTemperature = new SyncedTemperature();
@@ -115,7 +111,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
             byte newStatus = IDLE;
             if (logic.getTemperature() > MIN_COOKING_TEMP) {
                 newStatus = doCooking();
-            } else if (logic.getTemperature() < MAX_COOLING_TEMP) {
+            } else if (logic.getTemperature() < HeatFrameCoolingRecipeImpl.getMaxThresholdTemp()) {
                 newStatus = doCooling();
             }
             setStatus(newStatus);
@@ -215,10 +211,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
         ItemStack stack = handler.getStackInSlot(slot);
         if (stack.isEmpty()) return false;
 
-        IHeatFrameCoolingRecipe recipe = PneumaticCraftRecipes.heatFrameCoolingRecipes.values().stream()
-                .filter(r -> r.matches(stack))
-                .findFirst()
-                .orElse(null);
+        HeatFrameCoolingRecipe recipe = PneumaticCraftRecipeType.HEAT_FRAME_COOLING.findFirst(world, r -> r.matches(stack));
 
         if (recipe != null) {
             ItemStack containerItem = stack.getItem().getContainerItem(stack);
@@ -276,18 +269,5 @@ public class EntityHeatFrame extends EntitySemiblockBase {
         curInfo.add(HeatUtil.formatHeatString(logic.getTemperatureAsInt()));
         curInfo.add(PneumaticCraftUtils.xlate("waila.heatFrame.cooking", cook).applyTextStyle(TextFormatting.GRAY));
         curInfo.add(PneumaticCraftUtils.xlate("waila.heatFrame.cooling", cool).applyTextStyle(TextFormatting.GRAY));
-    }
-
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
-    public static class ReloadListener {
-        @SubscribeEvent
-        public static void onRecipeReload(RegisterMachineRecipesEvent.Post event) {
-            MAX_COOLING_TEMP = Integer.MIN_VALUE;
-            for (IHeatFrameCoolingRecipe recipe : PneumaticCraftRecipes.heatFrameCoolingRecipes.values()) {
-                if (MAX_COOLING_TEMP < recipe.getThresholdTemperature()) {
-                    MAX_COOLING_TEMP = recipe.getThresholdTemperature();
-                }
-            }
-        }
     }
 }

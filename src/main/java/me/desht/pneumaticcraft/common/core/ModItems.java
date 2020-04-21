@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.core;
 
-import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
-import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe.AssemblyProgramType;
+import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.tubes.*;
 import me.desht.pneumaticcraft.common.entity.living.*;
@@ -82,9 +82,9 @@ public class ModItems {
     public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_BOOTS = register("pneumatic_boots",
             () -> new ItemPneumaticArmor(EquipmentSlotType.FEET));
 
-    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_LASER = register(IAssemblyRecipe.AssemblyProgramType.LASER);
-    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_DRILL = register(IAssemblyRecipe.AssemblyProgramType.DRILL);
-    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_DRILL_LASER = register(IAssemblyRecipe.AssemblyProgramType.DRILL_LASER);
+    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_LASER = register(AssemblyRecipe.AssemblyProgramType.LASER);
+    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_DRILL = register(AssemblyRecipe.AssemblyProgramType.DRILL);
+    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_DRILL_LASER = register(AssemblyRecipe.AssemblyProgramType.DRILL_LASER);
 
     public static final RegistryObject<ItemEmptyPCB> EMPTY_PCB = register("empty_pcb",
             ItemEmptyPCB::new);

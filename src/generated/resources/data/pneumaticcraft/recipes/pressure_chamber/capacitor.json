@@ -1,0 +1,22 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "type": "pneumaticcraft:stacked_item",
+      "tag": "forge:nuggets/gold",
+      "count": 2
+    },
+    {
+      "tag": "forge:slimeballs"
+    },
+    {
+      "item": "pneumaticcraft:plastic"
+    }
+  ],
+  "pressure": 1.0,
+  "results": [
+    {
+      "item": "pneumaticcraft:capacitor"
+    }
+  ]
+}

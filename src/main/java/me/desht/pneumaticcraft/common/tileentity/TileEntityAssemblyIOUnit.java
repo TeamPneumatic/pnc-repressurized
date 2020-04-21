@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.api.crafting.recipe.IAssemblyRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -30,7 +30,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     @DescSynced
     private final BaseItemStackHandler itemHandler = new BaseItemStackHandler(this, 1);
 
-    private Collection<IAssemblyRecipe> recipeList;
+    private Collection<AssemblyRecipe> recipeList;
     private ItemStack searchedItemStack = ItemStack.EMPTY;
     private byte state = 0;
     private byte tickCounter = 0;
@@ -124,7 +124,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     /**
      * @return true if the controller should use air and display 'running'
      */
-    public boolean pickupItem(Collection<IAssemblyRecipe> list) {
+    public boolean pickupItem(Collection<AssemblyRecipe> list) {
         recipeList = list;
 
         if (state == STATE_IDLE) state++;
@@ -146,7 +146,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         if (isImportUnit()) {
             searchedItemStack = ItemStack.EMPTY;
             if (recipeList != null) {
-                for (IAssemblyRecipe recipe : recipeList) {
+                for (AssemblyRecipe recipe : recipeList) {
                     ItemImport result = getInventoryDirectionForItem(recipe);
                     if (result != null) {
                         searchedItemStack = result.stack;
@@ -349,7 +349,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         return isImportUnit() ? AssemblyProgram.EnumMachine.IO_UNIT_IMPORT : AssemblyProgram.EnumMachine.IO_UNIT_EXPORT;
     }
 
-    private ItemImport getInventoryDirectionForItem(IAssemblyRecipe recipe) {
+    private ItemImport getInventoryDirectionForItem(AssemblyRecipe recipe) {
         ItemStack heldStack = itemHandler.getStackInSlot(0);
         if (heldStack.isEmpty() || recipe.getInput().test(heldStack)) {
             for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
@@ -372,7 +372,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         return null;
     }
 
-    private ItemStack findIngredientInInventory(IItemHandler handler, IAssemblyRecipe recipe) {
+    private ItemStack findIngredientInInventory(IItemHandler handler, AssemblyRecipe recipe) {
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
             if (stack.getCount() >= recipe.getInputAmount() && recipe.getInput().test(stack)) {
