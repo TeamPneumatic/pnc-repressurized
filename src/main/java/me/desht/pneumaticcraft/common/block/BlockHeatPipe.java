@@ -38,7 +38,7 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[64];  // 2^6 shapes
 
     public BlockHeatPipe() {
-        super(ModBlocks.defaultProps());
+        super(ModBlocks.defaultProps().notSolid());  // notSolid() because of camo requirements
 
         BlockState state = getStateContainer().getBaseState();
         for (BooleanProperty prop : CONNECTION_PROPERTIES) {
@@ -83,7 +83,7 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         byte idx = 0;
         for (int i = 0; i < 6; i++) {
             if (state.get(CONNECTION_PROPERTIES[i])) {

@@ -13,6 +13,9 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -119,6 +122,11 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     @Override
     protected boolean doesCamoOverrideBounds() {
         return false;  // need to be able to highlight the buttons
+    }
+
+    @Override
+    public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
+        return VoxelShapes.fullCube();
     }
 
     public static void setSurroundingElevators(World world, BlockPos pos, int floor) {

@@ -93,7 +93,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     private final Tier tier;
 
     public BlockPressureTube(Tier tier) {
-        super(ModBlocks.defaultProps());
+        super(ModBlocks.defaultProps().notSolid());  // notSolid() because of camo requirements
         this.tier = tier;
 
         BlockState state = getStateContainer().getBaseState();
@@ -192,7 +192,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
+    public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
         VoxelShape res = getCachedShape(state);
         TileEntityPressureTube te = getPressureTube(reader, pos);
         if (te != null) {

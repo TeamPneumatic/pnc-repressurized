@@ -10,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.ILightReader;
 import net.minecraft.world.World;
@@ -57,45 +58,29 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
         return super.removedByPlayer(state, world, pos, player, willHarvest, fluid);
     }
 
-//    @Override
-//    public BlockRenderLayer getRenderLayer() {
-//        return BlockRenderLayer.CUTOUT_MIPPED;
-//    }
-
-//    @Override
-//    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-//        return true;
-//    }
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
+        ICamouflageableTE camo = getCamoState(reader, pos);
+        return camo == null ? getUncamouflagedShape(state, reader, pos, ctx) : camo.getCamouflage().getShape(reader, pos, ctx);
+    }
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
         ICamouflageableTE camo = getCamoState(reader, pos);
-        return camo != null ? camo.getCamouflage().getCollisionShape(reader, pos) : super.getCollisionShape(state, reader, pos, ctx);
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
-        ICamouflageableTE camo = getCamoState(reader, pos);
-        return camo != null ? camo.getCamouflage().getShape(reader, pos) : super.getShape(state, reader, pos, ctx);
+        return camo == null ? getUncamouflagedCollisionShape(state, reader, pos, ctx) : camo.getCamouflage().getCollisionShape(reader, pos, ctx);
     }
 
     @Override
     public VoxelShape getRaytraceShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
         ICamouflageableTE camo = getCamoState(worldIn, pos);
-        return camo != null ? camo.getCamouflage().getRaytraceShape(worldIn, pos) : super.getRaytraceShape(state, worldIn, pos);
+        return camo == null ? getUncamouflagedRaytraceShape(state, worldIn, pos) : camo.getCamouflage().getRaytraceShape(worldIn, pos);
     }
 
     @Override
     public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
         ICamouflageableTE camo = getCamoState(worldIn, pos);
-        return camo != null ? camo.getCamouflage().getRenderShape(worldIn, pos) : super.getRenderShape(state, worldIn, pos);
+        return camo == null ? getUncamouflagedRenderShape(state, worldIn, pos) : camo.getCamouflage().getRenderShape(worldIn, pos);
     }
-
-//    @Override
-//    public boolean doesSideBlockRendering(BlockState state, ILightReader world, BlockPos pos, Direction face) {
-//        ICamouflageableTE camo = getCamoState(world, pos);
-//        return camo == null || camo.getCamouflage().doesSideBlockRendering(world, pos, face);
-//    }
 
     @Override
     public int getOpacity(BlockState state, IBlockReader world, BlockPos pos) {
@@ -106,6 +91,29 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
     private ICamouflageableTE getCamoState(IBlockReader blockAccess, BlockPos pos) {
         TileEntity te = blockAccess.getTileEntity(pos);
         return te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null ? (ICamouflageableTE) te : null;
+    }
+
+    /**
+     * The equivalent of {@link net.minecraft.block.Block#getShape(BlockState, IBlockReader, BlockPos, ISelectionContext)}, but for
+     * uncamouflaged camo blocks.
+     * @param state the blockstate
+     * @param reader the world
+     * @param pos the block pos
+     * @param ctx the selection context
+     * @return the block's actual shape, when it isn't camouflaged
+     */
+    public abstract VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx);
+
+    protected VoxelShape getUncamouflagedCollisionShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
+        return getUncamouflagedShape(state, reader, pos, ctx);
+    }
+
+    protected VoxelShape getUncamouflagedRenderShape(BlockState state, IBlockReader reader, BlockPos pos) {
+        return getUncamouflagedShape(state, reader, pos, ISelectionContext.dummy());
+    }
+
+    protected VoxelShape getUncamouflagedRaytraceShape(BlockState state, IBlockReader reader, BlockPos pos) {
+        return VoxelShapes.empty();
     }
 
 //

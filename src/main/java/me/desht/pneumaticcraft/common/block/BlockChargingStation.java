@@ -36,7 +36,7 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+    public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
         return state.get(CHARGE_PAD) ? PAD_SHAPE : SHAPE;
     }
 

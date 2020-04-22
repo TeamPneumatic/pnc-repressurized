@@ -158,7 +158,7 @@ public class AreaRenderManager {
                     .filter(te -> te instanceof ICamouflageableTE && te.getPos().distanceSq(lastPlayerPos) < 144)
                     .map(TileEntity::getPos)
                     .collect(Collectors.toSet());
-            camoPositionShower = new AreaRenderer(s, 0x608080FF, 0.75f, true, true);
+            camoPositionShower = new AreaRenderer(s, 0x408080FF, 0.75f, true, true);
         }
         if (camoPositionShower != null) {
             camoPositionShower.render(matrixStack, buffer);

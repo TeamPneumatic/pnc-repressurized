@@ -14,14 +14,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockElevatorBase extends BlockPneumaticCraftCamo {
-    private static final VoxelShape SHAPE = Block.makeCuboidShape(0.001, 0, 0.001, 15.999, 16, 15.999);
+    private static final VoxelShape BASE = makeCuboidShape(0, 0, 0, 16, 1, 16);
+    private static final VoxelShape TOP  = makeCuboidShape(0, 15, 0, 16, 16, 16);
+    private static final VoxelShape CORE = makeCuboidShape(3, 1, 3, 13, 15, 13);
+    private static final VoxelShape SHAPE = VoxelShapes.or(BASE, CORE, TOP);
 
     public BlockElevatorBase() {
-        super(ModBlocks.defaultProps());
+        super(ModBlocks.defaultProps().notSolid());  // notSolid() because of camo requirements
         setDefaultState(getStateContainer().getBaseState()
                 .with(BlockPneumaticCraft.NORTH, false)
                 .with(BlockPneumaticCraft.SOUTH, false)
@@ -51,7 +55,7 @@ public class BlockElevatorBase extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
+    public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
         return SHAPE;
     }
 

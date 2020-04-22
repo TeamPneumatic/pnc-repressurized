@@ -4,15 +4,16 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.World;
 
 import java.util.Set;
 
@@ -63,8 +64,11 @@ public class AreaRenderer {
 
     private void addVertices(IVertexBuilder wr, Matrix4f posMat, BlockPos pos, int[] cols) {
         if (drawShapes) {
-            BlockState state = Minecraft.getInstance().world.getBlockState(pos);
-            VoxelShape shape = state.getShape(Minecraft.getInstance().world, pos, SELECTION_CONTEXT);
+            World world = Minecraft.getInstance().world;
+            BlockState state = world.getBlockState(pos);
+            VoxelShape shape = state.getBlock() instanceof BlockPneumaticCraftCamo ?
+                    ((BlockPneumaticCraftCamo) state.getBlock()).getUncamouflagedShape(state, world, pos, ISelectionContext.dummy()) :
+                    state.getShape(world, pos, ISelectionContext.dummy());
             shape.forEachBox((x1d, y1d, z1d, x2d, y2d, z2d) -> {
                 float x1 = (float) x1d;
                 float x2 = (float) x2d;
@@ -134,22 +138,4 @@ public class AreaRenderer {
             wr.pos(posMat, 0, size, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
         }
     }
-
-    private static final ISelectionContext SELECTION_CONTEXT = new ISelectionContext() {
-        @Override
-        public boolean func_225581_b_() {
-            // isSneaking(), I think
-            return false;
-        }
-
-        @Override
-        public boolean func_216378_a(VoxelShape shape, BlockPos pos, boolean p_216378_3_) {
-            return false;
-        }
-
-        @Override
-        public boolean hasItem(Item itemIn) {
-            return false;
-        }
-    };
 }

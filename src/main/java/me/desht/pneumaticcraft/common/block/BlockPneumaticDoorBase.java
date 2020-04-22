@@ -10,6 +10,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
@@ -71,5 +75,10 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
     @Override
     protected boolean reversePlacementRotation() {
         return true;
+    }
+
+    @Override
+    public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
+        return VoxelShapes.fullCube();
     }
 }
