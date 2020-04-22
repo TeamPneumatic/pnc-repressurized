@@ -135,6 +135,10 @@ public class PacketDescription extends LocationIntPacket {
         extraData = subTag.getCompound("Extra");
     }
 
+    public boolean hasData() {
+        return !fields.isEmpty() || !extraData.isEmpty();
+    }
+
     private static class IndexedField {
         final int idx;
         final byte type;

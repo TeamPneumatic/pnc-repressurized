@@ -66,6 +66,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     public float extension;
     @DescSynced
     private float targetExtension;
+    @DescSynced
+    float syncedSpeedMult;
     private boolean isStopped = true;  //used for sounds
     private TileEntityElevatorBase coreElevator;
     private List<TileEntityElevatorBase> multiElevators; //initialized when multiple elevators are connected in a multiblock manner.
@@ -90,108 +92,111 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @Override
     public void tick() {
         oldExtension = extension;
-        if (getWorld().isRemote && (getWorld().getGameTime() & 0x3f) == 0)
-            coreElevator = null;//reset this because the client doesn't get notified of neighbor block updates.
-        if (isCoreElevator()) {
-            super.tick();
-            if (!getWorld().isRemote && isControlledByRedstone()) {
-                float oldTargetExtension = targetExtension;
-                float maxExtension = getMaxElevatorHeight();
 
-                int redstoneInput = redstoneInputLevel;
-                if (multiElevators != null) {
-                    for (TileEntityElevatorBase base : multiElevators) {
-                        redstoneInput = Math.max(redstoneInputLevel, base.redstoneInputLevel);
-                    }
-                }
-
-                targetExtension = redstoneInput * maxExtension / 15;
-                if (targetExtension > oldExtension && getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR)
-                    targetExtension = oldExtension; // only ascent when there's enough pressure
-                if (oldTargetExtension != targetExtension) sendDescPacketFromAllElevators();
-            }
-            float speedMultiplier = getSpeedMultiplierFromUpgrades();
-            if (getWorld().isRemote) {
-                speedMultiplier = (float) (speedMultiplier * PacketServerTickTime.tickTimeMultiplier);
-            }
-
-            SoundEvent soundName = null;
-            if (extension < targetExtension) {
-                if (!getWorld().isRemote && getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
-                    targetExtension = extension;
-                    sendDescriptionPacket(256D);
-                }
-
-                float moveBy;
-                if (extension < targetExtension - TileEntityConstants.ELEVATOR_SLOW_EXTENSION) {
-                    moveBy = TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier;
-                } else {
-                    moveBy = TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier;
-                }
-                if (extension + moveBy > targetExtension) {
-                    extension = targetExtension;
-                    if (!getWorld().isRemote) updateFloors();
-                }
-                if (isStopped) {
-                    soundName = ModSounds.ELEVATOR_RISING_START.get();
-                    isStopped = false;
-                    if (!world.isRemote) {
-                        PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
-                        NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
-                    }
-                }
-                float startingExtension = extension;
-
-                while (extension < startingExtension + moveBy) {
-                    extension += TileEntityConstants.ELEVATOR_SPEED_SLOW;
-                    /*
-                    if(extension > startingExtension + moveBy) {
-                        extension = startingExtension + moveBy;
-                    }
-                    */
-                    // moveEntities(TileEntityConstants.ELEVATOR_SPEED_SLOW);
-                }
-                addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));// substract the ascended distance from the air reservoir.
-            }
-            if (extension > targetExtension) {
-                float chargingSlowdown = 1.0f - Math.min(4, getUpgrades(EnumUpgrade.CHARGING)) * 0.1f;
-                if (extension > targetExtension + TileEntityConstants.ELEVATOR_SLOW_EXTENSION) {
-                    extension -= TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier * chargingSlowdown;
-                } else {
-                    extension -= TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier * chargingSlowdown;
-                }
-                if (extension < targetExtension) {
-                    extension = targetExtension;
-                    if (!getWorld().isRemote) updateFloors();
-                }
-                if (isStopped) {
-                    soundName = ModSounds.ELEVATOR_RISING_START.get();
-                    isStopped = false;
-                    if (!world.isRemote) {
-                        PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
-                        NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
-                    }
-                }
-                if (getUpgrades(EnumUpgrade.CHARGING) > 0) {
-                    float mul = 0.15f * Math.min(4, getUpgrades(EnumUpgrade.CHARGING));
-                    addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * mul * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
-                }
-                //  movePlayerDown();
-            }
-            if (oldExtension == extension && !isStopped) {
-                soundName = ModSounds.ELEVATOR_RISING_STOP.get();
-                isStopped = true;
-            }
-
-            if (soundName != null && getWorld().isRemote) {
-                getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, 0.5F, 1.0F, true);
-            }
-
-        } else {
-            extension = 0;
+        if (!isCoreElevator()) {
+            extension = 0f;
+            return;
         }
-        if (!getWorld().isRemote && oldExtension != extension) {
-            sendDescriptionPacket(256);
+
+        super.tick();
+
+        float speedMultiplier;
+        if (!getWorld().isRemote) {
+            if (isControlledByRedstone()) {
+                handleRedstoneControl();
+            }
+            speedMultiplier = syncedSpeedMult = getSpeedMultiplierFromUpgrades();
+        } else {
+            speedMultiplier = (float) (syncedSpeedMult * PacketServerTickTime.tickTimeMultiplier);
+        }
+
+        SoundEvent soundName = null;
+        if (extension < targetExtension) {
+            if (!getWorld().isRemote && getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
+                targetExtension = extension;
+                sendDescriptionPacket(256D);
+            }
+
+            float moveBy = extension < targetExtension - TileEntityConstants.ELEVATOR_SLOW_EXTENSION ?
+                    TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier :
+                    TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier;
+
+            if (extension + moveBy > targetExtension) {
+                extension = targetExtension;
+                if (!getWorld().isRemote) {
+                    updateFloors();
+                }
+            }
+
+            if (isStopped) {
+                soundName = ModSounds.ELEVATOR_RISING_START.get();
+                isStopped = false;
+                if (!getWorld().isRemote) {
+                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
+                    NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
+                }
+            }
+            float startingExtension = extension;
+
+            while (extension < startingExtension + moveBy) {
+                extension += TileEntityConstants.ELEVATOR_SPEED_SLOW;
+            }
+            // substract the ascended distance from the air reservoir.
+            addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
+        }
+        if (extension > targetExtension) {
+            float chargingSlowdown = 1.0f - Math.min(4, getUpgrades(EnumUpgrade.CHARGING)) * 0.1f;
+            if (extension > targetExtension + TileEntityConstants.ELEVATOR_SLOW_EXTENSION) {
+                extension -= TileEntityConstants.ELEVATOR_SPEED_FAST * syncedSpeedMult * chargingSlowdown;
+            } else {
+                extension -= TileEntityConstants.ELEVATOR_SPEED_SLOW * syncedSpeedMult * chargingSlowdown;
+            }
+            if (extension < targetExtension) {
+                extension = targetExtension;
+                if (!getWorld().isRemote) updateFloors();
+            }
+            if (isStopped) {
+                soundName = ModSounds.ELEVATOR_RISING_START.get();
+                isStopped = false;
+                if (!world.isRemote) {
+                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
+                    NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
+                }
+            }
+            if (getUpgrades(EnumUpgrade.CHARGING) > 0) {
+                float mul = 0.15f * Math.min(4, getUpgrades(EnumUpgrade.CHARGING));
+                addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * mul * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
+            }
+        }
+        if (oldExtension == extension && !isStopped) {
+            soundName = ModSounds.ELEVATOR_RISING_STOP.get();
+            isStopped = true;
+        }
+
+        if (soundName != null && getWorld().isRemote) {
+            getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, 0.5F, 1.0F, true);
+        }
+    }
+
+    private void handleRedstoneControl() {
+        float oldTargetExtension = targetExtension;
+        float maxExtension = getMaxElevatorHeight();
+
+        int redstoneInput = redstoneInputLevel;
+        if (multiElevators != null) {
+            for (TileEntityElevatorBase base : multiElevators) {
+                redstoneInput = Math.max(redstoneInputLevel, base.redstoneInputLevel);
+            }
+        }
+
+        targetExtension = redstoneInput * maxExtension / 15;
+        if (targetExtension > oldExtension && getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
+            // we can descend at any time, but only ascend when there's sufficient pressure
+            targetExtension = oldExtension;
+        }
+
+        if (oldTargetExtension != targetExtension) {
+            sendDescPacketFromAllElevators();
         }
     }
 
@@ -522,7 +527,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     private TileEntityElevatorBase getCoreElevator() {
-        if (coreElevator == null) {
+        if (coreElevator == null || (getWorld().isRemote && (getWorld().getGameTime() & 0x3f) == 0)) {
+            // bit of a hack; force a recalc every 64 ticks on the client
             coreElevator = BlockElevatorBase.getCoreTileEntity(getWorld(), getPos());
         }
         return coreElevator;

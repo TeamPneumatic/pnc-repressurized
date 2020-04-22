@@ -153,7 +153,10 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     void sendDescriptionPacket(double maxPacketDistance) {
-        NetworkHandler.sendToAllAround(new PacketDescription(this, forceFullSync), world, maxPacketDistance);
+        PacketDescription descPacket = new PacketDescription(this, forceFullSync);
+        if (descPacket.hasData()) {
+            NetworkHandler.sendToAllAround(descPacket, world, maxPacketDistance);
+        }
         fieldsToSync.clear();
         forceFullSync = false;
     }
@@ -200,7 +203,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
                 ((IAutoFluidEjecting) this).autoExportFluid(this);
             }
 
-//            if (descriptionFields == null) forceFullSync = true;
             for (int i = 0; i < getDescriptionFields().size(); i++) {
                 if (getDescriptionFields().get(i).update()) {
                     fieldsToSync.set(i);
