@@ -146,8 +146,6 @@ public class ClientUtils {
         } else {
             return 0.0F;
         }
-//        BlockPos blockpos = new BlockPos(player.posX, getClientWorld().getMaxHeight(), player.posZ);
-//        return getClientWorld().isAreaLoaded(blockpos, 1) ? getClientWorld().getCombinedLight(blockpos, 0) : 0;
     }
 
     public static int getStringWidth(String line) {

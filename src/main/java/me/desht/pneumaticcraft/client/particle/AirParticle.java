@@ -1,9 +1,17 @@
 package me.desht.pneumaticcraft.client.particle;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.*;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 
@@ -61,7 +69,7 @@ public class AirParticle extends SpriteTexturedParticle {
 
     @Override
     public IParticleRenderType getRenderType() {
-        return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        return AIR_PARTICLE_RENDER;
     }
 
     public static class Factory implements IParticleFactory<AirParticleData> {
@@ -79,4 +87,35 @@ public class AirParticle extends SpriteTexturedParticle {
             return p;
         }
     }
+
+    private static final IParticleRenderType AIR_PARTICLE_RENDER = new IParticleRenderType() {
+        @Override
+        public void beginRender(BufferBuilder bufferBuilder, TextureManager textureManager) {
+            RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003921569F);
+            RenderSystem.disableLighting();
+
+            textureManager.bindTexture(AtlasTexture.LOCATION_PARTICLES_TEXTURE);
+            textureManager.getTexture(AtlasTexture.LOCATION_PARTICLES_TEXTURE).setBlurMipmap(true, false);
+            bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+        }
+
+        @Override
+        public void finishRender(Tessellator tessellator) {
+            tessellator.draw();
+
+            Minecraft.getInstance().textureManager.getTexture(AtlasTexture.LOCATION_PARTICLES_TEXTURE).restoreLastBlurMipmap();
+            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
+            RenderSystem.disableBlend();
+            RenderSystem.depthMask(true);
+        }
+
+        @Override
+        public String toString() {
+            return "pneumaticcraft:air_particle";
+        }
+    };
+
 }

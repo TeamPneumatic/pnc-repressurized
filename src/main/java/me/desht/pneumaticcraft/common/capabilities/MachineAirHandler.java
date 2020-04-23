@@ -163,7 +163,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
         if (getPressure() < 0) {
             double speed = getPressure() * 0.1F - 0.1F;
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, pos.getX() + 0.5D + motionX / 2D, pos.getY() + 0.5D + motionY / 2D, pos.getZ() + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), world);
+            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, pos.getX() + 0.5D + motionX, pos.getY() + 0.5D + motionY, pos.getZ() + 0.5D + motionZ, motionX * speed, motionY * speed, motionZ * speed), world);
             int dispersedAmount = -(int) (getPressure() * PneumaticValues.AIR_LEAK_FACTOR) + 20;
             if (getAir() > dispersedAmount) dispersedAmount = -getAir();
             onAirDispersion(ownerTE, dir, dispersedAmount);

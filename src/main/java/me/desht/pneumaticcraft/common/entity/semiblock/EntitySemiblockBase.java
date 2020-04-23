@@ -160,16 +160,9 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     @Override
     public float getBrightness() {
         // cheat a bit here - semiblocks on solid blocks will be unlit otherwise
-        // instead we use the brightness at the top of the world (hoping there isn't a block there...
+        // instead we use the brightness at the top of the world (hoping there isn't a block there...)
         return ClientUtils.getBrightnessAtWorldHeight();
     }
-
-//    @Override
-//    public int getBrightnessForRender() {
-//        // cheat a bit here - semiblocks on solid blocks will be unlit otherwise
-//        // instead we use the brightness at the top of the world (hoping there isn't a block there...)
-//        return ClientUtils.getBrightnessAtWorldHeight();
-//    }
 
     /**
      * Get the blockstate at the semiblock's position

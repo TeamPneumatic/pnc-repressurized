@@ -21,10 +21,6 @@ repositories {
         url = "http://dvs1.progwml6.com/files/maven"
     }
 //    maven {
-//        name = "MCMP"
-//        url = "http://maven.amadornes.com/"
-//    }
-//    maven {
 //        name = "OpenComputers"
 //        url = "http://maven.cil.li/"
 //    }
@@ -198,15 +194,12 @@ dependencies {
     runtime fg.deobf("top.theillusivec4.curios:curios:${curios_version}")
     compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
     runtime fg.deobf("vazkii.botania:Botania:${botania_version}")
+    compile fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
 //    compileOnly("mekanism:Mekanism:${mekanism_version}:api") { exclude group: "mezz.jei" }
-//    compileOnly "mezz.jei:jei_${mc_version}:${jei_version}"
 //    compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
-//    compileOnly "MCMultiPart2:MCMultiPart:${mcmultipart_version}"
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
 //    compileOnly "dan200.computercraft:ComputerCraft:${computercraft_version}"
-//    compileOnly "mcp.mobius.waila:Hwyla:${hwyla_version}"
-//    compileOnly "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
 //    compileOnly "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
 //    compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.14.4:${crafttweaker_version}")
 //    compileOnly "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
@@ -214,10 +207,8 @@ dependencies {
 //    compileOnly "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
 //    compileOnly "thaumcraft:Thaumcraft:${thaumcraft_version}"
 //    compileOnly "team.chisel.ctm:CTM:${ctm_version}:api"
-//    compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
 //    compileOnly("appeng:appliedenergistics2:${ae2_version}:api")
 //    //compileOnly "elucent:albedo:${albedo_version}"
-    compile fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 //    compileOnly "blusunrize:ImmersiveEngineering:${immersive_engineering_version}"
 //    compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
 //    compileOnly "com.github.glitchfiend.biomesoplenty:ToughAsNails:${tan_version}:universal"

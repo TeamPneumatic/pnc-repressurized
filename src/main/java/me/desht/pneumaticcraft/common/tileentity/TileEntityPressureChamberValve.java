@@ -84,7 +84,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     private boolean recipeRecalcNeeded = true;
 
     private long lastSoundTick;  // to avoid excessive spamming of the pop sound
-    private int nParticles;  // client-side: the number of particles to create each tick (dependent on chamber size & pressure)
+    private float particleChance;  // client-side: the number of particles to create each tick (dependent on chamber size & pressure)
 
     public TileEntityPressureChamberValve() {
         super(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
@@ -136,12 +136,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                         applicableRecipes.add(new ApplicableRecipe(recipe, slots));
                     }
                 });
-//                for (IPressureChamberRecipe recipe : PneumaticCraftRecipes.pressureChamberRecipes.values()) {
-//                    Collection<Integer> slots = recipe.findIngredients(itemsInChamber);
-//                    if (!slots.isEmpty()) {
-//                        applicableRecipes.add(new ApplicableRecipe(recipe, slots));
-//                    }
-//                }
                 isValidRecipeInChamber = !applicableRecipes.isEmpty();
                 recipeRecalcNeeded = false;
             }
@@ -156,7 +150,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         // particles
         if (getWorld().isRemote && hasGlass && isPrimaryValve() && roundedPressure > 0.2D) {
             if (ClientUtils.getClientPlayer().getDistanceSq(getPos().getX(), getPos().getY(), getPos().getZ()) < 256) {
-                for (int i = 0; i < nParticles; i++) {
+                if (world.rand.nextFloat() < particleChance) {
                     double posX = multiBlockX + 1D + getWorld().rand.nextDouble() * (multiBlockSize - 2D);
                     double posY = multiBlockY + 1.5D + getWorld().rand.nextDouble() * (multiBlockSize - 2.5D);
                     double posZ = multiBlockZ + 1D + getWorld().rand.nextDouble() * (multiBlockSize - 2D);
@@ -446,8 +440,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     @Override
     public void onDescUpdate() {
         super.onDescUpdate();
-        nParticles = IntMath.pow(multiBlockSize - 2, 3);
-        nParticles = Math.max(1, (int)(nParticles / ((dangerPressure + 1) - Math.min(dangerPressure, roundedPressure))));
+
+        particleChance = Math.min(1f, (roundedPressure / dangerPressure) * (multiBlockSize - 2) * (multiBlockSize - 2));
     }
 
     @Override
@@ -592,9 +586,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         List<ItemEntity> items = getWorld().getEntitiesWithinAABB(ItemEntity.class, getChamberAABB(), EntityPredicates.IS_ALIVE);
         for (ItemEntity item : items) {
             ItemStack stack = item.getItem();
-            ItemStack leftover = ItemHandlerHelper.insertItem(itemsInChamber, stack, false);
-            if (leftover.isEmpty()) item.remove();
-            else item.setItem(stack);
+            ItemStack excess = ItemHandlerHelper.insertItem(itemsInChamber, stack, false);
+            if (excess.isEmpty()) item.remove();
+            else item.setItem(excess);
         }
     }
 
