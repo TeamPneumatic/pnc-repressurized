@@ -41,7 +41,7 @@ repositories {
         url = "http://maven.tterrag.com/"
     }
     maven {
-        name = 'BlameJared - Crafttweaker/Patchouli'
+        name = 'BlameJared - Crafttweaker/Patchouli/Botania'
         url = 'http://maven.blamejared.com/'
     }
     maven {
@@ -196,6 +196,8 @@ dependencies {
     runtime fg.deobf("mezz.jei:jei-1.15.2:${jei_version}")
     compileOnly fg.deobf("top.theillusivec4.curios:curios:${curios_version}:api")
     runtime fg.deobf("top.theillusivec4.curios:curios:${curios_version}")
+    compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
+    runtime fg.deobf("vazkii.botania:Botania:${botania_version}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
 //    compileOnly("mekanism:Mekanism:${mekanism_version}:api") { exclude group: "mezz.jei" }
 //    compileOnly "mezz.jei:jei_${mc_version}:${jei_version}"
