@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
@@ -31,12 +32,12 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
         int uvProgress = TileEntityUVLightBox.getExposureProgress(stack);
         int etchProgress = getEtchProgress(stack);
 
+        if (etchProgress > 0) {
+            infoList.add(xlate("gui.tooltip.item.uvLightBox.etchProgress", etchProgress));
+        }
         infoList.add(xlate("gui.tooltip.item.uvLightBox.successChance", uvProgress));
         if (uvProgress < 100 && etchProgress == 0) {
             infoList.add(xlate("gui.tooltip.item.uvLightBox.putInLightBox").applyTextStyle(TextFormatting.GRAY));
-        }
-        if (etchProgress > 0) {
-            infoList.add(xlate("gui.tooltip.item.uvLightBox.etchProgress", etchProgress));
         }
         if (uvProgress > 0) {
             infoList.add(xlate("gui.tooltip.item.uvLightBox.putInAcid").applyTextStyle(TextFormatting.GRAY));
@@ -66,7 +67,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
     @Override
     public int getRGBDurabilityForDisplay(ItemStack stack) {
         int progress = TileEntityUVLightBox.getExposureProgress(stack);
-        return progress << 16 | 0xFF;
+        return progress * 2 << 16 | 0xFF;
     }
 
     @Override

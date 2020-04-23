@@ -11,7 +11,11 @@ import java.util.function.Predicate;
 
 /**
  * Registry for registering harvest handlers. Note that any subclass of {@link CropsBlock} is
- * supported automatically. Get an instance of this with {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getHarvestRegistry()}.
+ * supported automatically.
+ * <p>
+ * Harvest handlers are Forge registry entries, and should be registered via the Forge registration system:
+ * {@code net.minecraftforge.event.RegistryEvent.Register<HarvestHandler>}
+ *
  * @author MineMaarten
  *
  */

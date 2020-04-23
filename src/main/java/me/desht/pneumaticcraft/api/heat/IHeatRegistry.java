@@ -17,7 +17,11 @@ public interface IHeatRegistry {
     IHeatExchangerLogic makeHeatExchangerLogic();
 
     /**
-     * Register a block as a heat exchanger. Don't call this directly; subscribe to {@link HeatRegistrationEvent}.
+     * Register a block as a heat exchanger. Don't call this directly; subscribe to {@link HeatRegistrationEvent} or
+     * use datapacks.
+     *<p>
+     * Note: the preferred way to do this is with datapacks. See
+     * {@code data/pneumaticcraft/pneumaticcraft/block_heat_properties/*.json}
      *
      * @param block the block
      * @param temperature the block's temperature
@@ -26,7 +30,8 @@ public interface IHeatRegistry {
     void registerBlockExchanger(Block block, double temperature, double thermalResistance);
 
     /**
-     * Register a heat behaviour instance. Don't call this directly; subscribe to {@link HeatRegistrationEvent}.
+     * Register a heat behaviour instance. Don't call this directly; subscribe to {@link HeatRegistrationEvent} or use
+     * datapacks.
      * <p>
      * Note: the preferred way to do this is with datapacks. See
      * {@code data/pneumaticcraft/pneumaticcraft/block_heat_properties/*.json}

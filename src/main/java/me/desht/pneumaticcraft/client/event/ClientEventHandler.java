@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -15,7 +16,6 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
-import me.desht.pneumaticcraft.common.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -104,7 +104,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void tickEnd(TickEvent.RenderTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && Minecraft.getInstance().isGameFocused() 
+        if (event.phase == TickEvent.Phase.END && Minecraft.getInstance().isGameFocused()
                 && ClientUtils.getClientPlayer() != null
                 && (ModuleRegulatorTube.inverted || !ModuleRegulatorTube.inLine)) {
             Minecraft mc = Minecraft.getInstance();
@@ -127,7 +127,7 @@ public class ClientEventHandler {
                 int h = event.getWindow().getScaledHeight();
 
                 if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-                     drawBulletTraces2D(minigun.getAmmoColor() | 0x40000000, w, h);
+                    drawBulletTraces2D(minigun.getAmmoColor() | 0x40000000, w, h);
                 }
 
                 ItemStack ammo = minigun.getAmmoStack();
@@ -268,8 +268,6 @@ public class ClientEventHandler {
         }
     }
 
-//    private static final FloatBuffer BUF_FLOAT_16 = BufferUtils.createFloatBuffer(16);
-
     @SubscribeEvent
     public static void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
         PlayerEntity player = event.getPlayer();
@@ -279,45 +277,9 @@ public class ClientEventHandler {
             MatrixStack matrixStack = event.getMatrixStack();
             matrixStack.push();
             matrixStack.rotate(makeQuaternion(player));
-//            GlStateManager.pushMatrix();
-//            GlStateManager.translated(event.getX(), event.getY(), event.getZ());
-//            GlStateManager.multMatrix(quatToGlMatrix(makeQuaternion(player)));
-//            GlStateManager.translated(-event.getX(), -event.getY(), -event.getZ());
             player.limbSwingAmount = player.prevLimbSwingAmount = 0F;
         }
     }
-
-//    private static FloatBuffer quatToGlMatrix(Quaternion quaternionIn) {
-//        // lifted from 1.12.2 GlStateManager
-//        ClientEventHandler.BUF_FLOAT_16.clear();
-//        float f = quaternionIn.getX() * quaternionIn.getX();
-//        float f1 = quaternionIn.getX() * quaternionIn.getY();
-//        float f2 = quaternionIn.getX() * quaternionIn.getZ();
-//        float f3 = quaternionIn.getX() * quaternionIn.getW();
-//        float f4 = quaternionIn.getY() * quaternionIn.getY();
-//        float f5 = quaternionIn.getY() * quaternionIn.getZ();
-//        float f6 = quaternionIn.getY() * quaternionIn.getW();
-//        float f7 = quaternionIn.getZ() * quaternionIn.getZ();
-//        float f8 = quaternionIn.getZ() * quaternionIn.getW();
-//        ClientEventHandler.BUF_FLOAT_16.put(1.0F - 2.0F * (f4 + f7));
-//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f1 + f8));
-//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f2 - f6));
-//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f1 - f8));
-//        ClientEventHandler.BUF_FLOAT_16.put(1.0F - 2.0F * (f + f7));
-//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f5 + f3));
-//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f2 + f6));
-//        ClientEventHandler.BUF_FLOAT_16.put(2.0F * (f5 - f3));
-//        ClientEventHandler.BUF_FLOAT_16.put(1.0F - 2.0F * (f + f4));
-//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-//        ClientEventHandler.BUF_FLOAT_16.put(0.0F);
-//        ClientEventHandler.BUF_FLOAT_16.put(1.0F);
-//        ClientEventHandler.BUF_FLOAT_16.rewind();
-//        return ClientEventHandler.BUF_FLOAT_16;
-//    }
 
     @SubscribeEvent
     public static void playerPostRotateEvent(RenderPlayerEvent.Post event) {
@@ -326,7 +288,6 @@ public class ClientEventHandler {
         JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
         if (state != null && state.shouldRotatePlayer()) {
             event.getMatrixStack().pop();
-//            GlStateManager.popMatrix();
         }
     }
 
@@ -365,55 +326,45 @@ public class ClientEventHandler {
     public static void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
         if (event.getInfo().getFluidState().isTagged(FluidTags.WATER) && event.getInfo().getRenderViewEntity() instanceof PlayerEntity) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isScubaEnabled() && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.SCUBA) > 0) {
+            if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isScubaEnabled()
+                    && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.SCUBA) > 0) {
                 event.setDensity(0.02f);
                 event.setCanceled(true);
             }
         }
     }
 
+    private static final int Z_LEVEL = 233;  // should be just above the drawn itemstack
+
     @SubscribeEvent
     public static void guiContainerForeground(GuiContainerEvent.DrawForeground event) {
+        // general extra rendering
         if (Minecraft.getInstance().currentScreen instanceof IExtraGuiHandling) {
             ((IExtraGuiHandling) Minecraft.getInstance().currentScreen).drawExtras(event);
         }
-    }
 
-    @SubscribeEvent
-    public static void drawCustomDurabilityBars(GuiScreenEvent.DrawScreenEvent.Post event) {
-        // with thanks to V0idWa1k3r
-        // https://github.com/V0idWa1k3r/ExPetrum/blob/master/src/main/java/v0id/exp/client/ExPHandlerClient.java#L235
-        if (event.getGui() instanceof ContainerScreen) {
-            RenderSystem.disableTexture();
-            RenderSystem.color4f(1F, 1F, 1F, 1F);
-            BufferBuilder bb = Tessellator.getInstance().getBuffer();
-            ContainerScreen container = (ContainerScreen) event.getGui();
-            int i = container.getGuiLeft();
-            int j = container.getGuiTop();
-            bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-            for (Slot s : container.getContainer().inventorySlots) {
-                if (s.getStack().getItem() instanceof ICustomDurabilityBar
-                        && ((ICustomDurabilityBar) s.getStack().getItem()).shouldShowCustomDurabilityBar(s.getStack())) {
-                    // render secondary durability bar
-                    ICustomDurabilityBar custom = (ICustomDurabilityBar)s.getStack().getItem();
-                    float x = s.xPos;
-                    float y = s.yPos;
-                    float val = custom.getCustomDurability(s.getStack());
-                    int c = custom.getCustomDurabilityColour(s.getStack());
-                    float r = ((c & 0xFF0000) >> 16) / 256f;
-                    float g = ((c & 0xFF00) >> 8) / 256f;
-                    float b = ((c & 0xFF)) / 256f;
-                    int yOff = custom.shouldShowCustomDurabilityBar(s.getStack()) ? 0 : 1;
-                    bb.pos(i + x + 2, j + y + 13 + yOff, 300).color(r, g, b, 1F).endVertex();
-                    bb.pos(i + x + 2 + 13 * val, j + y + 13 + yOff, 300).color(r, g, b, 1F).endVertex();
-                    bb.pos(i + x + 2 + 13 * val, j + y + 12 + yOff, 300).color(r, g, b, 1F).endVertex();
-                    bb.pos(i + x + 2, j + y + 12 + yOff, 300).color(r, g, b, 1F).endVertex();
-
+        // custom durability bars
+        RenderSystem.disableTexture();
+        BufferBuilder bb = Tessellator.getInstance().getBuffer();
+        ContainerScreen container = event.getGuiContainer();
+        for (Slot s : container.getContainer().inventorySlots) {
+            if (s.getStack().getItem() instanceof ICustomDurabilityBar) {
+                ICustomDurabilityBar custom = (ICustomDurabilityBar) s.getStack().getItem();
+                if (custom.shouldShowCustomDurabilityBar(s.getStack())) {
+                    int x = s.xPos;
+                    int y = s.yPos;
+                    float width = custom.getCustomDurability(s.getStack()) * 13;
+                    int[] cols = RenderUtils.decomposeColor(custom.getCustomDurabilityColour(s.getStack()));
+                    int yOff = custom.isShowingOtherBar(s.getStack()) ? 0 : 1;
+                    if (yOff == 1) {
+                        GuiUtils.drawUntexturedQuad(bb, x + 2, y + 14, Z_LEVEL, width, 1, 40, 40, 40, 255);
+                    }
+                    GuiUtils.drawUntexturedQuad(bb, x + 2, y + 12 + yOff, Z_LEVEL, 13, 1, 0, 0, 0, 255);
+                    GuiUtils.drawUntexturedQuad(bb, x + 2, y + 12 + yOff, Z_LEVEL, width, 1, cols[1], cols[2], cols[3], 255);
                 }
             }
-            Tessellator.getInstance().draw();
-            RenderSystem.enableTexture();
         }
+        RenderSystem.enableTexture();
     }
 
     @SubscribeEvent

@@ -36,8 +36,8 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     float getCriticalPressure();
 
     /**
-     * Set the pressure of this handler directly.  This is generally used for creative-type tile entities, to
-     * maintain a constant pressure.
+     * Set the pressure of this handler directly.  This is generally only used for creative-type tile entities, to
+     * maintain a constant pressure; in nearly all cases, the {@link #addAir(int)} method should be used.
      * @param newPressure the new pressure, in bar
      */
     void setPressure(float newPressure);
@@ -147,8 +147,8 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
         int getDispersedAir();
 
         /**
-         * Set the air which will be dispersed along this connection in this tick. You should not normally call this directly;
-         * it is handled by {@link IAirHandlerMachine#tick(TileEntity)}.
+         * Set the air which will be dispersed along this connection in this tick. You should not normally call this
+         * directly; it is handled by {@link IAirHandlerMachine#tick(TileEntity)}.
          * @param toDisperse the air which will be dispersed this tick
          */
         void setAirToDisperse(int toDisperse);

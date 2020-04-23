@@ -151,23 +151,32 @@ public class GuiUtils {
     public static void drawTexture(ResourceLocation texture, int x, int y) {
         Minecraft.getInstance().getTextureManager().bindTexture(texture);
         RenderSystem.enableTexture();
-        RenderSystem.color4f(1, 1, 1, 1);
+//        RenderSystem.color4f(1, 1, 1, 1);
         BufferBuilder builder = Tessellator.getInstance().getBuffer();
-        builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        builder.pos(x, y + 16, 0).tex(0.0f, 1.0f).endVertex();
-        builder.pos(x + 16, y + 16, 0).tex(1.0f, 1.0f).endVertex();
-        builder.pos(x + 16, y, 0).tex(1.0f, 0.0f).endVertex();
-        builder.pos(x, y, 0).tex(0.0f, 0.0f).endVertex();
+        builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX);
+        builder.pos(x, y + 16, 0).color(255, 255, 255, 255).tex(0.0f, 1.0f).endVertex();
+        builder.pos(x + 16, y + 16, 0).color(255, 255, 255, 255).tex(1.0f, 1.0f).endVertex();
+        builder.pos(x + 16, y, 0).color(255, 255, 255, 255).tex(1.0f, 0.0f).endVertex();
+        builder.pos(x, y, 0).color(255, 255, 255, 255).tex(0.0f, 0.0f).endVertex();
         Tessellator.getInstance().draw();
     }
 
-    public static void glColorHex(int color, float brightness) {
-        float alpha = (color >> 24 & 255) / 255F;
-        float div = 255F / brightness;
-        float red = (color >> 16 & 255) / div;
-        float green = (color >> 8 & 255) / div;
-        float blue = (color & 255) / div;
-        RenderSystem.color4f(red, green, blue, alpha);
+    public static void drawUntexturedQuad(BufferBuilder renderer, double x, double y, double z, double width, int height, int red, int green, int blue, int alpha) {
+        renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        renderer.pos(x, y, z).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x, y + height, z).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x + width, y + height, z).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x + width,  y, z).color(red, green, blue, alpha).endVertex();
+        Tessellator.getInstance().draw();
+    }
+
+    public static void drawOutline(BufferBuilder renderer, double x, double y, double z, double width, int height, int red, int green, int blue, int alpha) {
+        renderer.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
+        renderer.pos(x, y, z).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x, y + height, z).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x + width, y + height, z).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x + width,  y, z).color(red, green, blue, alpha).endVertex();
+        Tessellator.getInstance().draw();
     }
 
     public static void glColorHex(int color) {

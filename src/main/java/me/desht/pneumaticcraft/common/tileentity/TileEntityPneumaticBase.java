@@ -115,12 +115,6 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
         airHandlerMap.forEach(IAirHandlerMachine::setConnectedFaces);
     }
 
-//    @Override
-//    public void onBlockRotated() {
-//        super.onBlockRotated();
-////        airHandler.invalidateNeighbours();
-//    }
-
     @Override
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();

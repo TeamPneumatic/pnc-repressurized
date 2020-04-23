@@ -28,8 +28,8 @@ public interface IFuelRegistry {
     void registerFuel(Fluid fluid, int mLPerBucket, float burnRateMultiplier);
 
     /**
-     * Get the fuel value of the given fluid; the amount of compressed air generated in a Liquid Compressor by burning
-     * 1000mL of the fluid.
+     * Get the fuel value of the given fluid; this is defined as the amount of compressed air generated in a Liquid
+     * Compressor (without Speed Upgrades) by burning 1000mL of the fluid.
      * @param fluid the fluid
      * @return the fuel value (0 for fluids which have not been registered as fuels)
      */

@@ -8,6 +8,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/**
+ * Defines a hoe handler; use this to register items that are not vanilla hoes ({@link net.minecraft.item.HoeItem}) as
+ * a valid tool for Harvesting Drones to use.
+ * <p>
+ * Hoe handlers are Forge registry objects and should be registered as such.
+ */
 public class HoeHandler extends ForgeRegistryEntry<HoeHandler> implements Predicate<ItemStack> {
     private final Predicate<ItemStack> matchItem;
     private final BiConsumer<ItemStack, PlayerEntity> useDurability;

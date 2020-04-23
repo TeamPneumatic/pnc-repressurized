@@ -25,7 +25,7 @@ public interface IHackableEntity {
     ResourceLocation getHackableId();
 
     /**
-     * Returning true will allow the player to hack this entity. This can be used to only allow hacking on certain
+     * Returning true will allow the player to hack this entity. This can be used to only allow hacking under certain
      * conditions.
      *
      * @param entity the potential hacking target

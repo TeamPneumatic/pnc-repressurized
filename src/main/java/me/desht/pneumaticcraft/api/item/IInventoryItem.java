@@ -12,9 +12,10 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedChest.NBT_ITEMS;
 
 /**
- * Implement this interface for your items that have an inventory. When you don't have access to the item, just create any old class
- * that implements this interface and register an instance of it with {@link IItemRegistry#registerInventoryItem(IInventoryItem)}.
- * This will then will be used in the Pneumatic Helmet's item search.
+ * Implement this interface for your items that have an inventory. When you don't have access to the item, just create
+ * a class that implements this interface, and register an instance of it with
+ * {@link IItemRegistry#registerInventoryItem(IInventoryItem)}.
+ * This will then will be used in the Pneumatic Helmet's item search and item tooltip generation.
  */
 public interface IInventoryItem {
     /**

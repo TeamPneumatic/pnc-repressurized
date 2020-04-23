@@ -49,8 +49,8 @@ public interface IAirHandler {
     int getVolume();
 
     /**
-     * Get the maximum pressure this handler can tank.  Behaviour when more air is added is implementation-dependent
-     * (e.g. items tend to stop accepting air, while machines tend to explode)
+     * Get the maximum pressure this handler can take.  Behaviour when more air is added is implementation-dependent
+     * (e.g. items tend to stop accepting air, while blocks/machine tend to explode)
      *
      * @return the maximum pressure for this handler
      */

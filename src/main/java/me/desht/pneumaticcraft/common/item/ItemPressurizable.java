@@ -50,7 +50,7 @@ public class ItemPressurizable extends Item {
                 .orElse(1f);
     }
 
-    public static int getPressureDurabilityColor(ItemStack stack) {
+    static int getPressureDurabilityColor(ItemStack stack) {
         return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(airHandler -> {
             float f = airHandler.getPressure() / airHandler.maxPressure();
             int c = (int) (64 + 191 * f);
@@ -58,7 +58,7 @@ public class ItemPressurizable extends Item {
         }).orElse(0xC0C0C0);
     }
 
-    public static boolean shouldShowPressureDurability(ItemStack stack) {
+    static boolean shouldShowPressureDurability(ItemStack stack) {
         if (PNCConfig.Client.alwaysShowPressureDurabilityBar) return true;
 
         return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)

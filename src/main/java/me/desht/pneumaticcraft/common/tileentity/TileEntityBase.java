@@ -317,7 +317,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     public void validate() {
         super.validate();
 
-        scheduleDescriptionPacket();
+        scheduleDescriptionPacket();  // TODO verify that we actually need this
     }
 
     @Override
