@@ -73,7 +73,7 @@ public class ModuleAirGrate extends TubeModule {
         if (!world.isRemote) {
             int oldGrateRange = grateRange;
             grateRange = getRange();
-            pressureTube.addAir((vacuum ? 1 : -1) * grateRange * PneumaticValues.USAGE_AIR_GRATE);
+//            pressureTube.addAir((vacuum ? 1 : -1) * grateRange * PneumaticValues.USAGE_AIR_GRATE);
             if (oldGrateRange != grateRange) sendDescriptionPacket();
 
             coolHeatSinks();
@@ -96,6 +96,7 @@ public class ModuleAirGrate extends TubeModule {
         AxisAlignedBB bbBox = getAffectedAABB();
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, entityFilter);
         double d0 = grateRange * 3;
+        int entitiesMoved = 0;
         for (Entity entity : entities) {
             if (!entity.world.isRemote && entity instanceof ItemEntity && entity.isAlive()
                     && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 1D) {
@@ -115,15 +116,19 @@ public class ModuleAirGrate extends TubeModule {
                     d5 *= d5;
                     if (vacuum) d5 *= -1;
                     entity.move(MoverType.SELF, new Vec3d(x * d5, y * d5, z * d5));
-                    if (world.isRemote && world.rand.nextDouble() * 0.85 > d4) {
+                    entitiesMoved++;
+                    if (world.isRemote && world.rand.nextDouble() < 0.2) {
                         if (vacuum) {
                             world.addParticle(AirParticleData.DENSE, entity.getPosX(), entity.getPosY(), entity.getPosZ(), -x, -y, -z);
                         } else {
-                            world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5 + x, pos.getY() + 0.5 + y, pos.getZ() + 0.5 + z, x, y, z);
+                            world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5 + getDirection().getXOffset(), pos.getY() + 0.5 + getDirection().getYOffset(), pos.getZ() + 0.5 + getDirection().getZOffset(), x, y, z);
                         }
                     }
                 }
             }
+        }
+        if (!world.isRemote) {
+            pressureTube.addAir(-entitiesMoved * PneumaticValues.USAGE_AIR_GRATE);
         }
     }
 
