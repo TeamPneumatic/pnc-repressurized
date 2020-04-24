@@ -61,7 +61,7 @@ public class PneumaticValues {
     public static final int AIR_LEAK_FACTOR = 40;//mL/bar/tick determines how much air being released.
 
     public static final int CHARGING_STATION_CHARGE_RATE = 10;// mL per tick
-    public static final int USAGE_AIR_GRATE = 10; // mL per tick per meter range
+    public static final int USAGE_AIR_GRATE = 2; // mL per entity affected this tick
     public static final int USAGE_VORTEX_CANNON = 250; // mL per shot
     public static final int USAGE_ELEVATOR = 300; // mL per meter ascending.
     public static final int USAGE_ENTITY_TRACKER = 1; // mL per tick
