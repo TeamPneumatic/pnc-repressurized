@@ -44,10 +44,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         implements IMinWorkingPressure, IAirListener, INamedContainerProvider {
@@ -196,57 +193,57 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     }
 
     private void checkForAirLeak() {
-        boolean[] connected = new boolean[]{ true, true, true, true, true, true };
+        BitSet disconnected = new BitSet(6);
 
-        switch (getRotation()) {
-            // take off the sides that tubes can connect to
-            case UP: case DOWN:
-                connected[Direction.UP.ordinal()] = connected[Direction.DOWN.ordinal()] = false;
+        switch (getRotation().getAxis()) {
+            case X:
+                disconnected.set(Direction.WEST.getIndex());
+                disconnected.set(Direction.EAST.getIndex());
                 break;
-            case NORTH: case SOUTH:
-                connected[Direction.NORTH.ordinal()] = connected[Direction.SOUTH.ordinal()] = false;
+            case Y:
+                disconnected.set(Direction.UP.getIndex());
+                disconnected.set(Direction.DOWN.getIndex());
                 break;
-            case EAST: case WEST:
-                connected[Direction.EAST.ordinal()] = connected[Direction.WEST.ordinal()] = false;
+            case Z:
+                disconnected.set(Direction.NORTH.getIndex());
+                disconnected.set(Direction.SOUTH.getIndex());
                 break;
         }
 
         List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
         for (IAirHandlerMachine.Connection c : l) {
-            if (c.getDirection() != null) connected[c.getDirection().ordinal()] = true;
+            if (c.getDirection() != null) disconnected.clear(c.getDirection().getIndex());
         }
 
         // retrieve the valve that is controlling the (potential) chamber
         TileEntityPressureChamberValve primaryValve = accessoryValves.isEmpty() ? null : accessoryValves.get(accessoryValves.size() - 1);
         if (primaryValve != null) {
-            // we can scratch one side (the side facing into the chamber) to be leaking air
-            switch (getRotation()) {
-                case UP: case DOWN:
-                    if (primaryValve.multiBlockY == getPos().getY()) {
-                        connected[Direction.UP.ordinal()] = true;
-                    } else {
-                        connected[Direction.DOWN.ordinal()] = true;
-                    }
-                    break;
-                case NORTH: case SOUTH:
-                    if (primaryValve.multiBlockZ == getPos().getZ()) {
-                        connected[Direction.SOUTH.ordinal()] = true;
-                    } else {
-                        connected[Direction.NORTH.ordinal()] = true;
-                    }
-                    break;
-                case EAST: case WEST:
+            // the side of the valve facing into a formed chamber doesn't leak, even though it's not connected
+            switch (getRotation().getAxis()) {
+                case X:
                     if (primaryValve.multiBlockX == getPos().getX()) {
-                        connected[Direction.EAST.ordinal()] = true;
+                        disconnected.clear(Direction.EAST.getIndex());
                     } else {
-                        connected[Direction.WEST.ordinal()] = true;
+                        disconnected.clear(Direction.WEST.getIndex());
+                    }
+                    break;
+                case Y:
+                    if (primaryValve.multiBlockY == getPos().getY()) {
+                        disconnected.clear(Direction.UP.getIndex());
+                    } else {
+                        disconnected.clear(Direction.DOWN.getIndex());
+                    }
+                    break;
+                case Z:
+                    if (primaryValve.multiBlockZ == getPos().getZ()) {
+                        disconnected.clear(Direction.SOUTH.getIndex());
+                    } else {
+                        disconnected.clear(Direction.NORTH.getIndex());
                     }
                     break;
             }
         }
-        for (int i = 0; i < 6; i++) {
-            if (!connected[i]) airHandler.airLeak(this, Direction.byIndex(i));
-        }
+        airHandler.setSideLeaking(disconnected.isEmpty() ? null : getRotation());
     }
 
     private void processApplicableRecipes() {

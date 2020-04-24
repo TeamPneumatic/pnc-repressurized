@@ -92,7 +92,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     protected void addProblems(List<String> textList) {
         super.addProblems(textList);
 
-        if (te.isLeaking()) {
+        if (te.hasNoConnectedAirHandlers()) {
             textList.add(I18n.format("gui.tab.problems.airLeak"));
         }
         if (container.inventorySlots.get(5).getStack().isEmpty() && te.getUpgrades(EnumUpgrade.ENTITY_TRACKER) == 0) {

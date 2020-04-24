@@ -65,10 +65,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
                 energy.extractEnergy(rfPerTick, false);
                 heatExchanger.addHeat(rfPerTick / 100D);
             }
-        }
-
-        if (!getWorld().isRemote && isLeaking()) {
-            airHandler.airLeak(this, getRotation().getOpposite());
+            airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation().getOpposite() : null);
         }
     }
 

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.BlockChargingStation;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
@@ -77,8 +76,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     public void onDescUpdate() {
         camoState = ICamouflageableTE.getStateForStack(camoStack);
-//        chargingStackEntity = new ItemEntity(EntityType.ITEM, world);
-//        chargingStackEntity.setItem(chargingStackSynced);
 
         super.onDescUpdate();
     }
@@ -134,10 +131,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 updateNeighbours();
             }
 
-            List<IAirHandlerMachine.Connection> teList = airHandler.getConnectedAirHandlers(this);
-            if (teList.isEmpty()) {
-                airHandler.airLeak(this, getRotation());
-            }
+            airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
         }
     }
 

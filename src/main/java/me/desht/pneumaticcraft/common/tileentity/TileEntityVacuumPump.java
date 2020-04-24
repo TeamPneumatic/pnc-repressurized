@@ -62,18 +62,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
         return super.getCapability(cap, side);
     }
 
-//    @Override
-//    public void remove() {
-//        super.remove();
-////        vacuumCap.invalidate();
-//    }
-//
-//    @Override
-//    public void onBlockRotated() {
-//        super.onBlockRotated();
-////        vacuumHandler.invalidateNeighbours();
-//    }
-
     @Override
     public IItemHandler getPrimaryInventory() {
         return null;
@@ -107,13 +95,8 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
             if (turnTimer == 0) {
                 turning = false;
             }
-
-            if (airHandler.getConnectedAirHandlers(this).isEmpty()) {
-                airHandler.airLeak(this, getInputSide());
-            }
-            if (vacuumHandler.getConnectedAirHandlers(this).isEmpty()) {
-                vacuumHandler.airLeak(this, getVacuumSide());
-            }
+            airHandler.setSideLeaking(airHandler.getConnectedAirHandlers(this).isEmpty() ? getInputSide() : null);
+            vacuumHandler.setSideLeaking(vacuumHandler.getConnectedAirHandlers(this).isEmpty() ? getVacuumSide() : null);
         } else {
             oldRotation = rotation;
             if (turning) {

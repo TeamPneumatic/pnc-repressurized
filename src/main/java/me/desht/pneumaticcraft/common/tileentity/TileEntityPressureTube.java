@@ -144,13 +144,19 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             }
         }
 
-        if (!getWorld().isRemote && !hasModules) {
-            List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
-            if (l.size() == 1) {
-                IAirHandlerMachine.Connection c = l.get(0);
-                Direction d = c.getDirection();
-                if (d != null && modules[d.getOpposite().ordinal()] == null && canConnectPneumatic(d.getOpposite())) {
-                    airHandler.airLeak(this, d.getOpposite());
+        if (!getWorld().isRemote) {
+            if (hasModules) {
+                airHandler.setSideLeaking(null);
+            } else {
+                List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
+                if (l.size() == 1) {
+                    IAirHandlerMachine.Connection c = l.get(0);
+                    Direction d = c.getDirection();
+                    if (d != null) {
+                        airHandler.setSideLeaking(canConnectPneumatic(d.getOpposite()) ? d.getOpposite() : null);
+                    }
+                } else {
+                    airHandler.setSideLeaking(null);
                 }
             }
         }

@@ -69,7 +69,6 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         lastLeftStat = lastRightStat = null;
         if (shouldAddPressureTab() && te instanceof TileEntityPneumaticBase) {
             pressureStat = this.addAnimatedStat("gui.tab.pressure", new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFF00AA00, false);
-            ((TileEntityPneumaticBase) te).initializeHullAirHandlers();
         }
         if (shouldAddProblemTab()) {
             problemTab = addAnimatedStat("gui.tab.problems", 0xFFA0A0A0, false);

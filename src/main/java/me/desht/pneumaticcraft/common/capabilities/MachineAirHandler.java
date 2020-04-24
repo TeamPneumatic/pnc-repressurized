@@ -4,26 +4,27 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
+import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -39,17 +40,18 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     private final float criticalPressure;
     private int volumeUpgrades = 0;
     private boolean hasSecurityUpgrade = false;
-    private int soundCounter;
     private final BitSet connectedFaces = new BitSet(6);
+    private Direction leakDir = null;
+    private Direction prevLeakDir = null;
+    private boolean safetyLeak;
     private int prevAir;
-
     private final List<LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new ArrayList<>();
 
     public MachineAirHandler(float dangerPressure, float criticalPressure, int volume) {
         super(volume);
+
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
-
         for (Direction ignored : Direction.VALUES) {
             this.neighbourAirHandlers.add(LazyOptional.empty());
         }
@@ -105,17 +107,42 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     @Override
     public void tick(TileEntity ownerTE) {
         World world = ownerTE.getWorld();
+        Direction actualLeakDir = leakDir;
         if (!world.isRemote) {
+            // server
             BlockPos pos = ownerTE.getPos();
             if (hasSecurityUpgrade) {
-                doSecurityChecks(ownerTE);
+                if (!safetyLeak && getPressure() >= dangerPressure) {
+                    safetyLeak = true;
+                } else if (safetyLeak && getPressure() < dangerPressure - 0.25) {
+                    safetyLeak = false;
+                }
             } else {
                 doOverpressureChecks(ownerTE, world, pos);
             }
             disperseAir(ownerTE);
             prevAir = getAir();
+            // TODO: derive a best direction here, don't just assume UP is ok
+            actualLeakDir = safetyLeak ? Direction.UP : leakDir;
+            if (prevLeakDir != actualLeakDir || actualLeakDir != null && (world.getGameTime() & 0x1f) == 0) {
+                // if leak status changes, sync pressure & leak dir to the client
+                // OR if already leaking, periodically sync pressure & leak dir to the client
+                NetworkHandler.sendToAllAround(new PacketUpdatePressureBlock(ownerTE, anyConnectedFace(), actualLeakDir, getAir()), world, 32D);
+            }
+
+            prevLeakDir = actualLeakDir;
         }
-        if (soundCounter > 0) soundCounter--;
+
+        if (actualLeakDir != null && getAir() != 0) {
+            handleAirLeak(ownerTE, actualLeakDir);
+        }
+    }
+
+    private Direction anyConnectedFace() {
+        for (Direction d : Direction.VALUES) {
+            if (connectedFaces.get(d.getIndex())) return d;
+        }
+        return null;
     }
 
     private void doOverpressureChecks(TileEntity ownerTE, World world, BlockPos pos) {
@@ -133,49 +160,45 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         }
     }
 
-    private void doSecurityChecks(TileEntity ownerTE) {
-        if (getPressure() >= dangerPressure - 0.1) {
-            airLeak(ownerTE, Direction.UP);
-        }
+    private void handleAirLeak(TileEntity ownerTE, Direction actualLeakDir) {
+        World world = ownerTE.getWorld();
+        BlockPos pos = ownerTE.getPos();
 
-        // Remove any remaining air
-        int excessAir = getAir() - (int) (getVolume() * (dangerPressure - 0.1));
-        if (excessAir > 0) {
-            addAir(-excessAir);
-            onAirDispersion(ownerTE,null, -excessAir);
+        if (!world.isRemote) {
+            if (getAir() > 0) {
+                int leakedAmount = (int) (getPressure() * PneumaticValues.AIR_LEAK_FACTOR) + 20;
+                if (leakedAmount > getAir()) leakedAmount = getAir();
+                onAirDispersion(ownerTE, leakDir, -leakedAmount);
+                addAir(-leakedAmount);
+            } else if (getAir() < 0) {
+                int leakedAmount = -(int) (getPressure() * PneumaticValues.AIR_LEAK_FACTOR) + 20;
+                if (getAir() > leakedAmount) leakedAmount = -getAir();
+                onAirDispersion(ownerTE, leakDir, leakedAmount);
+                addAir(leakedAmount);
+            }
+        } else {
+            double mx = actualLeakDir.getXOffset();
+            double my = actualLeakDir.getYOffset();
+            double mz = actualLeakDir.getZOffset();
+            double speed = getPressure() * 0.1F;
+            if (getAir() > 0) {
+                world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5D + mx * 0.6, pos.getY() + 0.5D + my * 0.6, pos.getZ() + 0.5D + mz * 0.6, mx * speed, my * speed, mz * speed);
+            } else if (getAir() < 0 && world.rand.nextBoolean()) {
+                world.addParticle(AirParticleData.NORMAL, pos.getX() + 0.5D + mx, pos.getY() + 0.5D + my, pos.getZ() + 0.5D + mz, mx * speed, my * speed, mz * speed);
+            }
+            MovingSounds.playMovingSound(MovingSounds.Sound.AIR_LEAK, ownerTE.getPos(), anyConnectedFace());
         }
     }
 
     @Override
-    public void airLeak(TileEntity ownerTE, Direction dir) {
-        World world = ownerTE.getWorld();
-        BlockPos pos = ownerTE.getPos();
+    public void setSideLeaking(@Nullable Direction dir) {
+        this.leakDir = dir;
+    }
 
-        if (world.isRemote || Math.abs(getPressure()) < 0.01F) return;
-        double motionX = dir.getXOffset();
-        double motionY = dir.getYOffset();
-        double motionZ = dir.getZOffset();
-        if (soundCounter <= 0) {
-            float pitch = MathHelper.clamp(1.0f + ((getPressure() - 3) / 10), 0.8f, 1.2f);
-            soundCounter = (int) (20 / pitch);
-            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.LEAKING_GAS.get(), SoundCategory.BLOCKS, pos.getX(), pos.getY(), pos.getZ(), 0.1F, pitch, true), world);
-        }
-
-        if (getPressure() < 0) {
-            double speed = getPressure() * 0.1F - 0.1F;
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, pos.getX() + 0.5D + motionX, pos.getY() + 0.5D + motionY, pos.getZ() + 0.5D + motionZ, motionX * speed, motionY * speed, motionZ * speed), world);
-            int dispersedAmount = -(int) (getPressure() * PneumaticValues.AIR_LEAK_FACTOR) + 20;
-            if (getAir() > dispersedAmount) dispersedAmount = -getAir();
-            onAirDispersion(ownerTE, dir, dispersedAmount);
-            addAir(dispersedAmount);
-        } else {
-            double speed = getPressure() * 0.1F + 0.1F;
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, pos.getX() + 0.5D + motionX / 2D, pos.getY() + 0.5D + motionY / 2D, pos.getZ() + 0.5D + motionZ / 2D, motionX * speed, motionY * speed, motionZ * speed), world);
-            int dispersedAmount = (int) (getPressure() * PneumaticValues.AIR_LEAK_FACTOR) + 20;
-            if (dispersedAmount > getAir()) dispersedAmount = getAir();
-            onAirDispersion(ownerTE, dir, -dispersedAmount);
-            addAir(-dispersedAmount);
-        }
+    @Nullable
+    @Override
+    public Direction getSideLeaking() {
+        return this.leakDir;
     }
 
     private LazyOptional<IAirHandlerMachine> getNeighbourAirHandler(TileEntity ownerTE, Direction dir) {
@@ -241,6 +264,19 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                 .map(ConnectedAirHandler::new)
                 .collect(Collectors.toList()));
         return neighbours;
+    }
+
+    @Override
+    public CompoundNBT serializeNBT() {
+        CompoundNBT nbt = super.serializeNBT();
+        if (leakDir != null) nbt.putByte("Leaking", (byte) leakDir.getIndex());
+        return nbt;
+    }
+
+    @Override
+    public void deserializeNBT(CompoundNBT nbt) {
+        super.deserializeNBT(nbt);
+        leakDir = nbt.contains("Leaking") ? Direction.byIndex(nbt.getByte("Leaking")) : null;
     }
 
     @Override

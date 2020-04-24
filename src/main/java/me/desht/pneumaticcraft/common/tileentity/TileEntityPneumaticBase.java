@@ -18,10 +18,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     @GuiSynced
@@ -41,6 +38,13 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
         this.defaultVolume = volume;
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundNBT tag) {
+        super.handleUpdateTag(tag);
+
+        initializeHullAirHandlers();
     }
 
     @Override
@@ -74,6 +78,15 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
             h.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
             h.setHasSecurityUpgrade(getUpgrades(EnumUpgrade.SECURITY) > 0);
         });
+    }
+
+    @Override
+    public void onBlockRotated() {
+        super.onBlockRotated();
+
+        // force a resync of where any leak might be coming from
+        initializeHullAirHandlers();
+        airHandlerMap.keySet().forEach(h -> h.setSideLeaking(null));
     }
 
     @Nonnull
@@ -113,6 +126,15 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
                     .ifPresent(handler -> airHandlerMap.computeIfAbsent(handler, k -> new ArrayList<>()).add(side));
         }
         airHandlerMap.forEach(IAirHandlerMachine::setConnectedFaces);
+    }
+
+    // called clientside when a PacketUpdatePressureBlock is received
+    // this ensures the TE can tick this air handler for air leak purposes
+    public void initializeHullAirHandler(Direction dir, IAirHandlerMachine handler) {
+        airHandlerMap.clear();
+        List<Direction> l = Collections.singletonList(dir);
+        airHandlerMap.put(handler, l);
+        handler.setConnectedFaces(l);
     }
 
     @Override
@@ -193,10 +215,10 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     }
 
     public void forceLeak(Direction dir) {
-        airHandler.airLeak(this, dir);
+        airHandler.setSideLeaking(dir);
     }
 
-    public boolean isLeaking() {
+    public boolean hasNoConnectedAirHandlers() {
         return airHandler.getConnectedAirHandlers(this).isEmpty();
     }
 }

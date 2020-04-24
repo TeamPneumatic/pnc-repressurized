@@ -145,8 +145,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
         super.tick();
 
-        if (!getWorld().isRemote && isLeaking()) {
-            airHandler.airLeak(this, getRotation());
+        if (!getWorld().isRemote) {
+            airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
         }
     }
 

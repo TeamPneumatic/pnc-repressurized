@@ -72,6 +72,8 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
     @Override
     public void tick() {
+        super.tick();
+
         if (!getWorld().isRemote) {
             if (redstoneAllows() && burnTime < curFuelUsage) {
                 ItemStack fuelStack = itemHandler.getStackInSlot(FUEL_SLOT);
@@ -96,12 +98,9 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
             if (wasActive != isActive) {
                 getWorld().setBlockState(getPos(), getWorld().getBlockState(getPos()).with(BlockAirCompressor.ON, isActive));
             }
-        } else if (isActive) spawnBurningParticle();
-
-        super.tick();
-
-        if (!getWorld().isRemote && isLeaking()) {
-            airHandler.airLeak(this, getRotation());
+            airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
+        } else {
+            if (isActive) spawnBurningParticle();
         }
     }
 

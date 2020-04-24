@@ -59,7 +59,7 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
             textList.add(I18n.format("gui.tab.problems.airCompressor.noFuel"));
         }
 
-        if (te.isLeaking()) {
+        if (te.hasNoConnectedAirHandlers()) {
             textList.add(I18n.format("gui.tab.problems.airLeak"));
         }
     }

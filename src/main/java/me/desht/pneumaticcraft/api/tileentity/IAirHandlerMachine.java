@@ -67,13 +67,22 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     void tick(TileEntity ownerTE);
 
     /**
-     * Leak air in the given direction.  The amount of air lost is dependent on the handler's current pressure;
-     * the exact amount is 20 + abs(pressure * 40) mL.
+     * Mark a face of the air handler as leaking or otherwise.  When called server-side, changes will be automatically
+     * synced to clients on the next tick so that particles and sound effects can be played there.  The amount of air
+     * leaked in a tick is pressure-dependent; the exact amount is {@code pressure * 40 + 20 mL}.
+     * <p>(Note: in theory, an air handler could leak in multiple directions at once, but this is a simplified
+     * implementation to keep the code straightforward & efficient, while still being effective)</p>
      *
-     * @param ownerTE the owning tile entity
-     * @param dir the direction to leak in
+     * @param dir the direction the leak is occurring (affects particle velocities), or null for no leak
      */
-    void airLeak(TileEntity ownerTE, Direction dir);
+    void setSideLeaking(@Nullable Direction dir);
+
+    /**
+     * Get the side which is leaking air, if any.
+     * @return the leaking side, or null if there's no leak
+     */
+    @Nullable
+    Direction getSideLeaking();
 
     /**
      * Get a list of all air handlers connected to this one.
