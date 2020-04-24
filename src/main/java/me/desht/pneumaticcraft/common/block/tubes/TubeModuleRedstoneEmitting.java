@@ -59,12 +59,12 @@ public abstract class TubeModuleRedstoneEmitting extends TubeModule {
             if (higherBound < lowerBound) {
                 if (higherBound != lowerBound - 0.1F) {
                     higherBound = lowerBound - 0.1F;
-                    sendDescriptionPacket();
+                    if (!pressureTube.getWorld().isRemote) sendDescriptionPacket();
                 }
             } else {
                 if (higherBound != lowerBound + 0.1F) {
                     higherBound = lowerBound + 0.1F;
-                    sendDescriptionPacket();
+                    if (!pressureTube.getWorld().isRemote) sendDescriptionPacket();
                 }
             }
         }
