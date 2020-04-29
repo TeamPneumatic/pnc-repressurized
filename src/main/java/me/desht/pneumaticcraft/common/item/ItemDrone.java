@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -41,7 +42,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
         BlockPos pos = ctx.getPos();
         if (!world.isRemote) {
             ItemStack iStack = ctx.getPlayer().getHeldItem(ctx.getHand());
-            if (iStack.getItem().getRegistryName().getPath().equals("logistic_drone")) {
+            if (iStack.getItem() == ModItems.LOGISTICS_DRONE.get()) {
                 AdvancementTriggers.LOGISTICS_DRONE_DEPLOYED.trigger((ServerPlayerEntity) ctx.getPlayer());
             }
             BlockPos placePos = pos.offset(ctx.getFace());
