@@ -13,7 +13,7 @@
       "item": "minecraft:brick"
     },
     "S": {
-      "item": "minecraft:cobblestone_slab"
+      "item": "pneumaticcraft:reinforced_stone_slab"
     }
   },
   "result": {
