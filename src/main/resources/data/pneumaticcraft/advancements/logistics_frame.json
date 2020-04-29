@@ -10,7 +10,7 @@
       "translate": "achievement.logisticsFrame.desc"
     }
   },
-  "parent": "pneumaticcraft:plastic",
+  "parent": "pneumaticcraft:root",
   "criteria": {
     "taken": {
       "trigger": "minecraft:inventory_changed",
