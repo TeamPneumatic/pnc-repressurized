@@ -16,7 +16,7 @@
       "item": "pneumaticcraft:pressure_tube"
     },
     "S": {
-      "item": "minecraft:stone_slab"
+      "item": "pneumaticcraft:reinforced_stone_slab"
     }
   },
   "result": {

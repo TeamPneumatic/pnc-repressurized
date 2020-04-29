@@ -201,7 +201,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 "  T/PPP/SSS",
                 'T', ModBlocks.PRESSURE_TUBE.get(),
                 'P', Items.BRICK,
-                'S', Blocks.COBBLESTONE_SLAB
+                'S', ModBlocks.REINFORCED_STONE_SLAB.get()
         ).build(consumer);
 
         shaped(ModItems.COLLECTOR_DRONE.get(), ModItems.TURBINE_ROTOR.get(),
@@ -763,7 +763,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'G', ModItems.PRESSURE_GAUGE.get(),
                 'R', ModItems.TURBINE_ROTOR.get(),
                 'T', ModBlocks.PRESSURE_TUBE.get(),
-                'S', Blocks.STONE_SLAB
+                'S', ModBlocks.REINFORCED_STONE_SLAB.get()
         ).build(consumer);
 
         shaped(ModBlocks.VORTEX_TUBE.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
