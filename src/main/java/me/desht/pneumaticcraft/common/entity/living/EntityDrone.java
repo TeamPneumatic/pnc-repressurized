@@ -172,8 +172,8 @@ public class EntityDrone extends EntityDroneBase implements
     public List<IProgWidget> progWidgets = new ArrayList<>();
 
     private DroneFakePlayer fakePlayer;
-    public String playerName = "Drone";
-    private UUID playerUUID;
+    public String ownerName = "Drone";
+    private UUID ownerUUID;
 
     private DroneGoToChargingStation chargeAI;
     private DroneGoToOwner gotoOwnerAI;
@@ -206,11 +206,11 @@ public class EntityDrone extends EntityDroneBase implements
     EntityDrone(EntityType<? extends EntityDrone> type, World world, PlayerEntity player) {
         this(type, world);
         if (player != null) {
-            playerUUID = player.getGameProfile().getId();
-            playerName = player.getName().getFormattedText();
+            ownerUUID = player.getGameProfile().getId();
+            ownerName = player.getName().getFormattedText();
         } else {
-            playerUUID = getUniqueID(); // Anonymous drone used for Amadron or spawned with a Dispenser
-            playerName = "Drone";
+            ownerUUID = getUniqueID(); // Anonymous drone used for Amadron or spawned with a Dispenser
+            ownerName = "Drone";
         }
     }
 
@@ -328,15 +328,15 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void writeSpawnData(PacketBuffer buffer) {
-        buffer.writeLong(playerUUID.getMostSignificantBits());
-        buffer.writeLong(playerUUID.getLeastSignificantBits());
-        buffer.writeString(playerName);
+        buffer.writeLong(ownerUUID.getMostSignificantBits());
+        buffer.writeLong(ownerUUID.getLeastSignificantBits());
+        buffer.writeString(ownerName);
     }
 
     @Override
     public void readSpawnData(PacketBuffer buffer) {
-        playerUUID = new UUID(buffer.readLong(), buffer.readLong());
-        playerName = buffer.readString();
+        ownerUUID = new UUID(buffer.readLong(), buffer.readLong());
+        ownerName = buffer.readString();
     }
 
     /**
@@ -528,7 +528,7 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public int getLaserColor() {
         // TODO since this is used in rendering, we should cache it for performance reasons
-        String name = hasCustomName() ? getCustomName().getFormattedText().toLowerCase() : playerName.toLowerCase();
+        String name = hasCustomName() ? getCustomName().getFormattedText().toLowerCase() : ownerName.toLowerCase();
         return LASER_COLOR_MAP.getOrDefault(name, super.getLaserColor());
     }
 
@@ -907,9 +907,9 @@ public class EntityDrone extends EntityDroneBase implements
 
         fluidTank.writeToNBT(tag);
 
-        tag.putString("owner", playerName);
-        tag.putLong("ownerUUID_M", playerUUID.getMostSignificantBits());
-        tag.putLong("ownerUUID_L", playerUUID.getLeastSignificantBits());
+        tag.putString("owner", ownerName);
+        tag.putLong("ownerUUID_M", ownerUUID.getMostSignificantBits());
+        tag.putLong("ownerUUID_L", ownerUUID.getLeastSignificantBits());
 
         if (!displacedLiquids.isEmpty()) {
             ListNBT disp = new ListNBT();
@@ -952,8 +952,8 @@ public class EntityDrone extends EntityDroneBase implements
 
         energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
 
-        if (tag.contains("owner")) playerName = tag.getString("owner");
-        if (tag.contains("ownerUUID_M")) playerUUID = new UUID(tag.getLong("ownerUUID_M"), tag.getLong("ownerUUID_L"));
+        if (tag.contains("owner")) ownerName = tag.getString("owner");
+        if (tag.contains("ownerUUID_M")) ownerUUID = new UUID(tag.getLong("ownerUUID_M"), tag.getLong("ownerUUID_L"));
 
         if (tag.contains("displacedLiquids")) {
             for (INBT inbt : tag.getList("displacedLiquids", Constants.NBT.TAG_LIST)) {
@@ -968,47 +968,17 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     // computercraft ("getOwnerName" method)
-    public String getPlayerName() {
-        return playerName;
+    public String getOwnerName() {
+        return ownerName;
     }
 
     public UUID getOwnerUUID() {
-        if (playerUUID == null) {
-            Log.warning(String.format("Drone with owner '%s' has no UUID! Substituting the Drone's UUID (%s).", playerName, getUniqueID().toString()));
-            playerUUID = getUniqueID();
+        if (ownerUUID == null) {
+            Log.warning(String.format("Drone with owner '%s' has no UUID! Substituting the Drone's UUID (%s).", ownerName, getUniqueID().toString()));
+            ownerUUID = getUniqueID();
         }
-        return playerUUID;
+        return ownerUUID;
     }
-
-//    /**
-//     * This and read() are _not_ being transfered from/to the Drone item.
-//     */
-//    @Override
-//    public CompoundNBT writeWithoutTypeId(CompoundNBT tag) {
-//        super.writeWithoutTypeId(tag);
-//        // this can be called client-side, e.g. TheOneProbe
-//        // but this data isn't sync'd to the client
-//        if (!getEntityWorld().isRemote) {
-//            if (playerName != null) {
-//                tag.putString("owner", playerName);
-//                tag.putString("ownerUUID", getOwnerUUID().toString());
-//            }
-//        }
-//        return tag;
-//    }
-//
-//    @Override
-//    public void read(CompoundNBT tag) {
-//        if (!getEntityWorld().isRemote) {
-//            if (tag.contains("owner")) {
-//                playerName = tag.getString("owner");
-//                playerUUID = tag.contains("ownerUUID") ? UUID.fromString(tag.getString("ownerUUID")) : null;
-//            }
-//        }
-//        super.read(tag);
-//        // see writeWithoutTypeId() above
-//
-//    }
 
     public int getUpgrades(EnumUpgrade upgrade) {
         return upgradeCache.getUpgrades(upgrade);
@@ -1017,7 +987,7 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public FakePlayer getFakePlayer() {
         if (fakePlayer == null && !world.isRemote) {
-            fakePlayer = new DroneFakePlayer((ServerWorld) world, new GameProfile(getOwnerUUID(), playerName), this);
+            fakePlayer = new DroneFakePlayer((ServerWorld) world, new GameProfile(getUniqueID(), ownerName + "_drone"), this);
             fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
         }
         return fakePlayer;
@@ -1111,7 +1081,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        if (playerUUID.equals(player.getUniqueID())) {
+        if (ownerUUID.equals(player.getUniqueID())) {
             if (isGoingToOwner()) {
                 curInfo.add("pneumaticHelmet.hacking.result.resumeTasks");
             } else {
@@ -1124,7 +1094,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        if (playerUUID.equals(player.getUniqueID())) {
+        if (ownerUUID.equals(player.getUniqueID())) {
             if (isGoingToOwner()) {
                 curInfo.add("pneumaticHelmet.hacking.finished.calledBack");
             } else {
@@ -1137,12 +1107,12 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public int getHackTime(Entity entity, PlayerEntity player) {
-        return playerUUID.equals(player.getUniqueID()) ? 20 : 100;
+        return ownerUUID.equals(player.getUniqueID()) ? 20 : 100;
     }
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        if (!world.isRemote && player.getGameProfile().equals(getFakePlayer().getGameProfile())) {
+        if (!world.isRemote && player.getUniqueID().equals(ownerUUID)) {
             setGoingToOwner(gotoOwnerAI == null); //toggle the state
         } else {
             disabledByHacking = true;
@@ -1179,7 +1149,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     public PlayerEntity getOwner() {
-        return world.getServer().getPlayerList().getPlayerByUsername(playerName);
+        return world.getServer().getPlayerList().getPlayerByUsername(ownerName);
     }
 
     public void setStandby(boolean standby) {

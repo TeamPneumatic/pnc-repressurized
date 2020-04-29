@@ -112,7 +112,7 @@ public class EntityTrackHandler {
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            curInfo.add(I18n.format("entityTracker.info.tamed", ((EntityDrone) entity).playerName));
+            curInfo.add(I18n.format("entityTracker.info.tamed", ((EntityDrone) entity).ownerName));
             curInfo.add(I18n.format("entityTracker.info.drone.routine", ((EntityDrone) entity).getLabel()));
             PlayerEntity player = ClientUtils.getClientPlayer();
             if (DroneDebugUpgradeHandler.enabledForPlayer(player)) {
