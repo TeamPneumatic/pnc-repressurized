@@ -3,8 +3,6 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 
@@ -42,11 +40,4 @@ public abstract class AbstractTileModelRenderer<T extends TileEntityBase> extend
     protected void renderExtras(T te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
     }
 
-    public static abstract class BaseModel extends EntityModel {
-        public void setRotation(ModelRenderer model, float x, float y, float z){
-            model.rotateAngleX = x;
-            model.rotateAngleY = y;
-            model.rotateAngleZ = z;
-        }
-    }
 }
