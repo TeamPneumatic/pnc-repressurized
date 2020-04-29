@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.render.fluid;
 
-import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -39,12 +38,12 @@ public class RenderFluidTank extends AbstractFluidTESR<TileEntityFluidTank> {
         return Collections.singletonList(new FluidTankRenderInfo(te.getTank(), bounds));
     }
 
-    public static class ItemInfoProvider extends FluidItemRenderInfoProvider {
+    public static class ItemRenderInfoProvider implements IFluidItemRenderInfoProvider {
         @Override
         public List<TankRenderInfo> getTanksToRender(ItemStack stack) {
             return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
-                    .map(h -> ImmutableList.of(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_NONE)))
-                    .orElse(null);
+                    .map(h -> Collections.singletonList(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_NONE)))
+                    .orElse(Collections.emptyList());
         }
     }
 

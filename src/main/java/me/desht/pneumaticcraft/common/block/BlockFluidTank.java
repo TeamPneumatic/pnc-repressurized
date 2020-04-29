@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.client.render.fluid.FluidItemRenderInfoProvider;
+import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.RenderFluidTank;
 import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -144,7 +144,7 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
         public static final String TANK_NAME = "Tank";
         private final int capacity;
 
-        private RenderFluidTank.ItemInfoProvider renderInfoProvider;
+        private RenderFluidTank.ItemRenderInfoProvider renderInfoProvider;
 
         public ItemBlockFluidTank(Block block) {
             super(block, ModItems.defaultProps());
@@ -176,8 +176,8 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
         }
 
         @Override
-        public FluidItemRenderInfoProvider getFluidItemRenderer() {
-            if (renderInfoProvider == null) renderInfoProvider = new RenderFluidTank.ItemInfoProvider();
+        public IFluidItemRenderInfoProvider getFluidItemRenderer() {
+            if (renderInfoProvider == null) renderInfoProvider = new RenderFluidTank.ItemRenderInfoProvider();
             return renderInfoProvider;
         }
 

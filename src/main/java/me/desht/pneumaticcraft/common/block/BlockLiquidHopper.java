@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.client.render.fluid.FluidItemRenderInfoProvider;
+import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.RenderLiquidHopper;
 import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -34,7 +34,7 @@ public class BlockLiquidHopper extends BlockOmnidirectionalHopper {
 
     public static class ItemBlockLiquidHopper extends BlockItem implements ColorHandlers.ITintableItem, IFluidRendered {
         public static final String TANK_NAME = "Tank";
-        RenderLiquidHopper.ItemInfoProvider renderInfoProvider = null;
+        RenderLiquidHopper.ItemRenderInfoProvider renderInfoProvider = null;
 
         public ItemBlockLiquidHopper(Block block) {
             super(block, ModItems.defaultProps());
@@ -68,8 +68,8 @@ public class BlockLiquidHopper extends BlockOmnidirectionalHopper {
         }
 
         @Override
-        public FluidItemRenderInfoProvider getFluidItemRenderer() {
-            if (renderInfoProvider == null) renderInfoProvider = new RenderLiquidHopper.ItemInfoProvider();
+        public IFluidItemRenderInfoProvider getFluidItemRenderer() {
+            if (renderInfoProvider == null) renderInfoProvider = new RenderLiquidHopper.ItemRenderInfoProvider();
             return renderInfoProvider;
         }
     }

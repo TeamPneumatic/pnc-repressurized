@@ -6,7 +6,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Pair;
-import me.desht.pneumaticcraft.client.render.fluid.FluidItemRenderInfoProvider;
+import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import net.minecraft.block.BlockState;
@@ -44,7 +44,7 @@ public class FluidItemModel implements IDynamicBakedModel {
     private final IBakedModel bakedBaseModel;
     private final ImmutableMap<ItemCameraTransforms.TransformType, TransformationMatrix> transformMap;
     private final ItemOverrideList overrideList = new FluidOverridesList(this);
-    private List<TankRenderInfo> tanksToRender;
+    private List<TankRenderInfo> tanksToRender = Collections.emptyList();
 
     private FluidItemModel(IBakedModel bakedBaseModel, ImmutableMap<ItemCameraTransforms.TransformType, TransformationMatrix> transformMap) {
         this.bakedBaseModel = bakedBaseModel;
@@ -56,47 +56,45 @@ public class FluidItemModel implements IDynamicBakedModel {
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         List<BakedQuad> res = new ArrayList<>(bakedBaseModel.getQuads(state, side, rand, extraData));
 
-        if (tanksToRender != null) {
-            for (TankRenderInfo info : tanksToRender) {
-                IFluidTank tank = info.getTank();
-                if (tank.getFluid().isEmpty()) continue;
-                Fluid fluid = tank.getFluid().getFluid();
-                ResourceLocation texture = fluid.getAttributes().getStillTexture(tank.getFluid());
-                TextureAtlasSprite still = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(texture);
-                int color = fluid.getAttributes().getColor(tank.getFluid());
-                float[] cols = new float[]{(color >> 24 & 0xFF) / 255F, (color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F};
-                AxisAlignedBB bounds = getRenderBounds(tank, info.getBounds());
-                float bx1 = (float) (bounds.minX * 16);
-                float bx2 = (float) (bounds.maxX * 16);
-                float by1 = (float) (bounds.minY * 16);
-                float by2 = (float) (bounds.maxY * 16);
-                float bz1 = (float) (bounds.minZ * 16);
-                float bz2 = (float) (bounds.maxZ * 16);
+        for (TankRenderInfo info : tanksToRender) {
+            IFluidTank tank = info.getTank();
+            if (tank.getFluid().isEmpty()) continue;
+            Fluid fluid = tank.getFluid().getFluid();
+            ResourceLocation texture = fluid.getAttributes().getStillTexture(tank.getFluid());
+            TextureAtlasSprite still = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(texture);
+            int color = fluid.getAttributes().getColor(tank.getFluid());
+            float[] cols = new float[]{(color >> 24 & 0xFF) / 255F, (color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F};
+            AxisAlignedBB bounds = getRenderBounds(tank, info.getBounds());
+            float bx1 = (float) (bounds.minX * 16);
+            float bx2 = (float) (bounds.maxX * 16);
+            float by1 = (float) (bounds.minY * 16);
+            float by2 = (float) (bounds.maxY * 16);
+            float bz1 = (float) (bounds.minZ * 16);
+            float bz2 = (float) (bounds.maxZ * 16);
 
-                if (info.shouldRender(Direction.DOWN)) {
-                    List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.maxX, bounds.minY, bounds.minZ), new Vec3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vec3d(bounds.minX, bounds.minY, bounds.maxZ), new Vec3d(bounds.minX, bounds.minY, bounds.minZ));
-                    res.add(createQuad(vecs, cols, still, Direction.DOWN, bx1, bx2, bz1, bz2));
-                }
-                if (info.shouldRender(Direction.UP)) {
-                    List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.minX, bounds.maxY, bounds.minZ), new Vec3d(bounds.minX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.minZ));
-                    res.add(createQuad(vecs, cols, still, Direction.UP, bx1, bx2, bz1, bz2));
-                }
-                if (info.shouldRender(Direction.NORTH)) {
-                    List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.maxX, bounds.maxY, bounds.minZ), new Vec3d(bounds.maxX, bounds.minY, bounds.minZ), new Vec3d(bounds.minX, bounds.minY, bounds.minZ), new Vec3d(bounds.minX, bounds.maxY, bounds.minZ));
-                    res.add(createQuad(vecs, cols, still, Direction.NORTH, bx1, bx2, by1, by2));
-                }
-                if (info.shouldRender(Direction.SOUTH)) {
-                    List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.minX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.minX, bounds.minY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.maxZ));
-                    res.add(createQuad(vecs, cols, still, Direction.SOUTH, bx1, bx2, by1, by2));
-                }
-                if (info.shouldRender(Direction.WEST)) {
-                    List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.minX, bounds.maxY, bounds.minZ), new Vec3d(bounds.minX, bounds.minY, bounds.minZ), new Vec3d(bounds.minX, bounds.minY, bounds.maxZ), new Vec3d(bounds.minX, bounds.maxY, bounds.maxZ));
-                    res.add(createQuad(vecs, cols, still, Direction.WEST, bz1, bz2, by1, by2));
-                }
-                if (info.shouldRender(Direction.EAST)) {
-                    List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.maxX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.minY, bounds.minZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.minZ));
-                    res.add(createQuad(vecs, cols, still, Direction.EAST, bz1, bz2, by1, by2));
-                }
+            if (info.shouldRender(Direction.DOWN)) {
+                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.maxX, bounds.minY, bounds.minZ), new Vec3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vec3d(bounds.minX, bounds.minY, bounds.maxZ), new Vec3d(bounds.minX, bounds.minY, bounds.minZ));
+                res.add(createQuad(vecs, cols, still, Direction.DOWN, bx1, bx2, bz1, bz2));
+            }
+            if (info.shouldRender(Direction.UP)) {
+                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.minX, bounds.maxY, bounds.minZ), new Vec3d(bounds.minX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.minZ));
+                res.add(createQuad(vecs, cols, still, Direction.UP, bx1, bx2, bz1, bz2));
+            }
+            if (info.shouldRender(Direction.NORTH)) {
+                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.maxX, bounds.maxY, bounds.minZ), new Vec3d(bounds.maxX, bounds.minY, bounds.minZ), new Vec3d(bounds.minX, bounds.minY, bounds.minZ), new Vec3d(bounds.minX, bounds.maxY, bounds.minZ));
+                res.add(createQuad(vecs, cols, still, Direction.NORTH, bx1, bx2, by1, by2));
+            }
+            if (info.shouldRender(Direction.SOUTH)) {
+                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.minX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.minX, bounds.minY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.maxZ));
+                res.add(createQuad(vecs, cols, still, Direction.SOUTH, bx1, bx2, by1, by2));
+            }
+            if (info.shouldRender(Direction.WEST)) {
+                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.minX, bounds.maxY, bounds.minZ), new Vec3d(bounds.minX, bounds.minY, bounds.minZ), new Vec3d(bounds.minX, bounds.minY, bounds.maxZ), new Vec3d(bounds.minX, bounds.maxY, bounds.maxZ));
+                res.add(createQuad(vecs, cols, still, Direction.WEST, bz1, bz2, by1, by2));
+            }
+            if (info.shouldRender(Direction.EAST)) {
+                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.maxX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.minY, bounds.minZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.minZ));
+                res.add(createQuad(vecs, cols, still, Direction.EAST, bz1, bz2, by1, by2));
             }
         }
         return res;
@@ -243,11 +241,10 @@ public class FluidItemModel implements IDynamicBakedModel {
         @Override
         public IBakedModel getModelWithOverrides(IBakedModel original, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
             if (stack.getItem() instanceof IFluidRendered) {
-                FluidItemRenderInfoProvider infoProvider = ((IFluidRendered) stack.getItem()).getFluidItemRenderer();
+                IFluidItemRenderInfoProvider infoProvider = ((IFluidRendered) stack.getItem()).getFluidItemRenderer();
                 modelIn.tanksToRender = infoProvider.getTanksToRender(stack);
             }
             return modelIn;
         }
     }
-
 }
