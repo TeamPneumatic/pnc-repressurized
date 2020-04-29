@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.client.render.RenderMinigunTracers;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSentryTurret;
@@ -123,6 +124,13 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
 
     private AxisAlignedBB getTargetingBoundingBox() {
         return new AxisAlignedBB(getPos()).grow(range);
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return RenderMinigunTracers.instance().shouldRender(getMinigun()) ?
+                new AxisAlignedBB(getPos(), getMinigun().getAttackTarget().getPosition()) :
+                super.getRenderBoundingBox();
     }
 
     @Override

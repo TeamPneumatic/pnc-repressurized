@@ -18,10 +18,17 @@ public enum RenderMinigunTracers {
         return INSTANCE;
     }
 
+    public boolean shouldRender(Minigun minigun) {
+        return minigun.isMinigunActivated()
+                && minigun.getMinigunSpeed() == MAX_GUN_SPEED
+                && minigun.isGunAimedAtTarget()
+                && minigun.getAttackTarget() != null;
+    }
+
     public void render(Minigun minigun, double x, double y, double z, double gunRadius) {
         LivingEntity attackTarget = minigun.getAttackTarget();
 
-        if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == MAX_GUN_SPEED && minigun.isGunAimedAtTarget() && attackTarget != null) {
+        if (shouldRender(minigun)) {
             GlStateManager.pushMatrix();
             GlStateManager.scaled(1, 1, 1);
             GlStateManager.translated(-x, -y, -z);
