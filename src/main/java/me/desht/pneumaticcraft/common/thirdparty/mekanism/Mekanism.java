@@ -19,7 +19,7 @@ public class Mekanism implements IThirdParty, IHeatDisperser {
     public static boolean available = false;
 
     @Override
-    public void preInit() {
+    public void init() {
         available = true;
 
         TileEntityBase.registerHeatDisperser(this);

@@ -5,11 +5,9 @@ import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 
 public class Thaumcraft implements IThirdParty {
     @Override
-    public void preInit() {
+    public void init() {
         PneumaticRegistry.getInstance().getHelmetRegistry().registerBlockTrackEntry(new BlockTrackEntryThaumcraft());
     }
-
-    // no init() method needed: recipe registration is done vis JSON
 
     @Override
     public void postInit() {

@@ -10,7 +10,7 @@
     },
     {
       "type": "pneumaticcraft:pressure_chamber",
-      "recipe": "pneumaticcraft:empty_pcb"
+      "recipe": "pneumaticcraft:pressure_chamber/empty_pcb"
     },
     {
       "type": "text",

@@ -16,7 +16,7 @@ public class ImmersiveEngineering implements IThirdParty {
     private static Block HEMP_BLOCK = null;
 
     @Override
-    public void preInit() {
+    public void init() {
         MinecraftForge.EVENT_BUS.register(ElectricAttackHandler.class);
         MinecraftForge.EVENT_BUS.register(this);
     }

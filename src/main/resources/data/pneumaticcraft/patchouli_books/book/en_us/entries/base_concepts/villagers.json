@@ -10,7 +10,7 @@
     {
       "type": "entity",
       "name": "Mechanic",
-      "entity": "minecraft:villager",
+      "entity": "minecraft:villager{VillagerData:{profession:'pneumaticcraft:mechanic'}}",
       "text": "$(italic)Not a fan of $(l:tools/amadron_tablet)Amadron/$."
     }
   ]

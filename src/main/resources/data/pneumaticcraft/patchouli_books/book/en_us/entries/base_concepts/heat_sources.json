@@ -40,11 +40,17 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:heat_pipe",
-      "text": "A $(l:machines/heat_pipe)Heat Pipe/$ is an insulated core of compressed iron which can transmit heat between blocks, without any thermal connection to adjacent air or fluid blocks. It's a more compact (and cheaper) alternative to using Compressed Iron Blocks to transmit heat. You can also attach Heat Sinks directly to a Heat Pipe."
+      "text": "A $(l:machines/heat_pipe)Heat Pipe/$ is an insulated core of compressed iron which can transmit heat between blocks, without any thermal connection to adjacent air or fluid blocks. It's a more compact (and cheaper) alternative to using $(item)Compressed Iron Blocks/$ to transmit heat. You can also attach $(item)Heat Sinks/$ directly to a Heat Pipe."
+    },
+    {
+      "type": "spotlight",
+      "item": "minecraft:furnace",
+      "text": "When connecting a vanilla $(item)Furnace/$ to any dynamic heat source (such as a $(l:machines/vortex_tube)Vortex Tube/$, but also blocks like the $(l:compressors/advanced_air_compressor)Advanced Air Compressor/$ which produces heat), the heat will be consumed by the Furnace to \"fuel\" it, making it possible to run Furnaces purely on heat, requiring no solid fuel. This is both convenient and more efficient."
     },
     {
       "type": "text",
-      "text": "$(bold)Heating a Furnace/$$(p)When connecting a $(item)Furnace/$ to any dynamic heat source (such as a $(l:machines/vortex_tube)Vortex Tube/$, but also blocks like the $(l:compressors/advanced_air_compressor)Advanced Air Compressor/$ which produces heat), the heat will be consumed by the Furnace to 'fuel' it. The Furnace will smelt faster the higher the temperature. This effect can be stacked with multiple heat sources around the Furnace. This furnace 'fueling' will start to work at 100°C."
+      "title": "Furnace (cont)",
+      "text": "This furnace \"fueling\" will start to work at 100°C, and will go faster with higher temperatures. Placing multiple heat sources around the Furnace will increase the heating effect.$(p)This heating effect also works for the vanilla $(item)Blast Furnace/$ and $(item)Smoker/$."
     }
   ]
 }

@@ -10,7 +10,7 @@
     },
     {
       "type": "pneumaticcraft:pressure_chamber",
-      "recipe": "pneumaticcraft:transistor"
+      "recipe": "pneumaticcraft:pressure_chamber/transistor"
     }
   ]
 }

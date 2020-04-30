@@ -10,7 +10,7 @@
     },
     {
       "type": "pneumaticcraft:pressure_chamber",
-      "recipe": "pneumaticcraft:capacitor"
+      "recipe": "pneumaticcraft:pressure_chamber/capacitor"
     }
   ]
 }

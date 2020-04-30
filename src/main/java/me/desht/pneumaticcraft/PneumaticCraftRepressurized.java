@@ -75,10 +75,8 @@ public class PneumaticCraftRepressurized {
 
         ConfigHolder.init();
         AuxConfigHandler.preInit();
-        ThirdPartyManager.instance().index();
 
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
-            ThirdPartyManager.instance().clientPreInit();
             modBus.addListener(ClientHandler::clientSetup);
             MinecraftForge.EVENT_BUS.addListener(ClientHandler::registerRenders);
         });
@@ -108,7 +106,6 @@ public class PneumaticCraftRepressurized {
 
         Reflections.init();
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
-        ThirdPartyManager.instance().preInit();
         AdvancementTriggers.registerTriggers();
 
         LootFunctionManager.registerFunction(new TileEntitySerializerFunction.Serializer());
@@ -134,6 +131,9 @@ public class PneumaticCraftRepressurized {
     private void commonSetup(FMLCommonSetupEvent event) {
         LOGGER.info(Names.MOD_NAME + " is loading!");
 
+        ThirdPartyManager.instance().index();
+
+        ThirdPartyManager.instance().init();
         AuxConfigHandler.postInit();
         registerCapabilities();
         NetworkHandler.init();

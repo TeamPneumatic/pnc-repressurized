@@ -23,7 +23,7 @@ public class Curios implements IThirdParty {
     public static final Pair<String,Integer> NONE = Pair.of("", -1);
 
     @Override
-    public void preInit() {
+    public void init() {
         available = true;
     }
 

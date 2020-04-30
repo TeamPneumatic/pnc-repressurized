@@ -73,11 +73,6 @@ public class ThirdPartyManager {
         for (Map.Entry<String, Supplier<? extends IThirdParty>> entry : thirdPartyClasses.entrySet()) {
             if (enabledThirdParty.contains(entry.getKey()) && ModList.get().isLoaded(entry.getKey())) {
                 thirdPartyMods.add(entry.getValue().get());
-//                try {
-//                } catch (Throwable e) {
-//                    Log.error("Failed to instantiate third party handler!");
-//                    e.printStackTrace();
-//                }
             }
         }
     }
@@ -91,18 +86,6 @@ public class ThirdPartyManager {
     public void onBlockRegistry(Block block) {
         for (IThirdParty thirdParty : thirdPartyMods) {
             if (thirdParty instanceof IRegistryListener) ((IRegistryListener) thirdParty).onBlockRegistry(block);
-        }
-    }
-
-    public void preInit() {
-        generic.preInit();
-        for (IThirdParty thirdParty : thirdPartyMods) {
-            try {
-                thirdParty.preInit();
-            } catch (Throwable e) {
-                Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " in the PreInit phase!");
-                e.printStackTrace();
-            }
         }
     }
 
@@ -131,18 +114,8 @@ public class ThirdPartyManager {
 
     }
 
-    public void clientPreInit() {
-        for (IThirdParty thirdParty : thirdPartyMods) {
-            try {
-                thirdParty.clientPreInit();
-            } catch (Throwable e) {
-                Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " client side!");
-                e.printStackTrace();
-            }
-        }
-    }
-
     public void clientInit() {
+        generic.clientInit();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.clientInit();

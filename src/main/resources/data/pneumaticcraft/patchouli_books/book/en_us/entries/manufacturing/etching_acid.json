@@ -10,7 +10,7 @@
     },
     {
       "type": "pneumaticcraft:pressure_chamber",
-      "recipe": "pneumaticcraft:etching_acid_bucket"
+      "recipe": "pneumaticcraft:pressure_chamber/etching_acid_bucket"
     }
   ]
 }

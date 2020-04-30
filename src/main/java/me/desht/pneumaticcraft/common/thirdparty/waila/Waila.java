@@ -6,7 +6,7 @@ public class Waila implements IThirdParty {
     public static boolean available = true;
 
     @Override
-    public void preInit() {
+    public void init() {
         // don't need to do much here; Waila init is handled implicitly in WailaRegistration
         available = true;
     }

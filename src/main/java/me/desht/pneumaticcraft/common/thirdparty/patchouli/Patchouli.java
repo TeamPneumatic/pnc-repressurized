@@ -24,12 +24,9 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     private static Screen prevGui;
 
     @Override
-    public void clientPreInit() {
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @Override
     public void clientInit() {
+        MinecraftForge.EVENT_BUS.register(this);
+
         PatchouliAPI.IPatchouliAPI papi = PatchouliAPI.instance;
 
         setConfigFlags();
