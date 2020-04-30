@@ -134,7 +134,7 @@ public class GuiUnitProgrammer extends Screen {
         if (ProgWidgetGuiManager.hasGui(widget)) {
             tooltip.add(new StringTextComponent("Right-click for options").applyTextStyle(TextFormatting.GOLD));
         }
-        ThirdPartyManager.instance().docsProvider.addTooltip(tooltip, false);
+        ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
     }
 
     public void render(int x, int y, boolean showFlow, boolean showInfo) {

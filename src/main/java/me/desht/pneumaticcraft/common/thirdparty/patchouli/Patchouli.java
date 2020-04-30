@@ -9,9 +9,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,11 +16,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import vazkii.patchouli.api.IMultiblock;
 import vazkii.patchouli.api.IStateMatcher;
 import vazkii.patchouli.api.PatchouliAPI;
-import vazkii.patchouli.client.book.BookEntry;
-import vazkii.patchouli.client.book.gui.GuiBook;
-import vazkii.patchouli.client.book.gui.GuiBookEntry;
-import vazkii.patchouli.common.book.Book;
-import vazkii.patchouli.common.book.BookRegistry;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
@@ -107,37 +99,24 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
         if (prevGui != null) {
+            // reopen the programmer GUI if that's where we came from
             event.setGui(prevGui);
             prevGui = null;
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static void openBookGui(ResourceLocation bookRes, String entryId) {
-        // This is bad and I feel bad. It will go if & when a Patchouli API method is added to do it properly.
+    @Override
+    public void showWidgetDocs(String path) {
+        Screen prev = Minecraft.getInstance().currentScreen;  // should be the programmer GUI
 
-        Screen prev = Minecraft.getInstance().currentScreen;
-
-        Book book = BookRegistry.INSTANCE.books.get(bookRes);
-        if (book != null) {
-            BookEntry entry = book.contents.entries.get(new ResourceLocation(bookRes.getNamespace(), entryId));
-            if (entry != null) {
-                GuiBook curr = book.contents.getCurrentGui();
-                book.contents.currentGui = new GuiBookEntry(book, entry, 0);
-                book.contents.guiStack.push(curr);
-                book.contents.openLexiconGui(book.contents.getCurrentGui(), true);
-                prevGui = prev;
-            }
+        PatchouliAPI.instance.openBookEntry(RL("book"), RL("programming/" + path), 1);
+        if (PatchouliAPI.instance.getOpenBookGui().equals(RL("book"))) {
+            prevGui = prev;
         }
     }
 
     @Override
-    public void showWidgetDocs(String path) {
-        openBookGui(RL("book"), "programming/" + path);
-    }
-
-    @Override
-    public boolean docsProviderInstalled() {
+    public boolean isInstalled() {
         return true;
     }
 }

@@ -14,6 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraftforge.fml.ModList;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ThirdPartyManager {
@@ -21,15 +22,19 @@ public class ThirdPartyManager {
     private static final ThirdPartyManager INSTANCE = new ThirdPartyManager();
     private final List<IThirdParty> thirdPartyMods = new ArrayList<>();
     public static boolean computerCraftLoaded;
-    public IDocsProvider docsProvider = new IDocsProvider.NoDocsProvider();
+    private IDocsProvider docsProvider = new IDocsProvider.NoDocsProvider();
     private GenericIntegrationHandler generic = new GenericIntegrationHandler();
 
     public static ThirdPartyManager instance() {
         return INSTANCE;
     }
 
+    public IDocsProvider getDocsProvider() {
+        return docsProvider;
+    }
+
     public void index() {
-        Map<String, Class<? extends IThirdParty>> thirdPartyClasses = new HashMap<>();
+        Map<String, Supplier<? extends IThirdParty>> thirdPartyClasses = new HashMap<>();
         try {
 //            thirdPartyClasses.put(ModIds.BUILDCRAFT, BuildCraft.class);
 //            thirdPartyClasses.put(ModIds.IGWMOD, IGWMod.class);
@@ -41,16 +46,16 @@ public class ThirdPartyManager {
 //            thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
 //            thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
 //            thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
-            thirdPartyClasses.put(ModIds.WAILA, Waila.class);
-            thirdPartyClasses.put(ModIds.TOP, TheOneProbe.class);
-            thirdPartyClasses.put(ModIds.CURIOS, Curios.class);
+            thirdPartyClasses.put(ModIds.WAILA, Waila::new);
+            thirdPartyClasses.put(ModIds.TOP, TheOneProbe::new);
+            thirdPartyClasses.put(ModIds.CURIOS, Curios::new);
 //            thirdPartyClasses.put(ModIds.CRAFTTWEAKER, CraftTweaker.class);
 //            thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
 //            thirdPartyClasses.put(ModIds.IMMERSIVEENGINEERING, ImmersiveEngineering.class);
 //            thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
-            thirdPartyClasses.put(ModIds.BOTANIA, Botania.class);
+            thirdPartyClasses.put(ModIds.BOTANIA, Botania::new);
 //            thirdPartyClasses.put(ModIds.IMMERSIVE_PETROLEUM, ImmersivePetroleum.class);
-            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli.class);
+            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli::new);
 //            thirdPartyClasses.put(ModIds.MEKANISM, Mekanism.class);
 //            thirdPartyClasses.put(ModIds.BAUBLES, Baubles.class);
 //            thirdPartyClasses.put(ModIds.TOUGH_AS_NAILS, ToughAsNails.class);
@@ -65,14 +70,14 @@ public class ThirdPartyManager {
 
         Log.info("Thirdparty integration activated for [" + Strings.join(enabledThirdParty, ", ") + "]");
 
-        for (Map.Entry<String, Class<? extends IThirdParty>> entry : thirdPartyClasses.entrySet()) {
+        for (Map.Entry<String, Supplier<? extends IThirdParty>> entry : thirdPartyClasses.entrySet()) {
             if (enabledThirdParty.contains(entry.getKey()) && ModList.get().isLoaded(entry.getKey())) {
-                try {
-                    thirdPartyMods.add(entry.getValue().newInstance());
-                } catch (Throwable e) {
-                    Log.error("Failed to instantiate third party handler!");
-                    e.printStackTrace();
-                }
+                thirdPartyMods.add(entry.getValue().get());
+//                try {
+//                } catch (Throwable e) {
+//                    Log.error("Failed to instantiate third party handler!");
+//                    e.printStackTrace();
+//                }
             }
         }
     }
@@ -90,7 +95,6 @@ public class ThirdPartyManager {
     }
 
     public void preInit() {
-        index();
         generic.preInit();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
@@ -143,6 +147,7 @@ public class ThirdPartyManager {
             try {
                 thirdParty.clientInit();
                 if (thirdParty instanceof IDocsProvider) {
+                    // TODO: priority system or selectable in config?  right now, last docs provider found wins
                     docsProvider = (IDocsProvider) thirdParty;
                 }
             } catch (Throwable e) {

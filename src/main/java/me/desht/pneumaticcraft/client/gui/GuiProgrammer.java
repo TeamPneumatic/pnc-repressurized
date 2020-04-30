@@ -405,7 +405,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     && (!showingAllWidgets || filteredSpawnWidgets == null || filteredSpawnWidgets.get(i))) {
                 List<ITextComponent> tooltip = new ArrayList<>();
                 widget.getTooltip(tooltip);
-                ThirdPartyManager.instance().docsProvider.addTooltip(tooltip, showingAllWidgets);
+                ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, showingAllWidgets);
                 if (!tooltip.isEmpty()) {
                     drawHoveringString(tooltip.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()), x - guiLeft, y - guiTop, font);
                 }
@@ -569,12 +569,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         IProgWidget hoveredWidget = programmerUnit.getHoveredWidget(x, y);
         if (hoveredWidget != null) {
-            ThirdPartyManager.instance().docsProvider.showWidgetDocs(getWidgetId(hoveredWidget));
+            ThirdPartyManager.instance().getDocsProvider().showWidgetDocs(getWidgetId(hoveredWidget));
             return true;
         } else {
             for (IProgWidget widget : visibleSpawnWidgets) {
                 if (widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
-                    ThirdPartyManager.instance().docsProvider.showWidgetDocs(getWidgetId(widget));
+                    ThirdPartyManager.instance().getDocsProvider().showWidgetDocs(getWidgetId(widget));
                     return true;
                 }
             }

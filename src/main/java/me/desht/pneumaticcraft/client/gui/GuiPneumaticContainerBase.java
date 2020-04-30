@@ -219,7 +219,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     protected void addInfoTab(String info) {
         IGuiAnimatedStat stat = addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true);
         stat.setText(info);
-        if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
+        if (!ThirdPartyManager.instance().getDocsProvider().isInstalled()) {
             stat.appendText(Arrays.asList("", "gui.tab.info.assistIGW"));
         }
     }

@@ -13,7 +13,7 @@ public interface IDocsProvider {
         tooltip.add(xlate(showingAll ? "gui.programmer.pressIForInfoTrayOpen" : "gui.programmer.pressIForInfo"));
     }
 
-    default boolean docsProviderInstalled() {
+    default boolean isInstalled() {
         return false;
     }
 

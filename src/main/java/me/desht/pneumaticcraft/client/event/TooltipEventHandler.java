@@ -88,7 +88,7 @@ public class TooltipEventHandler {
             if (ClientUtils.hasShiftDown()) {
                 String translatedInfo = TextFormatting.AQUA + I18n.format(key);
                 curInfo.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(translatedInfo, 50)));
-                if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
+                if (!ThirdPartyManager.instance().getDocsProvider().isInstalled()) {
                     curInfo.add(xlate("gui.tab.info.assistIGW"));
                 }
             } else {

@@ -75,6 +75,7 @@ public class PneumaticCraftRepressurized {
 
         ConfigHolder.init();
         AuxConfigHandler.preInit();
+        ThirdPartyManager.instance().index();
 
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
             ThirdPartyManager.instance().clientPreInit();
