@@ -14,6 +14,10 @@
     },
     {
       "type": "text",
+      "text": "The Air Grate will only affect entities in a cubic area, in the direction it's facing. The module must also have line of sight to an entity.$(p)You can right-click the module to make it show the affected range for a few seconds."
+    },
+    {
+      "type": "text",
       "title": "Heat Sink Cooling",
       "anchor": "active_cooling",
       "text": "An Air Grate Module can also be used to actively cool $(l:machines/heat_sink)Heat Sinks/$. The range in which Heat Sinks is cooled is a 3x3x3 cube in front of the Air Grate. This range is visualized when the module is placed down.$(p)The Air Grate will only cool Heat Sinks when it has a range of 3 blocks or more (so, 0.75 bar)."
