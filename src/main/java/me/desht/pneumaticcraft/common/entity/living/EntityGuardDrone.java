@@ -27,7 +27,10 @@ public class EntityGuardDrone extends EntityBasicDrone {
         builder.add(new ProgWidgetStart());
         // no item filter because we don't know what type of sword or ammo could be in the inventory
         builder.add(new ProgWidgetInventoryImport(), ProgWidgetArea.fromPosition(clickPos));
-        builder.add(new ProgWidgetEntityAttack(), standard16x16x16Area(clickPos), ProgWidgetText.withText("@mob"));
+        builder.add(new ProgWidgetEntityAttack(),
+                ProgWidgetArea.fromPositions(clickPos.add(-16, -5, -16), clickPos.add(16, 8, 16)),
+                ProgWidgetText.withText("@mob")
+        );
         maybeAddStandbyInstruction(builder, droneStack);
         builder.add(new ProgWidgetWait(), ProgWidgetText.withText("10"));
         widgets.addAll(builder.build());
