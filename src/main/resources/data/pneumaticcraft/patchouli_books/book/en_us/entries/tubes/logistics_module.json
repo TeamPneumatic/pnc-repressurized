@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "This powerful module is used to connect inventories to a $(l:logistics/overview)Logistics System/$, effectively allowing controlled item transfer via pressure tubes.$(p)The inventory or tank that the module points at must be fitted with a $(l:logistics/frames)Logistic Frame/$.$(p)The Logistics Module does not accept an $(l:tubes/advanced_pcb)Advanced PCB/$."
+      "text": "This powerful module is used to connect inventories to a $(l:logistics/overview)Logistics System/$, effectively allowing controlled item and fluid transfer via pressure tubes.$(p)The inventory or fluid tank that the module points at must be fitted with a $(l:logistics/frames)Logistics Frame/$.$(p)The Logistics Module does not accept an $(l:tubes/advanced_pcb)Advanced PCB/$."
     },
     {
       "type": "image",
@@ -18,7 +18,7 @@
     },
     {
       "type": "text",
-      "text": "A network of Logistics Modules is defined by all the modules connected to each other by $(l:tubes/pressure_tubes)Pressure Tubes/$; note that pneumatic machines do $(italic)not/$ form part of the network.$(p)You can select a channel via the module GUI, or by right-clicking with any $(item)dye/$; only Logistics Modules of the same color will communicate with each other, effectively giving you 16 $(thing)channels/$ on each network."
+      "text": "A network of Logistics Modules is defined by all the modules connected to each other by $(l:tubes/pressure_tubes)Pressure Tubes/$; note that any air-using machines do $(italic)not/$ form part of the network.$(p)You can select a channel via the module GUI, or by right-clicking with any $(item)dye/$; only Logistics Modules of the same color will communicate with each other, effectively giving you 16 $(thing)channels/$ on each network."
     },
     {
       "type": "text",
