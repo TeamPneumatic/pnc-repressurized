@@ -1112,7 +1112,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 new FluidStack(ModFluids.PLASTIC.get(), 1000), ItemStack.EMPTY,
                 TemperatureRange.min(373), 0f, false
         ).build(consumer, RL("thermo_plant/plastic"));
-        thermoPlant(FluidIngredient.of(Fluids.WATER, 1000), StackedIngredient.fromItems(4, Items.LAPIS_LAZULI),
+        thermoPlant(FluidIngredient.of(Fluids.WATER, 1000), Ingredient.fromItems(Items.LAPIS_LAZULI),
                 FluidStack.EMPTY, new ItemStack(ModItems.UPGRADE_MATRIX.get(), 4),
                 TemperatureRange.min(273), 2f, false
         ).build(consumer, RL("thermo_plant/upgrade_matrix"));

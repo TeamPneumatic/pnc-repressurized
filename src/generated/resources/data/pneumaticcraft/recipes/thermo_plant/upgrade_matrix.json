@@ -1,9 +1,7 @@
 {
   "type": "pneumaticcraft:thermo_plant",
   "item_input": {
-    "type": "pneumaticcraft:stacked_item",
-    "item": "minecraft:lapis_lazuli",
-    "count": 4
+    "item": "minecraft:lapis_lazuli"
   },
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
