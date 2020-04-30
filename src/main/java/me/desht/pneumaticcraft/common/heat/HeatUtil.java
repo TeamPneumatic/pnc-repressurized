@@ -62,15 +62,23 @@ public class HeatUtil {
     }
 
     public static ITextComponent formatHeatString(int tempK) {
-        return PneumaticCraftUtils.xlate("waila.temperature")
-                .appendText(TextFormatting.WHITE.toString() + (tempK - 273) + "°C")
-                .applyTextStyles(TextFormatting.GRAY);
+        return formatHeatString((tempK - 273) + "°C");
     }
 
     public static ITextComponent formatHeatString(Direction face, int tempK) {
-        return PneumaticCraftUtils.xlate("waila.temperature." + face.toString().toLowerCase())
-                .appendText(TextFormatting.WHITE.toString() + (tempK - 273) + "°C")
-                .applyTextStyle(TextFormatting.GRAY);
+        return formatHeatString(face, (tempK - 273) + "°C");
+    }
+
+    public static ITextComponent formatHeatString(String temp) {
+        return PneumaticCraftUtils.xlate("waila.temperature")
+                .appendText(TextFormatting.WHITE.toString() + temp)
+                .applyTextStyles(TextFormatting.GRAY);
+    }
+
+    public static ITextComponent formatHeatString(Direction face, String temp) {
+        return PneumaticCraftUtils.xlate("waila.temperature" + face.toString().toLowerCase())
+                .appendText(TextFormatting.WHITE.toString() + temp)
+                .applyTextStyles(TextFormatting.GRAY);
     }
 
     public static int countExposedFaces(Collection<? extends TileEntity> teList) {

@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -96,7 +97,7 @@ public class JEIRefineryCategory implements IRecipeCategory<RefineryRecipe> {
     public List<String> getTooltipStrings(RefineryRecipe recipe, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.get(recipe.getId());
         if (w != null && w.isMouseOver(mouseX, mouseY)) {
-            return ImmutableList.of(HeatUtil.formatHeatString(recipe.getOperatingTemp().getMin()).getFormattedText());
+            return ImmutableList.of(HeatUtil.formatHeatString(recipe.getOperatingTemp().asString(TemperatureScale.CELSIUS)).getFormattedText());
         }
         return Collections.emptyList();
     }

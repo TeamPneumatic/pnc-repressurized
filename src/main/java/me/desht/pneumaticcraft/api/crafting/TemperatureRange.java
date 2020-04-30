@@ -142,4 +142,47 @@ public class TemperatureRange {
         if (!json.has("max_temp")) return TemperatureRange.min(JSONUtils.getInt(json,"min_temp"));
         return TemperatureRange.of(JSONUtils.getInt(json,"min_temp"), JSONUtils.getInt(json,"max_temp"));
     }
+
+    public String asString(TemperatureScale scale) {
+        if (isAny()) return "any";
+        if (this == invalid()) return "invalid";
+
+        if (min > -Integer.MAX_VALUE) {
+            if (max < Integer.MAX_VALUE) {
+                return scale.convertFromKelvin(min) + scale.symbol() + " - " + scale.convertFromKelvin(max) + scale.symbol();
+            } else {
+                return ">= " + scale.convertFromKelvin(min) + scale.symbol();
+            }
+        } else {
+            if (max < Integer.MAX_VALUE) {
+                return "<= " + scale.convertFromKelvin(max) + scale.symbol();
+            } else {
+                return "any";
+            }
+        }
+    }
+
+    public enum TemperatureScale {
+        KELVIN("K"),
+        CELSIUS("°C"),
+        FAHRENHEIT("°F");
+
+        private final String symbol;
+
+        TemperatureScale(String symbol) {
+            this.symbol = symbol;
+        }
+
+        public float convertFromKelvin(float tempIn) {
+            switch (this) {
+                case CELSIUS: return tempIn - 273;
+                case FAHRENHEIT: return (tempIn - 273) * 1.8f + 32;
+                case KELVIN: default: return tempIn;
+            }
+        }
+
+        public String symbol() {
+            return symbol;
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
+import me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer;
@@ -11,6 +12,8 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
@@ -27,12 +30,15 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
     private final IDrawable icon;
     private final ITickTimer tickTimer;
     private final Map<ResourceLocation, WidgetTemperature> tempWidgets = new HashMap<>();
+    private final IDrawableAnimated progressBar;
 
     JEIThermopneumaticProcessingPlantCategory() {
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()));
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT, 5, 11, 166, 70);
+        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_THERMOPNEUMATIC_PROCESSING_PLANT, 0, 0, 166, 70);
         localizedName = I18n.format(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get().getTranslationKey());
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
+        IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT, 176, 0, 48, 30);
+        progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }
 
     @Override
@@ -116,10 +122,14 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
             PressureGaugeRenderer.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 136, 42);
         }
 
-        WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
-                id -> Helpers.makeTemperatureWidget(92, 12, recipe.getOperatingTemperature().getMin()));
-        w.setTemperature(tickTimer.getValue() * (w.getScales()[0] - 273.0) / tickTimer.getMaxValue() + 273.0);
-        w.render((int)mouseX, (int)mouseY, 0f);
+        if (!recipe.getOperatingTemperature().isAny()) {
+            WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
+                    id -> Helpers.makeTemperatureWidget(92, 12, recipe.getOperatingTemperature().getMin()));
+            w.setTemperature(tickTimer.getValue() * (w.getScales()[0] - 273.0) / tickTimer.getMaxValue() + 273.0);
+            w.render((int) mouseX, (int) mouseY, 0f);
+        }
+
+        progressBar.draw(25, 20);
     }
 
     @Override
@@ -127,7 +137,7 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
         List<String> res = new ArrayList<>();
         WidgetTemperature w = tempWidgets.get(recipe.getId());
         if (w != null && w.isMouseOver(mouseX, mouseY)) {
-            res.add(HeatUtil.formatHeatString(recipe.getOperatingTemperature().getMin()).getFormattedText());
+            res.add(HeatUtil.formatHeatString(recipe.getOperatingTemperature().asString(TemperatureScale.CELSIUS)).getFormattedText());
         }
         if (recipe.getRequiredPressure() > 0 && mouseX >= 116 && mouseY >= 22 && mouseX <= 156 && mouseY <= 62) {
             res.add(I18n.format("gui.tooltip.pressure", recipe.getRequiredPressure()));
