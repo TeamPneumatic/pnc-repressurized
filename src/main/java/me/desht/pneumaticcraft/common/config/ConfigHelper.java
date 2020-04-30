@@ -24,7 +24,6 @@ public class ConfigHelper {
         PNCConfig.Client.programmerDifficulty = client.general.programmerDifficulty.get();
         PNCConfig.Client.topShowsFluids = client.general.topShowsFluids.get();
         PNCConfig.Client.logisticsGuiTint = client.general.logisticsGuiTint.get();
-        PNCConfig.Client.semiBlockLighting = client.general.semiBlockLighting.get();
         PNCConfig.Client.guiBevel = client.general.guiBevel.get();
         PNCConfig.Client.alwaysShowPressureDurabilityBar = client.general.alwaysShowPressureDurabilityBar.get();
         PNCConfig.Client.tubeModuleRedstoneParticles = client.general.tubeModuleRedstoneParticles.get();
@@ -37,6 +36,9 @@ public class ConfigHelper {
         PNCConfig.Client.Armor.wirePath = client.armor.wirePath.get();
         PNCConfig.Client.Armor.xRayEnabled = client.armor.xRayEnabled.get();
         PNCConfig.Client.Armor.pathUpdateSetting = client.armor.pathUpdateSetting.get();
+
+        PNCConfig.Client.Sound.elevatorVolumeRunning = client.sound.elevatorVolumeRunning.get();
+        PNCConfig.Client.Sound.elevatorVolumeStartStop = client.sound.elevatorVolumeStartStop.get();
 
         UpgradeRenderHandlerList.instance().refreshConfig();
     }

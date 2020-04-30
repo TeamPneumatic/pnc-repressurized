@@ -14,7 +14,6 @@ public class PNCConfig {
         public static WidgetDifficulty programmerDifficulty;
         public static boolean topShowsFluids;
         public static boolean logisticsGuiTint;
-        public static boolean semiBlockLighting;
         public static boolean guiBevel;
         public static boolean alwaysShowPressureDurabilityBar;
         public static boolean tubeModuleRedstoneParticles;
@@ -28,6 +27,11 @@ public class PNCConfig {
             public static boolean wirePath;
             public static boolean xRayEnabled;
             public static ClientConfig.PathUpdateSetting pathUpdateSetting;
+        }
+
+        public static class Sound {
+            public static double elevatorVolumeRunning;
+            public static double elevatorVolumeStartStop;
         }
     }
 

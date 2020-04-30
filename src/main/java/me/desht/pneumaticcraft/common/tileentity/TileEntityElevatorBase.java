@@ -131,7 +131,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             if (isStopped) {
                 soundName = ModSounds.ELEVATOR_RISING_START.get();
                 isStopped = false;
-                if (!getWorld().isRemote) {
+                if (!getWorld().isRemote && (multiElevators == null || this == multiElevators.get(0))) {
                     PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
                     NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                 }
@@ -158,7 +158,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             if (isStopped) {
                 soundName = ModSounds.ELEVATOR_RISING_START.get();
                 isStopped = false;
-                if (!world.isRemote) {
+                if (!world.isRemote && (multiElevators == null || this == multiElevators.get(0))) {
                     PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
                     NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                 }
@@ -174,7 +174,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         }
 
         if (soundName != null && getWorld().isRemote) {
-            getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, 0.5F, 1.0F, true);
+            getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, (float) PNCConfig.Client.Sound.elevatorVolumeStartStop, 1.0F, true);
         }
     }
 

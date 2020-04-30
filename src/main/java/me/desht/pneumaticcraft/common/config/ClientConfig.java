@@ -26,8 +26,14 @@ public class ClientConfig {
         ForgeConfigSpec.EnumValue<PathUpdateSetting> pathUpdateSetting;
     }
 
+    public static class Sound {
+        ForgeConfigSpec.DoubleValue elevatorVolumeRunning;
+        ForgeConfigSpec.DoubleValue elevatorVolumeStartStop;
+    }
+
     public ClientConfig.General general = new General();
     public ClientConfig.Armor armor = new Armor();
+    public ClientConfig.Sound sound = new Sound();
 
     ClientConfig(ForgeConfigSpec.Builder builder) {
         builder.push("general");
@@ -47,10 +53,6 @@ public class ClientConfig {
                 .comment("Tint Logistics configuration GUI backgrounds according to the colour of the logistics frame you are configuring.")
                 .translation("pneumaticcraft.config.client.general.logistics_gui_tint")
                 .define("logistics_gui_tint", true);
-        general.semiBlockLighting = builder
-                .comment("Use block lighting for semiblocks (logistics frames, heat frames...). May cause occasional lighting issues - semiblocks appearing unlit - disable this if that's a problem.")
-                .translation("pneumaticcraft.config.client.general.semi_block_lighting")
-                .define("semi_block_lighting", true);
         general.guiBevel = builder
                 .comment("Should GUI side tabs be shown with a beveled edge? Setting to false uses a plain black edge, as in earlier versions of the mod.")
                 .translation("pneumaticcraft.config.client.general.gui_bevel")
@@ -100,6 +102,15 @@ public class ClientConfig {
                 .defineEnum("path_update_setting", PathUpdateSetting.NORMAL);
         builder.pop();
 
+        builder.push("sound");
+        sound.elevatorVolumeRunning = builder
+                .comment("Volume level of the Elevator while running")
+                .translation("pneumaticcraft.config.client.sound.elevator_volume_running")
+                .defineInRange("elevator_volume_running", 1d, 0d, 2d);
+        sound.elevatorVolumeStartStop = builder
+                .comment("Volume level of the Elevator *clunk* while starting/stopping")
+                .translation("pneumaticcraft.config.client.sound.elevator_volume_start_stop")
+                .defineInRange("elevator_volume_start_stop", 0.5d, 0d, 2d);
     }
 
     /**
