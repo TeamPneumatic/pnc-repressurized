@@ -17,9 +17,9 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraftforge.fluids.FluidStack;
@@ -45,7 +45,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, String playerId) {
-        super(id, input, output);
+        super(id, input, output, true, 0);
         offeringPlayerName = playerName;
         offeringPlayerId = playerId;
     }
@@ -71,19 +71,13 @@ public class AmadronPlayerOffer extends AmadronOffer {
      * @return a new Amadron offer with the input and output swapped
      */
     public AmadronPlayerOffer getReversedOffer() {
-        ResourceLocation reversedId = getReversedId(getOfferId());
+        ResourceLocation reversedId = getReversedId(getId());
         AmadronPlayerOffer reversed = new AmadronPlayerOffer(reversedId, getOutput(), getInput(), offeringPlayerName, offeringPlayerId);
         reversed.providingPos = providingPos;
         reversed.returningPos = returningPos;
         reversed.inStock = this.inStock;
         reversed.pendingPayments = this.pendingPayments;
         return reversed;
-    }
-
-    public AmadronPlayerOffer copy() {
-        CompoundNBT tag = new CompoundNBT();
-        writeToNBT(tag);
-        return loadFromNBT(tag);
     }
 
     public void updatePlayerId() {
@@ -215,37 +209,38 @@ public class AmadronPlayerOffer extends AmadronOffer {
         return providingPos;
     }
 
+//    @Override
+//    public void writeToNBT(CompoundNBT tag) {
+//        super.writeToNBT(tag);
+//        tag.putString("offeringPlayerId", offeringPlayerId);
+//        tag.putString("offeringPlayerName", offeringPlayerName);
+//        tag.putInt("inStock", inStock);
+//        tag.putInt("pendingPayments", pendingPayments);
+//        if (providingPos != null) {
+//            tag.put("providingPos", GlobalPosUtils.serializeGlobalPos(providingPos));
+//        }
+//        if (returningPos != null) {
+//            tag.put("returningPos", GlobalPosUtils.serializeGlobalPos(returningPos));
+//        }
+//    }
+//
+//    public static AmadronPlayerOffer loadFromNBT(CompoundNBT tag) {
+//        AmadronOffer offer = AmadronOffer.loadFromNBT(tag);
+//        AmadronPlayerOffer custom = new AmadronPlayerOffer(offer.getId(), offer.getInput(), offer.getOutput(), tag.getString("offeringPlayerName"), tag.getString("offeringPlayerId"));
+//        custom.inStock = tag.getInt("inStock");
+//        custom.pendingPayments = tag.getInt("pendingPayments");
+//        if (tag.contains("providingPos")) {
+//            custom.setProvidingPosition(GlobalPosUtils.deserializeGlobalPos(tag.getCompound("providingPos")));
+//        }
+//        if (tag.contains("returningPos")) {
+//            custom.setProvidingPosition(GlobalPosUtils.deserializeGlobalPos(tag.getCompound("returningPos")));
+//        }
+//        return custom;
+//    }
+
     @Override
-    public void writeToNBT(CompoundNBT tag) {
-        super.writeToNBT(tag);
-        tag.putString("offeringPlayerId", offeringPlayerId);
-        tag.putString("offeringPlayerName", offeringPlayerName);
-        tag.putInt("inStock", inStock);
-        tag.putInt("pendingPayments", pendingPayments);
-        if (providingPos != null) {
-            tag.put("providingPos", GlobalPosUtils.serializeGlobalPos(providingPos));
-        }
-        if (returningPos != null) {
-            tag.put("returningPos", GlobalPosUtils.serializeGlobalPos(returningPos));
-        }
-    }
-
-    public static AmadronPlayerOffer loadFromNBT(CompoundNBT tag) {
-        AmadronOffer offer = AmadronOffer.loadFromNBT(tag);
-        AmadronPlayerOffer custom = new AmadronPlayerOffer(offer.getOfferId(), offer.getInput(), offer.getOutput(), tag.getString("offeringPlayerName"), tag.getString("offeringPlayerId"));
-        custom.inStock = tag.getInt("inStock");
-        custom.pendingPayments = tag.getInt("pendingPayments");
-        if (tag.contains("providingPos")) {
-            custom.setProvidingPosition(GlobalPosUtils.deserializeGlobalPos(tag.getCompound("providingPos")));
-        }
-        if (tag.contains("returningPos")) {
-            custom.setProvidingPosition(GlobalPosUtils.deserializeGlobalPos(tag.getCompound("returningPos")));
-        }
-        return custom;
-    }
-
-    public void writeToBuf(PacketBuffer buf) {
-        super.writeToBuf(buf);
+    public void write(PacketBuffer buf) {
+        super.write(buf);
         buf.writeString(offeringPlayerName);
         buf.writeString(offeringPlayerId);
         buf.writeBoolean(providingPos != null);
@@ -294,8 +289,8 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public static AmadronPlayerOffer fromJson(JsonObject json) throws CommandSyntaxException {
-        AmadronOffer offer = AmadronOffer.fromJson(json);
-        AmadronPlayerOffer custom = new AmadronPlayerOffer(offer.getOfferId(), offer.input, offer.output,
+        AmadronOffer offer = AmadronOffer.fromJson(new ResourceLocation(JSONUtils.getString(json, "id")), json);
+        AmadronPlayerOffer custom = new AmadronPlayerOffer(offer.getId(), offer.input, offer.output,
                 json.get("offeringPlayerName").getAsString(), json.get("offeringPlayerId").getAsString());
         custom.inStock = json.get("inStock").getAsInt();
         custom.pendingPayments = json.get("pendingPayments").getAsInt();

@@ -1,13 +1,15 @@
 {
-  "static": "true",
+  "type": "pneumaticcraft:amadron",
+  "static": true,
   "input": {
-    "type": "fluid",
+    "type": "FLUID",
     "id": "pneumaticcraft:gasoline",
     "amount": 2000
   },
   "output": {
-    "type": "item",
+    "type": "ITEM",
     "id": "minecraft:emerald",
     "amount": 1
-  }
+  },
+  "level": 0
 }

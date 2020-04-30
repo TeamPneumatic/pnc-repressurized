@@ -112,7 +112,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             for (int i = 0; i < activeOffers.size(); i++) {
                 int amount = capShoppingAmount(activeOffers.get(i), 1, itemCap, fluidCap);
                 buyableOffers[i] = amount > 0;
-                liveIndex.put(activeOffers.get(i).getOfferId(), i);
+                liveIndex.put(activeOffers.get(i).getId(), i);
             }
             problemState = EnumProblemState.NO_PROBLEMS;
 
@@ -254,7 +254,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                     GlobalPos fluidGPos = ItemAmadronTablet.getFluidProvidingLocation(player.getHeldItem(hand));
                     EntityAmadrone drone = retrieveOrderItems(offer, shoppingAmounts[i], itemGPos, fluidGPos);
                     if (drone != null) {
-                        drone.setHandlingOffer(offer.getOfferId(), shoppingAmounts[i], player.getHeldItem(hand), player.getName().getFormattedText(), AmadronAction.TAKING_PAYMENT);
+                        drone.setHandlingOffer(offer.getId(), shoppingAmounts[i], player.getHeldItem(hand), player.getName().getFormattedText(), AmadronAction.TAKING_PAYMENT);
                         placed = true;
                     }
                 }
@@ -416,7 +416,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             Map<ResourceLocation, Integer> shoppingCart = new HashMap<>();
             for (int i = 0; i < shoppingItems.length; i++) {
                 if (shoppingItems[i] >= 0) {
-                    shoppingCart.put(activeOffers.get(shoppingItems[i]).getOfferId(), shoppingAmounts[i]);
+                    shoppingCart.put(activeOffers.get(shoppingItems[i]).getId(), shoppingAmounts[i]);
                 }
             }
             ItemAmadronTablet.saveShoppingCart(player.getHeldItem(hand), shoppingCart);

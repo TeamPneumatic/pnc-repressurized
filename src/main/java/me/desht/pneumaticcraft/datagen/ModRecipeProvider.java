@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.datagen;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
@@ -1134,6 +1135,56 @@ public class ModRecipeProvider extends RecipeProvider {
         assembly(Ingredient.fromTag(Tags.Items.STORAGE_BLOCKS_QUARTZ), new ItemStack(ModBlocks.APHORISM_TILE.get(), 4),
                 AssemblyProgramType.LASER)
                 .build(consumer, RL("assembly/aphorism_tile"));
+
+        // amadron (core static offers only)
+        amadronStatic(
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
+                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL.get()))
+        ).build(consumer, RL("amadron/assembly_program_drill"));
+        amadronStatic(
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
+                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_LASER.get()))
+        ).build(consumer, RL("amadron/assembly_program_laser"));
+        amadronStatic(
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 14)),
+                AmadronTradeResource.of(new ItemStack(ModItems.ASSEMBLY_PROGRAM_DRILL_LASER.get()))
+        ).build(consumer, RL("amadron/assembly_program_drill_laser"));
+        amadronStatic(
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 8)),
+                AmadronTradeResource.of(new ItemStack(ModItems.PCB_BLUEPRINT.get()))
+        ).build(consumer, RL("amadron/pcb_blueprint"));
+        amadronStatic(
+                AmadronTradeResource.of(new FluidStack(ModFluids.OIL.get(), 5000)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
+        ).build(consumer, RL("amadron/oil_to_emerald"));
+        amadronStatic(
+                AmadronTradeResource.of(new FluidStack(ModFluids.DIESEL.get(), 4000)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
+        ).build(consumer, RL("amadron/diesel_to_emerald"));
+        amadronStatic(
+                AmadronTradeResource.of(new FluidStack(ModFluids.KEROSENE.get(), 3000)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
+        ).build(consumer, RL("amadron/kerosene_to_emerald"));
+        amadronStatic(
+                AmadronTradeResource.of(new FluidStack(ModFluids.GASOLINE.get(), 2000)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
+        ).build(consumer, RL("amadron/gasoline_to_emerald"));
+        amadronStatic(
+                AmadronTradeResource.of(new FluidStack(ModFluids.LPG.get(), 1000)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
+        ).build(consumer, RL("amadron/lpg_to_emerald"));
+        amadronStatic(
+                AmadronTradeResource.of(new FluidStack(ModFluids.LUBRICANT.get(), 2500)),
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD))
+        ).build(consumer, RL("amadron/lubricant_to_emerald"));
+        amadronStatic(
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 5)),
+                AmadronTradeResource.of(new FluidStack(ModFluids.LUBRICANT.get(), 1000))
+        ).build(consumer, RL("amadron/emerald_to_lubricant"));
+        amadronStatic(
+                AmadronTradeResource.of(new ItemStack(Items.EMERALD, 1)),
+                AmadronTradeResource.of(new FluidStack(ModFluids.OIL.get(), 1000))
+        ).build(consumer, RL("amadron/emerald_to_oil"));
     }
 
     private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, T required, Object... ingredients) {
@@ -1294,6 +1345,16 @@ public class ModRecipeProvider extends RecipeProvider {
     private AssemblyRecipeBuilder assembly(Ingredient input, ItemStack output, AssemblyProgramType programType) {
         return new AssemblyRecipeBuilder(input, output, programType)
                 .addCriterion(Criteria.has(input));
+    }
+
+    private AmadronRecipeBuilder amadronStatic(AmadronTradeResource in, AmadronTradeResource out) {
+        return new AmadronRecipeBuilder(in, out, true, 0)
+                .addCriterion(Criteria.has(ModItems.AMADRON_TABLET.get()));
+    }
+
+    private AmadronRecipeBuilder amadronPeriodic(AmadronTradeResource in, AmadronTradeResource out, int tradeLevel) {
+        return new AmadronRecipeBuilder(in, out, false, tradeLevel)
+                .addCriterion(Criteria.has(ModItems.AMADRON_TABLET.get()));
     }
 
     private String getId(String s) {

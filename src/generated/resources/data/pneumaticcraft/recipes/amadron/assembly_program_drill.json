@@ -1,13 +1,15 @@
 {
-  "static": "true",
+  "type": "pneumaticcraft:amadron",
+  "static": true,
   "input": {
-    "type": "item",
+    "type": "ITEM",
     "id": "minecraft:emerald",
     "amount": 8
   },
   "output": {
-    "type": "item",
+    "type": "ITEM",
     "id": "pneumaticcraft:assembly_program_drill",
     "amount": 1
-  }
+  },
+  "level": 0
 }

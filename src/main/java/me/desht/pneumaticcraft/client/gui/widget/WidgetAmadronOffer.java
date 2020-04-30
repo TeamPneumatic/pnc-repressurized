@@ -96,7 +96,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
                 curTip.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.amadron.amadronWidget.sneakRightClickToRemove"), 40));
             }
             if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
-                curTip.add(TextFormatting.DARK_GRAY.toString() + offer.getOfferId());
+                curTip.add(TextFormatting.DARK_GRAY.toString() + offer.getId());
             }
         }
     }

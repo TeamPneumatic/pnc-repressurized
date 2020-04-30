@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.api.crafting;
 
 public class PneumaticCraftRecipeTypes {
+    public static final String AMADRON_OFFERS = "amadron";
     public static final String ASSEMBLY_DRILL = "assembly_drill";
     public static final String ASSEMBLY_LASER = "assembly_laser";
     public static final String ASSEMBLY_DRILL_LASER = "assembly_drill_laser";

@@ -18,7 +18,8 @@ public abstract class PacketAbstractAmadronTrade {
     }
 
     public void toBytes(PacketBuffer buf) {
-        offer.writeToBuf(buf);
+        buf.writeResourceLocation(offer.getId());
+        offer.write(buf);
     }
 
     public AmadronPlayerOffer getOffer() {

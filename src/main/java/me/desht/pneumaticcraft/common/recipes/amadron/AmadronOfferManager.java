@@ -36,11 +36,9 @@ import java.util.stream.IntStream;
 public enum AmadronOfferManager {
     INSTANCE;
 
-    private static final String AMADRON_OFFERS = "pneumaticcraft/amadron_offers";
-
-    // static trades, always available: loaded from datapack
+    // static trades, always available: loaded from recipes datapack
     private final List<AmadronOffer> staticOffers = new ArrayList<>();
-    // periodic trades, randomly appear: loaded from datapack
+    // periodic trades, randomly appear: loaded from recipes datapack
     private final Map<Integer,List<AmadronOffer>> periodicOffers = new HashMap<>();  // a list due to random access needs
     // maps villager profession/level to list of trades
     private Map<String,List<AmadronOffer>> villagerTrades = new HashMap<>();
@@ -72,7 +70,7 @@ public enum AmadronOfferManager {
     public boolean addPlayerOffer(AmadronPlayerOffer offer) {
         if (hasSimilarPlayerOffer(offer)) return false;
 
-        getPlayerOffers().put(offer.getOfferId(), offer);
+        getPlayerOffers().put(offer.getId(), offer);
         addOffer(activeOffers, offer);
         addOffer(allOffers, offer);
         addOffer(allOffers, offer.getReversedOffer());
@@ -82,10 +80,10 @@ public enum AmadronOfferManager {
     }
 
     public boolean removePlayerOffer(AmadronPlayerOffer offer) {
-        if (getPlayerOffers().remove(offer.getOfferId()) != null) {
-            activeOffers.remove(offer.getOfferId());
-            allOffers.remove(offer.getOfferId());
-            allOffers.remove(AmadronPlayerOffer.getReversedId(offer.getOfferId()));
+        if (getPlayerOffers().remove(offer.getId()) != null) {
+            activeOffers.remove(offer.getId());
+            allOffers.remove(offer.getId());
+            allOffers.remove(AmadronPlayerOffer.getReversedId(offer.getId()));
             NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers());
             saveAll();
             return true;
@@ -147,7 +145,7 @@ public enum AmadronOfferManager {
                 EntityAmadrone drone = ContainerAmadron.retrieveOrderItems(offer.getReversedOffer(), possiblePickups,
                         offer.getProvidingPos(), offer.getProvidingPos());
                 if (drone != null) {
-                    drone.setHandlingOffer(reversed.getOfferId(), possiblePickups, ItemStack.EMPTY,
+                    drone.setHandlingOffer(reversed.getId(), possiblePickups, ItemStack.EMPTY,
                             "Restock", EntityAmadrone.AmadronAction.RESTOCKING);
                 }
             }
@@ -157,14 +155,15 @@ public enum AmadronOfferManager {
     }
 
     /**
-     * Called on server start or /reload
+     * Called on server start or reload
      *
-     * @param resourceList a collection of all the amadron offer Json files
-     * @param resourceManager the resource manager
+     * @param resourceList a collection of all the static offers loaded as recipes
      */
-    public void initOffers(Map<ResourceLocation, JsonObject> resourceList, IResourceManager resourceManager) {
-        loadFromDatapack(resourceList);
+    public void initOffers(Map<ResourceLocation, JsonObject> resourceList) {
+        loadRecipeOffers(resourceList);
+
         setupVillagerTrades();
+
         compileActiveOffersList();
     }
 
@@ -176,7 +175,7 @@ public enum AmadronOfferManager {
     }
 
     private <T extends AmadronOffer> void addOffer(Map<ResourceLocation, T> map, T offer) {
-        map.put(offer.getOfferId(), offer);
+        map.put(offer.getId(), offer);
     }
 
     /**
@@ -272,19 +271,18 @@ public enum AmadronOfferManager {
         }
     }
 
-    private void loadFromDatapack(Map<ResourceLocation, JsonObject> resourceList) {
+    private void loadRecipeOffers(Map<ResourceLocation, JsonObject> resourceList) {
         staticOffers.clear();
         periodicOffers.clear();
         resourceList.forEach((id, json) -> {
-            if (!json.has("id")) {
-                json.addProperty("id", id.toString());
-            }
             try {
-                if (JSONUtils.getBoolean(json, "static")) {
-                    staticOffers.add(AmadronOffer.fromJson(json));
-                } else {
-                    int level = JSONUtils.getInt(json, "level", 1);
-                    periodicOffers.computeIfAbsent(level, l -> new ArrayList<>()).add(AmadronOffer.fromJson(json));
+                if (JSONUtils.getString(json, "type").equals("pneumaticcraft:amadron")) {
+                    AmadronOffer offer = AmadronOffer.fromJson(id, json);
+                    if (offer.isStaticOffer()) {
+                        staticOffers.add(offer);
+                    } else {
+                        periodicOffers.computeIfAbsent(offer.getTradeLevel(), l -> new ArrayList<>()).add(offer);
+                    }
                 }
             } catch (CommandSyntaxException e) {
                 Log.error("Syntax error for offer id " + id + ": " + e.getMessage());
@@ -292,7 +290,6 @@ public enum AmadronOfferManager {
             }
         });
     }
-
 
     private void setupVillagerTrades() {
         // this only needs to be done once, on first-time data load
@@ -307,7 +304,9 @@ public enum AmadronOfferManager {
                         ResourceLocation offerId = new ResourceLocation(profession.toString() + "_" + level + "_" + i);
                         villagerTrades.computeIfAbsent(key, k -> new ArrayList<>()).add(new AmadronOffer(offerId,
                                 AmadronTradeResource.of(offer.getBuyingStackFirst()),
-                                AmadronTradeResource.of(offer.getSellingStack())
+                                AmadronTradeResource.of(offer.getSellingStack()),
+                                false,
+                                level
                         ));
                         validSet.add(profession);
                     } catch (NullPointerException ignored) {
@@ -323,12 +322,12 @@ public enum AmadronOfferManager {
         private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
 
         public ReloadListener() {
-            super(GSON, AMADRON_OFFERS);
+            super(GSON, "recipes");
         }
 
         @Override
         protected void apply(Map<ResourceLocation, JsonObject> resourceList, IResourceManager resourceManagerIn, IProfiler profilerIn) {
-            AmadronOfferManager.getInstance().initOffers(resourceList, resourceManagerIn);
+            AmadronOfferManager.getInstance().initOffers(resourceList);
         }
     }
 

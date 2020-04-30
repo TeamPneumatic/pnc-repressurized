@@ -107,7 +107,7 @@ public class EventHandlerAmadron {
     }
 
     private AmadronPlayerOffer getPlayerOffer(AmadronOffer offer) {
-        AmadronOffer o = AmadronOfferManager.getInstance().getOffer(AmadronPlayerOffer.getReversedId(offer.getOfferId()));
+        AmadronOffer o = AmadronOfferManager.getInstance().getOffer(AmadronPlayerOffer.getReversedId(offer.getId()));
         return o instanceof AmadronPlayerOffer ? (AmadronPlayerOffer) o : null;
     }
 }

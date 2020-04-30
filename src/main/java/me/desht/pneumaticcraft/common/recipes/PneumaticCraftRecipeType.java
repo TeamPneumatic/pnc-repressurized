@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
@@ -30,6 +31,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements IRecipeType<T> {
     private static final List<PneumaticCraftRecipeType<? extends PneumaticCraftRecipe>> types = new ArrayList<>();
 
+    public static final PneumaticCraftRecipeType<AmadronOffer> AMADRON_OFFERS
+            = registerType(PneumaticCraftRecipeTypes.AMADRON_OFFERS);
     public static final PneumaticCraftRecipeType<AssemblyRecipe> ASSEMBLY_LASER
             = registerType(PneumaticCraftRecipeTypes.ASSEMBLY_LASER);
     public static final PneumaticCraftRecipeType<AssemblyRecipe> ASSEMBLY_DRILL

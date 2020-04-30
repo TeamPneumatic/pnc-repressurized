@@ -1,10 +1,9 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -18,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
@@ -105,9 +103,9 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
 
     private void drawFluidOverlay(int x, FontRenderer fr, AmadronTradeResource res) {
         String s = res.getAmount() / 1000 + "B";
-        GlStateManager.translated(0, 0, 400);
+        RenderSystem.translated(0, 0, 400);
         fr.drawStringWithShadow(s, x - fr.getStringWidth(s), 23, 0xFFFFFFFF);
-        GlStateManager.translated(0, 0, -400);
+        RenderSystem.translated(0, 0, -400);
     }
 
     @Override
@@ -119,9 +117,5 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
             res.add(I18n.format("gui.amadron.amadronWidget.buying", recipe.getInput().toString()));
         }
         return res;
-    }
-
-    static Collection<AmadronOffer> getAllRecipes() {
-        return AmadronOfferManager.getInstance().getActiveOffers();
     }
 }

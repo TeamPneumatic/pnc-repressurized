@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 /**
  * Received on: CLIENT
- * Sent by server to sync up current Amadron offer list when the tablet is opened
+ * Sent by server to sync up current Amadron offer list when the offer list changes, or when a player logs in
  */
 public class PacketSyncAmadronOffers {
     private final Collection<AmadronOffer> activeOffers;
@@ -43,7 +43,8 @@ public class PacketSyncAmadronOffers {
         buf.writeInt(activeOffers.size());
         for (AmadronOffer offer : activeOffers) {
             buf.writeBoolean(offer instanceof AmadronPlayerOffer);
-            offer.writeToBuf(buf);
+            buf.writeResourceLocation(offer.getId());
+            offer.write(buf);
         }
     }
 

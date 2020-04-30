@@ -58,7 +58,7 @@ public class AmadronPlayerOffers extends AuxConfigJson {
         for (JsonElement element : array) {
             try {
                 AmadronPlayerOffer offer = AmadronPlayerOffer.fromJson((JsonObject) element);
-                playerOffers.put(offer.getOfferId(), offer);
+                playerOffers.put(offer.getId(), offer);
             } catch (CommandSyntaxException e) {
                 e.printStackTrace();
             }

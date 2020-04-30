@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.core;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.ShapedPressurizableRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.*;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
 import me.desht.pneumaticcraft.common.recipes.special.*;
 import me.desht.pneumaticcraft.lib.Names;
@@ -14,6 +15,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModRecipes {
     public static final DeferredRegister<IRecipeSerializer<?>> RECIPES = new DeferredRegister<>(ForgeRegistries.RECIPE_SERIALIZERS, Names.MOD_ID);
+
+    public static final RegistryObject<IRecipeSerializer<AmadronRecipe>> AMADRON_OFFERS
+            = RECIPES.register(PneumaticCraftRecipeTypes.AMADRON_OFFERS,
+            () -> new AmadronOffer.Serializer<>(AmadronOffer::new));
 
     public static final RegistryObject<IRecipeSerializer<AssemblyRecipe>> ASSEMBLY_LASER
             = RECIPES.register(PneumaticCraftRecipeTypes.ASSEMBLY_LASER,
@@ -60,5 +65,4 @@ public class ModRecipes {
             = RECIPES.register("patchouli_book_crafting", () -> new SpecialRecipeSerializer<>(PatchouliBookCrafting::new));
     public static final RegistryObject<ShapedPressurizableRecipe.Serializer> CRAFTING_SHAPED_PRESSURIZABLE
             = RECIPES.register("crafting_shaped_pressurizable", ShapedPressurizableRecipe.Serializer::new);
-
 }
