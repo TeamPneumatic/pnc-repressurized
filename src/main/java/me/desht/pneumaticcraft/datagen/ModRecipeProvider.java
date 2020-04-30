@@ -991,11 +991,12 @@ public class ModRecipeProvider extends RecipeProvider {
         specialRecipe(ModRecipes.PRESSURE_CHAMBER_DISENCHANTING.get()).build(consumer, getId("pressure_chamber/pressure_chamber_disenchanting"));
 
         // smelting
-        CookingRecipeBuilder.blastingRecipe(Ingredient.fromItems(ModItems.FAILED_PCB.get()), ModItems.EMPTY_PCB.get(), 0.25f, 100)
+        CookingRecipeBuilder.blastingRecipe(Ingredient.fromItems(ModItems.FAILED_PCB.get()), ModItems.EMPTY_PCB.get(),
+                0.25f, 100)
                 .addCriterion("has_empty_pcb", this.hasItem(ModItems.FAILED_PCB.get()))
                 .build(consumer, RL("empty_pcb_from_failed_pcb"));
         CookingRecipeBuilder.smeltingRecipe(Ingredient.fromTag(PneumaticCraftTags.Items.PLASTIC_BRICKS), ModItems.PLASTIC.get(),
-                0.1f, 100)
+                0f, 100)
                 .addCriterion("has_plastic", this.hasItem(ModItems.PLASTIC.get()))
                 .build(consumer, RL("plastic_sheet_from_brick"));
 
