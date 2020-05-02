@@ -10,7 +10,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -22,9 +21,10 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 public class BlockSecurityStation extends BlockPneumaticCraft {
     private static final VoxelShape BODY = Block.makeCuboidShape(1, 8, 1, 15, 11, 15);
@@ -82,7 +82,9 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
                     } else if (getPlayerHackLevel(player) < te.getSecurityLevel()) {
                         player.sendStatusMessage(PneumaticCraftUtils.xlate("message.securityStation.cantHack", te.getSecurityLevel()), false);
                     } else {
-                        NetworkHooks.openGui((ServerPlayerEntity) player, te.getHackingContainerProvider(), pos);
+                        // FIXME reimplement security station hacking
+                        player.sendStatusMessage(new StringTextComponent("Sorry, but Security Station hacking is not yet implemented in this release of PneumaticCraft").applyTextStyle(TextFormatting.GOLD), false);
+//                        NetworkHooks.openGui((ServerPlayerEntity) player, te.getHackingContainerProvider(), pos);
                     }
                 }
             }

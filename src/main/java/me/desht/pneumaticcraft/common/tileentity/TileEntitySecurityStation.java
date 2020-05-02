@@ -306,7 +306,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             if (gameProfileEquals(user, player.getGameProfile())) {
                 if (user.getId() == null && player.getGameProfile().getId() != null) {
                     sharedUsers.set(i, player.getGameProfile());
-                    Log.info("Legacy conversion: Security Station shared username '" + player.getName() + "' is now using UUID '" + player.getGameProfile().getId() + "'.");
+                    Log.info("Legacy conversion: Security Station shared username '" + player.getName().getFormattedText() + "' is now using UUID '" + player.getGameProfile().getId() + "'.");
                 }
                 return true;
             }
@@ -320,7 +320,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             if (gameProfileEquals(user, player.getGameProfile())) {
                 if (user.getId() == null && player.getGameProfile().getId() != null) {
                     hackedUsers.set(i, player.getGameProfile());
-                    Log.info("Legacy conversion: Security Station hacked username '" + player.getName() + "' is now using UUID '" + player.getGameProfile().getId() + "'.");
+                    Log.info("Legacy conversion: Security Station hacked username '" + player.getName().getFormattedText() + "' is now using UUID '" + player.getGameProfile().getId() + "'.");
                 }
                 return true;
             }

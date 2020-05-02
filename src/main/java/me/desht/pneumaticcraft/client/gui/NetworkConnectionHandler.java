@@ -101,10 +101,10 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
     }
 
     void addConnection(int firstSlot, int secondSlot) {
-        double startX = baseX + firstSlot % 5.0 * nodeSpacing;
-        double startY = baseY + firstSlot / 5.0 * nodeSpacing;
-        double endX = baseX + secondSlot % 5.0 * nodeSpacing;
-        double endY = baseY + secondSlot / 5.0 * nodeSpacing;
+        int startX = baseX + firstSlot % 5 * nodeSpacing;
+        int startY = baseY + firstSlot / 5 * nodeSpacing;
+        int endX = baseX + secondSlot % 5 * nodeSpacing;
+        int endY = baseY + secondSlot / 5 * nodeSpacing;
         for (ProgressingLine line : lineList) {
             if (line.hasLineSameProperties(startX, startY, 0, endX, endY, 0)) return;
         }
@@ -112,10 +112,10 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
     }
 
     void removeConnection(int firstSlot, int secondSlot) {
-        double startX = baseX + firstSlot % 5.0 * nodeSpacing;
-        double startY = baseY + firstSlot / 5.0 * nodeSpacing;
-        double endX = baseX + secondSlot % 5.0 * nodeSpacing;
-        double endY = baseY + secondSlot / 5.0 * nodeSpacing;
+        int startX = baseX + firstSlot % 5 * nodeSpacing;
+        int startY = baseY + firstSlot / 5 * nodeSpacing;
+        int endX = baseX + secondSlot % 5 * nodeSpacing;
+        int endY = baseY + secondSlot / 5 * nodeSpacing;
         for (ProgressingLine line : lineList) {
             if (line.hasLineSameProperties(startX, startY, 0, endX, endY, 0)) {
                 lineList.remove(line);

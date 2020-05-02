@@ -69,7 +69,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
 
         addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 103, 64, 20, I18n.format("gui.securityStation.test"))).withTag("test");
         addButton(rebootButton);
-        addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 125, 64, 20, I18n.format("gui.universalSensor.button.showRange"), b -> te.showRangeLines()));
+        addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 125, 64, 20, I18n.format("gui.button.showRange"), b -> te.showRangeLines()));
 
         updateUserRemoveButtons();
 
