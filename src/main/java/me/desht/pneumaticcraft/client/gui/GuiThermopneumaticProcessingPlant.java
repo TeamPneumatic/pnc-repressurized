@@ -25,6 +25,7 @@ public class GuiThermopneumaticProcessingPlant extends
         GuiPneumaticContainerBase<ContainerThermopneumaticProcessingPlant,TileEntityThermopneumaticProcessingPlant> {
 
     private WidgetTemperature tempWidget;
+    private WidgetButtonExtended dumpButton;
     private int nExposedFaces;
 
     public GuiThermopneumaticProcessingPlant(ContainerThermopneumaticProcessingPlant container, PlayerInventory inv, ITextComponent displayString) {
@@ -58,9 +59,9 @@ public class GuiThermopneumaticProcessingPlant extends
         };
         addButton(tempWidget);
 
-        WidgetButtonExtended dumpButton = new WidgetButtonExtended(guiLeft + 12, guiTop + 81, 18, 20, "").withTag("dump");
-        dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
-        dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.thermopneumatic.dumpInput")));
+        dumpButton = new WidgetButtonExtended(guiLeft + 12, guiTop + 81, 18, 20, "").withTag("dump");
+        dumpButton.setRenderedIcon(Textures.GUI_RIGHT_ARROW);
+        dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.thermopneumatic.moveInput")));
         addButton(dumpButton);
 
         nExposedFaces = HeatUtil.countExposedFaces(Collections.singletonList(te));
@@ -68,8 +69,17 @@ public class GuiThermopneumaticProcessingPlant extends
 
     @Override
     public void tick() {
-        tempWidget.setScales((int) te.minTemperature);
         super.tick();
+
+        tempWidget.setScales((int) te.minTemperature);
+
+        if (hasShiftDown()) {
+            dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
+            dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.thermopneumatic.dumpInput")));
+        } else {
+            dumpButton.setRenderedIcon(Textures.GUI_RIGHT_ARROW);
+            dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.thermopneumatic.moveInput")));
+        }
     }
 
     @Override

@@ -822,6 +822,7 @@
   "gui.pressureChamberInterface.export.any": "All",
   "gui.pressureChamberInterface.export.any.tooltip": "Export ALL items from the Pressure Chamber. \\n§7Use this to extract items added by mistake.",
   "gui.thermopneumatic.dumpInput": "Dump Input Tank \\n§7Get rid of any unwanted / excess fluids from the input tank",
+  "gui.thermopneumatic.moveInput": "Move Fluid \\n§7Move any fluid from the input tank to the output tank, if possible \\n§oHold Shift to dump fluid",
   "gui.button.showRange": "Show Range",
   "gui.programmer.button.showArea": "Preview Area",
   "gui.programmer.button.stopShowingArea": "Stop Previewing Area",

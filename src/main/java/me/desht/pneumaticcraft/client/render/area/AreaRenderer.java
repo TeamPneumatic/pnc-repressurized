@@ -63,9 +63,10 @@ public class AreaRenderer {
     }
 
     private void addVertices(IVertexBuilder wr, Matrix4f posMat, BlockPos pos, int[] cols) {
+        World world = Minecraft.getInstance().world;
+        BlockState state = world.getBlockState(pos);
+        if (!disableDepthTest && !state.getMaterial().isReplaceable()) return;
         if (drawShapes) {
-            World world = Minecraft.getInstance().world;
-            BlockState state = world.getBlockState(pos);
             VoxelShape shape = state.getBlock() instanceof BlockPneumaticCraftCamo ?
                     ((BlockPneumaticCraftCamo) state.getBlock()).getUncamouflagedShape(state, world, pos, ISelectionContext.dummy()) :
                     state.getShape(world, pos, ISelectionContext.dummy());

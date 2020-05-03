@@ -176,6 +176,7 @@ public class Textures {
     public static final ResourceLocation GUI_UPGRADES_LOCATION = guiIconTexture("gui_upgrade.png");
     public static final ResourceLocation GUI_WARNING_TEXTURE = guiIconTexture("gui_warning.png");
     public static final ResourceLocation GUI_X_BUTTON = guiIconTexture("gui_x_button.png");
+    public static final ResourceLocation GUI_RIGHT_ARROW = guiIconTexture("gui_right_arrow.png");
     public static final ResourceLocation GUI_JEI_LOGO = guiIconTexture("jei_logo.png");
 
     // widget textures
