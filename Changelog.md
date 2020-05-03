@@ -17,14 +17,14 @@ This release adds no major new features to the 1.14.4 version, but there are sev
   * All machine recipes are now handled through the vanilla recipe system, and loaded from `data/<modid>/recipes/<machine-type>/*.json`. 
   * The most player-visible effect of this is that machine recipes now show up properly in JEI on dedicated servers.
 * Amadron changes
-  * Amadron offers are now loaded as vanilla recipes from `data/<modid>/recipes/amadron/*.json`.  Note that villager trades and player-player offers are still handled separately.
+  * Builtin Amadron offers are now loaded as vanilla recipes from `data/<modid>/recipes/amadron/*.json`.  Note that villager trades and player-player offers are still handled separately.
   * JEI now shows *only* the Amadron offers which have been loaded from datapack.  Periodic villager trades and player-player offers require an Amadron tablet to view.
-* Smelting Plastic Construction Bricks to Plastic Sheets no longer providers any experience.
-* Reduced vertical aggro range of guard drone to 8 up & 5 down, to minimise risk of aggroing something in a cave deep below and teleporting off, leaving owner puzzled as to where it went.  Horizontal range is unchanged at 16 in each direction.
+* Smelting Plastic Construction Bricks to Plastic Sheets no longer provides any experience.
+* Reduced vertical aggro range of Guard Drone to 8 up & 5 down, to minimise risk of aggroing something in a cave deep below and teleporting off, leaving owner puzzled as to where it went.  Horizontal range is unchanged at 16 in each direction.
 * Logistics advancements no longer require plastic to be unlocked (since logistics items no longer require plastic...)
 * Drones no longer use their owner's UUID for their fake player.
-  * While this was convenient for protection mods, it introduced some subtle problems, where the server associated a player's UUID with a fake player object instead of the real player.  The most obvious effect of this was advancement often not working.
-  * Protection mods should now use "<player-name>_drone" to permit a given player's drones.
+  * While this was convenient for protection mods, it introduced some subtle problems, where the server associated a player's UUID with a fake player object instead of the real player.  The most obvious effect of this was advancements often not working.
+  * Protection mods should now use "<playername>_drone" to permit a given player's drones.
 * Improved textures for Air Cannon, Vacuum Pump & Charging Station.  Also, these machines now use Reinforced Stone Slabs instead of Cobblestone or Stone slabs in their crafting recipes.
 * Reduced network chatter for leaking pressure tubes (sounds and particles now played purely client-side)
 * Reduce network chatter for moving elevators
@@ -42,6 +42,7 @@ This release adds no major new features to the 1.14.4 version, but there are sev
 * Pressure interface doors render better, especially when beside Pressure Glass (doors now no longer stick out the side when open)
 * Jet Boots speed slightly increased, back to 1.12.2 levels (was a little slower in 1.14.4 version due to an error on my part)
 * Fixed multiblock elevators playing their sound effects much too loud.
+* JEI now shows all "special" crafting recipes: gun ammo + potion crafting, drone dyeing, drone upgrading, guidebook crafting and pneumatic helmet + one probe crafting.
 
 ## Minecraft 1.14.4
 
