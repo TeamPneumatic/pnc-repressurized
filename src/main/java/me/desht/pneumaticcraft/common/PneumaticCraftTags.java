@@ -46,7 +46,8 @@ public class PneumaticCraftTags {
         public static final Tag<Item> FLUID_TANKS = modTag("fluid_tanks");
         public static final Tag<Item> CHESTS = modTag("chests");
 
-        public static final Tag<Item> UPGRADE_COMPONENT = modTag("upgrade_component");
+        public static final Tag<Item> UPGRADE_COMPONENTS = modTag("upgrade_components");
+        public static final Tag<Item> BASIC_DRONES = modTag("basic_drones");
 
         public static final Tag<Item> INGOTS_COMPRESSED_IRON = forgeTag("ingots/compressed_iron");
         public static final Tag<Item> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");

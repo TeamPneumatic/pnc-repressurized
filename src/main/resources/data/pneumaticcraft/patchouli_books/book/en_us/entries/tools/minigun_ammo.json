@@ -63,6 +63,10 @@
       "type": "crafting",
       "recipe": "pneumaticcraft:gun_ammo_explosive",
       "recipe2": "pneumaticcraft:gun_ammo_freezing"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:gun_ammo_potion_crafting"
     }
   ]
 }

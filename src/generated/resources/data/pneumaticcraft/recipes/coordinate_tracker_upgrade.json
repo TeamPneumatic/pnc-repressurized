@@ -7,7 +7,7 @@
   ],
   "key": {
     "L": {
-      "tag": "pneumaticcraft:upgrade_component"
+      "tag": "pneumaticcraft:upgrade_components"
     },
     "X": {
       "item": "minecraft:redstone"

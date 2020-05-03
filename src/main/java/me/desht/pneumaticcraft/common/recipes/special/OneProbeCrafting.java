@@ -7,19 +7,28 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipe;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapelessRecipe;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ObjectHolder;
 
-public class OneProbeCrafting extends SpecialRecipe {
+public class OneProbeCrafting extends ShapelessRecipe {
     @ObjectHolder("theoneprobe:probe")
     public static final Item ONE_PROBE = null;
 
     private static final String ONE_PROBE_TAG = "theoneprobe";
 
     public OneProbeCrafting(ResourceLocation idIn) {
-        super(idIn);
+        super(idIn, "", makeOutputStack(),
+                NonNullList.from(Ingredient.EMPTY, Ingredient.fromItems(ModItems.PNEUMATIC_HELMET.get()), Ingredient.fromItems(ONE_PROBE)));
+    }
+
+    private static ItemStack makeOutputStack() {
+        ItemStack stack = new ItemStack(ModItems.PNEUMATIC_HELMET.get());
+        setOneProbeEnabled(stack);
+        return stack;
     }
 
     @Override
@@ -30,7 +39,7 @@ public class OneProbeCrafting extends SpecialRecipe {
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             Item item = inv.getStackInSlot(i).getItem();
             if (item == ModItems.PNEUMATIC_HELMET.get()) {
-                if (helmetFound) return false;
+                if (helmetFound || isOneProbeEnabled(inv.getStackInSlot(i))) return false;
                 helmetFound = true;
             } else if (item == ONE_PROBE) {
                 if (probeFound) return false;
@@ -51,11 +60,6 @@ public class OneProbeCrafting extends SpecialRecipe {
         return output;
     }
 
-    @Override
-    public boolean canFit(int width, int height) {
-        return width * height >= 2;
-    }
-
     private ItemStack findHelmet(CraftingInventory inv) {
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             if (inv.getStackInSlot(i).getItem() == ModItems.PNEUMATIC_HELMET.get()) {
@@ -73,7 +77,8 @@ public class OneProbeCrafting extends SpecialRecipe {
     public static boolean isOneProbeEnabled(ItemStack helmetStack) {
         return helmetStack.hasTag() && helmetStack.getTag().getInt(ONE_PROBE_TAG) > 0;
     }
-    public static void setOneProbeEnabled(ItemStack helmetStack) {
+
+    private static void setOneProbeEnabled(ItemStack helmetStack) {
         helmetStack.getOrCreateTag().putInt(ONE_PROBE_TAG, 1);
     }
 }

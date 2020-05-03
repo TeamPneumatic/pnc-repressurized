@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "$(li)Get some $(thing)iron/$; ingots or blocks.  You'll want around one stack of iron to start with.$(li)Throw it on the ground, and blow it up. Yes, really.$(li)Collect the resulting $(thing)Compressed Iron/$ (there'll be a bit less than the iron you dropped).$(li)Make some $(l:tubes/pressure_tubes)Pressure Tubes/$.$(li)Build a $(l:manufacturing/pressure_chamber)Pressure Chamber/$."
+      "text": "Welcome to PneumaticCraft!$(li)Get some $(thing)iron/$; ingots or blocks.  You'll want around one stack of iron to start with.$(li)Throw it on the ground, and blow it up. Yes, really.$(li)Collect the resulting $(thing)Compressed Iron/$ (there'll be a bit less than the iron you dropped).$(li)Make some $(l:tubes/pressure_tubes)Pressure Tubes/$.$(li)Build a $(l:manufacturing/pressure_chamber)Pressure Chamber/$."
     },
     {
       "type": "text",

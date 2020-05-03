@@ -1,38 +1,25 @@
 package me.desht.pneumaticcraft.common.recipes.special;
 
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemDrone;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipe;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapelessRecipe;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraftforge.common.Tags;
 
-public class DroneColorCrafting extends SpecialRecipe {
+public class DroneColorCrafting extends ShapelessRecipe {
     public DroneColorCrafting(ResourceLocation idIn) {
-        super(idIn);
-    }
-
-    @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
-        boolean hasDrone = false, hasDye = false;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            ItemStack stack = inv.getStackInSlot(i);
-            if (stack.getItem() instanceof ItemDrone) {
-                if (!hasDrone) hasDrone = true;
-                else return false;
-            } else if (stack.getItem() instanceof DyeItem) {
-                if (!hasDye) hasDye = true;
-                else return false;
-            } else if (!stack.isEmpty()) {
-                return false;
-            }
-        }
-        return hasDrone && hasDye;
+        super(idIn, "", new ItemStack(ModItems.DRONE.get()),
+                NonNullList.from(Ingredient.EMPTY, Ingredient.fromTag(Tags.Items.DYES), Ingredient.fromItems(ModItems.DRONE.get())));
     }
 
     @Override
@@ -49,18 +36,15 @@ public class DroneColorCrafting extends SpecialRecipe {
                 }
             }
         }
+        if (drone.isEmpty() || dyeColor == null) return ItemStack.EMPTY;
+
         CompoundNBT droneTag = drone.getTag();
         if (droneTag == null) {
             droneTag = new CompoundNBT();
             drone.setTag(droneTag);
         }
-        droneTag.putInt("color", dyeColor.getId());
+        droneTag.putInt(EntityDrone.NBT_DRONE_COLOR, dyeColor.getId());
         return drone;
-    }
-
-    @Override
-    public boolean canFit(int width, int height) {
-        return width * height >= 2;
     }
 
     @Override

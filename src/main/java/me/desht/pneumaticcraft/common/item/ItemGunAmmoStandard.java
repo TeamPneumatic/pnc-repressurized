@@ -96,7 +96,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
             } else if (potion.getItem() instanceof LingeringPotionItem) {
                 extra = " " + I18n.format("gui.tooltip.gunAmmo.lingering");
             }
-            infoList.add(xlate("gui.tooltip.gunAmmo").appendText(" " + potionInfo.get(0) + extra));
+            infoList.add(xlate("gui.tooltip.gunAmmo").appendText(" " + potionInfo.get(0).getFormattedText() + extra));
         } else {
             infoList.add(xlate("gui.tooltip.gunAmmo.combineWithPotion"));
         }

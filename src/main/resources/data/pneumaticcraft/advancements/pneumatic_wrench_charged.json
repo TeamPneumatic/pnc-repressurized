@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:pneumatic_wrench",
-      "durability": 30000
+      "item": "pneumaticcraft:pneumatic_wrench"
     },
     "title": {
       "translate": "achievement.pneumaticWrenchCharged"
@@ -19,10 +18,7 @@
         "items": [
           {
             "item": "pneumaticcraft:pneumatic_wrench",
-            "durability": {
-              "min": 1,
-              "max": 30000
-            }
+            "nbt": "{\"pneumaticcraft:air\":30000 }"
           }
         ]
       }

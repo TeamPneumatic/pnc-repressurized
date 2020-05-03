@@ -33,7 +33,7 @@
     },
     {
       "type": "text",
-      "text": "You can use a $(l:blocks/vortex_tube)Vortex Tube/$ to heat the  $(item)Refinery/$, or place hot fluids (Lava...) or blocks (Magma...) next to any $(item)Refinery/$ blocks.  Note that such fluids and blocks will get used up (their heat gets drained), so you may wish to find a way to automate the production and placement of those resources."
+      "text": "You can use a $(l:machines/vortex_tube)Vortex Tube/$ to heat the  $(item)Refinery/$, or place hot fluids (Lava...) or blocks (Magma...) next to any $(item)Refinery/$ blocks.  Note that such fluids and blocks will get used up (their heat gets drained), so you may wish to find a way to automate the production and placement of those resources."
     },
     {
       "type": "link",

@@ -19,7 +19,7 @@
       "type": "image",
       "text": "A GUI showing 3 side tabs: Pressure Status, Problems (none here) and a machine-specific Assembly Controller Status",
       "images": [
-        "pneumaticcraft:textures/wiki/gui_tabs.png"
+        "pneumaticcraft:textures/patchouli/gui_tabs.png"
       ],
       "border": "false"
     }

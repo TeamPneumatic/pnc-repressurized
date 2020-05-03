@@ -81,7 +81,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     public void validate(){
         super.validate();
         GlobalTileEntityCacheManager.getInstance().securityStations.add(this);
-        rangeLines = new RangeLines(0x33FF0000, getPos());
+        rangeLines = new RangeLines(0x33FF0000);
     }
 
     @Override

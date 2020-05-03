@@ -5,32 +5,25 @@ import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmoStandard;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipe;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapelessRecipe;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtils;
+import net.minecraft.potion.Potions;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraftforge.registries.ForgeRegistries;
 
-public class GunAmmoPotionCrafting extends SpecialRecipe {
+import javax.annotation.Nullable;
+import java.util.stream.Stream;
+
+public class GunAmmoPotionCrafting extends ShapelessRecipe {
     public GunAmmoPotionCrafting(ResourceLocation idIn) {
-        super(idIn);
-    }
-
-    @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
-        int itemCount = 0;
-        boolean foundPotion = false;
-        boolean foundAmmo = false;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            ItemStack stack = inv.getStackInSlot(i);
-            if (!stack.isEmpty()) {
-                if (++itemCount > 2) return false;
-                itemCount++;
-                if (stack.getItem() instanceof PotionItem) foundPotion = true;
-                if (stack.getItem() == ModItems.GUN_AMMO.get()) foundAmmo = true;
-            }
-        }
-        return foundPotion && foundAmmo;
+        super(idIn, "", new ItemStack(ModItems.GUN_AMMO.get()),
+                NonNullList.from(Ingredient.EMPTY, Ingredient.fromItems(ModItems.GUN_AMMO.get()), new PotionIngredient()));
     }
 
     @Override
@@ -39,26 +32,44 @@ public class GunAmmoPotionCrafting extends SpecialRecipe {
         ItemStack ammo = ItemStack.EMPTY;
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
-            if (!stack.isEmpty()) {
-                if (stack.getItem() instanceof PotionItem) {
-                    potion = stack;
-                } else {
-                    ammo = stack;
-                }
+            if (stack.getItem() instanceof PotionItem) {
+                potion = stack;
+            } else if (stack.getItem() == ModItems.GUN_AMMO.get()) {
+                ammo = stack;
+            } else if (!stack.isEmpty()) {
+                return ItemStack.EMPTY;
             }
         }
+        if (ammo.isEmpty() || potion.isEmpty()) return ItemStack.EMPTY;
+
         ammo = ammo.copy();
         ItemGunAmmoStandard.setPotion(ammo, potion);
         return ammo;
     }
 
     @Override
-    public boolean canFit(int width, int height) {
-        return width * height >= 2;
-    }
-
-    @Override
     public IRecipeSerializer<?> getSerializer() {
         return ModRecipes.GUN_AMMO_POTION_CRAFTING.get();
+    }
+
+    private static class PotionIngredient extends Ingredient {
+        PotionIngredient() {
+            super(Stream.empty());
+        }
+
+        @Override
+        public ItemStack[] getMatchingStacks() {
+            NonNullList<ItemStack> potions = NonNullList.create();
+            for (Potion p : ForgeRegistries.POTION_TYPES.getValues()) {
+                if (p != Potions.EMPTY) potions.add(PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), p));
+            }
+
+            return potions.toArray(new ItemStack[0]);
+        }
+
+        @Override
+        public boolean test(@Nullable ItemStack stack) {
+            return !PotionUtils.getEffectsFromStack(stack).isEmpty();
+        }
     }
 }

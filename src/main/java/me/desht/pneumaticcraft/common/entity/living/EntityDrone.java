@@ -141,6 +141,9 @@ public class EntityDrone extends EntityDroneBase implements
     private static final DataParameter<Integer> TARGET_ID = EntityDataManager.createKey(EntityDrone.class, DataSerializers.VARINT);
 
     private static final HashMap<String, Integer> LASER_COLOR_MAP = new HashMap<>();
+
+    public static final String NBT_DRONE_COLOR = "color";
+
     static {
         LASER_COLOR_MAP.put("aureylian", 0xff69b4);
         LASER_COLOR_MAP.put("loneztar", 0x00a0a0);
@@ -253,7 +256,7 @@ public class EntityDrone extends EntityDroneBase implements
                 progWidgets = TileEntityProgrammer.getWidgetsFromNBT(stackTag);
                 TileEntityProgrammer.updatePuzzleConnections(progWidgets);
             }
-            setDroneColor(stackTag.getInt("color"));
+            setDroneColor(stackTag.getInt(NBT_DRONE_COLOR));
         }
         if (droneStack.hasDisplayName()) setCustomName(droneStack.getDisplayName());
     }

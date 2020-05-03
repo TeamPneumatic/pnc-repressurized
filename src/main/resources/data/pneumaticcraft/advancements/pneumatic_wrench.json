@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "pneumaticcraft:pneumatic_wrench",
-      "durability": 0
+      "item": "pneumaticcraft:pneumatic_wrench"
     },
     "title": {
       "translate": "achievement.pneumaticWrench"
@@ -19,7 +18,7 @@
         "items": [
           {
             "item": "pneumaticcraft:pneumatic_wrench",
-            "durability": 0
+            "nbt": "{}"
           }
         ]
       }

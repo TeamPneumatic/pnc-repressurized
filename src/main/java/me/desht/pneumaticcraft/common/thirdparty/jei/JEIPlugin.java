@@ -10,10 +10,6 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.ItemPressurizable;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
-import me.desht.pneumaticcraft.common.recipes.special.PatchouliBookCrafting;
-import me.desht.pneumaticcraft.common.thirdparty.jei.extension.HelmetOneProbeExtension;
-import me.desht.pneumaticcraft.common.thirdparty.jei.extension.PatchouliBookExtension;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.AmadronAddTradeGhost;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.LogisticsFilterGhost;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.ProgWidgetItemFilterGhost;
@@ -136,14 +132,6 @@ public class JEIPlugin implements IModPlugin {
         registration.addGhostIngredientHandler(GuiAmadronAddTrade.class, new AmadronAddTradeGhost());
         registration.addGhostIngredientHandler(GuiLogisticsBase.class, new LogisticsFilterGhost());
         registration.addGhostIngredientHandler(GuiProgWidgetItemFilter.class, new ProgWidgetItemFilterGhost());
-    }
-
-    @Override
-    public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
-        if (OneProbeCrafting.ONE_PROBE != null) {
-            registration.getCraftingCategory().addCategoryExtension(OneProbeCrafting.class, HelmetOneProbeExtension::new);
-        }
-        registration.getCraftingCategory().addCategoryExtension(PatchouliBookCrafting.class, PatchouliBookExtension::new);
     }
 
     @Override

@@ -38,7 +38,11 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         appendToTag(Tags.Items.STORAGE_BLOCKS, PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON);
         appendToTag(Tags.Items.CHESTS, PneumaticCraftTags.Items.CHESTS);
 
-        addItemsToTag(PneumaticCraftTags.Items.UPGRADE_COMPONENT, ModItems.UPGRADE_MATRIX, () -> Items.LAPIS_LAZULI);
+        addItemsToTag(PneumaticCraftTags.Items.UPGRADE_COMPONENTS, ModItems.UPGRADE_MATRIX, () -> Items.LAPIS_LAZULI);
+
+        addItemsToTag(PneumaticCraftTags.Items.BASIC_DRONES,
+                ModItems.LOGISTICS_DRONE, ModItems.GUARD_DRONE, ModItems.HARVESTING_DRONE, ModItems.COLLECTOR_DRONE
+        );
 
         addItemsToTag(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, ModItems.COMPRESSED_IRON_INGOT);
         appendToTag(Tags.Items.INGOTS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON);

@@ -2,18 +2,18 @@ package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
-import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipe;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapelessRecipe;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import net.minecraftforge.registries.ObjectHolder;
 
-public class PatchouliBookCrafting extends SpecialRecipe {
+public class PatchouliBookCrafting extends ShapelessRecipe {
     @ObjectHolder("patchouli:guide_book")
     public static Item GUIDE_BOOK = null;
 
@@ -21,50 +21,21 @@ public class PatchouliBookCrafting extends SpecialRecipe {
     private static final String NBT_VAL = "pneumaticcraft:book";
 
     public PatchouliBookCrafting(ResourceLocation idIn) {
-        super(idIn);
+        super(idIn, "", makeGuideBook(),
+                NonNullList.from(Ingredient.EMPTY, Ingredient.fromItems(Items.BOOK), Ingredient.fromItems(ModItems.COMPRESSED_IRON_INGOT.get()))
+        );
     }
 
-    @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
-        if (GUIDE_BOOK == null) return false;
-
-        boolean bookFound = false, ingotFound = false;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            Item item = inv.getStackInSlot(i).getItem();
-            if (item == ModItems.COMPRESSED_IRON_INGOT.get()) {
-                if (ingotFound) return false;
-                ingotFound = true;
-            } else if (item == Items.BOOK) {
-                if (bookFound) return false;
-                bookFound = true;
-            } else if (item != Items.AIR) {
-                return false;
-            }
-        }
-        return bookFound && ingotFound;
-    }
-
-    @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    private static ItemStack makeGuideBook() {
         if (GUIDE_BOOK == null) return ItemStack.EMPTY;
-
-        ItemStack guideBook = new ItemStack(GUIDE_BOOK);
-        setBookNBT(guideBook);
-        return guideBook;
-    }
-
-    @Override
-    public boolean canFit(int width, int height) {
-        return width * height >= 2;
+        ItemStack book = new ItemStack(GUIDE_BOOK);
+        CompoundNBT tag = book.getOrCreateTag();
+        tag.putString(NBT_KEY, NBT_VAL);
+        return book;
     }
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
         return ModRecipes.PATCHOULI_BOOK_CRAFTING.get();
-    }
-
-    public static void setBookNBT(ItemStack guideBook) {
-        CompoundNBT tag = guideBook.getOrCreateTag();
-        tag.putString(NBT_KEY, NBT_VAL);
     }
 }

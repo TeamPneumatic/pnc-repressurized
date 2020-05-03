@@ -13,7 +13,7 @@
     },
     {
       "type": "text",
-      "text": "Once you've found some Oil, you'll need to extract and transport it. The recommended $(pncr) way to extract oil is with a $(l:machines/gas_lift)Gas Lift/$, although fluid pumps from other mods can also be used. If you're pumping far from your base, one early game solution for transport is a simple $(l:machines/liquid_hopper)Liquid Hopper/$, which can hold up to 16,000mB of fluid and keeps its contents when broken. (Even the Gas Lift can be used for this purpose since it also keeps its fluid contents)."
+      "text": "Once you've found some Oil, you'll need to extract and transport it. The recommended $(pncr) way to extract oil is with a $(l:machines/gas_lift)Gas Lift/$, although fluid pumps from other mods can also be used. If you're pumping far from your base, one early game solution for transport is a simple $(l:machines/tanks)Small Tank/$, which can hold up to 32,000mB of fluid and keeps its contents when broken. (Even the Gas Lift can be used for this purpose since it also keeps its fluid contents)."
     },
     {
       "type": "image",
