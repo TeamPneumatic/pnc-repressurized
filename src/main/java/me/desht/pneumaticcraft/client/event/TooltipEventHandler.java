@@ -31,6 +31,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -51,7 +52,6 @@ public class TooltipEventHandler {
         if (event.getPlayer() == null) return;
 
         ItemStack stack = event.getItemStack();
-
 
         if (stack.getItem() instanceof BucketItem) {
             handleFluidContainerTooltip(event);
@@ -143,20 +143,12 @@ public class TooltipEventHandler {
 
     private static void handleFluidContainerTooltip(ItemTooltipEvent event) {
         FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
-            String key = "gui.tooltip.item.pneumaticcraft." + event.getItemStack().getItem().getRegistryName().getPath();
+            String fluidName = fluidStack.getFluid().getRegistryName().toString().replace(':', '.');
+            String key = "gui.tooltip.item." + fluidName;
             if (I18n.hasKey(key)) {
-                if (event.getToolTip().get(event.getToolTip().size() - 1).getFormattedText().contains("Minecraft Forge")) {
-                    // bit of a kludge!  otherwise the blue "Minecraft Forge" string gets shown twice
-                    event.getToolTip().remove(event.getToolTip().size() - 1);
-                }
-                String prefix = "";
-                if (!fluidStack.getFluid().getRegistryName().getNamespace().equals(Names.MOD_ID)) {
-                    // fluid is owned by another mod; let's make it clear that this tooltip applies to PneumaticCraft
-                    prefix = TextFormatting.DARK_AQUA + "" + TextFormatting.ITALIC + "[" + Names.MOD_NAME + "] ";
-                }
                 if (Screen.hasShiftDown()) {
-                    String translatedInfo = TextFormatting.AQUA + I18n.format(key);
-                    event.getToolTip().addAll(PneumaticCraftUtils.splitString(prefix + translatedInfo, 40).stream().map(StringTextComponent::new).collect(Collectors.toList()));
+                    PneumaticCraftUtils.splitString(I18n.format(key), 45)
+                            .forEach(s -> event.getToolTip().add(new StringTextComponent(s).applyTextStyle(TextFormatting.AQUA)));
                 } else {
                     event.getToolTip().add(xlate("gui.tooltip.sneakForInfo").applyTextStyles(TextFormatting.AQUA));
                 }
