@@ -59,8 +59,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 	@Override
 	public void write(PacketBuffer buffer) {
 		input.write(buffer);
-		buffer.writeVarInt(operatingTemp.getMin());
-		buffer.writeVarInt(operatingTemp.getMax());
+		operatingTemp.write(buffer);
 		buffer.writeVarInt(outputs.size());
 		outputs.forEach(fluidStack -> fluidStack.writeToPacket(buffer));
 	}
@@ -95,7 +94,12 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 		@Override
         public T read(ResourceLocation recipeId, JsonObject json) {
         	Ingredient input = FluidIngredient.deserialize(json.get("input"));
-        	TemperatureRange tempRange = TemperatureRange.fromJson(json.getAsJsonObject("temperature"));
+        	TemperatureRange tempRange;
+        	if (json.has("temperature")) {
+				tempRange = TemperatureRange.fromJson(json.getAsJsonObject("temperature"));
+			} else {
+        		tempRange = TemperatureRange.min(373);
+			}
         	JsonArray outputs = json.get("results").getAsJsonArray();
         	if (outputs.size() < 2 || outputs.size() > RefineryRecipe.MAX_OUTPUTS) {
         		throw new JsonSyntaxException("must be between 2 and 4 (inclusive) output fluids!");
@@ -111,7 +115,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
         @Override
         public T read(ResourceLocation recipeId, PacketBuffer buffer) {
             FluidIngredient input = (FluidIngredient) Ingredient.read(buffer);
-            TemperatureRange range = TemperatureRange.of(buffer.readVarInt(), buffer.readVarInt());
+            TemperatureRange range = TemperatureRange.read(buffer);
             int nOutputs = buffer.readVarInt();
             FluidStack[] outputs = new FluidStack[nOutputs];
             for (int i = 0; i < nOutputs; i++) {

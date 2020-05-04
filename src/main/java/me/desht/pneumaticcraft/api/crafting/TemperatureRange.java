@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.api.crafting;
 
 import com.google.gson.JsonObject;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import org.apache.commons.lang3.Validate;
 
@@ -9,7 +10,7 @@ import org.apache.commons.lang3.Validate;
  * so negative values are not accepted.
  */
 public class TemperatureRange {
-    private static TemperatureRange INVALID = new TemperatureRange(0, 1) {
+    private static final TemperatureRange INVALID = new TemperatureRange(0, 1) {
         @Override
         public boolean inRange(int temp) {
             return false;
@@ -20,7 +21,7 @@ public class TemperatureRange {
             return false;
         }
     };
-    private static TemperatureRange ANY = new TemperatureRange(0, Integer.MAX_VALUE);
+    private static final TemperatureRange ANY = new TemperatureRange(0, Integer.MAX_VALUE);
 
     private final int min;
     private final int max;
@@ -91,6 +92,15 @@ public class TemperatureRange {
     }
 
     /**
+     * Read a temperature range from packet buffer, as written by {@link #write(PacketBuffer)}
+     * @param buffer the buffer
+     * @return a new temperature range object
+     */
+    public static TemperatureRange read(PacketBuffer buffer) {
+        return new TemperatureRange(buffer.readVarInt(), buffer.readVarInt());
+    }
+
+    /**
      * Check if the given temperature is valid for this range object.
      *
      * @param temp the temperature
@@ -125,6 +135,11 @@ public class TemperatureRange {
      */
     public boolean isAny() {
         return this == TemperatureRange.ANY;
+    }
+
+    public void write(PacketBuffer buffer) {
+        buffer.writeVarInt(min);
+        buffer.writeVarInt(max);
     }
 
     public JsonObject toJson() {

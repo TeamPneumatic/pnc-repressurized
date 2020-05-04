@@ -96,8 +96,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
     @Override
     public void write(PacketBuffer buffer) {
-        buffer.writeVarInt(operatingTemperature.getMin());
-        buffer.writeVarInt(operatingTemperature.getMax());
+        operatingTemperature.write(buffer);
         buffer.writeFloat(requiredPressure);
         inputItem.write(buffer);
         inputFluid.write(buffer);
@@ -169,7 +168,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         @Nullable
         @Override
         public T read(ResourceLocation recipeId, PacketBuffer buffer) {
-            TemperatureRange range = TemperatureRange.of(buffer.readVarInt(), buffer.readVarInt());
+            TemperatureRange range = TemperatureRange.read(buffer);
             float pressure = buffer.readFloat();
             Ingredient input = Ingredient.read(buffer);
             FluidIngredient fluidIn = (FluidIngredient) Ingredient.read(buffer);
