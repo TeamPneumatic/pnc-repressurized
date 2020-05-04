@@ -15,12 +15,12 @@ import java.util.List;
 public class ProgWidgetRedstoneCondition extends ProgWidgetCondition {
 
     public ProgWidgetRedstoneCondition() {
-        super(ModProgWidgets.CONDITION_REDSTONE.get());
+        super(ModProgWidgets.CONDITION_REDSTONE);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
     }
 
     @Override

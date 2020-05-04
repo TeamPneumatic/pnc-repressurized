@@ -13,12 +13,12 @@ import java.util.List;
 public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneCondition {
 
     public ProgWidgetDroneConditionPressure() {
-        super(ModProgWidgets.DRONE_CONDITION_PRESSURE.get());
+        super(ModProgWidgets.DRONE_CONDITION_PRESSURE);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgets.TEXT);
     }
 
     @Override

@@ -57,7 +57,7 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get());
+        return ImmutableList.of(ModProgWidgets.AREA);
     }
 
     @Override

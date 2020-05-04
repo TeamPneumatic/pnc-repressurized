@@ -13,12 +13,12 @@ import java.util.List;
 public class ProgWidgetDroneConditionItem extends ProgWidgetDroneCondition implements IItemFiltering {
 
     public ProgWidgetDroneConditionItem() {
-        super(ModProgWidgets.DRONE_CONDITION_ITEM.get());
+        super(ModProgWidgets.DRONE_CONDITION_ITEM);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER, ModProgWidgets.TEXT);
     }
 
     @Override
@@ -41,8 +41,8 @@ public class ProgWidgetDroneConditionItem extends ProgWidgetDroneCondition imple
     @Override
     public boolean isItemValidForFilters(ItemStack item) {
         return ProgWidgetItemFilter.isItemValidForFilters(item,
-                ProgWidget.getConnectedWidgetList(this, 0, ModProgWidgets.ITEM_FILTER.get()),
-                ProgWidget.getConnectedWidgetList(this, getParameters().size(), ModProgWidgets.ITEM_FILTER.get()),
+                ProgWidget.getConnectedWidgetList(this, 0, ModProgWidgets.ITEM_FILTER),
+                ProgWidget.getConnectedWidgetList(this, getParameters().size(), ModProgWidgets.ITEM_FILTER),
                 null);
     }
 

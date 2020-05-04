@@ -16,7 +16,7 @@ import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.core.ModRegistries;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
@@ -49,7 +49,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer,TileEntityProgrammer> {
@@ -254,8 +253,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
         }
         int i = 0;
-        for (Supplier<? extends ProgWidgetType> type : ModProgWidgets.WIDGET_LIST) {
-            IProgWidget widget = IProgWidget.create(type.get());
+        Collection<ProgWidgetType<?>> allProgWidgets = ModRegistries.PROG_WIDGETS.getValues();
+        for (ProgWidgetType type : allProgWidgets) {
+            IProgWidget widget = IProgWidget.create(type);
             if (difficulty >= widget.getDifficulty().ordinal()) {
                 widget.setY(y + 40);
                 widget.setX(showAllWidgets ? x : getWidgetTrayRight());
@@ -269,7 +269,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     y = 0;
                     x += WIDGET_X_SPACING;
                     page++;
-                    if (i < ModProgWidgets.WIDGET_LIST.size() - 1) maxPage++;
+                    if (i < allProgWidgets.size() - 1) maxPage++;
                 }
             }
             i++;

@@ -47,7 +47,6 @@ import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -100,9 +99,9 @@ public class PneumaticCraftRepressurized {
         ModDecorators.DECORATORS.register(modBus);
         ModVillagers.POI.register(modBus);
         ModVillagers.PROFESSIONS.register(modBus);
-        // Temp. hacky solution: delay adding deferred registration for custom registries
-        // Proper forge support under discussion...
-        modBus.addListener(EventPriority.LOWEST, this::addCustomRegistryDeferredRegisters);
+
+        // Note: custom registries not handled via deferred registration (harvest handlers, hoe handlers, progwidgets)
+        // since Forge doesn't support this (yet?)
 
         Reflections.init();
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
@@ -118,14 +117,6 @@ public class PneumaticCraftRepressurized {
         MinecraftForge.EVENT_BUS.register(new DroneSpecialVariableHandler());
         MinecraftForge.EVENT_BUS.register(ItemGPSAreaTool.EventHandler.class);
         MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
-    }
-
-
-    private void addCustomRegistryDeferredRegisters(RegistryEvent.NewRegistry event) {
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
-        ModHarvestHandlers.HARVEST_HANDLERS.register(modBus);
-        ModHoeHandlers.HOE_HANDLERS.register(modBus);
-        ModProgWidgets.PROG_WIDGETS.register(modBus);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

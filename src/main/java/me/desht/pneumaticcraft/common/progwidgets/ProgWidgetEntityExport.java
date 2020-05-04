@@ -17,7 +17,7 @@ import java.util.List;
 public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase {
 
     public ProgWidgetEntityExport() {
-        super(ModProgWidgets.ENTITY_EXPORT.get());
+        super(ModProgWidgets.ENTITY_EXPORT);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase {
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
     }
 
     @Override

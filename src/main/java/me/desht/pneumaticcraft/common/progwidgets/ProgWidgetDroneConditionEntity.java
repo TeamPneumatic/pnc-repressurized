@@ -19,12 +19,12 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition imp
     private EntityFilterPair<ProgWidgetDroneConditionEntity> entityFilters;
 
     public ProgWidgetDroneConditionEntity() {
-        super(ModProgWidgets.DRONE_CONDITION_ENTITY.get());
+        super(ModProgWidgets.DRONE_CONDITION_ENTITY);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgets.TEXT, ModProgWidgets.TEXT);
     }
 
     @Override

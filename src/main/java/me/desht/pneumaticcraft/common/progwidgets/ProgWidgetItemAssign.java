@@ -24,7 +24,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     private DroneAIManager aiManager;
 
     public ProgWidgetItemAssign() {
-        super(ModProgWidgets.ITEM_ASSIGN.get());
+        super(ModProgWidgets.ITEM_ASSIGN);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get());
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class ProgWidgetText extends ProgWidget {
     public String string = "";
 
     public ProgWidgetText() {
-        super(ModProgWidgets.TEXT.get());
+        super(ModProgWidgets.TEXT);
     }
 
     public ProgWidgetText(ProgWidgetType<?> type) {
@@ -54,12 +54,12 @@ public class ProgWidgetText extends ProgWidget {
 
     @Override
     public ProgWidgetType returnType() {
-        return ModProgWidgets.TEXT.get();
+        return ModProgWidgets.TEXT;
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgets.TEXT);
     }
 
     @Override

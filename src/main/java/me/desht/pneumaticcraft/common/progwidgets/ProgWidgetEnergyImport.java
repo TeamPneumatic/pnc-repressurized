@@ -14,12 +14,12 @@ import java.util.List;
 
 public class ProgWidgetEnergyImport extends ProgWidgetInventoryBase {
     public ProgWidgetEnergyImport() {
-        super(ModProgWidgets.RF_IMPORT.get());
+        super(ModProgWidgets.RF_IMPORT);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get());
+        return ImmutableList.of(ModProgWidgets.AREA);
     }
 
     @Override

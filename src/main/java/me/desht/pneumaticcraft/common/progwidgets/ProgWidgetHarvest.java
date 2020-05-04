@@ -20,7 +20,7 @@ public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUse
     private boolean requireHoe;
     
     public ProgWidgetHarvest() {
-        super(ModProgWidgets.HARVEST.get(), ProgWidgetDigAndPlace.EnumOrder.CLOSEST);
+        super(ModProgWidgets.HARVEST, ProgWidgetDigAndPlace.EnumOrder.CLOSEST);
     }
 
     @Override

@@ -21,12 +21,12 @@ import java.util.Set;
 public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
 
     public ProgWidgetItemInventoryCondition() {
-        super(ModProgWidgets.CONDITION_ITEM_INVENTORY.get());
+        super(ModProgWidgets.CONDITION_ITEM_INVENTORY);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.ITEM_FILTER, ModProgWidgets.TEXT);
     }
 
     @Override

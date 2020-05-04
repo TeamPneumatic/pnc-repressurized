@@ -13,7 +13,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     private boolean sneaking;
 
     public ProgWidgetBlockRightClick() {
-        super(ModProgWidgets.BLOCK_RIGHT_CLICK.get());
+        super(ModProgWidgets.BLOCK_RIGHT_CLICK);
     }
 
     @Override

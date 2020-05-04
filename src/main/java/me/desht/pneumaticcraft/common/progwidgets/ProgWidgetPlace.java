@@ -22,7 +22,7 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace implements ISidedWidg
     public Direction placeDir = Direction.DOWN;
 
     public ProgWidgetPlace() {
-        super(ModProgWidgets.PLACE.get(), ProgWidgetDigAndPlace.EnumOrder.LOW_TO_HIGH);
+        super(ModProgWidgets.PLACE, ProgWidgetDigAndPlace.EnumOrder.LOW_TO_HIGH);
     }
 
     ProgWidgetPlace(ProgWidgetType<?> type) {

@@ -48,7 +48,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.ITEM_FILTER.get());
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.ITEM_FILTER);
     }
 
     @Override
@@ -178,8 +178,8 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
 
     public boolean isItemValidForFilters(ItemStack item, BlockState blockState) {
         return ProgWidgetItemFilter.isItemValidForFilters(item,
-                ProgWidget.getConnectedWidgetList(this, 1, ModProgWidgets.ITEM_FILTER.get()),
-                ProgWidget.getConnectedWidgetList(this, getParameters().size() + 1, ModProgWidgets.ITEM_FILTER.get()),
+                ProgWidget.getConnectedWidgetList(this, 1, ModProgWidgets.ITEM_FILTER),
+                ProgWidget.getConnectedWidgetList(this, getParameters().size() + 1, ModProgWidgets.ITEM_FILTER),
                 blockState
         );
     }

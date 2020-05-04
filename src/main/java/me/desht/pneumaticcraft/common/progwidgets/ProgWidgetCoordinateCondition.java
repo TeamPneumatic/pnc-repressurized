@@ -24,12 +24,12 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     private Operator operator = Operator.GE;
 
     public ProgWidgetCoordinateCondition() {
-        super(ModProgWidgets.CONDITION_COORDINATE.get());
+        super(ModProgWidgets.CONDITION_COORDINATE);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.COORDINATE.get(), ModProgWidgets.COORDINATE.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgets.COORDINATE, ModProgWidgets.COORDINATE, ModProgWidgets.TEXT);
     }
 
     @Override

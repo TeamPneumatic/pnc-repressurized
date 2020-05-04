@@ -17,7 +17,7 @@ import java.util.List;
 public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignEditWidget {
 
     public ProgWidgetEditSign() {
-        super(ModProgWidgets.EDIT_SIGN.get());
+        super(ModProgWidgets.EDIT_SIGN);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignE
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
     }
 
     @Override

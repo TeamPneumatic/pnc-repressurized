@@ -36,7 +36,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     private String variable = "";
 
     public ProgWidgetItemFilter() {
-        super(ModProgWidgets.ITEM_FILTER.get());
+        super(ModProgWidgets.ITEM_FILTER);
     }
 
     public static ProgWidgetItemFilter withFilter(ItemStack filter){
@@ -111,12 +111,12 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
 
     @Override
     public ProgWidgetType returnType() {
-        return ModProgWidgets.ITEM_FILTER.get();
+        return ModProgWidgets.ITEM_FILTER;
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get());
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER);
     }
 
     @Override

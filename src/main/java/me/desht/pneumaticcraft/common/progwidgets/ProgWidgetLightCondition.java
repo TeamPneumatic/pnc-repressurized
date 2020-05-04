@@ -14,12 +14,12 @@ import java.util.List;
 public class ProgWidgetLightCondition extends ProgWidgetCondition {
 
     public ProgWidgetLightCondition() {
-        super(ModProgWidgets.CONDITION_LIGHT.get());
+        super(ModProgWidgets.CONDITION_LIGHT);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
     }
 
     @Override

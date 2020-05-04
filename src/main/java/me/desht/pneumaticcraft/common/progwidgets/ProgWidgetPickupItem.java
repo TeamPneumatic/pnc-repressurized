@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase {
 
     public ProgWidgetPickupItem() {
-        super(ModProgWidgets.PICKUP_ITEM.get());
+        super(ModProgWidgets.PICKUP_ITEM);
     }
 
     @Override

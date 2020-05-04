@@ -18,7 +18,7 @@ import java.util.List;
 public class ProgWidgetSuicide extends ProgWidget {
 
     public ProgWidgetSuicide() {
-        super(ModProgWidgets.SUICIDE.get());
+        super(ModProgWidgets.SUICIDE);
     }
 
     @Override

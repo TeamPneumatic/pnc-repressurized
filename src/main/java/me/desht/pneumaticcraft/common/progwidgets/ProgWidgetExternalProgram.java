@@ -18,7 +18,7 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     public boolean shareVariables;
 
     public ProgWidgetExternalProgram() {
-        super(ModProgWidgets.EXTERNAL_PROGRAM.get());
+        super(ModProgWidgets.EXTERNAL_PROGRAM);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get());
+        return ImmutableList.of(ModProgWidgets.AREA);
     }
 
     @Override

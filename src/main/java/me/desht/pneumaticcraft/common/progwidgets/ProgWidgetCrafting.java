@@ -43,7 +43,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     private int count;
 
     public ProgWidgetCrafting() {
-        super(ModProgWidgets.CRAFTING.get());
+        super(ModProgWidgets.CRAFTING);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.ITEM_FILTER.get());
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER, ModProgWidgets.ITEM_FILTER, ModProgWidgets.ITEM_FILTER);
     }
 
     @Override

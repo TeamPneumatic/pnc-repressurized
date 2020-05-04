@@ -20,7 +20,7 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     private boolean dropStraight;
 
     public ProgWidgetDropItem() {
-        super(ModProgWidgets.DROP_ITEM.get());
+        super(ModProgWidgets.DROP_ITEM);
     }
 
     @Override

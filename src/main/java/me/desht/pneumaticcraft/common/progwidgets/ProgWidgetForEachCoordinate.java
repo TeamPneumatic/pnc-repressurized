@@ -26,7 +26,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     private DroneAIForEachCoordinate ai;
 
     public ProgWidgetForEachCoordinate() {
-        super(ModProgWidgets.FOR_EACH_COORDINATE.get());
+        super(ModProgWidgets.FOR_EACH_COORDINATE);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
     }
 
     @Override

@@ -24,7 +24,7 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     public boolean doneWhenDeparting;
 
     public ProgWidgetGoToLocation() {
-        super(ModProgWidgets.GOTO.get());
+        super(ModProgWidgets.GOTO);
     }
 
     ProgWidgetGoToLocation(ProgWidgetType<ProgWidgetTeleport> type) {
@@ -77,7 +77,7 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get());
+        return ImmutableList.of(ModProgWidgets.AREA);
     }
 
     @Override

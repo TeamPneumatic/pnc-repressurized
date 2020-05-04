@@ -1,17 +1,19 @@
 package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.harvesting.HoeHandler;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.item.HoeItem;
-import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModHoeHandlers {
-    public static final DeferredRegister<HoeHandler> HOE_HANDLERS = new DeferredRegister<>(ModRegistries.HOE_HANDLERS, Names.MOD_ID);
-
-    static {
-        HOE_HANDLERS.register("default_hoe_handler",
-                () -> new HoeHandler(item -> item.getItem() instanceof HoeItem,
-                        (stack, player) -> stack.damageItem(1, player, p -> { })));
+    @SubscribeEvent
+    public static void register(RegistryEvent.Register<HoeHandler> event) {
+        event.getRegistry().register(new HoeHandler(
+                        item -> item.getItem() instanceof HoeItem,
+                        (stack, player) -> stack.damageItem(1, player, p -> { })
+                ).setRegistryName("default_hoe_handler")
+        );
     }
-
 }

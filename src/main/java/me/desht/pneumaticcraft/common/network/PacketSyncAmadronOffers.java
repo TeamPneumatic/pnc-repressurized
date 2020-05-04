@@ -27,7 +27,7 @@ public class PacketSyncAmadronOffers {
     }
 
     private Collection<AmadronOffer> readOffers(PacketBuffer buf) {
-        int offerCount = buf.readInt();
+        int offerCount = buf.readVarInt();
         List<AmadronOffer> offers = new ArrayList<>();
         for (int i = 0; i < offerCount; i++) {
             if (buf.readBoolean()) {
@@ -40,7 +40,7 @@ public class PacketSyncAmadronOffers {
     }
 
     public void toBytes(PacketBuffer buf) {
-        buf.writeInt(activeOffers.size());
+        buf.writeVarInt(activeOffers.size());
         for (AmadronOffer offer : activeOffers) {
             buf.writeBoolean(offer instanceof AmadronPlayerOffer);
             buf.writeResourceLocation(offer.getId());

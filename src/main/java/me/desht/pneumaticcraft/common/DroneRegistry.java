@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.api.drone.ICustomBlockInteract;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCustomBlockInteract;
 import me.desht.pneumaticcraft.common.util.ProgrammedDroneUtils;
 import net.minecraft.block.Block;
@@ -38,7 +37,7 @@ public enum DroneRegistry implements IDroneRegistry {
         ProgWidgetType type = new ProgWidgetType<>(() ->
                 new ProgWidgetCustomBlockInteract().setInteractor(interactor)).setRegistryName(interactor.getID());
         event.getRegistry().register(type);
-        ModProgWidgets.registerCustom(type);
+//        ModProgWidgets.registerCustom(type);
     }
 
     @Override

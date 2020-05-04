@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.harvesting;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
-import me.desht.pneumaticcraft.common.core.ModHarvestHandlers;
+import me.desht.pneumaticcraft.common.core.ModHarvestHandlers.TreePart;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -28,8 +28,7 @@ public class HarvestHandlerTree extends HarvestHandler {
         harvest(world, chunkCache, pos, state, drone);
 
         // this will work for all vanilla trees, and any modded trees where the mod is consistent about log/sapling naming
-        Block logBlock = state.getBlock();
-        Block saplingBlock = ModHarvestHandlers.convertTree(logBlock, "log", "sapling");
+        Block saplingBlock = TreePart.LOG.convert(state.getBlock(), TreePart.SAPLING);
 
         if (saplingBlock != null && saplingBlock != Blocks.AIR) {
             BlockState saplingState = saplingBlock.getDefaultState();

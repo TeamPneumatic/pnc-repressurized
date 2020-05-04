@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.harvesting;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
-import me.desht.pneumaticcraft.common.core.ModHarvestHandlers;
+import me.desht.pneumaticcraft.common.core.ModHarvestHandlers.TreePart;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
@@ -23,7 +23,7 @@ public class HarvestHandlerLeaves extends HarvestHandler {
 
     @Override
     public List<ItemStack> addFilterItems(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone) {
-        Block sapling = ModHarvestHandlers.convertTree(state.getBlock(), "leaves", "sapling");
+        Block sapling = TreePart.LEAVES.convert(state.getBlock(), TreePart.SAPLING);
         return Collections.singletonList(new ItemStack(sapling));
     }
 }
