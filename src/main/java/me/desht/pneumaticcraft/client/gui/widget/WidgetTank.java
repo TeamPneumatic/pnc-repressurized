@@ -29,8 +29,8 @@ public class WidgetTank extends Widget implements ITooltipProvider {
         this.tank = tank;
     }
 
-    public WidgetTank(int x, int y, FluidStack stack) {
-        this(x, y, makeTank(stack, 160000));
+    public WidgetTank(int x, int y, FluidStack stack, int capacity) {
+        this(x, y, makeTank(stack, capacity));
     }
 
     public WidgetTank(int x, int y, int width, int height, FluidStack stack) {

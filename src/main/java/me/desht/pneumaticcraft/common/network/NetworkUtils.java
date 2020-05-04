@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.common.network.SyncedField.*;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -129,7 +128,7 @@ public class NetworkUtils {
                     return syncedFields;
                 }
                 if (o instanceof FluidStack[]) {
-                    FluidTank[] array = (FluidTank[]) o;
+                    FluidStack[] array = (FluidStack[]) o;
                     if (filteredIndex >= 0) {
                         syncedFields.add(new SyncedFluidStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {

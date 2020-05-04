@@ -49,7 +49,8 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> inputTank);
 
     @GuiSynced
-    public final FluidTank[] outputsSynced = new FluidTank[IRefineryRecipe.MAX_OUTPUTS];  // purely for GUI syncing
+    public final SmartSyncTank[] outputsSynced = new SmartSyncTank[IRefineryRecipe.MAX_OUTPUTS];  // purely for GUI syncing
+
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
@@ -78,8 +79,8 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     public TileEntityRefineryController() {
         super(ModTileEntities.REFINERY.get());
 
-        for (int i = 0; i < IRefineryRecipe.MAX_OUTPUTS; i++) {
-            outputsSynced[i] = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+        for (int i = 0; i < outputsSynced.length; i++) {
+            outputsSynced[i] = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
         }
     }
 
@@ -143,18 +144,24 @@ public class TileEntityRefineryController extends TileEntityTickableBase
                 }
             }
 
-            IntStream.range(0, outputCount).forEach(i -> {
-                outputCache.get(i).ifPresent(h -> outputsSynced[i].setFluid(h.getFluidInTank(0)));
-            });
+            IntStream.range(0, outputCount).forEach(i -> outputCache.get(i).ifPresent(h -> {
+                outputsSynced[i].setFluid(h.getFluidInTank(0).copy());
+                outputsSynced[i].tick();
+            }));
 
             prevOutputCount = outputCount;
             updateComparatorValue(outputCount, hasWork);
-        } else if (getWorld().isRemote && lastProgress > 0) {
-            TileEntityRefineryOutput teRO = findAdjacentOutput();
-            if (teRO != null) {
-                for (int i = 0; i < lastProgress; i++) {
-                    ClientUtils.emitParticles(getWorld(), teRO.getPos().offset(Direction.UP, outputCount - 1), ParticleTypes.SMOKE);
+        } else if (getWorld().isRemote) {
+            if (lastProgress > 0) {
+                TileEntityRefineryOutput teRO = findAdjacentOutput();
+                if (teRO != null) {
+                    for (int i = 0; i < lastProgress; i++) {
+                        ClientUtils.emitParticles(getWorld(), teRO.getPos().offset(Direction.UP, outputCount - 1), ParticleTypes.SMOKE);
+                    }
                 }
+            }
+            for (SmartSyncTank smartSyncTank : outputsSynced) {
+                smartSyncTank.tick();
             }
         }
     }

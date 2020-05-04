@@ -96,15 +96,15 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            fill(guiLeft + 155, guiTop + 5, guiLeft + 171, guiTop + 69, 0x40FF0000);
+            fill(guiLeft + 155, guiTop + 17, guiLeft + 171, guiTop + 81, 0x40FF0000);
             if (outputs.size() < 3) {
-                fill(guiLeft + 135, guiTop + 9, guiLeft + 151, guiTop + 73, 0x40FF0000);
+                fill(guiLeft + 135, guiTop + 21, guiLeft + 151, guiTop + 85, 0x40FF0000);
             }
             if (outputs.size() < 2) {
-                fill(guiLeft + 115, guiTop + 13, guiLeft + 131, guiTop + 77, 0x40FF0000);
+                fill(guiLeft + 115, guiTop + 25, guiLeft + 131, guiTop + 89, 0x40FF0000);
             }
             if (outputs.size() < 1) {
-                fill(guiLeft + 95, guiTop + 17, guiLeft + 111, guiTop + 81, 0x40FF0000);
+                fill(guiLeft + 95, guiTop + 29, guiLeft + 111, guiTop + 93, 0x40FF0000);
             }
             GlStateManager.disableBlend();
         }
