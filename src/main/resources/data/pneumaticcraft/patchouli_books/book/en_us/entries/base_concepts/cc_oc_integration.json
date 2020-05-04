@@ -60,12 +60,6 @@
     },
     {
       "type": "spotlight",
-      "anchor": "plastic_mixer",
-      "item": "pneumaticcraft:plastic_mixer",
-      "text": "$(li)$(#800)selectColor(<colorIndex>)/$: sets the currently selected plastic color to the supplied <colorIndex>, ranging from 1-16. Calling $(#800)selectColor(0)/$ unselects any selections."
-    },
-    {
-      "type": "spotlight",
       "anchor": "universal_sensor",
       "item": "pneumaticcraft:universal_sensor",
       "text": "$(li)$(#800)getSensorNames()/$: Returns a table of all known sensor names.$(li)$(#800)getSensor()/$: Returns the name of the currently-selected sensor."
